@@ -431,6 +431,32 @@ func (r *RemoveDedicatedDomainLandingPagesRequest) SetLandingPageID(landingPageI
 	r.require(removeDedicatedDomainLandingPagesRequestFieldLandingPageID)
 }
 
+var (
+	renderLandingPagesRequestFieldLandingPageID = big.NewInt(1 << 0)
+)
+
+type RenderLandingPagesRequest struct {
+	// Landing page ID
+	LandingPageID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (r *RenderLandingPagesRequest) require(field *big.Int) {
+	if r.explicitFields == nil {
+		r.explicitFields = big.NewInt(0)
+	}
+	r.explicitFields.Or(r.explicitFields, field)
+}
+
+// SetLandingPageID sets the LandingPageID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RenderLandingPagesRequest) SetLandingPageID(landingPageID string) {
+	r.LandingPageID = landingPageID
+	r.require(renderLandingPagesRequestFieldLandingPageID)
+}
+
 // Landing page builder JSON.
 var (
 	landingPageContentFieldBlocks   = big.NewInt(1 << 0)
@@ -1294,13 +1320,14 @@ var (
 	landingPageSummaryFieldCustomDomainScope = big.NewInt(1 << 6)
 	landingPageSummaryFieldID                = big.NewInt(1 << 7)
 	landingPageSummaryFieldName              = big.NewInt(1 << 8)
-	landingPageSummaryFieldPublicURL         = big.NewInt(1 << 9)
-	landingPageSummaryFieldPublishedAt       = big.NewInt(1 << 10)
-	landingPageSummaryFieldSlug              = big.NewInt(1 << 11)
-	landingPageSummaryFieldStatus            = big.NewInt(1 << 12)
-	landingPageSummaryFieldUpdatedAt         = big.NewInt(1 << 13)
-	landingPageSummaryFieldURL               = big.NewInt(1 << 14)
-	landingPageSummaryFieldViewCount         = big.NewInt(1 << 15)
+	landingPageSummaryFieldPreviewURL        = big.NewInt(1 << 9)
+	landingPageSummaryFieldPublicURL         = big.NewInt(1 << 10)
+	landingPageSummaryFieldPublishedAt       = big.NewInt(1 << 11)
+	landingPageSummaryFieldSlug              = big.NewInt(1 << 12)
+	landingPageSummaryFieldStatus            = big.NewInt(1 << 13)
+	landingPageSummaryFieldUpdatedAt         = big.NewInt(1 << 14)
+	landingPageSummaryFieldURL               = big.NewInt(1 << 15)
+	landingPageSummaryFieldViewCount         = big.NewInt(1 << 16)
 )
 
 type LandingPageSummary struct {
@@ -1316,6 +1343,8 @@ type LandingPageSummary struct {
 	CustomDomainScope *LandingPageSummaryCustomDomainScope `json:"customDomainScope,omitempty" url:"customDomainScope,omitempty"`
 	ID                *string                              `json:"id,omitempty" url:"id,omitempty"`
 	Name              *string                              `json:"name,omitempty" url:"name,omitempty"`
+	// Signed, unlisted visitor-facing preview of the current content. Works for drafts. Not indexed.
+	PreviewURL *string `json:"previewUrl,omitempty" url:"previewUrl,omitempty"`
 	// Custom-domain public URL when a verified custom domain is connected, otherwise the Sequenzy-hosted public URL.
 	PublicURL   *string                   `json:"publicUrl,omitempty" url:"publicUrl,omitempty"`
 	PublishedAt *time.Time                `json:"publishedAt,omitempty" url:"publishedAt,omitempty"`
@@ -1394,6 +1423,13 @@ func (l *LandingPageSummary) GetName() *string {
 		return nil
 	}
 	return l.Name
+}
+
+func (l *LandingPageSummary) GetPreviewURL() *string {
+	if l == nil {
+		return nil
+	}
+	return l.PreviewURL
 }
 
 func (l *LandingPageSummary) GetPublicURL() *string {
@@ -1520,6 +1556,13 @@ func (l *LandingPageSummary) SetID(id *string) {
 func (l *LandingPageSummary) SetName(name *string) {
 	l.Name = name
 	l.require(landingPageSummaryFieldName)
+}
+
+// SetPreviewURL sets the PreviewURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageSummary) SetPreviewURL(previewURL *string) {
+	l.PreviewURL = previewURL
+	l.require(landingPageSummaryFieldPreviewURL)
 }
 
 // SetPublicURL sets the PublicURL field and marks it as non-optional;
@@ -2934,6 +2977,240 @@ func (r *RemoveDedicatedDomainLandingPagesResponse) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", r)
+}
+
+var (
+	renderLandingPagesResponseFieldLandingPageID = big.NewInt(1 << 0)
+	renderLandingPagesResponseFieldMessage       = big.NewInt(1 << 1)
+	renderLandingPagesResponseFieldName          = big.NewInt(1 << 2)
+	renderLandingPagesResponseFieldPreviewURL    = big.NewInt(1 << 3)
+	renderLandingPagesResponseFieldPublicURL     = big.NewInt(1 << 4)
+	renderLandingPagesResponseFieldPublished     = big.NewInt(1 << 5)
+	renderLandingPagesResponseFieldStatus        = big.NewInt(1 << 6)
+	renderLandingPagesResponseFieldSuccess       = big.NewInt(1 << 7)
+	renderLandingPagesResponseFieldTitle         = big.NewInt(1 << 8)
+)
+
+type RenderLandingPagesResponse struct {
+	LandingPageID *string                           `json:"landingPageId,omitempty" url:"landingPageId,omitempty"`
+	Message       *string                           `json:"message,omitempty" url:"message,omitempty"`
+	Name          *string                           `json:"name,omitempty" url:"name,omitempty"`
+	PreviewURL    *string                           `json:"previewUrl,omitempty" url:"previewUrl,omitempty"`
+	PublicURL     *string                           `json:"publicUrl,omitempty" url:"publicUrl,omitempty"`
+	Published     *bool                             `json:"published,omitempty" url:"published,omitempty"`
+	Status        *RenderLandingPagesResponseStatus `json:"status,omitempty" url:"status,omitempty"`
+	Success       *bool                             `json:"success,omitempty" url:"success,omitempty"`
+	Title         *string                           `json:"title,omitempty" url:"title,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *RenderLandingPagesResponse) GetLandingPageID() *string {
+	if r == nil {
+		return nil
+	}
+	return r.LandingPageID
+}
+
+func (r *RenderLandingPagesResponse) GetMessage() *string {
+	if r == nil {
+		return nil
+	}
+	return r.Message
+}
+
+func (r *RenderLandingPagesResponse) GetName() *string {
+	if r == nil {
+		return nil
+	}
+	return r.Name
+}
+
+func (r *RenderLandingPagesResponse) GetPreviewURL() *string {
+	if r == nil {
+		return nil
+	}
+	return r.PreviewURL
+}
+
+func (r *RenderLandingPagesResponse) GetPublicURL() *string {
+	if r == nil {
+		return nil
+	}
+	return r.PublicURL
+}
+
+func (r *RenderLandingPagesResponse) GetPublished() *bool {
+	if r == nil {
+		return nil
+	}
+	return r.Published
+}
+
+func (r *RenderLandingPagesResponse) GetStatus() *RenderLandingPagesResponseStatus {
+	if r == nil {
+		return nil
+	}
+	return r.Status
+}
+
+func (r *RenderLandingPagesResponse) GetSuccess() *bool {
+	if r == nil {
+		return nil
+	}
+	return r.Success
+}
+
+func (r *RenderLandingPagesResponse) GetTitle() *string {
+	if r == nil {
+		return nil
+	}
+	return r.Title
+}
+
+func (r *RenderLandingPagesResponse) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *RenderLandingPagesResponse) require(field *big.Int) {
+	if r.explicitFields == nil {
+		r.explicitFields = big.NewInt(0)
+	}
+	r.explicitFields.Or(r.explicitFields, field)
+}
+
+// SetLandingPageID sets the LandingPageID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RenderLandingPagesResponse) SetLandingPageID(landingPageID *string) {
+	r.LandingPageID = landingPageID
+	r.require(renderLandingPagesResponseFieldLandingPageID)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RenderLandingPagesResponse) SetMessage(message *string) {
+	r.Message = message
+	r.require(renderLandingPagesResponseFieldMessage)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RenderLandingPagesResponse) SetName(name *string) {
+	r.Name = name
+	r.require(renderLandingPagesResponseFieldName)
+}
+
+// SetPreviewURL sets the PreviewURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RenderLandingPagesResponse) SetPreviewURL(previewURL *string) {
+	r.PreviewURL = previewURL
+	r.require(renderLandingPagesResponseFieldPreviewURL)
+}
+
+// SetPublicURL sets the PublicURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RenderLandingPagesResponse) SetPublicURL(publicURL *string) {
+	r.PublicURL = publicURL
+	r.require(renderLandingPagesResponseFieldPublicURL)
+}
+
+// SetPublished sets the Published field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RenderLandingPagesResponse) SetPublished(published *bool) {
+	r.Published = published
+	r.require(renderLandingPagesResponseFieldPublished)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RenderLandingPagesResponse) SetStatus(status *RenderLandingPagesResponseStatus) {
+	r.Status = status
+	r.require(renderLandingPagesResponseFieldStatus)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RenderLandingPagesResponse) SetSuccess(success *bool) {
+	r.Success = success
+	r.require(renderLandingPagesResponseFieldSuccess)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RenderLandingPagesResponse) SetTitle(title *string) {
+	r.Title = title
+	r.require(renderLandingPagesResponseFieldTitle)
+}
+
+func (r *RenderLandingPagesResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler RenderLandingPagesResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = RenderLandingPagesResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *RenderLandingPagesResponse) MarshalJSON() ([]byte, error) {
+	type embed RenderLandingPagesResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *RenderLandingPagesResponse) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+type RenderLandingPagesResponseStatus string
+
+const (
+	RenderLandingPagesResponseStatusDraft     RenderLandingPagesResponseStatus = "draft"
+	RenderLandingPagesResponseStatusPublished RenderLandingPagesResponseStatus = "published"
+)
+
+func NewRenderLandingPagesResponseStatusFromString(s string) (RenderLandingPagesResponseStatus, error) {
+	switch s {
+	case "draft":
+		return RenderLandingPagesResponseStatusDraft, nil
+	case "published":
+		return RenderLandingPagesResponseStatusPublished, nil
+	}
+	var t RenderLandingPagesResponseStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r RenderLandingPagesResponseStatus) Ptr() *RenderLandingPagesResponseStatus {
+	return &r
 }
 
 var (

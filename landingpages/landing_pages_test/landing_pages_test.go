@@ -362,6 +362,32 @@ func TestLandingPagesRemoveDedicatedDomainWithWireMock(
 	VerifyRequestCount(t, "TestLandingPagesRemoveDedicatedDomainWithWireMock", "DELETE", "/landing-pages/landingPageId/domain", nil, 1)
 }
 
+func TestLandingPagesRenderWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.RenderLandingPagesRequest{
+		LandingPageID: "landingPageId",
+	}
+	_, invocationErr := client.LandingPages.Render(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestLandingPagesRenderWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestLandingPagesRenderWithWireMock", "POST", "/landing-pages/landingPageId/render", nil, 1)
+}
+
 func TestLandingPagesUnpublishWithWireMock(
 	t *testing.T,
 ) {

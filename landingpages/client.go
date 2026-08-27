@@ -326,6 +326,33 @@ func (c *Client) RemoveDedicatedDomain(
 	return response.Body, nil
 }
 
+// Returns a signed, unlisted preview URL for the current landing page content. Works for drafts. Does not publish the page or collect signup form submissions on a draft preview.
+//
+// Example:
+//
+//	request := &sequenzygo.RenderLandingPagesRequest{
+//	    LandingPageID: "landingPageId",
+//	}
+//	client.LandingPages.Render(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Render(
+	ctx context.Context,
+	request *sequenzygo.RenderLandingPagesRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.RenderLandingPagesResponse, error) {
+	response, err := c.WithRawResponse.Render(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Returns a landing page to draft status and optionally updates name, slug, or content first.
 //
 // Example:

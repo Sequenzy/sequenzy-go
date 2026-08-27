@@ -288,6 +288,10 @@ type SendTransactionalRequest struct {
 	EmailType *SendTransactionalRequestEmailType `json:"emailType,omitempty" url:"-"`
 	// Custom from address. Format: "Name <email>" or just "email".
 	// The domain must be verified for your account. If not verified, this field is silently ignored.
+	// When the address exactly matches an existing sender identity (the display name disambiguates if
+	// several identities share the address), that identity - including its sending route - is used for
+	// the send; otherwise the template or company-default identity is kept and this field only changes
+	// the visible From.
 	From *string `json:"from,omitempty" url:"-"`
 	// Compatibility alias for `body`. Accepted with `subject` for direct sends and must match `body` when both are provided.
 	HTML *string `json:"html,omitempty" url:"-"`

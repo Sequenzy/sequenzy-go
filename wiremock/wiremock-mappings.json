@@ -3385,7 +3385,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"landingPage\": {\n    \"appPublicUrl\": \"https://sequenzy.com/lp/comp_abc123/product-waitlist\",\n    \"companyId\": \"comp_abc123\",\n    \"content\": {\n      \"blocks\": [\n        {\n          \"key\": \"value\"\n        }\n      ],\n      \"seo\": {\n        \"faviconUrl\": \"https://acme.com/favicon.png\"\n      },\n      \"template\": \"waitlist\",\n      \"version\": 2\n    },\n    \"conversionCount\": 186,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"customDomain\": \"offer.example.com\",\n    \"customDomainScope\": \"page\",\n    \"id\": \"lp_abc123\",\n    \"name\": \"Product Waitlist\",\n    \"publicUrl\": \"https://pages.example.com/product-waitlist\",\n    \"publishedAt\": \"2024-01-15T09:30:00Z\",\n    \"slug\": \"product-waitlist\",\n    \"status\": \"draft\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"url\": \"https://sequenzy.com/dashboard/company/comp_abc123/landing-pages/lp_abc123\",\n    \"viewCount\": 1240\n  },\n  \"message\": \"Landing page created as a draft. Use publish_landing_page when it is ready to go live.\",\n  \"success\": true\n}",
+        "body": "{\n  \"landingPage\": {\n    \"appPublicUrl\": \"https://sequenzy.com/lp/comp_abc123/product-waitlist\",\n    \"companyId\": \"comp_abc123\",\n    \"content\": {\n      \"blocks\": [\n        {\n          \"key\": \"value\"\n        }\n      ],\n      \"seo\": {\n        \"faviconUrl\": \"https://acme.com/favicon.png\"\n      },\n      \"template\": \"waitlist\",\n      \"version\": 2\n    },\n    \"conversionCount\": 186,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"customDomain\": \"offer.example.com\",\n    \"customDomainScope\": \"page\",\n    \"id\": \"lp_abc123\",\n    \"name\": \"Product Waitlist\",\n    \"previewUrl\": \"https://sequenzy.com/lp/preview/lp_abc123?token=...\",\n    \"publicUrl\": \"https://pages.example.com/product-waitlist\",\n    \"publishedAt\": \"2024-01-15T09:30:00Z\",\n    \"slug\": \"product-waitlist\",\n    \"status\": \"draft\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"url\": \"https://sequenzy.com/dashboard/company/comp_abc123/landing-pages/lp_abc123\",\n    \"viewCount\": 1240\n  },\n  \"message\": \"Landing page created as a draft. Use publish_landing_page when it is ready to go live.\",\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -3457,7 +3457,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"landingPage\": {\n    \"appPublicUrl\": \"https://sequenzy.com/lp/comp_abc123/product-waitlist\",\n    \"companyId\": \"comp_abc123\",\n    \"content\": {\n      \"blocks\": [\n        {\n          \"key\": \"value\"\n        }\n      ],\n      \"seo\": {\n        \"faviconUrl\": \"https://acme.com/favicon.png\"\n      },\n      \"template\": \"waitlist\",\n      \"version\": 2\n    },\n    \"conversionCount\": 186,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"customDomain\": \"offer.example.com\",\n    \"customDomainScope\": \"page\",\n    \"id\": \"lp_abc123\",\n    \"name\": \"Product Waitlist\",\n    \"publicUrl\": \"https://pages.example.com/product-waitlist\",\n    \"publishedAt\": \"2024-01-15T09:30:00Z\",\n    \"slug\": \"product-waitlist\",\n    \"status\": \"draft\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"url\": \"https://sequenzy.com/dashboard/company/comp_abc123/landing-pages/lp_abc123\",\n    \"viewCount\": 1240\n  },\n  \"message\": \"message\",\n  \"success\": true\n}",
+        "body": "{\n  \"landingPage\": {\n    \"appPublicUrl\": \"https://sequenzy.com/lp/comp_abc123/product-waitlist\",\n    \"companyId\": \"comp_abc123\",\n    \"content\": {\n      \"blocks\": [\n        {\n          \"key\": \"value\"\n        }\n      ],\n      \"seo\": {\n        \"faviconUrl\": \"https://acme.com/favicon.png\"\n      },\n      \"template\": \"waitlist\",\n      \"version\": 2\n    },\n    \"conversionCount\": 186,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"customDomain\": \"offer.example.com\",\n    \"customDomainScope\": \"page\",\n    \"id\": \"lp_abc123\",\n    \"name\": \"Product Waitlist\",\n    \"previewUrl\": \"https://sequenzy.com/lp/preview/lp_abc123?token=...\",\n    \"publicUrl\": \"https://pages.example.com/product-waitlist\",\n    \"publishedAt\": \"2024-01-15T09:30:00Z\",\n    \"slug\": \"product-waitlist\",\n    \"status\": \"draft\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"url\": \"https://sequenzy.com/dashboard/company/comp_abc123/landing-pages/lp_abc123\",\n    \"viewCount\": 1240\n  },\n  \"message\": \"message\",\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -3493,7 +3493,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"landingPage\": {\n    \"appPublicUrl\": \"https://sequenzy.com/lp/comp_abc123/product-waitlist\",\n    \"companyId\": \"comp_abc123\",\n    \"content\": {\n      \"blocks\": [\n        {\n          \"key\": \"value\"\n        }\n      ],\n      \"seo\": {\n        \"faviconUrl\": \"https://acme.com/favicon.png\"\n      },\n      \"template\": \"waitlist\",\n      \"version\": 2\n    },\n    \"conversionCount\": 186,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"customDomain\": \"offer.example.com\",\n    \"customDomainScope\": \"page\",\n    \"id\": \"lp_abc123\",\n    \"name\": \"Product Waitlist\",\n    \"publicUrl\": \"https://pages.example.com/product-waitlist\",\n    \"publishedAt\": \"2024-01-15T09:30:00Z\",\n    \"slug\": \"product-waitlist\",\n    \"status\": \"draft\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"url\": \"https://sequenzy.com/dashboard/company/comp_abc123/landing-pages/lp_abc123\",\n    \"viewCount\": 1240\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"landingPage\": {\n    \"appPublicUrl\": \"https://sequenzy.com/lp/comp_abc123/product-waitlist\",\n    \"companyId\": \"comp_abc123\",\n    \"content\": {\n      \"blocks\": [\n        {\n          \"key\": \"value\"\n        }\n      ],\n      \"seo\": {\n        \"faviconUrl\": \"https://acme.com/favicon.png\"\n      },\n      \"template\": \"waitlist\",\n      \"version\": 2\n    },\n    \"conversionCount\": 186,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"customDomain\": \"offer.example.com\",\n    \"customDomainScope\": \"page\",\n    \"id\": \"lp_abc123\",\n    \"name\": \"Product Waitlist\",\n    \"previewUrl\": \"https://sequenzy.com/lp/preview/lp_abc123?token=...\",\n    \"publicUrl\": \"https://pages.example.com/product-waitlist\",\n    \"publishedAt\": \"2024-01-15T09:30:00Z\",\n    \"slug\": \"product-waitlist\",\n    \"status\": \"draft\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"url\": \"https://sequenzy.com/dashboard/company/comp_abc123/landing-pages/lp_abc123\",\n    \"viewCount\": 1240\n  },\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -3592,7 +3592,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"companyId\": \"comp_abc123\",\n  \"landingPages\": [\n    {\n      \"appPublicUrl\": \"https://sequenzy.com/lp/comp_abc123/product-waitlist\",\n      \"companyId\": \"comp_abc123\",\n      \"content\": {\n        \"blocks\": [\n          {\n            \"key\": \"value\"\n          }\n        ],\n        \"seo\": {\n          \"faviconUrl\": \"https://acme.com/favicon.png\"\n        },\n        \"template\": \"waitlist\",\n        \"version\": 2\n      },\n      \"conversionCount\": 186,\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"customDomain\": \"offer.example.com\",\n      \"customDomainScope\": \"page\",\n      \"id\": \"lp_abc123\",\n      \"name\": \"Product Waitlist\",\n      \"publicUrl\": \"https://pages.example.com/product-waitlist\",\n      \"publishedAt\": \"2024-01-15T09:30:00Z\",\n      \"slug\": \"product-waitlist\",\n      \"status\": \"draft\",\n      \"updatedAt\": \"2024-01-15T09:30:00Z\",\n      \"url\": \"https://sequenzy.com/dashboard/company/comp_abc123/landing-pages/lp_abc123\",\n      \"viewCount\": 1240\n    }\n  ],\n  \"success\": true,\n  \"url\": \"https://sequenzy.com/dashboard/company/comp_abc123/landing-pages\"\n}",
+        "body": "{\n  \"companyId\": \"comp_abc123\",\n  \"landingPages\": [\n    {\n      \"appPublicUrl\": \"https://sequenzy.com/lp/comp_abc123/product-waitlist\",\n      \"companyId\": \"comp_abc123\",\n      \"content\": {\n        \"blocks\": [\n          {\n            \"key\": \"value\"\n          }\n        ],\n        \"seo\": {\n          \"faviconUrl\": \"https://acme.com/favicon.png\"\n        },\n        \"template\": \"waitlist\",\n        \"version\": 2\n      },\n      \"conversionCount\": 186,\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"customDomain\": \"offer.example.com\",\n      \"customDomainScope\": \"page\",\n      \"id\": \"lp_abc123\",\n      \"name\": \"Product Waitlist\",\n      \"previewUrl\": \"https://sequenzy.com/lp/preview/lp_abc123?token=...\",\n      \"publicUrl\": \"https://pages.example.com/product-waitlist\",\n      \"publishedAt\": \"2024-01-15T09:30:00Z\",\n      \"slug\": \"product-waitlist\",\n      \"status\": \"draft\",\n      \"updatedAt\": \"2024-01-15T09:30:00Z\",\n      \"url\": \"https://sequenzy.com/dashboard/company/comp_abc123/landing-pages/lp_abc123\",\n      \"viewCount\": 1240\n    }\n  ],\n  \"success\": true,\n  \"url\": \"https://sequenzy.com/dashboard/company/comp_abc123/landing-pages\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -3629,7 +3629,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"landingPage\": {\n    \"appPublicUrl\": \"https://sequenzy.com/lp/comp_abc123/product-waitlist\",\n    \"companyId\": \"comp_abc123\",\n    \"content\": {\n      \"blocks\": [\n        {\n          \"key\": \"value\"\n        }\n      ],\n      \"seo\": {\n        \"faviconUrl\": \"https://acme.com/favicon.png\"\n      },\n      \"template\": \"waitlist\",\n      \"version\": 2\n    },\n    \"conversionCount\": 186,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"customDomain\": \"offer.example.com\",\n    \"customDomainScope\": \"page\",\n    \"id\": \"lp_abc123\",\n    \"name\": \"Product Waitlist\",\n    \"publicUrl\": \"https://pages.example.com/product-waitlist\",\n    \"publishedAt\": \"2024-01-15T09:30:00Z\",\n    \"slug\": \"product-waitlist\",\n    \"status\": \"draft\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"url\": \"https://sequenzy.com/dashboard/company/comp_abc123/landing-pages/lp_abc123\",\n    \"viewCount\": 1240\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"landingPage\": {\n    \"appPublicUrl\": \"https://sequenzy.com/lp/comp_abc123/product-waitlist\",\n    \"companyId\": \"comp_abc123\",\n    \"content\": {\n      \"blocks\": [\n        {\n          \"key\": \"value\"\n        }\n      ],\n      \"seo\": {\n        \"faviconUrl\": \"https://acme.com/favicon.png\"\n      },\n      \"template\": \"waitlist\",\n      \"version\": 2\n    },\n    \"conversionCount\": 186,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"customDomain\": \"offer.example.com\",\n    \"customDomainScope\": \"page\",\n    \"id\": \"lp_abc123\",\n    \"name\": \"Product Waitlist\",\n    \"previewUrl\": \"https://sequenzy.com/lp/preview/lp_abc123?token=...\",\n    \"publicUrl\": \"https://pages.example.com/product-waitlist\",\n    \"publishedAt\": \"2024-01-15T09:30:00Z\",\n    \"slug\": \"product-waitlist\",\n    \"status\": \"draft\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"url\": \"https://sequenzy.com/dashboard/company/comp_abc123/landing-pages/lp_abc123\",\n    \"viewCount\": 1240\n  },\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -3683,6 +3683,42 @@
       }
     },
     {
+      "id": "9ca0c94a-6e1b-4a09-ba62-a6e96f8df87a",
+      "name": "Render landing page preview - default",
+      "request": {
+        "urlPathTemplate": "/landing-pages/{landingPageId}/render",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "landingPageId": {
+            "equalTo": "landingPageId"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"landingPageId\": \"lp_abc123\",\n  \"message\": \"message\",\n  \"name\": \"Product Waitlist\",\n  \"previewUrl\": \"https://sequenzy.com/lp/preview/lp_abc123?token=...\",\n  \"publicUrl\": \"publicUrl\",\n  \"published\": false,\n  \"status\": \"draft\",\n  \"success\": true,\n  \"title\": \"Join the Acme waitlist\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "9ca0c94a-6e1b-4a09-ba62-a6e96f8df87a",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "07f6a6b8-4afd-429c-ad82-cf83761574b0",
       "name": "Unpublish landing page - default",
       "request": {
@@ -3701,7 +3737,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"landingPage\": {\n    \"appPublicUrl\": \"https://sequenzy.com/lp/comp_abc123/product-waitlist\",\n    \"companyId\": \"comp_abc123\",\n    \"content\": {\n      \"blocks\": [\n        {\n          \"key\": \"value\"\n        }\n      ],\n      \"seo\": {\n        \"faviconUrl\": \"https://acme.com/favicon.png\"\n      },\n      \"template\": \"waitlist\",\n      \"version\": 2\n    },\n    \"conversionCount\": 186,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"customDomain\": \"offer.example.com\",\n    \"customDomainScope\": \"page\",\n    \"id\": \"lp_abc123\",\n    \"name\": \"Product Waitlist\",\n    \"publicUrl\": \"https://pages.example.com/product-waitlist\",\n    \"publishedAt\": \"2024-01-15T09:30:00Z\",\n    \"slug\": \"product-waitlist\",\n    \"status\": \"draft\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"url\": \"https://sequenzy.com/dashboard/company/comp_abc123/landing-pages/lp_abc123\",\n    \"viewCount\": 1240\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"landingPage\": {\n    \"appPublicUrl\": \"https://sequenzy.com/lp/comp_abc123/product-waitlist\",\n    \"companyId\": \"comp_abc123\",\n    \"content\": {\n      \"blocks\": [\n        {\n          \"key\": \"value\"\n        }\n      ],\n      \"seo\": {\n        \"faviconUrl\": \"https://acme.com/favicon.png\"\n      },\n      \"template\": \"waitlist\",\n      \"version\": 2\n    },\n    \"conversionCount\": 186,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"customDomain\": \"offer.example.com\",\n    \"customDomainScope\": \"page\",\n    \"id\": \"lp_abc123\",\n    \"name\": \"Product Waitlist\",\n    \"previewUrl\": \"https://sequenzy.com/lp/preview/lp_abc123?token=...\",\n    \"publicUrl\": \"https://pages.example.com/product-waitlist\",\n    \"publishedAt\": \"2024-01-15T09:30:00Z\",\n    \"slug\": \"product-waitlist\",\n    \"status\": \"draft\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"url\": \"https://sequenzy.com/dashboard/company/comp_abc123/landing-pages/lp_abc123\",\n    \"viewCount\": 1240\n  },\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -3737,7 +3773,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"landingPage\": {\n    \"appPublicUrl\": \"https://sequenzy.com/lp/comp_abc123/product-waitlist\",\n    \"companyId\": \"comp_abc123\",\n    \"content\": {\n      \"blocks\": [\n        {\n          \"key\": \"value\"\n        }\n      ],\n      \"seo\": {\n        \"faviconUrl\": \"https://acme.com/favicon.png\"\n      },\n      \"template\": \"waitlist\",\n      \"version\": 2\n    },\n    \"conversionCount\": 186,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"customDomain\": \"offer.example.com\",\n    \"customDomainScope\": \"page\",\n    \"id\": \"lp_abc123\",\n    \"name\": \"Product Waitlist\",\n    \"publicUrl\": \"https://pages.example.com/product-waitlist\",\n    \"publishedAt\": \"2024-01-15T09:30:00Z\",\n    \"slug\": \"product-waitlist\",\n    \"status\": \"draft\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"url\": \"https://sequenzy.com/dashboard/company/comp_abc123/landing-pages/lp_abc123\",\n    \"viewCount\": 1240\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"landingPage\": {\n    \"appPublicUrl\": \"https://sequenzy.com/lp/comp_abc123/product-waitlist\",\n    \"companyId\": \"comp_abc123\",\n    \"content\": {\n      \"blocks\": [\n        {\n          \"key\": \"value\"\n        }\n      ],\n      \"seo\": {\n        \"faviconUrl\": \"https://acme.com/favicon.png\"\n      },\n      \"template\": \"waitlist\",\n      \"version\": 2\n    },\n    \"conversionCount\": 186,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"customDomain\": \"offer.example.com\",\n    \"customDomainScope\": \"page\",\n    \"id\": \"lp_abc123\",\n    \"name\": \"Product Waitlist\",\n    \"previewUrl\": \"https://sequenzy.com/lp/preview/lp_abc123?token=...\",\n    \"publicUrl\": \"https://pages.example.com/product-waitlist\",\n    \"publishedAt\": \"2024-01-15T09:30:00Z\",\n    \"slug\": \"product-waitlist\",\n    \"status\": \"draft\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"url\": \"https://sequenzy.com/dashboard/company/comp_abc123/landing-pages/lp_abc123\",\n    \"viewCount\": 1240\n  },\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -9643,6 +9679,6 @@
     }
   ],
   "meta": {
-    "total": 279
+    "total": 280
   }
 }
