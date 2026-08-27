@@ -1,0 +1,14 @@
+{
+  "cliVersion": "5.103.0",
+  "generatorName": "fernapi/fern-go-sdk",
+  "generatorVersion": "1.57.8",
+  "generatorConfig": {
+    "module": {
+      "path": "github.com/sequenzy/sequenzy-go"
+    }
+  },
+  "originGitCommit": "5be721ac3768e1b476bb1a6fdde210b1e0a8f0f9",
+  "originGitCommitIsDirty": false,
+  "invokedBy": "ci",
+  "ciProvider": "github"
+}
