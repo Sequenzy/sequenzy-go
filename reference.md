@@ -662,6 +662,75 @@ client.AbTests.Restart(
 </dl>
 </details>
 
+<details><summary><code>client.AbTests.SelectWinner(AbTestID, request) -> *sequenzygo.SelectWinnerAbTestsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Selects a winner for a campaign A/B test in the testing phase and queues the winning variant for the remaining audience.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.SelectWinnerAbTestsRequest{
+    AbTestID: "abTestId",
+    VariantID: "variantId",
+}
+client.AbTests.SelectWinner(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**abTestID:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**variantID:** `string` — Variant to select as the winner.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.AbTests.Update(AbTestID, request) -> *sequenzygo.UpdateAbTestsResponse</code></summary>
 <dl>
 <dd>
@@ -14072,7 +14141,7 @@ client.Sequences.RotateInboundWebhookSecret(
 <dl>
 <dd>
 
-Queues a real test email for one saved action_email sequence step to one or more internal reviewers. action_ab_test steps are not supported; inspect their variants through the A/B test endpoints. The sequence is not activated and no subscribers are enrolled. Returns one durable email send ID per recipient for delivery inspection.
+Queues a real test email for one saved action_email sequence step to one or more internal reviewers. action_ab_test steps are not supported; inspect their variants on the sequence detail emails[].abTest.variants payload. The sequence is not activated and no subscribers are enrolled. Returns one durable email send ID per recipient for delivery inspection.
 </dd>
 </dl>
 </dd>

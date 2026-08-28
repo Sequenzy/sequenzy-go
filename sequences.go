@@ -2713,7 +2713,7 @@ func (e *EmailThemePatchTypography) String() string {
 	return fmt.Sprintf("%#v", e)
 }
 
-// A/B test attached to an action_ab_test step. The step's own subject, previewText, and blocks are control variant A only. Without ab_tests:read, record-backed fields are null and variants is empty while the configured id and editing guidance remain available.
+// A/B test attached to an action_ab_test step. The step's own subject, previewText, and blocks are control variant A only. With ab_tests:read, variants[] includes each variant's full blocks. Without ab_tests:read, record-backed fields are null and variants is empty while the configured id and editing guidance remain available.
 var (
 	sequenceAbTestStepSummaryFieldContentEditing   = big.NewInt(1 << 0)
 	sequenceAbTestStepSummaryFieldID               = big.NewInt(1 << 1)
@@ -2966,17 +2966,20 @@ func (s SequenceAbTestStepSummaryTestType) Ptr() *SequenceAbTestStepSummaryTestT
 
 var (
 	sequenceAbTestStepVariantFieldBlockCount   = big.NewInt(1 << 0)
-	sequenceAbTestStepVariantFieldEmailID      = big.NewInt(1 << 1)
-	sequenceAbTestStepVariantFieldIsWinner     = big.NewInt(1 << 2)
-	sequenceAbTestStepVariantFieldPreviewText  = big.NewInt(1 << 3)
-	sequenceAbTestStepVariantFieldSubject      = big.NewInt(1 << 4)
-	sequenceAbTestStepVariantFieldVariantID    = big.NewInt(1 << 5)
-	sequenceAbTestStepVariantFieldVariantLabel = big.NewInt(1 << 6)
+	sequenceAbTestStepVariantFieldBlocks       = big.NewInt(1 << 1)
+	sequenceAbTestStepVariantFieldEmailID      = big.NewInt(1 << 2)
+	sequenceAbTestStepVariantFieldIsWinner     = big.NewInt(1 << 3)
+	sequenceAbTestStepVariantFieldPreviewText  = big.NewInt(1 << 4)
+	sequenceAbTestStepVariantFieldSubject      = big.NewInt(1 << 5)
+	sequenceAbTestStepVariantFieldVariantID    = big.NewInt(1 << 6)
+	sequenceAbTestStepVariantFieldVariantLabel = big.NewInt(1 << 7)
 )
 
 type SequenceAbTestStepVariant struct {
-	// Number of blocks in this variant's body. Read the blocks themselves with GET /ab-tests/{abTestId}.
+	// Number of blocks in this variant's body. Same as blocks.length.
 	BlockCount *float64 `json:"blockCount,omitempty" url:"blockCount,omitempty"`
+	// This variant's email body. Present when ab_tests:read is granted. Step-level blocks remain control variant A only.
+	Blocks []*EmailBlock `json:"blocks,omitempty" url:"blocks,omitempty"`
 	// Email template holding this variant's stored copy.
 	EmailID      *string `json:"emailId,omitempty" url:"emailId,omitempty"`
 	IsWinner     *bool   `json:"isWinner,omitempty" url:"isWinner,omitempty"`
@@ -2997,6 +3000,13 @@ func (s *SequenceAbTestStepVariant) GetBlockCount() *float64 {
 		return nil
 	}
 	return s.BlockCount
+}
+
+func (s *SequenceAbTestStepVariant) GetBlocks() []*EmailBlock {
+	if s == nil {
+		return nil
+	}
+	return s.Blocks
 }
 
 func (s *SequenceAbTestStepVariant) GetEmailID() *string {
@@ -3060,6 +3070,13 @@ func (s *SequenceAbTestStepVariant) require(field *big.Int) {
 func (s *SequenceAbTestStepVariant) SetBlockCount(blockCount *float64) {
 	s.BlockCount = blockCount
 	s.require(sequenceAbTestStepVariantFieldBlockCount)
+}
+
+// SetBlocks sets the Blocks field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceAbTestStepVariant) SetBlocks(blocks []*EmailBlock) {
+	s.Blocks = blocks
+	s.require(sequenceAbTestStepVariantFieldBlocks)
 }
 
 // SetEmailID sets the EmailID field and marks it as non-optional;

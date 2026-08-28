@@ -512,6 +512,62 @@ func (r *RestartAbTestsRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
+	selectWinnerAbTestsRequestFieldAbTestID  = big.NewInt(1 << 0)
+	selectWinnerAbTestsRequestFieldVariantID = big.NewInt(1 << 1)
+)
+
+type SelectWinnerAbTestsRequest struct {
+	AbTestID string `json:"-" url:"-"`
+	// Variant to select as the winner.
+	VariantID string `json:"variantId" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (s *SelectWinnerAbTestsRequest) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetAbTestID sets the AbTestID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SelectWinnerAbTestsRequest) SetAbTestID(abTestID string) {
+	s.AbTestID = abTestID
+	s.require(selectWinnerAbTestsRequestFieldAbTestID)
+}
+
+// SetVariantID sets the VariantID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SelectWinnerAbTestsRequest) SetVariantID(variantID string) {
+	s.VariantID = variantID
+	s.require(selectWinnerAbTestsRequestFieldVariantID)
+}
+
+func (s *SelectWinnerAbTestsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler SelectWinnerAbTestsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*s = SelectWinnerAbTestsRequest(body)
+	return nil
+}
+
+func (s *SelectWinnerAbTestsRequest) MarshalJSON() ([]byte, error) {
+	type embed SelectWinnerAbTestsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
 	abTestFieldAutomationNodeID    = big.NewInt(1 << 0)
 	abTestFieldCampaignID          = big.NewInt(1 << 1)
 	abTestFieldCompanyID           = big.NewInt(1 << 2)
@@ -2642,6 +2698,106 @@ func (r *RestartAbTestsResponse) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", r)
+}
+
+var (
+	selectWinnerAbTestsResponseFieldAbTest  = big.NewInt(1 << 0)
+	selectWinnerAbTestsResponseFieldSuccess = big.NewInt(1 << 1)
+)
+
+type SelectWinnerAbTestsResponse struct {
+	AbTest  *AbTest `json:"abTest,omitempty" url:"abTest,omitempty"`
+	Success *bool   `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SelectWinnerAbTestsResponse) GetAbTest() *AbTest {
+	if s == nil {
+		return nil
+	}
+	return s.AbTest
+}
+
+func (s *SelectWinnerAbTestsResponse) GetSuccess() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.Success
+}
+
+func (s *SelectWinnerAbTestsResponse) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SelectWinnerAbTestsResponse) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetAbTest sets the AbTest field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SelectWinnerAbTestsResponse) SetAbTest(abTest *AbTest) {
+	s.AbTest = abTest
+	s.require(selectWinnerAbTestsResponseFieldAbTest)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SelectWinnerAbTestsResponse) SetSuccess(success *bool) {
+	s.Success = success
+	s.require(selectWinnerAbTestsResponseFieldSuccess)
+}
+
+func (s *SelectWinnerAbTestsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler SelectWinnerAbTestsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SelectWinnerAbTestsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SelectWinnerAbTestsResponse) MarshalJSON() ([]byte, error) {
+	type embed SelectWinnerAbTestsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SelectWinnerAbTestsResponse) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
 }
 
 // Sequence-only variant strategy.

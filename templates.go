@@ -490,6 +490,222 @@ func (s *SyncLocalizationsTemplatesRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
+	templateAbTestReferenceFieldAbTestID       = big.NewInt(1 << 0)
+	templateAbTestReferenceFieldContentEditing = big.NewInt(1 << 1)
+	templateAbTestReferenceFieldVariants       = big.NewInt(1 << 2)
+)
+
+type TemplateAbTestReference struct {
+	AbTestID       string                            `json:"abTestId" url:"abTestId"`
+	ContentEditing *AbTestContentEditing             `json:"contentEditing" url:"contentEditing"`
+	Variants       []*TemplateAbTestVariantReference `json:"variants" url:"variants"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (t *TemplateAbTestReference) GetAbTestID() string {
+	if t == nil {
+		return ""
+	}
+	return t.AbTestID
+}
+
+func (t *TemplateAbTestReference) GetContentEditing() *AbTestContentEditing {
+	if t == nil {
+		return nil
+	}
+	return t.ContentEditing
+}
+
+func (t *TemplateAbTestReference) GetVariants() []*TemplateAbTestVariantReference {
+	if t == nil {
+		return nil
+	}
+	return t.Variants
+}
+
+func (t *TemplateAbTestReference) GetExtraProperties() map[string]interface{} {
+	if t == nil {
+		return nil
+	}
+	return t.extraProperties
+}
+
+func (t *TemplateAbTestReference) require(field *big.Int) {
+	if t.explicitFields == nil {
+		t.explicitFields = big.NewInt(0)
+	}
+	t.explicitFields.Or(t.explicitFields, field)
+}
+
+// SetAbTestID sets the AbTestID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TemplateAbTestReference) SetAbTestID(abTestID string) {
+	t.AbTestID = abTestID
+	t.require(templateAbTestReferenceFieldAbTestID)
+}
+
+// SetContentEditing sets the ContentEditing field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TemplateAbTestReference) SetContentEditing(contentEditing *AbTestContentEditing) {
+	t.ContentEditing = contentEditing
+	t.require(templateAbTestReferenceFieldContentEditing)
+}
+
+// SetVariants sets the Variants field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TemplateAbTestReference) SetVariants(variants []*TemplateAbTestVariantReference) {
+	t.Variants = variants
+	t.require(templateAbTestReferenceFieldVariants)
+}
+
+func (t *TemplateAbTestReference) UnmarshalJSON(data []byte) error {
+	type unmarshaler TemplateAbTestReference
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*t = TemplateAbTestReference(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+	t.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (t *TemplateAbTestReference) MarshalJSON() ([]byte, error) {
+	type embed TemplateAbTestReference
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*t),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, t.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (t *TemplateAbTestReference) String() string {
+	if t == nil {
+		return "<nil>"
+	}
+	if len(t.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(t.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(t); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", t)
+}
+
+var (
+	templateAbTestVariantReferenceFieldVariantID    = big.NewInt(1 << 0)
+	templateAbTestVariantReferenceFieldVariantLabel = big.NewInt(1 << 1)
+)
+
+type TemplateAbTestVariantReference struct {
+	VariantID    string `json:"variantId" url:"variantId"`
+	VariantLabel string `json:"variantLabel" url:"variantLabel"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (t *TemplateAbTestVariantReference) GetVariantID() string {
+	if t == nil {
+		return ""
+	}
+	return t.VariantID
+}
+
+func (t *TemplateAbTestVariantReference) GetVariantLabel() string {
+	if t == nil {
+		return ""
+	}
+	return t.VariantLabel
+}
+
+func (t *TemplateAbTestVariantReference) GetExtraProperties() map[string]interface{} {
+	if t == nil {
+		return nil
+	}
+	return t.extraProperties
+}
+
+func (t *TemplateAbTestVariantReference) require(field *big.Int) {
+	if t.explicitFields == nil {
+		t.explicitFields = big.NewInt(0)
+	}
+	t.explicitFields.Or(t.explicitFields, field)
+}
+
+// SetVariantID sets the VariantID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TemplateAbTestVariantReference) SetVariantID(variantID string) {
+	t.VariantID = variantID
+	t.require(templateAbTestVariantReferenceFieldVariantID)
+}
+
+// SetVariantLabel sets the VariantLabel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TemplateAbTestVariantReference) SetVariantLabel(variantLabel string) {
+	t.VariantLabel = variantLabel
+	t.require(templateAbTestVariantReferenceFieldVariantLabel)
+}
+
+func (t *TemplateAbTestVariantReference) UnmarshalJSON(data []byte) error {
+	type unmarshaler TemplateAbTestVariantReference
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*t = TemplateAbTestVariantReference(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+	t.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (t *TemplateAbTestVariantReference) MarshalJSON() ([]byte, error) {
+	type embed TemplateAbTestVariantReference
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*t),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, t.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (t *TemplateAbTestVariantReference) String() string {
+	if t == nil {
+		return "<nil>"
+	}
+	if len(t.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(t.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(t); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", t)
+}
+
+var (
 	templateDetailFieldCreatedAt               = big.NewInt(1 << 0)
 	templateDetailFieldEmailPreset             = big.NewInt(1 << 1)
 	templateDetailFieldID                      = big.NewInt(1 << 2)
@@ -499,11 +715,12 @@ var (
 	templateDetailFieldPreviewText             = big.NewInt(1 << 6)
 	templateDetailFieldSubject                 = big.NewInt(1 << 7)
 	templateDetailFieldUpdatedAt               = big.NewInt(1 << 8)
-	templateDetailFieldBlocks                  = big.NewInt(1 << 9)
-	templateDetailFieldCompanyID               = big.NewInt(1 << 10)
-	templateDetailFieldEmailLocalizationConfig = big.NewInt(1 << 11)
-	templateDetailFieldFontFamily              = big.NewInt(1 << 12)
-	templateDetailFieldShareURL                = big.NewInt(1 << 13)
+	templateDetailFieldAbTests                 = big.NewInt(1 << 9)
+	templateDetailFieldBlocks                  = big.NewInt(1 << 10)
+	templateDetailFieldCompanyID               = big.NewInt(1 << 11)
+	templateDetailFieldEmailLocalizationConfig = big.NewInt(1 << 12)
+	templateDetailFieldFontFamily              = big.NewInt(1 << 13)
+	templateDetailFieldShareURL                = big.NewInt(1 << 14)
 )
 
 type TemplateDetail struct {
@@ -511,16 +728,22 @@ type TemplateDetail struct {
 	EmailPreset *EmailPreset `json:"emailPreset,omitempty" url:"emailPreset,omitempty"`
 	ID          *string      `json:"id,omitempty" url:"id,omitempty"`
 	// Label names assigned to this template.
-	Labels                  []string         `json:"labels,omitempty" url:"labels,omitempty"`
-	Localizations           []map[string]any `json:"localizations,omitempty" url:"localizations,omitempty"`
-	Name                    *string          `json:"name,omitempty" url:"name,omitempty"`
-	PreviewText             *string          `json:"previewText,omitempty" url:"previewText,omitempty"`
-	Subject                 *string          `json:"subject,omitempty" url:"subject,omitempty"`
-	UpdatedAt               *time.Time       `json:"updatedAt,omitempty" url:"updatedAt,omitempty"`
-	Blocks                  []*EmailBlock    `json:"blocks,omitempty" url:"blocks,omitempty"`
-	CompanyID               *string          `json:"companyId,omitempty" url:"companyId,omitempty"`
-	EmailLocalizationConfig map[string]any   `json:"emailLocalizationConfig,omitempty" url:"emailLocalizationConfig,omitempty"`
-	FontFamily              *string          `json:"fontFamily,omitempty" url:"fontFamily,omitempty"`
+	Labels        []string         `json:"labels,omitempty" url:"labels,omitempty"`
+	Localizations []map[string]any `json:"localizations,omitempty" url:"localizations,omitempty"`
+	Name          *string          `json:"name,omitempty" url:"name,omitempty"`
+	PreviewText   *string          `json:"previewText,omitempty" url:"previewText,omitempty"`
+	Subject       *string          `json:"subject,omitempty" url:"subject,omitempty"`
+	UpdatedAt     *time.Time       `json:"updatedAt,omitempty" url:"updatedAt,omitempty"`
+	// Present when this email belongs to one or more A/B test
+	// variants and the key has ab_tests:read. Content edits must use
+	// the A/B variant update endpoint / `update_ab_test_variant`
+	// tool, not PUT /templates/{templateId}. Campaign variants can
+	// share one email, so each test lists every matching variant.
+	AbTests                 []*TemplateAbTestReference `json:"abTests,omitempty" url:"abTests,omitempty"`
+	Blocks                  []*EmailBlock              `json:"blocks,omitempty" url:"blocks,omitempty"`
+	CompanyID               *string                    `json:"companyId,omitempty" url:"companyId,omitempty"`
+	EmailLocalizationConfig map[string]any             `json:"emailLocalizationConfig,omitempty" url:"emailLocalizationConfig,omitempty"`
+	FontFamily              *string                    `json:"fontFamily,omitempty" url:"fontFamily,omitempty"`
 	// Public anonymized view-in-browser URL. Null until a link is
 	// minted via POST /templates/{templateId}/share-link.
 	ShareURL *string `json:"shareUrl,omitempty" url:"shareUrl,omitempty"`
@@ -593,6 +816,13 @@ func (t *TemplateDetail) GetUpdatedAt() *time.Time {
 		return nil
 	}
 	return t.UpdatedAt
+}
+
+func (t *TemplateDetail) GetAbTests() []*TemplateAbTestReference {
+	if t == nil {
+		return nil
+	}
+	return t.AbTests
 }
 
 func (t *TemplateDetail) GetBlocks() []*EmailBlock {
@@ -705,6 +935,13 @@ func (t *TemplateDetail) SetSubject(subject *string) {
 func (t *TemplateDetail) SetUpdatedAt(updatedAt *time.Time) {
 	t.UpdatedAt = updatedAt
 	t.require(templateDetailFieldUpdatedAt)
+}
+
+// SetAbTests sets the AbTests field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TemplateDetail) SetAbTests(abTests []*TemplateAbTestReference) {
+	t.AbTests = abTests
+	t.require(templateDetailFieldAbTests)
 }
 
 // SetBlocks sets the Blocks field and marks it as non-optional;

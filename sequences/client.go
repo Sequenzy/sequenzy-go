@@ -736,7 +736,7 @@ func (c *Client) RotateInboundWebhookSecret(
 	return response.Body, nil
 }
 
-// Queues a real test email for one saved action_email sequence step to one or more internal reviewers. action_ab_test steps are not supported; inspect their variants through the A/B test endpoints. The sequence is not activated and no subscribers are enrolled. Returns one durable email send ID per recipient for delivery inspection.
+// Queues a real test email for one saved action_email sequence step to one or more internal reviewers. action_ab_test steps are not supported; inspect their variants on the sequence detail emails[].abTest.variants payload. The sequence is not activated and no subscribers are enrolled. Returns one durable email send ID per recipient for delivery inspection.
 //
 // Example:
 //

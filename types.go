@@ -5088,6 +5088,204 @@ func (s *ServiceUnavailableErrorBody) String() string {
 }
 
 var (
+	templateUpdateErrorFieldCode      = big.NewInt(1 << 0)
+	templateUpdateErrorFieldError     = big.NewInt(1 << 1)
+	templateUpdateErrorFieldRetryable = big.NewInt(1 << 2)
+	templateUpdateErrorFieldSuccess   = big.NewInt(1 << 3)
+	templateUpdateErrorFieldAbTests   = big.NewInt(1 << 4)
+	templateUpdateErrorFieldDocsURL   = big.NewInt(1 << 5)
+	templateUpdateErrorFieldHowToFix  = big.NewInt(1 << 6)
+	templateUpdateErrorFieldTitle     = big.NewInt(1 << 7)
+)
+
+type TemplateUpdateError struct {
+	// Optional stable machine-readable error discriminator when available.
+	Code  *string `json:"code,omitempty" url:"code,omitempty"`
+	Error string  `json:"error" url:"error"`
+	// Whether retrying the request can recover from the error.
+	Retryable *bool                      `json:"retryable,omitempty" url:"retryable,omitempty"`
+	Success   *bool                      `json:"success,omitempty" url:"success,omitempty"`
+	AbTests   []*TemplateAbTestReference `json:"abTests,omitempty" url:"abTests,omitempty"`
+	DocsURL   *string                    `json:"docsUrl,omitempty" url:"docsUrl,omitempty"`
+	HowToFix  *string                    `json:"howToFix,omitempty" url:"howToFix,omitempty"`
+	Title     *string                    `json:"title,omitempty" url:"title,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (t *TemplateUpdateError) GetCode() *string {
+	if t == nil {
+		return nil
+	}
+	return t.Code
+}
+
+func (t *TemplateUpdateError) GetError() string {
+	if t == nil {
+		return ""
+	}
+	return t.Error
+}
+
+func (t *TemplateUpdateError) GetRetryable() *bool {
+	if t == nil {
+		return nil
+	}
+	return t.Retryable
+}
+
+func (t *TemplateUpdateError) GetSuccess() *bool {
+	if t == nil {
+		return nil
+	}
+	return t.Success
+}
+
+func (t *TemplateUpdateError) GetAbTests() []*TemplateAbTestReference {
+	if t == nil {
+		return nil
+	}
+	return t.AbTests
+}
+
+func (t *TemplateUpdateError) GetDocsURL() *string {
+	if t == nil {
+		return nil
+	}
+	return t.DocsURL
+}
+
+func (t *TemplateUpdateError) GetHowToFix() *string {
+	if t == nil {
+		return nil
+	}
+	return t.HowToFix
+}
+
+func (t *TemplateUpdateError) GetTitle() *string {
+	if t == nil {
+		return nil
+	}
+	return t.Title
+}
+
+func (t *TemplateUpdateError) GetExtraProperties() map[string]interface{} {
+	if t == nil {
+		return nil
+	}
+	return t.extraProperties
+}
+
+func (t *TemplateUpdateError) require(field *big.Int) {
+	if t.explicitFields == nil {
+		t.explicitFields = big.NewInt(0)
+	}
+	t.explicitFields.Or(t.explicitFields, field)
+}
+
+// SetCode sets the Code field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TemplateUpdateError) SetCode(code *string) {
+	t.Code = code
+	t.require(templateUpdateErrorFieldCode)
+}
+
+// SetError sets the Error field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TemplateUpdateError) SetError(error_ string) {
+	t.Error = error_
+	t.require(templateUpdateErrorFieldError)
+}
+
+// SetRetryable sets the Retryable field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TemplateUpdateError) SetRetryable(retryable *bool) {
+	t.Retryable = retryable
+	t.require(templateUpdateErrorFieldRetryable)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TemplateUpdateError) SetSuccess(success *bool) {
+	t.Success = success
+	t.require(templateUpdateErrorFieldSuccess)
+}
+
+// SetAbTests sets the AbTests field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TemplateUpdateError) SetAbTests(abTests []*TemplateAbTestReference) {
+	t.AbTests = abTests
+	t.require(templateUpdateErrorFieldAbTests)
+}
+
+// SetDocsURL sets the DocsURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TemplateUpdateError) SetDocsURL(docsURL *string) {
+	t.DocsURL = docsURL
+	t.require(templateUpdateErrorFieldDocsURL)
+}
+
+// SetHowToFix sets the HowToFix field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TemplateUpdateError) SetHowToFix(howToFix *string) {
+	t.HowToFix = howToFix
+	t.require(templateUpdateErrorFieldHowToFix)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TemplateUpdateError) SetTitle(title *string) {
+	t.Title = title
+	t.require(templateUpdateErrorFieldTitle)
+}
+
+func (t *TemplateUpdateError) UnmarshalJSON(data []byte) error {
+	type unmarshaler TemplateUpdateError
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*t = TemplateUpdateError(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+	t.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (t *TemplateUpdateError) MarshalJSON() ([]byte, error) {
+	type embed TemplateUpdateError
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*t),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, t.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (t *TemplateUpdateError) String() string {
+	if t == nil {
+		return "<nil>"
+	}
+	if len(t.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(t.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(t); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", t)
+}
+
+var (
 	tooManyRequestsErrorBodyFieldMessage = big.NewInt(1 << 0)
 	tooManyRequestsErrorBodyFieldSuccess = big.NewInt(1 << 1)
 )

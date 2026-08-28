@@ -248,6 +248,34 @@ func (c *Client) Restart(
 	return response.Body, nil
 }
 
+// Selects a winner for a campaign A/B test in the testing phase and queues the winning variant for the remaining audience.
+//
+// Example:
+//
+//	request := &sequenzygo.SelectWinnerAbTestsRequest{
+//	    AbTestID: "abTestId",
+//	    VariantID: "variantId",
+//	}
+//	client.AbTests.SelectWinner(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) SelectWinner(
+	ctx context.Context,
+	request *sequenzygo.SelectWinnerAbTestsRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.SelectWinnerAbTestsResponse, error) {
+	response, err := c.WithRawResponse.SelectWinner(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Updates a draft campaign test or the effective settings for a sequence test. Campaigns use testPercentage and testDurationMinutes; sequences use testType and winnerThreshold. Sequence changes that affect a live or already-used test require confirmLiveChange.
 //
 // Example:
