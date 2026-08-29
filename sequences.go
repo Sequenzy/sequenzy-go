@@ -1830,7 +1830,7 @@ func (s *SimulateSequencesRequest) SetSubscriberID(subscriberID *string) {
 	s.require(simulateSequencesRequestFieldSubscriberID)
 }
 
-// Partial visual theme patch. Omitted fields keep their current value, so {"colors": {"background": "#ffffff"}} repaints only the background. Colors are 6-digit hex; numeric values are clamped to their supported ranges. Null clears the stored theme.
+// Partial visual theme patch. Omitted fields keep their current value, so {"colors": {"background": "#f3f4f6"}} repaints only the outer canvas, while content controls the inner card the blocks sit on. Colors are 6-digit hex; numeric values are clamped to their supported ranges. Null clears the stored theme.
 var (
 	emailThemePatchFieldButtonStyle = big.NewInt(1 << 0)
 	emailThemePatchFieldColors      = big.NewInt(1 << 1)
@@ -2005,24 +2005,29 @@ var (
 	emailThemePatchColorsFieldBackground = big.NewInt(1 << 0)
 	emailThemePatchColorsFieldBorder     = big.NewInt(1 << 1)
 	emailThemePatchColorsFieldButtonText = big.NewInt(1 << 2)
-	emailThemePatchColorsFieldHeading    = big.NewInt(1 << 3)
-	emailThemePatchColorsFieldLink       = big.NewInt(1 << 4)
-	emailThemePatchColorsFieldMutedText  = big.NewInt(1 << 5)
-	emailThemePatchColorsFieldPrimary    = big.NewInt(1 << 6)
-	emailThemePatchColorsFieldSurface    = big.NewInt(1 << 7)
-	emailThemePatchColorsFieldText       = big.NewInt(1 << 8)
+	emailThemePatchColorsFieldContent    = big.NewInt(1 << 3)
+	emailThemePatchColorsFieldHeading    = big.NewInt(1 << 4)
+	emailThemePatchColorsFieldLink       = big.NewInt(1 << 5)
+	emailThemePatchColorsFieldMutedText  = big.NewInt(1 << 6)
+	emailThemePatchColorsFieldPrimary    = big.NewInt(1 << 7)
+	emailThemePatchColorsFieldSurface    = big.NewInt(1 << 8)
+	emailThemePatchColorsFieldText       = big.NewInt(1 << 9)
 )
 
 type EmailThemePatchColors struct {
+	// Outer canvas behind the email.
 	Background *string `json:"background,omitempty" url:"background,omitempty"`
 	Border     *string `json:"border,omitempty" url:"border,omitempty"`
 	ButtonText *string `json:"buttonText,omitempty" url:"buttonText,omitempty"`
-	Heading    *string `json:"heading,omitempty" url:"heading,omitempty"`
-	Link       *string `json:"link,omitempty" url:"link,omitempty"`
-	MutedText  *string `json:"mutedText,omitempty" url:"mutedText,omitempty"`
-	Primary    *string `json:"primary,omitempty" url:"primary,omitempty"`
-	Surface    *string `json:"surface,omitempty" url:"surface,omitempty"`
-	Text       *string `json:"text,omitempty" url:"text,omitempty"`
+	// Inner content card. Omit to preserve its current value; when no content color is stored, the card follows the outer canvas.
+	Content   *string `json:"content,omitempty" url:"content,omitempty"`
+	Heading   *string `json:"heading,omitempty" url:"heading,omitempty"`
+	Link      *string `json:"link,omitempty" url:"link,omitempty"`
+	MutedText *string `json:"mutedText,omitempty" url:"mutedText,omitempty"`
+	Primary   *string `json:"primary,omitempty" url:"primary,omitempty"`
+	// Nested cards and tinted tiles.
+	Surface *string `json:"surface,omitempty" url:"surface,omitempty"`
+	Text    *string `json:"text,omitempty" url:"text,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -2050,6 +2055,13 @@ func (e *EmailThemePatchColors) GetButtonText() *string {
 		return nil
 	}
 	return e.ButtonText
+}
+
+func (e *EmailThemePatchColors) GetContent() *string {
+	if e == nil {
+		return nil
+	}
+	return e.Content
 }
 
 func (e *EmailThemePatchColors) GetHeading() *string {
@@ -2127,6 +2139,13 @@ func (e *EmailThemePatchColors) SetBorder(border *string) {
 func (e *EmailThemePatchColors) SetButtonText(buttonText *string) {
 	e.ButtonText = buttonText
 	e.require(emailThemePatchColorsFieldButtonText)
+}
+
+// SetContent sets the Content field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailThemePatchColors) SetContent(content *string) {
+	e.Content = content
+	e.require(emailThemePatchColorsFieldContent)
 }
 
 // SetHeading sets the Heading field and marks it as non-optional;

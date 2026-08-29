@@ -135,7 +135,7 @@ type CreateSubscribersRequest struct {
 	DuplicateStrategy *CreateSubscribersRequestDuplicateStrategy `json:"duplicateStrategy,omitempty" url:"-"`
 	// Required when creating a new subscriber unless a phone is provided (which creates a phone-only SMS contact). Optional when externalId identifies an existing subscriber.
 	Email *string `json:"email,omitempty" url:"-"`
-	// Whether to enroll the subscriber in matching sequences. Defaults to true for API calls, or to false when createdAt is supplied.
+	// Whether to enroll the subscriber in matching sequences. Defaults to true for API calls, or to false when createdAt is supplied. Explicitly passing true requires the automations:trigger scope and returns 403 when that scope is missing.
 	EnrollInSequences *bool `json:"enrollInSequences,omitempty" url:"-"`
 	// Customer-owned app/customer/user ID. Unique per company when provided.
 	ExternalID *string `json:"externalId,omitempty" url:"-"`

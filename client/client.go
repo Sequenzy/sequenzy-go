@@ -13,6 +13,7 @@ import (
 	core "github.com/sequenzy/sequenzy-go/core"
 	emailblocks "github.com/sequenzy/sequenzy-go/emailblocks"
 	emailcomponents "github.com/sequenzy/sequenzy-go/emailcomponents"
+	emaildesignsystem "github.com/sequenzy/sequenzy-go/emaildesignsystem"
 	emails "github.com/sequenzy/sequenzy-go/emails"
 	emailsends "github.com/sequenzy/sequenzy-go/emailsends"
 	events "github.com/sequenzy/sequenzy-go/events"
@@ -58,6 +59,7 @@ type Client struct {
 	Conversations           *conversations.Client
 	EmailBlocks             *emailblocks.Client
 	EmailComponents         *emailcomponents.Client
+	EmailDesignSystem       *emaildesignsystem.Client
 	Emails                  *emails.Client
 	EmailSends              *emailsends.Client
 	Events                  *events.Client
@@ -107,6 +109,7 @@ func NewClient(opts ...option.RequestOption) *Client {
 		Conversations:           conversations.NewClient(options),
 		EmailBlocks:             emailblocks.NewClient(options),
 		EmailComponents:         emailcomponents.NewClient(options),
+		EmailDesignSystem:       emaildesignsystem.NewClient(options),
 		Emails:                  emails.NewClient(options),
 		EmailSends:              emailsends.NewClient(options),
 		Events:                  events.NewClient(options),

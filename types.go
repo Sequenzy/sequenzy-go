@@ -3436,7 +3436,7 @@ type RenderEmailRequest struct {
 	Tracking *bool `json:"tracking,omitempty" url:"tracking,omitempty"`
 	// Extra merge variables layered over the contact's attributes.
 	Variables map[string]any `json:"variables,omitempty" url:"variables,omitempty"`
-	// Render a specific A/B test variant. Ignored for templates.
+	// Render a specific A/B test variant. Required for sequence steps whose nodeType is action_ab_test; those steps have no email of their own. Sequence variants also need the ab_tests:read scope. Ignored for templates.
 	VariantID *string `json:"variantId,omitempty" url:"variantId,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted

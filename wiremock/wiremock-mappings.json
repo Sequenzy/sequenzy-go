@@ -2707,6 +2707,69 @@
       }
     },
     {
+      "id": "b088b278-ca56-4551-a3c5-96b534652dac",
+      "name": "Get email design system - default",
+      "request": {
+        "urlPathTemplate": "/email-design-system",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"designSystem\": {\n    \"compositionSpine\": \"hero-led\",\n    \"designCode\": {\n      \"buttonShape\": \"rounded\",\n      \"density\": \"airy\",\n      \"dividerStyle\": \"line\",\n      \"kickerStyle\": \"chip\",\n      \"openerTreatments\": [\n        \"hero-image\"\n      ],\n      \"titleAlignment\": \"left\",\n      \"version\": 1\n    },\n    \"source\": \"derived\",\n    \"version\": 1\n  },\n  \"directionText\": \"directionText\",\n  \"isDefault\": true,\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "b088b278-ca56-4551-a3c5-96b534652dac",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
+      "id": "821ec7c6-fca5-4d21-9961-c942aa0947fa",
+      "name": "Update email design system - Switch to a typography-first editorial identity",
+      "request": {
+        "urlPathTemplate": "/email-design-system",
+        "method": "PATCH",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"designSystem\": {\n    \"compositionSpine\": \"hero-led\",\n    \"designCode\": {\n      \"buttonShape\": \"rounded\",\n      \"density\": \"airy\",\n      \"dividerStyle\": \"line\",\n      \"kickerStyle\": \"chip\",\n      \"openerTreatments\": [\n        \"hero-image\"\n      ],\n      \"titleAlignment\": \"left\",\n      \"version\": 1\n    },\n    \"source\": \"derived\",\n    \"version\": 1\n  },\n  \"directionText\": \"directionText\",\n  \"isDefault\": true,\n  \"message\": \"Updated the email design system and rewrote the design direction text to match.\",\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "821ec7c6-fca5-4d21-9961-c942aa0947fa",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "261d4499-c7ff-4f1c-bb08-ccda46392f2b",
       "name": "Create email - default",
       "request": {
@@ -9715,6 +9778,6 @@
     }
   ],
   "meta": {
-    "total": 281
+    "total": 283
   }
 }

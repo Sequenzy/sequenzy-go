@@ -1544,25 +1544,30 @@ var (
 	updateCompaniesRequestEmailThemeColorsFieldBackground = big.NewInt(1 << 0)
 	updateCompaniesRequestEmailThemeColorsFieldBorder     = big.NewInt(1 << 1)
 	updateCompaniesRequestEmailThemeColorsFieldButtonText = big.NewInt(1 << 2)
-	updateCompaniesRequestEmailThemeColorsFieldHeading    = big.NewInt(1 << 3)
-	updateCompaniesRequestEmailThemeColorsFieldLink       = big.NewInt(1 << 4)
-	updateCompaniesRequestEmailThemeColorsFieldMutedText  = big.NewInt(1 << 5)
-	updateCompaniesRequestEmailThemeColorsFieldPrimary    = big.NewInt(1 << 6)
-	updateCompaniesRequestEmailThemeColorsFieldSurface    = big.NewInt(1 << 7)
-	updateCompaniesRequestEmailThemeColorsFieldText       = big.NewInt(1 << 8)
+	updateCompaniesRequestEmailThemeColorsFieldContent    = big.NewInt(1 << 3)
+	updateCompaniesRequestEmailThemeColorsFieldHeading    = big.NewInt(1 << 4)
+	updateCompaniesRequestEmailThemeColorsFieldLink       = big.NewInt(1 << 5)
+	updateCompaniesRequestEmailThemeColorsFieldMutedText  = big.NewInt(1 << 6)
+	updateCompaniesRequestEmailThemeColorsFieldPrimary    = big.NewInt(1 << 7)
+	updateCompaniesRequestEmailThemeColorsFieldSurface    = big.NewInt(1 << 8)
+	updateCompaniesRequestEmailThemeColorsFieldText       = big.NewInt(1 << 9)
 )
 
 type UpdateCompaniesRequestEmailThemeColors struct {
+	// Outer canvas behind the email.
 	Background *string `json:"background,omitempty" url:"background,omitempty"`
 	Border     *string `json:"border,omitempty" url:"border,omitempty"`
 	// Label color for solid buttons. Omit to auto-derive a readable color from the button background.
 	ButtonText *string `json:"buttonText,omitempty" url:"buttonText,omitempty"`
-	Heading    *string `json:"heading,omitempty" url:"heading,omitempty"`
-	Link       *string `json:"link,omitempty" url:"link,omitempty"`
-	MutedText  *string `json:"mutedText,omitempty" url:"mutedText,omitempty"`
-	Primary    *string `json:"primary,omitempty" url:"primary,omitempty"`
-	Surface    *string `json:"surface,omitempty" url:"surface,omitempty"`
-	Text       *string `json:"text,omitempty" url:"text,omitempty"`
+	// Inner content card. Omit to preserve its current effective color.
+	Content   *string `json:"content,omitempty" url:"content,omitempty"`
+	Heading   *string `json:"heading,omitempty" url:"heading,omitempty"`
+	Link      *string `json:"link,omitempty" url:"link,omitempty"`
+	MutedText *string `json:"mutedText,omitempty" url:"mutedText,omitempty"`
+	Primary   *string `json:"primary,omitempty" url:"primary,omitempty"`
+	// Nested cards and tinted tiles.
+	Surface *string `json:"surface,omitempty" url:"surface,omitempty"`
+	Text    *string `json:"text,omitempty" url:"text,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1590,6 +1595,13 @@ func (u *UpdateCompaniesRequestEmailThemeColors) GetButtonText() *string {
 		return nil
 	}
 	return u.ButtonText
+}
+
+func (u *UpdateCompaniesRequestEmailThemeColors) GetContent() *string {
+	if u == nil {
+		return nil
+	}
+	return u.Content
 }
 
 func (u *UpdateCompaniesRequestEmailThemeColors) GetHeading() *string {
@@ -1667,6 +1679,13 @@ func (u *UpdateCompaniesRequestEmailThemeColors) SetBorder(border *string) {
 func (u *UpdateCompaniesRequestEmailThemeColors) SetButtonText(buttonText *string) {
 	u.ButtonText = buttonText
 	u.require(updateCompaniesRequestEmailThemeColorsFieldButtonText)
+}
+
+// SetContent sets the Content field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateCompaniesRequestEmailThemeColors) SetContent(content *string) {
+	u.Content = content
+	u.require(updateCompaniesRequestEmailThemeColorsFieldContent)
 }
 
 // SetHeading sets the Heading field and marks it as non-optional;

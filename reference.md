@@ -6550,6 +6550,131 @@ client.EmailComponents.Update(
 </dl>
 </details>
 
+## EmailDesignSystem
+<details><summary><code>client.EmailDesignSystem.GetEmailDesignSystem() -> *sequenzygo.GetEmailDesignSystemResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns the company's effective email design system - the visual identity every AI-generated email (campaigns and sequence steps) renders inside. The identity is stored as the company's emailDesignPrompt direction text; tokens are parsed from that text, with unstated tokens derived deterministically from brand context. isDefault is true while the identity is purely derived.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+client.EmailDesignSystem.GetEmailDesignSystem(
+    context.TODO(),
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.EmailDesignSystem.UpdateEmailDesignSystem(request) -> *sequenzygo.UpdateEmailDesignSystemResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Adjusts the company's email design system. This is a partial update - only the passed fields change - and it affects every future AI email generation and sequence enrichment. The adjustment is written into the company's emailDesignPrompt direction text (the single source of truth) - the new identity's sentences are prepended and custom prose the text carried is preserved below them. Pass reset true to clear the direction text and return to the brand-derived defaults.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.UpdateEmailDesignSystemRequest{
+    CompositionSpine: sequenzygo.UpdateEmailDesignSystemRequestCompositionSpineEditorial.Ptr(),
+    DesignCode: &sequenzygo.UpdateEmailDesignSystemRequestDesignCode{
+        KickerStyle: sequenzygo.UpdateEmailDesignSystemRequestDesignCodeKickerStyleLetterspaced.Ptr(),
+        OpenerTreatments: []sequenzygo.UpdateEmailDesignSystemRequestDesignCodeOpenerTreatmentsItem{
+            sequenzygo.UpdateEmailDesignSystemRequestDesignCodeOpenerTreatmentsItemEditorialMasthead,
+            sequenzygo.UpdateEmailDesignSystemRequestDesignCodeOpenerTreatmentsItemTitleLed,
+        },
+    },
+}
+client.EmailDesignSystem.UpdateEmailDesignSystem(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**compositionSpine:** `*sequenzygo.UpdateEmailDesignSystemRequestCompositionSpine` — Which worked-example skeleton anchors generation.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**designCode:** `*sequenzygo.UpdateEmailDesignSystemRequestDesignCode` — Partial visual-grammar adjustment; omitted tokens keep their current value.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**reset:** `*bool` — true clears the direction text and returns to brand-derived defaults. Cannot be combined with designCode or compositionSpine.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Emails
 <details><summary><code>client.Emails.Create(request) -> *sequenzygo.CreateEmailsResponse</code></summary>
 <dl>
@@ -15487,7 +15612,7 @@ How to handle existing subscribers:
 <dl>
 <dd>
 
-**enrollInSequences:** `*bool` — Whether to enroll the subscriber in matching sequences. Defaults to true for API calls, or to false when createdAt is supplied.
+**enrollInSequences:** `*bool` — Whether to enroll the subscriber in matching sequences. Defaults to true for API calls, or to false when createdAt is supplied. Explicitly passing true requires the automations:trigger scope and returns 403 when that scope is missing.
     
 </dd>
 </dl>
