@@ -46,7 +46,7 @@ var (
 )
 
 type ConnectIntegrationsRequest struct {
-	// Provider API key. Required for every provider except clerk, posthog, and segment.
+	// Provider API key. Required for polar, paddle, dodo, whop, creem, chargebee, affonso, and attio. Attio uses the workspace access token.
 	APIKey *string `json:"apiKey,omitempty" url:"-"`
 	// PostHog and Segment only. Imports event history after connecting: PostHog reads the project archive (projectId + personalApiKey); Segment walks your existing contacts' Unify profiles (spaceId + profileApiToken) and covers at most the last 14 days the Profile API serves, because Segment has no bulk event export.
 	HistoryImport *ConnectIntegrationsRequestHistoryImport `json:"historyImport,omitempty" url:"-"`
@@ -54,10 +54,10 @@ type ConnectIntegrationsRequest struct {
 	Provider ConnectIntegrationsRequestProvider `json:"provider" url:"-"`
 	// Provider account id: Paddle seller ID, Dodo business ID, Whop company ID, Creem store ID, or Chargebee site name. Polar resolves it from the API key.
 	ProviderAccountID *string `json:"providerAccountId,omitempty" url:"-"`
-	// PostHog and Segment only. Event delivery scope. PostHog defaults to every non-internal event; new Segment connections skip automatic page/screen calls unless explicitly allowlisted.
+	// PostHog and Segment: event delivery scope. Attio: listMap (Sequenzy list id to Attio list id or slug) and syncCompanyFromDomain.
 	Settings *ConnectIntegrationsRequestSettings `json:"settings,omitempty" url:"-"`
-	// Signing secret of the webhook created at the provider. For Chargebee, the webhook's basic-auth credentials as username:password. For Segment, the secret is your own choice and must be between 16 and 153 UTF-8 bytes.
-	WebhookSecret string `json:"webhookSecret" url:"-"`
+	// Signing secret of the webhook created at the provider. Required except for attio, which is outbound-only. For Chargebee, the webhook's basic-auth credentials as username:password. For Segment, the secret is your own choice and must be between 16 and 153 UTF-8 bytes.
+	WebhookSecret *string `json:"webhookSecret,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -107,7 +107,7 @@ func (c *ConnectIntegrationsRequest) SetSettings(settings *ConnectIntegrationsRe
 
 // SetWebhookSecret sets the WebhookSecret field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *ConnectIntegrationsRequest) SetWebhookSecret(webhookSecret string) {
+func (c *ConnectIntegrationsRequest) SetWebhookSecret(webhookSecret *string) {
 	c.WebhookSecret = webhookSecret
 	c.require(connectIntegrationsRequestFieldWebhookSecret)
 }
@@ -157,6 +157,32 @@ func (g *GetIntegrationsRequest) require(field *big.Int) {
 func (g *GetIntegrationsRequest) SetID(id string) {
 	g.ID = id
 	g.require(getIntegrationsRequestFieldID)
+}
+
+var (
+	getAttioMappingRequestFieldID = big.NewInt(1 << 0)
+)
+
+type GetAttioMappingRequest struct {
+	// Attio integration ID.
+	ID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (g *GetAttioMappingRequest) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetAttioMappingRequest) SetID(id string) {
+	g.ID = id
+	g.require(getAttioMappingRequestFieldID)
 }
 
 var (
@@ -273,7 +299,7 @@ var (
 )
 
 type ListCapabilitiesIntegrationsRequest struct {
-	// Filter by category: payments, ecommerce, auth, analytics, ads, affiliate, cms, or developer.
+	// Filter by category: payments, ecommerce, auth, analytics, ads, affiliate, cms, crm, or developer.
 	Category *string `json:"-" url:"category,omitempty"`
 	// Return only this provider, for example stripe.
 	Provider *string `json:"-" url:"provider,omitempty"`
@@ -769,6 +795,473 @@ func NewIntegrationActivityEntryStatusFromString(s string) (IntegrationActivityE
 
 func (i IntegrationActivityEntryStatus) Ptr() *IntegrationActivityEntryStatus {
 	return &i
+}
+
+// Attio list mapping for a connected integration: saved Sequenzy-to-Attio listMap, live people-lists from Attio, and this company's Sequenzy lists.
+var (
+	integrationAttioMappingFieldAttioLists            = big.NewInt(1 << 0)
+	integrationAttioMappingFieldChanged               = big.NewInt(1 << 1)
+	integrationAttioMappingFieldChangedFields         = big.NewInt(1 << 2)
+	integrationAttioMappingFieldIntegrationID         = big.NewInt(1 << 3)
+	integrationAttioMappingFieldListMap               = big.NewInt(1 << 4)
+	integrationAttioMappingFieldMappedListCount       = big.NewInt(1 << 5)
+	integrationAttioMappingFieldMessage               = big.NewInt(1 << 6)
+	integrationAttioMappingFieldProvider              = big.NewInt(1 << 7)
+	integrationAttioMappingFieldSequenzyLists         = big.NewInt(1 << 8)
+	integrationAttioMappingFieldSuccess               = big.NewInt(1 << 9)
+	integrationAttioMappingFieldSyncCompanyFromDomain = big.NewInt(1 << 10)
+)
+
+type IntegrationAttioMapping struct {
+	// Attio people-lists the stored token can write, read live.
+	AttioLists []*IntegrationAttioMappingAttioListsItem `json:"attioLists,omitempty" url:"attioLists,omitempty"`
+	// Present on PATCH. False when already in the requested state.
+	Changed *bool `json:"changed,omitempty" url:"changed,omitempty"`
+	// Present on PATCH. Which settings actually moved.
+	ChangedFields []string `json:"changedFields,omitempty" url:"changedFields,omitempty"`
+	IntegrationID *string  `json:"integrationId,omitempty" url:"integrationId,omitempty"`
+	// Sequenzy list id to Attio list UUID or api slug.
+	ListMap map[string]string `json:"listMap,omitempty" url:"listMap,omitempty"`
+	// Number of saved mappings whose Sequenzy source and Attio target lists both still exist. Stale saved entries remain in listMap but are not counted.
+	MappedListCount *int                                        `json:"mappedListCount,omitempty" url:"mappedListCount,omitempty"`
+	Message         *string                                     `json:"message,omitempty" url:"message,omitempty"`
+	Provider        *string                                     `json:"provider,omitempty" url:"provider,omitempty"`
+	SequenzyLists   []*IntegrationAttioMappingSequenzyListsItem `json:"sequenzyLists,omitempty" url:"sequenzyLists,omitempty"`
+	Success         *bool                                       `json:"success,omitempty" url:"success,omitempty"`
+	// When true, upsert a company from the person's non-free-mail email domain.
+	SyncCompanyFromDomain *bool `json:"syncCompanyFromDomain,omitempty" url:"syncCompanyFromDomain,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (i *IntegrationAttioMapping) GetAttioLists() []*IntegrationAttioMappingAttioListsItem {
+	if i == nil {
+		return nil
+	}
+	return i.AttioLists
+}
+
+func (i *IntegrationAttioMapping) GetChanged() *bool {
+	if i == nil {
+		return nil
+	}
+	return i.Changed
+}
+
+func (i *IntegrationAttioMapping) GetChangedFields() []string {
+	if i == nil {
+		return nil
+	}
+	return i.ChangedFields
+}
+
+func (i *IntegrationAttioMapping) GetIntegrationID() *string {
+	if i == nil {
+		return nil
+	}
+	return i.IntegrationID
+}
+
+func (i *IntegrationAttioMapping) GetListMap() map[string]string {
+	if i == nil {
+		return nil
+	}
+	return i.ListMap
+}
+
+func (i *IntegrationAttioMapping) GetMappedListCount() *int {
+	if i == nil {
+		return nil
+	}
+	return i.MappedListCount
+}
+
+func (i *IntegrationAttioMapping) GetMessage() *string {
+	if i == nil {
+		return nil
+	}
+	return i.Message
+}
+
+func (i *IntegrationAttioMapping) GetProvider() *string {
+	if i == nil {
+		return nil
+	}
+	return i.Provider
+}
+
+func (i *IntegrationAttioMapping) GetSequenzyLists() []*IntegrationAttioMappingSequenzyListsItem {
+	if i == nil {
+		return nil
+	}
+	return i.SequenzyLists
+}
+
+func (i *IntegrationAttioMapping) GetSuccess() *bool {
+	if i == nil {
+		return nil
+	}
+	return i.Success
+}
+
+func (i *IntegrationAttioMapping) GetSyncCompanyFromDomain() *bool {
+	if i == nil {
+		return nil
+	}
+	return i.SyncCompanyFromDomain
+}
+
+func (i *IntegrationAttioMapping) GetExtraProperties() map[string]interface{} {
+	if i == nil {
+		return nil
+	}
+	return i.extraProperties
+}
+
+func (i *IntegrationAttioMapping) require(field *big.Int) {
+	if i.explicitFields == nil {
+		i.explicitFields = big.NewInt(0)
+	}
+	i.explicitFields.Or(i.explicitFields, field)
+}
+
+// SetAttioLists sets the AttioLists field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IntegrationAttioMapping) SetAttioLists(attioLists []*IntegrationAttioMappingAttioListsItem) {
+	i.AttioLists = attioLists
+	i.require(integrationAttioMappingFieldAttioLists)
+}
+
+// SetChanged sets the Changed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IntegrationAttioMapping) SetChanged(changed *bool) {
+	i.Changed = changed
+	i.require(integrationAttioMappingFieldChanged)
+}
+
+// SetChangedFields sets the ChangedFields field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IntegrationAttioMapping) SetChangedFields(changedFields []string) {
+	i.ChangedFields = changedFields
+	i.require(integrationAttioMappingFieldChangedFields)
+}
+
+// SetIntegrationID sets the IntegrationID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IntegrationAttioMapping) SetIntegrationID(integrationID *string) {
+	i.IntegrationID = integrationID
+	i.require(integrationAttioMappingFieldIntegrationID)
+}
+
+// SetListMap sets the ListMap field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IntegrationAttioMapping) SetListMap(listMap map[string]string) {
+	i.ListMap = listMap
+	i.require(integrationAttioMappingFieldListMap)
+}
+
+// SetMappedListCount sets the MappedListCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IntegrationAttioMapping) SetMappedListCount(mappedListCount *int) {
+	i.MappedListCount = mappedListCount
+	i.require(integrationAttioMappingFieldMappedListCount)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IntegrationAttioMapping) SetMessage(message *string) {
+	i.Message = message
+	i.require(integrationAttioMappingFieldMessage)
+}
+
+// SetProvider sets the Provider field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IntegrationAttioMapping) SetProvider(provider *string) {
+	i.Provider = provider
+	i.require(integrationAttioMappingFieldProvider)
+}
+
+// SetSequenzyLists sets the SequenzyLists field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IntegrationAttioMapping) SetSequenzyLists(sequenzyLists []*IntegrationAttioMappingSequenzyListsItem) {
+	i.SequenzyLists = sequenzyLists
+	i.require(integrationAttioMappingFieldSequenzyLists)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IntegrationAttioMapping) SetSuccess(success *bool) {
+	i.Success = success
+	i.require(integrationAttioMappingFieldSuccess)
+}
+
+// SetSyncCompanyFromDomain sets the SyncCompanyFromDomain field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IntegrationAttioMapping) SetSyncCompanyFromDomain(syncCompanyFromDomain *bool) {
+	i.SyncCompanyFromDomain = syncCompanyFromDomain
+	i.require(integrationAttioMappingFieldSyncCompanyFromDomain)
+}
+
+func (i *IntegrationAttioMapping) UnmarshalJSON(data []byte) error {
+	type unmarshaler IntegrationAttioMapping
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*i = IntegrationAttioMapping(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+	i.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *IntegrationAttioMapping) MarshalJSON() ([]byte, error) {
+	type embed IntegrationAttioMapping
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*i),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (i *IntegrationAttioMapping) String() string {
+	if i == nil {
+		return "<nil>"
+	}
+	if len(i.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
+var (
+	integrationAttioMappingAttioListsItemFieldAPISlug = big.NewInt(1 << 0)
+	integrationAttioMappingAttioListsItemFieldID      = big.NewInt(1 << 1)
+	integrationAttioMappingAttioListsItemFieldName    = big.NewInt(1 << 2)
+)
+
+type IntegrationAttioMappingAttioListsItem struct {
+	APISlug *string `json:"apiSlug,omitempty" url:"apiSlug,omitempty"`
+	ID      *string `json:"id,omitempty" url:"id,omitempty"`
+	Name    *string `json:"name,omitempty" url:"name,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (i *IntegrationAttioMappingAttioListsItem) GetAPISlug() *string {
+	if i == nil {
+		return nil
+	}
+	return i.APISlug
+}
+
+func (i *IntegrationAttioMappingAttioListsItem) GetID() *string {
+	if i == nil {
+		return nil
+	}
+	return i.ID
+}
+
+func (i *IntegrationAttioMappingAttioListsItem) GetName() *string {
+	if i == nil {
+		return nil
+	}
+	return i.Name
+}
+
+func (i *IntegrationAttioMappingAttioListsItem) GetExtraProperties() map[string]interface{} {
+	if i == nil {
+		return nil
+	}
+	return i.extraProperties
+}
+
+func (i *IntegrationAttioMappingAttioListsItem) require(field *big.Int) {
+	if i.explicitFields == nil {
+		i.explicitFields = big.NewInt(0)
+	}
+	i.explicitFields.Or(i.explicitFields, field)
+}
+
+// SetAPISlug sets the APISlug field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IntegrationAttioMappingAttioListsItem) SetAPISlug(apiSlug *string) {
+	i.APISlug = apiSlug
+	i.require(integrationAttioMappingAttioListsItemFieldAPISlug)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IntegrationAttioMappingAttioListsItem) SetID(id *string) {
+	i.ID = id
+	i.require(integrationAttioMappingAttioListsItemFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IntegrationAttioMappingAttioListsItem) SetName(name *string) {
+	i.Name = name
+	i.require(integrationAttioMappingAttioListsItemFieldName)
+}
+
+func (i *IntegrationAttioMappingAttioListsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler IntegrationAttioMappingAttioListsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*i = IntegrationAttioMappingAttioListsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+	i.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *IntegrationAttioMappingAttioListsItem) MarshalJSON() ([]byte, error) {
+	type embed IntegrationAttioMappingAttioListsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*i),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (i *IntegrationAttioMappingAttioListsItem) String() string {
+	if i == nil {
+		return "<nil>"
+	}
+	if len(i.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
+var (
+	integrationAttioMappingSequenzyListsItemFieldID   = big.NewInt(1 << 0)
+	integrationAttioMappingSequenzyListsItemFieldName = big.NewInt(1 << 1)
+)
+
+type IntegrationAttioMappingSequenzyListsItem struct {
+	ID   *string `json:"id,omitempty" url:"id,omitempty"`
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (i *IntegrationAttioMappingSequenzyListsItem) GetID() *string {
+	if i == nil {
+		return nil
+	}
+	return i.ID
+}
+
+func (i *IntegrationAttioMappingSequenzyListsItem) GetName() *string {
+	if i == nil {
+		return nil
+	}
+	return i.Name
+}
+
+func (i *IntegrationAttioMappingSequenzyListsItem) GetExtraProperties() map[string]interface{} {
+	if i == nil {
+		return nil
+	}
+	return i.extraProperties
+}
+
+func (i *IntegrationAttioMappingSequenzyListsItem) require(field *big.Int) {
+	if i.explicitFields == nil {
+		i.explicitFields = big.NewInt(0)
+	}
+	i.explicitFields.Or(i.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IntegrationAttioMappingSequenzyListsItem) SetID(id *string) {
+	i.ID = id
+	i.require(integrationAttioMappingSequenzyListsItemFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IntegrationAttioMappingSequenzyListsItem) SetName(name *string) {
+	i.Name = name
+	i.require(integrationAttioMappingSequenzyListsItemFieldName)
+}
+
+func (i *IntegrationAttioMappingSequenzyListsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler IntegrationAttioMappingSequenzyListsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*i = IntegrationAttioMappingSequenzyListsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+	i.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *IntegrationAttioMappingSequenzyListsItem) MarshalJSON() ([]byte, error) {
+	type embed IntegrationAttioMappingSequenzyListsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*i),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (i *IntegrationAttioMappingSequenzyListsItem) String() string {
+	if i == nil {
+		return "<nil>"
+	}
+	if len(i.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
 }
 
 var (
@@ -1717,7 +2210,7 @@ type IntegrationDetailIntegration struct {
 	// Provider category, or null for a provider with no catalog entry.
 	Category    *IntegrationDetailIntegrationCategory `json:"category,omitempty" url:"category,omitempty"`
 	ConnectedAt *time.Time                            `json:"connectedAt,omitempty" url:"connectedAt,omitempty"`
-	// Allowlisted non-secret metadata. Never contains credentials.
+	// Allowlisted non-secret metadata. Never contains credentials. Attio includes listMap, mappedListCount, and syncCompanyFromDomain for configuration diagnostics.
 	Details        map[string]any `json:"details,omitempty" url:"details,omitempty"`
 	DisconnectedAt *time.Time     `json:"disconnectedAt,omitempty" url:"disconnectedAt,omitempty"`
 	ID             *string        `json:"id,omitempty" url:"id,omitempty"`
@@ -2050,6 +2543,7 @@ const (
 	IntegrationDetailIntegrationCategoryAds       IntegrationDetailIntegrationCategory = "ads"
 	IntegrationDetailIntegrationCategoryAffiliate IntegrationDetailIntegrationCategory = "affiliate"
 	IntegrationDetailIntegrationCategoryCms       IntegrationDetailIntegrationCategory = "cms"
+	IntegrationDetailIntegrationCategoryCrm       IntegrationDetailIntegrationCategory = "crm"
 	IntegrationDetailIntegrationCategoryDeveloper IntegrationDetailIntegrationCategory = "developer"
 )
 
@@ -2069,6 +2563,8 @@ func NewIntegrationDetailIntegrationCategoryFromString(s string) (IntegrationDet
 		return IntegrationDetailIntegrationCategoryAffiliate, nil
 	case "cms":
 		return IntegrationDetailIntegrationCategoryCms, nil
+	case "crm":
+		return IntegrationDetailIntegrationCategoryCrm, nil
 	case "developer":
 		return IntegrationDetailIntegrationCategoryDeveloper, nil
 	}
@@ -3588,13 +4084,14 @@ func (i *IntegrationProviderCapability) String() string {
 type IntegrationProviderCapabilityActionsItem string
 
 const (
-	IntegrationProviderCapabilityActionsItemConnect          IntegrationProviderCapabilityActionsItem = "connect"
-	IntegrationProviderCapabilityActionsItemEnableSync       IntegrationProviderCapabilityActionsItem = "enable_sync"
-	IntegrationProviderCapabilityActionsItemDisableSync      IntegrationProviderCapabilityActionsItem = "disable_sync"
-	IntegrationProviderCapabilityActionsItemSyncNow          IntegrationProviderCapabilityActionsItem = "sync_now"
-	IntegrationProviderCapabilityActionsItemSyncProducts     IntegrationProviderCapabilityActionsItem = "sync_products"
-	IntegrationProviderCapabilityActionsItemSetListTargeting IntegrationProviderCapabilityActionsItem = "set_list_targeting"
-	IntegrationProviderCapabilityActionsItemActivatePixel    IntegrationProviderCapabilityActionsItem = "activate_pixel"
+	IntegrationProviderCapabilityActionsItemConnect             IntegrationProviderCapabilityActionsItem = "connect"
+	IntegrationProviderCapabilityActionsItemEnableSync          IntegrationProviderCapabilityActionsItem = "enable_sync"
+	IntegrationProviderCapabilityActionsItemDisableSync         IntegrationProviderCapabilityActionsItem = "disable_sync"
+	IntegrationProviderCapabilityActionsItemSyncNow             IntegrationProviderCapabilityActionsItem = "sync_now"
+	IntegrationProviderCapabilityActionsItemSyncProducts        IntegrationProviderCapabilityActionsItem = "sync_products"
+	IntegrationProviderCapabilityActionsItemSetListTargeting    IntegrationProviderCapabilityActionsItem = "set_list_targeting"
+	IntegrationProviderCapabilityActionsItemActivatePixel       IntegrationProviderCapabilityActionsItem = "activate_pixel"
+	IntegrationProviderCapabilityActionsItemUpdateAttioSettings IntegrationProviderCapabilityActionsItem = "update_attio_settings"
 )
 
 func NewIntegrationProviderCapabilityActionsItemFromString(s string) (IntegrationProviderCapabilityActionsItem, error) {
@@ -3613,6 +4110,8 @@ func NewIntegrationProviderCapabilityActionsItemFromString(s string) (Integratio
 		return IntegrationProviderCapabilityActionsItemSetListTargeting, nil
 	case "activate_pixel":
 		return IntegrationProviderCapabilityActionsItemActivatePixel, nil
+	case "update_attio_settings":
+		return IntegrationProviderCapabilityActionsItemUpdateAttioSettings, nil
 	}
 	var t IntegrationProviderCapabilityActionsItem
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -3658,6 +4157,7 @@ const (
 	IntegrationProviderCapabilityCategoryAds       IntegrationProviderCapabilityCategory = "ads"
 	IntegrationProviderCapabilityCategoryAffiliate IntegrationProviderCapabilityCategory = "affiliate"
 	IntegrationProviderCapabilityCategoryCms       IntegrationProviderCapabilityCategory = "cms"
+	IntegrationProviderCapabilityCategoryCrm       IntegrationProviderCapabilityCategory = "crm"
 	IntegrationProviderCapabilityCategoryDeveloper IntegrationProviderCapabilityCategory = "developer"
 )
 
@@ -3677,6 +4177,8 @@ func NewIntegrationProviderCapabilityCategoryFromString(s string) (IntegrationPr
 		return IntegrationProviderCapabilityCategoryAffiliate, nil
 	case "cms":
 		return IntegrationProviderCapabilityCategoryCms, nil
+	case "crm":
+		return IntegrationProviderCapabilityCategoryCrm, nil
 	case "developer":
 		return IntegrationProviderCapabilityCategoryDeveloper, nil
 	}
@@ -4108,7 +4610,7 @@ type IntegrationSummary struct {
 	// Provider category, or null for a provider with no catalog entry.
 	Category    *IntegrationSummaryCategory `json:"category,omitempty" url:"category,omitempty"`
 	ConnectedAt *time.Time                  `json:"connectedAt,omitempty" url:"connectedAt,omitempty"`
-	// Allowlisted non-secret metadata. Never contains credentials.
+	// Allowlisted non-secret metadata. Never contains credentials. Attio includes listMap, mappedListCount, and syncCompanyFromDomain for configuration diagnostics.
 	Details        map[string]any `json:"details,omitempty" url:"details,omitempty"`
 	DisconnectedAt *time.Time     `json:"disconnectedAt,omitempty" url:"disconnectedAt,omitempty"`
 	ID             *string        `json:"id,omitempty" url:"id,omitempty"`
@@ -4441,6 +4943,7 @@ const (
 	IntegrationSummaryCategoryAds       IntegrationSummaryCategory = "ads"
 	IntegrationSummaryCategoryAffiliate IntegrationSummaryCategory = "affiliate"
 	IntegrationSummaryCategoryCms       IntegrationSummaryCategory = "cms"
+	IntegrationSummaryCategoryCrm       IntegrationSummaryCategory = "crm"
 	IntegrationSummaryCategoryDeveloper IntegrationSummaryCategory = "developer"
 )
 
@@ -4460,6 +4963,8 @@ func NewIntegrationSummaryCategoryFromString(s string) (IntegrationSummaryCatego
 		return IntegrationSummaryCategoryAffiliate, nil
 	case "cms":
 		return IntegrationSummaryCategoryCms, nil
+	case "crm":
+		return IntegrationSummaryCategoryCrm, nil
 	case "developer":
 		return IntegrationSummaryCategoryDeveloper, nil
 	}
@@ -5200,6 +5705,7 @@ const (
 	ConnectIntegrationsRequestProviderPosthog   ConnectIntegrationsRequestProvider = "posthog"
 	ConnectIntegrationsRequestProviderSegment   ConnectIntegrationsRequestProvider = "segment"
 	ConnectIntegrationsRequestProviderAffonso   ConnectIntegrationsRequestProvider = "affonso"
+	ConnectIntegrationsRequestProviderAttio     ConnectIntegrationsRequestProvider = "attio"
 )
 
 func NewConnectIntegrationsRequestProviderFromString(s string) (ConnectIntegrationsRequestProvider, error) {
@@ -5224,6 +5730,8 @@ func NewConnectIntegrationsRequestProviderFromString(s string) (ConnectIntegrati
 		return ConnectIntegrationsRequestProviderSegment, nil
 	case "affonso":
 		return ConnectIntegrationsRequestProviderAffonso, nil
+	case "attio":
+		return ConnectIntegrationsRequestProviderAttio, nil
 	}
 	var t ConnectIntegrationsRequestProvider
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -5233,15 +5741,21 @@ func (c ConnectIntegrationsRequestProvider) Ptr() *ConnectIntegrationsRequestPro
 	return &c
 }
 
-// PostHog and Segment only. Event delivery scope. PostHog defaults to every non-internal event; new Segment connections skip automatic page/screen calls unless explicitly allowlisted.
+// PostHog and Segment: event delivery scope. Attio: listMap (Sequenzy list id to Attio list id or slug) and syncCompanyFromDomain.
 var (
-	connectIntegrationsRequestSettingsFieldEventAllowlist = big.NewInt(1 << 0)
-	connectIntegrationsRequestSettingsFieldSyncAllEvents  = big.NewInt(1 << 1)
+	connectIntegrationsRequestSettingsFieldEventAllowlist        = big.NewInt(1 << 0)
+	connectIntegrationsRequestSettingsFieldListMap               = big.NewInt(1 << 1)
+	connectIntegrationsRequestSettingsFieldSyncAllEvents         = big.NewInt(1 << 2)
+	connectIntegrationsRequestSettingsFieldSyncCompanyFromDomain = big.NewInt(1 << 3)
 )
 
 type ConnectIntegrationsRequestSettings struct {
 	EventAllowlist []string `json:"eventAllowlist,omitempty" url:"eventAllowlist,omitempty"`
-	SyncAllEvents  *bool    `json:"syncAllEvents,omitempty" url:"syncAllEvents,omitempty"`
+	// Attio only. Sequenzy list id to Attio list UUID or slug.
+	ListMap       map[string]string `json:"listMap,omitempty" url:"listMap,omitempty"`
+	SyncAllEvents *bool             `json:"syncAllEvents,omitempty" url:"syncAllEvents,omitempty"`
+	// Attio only. Upsert a company from the person's non-free-mail email domain.
+	SyncCompanyFromDomain *bool `json:"syncCompanyFromDomain,omitempty" url:"syncCompanyFromDomain,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -5257,11 +5771,25 @@ func (c *ConnectIntegrationsRequestSettings) GetEventAllowlist() []string {
 	return c.EventAllowlist
 }
 
+func (c *ConnectIntegrationsRequestSettings) GetListMap() map[string]string {
+	if c == nil {
+		return nil
+	}
+	return c.ListMap
+}
+
 func (c *ConnectIntegrationsRequestSettings) GetSyncAllEvents() *bool {
 	if c == nil {
 		return nil
 	}
 	return c.SyncAllEvents
+}
+
+func (c *ConnectIntegrationsRequestSettings) GetSyncCompanyFromDomain() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.SyncCompanyFromDomain
 }
 
 func (c *ConnectIntegrationsRequestSettings) GetExtraProperties() map[string]interface{} {
@@ -5285,11 +5813,25 @@ func (c *ConnectIntegrationsRequestSettings) SetEventAllowlist(eventAllowlist []
 	c.require(connectIntegrationsRequestSettingsFieldEventAllowlist)
 }
 
+// SetListMap sets the ListMap field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ConnectIntegrationsRequestSettings) SetListMap(listMap map[string]string) {
+	c.ListMap = listMap
+	c.require(connectIntegrationsRequestSettingsFieldListMap)
+}
+
 // SetSyncAllEvents sets the SyncAllEvents field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *ConnectIntegrationsRequestSettings) SetSyncAllEvents(syncAllEvents *bool) {
 	c.SyncAllEvents = syncAllEvents
 	c.require(connectIntegrationsRequestSettingsFieldSyncAllEvents)
+}
+
+// SetSyncCompanyFromDomain sets the SyncCompanyFromDomain field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ConnectIntegrationsRequestSettings) SetSyncCompanyFromDomain(syncCompanyFromDomain *bool) {
+	c.SyncCompanyFromDomain = syncCompanyFromDomain
+	c.require(connectIntegrationsRequestSettingsFieldSyncCompanyFromDomain)
 }
 
 func (c *ConnectIntegrationsRequestSettings) UnmarshalJSON(data []byte) error {
@@ -5352,7 +5894,7 @@ type ConnectIntegrationsResponse struct {
 	// Payment providers only. Whether the initial revenue backfill was queued.
 	RevenueSyncQueued *bool `json:"revenueSyncQueued,omitempty" url:"revenueSyncQueued,omitempty"`
 	Success           *bool `json:"success,omitempty" url:"success,omitempty"`
-	// URL to configure in the provider's webhook settings with the same secret.
+	// URL to configure in the provider's webhook settings with the same secret. Empty for Attio, which is outbound-only.
 	WebhookURL *string `json:"webhookUrl,omitempty" url:"webhookUrl,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -6521,6 +7063,73 @@ func NewUpdateSyncIntegrationsResponseListTargetingFromString(s string) (UpdateS
 
 func (u UpdateSyncIntegrationsResponseListTargeting) Ptr() *UpdateSyncIntegrationsResponseListTargeting {
 	return &u
+}
+
+var (
+	updateAttioSettingsRequestFieldID                    = big.NewInt(1 << 0)
+	updateAttioSettingsRequestFieldListMap               = big.NewInt(1 << 1)
+	updateAttioSettingsRequestFieldSyncCompanyFromDomain = big.NewInt(1 << 2)
+)
+
+type UpdateAttioSettingsRequest struct {
+	// Attio integration ID.
+	ID string `json:"-" url:"-"`
+	// Complete Sequenzy list id to Attio list UUID or api slug map. Replaces the saved map. Pass {} to clear every mapping.
+	ListMap map[string]string `json:"listMap,omitempty" url:"-"`
+	// When true, upsert a company from the person's non-free-mail email domain.
+	SyncCompanyFromDomain *bool `json:"syncCompanyFromDomain,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (u *UpdateAttioSettingsRequest) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAttioSettingsRequest) SetID(id string) {
+	u.ID = id
+	u.require(updateAttioSettingsRequestFieldID)
+}
+
+// SetListMap sets the ListMap field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAttioSettingsRequest) SetListMap(listMap map[string]string) {
+	u.ListMap = listMap
+	u.require(updateAttioSettingsRequestFieldListMap)
+}
+
+// SetSyncCompanyFromDomain sets the SyncCompanyFromDomain field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAttioSettingsRequest) SetSyncCompanyFromDomain(syncCompanyFromDomain *bool) {
+	u.SyncCompanyFromDomain = syncCompanyFromDomain
+	u.require(updateAttioSettingsRequestFieldSyncCompanyFromDomain)
+}
+
+func (u *UpdateAttioSettingsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateAttioSettingsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*u = UpdateAttioSettingsRequest(body)
+	return nil
+}
+
+func (u *UpdateAttioSettingsRequest) MarshalJSON() ([]byte, error) {
+	type embed UpdateAttioSettingsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
 }
 
 var (

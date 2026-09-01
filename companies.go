@@ -106,33 +106,34 @@ var (
 	companyFieldDefaultSenderProfileID   = big.NewInt(1 << 9)
 	companyFieldDefaultSubscriberListIDs = big.NewInt(1 << 10)
 	companyFieldDescription              = big.NewInt(1 << 11)
-	companyFieldEmailDesignPrompt        = big.NewInt(1 << 12)
-	companyFieldEmailDirection           = big.NewInt(1 << 13)
-	companyFieldEmailLengthPreference    = big.NewInt(1 << 14)
-	companyFieldEmailLocalizationConfig  = big.NewInt(1 << 15)
-	companyFieldEmailTheme               = big.NewInt(1 << 16)
-	companyFieldFontFamily               = big.NewInt(1 << 17)
-	companyFieldForwardReplies           = big.NewInt(1 << 18)
-	companyFieldFounderName              = big.NewInt(1 << 19)
-	companyFieldID                       = big.NewInt(1 << 20)
-	companyFieldLanguage                 = big.NewInt(1 << 21)
-	companyFieldLogoURL                  = big.NewInt(1 << 22)
-	companyFieldName                     = big.NewInt(1 << 23)
-	companyFieldPreviewURL               = big.NewInt(1 << 24)
-	companyFieldPricing                  = big.NewInt(1 << 25)
-	companyFieldPrimaryColor             = big.NewInt(1 << 26)
-	companyFieldPrivacyPolicyURL         = big.NewInt(1 << 27)
-	companyFieldReplyRetentionDays       = big.NewInt(1 << 28)
-	companyFieldReplyTrackingDomainMode  = big.NewInt(1 << 29)
-	companyFieldReplyTrackingEnabled     = big.NewInt(1 << 30)
-	companyFieldSocialLinks              = big.NewInt(1 << 31)
-	companyFieldStatus                   = big.NewInt(1 << 32)
-	companyFieldTermsURL                 = big.NewInt(1 << 33)
-	companyFieldTestimonials             = big.NewInt(1 << 34)
-	companyFieldToneVoice                = big.NewInt(1 << 35)
-	companyFieldURL                      = big.NewInt(1 << 36)
-	companyFieldValueProps               = big.NewInt(1 << 37)
-	companyFieldWebsiteURL               = big.NewInt(1 << 38)
+	companyFieldEmailBranding            = big.NewInt(1 << 12)
+	companyFieldEmailDesignPrompt        = big.NewInt(1 << 13)
+	companyFieldEmailDirection           = big.NewInt(1 << 14)
+	companyFieldEmailLengthPreference    = big.NewInt(1 << 15)
+	companyFieldEmailLocalizationConfig  = big.NewInt(1 << 16)
+	companyFieldEmailTheme               = big.NewInt(1 << 17)
+	companyFieldFontFamily               = big.NewInt(1 << 18)
+	companyFieldForwardReplies           = big.NewInt(1 << 19)
+	companyFieldFounderName              = big.NewInt(1 << 20)
+	companyFieldID                       = big.NewInt(1 << 21)
+	companyFieldLanguage                 = big.NewInt(1 << 22)
+	companyFieldLogoURL                  = big.NewInt(1 << 23)
+	companyFieldName                     = big.NewInt(1 << 24)
+	companyFieldPreviewURL               = big.NewInt(1 << 25)
+	companyFieldPricing                  = big.NewInt(1 << 26)
+	companyFieldPrimaryColor             = big.NewInt(1 << 27)
+	companyFieldPrivacyPolicyURL         = big.NewInt(1 << 28)
+	companyFieldReplyRetentionDays       = big.NewInt(1 << 29)
+	companyFieldReplyTrackingDomainMode  = big.NewInt(1 << 30)
+	companyFieldReplyTrackingEnabled     = big.NewInt(1 << 31)
+	companyFieldSocialLinks              = big.NewInt(1 << 32)
+	companyFieldStatus                   = big.NewInt(1 << 33)
+	companyFieldTermsURL                 = big.NewInt(1 << 34)
+	companyFieldTestimonials             = big.NewInt(1 << 35)
+	companyFieldToneVoice                = big.NewInt(1 << 36)
+	companyFieldURL                      = big.NewInt(1 << 37)
+	companyFieldValueProps               = big.NewInt(1 << 38)
+	companyFieldWebsiteURL               = big.NewInt(1 << 39)
 )
 
 type Company struct {
@@ -149,6 +150,8 @@ type Company struct {
 	// Workspace default lists new contacts join when nothing targets them explicitly. null means every current and future list, [] means no list at all, and an array means exactly those lists.
 	DefaultSubscriberListIDs []string `json:"defaultSubscriberListIds,omitempty" url:"defaultSubscriberListIds,omitempty"`
 	Description              *string  `json:"description,omitempty" url:"description,omitempty"`
+	// Effective "Sent with Sequenzy" entitlement for future renders and sends. This is derived from the company owner's subscription and is not an editable footer field. Existing live sequences pick up an entitlement change without their stored email blocks changing.
+	EmailBranding *CompanyEmailBranding `json:"emailBranding,omitempty" url:"emailBranding,omitempty"`
 	// Art direction for AI-designed emails: layout, density, which sections belong in an email, imagery, and CTA prominence. `toneVoice` steers copy; this steers design. When empty, the next email generation prefills it with the direction derived from the brand.
 	EmailDesignPrompt *string `json:"emailDesignPrompt,omitempty" url:"emailDesignPrompt,omitempty"`
 	EmailDirection    *string `json:"emailDirection,omitempty" url:"emailDirection,omitempty"`
@@ -274,6 +277,13 @@ func (c *Company) GetDescription() *string {
 		return nil
 	}
 	return c.Description
+}
+
+func (c *Company) GetEmailBranding() *CompanyEmailBranding {
+	if c == nil {
+		return nil
+	}
+	return c.EmailBranding
 }
 
 func (c *Company) GetEmailDesignPrompt() *string {
@@ -563,6 +573,13 @@ func (c *Company) SetDescription(description *string) {
 	c.require(companyFieldDescription)
 }
 
+// SetEmailBranding sets the EmailBranding field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *Company) SetEmailBranding(emailBranding *CompanyEmailBranding) {
+	c.EmailBranding = emailBranding
+	c.require(companyFieldEmailBranding)
+}
+
 // SetEmailDesignPrompt sets the EmailDesignPrompt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *Company) SetEmailDesignPrompt(emailDesignPrompt *string) {
@@ -800,6 +817,370 @@ func (c *Company) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", c)
+}
+
+// Effective "Sent with Sequenzy" entitlement for future renders and sends. This is derived from the company owner's subscription and is not an editable footer field. Existing live sequences pick up an entitlement change without their stored email blocks changing.
+var (
+	companyEmailBrandingFieldManagedBy          = big.NewInt(1 << 0)
+	companyEmailBrandingFieldReason             = big.NewInt(1 << 1)
+	companyEmailBrandingFieldRemovalAction      = big.NewInt(1 << 2)
+	companyEmailBrandingFieldRemovalEntitled    = big.NewInt(1 << 3)
+	companyEmailBrandingFieldSubscriptionStatus = big.NewInt(1 << 4)
+	companyEmailBrandingFieldSubscriptionTier   = big.NewInt(1 << 5)
+	companyEmailBrandingFieldSubscriptionURL    = big.NewInt(1 << 6)
+	companyEmailBrandingFieldVisible            = big.NewInt(1 << 7)
+)
+
+type CompanyEmailBranding struct {
+	ManagedBy     CompanyEmailBrandingManagedBy     `json:"managedBy" url:"managedBy"`
+	Reason        CompanyEmailBrandingReason        `json:"reason" url:"reason"`
+	RemovalAction CompanyEmailBrandingRemovalAction `json:"removalAction" url:"removalAction"`
+	// Whether the current owner subscription removes branding.
+	RemovalEntitled    bool                                    `json:"removalEntitled" url:"removalEntitled"`
+	SubscriptionStatus *CompanyEmailBrandingSubscriptionStatus `json:"subscriptionStatus,omitempty" url:"subscriptionStatus,omitempty"`
+	SubscriptionTier   *CompanyEmailBrandingSubscriptionTier   `json:"subscriptionTier,omitempty" url:"subscriptionTier,omitempty"`
+	// Owner-facing subscription, upgrade, and billing-management page.
+	SubscriptionURL string `json:"subscriptionUrl" url:"subscriptionUrl"`
+	// Whether Sequenzy branding is added to outgoing email.
+	Visible bool `json:"visible" url:"visible"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CompanyEmailBranding) GetManagedBy() CompanyEmailBrandingManagedBy {
+	if c == nil {
+		return ""
+	}
+	return c.ManagedBy
+}
+
+func (c *CompanyEmailBranding) GetReason() CompanyEmailBrandingReason {
+	if c == nil {
+		return ""
+	}
+	return c.Reason
+}
+
+func (c *CompanyEmailBranding) GetRemovalAction() CompanyEmailBrandingRemovalAction {
+	if c == nil {
+		return ""
+	}
+	return c.RemovalAction
+}
+
+func (c *CompanyEmailBranding) GetRemovalEntitled() bool {
+	if c == nil {
+		return false
+	}
+	return c.RemovalEntitled
+}
+
+func (c *CompanyEmailBranding) GetSubscriptionStatus() *CompanyEmailBrandingSubscriptionStatus {
+	if c == nil {
+		return nil
+	}
+	return c.SubscriptionStatus
+}
+
+func (c *CompanyEmailBranding) GetSubscriptionTier() *CompanyEmailBrandingSubscriptionTier {
+	if c == nil {
+		return nil
+	}
+	return c.SubscriptionTier
+}
+
+func (c *CompanyEmailBranding) GetSubscriptionURL() string {
+	if c == nil {
+		return ""
+	}
+	return c.SubscriptionURL
+}
+
+func (c *CompanyEmailBranding) GetVisible() bool {
+	if c == nil {
+		return false
+	}
+	return c.Visible
+}
+
+func (c *CompanyEmailBranding) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CompanyEmailBranding) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetManagedBy sets the ManagedBy field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CompanyEmailBranding) SetManagedBy(managedBy CompanyEmailBrandingManagedBy) {
+	c.ManagedBy = managedBy
+	c.require(companyEmailBrandingFieldManagedBy)
+}
+
+// SetReason sets the Reason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CompanyEmailBranding) SetReason(reason CompanyEmailBrandingReason) {
+	c.Reason = reason
+	c.require(companyEmailBrandingFieldReason)
+}
+
+// SetRemovalAction sets the RemovalAction field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CompanyEmailBranding) SetRemovalAction(removalAction CompanyEmailBrandingRemovalAction) {
+	c.RemovalAction = removalAction
+	c.require(companyEmailBrandingFieldRemovalAction)
+}
+
+// SetRemovalEntitled sets the RemovalEntitled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CompanyEmailBranding) SetRemovalEntitled(removalEntitled bool) {
+	c.RemovalEntitled = removalEntitled
+	c.require(companyEmailBrandingFieldRemovalEntitled)
+}
+
+// SetSubscriptionStatus sets the SubscriptionStatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CompanyEmailBranding) SetSubscriptionStatus(subscriptionStatus *CompanyEmailBrandingSubscriptionStatus) {
+	c.SubscriptionStatus = subscriptionStatus
+	c.require(companyEmailBrandingFieldSubscriptionStatus)
+}
+
+// SetSubscriptionTier sets the SubscriptionTier field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CompanyEmailBranding) SetSubscriptionTier(subscriptionTier *CompanyEmailBrandingSubscriptionTier) {
+	c.SubscriptionTier = subscriptionTier
+	c.require(companyEmailBrandingFieldSubscriptionTier)
+}
+
+// SetSubscriptionURL sets the SubscriptionURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CompanyEmailBranding) SetSubscriptionURL(subscriptionURL string) {
+	c.SubscriptionURL = subscriptionURL
+	c.require(companyEmailBrandingFieldSubscriptionURL)
+}
+
+// SetVisible sets the Visible field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CompanyEmailBranding) SetVisible(visible bool) {
+	c.Visible = visible
+	c.require(companyEmailBrandingFieldVisible)
+}
+
+func (c *CompanyEmailBranding) UnmarshalJSON(data []byte) error {
+	type unmarshaler CompanyEmailBranding
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CompanyEmailBranding(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CompanyEmailBranding) MarshalJSON() ([]byte, error) {
+	type embed CompanyEmailBranding
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CompanyEmailBranding) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+type CompanyEmailBrandingManagedBy string
+
+const (
+	CompanyEmailBrandingManagedByOwnerSubscription CompanyEmailBrandingManagedBy = "owner_subscription"
+)
+
+func NewCompanyEmailBrandingManagedByFromString(s string) (CompanyEmailBrandingManagedBy, error) {
+	switch s {
+	case "owner_subscription":
+		return CompanyEmailBrandingManagedByOwnerSubscription, nil
+	}
+	var t CompanyEmailBrandingManagedBy
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CompanyEmailBrandingManagedBy) Ptr() *CompanyEmailBrandingManagedBy {
+	return &c
+}
+
+type CompanyEmailBrandingReason string
+
+const (
+	CompanyEmailBrandingReasonFreePlan             CompanyEmailBrandingReason = "free_plan"
+	CompanyEmailBrandingReasonPaidPlan             CompanyEmailBrandingReason = "paid_plan"
+	CompanyEmailBrandingReasonEmailPartner         CompanyEmailBrandingReason = "email_partner"
+	CompanyEmailBrandingReasonInactiveSubscription CompanyEmailBrandingReason = "inactive_subscription"
+	CompanyEmailBrandingReasonCompanyNotFound      CompanyEmailBrandingReason = "company_not_found"
+)
+
+func NewCompanyEmailBrandingReasonFromString(s string) (CompanyEmailBrandingReason, error) {
+	switch s {
+	case "free_plan":
+		return CompanyEmailBrandingReasonFreePlan, nil
+	case "paid_plan":
+		return CompanyEmailBrandingReasonPaidPlan, nil
+	case "email_partner":
+		return CompanyEmailBrandingReasonEmailPartner, nil
+	case "inactive_subscription":
+		return CompanyEmailBrandingReasonInactiveSubscription, nil
+	case "company_not_found":
+		return CompanyEmailBrandingReasonCompanyNotFound, nil
+	}
+	var t CompanyEmailBrandingReason
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CompanyEmailBrandingReason) Ptr() *CompanyEmailBrandingReason {
+	return &c
+}
+
+type CompanyEmailBrandingRemovalAction string
+
+const (
+	CompanyEmailBrandingRemovalActionNone              CompanyEmailBrandingRemovalAction = "none"
+	CompanyEmailBrandingRemovalActionUpgrade           CompanyEmailBrandingRemovalAction = "upgrade"
+	CompanyEmailBrandingRemovalActionRenewSubscription CompanyEmailBrandingRemovalAction = "renew_subscription"
+)
+
+func NewCompanyEmailBrandingRemovalActionFromString(s string) (CompanyEmailBrandingRemovalAction, error) {
+	switch s {
+	case "none":
+		return CompanyEmailBrandingRemovalActionNone, nil
+	case "upgrade":
+		return CompanyEmailBrandingRemovalActionUpgrade, nil
+	case "renew_subscription":
+		return CompanyEmailBrandingRemovalActionRenewSubscription, nil
+	}
+	var t CompanyEmailBrandingRemovalAction
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CompanyEmailBrandingRemovalAction) Ptr() *CompanyEmailBrandingRemovalAction {
+	return &c
+}
+
+type CompanyEmailBrandingSubscriptionStatus string
+
+const (
+	CompanyEmailBrandingSubscriptionStatusActive     CompanyEmailBrandingSubscriptionStatus = "active"
+	CompanyEmailBrandingSubscriptionStatusPastDue    CompanyEmailBrandingSubscriptionStatus = "past_due"
+	CompanyEmailBrandingSubscriptionStatusCanceled   CompanyEmailBrandingSubscriptionStatus = "canceled"
+	CompanyEmailBrandingSubscriptionStatusTrialing   CompanyEmailBrandingSubscriptionStatus = "trialing"
+	CompanyEmailBrandingSubscriptionStatusIncomplete CompanyEmailBrandingSubscriptionStatus = "incomplete"
+)
+
+func NewCompanyEmailBrandingSubscriptionStatusFromString(s string) (CompanyEmailBrandingSubscriptionStatus, error) {
+	switch s {
+	case "active":
+		return CompanyEmailBrandingSubscriptionStatusActive, nil
+	case "past_due":
+		return CompanyEmailBrandingSubscriptionStatusPastDue, nil
+	case "canceled":
+		return CompanyEmailBrandingSubscriptionStatusCanceled, nil
+	case "trialing":
+		return CompanyEmailBrandingSubscriptionStatusTrialing, nil
+	case "incomplete":
+		return CompanyEmailBrandingSubscriptionStatusIncomplete, nil
+	}
+	var t CompanyEmailBrandingSubscriptionStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CompanyEmailBrandingSubscriptionStatus) Ptr() *CompanyEmailBrandingSubscriptionStatus {
+	return &c
+}
+
+type CompanyEmailBrandingSubscriptionTier string
+
+const (
+	CompanyEmailBrandingSubscriptionTierFree       CompanyEmailBrandingSubscriptionTier = "free"
+	CompanyEmailBrandingSubscriptionTierPro1K      CompanyEmailBrandingSubscriptionTier = "pro_1k"
+	CompanyEmailBrandingSubscriptionTierPro5K      CompanyEmailBrandingSubscriptionTier = "pro_5k"
+	CompanyEmailBrandingSubscriptionTierPro10K     CompanyEmailBrandingSubscriptionTier = "pro_10k"
+	CompanyEmailBrandingSubscriptionTierPro25K     CompanyEmailBrandingSubscriptionTier = "pro_25k"
+	CompanyEmailBrandingSubscriptionTierPro30K     CompanyEmailBrandingSubscriptionTier = "pro_30k"
+	CompanyEmailBrandingSubscriptionTierPro50K     CompanyEmailBrandingSubscriptionTier = "pro_50k"
+	CompanyEmailBrandingSubscriptionTierPro100K    CompanyEmailBrandingSubscriptionTier = "pro_100k"
+	CompanyEmailBrandingSubscriptionTierPro150K    CompanyEmailBrandingSubscriptionTier = "pro_150k"
+	CompanyEmailBrandingSubscriptionTierPro2M      CompanyEmailBrandingSubscriptionTier = "pro_2m"
+	CompanyEmailBrandingSubscriptionTierPro3M      CompanyEmailBrandingSubscriptionTier = "pro_3m"
+	CompanyEmailBrandingSubscriptionTierPro4M      CompanyEmailBrandingSubscriptionTier = "pro_4m"
+	CompanyEmailBrandingSubscriptionTierPro5M      CompanyEmailBrandingSubscriptionTier = "pro_5m"
+	CompanyEmailBrandingSubscriptionTierEnterprise CompanyEmailBrandingSubscriptionTier = "enterprise"
+)
+
+func NewCompanyEmailBrandingSubscriptionTierFromString(s string) (CompanyEmailBrandingSubscriptionTier, error) {
+	switch s {
+	case "free":
+		return CompanyEmailBrandingSubscriptionTierFree, nil
+	case "pro_1k":
+		return CompanyEmailBrandingSubscriptionTierPro1K, nil
+	case "pro_5k":
+		return CompanyEmailBrandingSubscriptionTierPro5K, nil
+	case "pro_10k":
+		return CompanyEmailBrandingSubscriptionTierPro10K, nil
+	case "pro_25k":
+		return CompanyEmailBrandingSubscriptionTierPro25K, nil
+	case "pro_30k":
+		return CompanyEmailBrandingSubscriptionTierPro30K, nil
+	case "pro_50k":
+		return CompanyEmailBrandingSubscriptionTierPro50K, nil
+	case "pro_100k":
+		return CompanyEmailBrandingSubscriptionTierPro100K, nil
+	case "pro_150k":
+		return CompanyEmailBrandingSubscriptionTierPro150K, nil
+	case "pro_2m":
+		return CompanyEmailBrandingSubscriptionTierPro2M, nil
+	case "pro_3m":
+		return CompanyEmailBrandingSubscriptionTierPro3M, nil
+	case "pro_4m":
+		return CompanyEmailBrandingSubscriptionTierPro4M, nil
+	case "pro_5m":
+		return CompanyEmailBrandingSubscriptionTierPro5M, nil
+	case "enterprise":
+		return CompanyEmailBrandingSubscriptionTierEnterprise, nil
+	}
+	var t CompanyEmailBrandingSubscriptionTier
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CompanyEmailBrandingSubscriptionTier) Ptr() *CompanyEmailBrandingSubscriptionTier {
+	return &c
 }
 
 // How long AI-written email copy should be. New workspaces default to `concise`.

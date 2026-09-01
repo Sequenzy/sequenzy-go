@@ -1037,6 +1037,42 @@ func (g *GetSequencesRequest) SetSequenceID(sequenceID string) {
 }
 
 var (
+	getEnrollmentSequencesRequestFieldSequenceID   = big.NewInt(1 << 0)
+	getEnrollmentSequencesRequestFieldEnrollmentID = big.NewInt(1 << 1)
+)
+
+type GetEnrollmentSequencesRequest struct {
+	// Sequence ID
+	SequenceID string `json:"-" url:"-"`
+	// Enrollment token ID from list sequence enrollments (enrollmentId).
+	EnrollmentID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (g *GetEnrollmentSequencesRequest) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetSequenceID sets the SequenceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetEnrollmentSequencesRequest) SetSequenceID(sequenceID string) {
+	g.SequenceID = sequenceID
+	g.require(getEnrollmentSequencesRequestFieldSequenceID)
+}
+
+// SetEnrollmentID sets the EnrollmentID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetEnrollmentSequencesRequest) SetEnrollmentID(enrollmentID string) {
+	g.EnrollmentID = enrollmentID
+	g.require(getEnrollmentSequencesRequestFieldEnrollmentID)
+}
+
+var (
 	getEnrollmentRealignmentSequencesRequestFieldSequenceID = big.NewInt(1 << 0)
 	getEnrollmentRealignmentSequencesRequestFieldJobID      = big.NewInt(1 << 1)
 )
@@ -8334,6 +8370,639 @@ func (s SequenceEmailUpdateInputEmailPreset) Ptr() *SequenceEmailUpdateInputEmai
 	return &s
 }
 
+// One if/else or random-split verdict. Compared values are summaries, never the raw recipient value.
+var (
+	sequenceEnrollmentBranchDecisionFieldDecidedAt          = big.NewInt(1 << 0)
+	sequenceEnrollmentBranchDecisionFieldEvaluations        = big.NewInt(1 << 1)
+	sequenceEnrollmentBranchDecisionFieldMatchedBranchID    = big.NewInt(1 << 2)
+	sequenceEnrollmentBranchDecisionFieldMatchedBranchIndex = big.NewInt(1 << 3)
+	sequenceEnrollmentBranchDecisionFieldNodeID             = big.NewInt(1 << 4)
+	sequenceEnrollmentBranchDecisionFieldRoutedEdgeBranchID = big.NewInt(1 << 5)
+	sequenceEnrollmentBranchDecisionFieldSelectedPath       = big.NewInt(1 << 6)
+	sequenceEnrollmentBranchDecisionFieldSplitMode          = big.NewInt(1 << 7)
+)
+
+type SequenceEnrollmentBranchDecision struct {
+	DecidedAt          *time.Time                                         `json:"decidedAt,omitempty" url:"decidedAt,omitempty"`
+	Evaluations        []*SequenceEnrollmentBranchDecisionEvaluationsItem `json:"evaluations,omitempty" url:"evaluations,omitempty"`
+	MatchedBranchID    *string                                            `json:"matchedBranchId,omitempty" url:"matchedBranchId,omitempty"`
+	MatchedBranchIndex *int                                               `json:"matchedBranchIndex,omitempty" url:"matchedBranchIndex,omitempty"`
+	NodeID             *string                                            `json:"nodeId,omitempty" url:"nodeId,omitempty"`
+	RoutedEdgeBranchID *string                                            `json:"routedEdgeBranchId,omitempty" url:"routedEdgeBranchId,omitempty"`
+	SelectedPath       *SequenceEnrollmentBranchDecisionSelectedPath      `json:"selectedPath,omitempty" url:"selectedPath,omitempty"`
+	SplitMode          *SequenceEnrollmentBranchDecisionSplitMode         `json:"splitMode,omitempty" url:"splitMode,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequenceEnrollmentBranchDecision) GetDecidedAt() *time.Time {
+	if s == nil {
+		return nil
+	}
+	return s.DecidedAt
+}
+
+func (s *SequenceEnrollmentBranchDecision) GetEvaluations() []*SequenceEnrollmentBranchDecisionEvaluationsItem {
+	if s == nil {
+		return nil
+	}
+	return s.Evaluations
+}
+
+func (s *SequenceEnrollmentBranchDecision) GetMatchedBranchID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.MatchedBranchID
+}
+
+func (s *SequenceEnrollmentBranchDecision) GetMatchedBranchIndex() *int {
+	if s == nil {
+		return nil
+	}
+	return s.MatchedBranchIndex
+}
+
+func (s *SequenceEnrollmentBranchDecision) GetNodeID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.NodeID
+}
+
+func (s *SequenceEnrollmentBranchDecision) GetRoutedEdgeBranchID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.RoutedEdgeBranchID
+}
+
+func (s *SequenceEnrollmentBranchDecision) GetSelectedPath() *SequenceEnrollmentBranchDecisionSelectedPath {
+	if s == nil {
+		return nil
+	}
+	return s.SelectedPath
+}
+
+func (s *SequenceEnrollmentBranchDecision) GetSplitMode() *SequenceEnrollmentBranchDecisionSplitMode {
+	if s == nil {
+		return nil
+	}
+	return s.SplitMode
+}
+
+func (s *SequenceEnrollmentBranchDecision) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequenceEnrollmentBranchDecision) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetDecidedAt sets the DecidedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentBranchDecision) SetDecidedAt(decidedAt *time.Time) {
+	s.DecidedAt = decidedAt
+	s.require(sequenceEnrollmentBranchDecisionFieldDecidedAt)
+}
+
+// SetEvaluations sets the Evaluations field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentBranchDecision) SetEvaluations(evaluations []*SequenceEnrollmentBranchDecisionEvaluationsItem) {
+	s.Evaluations = evaluations
+	s.require(sequenceEnrollmentBranchDecisionFieldEvaluations)
+}
+
+// SetMatchedBranchID sets the MatchedBranchID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentBranchDecision) SetMatchedBranchID(matchedBranchID *string) {
+	s.MatchedBranchID = matchedBranchID
+	s.require(sequenceEnrollmentBranchDecisionFieldMatchedBranchID)
+}
+
+// SetMatchedBranchIndex sets the MatchedBranchIndex field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentBranchDecision) SetMatchedBranchIndex(matchedBranchIndex *int) {
+	s.MatchedBranchIndex = matchedBranchIndex
+	s.require(sequenceEnrollmentBranchDecisionFieldMatchedBranchIndex)
+}
+
+// SetNodeID sets the NodeID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentBranchDecision) SetNodeID(nodeID *string) {
+	s.NodeID = nodeID
+	s.require(sequenceEnrollmentBranchDecisionFieldNodeID)
+}
+
+// SetRoutedEdgeBranchID sets the RoutedEdgeBranchID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentBranchDecision) SetRoutedEdgeBranchID(routedEdgeBranchID *string) {
+	s.RoutedEdgeBranchID = routedEdgeBranchID
+	s.require(sequenceEnrollmentBranchDecisionFieldRoutedEdgeBranchID)
+}
+
+// SetSelectedPath sets the SelectedPath field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentBranchDecision) SetSelectedPath(selectedPath *SequenceEnrollmentBranchDecisionSelectedPath) {
+	s.SelectedPath = selectedPath
+	s.require(sequenceEnrollmentBranchDecisionFieldSelectedPath)
+}
+
+// SetSplitMode sets the SplitMode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentBranchDecision) SetSplitMode(splitMode *SequenceEnrollmentBranchDecisionSplitMode) {
+	s.SplitMode = splitMode
+	s.require(sequenceEnrollmentBranchDecisionFieldSplitMode)
+}
+
+func (s *SequenceEnrollmentBranchDecision) UnmarshalJSON(data []byte) error {
+	type embed SequenceEnrollmentBranchDecision
+	var unmarshaler = struct {
+		embed
+		DecidedAt *internal.DateTime `json:"decidedAt,omitempty"`
+	}{
+		embed: embed(*s),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*s = SequenceEnrollmentBranchDecision(unmarshaler.embed)
+	s.DecidedAt = unmarshaler.DecidedAt.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceEnrollmentBranchDecision) MarshalJSON() ([]byte, error) {
+	type embed SequenceEnrollmentBranchDecision
+	var marshaler = struct {
+		embed
+		DecidedAt *internal.DateTime `json:"decidedAt,omitempty"`
+	}{
+		embed:     embed(*s),
+		DecidedAt: internal.NewOptionalDateTime(s.DecidedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequenceEnrollmentBranchDecision) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	sequenceEnrollmentBranchDecisionEvaluationsItemFieldBranchID      = big.NewInt(1 << 0)
+	sequenceEnrollmentBranchDecisionEvaluationsItemFieldBranchIndex   = big.NewInt(1 << 1)
+	sequenceEnrollmentBranchDecisionEvaluationsItemFieldCompared      = big.NewInt(1 << 2)
+	sequenceEnrollmentBranchDecisionEvaluationsItemFieldConditionType = big.NewInt(1 << 3)
+	sequenceEnrollmentBranchDecisionEvaluationsItemFieldFieldName     = big.NewInt(1 << 4)
+	sequenceEnrollmentBranchDecisionEvaluationsItemFieldOutcome       = big.NewInt(1 << 5)
+	sequenceEnrollmentBranchDecisionEvaluationsItemFieldReason        = big.NewInt(1 << 6)
+)
+
+type SequenceEnrollmentBranchDecisionEvaluationsItem struct {
+	BranchID      *string                                                  `json:"branchId,omitempty" url:"branchId,omitempty"`
+	BranchIndex   *int                                                     `json:"branchIndex,omitempty" url:"branchIndex,omitempty"`
+	Compared      *SequenceEnrollmentBranchDecisionEvaluationsItemCompared `json:"compared,omitempty" url:"compared,omitempty"`
+	ConditionType *string                                                  `json:"conditionType,omitempty" url:"conditionType,omitempty"`
+	FieldName     *string                                                  `json:"fieldName,omitempty" url:"fieldName,omitempty"`
+	Outcome       *SequenceEnrollmentBranchDecisionEvaluationsItemOutcome  `json:"outcome,omitempty" url:"outcome,omitempty"`
+	// Human-readable, already redacted. Never includes the compared value.
+	Reason *string `json:"reason,omitempty" url:"reason,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequenceEnrollmentBranchDecisionEvaluationsItem) GetBranchID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.BranchID
+}
+
+func (s *SequenceEnrollmentBranchDecisionEvaluationsItem) GetBranchIndex() *int {
+	if s == nil {
+		return nil
+	}
+	return s.BranchIndex
+}
+
+func (s *SequenceEnrollmentBranchDecisionEvaluationsItem) GetCompared() *SequenceEnrollmentBranchDecisionEvaluationsItemCompared {
+	if s == nil {
+		return nil
+	}
+	return s.Compared
+}
+
+func (s *SequenceEnrollmentBranchDecisionEvaluationsItem) GetConditionType() *string {
+	if s == nil {
+		return nil
+	}
+	return s.ConditionType
+}
+
+func (s *SequenceEnrollmentBranchDecisionEvaluationsItem) GetFieldName() *string {
+	if s == nil {
+		return nil
+	}
+	return s.FieldName
+}
+
+func (s *SequenceEnrollmentBranchDecisionEvaluationsItem) GetOutcome() *SequenceEnrollmentBranchDecisionEvaluationsItemOutcome {
+	if s == nil {
+		return nil
+	}
+	return s.Outcome
+}
+
+func (s *SequenceEnrollmentBranchDecisionEvaluationsItem) GetReason() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Reason
+}
+
+func (s *SequenceEnrollmentBranchDecisionEvaluationsItem) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequenceEnrollmentBranchDecisionEvaluationsItem) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetBranchID sets the BranchID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentBranchDecisionEvaluationsItem) SetBranchID(branchID *string) {
+	s.BranchID = branchID
+	s.require(sequenceEnrollmentBranchDecisionEvaluationsItemFieldBranchID)
+}
+
+// SetBranchIndex sets the BranchIndex field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentBranchDecisionEvaluationsItem) SetBranchIndex(branchIndex *int) {
+	s.BranchIndex = branchIndex
+	s.require(sequenceEnrollmentBranchDecisionEvaluationsItemFieldBranchIndex)
+}
+
+// SetCompared sets the Compared field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentBranchDecisionEvaluationsItem) SetCompared(compared *SequenceEnrollmentBranchDecisionEvaluationsItemCompared) {
+	s.Compared = compared
+	s.require(sequenceEnrollmentBranchDecisionEvaluationsItemFieldCompared)
+}
+
+// SetConditionType sets the ConditionType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentBranchDecisionEvaluationsItem) SetConditionType(conditionType *string) {
+	s.ConditionType = conditionType
+	s.require(sequenceEnrollmentBranchDecisionEvaluationsItemFieldConditionType)
+}
+
+// SetFieldName sets the FieldName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentBranchDecisionEvaluationsItem) SetFieldName(fieldName *string) {
+	s.FieldName = fieldName
+	s.require(sequenceEnrollmentBranchDecisionEvaluationsItemFieldFieldName)
+}
+
+// SetOutcome sets the Outcome field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentBranchDecisionEvaluationsItem) SetOutcome(outcome *SequenceEnrollmentBranchDecisionEvaluationsItemOutcome) {
+	s.Outcome = outcome
+	s.require(sequenceEnrollmentBranchDecisionEvaluationsItemFieldOutcome)
+}
+
+// SetReason sets the Reason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentBranchDecisionEvaluationsItem) SetReason(reason *string) {
+	s.Reason = reason
+	s.require(sequenceEnrollmentBranchDecisionEvaluationsItemFieldReason)
+}
+
+func (s *SequenceEnrollmentBranchDecisionEvaluationsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler SequenceEnrollmentBranchDecisionEvaluationsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SequenceEnrollmentBranchDecisionEvaluationsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceEnrollmentBranchDecisionEvaluationsItem) MarshalJSON() ([]byte, error) {
+	type embed SequenceEnrollmentBranchDecisionEvaluationsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequenceEnrollmentBranchDecisionEvaluationsItem) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	sequenceEnrollmentBranchDecisionEvaluationsItemComparedFieldKind    = big.NewInt(1 << 0)
+	sequenceEnrollmentBranchDecisionEvaluationsItemComparedFieldPresent = big.NewInt(1 << 1)
+	sequenceEnrollmentBranchDecisionEvaluationsItemComparedFieldSummary = big.NewInt(1 << 2)
+)
+
+type SequenceEnrollmentBranchDecisionEvaluationsItemCompared struct {
+	Kind    *SequenceEnrollmentBranchDecisionEvaluationsItemComparedKind    `json:"kind,omitempty" url:"kind,omitempty"`
+	Present *bool                                                           `json:"present,omitempty" url:"present,omitempty"`
+	Summary *SequenceEnrollmentBranchDecisionEvaluationsItemComparedSummary `json:"summary,omitempty" url:"summary,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequenceEnrollmentBranchDecisionEvaluationsItemCompared) GetKind() *SequenceEnrollmentBranchDecisionEvaluationsItemComparedKind {
+	if s == nil {
+		return nil
+	}
+	return s.Kind
+}
+
+func (s *SequenceEnrollmentBranchDecisionEvaluationsItemCompared) GetPresent() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.Present
+}
+
+func (s *SequenceEnrollmentBranchDecisionEvaluationsItemCompared) GetSummary() *SequenceEnrollmentBranchDecisionEvaluationsItemComparedSummary {
+	if s == nil {
+		return nil
+	}
+	return s.Summary
+}
+
+func (s *SequenceEnrollmentBranchDecisionEvaluationsItemCompared) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequenceEnrollmentBranchDecisionEvaluationsItemCompared) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetKind sets the Kind field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentBranchDecisionEvaluationsItemCompared) SetKind(kind *SequenceEnrollmentBranchDecisionEvaluationsItemComparedKind) {
+	s.Kind = kind
+	s.require(sequenceEnrollmentBranchDecisionEvaluationsItemComparedFieldKind)
+}
+
+// SetPresent sets the Present field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentBranchDecisionEvaluationsItemCompared) SetPresent(present *bool) {
+	s.Present = present
+	s.require(sequenceEnrollmentBranchDecisionEvaluationsItemComparedFieldPresent)
+}
+
+// SetSummary sets the Summary field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentBranchDecisionEvaluationsItemCompared) SetSummary(summary *SequenceEnrollmentBranchDecisionEvaluationsItemComparedSummary) {
+	s.Summary = summary
+	s.require(sequenceEnrollmentBranchDecisionEvaluationsItemComparedFieldSummary)
+}
+
+func (s *SequenceEnrollmentBranchDecisionEvaluationsItemCompared) UnmarshalJSON(data []byte) error {
+	type unmarshaler SequenceEnrollmentBranchDecisionEvaluationsItemCompared
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SequenceEnrollmentBranchDecisionEvaluationsItemCompared(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceEnrollmentBranchDecisionEvaluationsItemCompared) MarshalJSON() ([]byte, error) {
+	type embed SequenceEnrollmentBranchDecisionEvaluationsItemCompared
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequenceEnrollmentBranchDecisionEvaluationsItemCompared) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+type SequenceEnrollmentBranchDecisionEvaluationsItemComparedKind string
+
+const (
+	SequenceEnrollmentBranchDecisionEvaluationsItemComparedKindString  SequenceEnrollmentBranchDecisionEvaluationsItemComparedKind = "string"
+	SequenceEnrollmentBranchDecisionEvaluationsItemComparedKindNumber  SequenceEnrollmentBranchDecisionEvaluationsItemComparedKind = "number"
+	SequenceEnrollmentBranchDecisionEvaluationsItemComparedKindBoolean SequenceEnrollmentBranchDecisionEvaluationsItemComparedKind = "boolean"
+	SequenceEnrollmentBranchDecisionEvaluationsItemComparedKindObject  SequenceEnrollmentBranchDecisionEvaluationsItemComparedKind = "object"
+	SequenceEnrollmentBranchDecisionEvaluationsItemComparedKindArray   SequenceEnrollmentBranchDecisionEvaluationsItemComparedKind = "array"
+	SequenceEnrollmentBranchDecisionEvaluationsItemComparedKindNull    SequenceEnrollmentBranchDecisionEvaluationsItemComparedKind = "null"
+)
+
+func NewSequenceEnrollmentBranchDecisionEvaluationsItemComparedKindFromString(s string) (SequenceEnrollmentBranchDecisionEvaluationsItemComparedKind, error) {
+	switch s {
+	case "string":
+		return SequenceEnrollmentBranchDecisionEvaluationsItemComparedKindString, nil
+	case "number":
+		return SequenceEnrollmentBranchDecisionEvaluationsItemComparedKindNumber, nil
+	case "boolean":
+		return SequenceEnrollmentBranchDecisionEvaluationsItemComparedKindBoolean, nil
+	case "object":
+		return SequenceEnrollmentBranchDecisionEvaluationsItemComparedKindObject, nil
+	case "array":
+		return SequenceEnrollmentBranchDecisionEvaluationsItemComparedKindArray, nil
+	case "null":
+		return SequenceEnrollmentBranchDecisionEvaluationsItemComparedKindNull, nil
+	}
+	var t SequenceEnrollmentBranchDecisionEvaluationsItemComparedKind
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SequenceEnrollmentBranchDecisionEvaluationsItemComparedKind) Ptr() *SequenceEnrollmentBranchDecisionEvaluationsItemComparedKind {
+	return &s
+}
+
+type SequenceEnrollmentBranchDecisionEvaluationsItemComparedSummary string
+
+const (
+	SequenceEnrollmentBranchDecisionEvaluationsItemComparedSummaryMissing        SequenceEnrollmentBranchDecisionEvaluationsItemComparedSummary = "missing"
+	SequenceEnrollmentBranchDecisionEvaluationsItemComparedSummaryEmpty          SequenceEnrollmentBranchDecisionEvaluationsItemComparedSummary = "empty"
+	SequenceEnrollmentBranchDecisionEvaluationsItemComparedSummaryNonempty       SequenceEnrollmentBranchDecisionEvaluationsItemComparedSummary = "nonempty"
+	SequenceEnrollmentBranchDecisionEvaluationsItemComparedSummaryEqualsExpected SequenceEnrollmentBranchDecisionEvaluationsItemComparedSummary = "equals_expected"
+)
+
+func NewSequenceEnrollmentBranchDecisionEvaluationsItemComparedSummaryFromString(s string) (SequenceEnrollmentBranchDecisionEvaluationsItemComparedSummary, error) {
+	switch s {
+	case "missing":
+		return SequenceEnrollmentBranchDecisionEvaluationsItemComparedSummaryMissing, nil
+	case "empty":
+		return SequenceEnrollmentBranchDecisionEvaluationsItemComparedSummaryEmpty, nil
+	case "nonempty":
+		return SequenceEnrollmentBranchDecisionEvaluationsItemComparedSummaryNonempty, nil
+	case "equals_expected":
+		return SequenceEnrollmentBranchDecisionEvaluationsItemComparedSummaryEqualsExpected, nil
+	}
+	var t SequenceEnrollmentBranchDecisionEvaluationsItemComparedSummary
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SequenceEnrollmentBranchDecisionEvaluationsItemComparedSummary) Ptr() *SequenceEnrollmentBranchDecisionEvaluationsItemComparedSummary {
+	return &s
+}
+
+type SequenceEnrollmentBranchDecisionEvaluationsItemOutcome string
+
+const (
+	SequenceEnrollmentBranchDecisionEvaluationsItemOutcomePass SequenceEnrollmentBranchDecisionEvaluationsItemOutcome = "pass"
+	SequenceEnrollmentBranchDecisionEvaluationsItemOutcomeFail SequenceEnrollmentBranchDecisionEvaluationsItemOutcome = "fail"
+	SequenceEnrollmentBranchDecisionEvaluationsItemOutcomeSkip SequenceEnrollmentBranchDecisionEvaluationsItemOutcome = "skip"
+)
+
+func NewSequenceEnrollmentBranchDecisionEvaluationsItemOutcomeFromString(s string) (SequenceEnrollmentBranchDecisionEvaluationsItemOutcome, error) {
+	switch s {
+	case "pass":
+		return SequenceEnrollmentBranchDecisionEvaluationsItemOutcomePass, nil
+	case "fail":
+		return SequenceEnrollmentBranchDecisionEvaluationsItemOutcomeFail, nil
+	case "skip":
+		return SequenceEnrollmentBranchDecisionEvaluationsItemOutcomeSkip, nil
+	}
+	var t SequenceEnrollmentBranchDecisionEvaluationsItemOutcome
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SequenceEnrollmentBranchDecisionEvaluationsItemOutcome) Ptr() *SequenceEnrollmentBranchDecisionEvaluationsItemOutcome {
+	return &s
+}
+
+type SequenceEnrollmentBranchDecisionSelectedPath string
+
+const (
+	SequenceEnrollmentBranchDecisionSelectedPathMatched SequenceEnrollmentBranchDecisionSelectedPath = "matched"
+	SequenceEnrollmentBranchDecisionSelectedPathElse    SequenceEnrollmentBranchDecisionSelectedPath = "else"
+)
+
+func NewSequenceEnrollmentBranchDecisionSelectedPathFromString(s string) (SequenceEnrollmentBranchDecisionSelectedPath, error) {
+	switch s {
+	case "matched":
+		return SequenceEnrollmentBranchDecisionSelectedPathMatched, nil
+	case "else":
+		return SequenceEnrollmentBranchDecisionSelectedPathElse, nil
+	}
+	var t SequenceEnrollmentBranchDecisionSelectedPath
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SequenceEnrollmentBranchDecisionSelectedPath) Ptr() *SequenceEnrollmentBranchDecisionSelectedPath {
+	return &s
+}
+
+type SequenceEnrollmentBranchDecisionSplitMode string
+
+const (
+	SequenceEnrollmentBranchDecisionSplitModeCondition SequenceEnrollmentBranchDecisionSplitMode = "condition"
+	SequenceEnrollmentBranchDecisionSplitModeRandom    SequenceEnrollmentBranchDecisionSplitMode = "random"
+)
+
+func NewSequenceEnrollmentBranchDecisionSplitModeFromString(s string) (SequenceEnrollmentBranchDecisionSplitMode, error) {
+	switch s {
+	case "condition":
+		return SequenceEnrollmentBranchDecisionSplitModeCondition, nil
+	case "random":
+		return SequenceEnrollmentBranchDecisionSplitModeRandom, nil
+	}
+	var t SequenceEnrollmentBranchDecisionSplitMode
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SequenceEnrollmentBranchDecisionSplitMode) Ptr() *SequenceEnrollmentBranchDecisionSplitMode {
+	return &s
+}
+
 var (
 	sequenceEnrollmentCancelResponseFieldCancelledCount = big.NewInt(1 << 0)
 	sequenceEnrollmentCancelResponseFieldDryRun         = big.NewInt(1 << 1)
@@ -8713,6 +9382,1360 @@ func (s *SequenceEnrollmentCancelResponseEnrollmentsItem) String() string {
 	return fmt.Sprintf("%#v", s)
 }
 
+// Event or manual-enrollment context captured at entry. Property keys only; values from the enrolling payload are never returned.
+var (
+	sequenceEnrollmentEntryContextFieldEventID            = big.NewInt(1 << 0)
+	sequenceEnrollmentEntryContextFieldEventName          = big.NewInt(1 << 1)
+	sequenceEnrollmentEntryContextFieldEventPropertyKeys  = big.NewInt(1 << 2)
+	sequenceEnrollmentEntryContextFieldFieldSnapshotKeys  = big.NewInt(1 << 3)
+	sequenceEnrollmentEntryContextFieldHasEventProperties = big.NewInt(1 << 4)
+	sequenceEnrollmentEntryContextFieldHasFieldSnapshots  = big.NewInt(1 << 5)
+	sequenceEnrollmentEntryContextFieldTriggerType        = big.NewInt(1 << 6)
+)
+
+type SequenceEnrollmentEntryContext struct {
+	// Durable ID of the enrolling event, or null.
+	EventID *string `json:"eventId,omitempty" url:"eventId,omitempty"`
+	// Enrolling event name, or null.
+	EventName *string `json:"eventName,omitempty" url:"eventName,omitempty"`
+	// Keys present on the enrolling event payload. Values are omitted.
+	EventPropertyKeys []string `json:"eventPropertyKeys,omitempty" url:"eventPropertyKeys,omitempty"`
+	// Subscriber field paths snapshotted at enrollment. Values are omitted.
+	FieldSnapshotKeys []string `json:"fieldSnapshotKeys,omitempty" url:"fieldSnapshotKeys,omitempty"`
+	// Whether any event property keys were stored on this enrollment.
+	HasEventProperties *bool `json:"hasEventProperties,omitempty" url:"hasEventProperties,omitempty"`
+	// Whether subscriber field snapshots were stored at enrollment.
+	HasFieldSnapshots *bool `json:"hasFieldSnapshots,omitempty" url:"hasFieldSnapshots,omitempty"`
+	// Stored entryTriggerType, such as event_received or manual_enrollment. Null when never stamped.
+	TriggerType *string `json:"triggerType,omitempty" url:"triggerType,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequenceEnrollmentEntryContext) GetEventID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.EventID
+}
+
+func (s *SequenceEnrollmentEntryContext) GetEventName() *string {
+	if s == nil {
+		return nil
+	}
+	return s.EventName
+}
+
+func (s *SequenceEnrollmentEntryContext) GetEventPropertyKeys() []string {
+	if s == nil {
+		return nil
+	}
+	return s.EventPropertyKeys
+}
+
+func (s *SequenceEnrollmentEntryContext) GetFieldSnapshotKeys() []string {
+	if s == nil {
+		return nil
+	}
+	return s.FieldSnapshotKeys
+}
+
+func (s *SequenceEnrollmentEntryContext) GetHasEventProperties() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.HasEventProperties
+}
+
+func (s *SequenceEnrollmentEntryContext) GetHasFieldSnapshots() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.HasFieldSnapshots
+}
+
+func (s *SequenceEnrollmentEntryContext) GetTriggerType() *string {
+	if s == nil {
+		return nil
+	}
+	return s.TriggerType
+}
+
+func (s *SequenceEnrollmentEntryContext) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequenceEnrollmentEntryContext) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetEventID sets the EventID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentEntryContext) SetEventID(eventID *string) {
+	s.EventID = eventID
+	s.require(sequenceEnrollmentEntryContextFieldEventID)
+}
+
+// SetEventName sets the EventName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentEntryContext) SetEventName(eventName *string) {
+	s.EventName = eventName
+	s.require(sequenceEnrollmentEntryContextFieldEventName)
+}
+
+// SetEventPropertyKeys sets the EventPropertyKeys field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentEntryContext) SetEventPropertyKeys(eventPropertyKeys []string) {
+	s.EventPropertyKeys = eventPropertyKeys
+	s.require(sequenceEnrollmentEntryContextFieldEventPropertyKeys)
+}
+
+// SetFieldSnapshotKeys sets the FieldSnapshotKeys field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentEntryContext) SetFieldSnapshotKeys(fieldSnapshotKeys []string) {
+	s.FieldSnapshotKeys = fieldSnapshotKeys
+	s.require(sequenceEnrollmentEntryContextFieldFieldSnapshotKeys)
+}
+
+// SetHasEventProperties sets the HasEventProperties field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentEntryContext) SetHasEventProperties(hasEventProperties *bool) {
+	s.HasEventProperties = hasEventProperties
+	s.require(sequenceEnrollmentEntryContextFieldHasEventProperties)
+}
+
+// SetHasFieldSnapshots sets the HasFieldSnapshots field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentEntryContext) SetHasFieldSnapshots(hasFieldSnapshots *bool) {
+	s.HasFieldSnapshots = hasFieldSnapshots
+	s.require(sequenceEnrollmentEntryContextFieldHasFieldSnapshots)
+}
+
+// SetTriggerType sets the TriggerType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentEntryContext) SetTriggerType(triggerType *string) {
+	s.TriggerType = triggerType
+	s.require(sequenceEnrollmentEntryContextFieldTriggerType)
+}
+
+func (s *SequenceEnrollmentEntryContext) UnmarshalJSON(data []byte) error {
+	type unmarshaler SequenceEnrollmentEntryContext
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SequenceEnrollmentEntryContext(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceEnrollmentEntryContext) MarshalJSON() ([]byte, error) {
+	type embed SequenceEnrollmentEntryContext
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequenceEnrollmentEntryContext) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	sequenceEnrollmentGetResponseFieldEnrollment           = big.NewInt(1 << 0)
+	sequenceEnrollmentGetResponseFieldHistorySource        = big.NewInt(1 << 1)
+	sequenceEnrollmentGetResponseFieldNodeHistory          = big.NewInt(1 << 2)
+	sequenceEnrollmentGetResponseFieldNodeHistoryLimit     = big.NewInt(1 << 3)
+	sequenceEnrollmentGetResponseFieldNodeHistoryTruncated = big.NewInt(1 << 4)
+	sequenceEnrollmentGetResponseFieldSequenceID           = big.NewInt(1 << 5)
+	sequenceEnrollmentGetResponseFieldSequenceName         = big.NewInt(1 << 6)
+	sequenceEnrollmentGetResponseFieldStopCondition        = big.NewInt(1 << 7)
+	sequenceEnrollmentGetResponseFieldSuccess              = big.NewInt(1 << 8)
+)
+
+type SequenceEnrollmentGetResponse struct {
+	Enrollment *SequenceEnrollmentGetResponseEnrollment `json:"enrollment,omitempty" url:"enrollment,omitempty"`
+	// Where the branch history came from.
+	HistorySource *SequenceEnrollmentGetResponseHistorySource `json:"historySource,omitempty" url:"historySource,omitempty"`
+	// ClickHouse graph-walk events for this token, oldest first.
+	NodeHistory []*SequenceEnrollmentGetResponseNodeHistoryItem `json:"nodeHistory,omitempty" url:"nodeHistory,omitempty"`
+	// Maximum number of node events returned.
+	NodeHistoryLimit *int `json:"nodeHistoryLimit,omitempty" url:"nodeHistoryLimit,omitempty"`
+	// Whether additional node events exist beyond the returned bounded history.
+	NodeHistoryTruncated *bool                  `json:"nodeHistoryTruncated,omitempty" url:"nodeHistoryTruncated,omitempty"`
+	SequenceID           *string                `json:"sequenceId,omitempty" url:"sequenceId,omitempty"`
+	SequenceName         *string                `json:"sequenceName,omitempty" url:"sequenceName,omitempty"`
+	StopCondition        *SequenceStopCondition `json:"stopCondition,omitempty" url:"stopCondition,omitempty"`
+	Success              *bool                  `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequenceEnrollmentGetResponse) GetEnrollment() *SequenceEnrollmentGetResponseEnrollment {
+	if s == nil {
+		return nil
+	}
+	return s.Enrollment
+}
+
+func (s *SequenceEnrollmentGetResponse) GetHistorySource() *SequenceEnrollmentGetResponseHistorySource {
+	if s == nil {
+		return nil
+	}
+	return s.HistorySource
+}
+
+func (s *SequenceEnrollmentGetResponse) GetNodeHistory() []*SequenceEnrollmentGetResponseNodeHistoryItem {
+	if s == nil {
+		return nil
+	}
+	return s.NodeHistory
+}
+
+func (s *SequenceEnrollmentGetResponse) GetNodeHistoryLimit() *int {
+	if s == nil {
+		return nil
+	}
+	return s.NodeHistoryLimit
+}
+
+func (s *SequenceEnrollmentGetResponse) GetNodeHistoryTruncated() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.NodeHistoryTruncated
+}
+
+func (s *SequenceEnrollmentGetResponse) GetSequenceID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.SequenceID
+}
+
+func (s *SequenceEnrollmentGetResponse) GetSequenceName() *string {
+	if s == nil {
+		return nil
+	}
+	return s.SequenceName
+}
+
+func (s *SequenceEnrollmentGetResponse) GetStopCondition() *SequenceStopCondition {
+	if s == nil {
+		return nil
+	}
+	return s.StopCondition
+}
+
+func (s *SequenceEnrollmentGetResponse) GetSuccess() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.Success
+}
+
+func (s *SequenceEnrollmentGetResponse) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequenceEnrollmentGetResponse) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetEnrollment sets the Enrollment field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponse) SetEnrollment(enrollment *SequenceEnrollmentGetResponseEnrollment) {
+	s.Enrollment = enrollment
+	s.require(sequenceEnrollmentGetResponseFieldEnrollment)
+}
+
+// SetHistorySource sets the HistorySource field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponse) SetHistorySource(historySource *SequenceEnrollmentGetResponseHistorySource) {
+	s.HistorySource = historySource
+	s.require(sequenceEnrollmentGetResponseFieldHistorySource)
+}
+
+// SetNodeHistory sets the NodeHistory field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponse) SetNodeHistory(nodeHistory []*SequenceEnrollmentGetResponseNodeHistoryItem) {
+	s.NodeHistory = nodeHistory
+	s.require(sequenceEnrollmentGetResponseFieldNodeHistory)
+}
+
+// SetNodeHistoryLimit sets the NodeHistoryLimit field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponse) SetNodeHistoryLimit(nodeHistoryLimit *int) {
+	s.NodeHistoryLimit = nodeHistoryLimit
+	s.require(sequenceEnrollmentGetResponseFieldNodeHistoryLimit)
+}
+
+// SetNodeHistoryTruncated sets the NodeHistoryTruncated field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponse) SetNodeHistoryTruncated(nodeHistoryTruncated *bool) {
+	s.NodeHistoryTruncated = nodeHistoryTruncated
+	s.require(sequenceEnrollmentGetResponseFieldNodeHistoryTruncated)
+}
+
+// SetSequenceID sets the SequenceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponse) SetSequenceID(sequenceID *string) {
+	s.SequenceID = sequenceID
+	s.require(sequenceEnrollmentGetResponseFieldSequenceID)
+}
+
+// SetSequenceName sets the SequenceName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponse) SetSequenceName(sequenceName *string) {
+	s.SequenceName = sequenceName
+	s.require(sequenceEnrollmentGetResponseFieldSequenceName)
+}
+
+// SetStopCondition sets the StopCondition field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponse) SetStopCondition(stopCondition *SequenceStopCondition) {
+	s.StopCondition = stopCondition
+	s.require(sequenceEnrollmentGetResponseFieldStopCondition)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponse) SetSuccess(success *bool) {
+	s.Success = success
+	s.require(sequenceEnrollmentGetResponseFieldSuccess)
+}
+
+func (s *SequenceEnrollmentGetResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler SequenceEnrollmentGetResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SequenceEnrollmentGetResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceEnrollmentGetResponse) MarshalJSON() ([]byte, error) {
+	type embed SequenceEnrollmentGetResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequenceEnrollmentGetResponse) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	sequenceEnrollmentGetResponseEnrollmentFieldBranchDecisionCount      = big.NewInt(1 << 0)
+	sequenceEnrollmentGetResponseEnrollmentFieldBranchDecisions          = big.NewInt(1 << 1)
+	sequenceEnrollmentGetResponseEnrollmentFieldBranchDecisionsTruncated = big.NewInt(1 << 2)
+	sequenceEnrollmentGetResponseEnrollmentFieldCurrentNodeID            = big.NewInt(1 << 3)
+	sequenceEnrollmentGetResponseEnrollmentFieldCurrentNodeLabel         = big.NewInt(1 << 4)
+	sequenceEnrollmentGetResponseEnrollmentFieldCurrentNodeMissing       = big.NewInt(1 << 5)
+	sequenceEnrollmentGetResponseEnrollmentFieldCurrentNodeType          = big.NewInt(1 << 6)
+	sequenceEnrollmentGetResponseEnrollmentFieldEmail                    = big.NewInt(1 << 7)
+	sequenceEnrollmentGetResponseEnrollmentFieldEnrollmentID             = big.NewInt(1 << 8)
+	sequenceEnrollmentGetResponseEnrollmentFieldEnrollmentKey            = big.NewInt(1 << 9)
+	sequenceEnrollmentGetResponseEnrollmentFieldEnrollmentStartedAt      = big.NewInt(1 << 10)
+	sequenceEnrollmentGetResponseEnrollmentFieldEnteredVia               = big.NewInt(1 << 11)
+	sequenceEnrollmentGetResponseEnrollmentFieldEntryContext             = big.NewInt(1 << 12)
+	sequenceEnrollmentGetResponseEnrollmentFieldFailedReason             = big.NewInt(1 << 13)
+	sequenceEnrollmentGetResponseEnrollmentFieldFirstName                = big.NewInt(1 << 14)
+	sequenceEnrollmentGetResponseEnrollmentFieldLastName                 = big.NewInt(1 << 15)
+	sequenceEnrollmentGetResponseEnrollmentFieldLastUpdatedAt            = big.NewInt(1 << 16)
+	sequenceEnrollmentGetResponseEnrollmentFieldMovedAt                  = big.NewInt(1 << 17)
+	sequenceEnrollmentGetResponseEnrollmentFieldMovedFromNodeID          = big.NewInt(1 << 18)
+	sequenceEnrollmentGetResponseEnrollmentFieldMoveReason               = big.NewInt(1 << 19)
+	sequenceEnrollmentGetResponseEnrollmentFieldSequenceID               = big.NewInt(1 << 20)
+	sequenceEnrollmentGetResponseEnrollmentFieldStatus                   = big.NewInt(1 << 21)
+	sequenceEnrollmentGetResponseEnrollmentFieldStopConditionMatches     = big.NewInt(1 << 22)
+	sequenceEnrollmentGetResponseEnrollmentFieldStopConditionMatchReason = big.NewInt(1 << 23)
+	sequenceEnrollmentGetResponseEnrollmentFieldSubscriberID             = big.NewInt(1 << 24)
+	sequenceEnrollmentGetResponseEnrollmentFieldSubscriberStatus         = big.NewInt(1 << 25)
+	sequenceEnrollmentGetResponseEnrollmentFieldWaitUntil                = big.NewInt(1 << 26)
+)
+
+type SequenceEnrollmentGetResponseEnrollment struct {
+	// Total decisions taken, including decisions omitted from the bounded array.
+	BranchDecisionCount *int `json:"branchDecisionCount,omitempty" url:"branchDecisionCount,omitempty"`
+	// Bounded redacted if/else and random-split verdicts, oldest first within the retained window. Compared values are summaries (missing, empty, nonempty, equals_expected), never the raw field or event-property value. Empty on enrollments recorded before this field existed; use GET /sequences/{sequenceId}/enrollments/{enrollmentId} to reconstruct those from ClickHouse.
+	BranchDecisions []*SequenceEnrollmentBranchDecision `json:"branchDecisions,omitempty" url:"branchDecisions,omitempty"`
+	// Whether older decisions were omitted from branchDecisions.
+	BranchDecisionsTruncated *bool `json:"branchDecisionsTruncated,omitempty" url:"branchDecisionsTruncated,omitempty"`
+	// Sequence node this enrollment is currently sitting on.
+	CurrentNodeID *string `json:"currentNodeId,omitempty" url:"currentNodeId,omitempty"`
+	// Node label or email subject when available.
+	CurrentNodeLabel   *string `json:"currentNodeLabel,omitempty" url:"currentNodeLabel,omitempty"`
+	CurrentNodeMissing *bool   `json:"currentNodeMissing,omitempty" url:"currentNodeMissing,omitempty"`
+	// Omitted when the node no longer exists in the sequence graph.
+	CurrentNodeType *string `json:"currentNodeType,omitempty" url:"currentNodeType,omitempty"`
+	// Subscriber email address. Falls back to the address captured at enrollment when the subscriber record no longer exists.
+	Email *string `json:"email,omitempty" url:"email,omitempty"`
+	// Enrollment token ID. Stable identifier for this one run through the sequence.
+	EnrollmentID        *string    `json:"enrollmentId,omitempty" url:"enrollmentId,omitempty"`
+	EnrollmentKey       *string    `json:"enrollmentKey,omitempty" url:"enrollmentKey,omitempty"`
+	EnrollmentStartedAt *time.Time `json:"enrollmentStartedAt,omitempty" url:"enrollmentStartedAt,omitempty"`
+	// What put this contact into the sequence. The distinguishing detail when a trigger covers several lists or tags.
+	EnteredVia   *SequenceEnrollmentGetResponseEnrollmentEnteredVia `json:"enteredVia,omitempty" url:"enteredVia,omitempty"`
+	EntryContext *SequenceEnrollmentEntryContext                    `json:"entryContext,omitempty" url:"entryContext,omitempty"`
+	// Why this enrollment stopped, for status `failed`. Null for every other status and for failures recorded before this field existed. The same reason repeated across enrollments on one `currentNodeId` points at that step rather than at the contacts.
+	FailedReason *string `json:"failedReason,omitempty" url:"failedReason,omitempty"`
+	FirstName    *string `json:"firstName,omitempty" url:"firstName,omitempty"`
+	LastName     *string `json:"lastName,omitempty" url:"lastName,omitempty"`
+	// Last change to this enrollment. For a waiting enrollment this is when it arrived at its current node.
+	LastUpdatedAt *time.Time `json:"lastUpdatedAt,omitempty" url:"lastUpdatedAt,omitempty"`
+	// When that release happened, or null when the enrollment was never moved.
+	MovedAt *time.Time `json:"movedAt,omitempty" url:"movedAt,omitempty"`
+	// Step this enrollment was released from by POST /sequences/{sequenceId}/enrollments/move, or null when it reached its current step on its own.
+	MovedFromNodeID *string `json:"movedFromNodeId,omitempty" url:"movedFromNodeId,omitempty"`
+	// Note recorded with that release, or null when none was given.
+	MoveReason *string                                        `json:"moveReason,omitempty" url:"moveReason,omitempty"`
+	SequenceID *string                                        `json:"sequenceId,omitempty" url:"sequenceId,omitempty"`
+	Status     *SequenceEnrollmentGetResponseEnrollmentStatus `json:"status,omitempty" url:"status,omitempty"`
+	// Whether the sequence stop condition matches for this contact right now. Null when it was not determined - stopConditionMatch was not requested, the sequence has no stop condition, this enrollment is no longer active or waiting, or it fell outside the evaluated window. Null never means "does not match". This is a non-atomic snapshot; the worker re-checks before a future step, but the condition can change and a step already past its stop check may still finish.
+	StopConditionMatches *bool `json:"stopConditionMatches,omitempty" url:"stopConditionMatches,omitempty"`
+	// Human-readable reason the stop condition matches. Null when stopConditionMatches is not true.
+	StopConditionMatchReason *string `json:"stopConditionMatchReason,omitempty" url:"stopConditionMatchReason,omitempty"`
+	SubscriberID             *string `json:"subscriberId,omitempty" url:"subscriberId,omitempty"`
+	SubscriberStatus         *string `json:"subscriberStatus,omitempty" url:"subscriberStatus,omitempty"`
+	// When a waiting enrollment is scheduled to resume, or null when nothing is scheduled.
+	WaitUntil *time.Time `json:"waitUntil,omitempty" url:"waitUntil,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequenceEnrollmentGetResponseEnrollment) GetBranchDecisionCount() *int {
+	if s == nil {
+		return nil
+	}
+	return s.BranchDecisionCount
+}
+
+func (s *SequenceEnrollmentGetResponseEnrollment) GetBranchDecisions() []*SequenceEnrollmentBranchDecision {
+	if s == nil {
+		return nil
+	}
+	return s.BranchDecisions
+}
+
+func (s *SequenceEnrollmentGetResponseEnrollment) GetBranchDecisionsTruncated() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.BranchDecisionsTruncated
+}
+
+func (s *SequenceEnrollmentGetResponseEnrollment) GetCurrentNodeID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.CurrentNodeID
+}
+
+func (s *SequenceEnrollmentGetResponseEnrollment) GetCurrentNodeLabel() *string {
+	if s == nil {
+		return nil
+	}
+	return s.CurrentNodeLabel
+}
+
+func (s *SequenceEnrollmentGetResponseEnrollment) GetCurrentNodeMissing() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.CurrentNodeMissing
+}
+
+func (s *SequenceEnrollmentGetResponseEnrollment) GetCurrentNodeType() *string {
+	if s == nil {
+		return nil
+	}
+	return s.CurrentNodeType
+}
+
+func (s *SequenceEnrollmentGetResponseEnrollment) GetEmail() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Email
+}
+
+func (s *SequenceEnrollmentGetResponseEnrollment) GetEnrollmentID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.EnrollmentID
+}
+
+func (s *SequenceEnrollmentGetResponseEnrollment) GetEnrollmentKey() *string {
+	if s == nil {
+		return nil
+	}
+	return s.EnrollmentKey
+}
+
+func (s *SequenceEnrollmentGetResponseEnrollment) GetEnrollmentStartedAt() *time.Time {
+	if s == nil {
+		return nil
+	}
+	return s.EnrollmentStartedAt
+}
+
+func (s *SequenceEnrollmentGetResponseEnrollment) GetEnteredVia() *SequenceEnrollmentGetResponseEnrollmentEnteredVia {
+	if s == nil {
+		return nil
+	}
+	return s.EnteredVia
+}
+
+func (s *SequenceEnrollmentGetResponseEnrollment) GetEntryContext() *SequenceEnrollmentEntryContext {
+	if s == nil {
+		return nil
+	}
+	return s.EntryContext
+}
+
+func (s *SequenceEnrollmentGetResponseEnrollment) GetFailedReason() *string {
+	if s == nil {
+		return nil
+	}
+	return s.FailedReason
+}
+
+func (s *SequenceEnrollmentGetResponseEnrollment) GetFirstName() *string {
+	if s == nil {
+		return nil
+	}
+	return s.FirstName
+}
+
+func (s *SequenceEnrollmentGetResponseEnrollment) GetLastName() *string {
+	if s == nil {
+		return nil
+	}
+	return s.LastName
+}
+
+func (s *SequenceEnrollmentGetResponseEnrollment) GetLastUpdatedAt() *time.Time {
+	if s == nil {
+		return nil
+	}
+	return s.LastUpdatedAt
+}
+
+func (s *SequenceEnrollmentGetResponseEnrollment) GetMovedAt() *time.Time {
+	if s == nil {
+		return nil
+	}
+	return s.MovedAt
+}
+
+func (s *SequenceEnrollmentGetResponseEnrollment) GetMovedFromNodeID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.MovedFromNodeID
+}
+
+func (s *SequenceEnrollmentGetResponseEnrollment) GetMoveReason() *string {
+	if s == nil {
+		return nil
+	}
+	return s.MoveReason
+}
+
+func (s *SequenceEnrollmentGetResponseEnrollment) GetSequenceID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.SequenceID
+}
+
+func (s *SequenceEnrollmentGetResponseEnrollment) GetStatus() *SequenceEnrollmentGetResponseEnrollmentStatus {
+	if s == nil {
+		return nil
+	}
+	return s.Status
+}
+
+func (s *SequenceEnrollmentGetResponseEnrollment) GetStopConditionMatches() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.StopConditionMatches
+}
+
+func (s *SequenceEnrollmentGetResponseEnrollment) GetStopConditionMatchReason() *string {
+	if s == nil {
+		return nil
+	}
+	return s.StopConditionMatchReason
+}
+
+func (s *SequenceEnrollmentGetResponseEnrollment) GetSubscriberID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.SubscriberID
+}
+
+func (s *SequenceEnrollmentGetResponseEnrollment) GetSubscriberStatus() *string {
+	if s == nil {
+		return nil
+	}
+	return s.SubscriberStatus
+}
+
+func (s *SequenceEnrollmentGetResponseEnrollment) GetWaitUntil() *time.Time {
+	if s == nil {
+		return nil
+	}
+	return s.WaitUntil
+}
+
+func (s *SequenceEnrollmentGetResponseEnrollment) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequenceEnrollmentGetResponseEnrollment) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetBranchDecisionCount sets the BranchDecisionCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponseEnrollment) SetBranchDecisionCount(branchDecisionCount *int) {
+	s.BranchDecisionCount = branchDecisionCount
+	s.require(sequenceEnrollmentGetResponseEnrollmentFieldBranchDecisionCount)
+}
+
+// SetBranchDecisions sets the BranchDecisions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponseEnrollment) SetBranchDecisions(branchDecisions []*SequenceEnrollmentBranchDecision) {
+	s.BranchDecisions = branchDecisions
+	s.require(sequenceEnrollmentGetResponseEnrollmentFieldBranchDecisions)
+}
+
+// SetBranchDecisionsTruncated sets the BranchDecisionsTruncated field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponseEnrollment) SetBranchDecisionsTruncated(branchDecisionsTruncated *bool) {
+	s.BranchDecisionsTruncated = branchDecisionsTruncated
+	s.require(sequenceEnrollmentGetResponseEnrollmentFieldBranchDecisionsTruncated)
+}
+
+// SetCurrentNodeID sets the CurrentNodeID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponseEnrollment) SetCurrentNodeID(currentNodeID *string) {
+	s.CurrentNodeID = currentNodeID
+	s.require(sequenceEnrollmentGetResponseEnrollmentFieldCurrentNodeID)
+}
+
+// SetCurrentNodeLabel sets the CurrentNodeLabel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponseEnrollment) SetCurrentNodeLabel(currentNodeLabel *string) {
+	s.CurrentNodeLabel = currentNodeLabel
+	s.require(sequenceEnrollmentGetResponseEnrollmentFieldCurrentNodeLabel)
+}
+
+// SetCurrentNodeMissing sets the CurrentNodeMissing field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponseEnrollment) SetCurrentNodeMissing(currentNodeMissing *bool) {
+	s.CurrentNodeMissing = currentNodeMissing
+	s.require(sequenceEnrollmentGetResponseEnrollmentFieldCurrentNodeMissing)
+}
+
+// SetCurrentNodeType sets the CurrentNodeType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponseEnrollment) SetCurrentNodeType(currentNodeType *string) {
+	s.CurrentNodeType = currentNodeType
+	s.require(sequenceEnrollmentGetResponseEnrollmentFieldCurrentNodeType)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponseEnrollment) SetEmail(email *string) {
+	s.Email = email
+	s.require(sequenceEnrollmentGetResponseEnrollmentFieldEmail)
+}
+
+// SetEnrollmentID sets the EnrollmentID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponseEnrollment) SetEnrollmentID(enrollmentID *string) {
+	s.EnrollmentID = enrollmentID
+	s.require(sequenceEnrollmentGetResponseEnrollmentFieldEnrollmentID)
+}
+
+// SetEnrollmentKey sets the EnrollmentKey field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponseEnrollment) SetEnrollmentKey(enrollmentKey *string) {
+	s.EnrollmentKey = enrollmentKey
+	s.require(sequenceEnrollmentGetResponseEnrollmentFieldEnrollmentKey)
+}
+
+// SetEnrollmentStartedAt sets the EnrollmentStartedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponseEnrollment) SetEnrollmentStartedAt(enrollmentStartedAt *time.Time) {
+	s.EnrollmentStartedAt = enrollmentStartedAt
+	s.require(sequenceEnrollmentGetResponseEnrollmentFieldEnrollmentStartedAt)
+}
+
+// SetEnteredVia sets the EnteredVia field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponseEnrollment) SetEnteredVia(enteredVia *SequenceEnrollmentGetResponseEnrollmentEnteredVia) {
+	s.EnteredVia = enteredVia
+	s.require(sequenceEnrollmentGetResponseEnrollmentFieldEnteredVia)
+}
+
+// SetEntryContext sets the EntryContext field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponseEnrollment) SetEntryContext(entryContext *SequenceEnrollmentEntryContext) {
+	s.EntryContext = entryContext
+	s.require(sequenceEnrollmentGetResponseEnrollmentFieldEntryContext)
+}
+
+// SetFailedReason sets the FailedReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponseEnrollment) SetFailedReason(failedReason *string) {
+	s.FailedReason = failedReason
+	s.require(sequenceEnrollmentGetResponseEnrollmentFieldFailedReason)
+}
+
+// SetFirstName sets the FirstName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponseEnrollment) SetFirstName(firstName *string) {
+	s.FirstName = firstName
+	s.require(sequenceEnrollmentGetResponseEnrollmentFieldFirstName)
+}
+
+// SetLastName sets the LastName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponseEnrollment) SetLastName(lastName *string) {
+	s.LastName = lastName
+	s.require(sequenceEnrollmentGetResponseEnrollmentFieldLastName)
+}
+
+// SetLastUpdatedAt sets the LastUpdatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponseEnrollment) SetLastUpdatedAt(lastUpdatedAt *time.Time) {
+	s.LastUpdatedAt = lastUpdatedAt
+	s.require(sequenceEnrollmentGetResponseEnrollmentFieldLastUpdatedAt)
+}
+
+// SetMovedAt sets the MovedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponseEnrollment) SetMovedAt(movedAt *time.Time) {
+	s.MovedAt = movedAt
+	s.require(sequenceEnrollmentGetResponseEnrollmentFieldMovedAt)
+}
+
+// SetMovedFromNodeID sets the MovedFromNodeID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponseEnrollment) SetMovedFromNodeID(movedFromNodeID *string) {
+	s.MovedFromNodeID = movedFromNodeID
+	s.require(sequenceEnrollmentGetResponseEnrollmentFieldMovedFromNodeID)
+}
+
+// SetMoveReason sets the MoveReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponseEnrollment) SetMoveReason(moveReason *string) {
+	s.MoveReason = moveReason
+	s.require(sequenceEnrollmentGetResponseEnrollmentFieldMoveReason)
+}
+
+// SetSequenceID sets the SequenceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponseEnrollment) SetSequenceID(sequenceID *string) {
+	s.SequenceID = sequenceID
+	s.require(sequenceEnrollmentGetResponseEnrollmentFieldSequenceID)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponseEnrollment) SetStatus(status *SequenceEnrollmentGetResponseEnrollmentStatus) {
+	s.Status = status
+	s.require(sequenceEnrollmentGetResponseEnrollmentFieldStatus)
+}
+
+// SetStopConditionMatches sets the StopConditionMatches field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponseEnrollment) SetStopConditionMatches(stopConditionMatches *bool) {
+	s.StopConditionMatches = stopConditionMatches
+	s.require(sequenceEnrollmentGetResponseEnrollmentFieldStopConditionMatches)
+}
+
+// SetStopConditionMatchReason sets the StopConditionMatchReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponseEnrollment) SetStopConditionMatchReason(stopConditionMatchReason *string) {
+	s.StopConditionMatchReason = stopConditionMatchReason
+	s.require(sequenceEnrollmentGetResponseEnrollmentFieldStopConditionMatchReason)
+}
+
+// SetSubscriberID sets the SubscriberID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponseEnrollment) SetSubscriberID(subscriberID *string) {
+	s.SubscriberID = subscriberID
+	s.require(sequenceEnrollmentGetResponseEnrollmentFieldSubscriberID)
+}
+
+// SetSubscriberStatus sets the SubscriberStatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponseEnrollment) SetSubscriberStatus(subscriberStatus *string) {
+	s.SubscriberStatus = subscriberStatus
+	s.require(sequenceEnrollmentGetResponseEnrollmentFieldSubscriberStatus)
+}
+
+// SetWaitUntil sets the WaitUntil field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponseEnrollment) SetWaitUntil(waitUntil *time.Time) {
+	s.WaitUntil = waitUntil
+	s.require(sequenceEnrollmentGetResponseEnrollmentFieldWaitUntil)
+}
+
+func (s *SequenceEnrollmentGetResponseEnrollment) UnmarshalJSON(data []byte) error {
+	type embed SequenceEnrollmentGetResponseEnrollment
+	var unmarshaler = struct {
+		embed
+		EnrollmentStartedAt *internal.DateTime `json:"enrollmentStartedAt,omitempty"`
+		LastUpdatedAt       *internal.DateTime `json:"lastUpdatedAt,omitempty"`
+		MovedAt             *internal.DateTime `json:"movedAt,omitempty"`
+		WaitUntil           *internal.DateTime `json:"waitUntil,omitempty"`
+	}{
+		embed: embed(*s),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*s = SequenceEnrollmentGetResponseEnrollment(unmarshaler.embed)
+	s.EnrollmentStartedAt = unmarshaler.EnrollmentStartedAt.TimePtr()
+	s.LastUpdatedAt = unmarshaler.LastUpdatedAt.TimePtr()
+	s.MovedAt = unmarshaler.MovedAt.TimePtr()
+	s.WaitUntil = unmarshaler.WaitUntil.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceEnrollmentGetResponseEnrollment) MarshalJSON() ([]byte, error) {
+	type embed SequenceEnrollmentGetResponseEnrollment
+	var marshaler = struct {
+		embed
+		EnrollmentStartedAt *internal.DateTime `json:"enrollmentStartedAt,omitempty"`
+		LastUpdatedAt       *internal.DateTime `json:"lastUpdatedAt,omitempty"`
+		MovedAt             *internal.DateTime `json:"movedAt,omitempty"`
+		WaitUntil           *internal.DateTime `json:"waitUntil,omitempty"`
+	}{
+		embed:               embed(*s),
+		EnrollmentStartedAt: internal.NewOptionalDateTime(s.EnrollmentStartedAt),
+		LastUpdatedAt:       internal.NewOptionalDateTime(s.LastUpdatedAt),
+		MovedAt:             internal.NewOptionalDateTime(s.MovedAt),
+		WaitUntil:           internal.NewOptionalDateTime(s.WaitUntil),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequenceEnrollmentGetResponseEnrollment) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+// What put this contact into the sequence. The distinguishing detail when a trigger covers several lists or tags.
+var (
+	sequenceEnrollmentGetResponseEnrollmentEnteredViaFieldDescription = big.NewInt(1 << 0)
+	sequenceEnrollmentGetResponseEnrollmentEnteredViaFieldKind        = big.NewInt(1 << 1)
+	sequenceEnrollmentGetResponseEnrollmentEnteredViaFieldName        = big.NewInt(1 << 2)
+	sequenceEnrollmentGetResponseEnrollmentEnteredViaFieldValue       = big.NewInt(1 << 3)
+)
+
+type SequenceEnrollmentGetResponseEnrollmentEnteredVia struct {
+	// Ready-to-display attribution line.
+	Description *string `json:"description,omitempty" url:"description,omitempty"`
+	// `inactivity` and `frequency` identify time-based evaluation of the monitored event rather than an ordinary event-received enrollment. `manual` is a dashboard or API enrollment that bypassed the trigger. `unknown` covers enrollments recorded before this field existed.
+	Kind *SequenceEnrollmentGetResponseEnrollmentEnteredViaKind `json:"kind,omitempty" url:"kind,omitempty"`
+	// Resolved list or segment name. Set for list and segment kinds, and null when the referenced resource has since been deleted.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// The list ID, tag name, segment ID, event name, or monitored event name. Null for `manual`, `test_run`, and `unknown`.
+	Value *string `json:"value,omitempty" url:"value,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequenceEnrollmentGetResponseEnrollmentEnteredVia) GetDescription() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Description
+}
+
+func (s *SequenceEnrollmentGetResponseEnrollmentEnteredVia) GetKind() *SequenceEnrollmentGetResponseEnrollmentEnteredViaKind {
+	if s == nil {
+		return nil
+	}
+	return s.Kind
+}
+
+func (s *SequenceEnrollmentGetResponseEnrollmentEnteredVia) GetName() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Name
+}
+
+func (s *SequenceEnrollmentGetResponseEnrollmentEnteredVia) GetValue() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Value
+}
+
+func (s *SequenceEnrollmentGetResponseEnrollmentEnteredVia) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequenceEnrollmentGetResponseEnrollmentEnteredVia) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetDescription sets the Description field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponseEnrollmentEnteredVia) SetDescription(description *string) {
+	s.Description = description
+	s.require(sequenceEnrollmentGetResponseEnrollmentEnteredViaFieldDescription)
+}
+
+// SetKind sets the Kind field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponseEnrollmentEnteredVia) SetKind(kind *SequenceEnrollmentGetResponseEnrollmentEnteredViaKind) {
+	s.Kind = kind
+	s.require(sequenceEnrollmentGetResponseEnrollmentEnteredViaFieldKind)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponseEnrollmentEnteredVia) SetName(name *string) {
+	s.Name = name
+	s.require(sequenceEnrollmentGetResponseEnrollmentEnteredViaFieldName)
+}
+
+// SetValue sets the Value field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponseEnrollmentEnteredVia) SetValue(value *string) {
+	s.Value = value
+	s.require(sequenceEnrollmentGetResponseEnrollmentEnteredViaFieldValue)
+}
+
+func (s *SequenceEnrollmentGetResponseEnrollmentEnteredVia) UnmarshalJSON(data []byte) error {
+	type unmarshaler SequenceEnrollmentGetResponseEnrollmentEnteredVia
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SequenceEnrollmentGetResponseEnrollmentEnteredVia(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceEnrollmentGetResponseEnrollmentEnteredVia) MarshalJSON() ([]byte, error) {
+	type embed SequenceEnrollmentGetResponseEnrollmentEnteredVia
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequenceEnrollmentGetResponseEnrollmentEnteredVia) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+// `inactivity` and `frequency` identify time-based evaluation of the monitored event rather than an ordinary event-received enrollment. `manual` is a dashboard or API enrollment that bypassed the trigger. `unknown` covers enrollments recorded before this field existed.
+type SequenceEnrollmentGetResponseEnrollmentEnteredViaKind string
+
+const (
+	SequenceEnrollmentGetResponseEnrollmentEnteredViaKindList       SequenceEnrollmentGetResponseEnrollmentEnteredViaKind = "list"
+	SequenceEnrollmentGetResponseEnrollmentEnteredViaKindTag        SequenceEnrollmentGetResponseEnrollmentEnteredViaKind = "tag"
+	SequenceEnrollmentGetResponseEnrollmentEnteredViaKindSegment    SequenceEnrollmentGetResponseEnrollmentEnteredViaKind = "segment"
+	SequenceEnrollmentGetResponseEnrollmentEnteredViaKindEvent      SequenceEnrollmentGetResponseEnrollmentEnteredViaKind = "event"
+	SequenceEnrollmentGetResponseEnrollmentEnteredViaKindInactivity SequenceEnrollmentGetResponseEnrollmentEnteredViaKind = "inactivity"
+	SequenceEnrollmentGetResponseEnrollmentEnteredViaKindFrequency  SequenceEnrollmentGetResponseEnrollmentEnteredViaKind = "frequency"
+	SequenceEnrollmentGetResponseEnrollmentEnteredViaKindManual     SequenceEnrollmentGetResponseEnrollmentEnteredViaKind = "manual"
+	SequenceEnrollmentGetResponseEnrollmentEnteredViaKindTestRun    SequenceEnrollmentGetResponseEnrollmentEnteredViaKind = "test_run"
+	SequenceEnrollmentGetResponseEnrollmentEnteredViaKindUnknown    SequenceEnrollmentGetResponseEnrollmentEnteredViaKind = "unknown"
+)
+
+func NewSequenceEnrollmentGetResponseEnrollmentEnteredViaKindFromString(s string) (SequenceEnrollmentGetResponseEnrollmentEnteredViaKind, error) {
+	switch s {
+	case "list":
+		return SequenceEnrollmentGetResponseEnrollmentEnteredViaKindList, nil
+	case "tag":
+		return SequenceEnrollmentGetResponseEnrollmentEnteredViaKindTag, nil
+	case "segment":
+		return SequenceEnrollmentGetResponseEnrollmentEnteredViaKindSegment, nil
+	case "event":
+		return SequenceEnrollmentGetResponseEnrollmentEnteredViaKindEvent, nil
+	case "inactivity":
+		return SequenceEnrollmentGetResponseEnrollmentEnteredViaKindInactivity, nil
+	case "frequency":
+		return SequenceEnrollmentGetResponseEnrollmentEnteredViaKindFrequency, nil
+	case "manual":
+		return SequenceEnrollmentGetResponseEnrollmentEnteredViaKindManual, nil
+	case "test_run":
+		return SequenceEnrollmentGetResponseEnrollmentEnteredViaKindTestRun, nil
+	case "unknown":
+		return SequenceEnrollmentGetResponseEnrollmentEnteredViaKindUnknown, nil
+	}
+	var t SequenceEnrollmentGetResponseEnrollmentEnteredViaKind
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SequenceEnrollmentGetResponseEnrollmentEnteredViaKind) Ptr() *SequenceEnrollmentGetResponseEnrollmentEnteredViaKind {
+	return &s
+}
+
+type SequenceEnrollmentGetResponseEnrollmentStatus string
+
+const (
+	SequenceEnrollmentGetResponseEnrollmentStatusActive    SequenceEnrollmentGetResponseEnrollmentStatus = "active"
+	SequenceEnrollmentGetResponseEnrollmentStatusWaiting   SequenceEnrollmentGetResponseEnrollmentStatus = "waiting"
+	SequenceEnrollmentGetResponseEnrollmentStatusCompleted SequenceEnrollmentGetResponseEnrollmentStatus = "completed"
+	SequenceEnrollmentGetResponseEnrollmentStatusFailed    SequenceEnrollmentGetResponseEnrollmentStatus = "failed"
+	SequenceEnrollmentGetResponseEnrollmentStatusCancelled SequenceEnrollmentGetResponseEnrollmentStatus = "cancelled"
+)
+
+func NewSequenceEnrollmentGetResponseEnrollmentStatusFromString(s string) (SequenceEnrollmentGetResponseEnrollmentStatus, error) {
+	switch s {
+	case "active":
+		return SequenceEnrollmentGetResponseEnrollmentStatusActive, nil
+	case "waiting":
+		return SequenceEnrollmentGetResponseEnrollmentStatusWaiting, nil
+	case "completed":
+		return SequenceEnrollmentGetResponseEnrollmentStatusCompleted, nil
+	case "failed":
+		return SequenceEnrollmentGetResponseEnrollmentStatusFailed, nil
+	case "cancelled":
+		return SequenceEnrollmentGetResponseEnrollmentStatusCancelled, nil
+	}
+	var t SequenceEnrollmentGetResponseEnrollmentStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SequenceEnrollmentGetResponseEnrollmentStatus) Ptr() *SequenceEnrollmentGetResponseEnrollmentStatus {
+	return &s
+}
+
+// Where the branch history came from.
+type SequenceEnrollmentGetResponseHistorySource string
+
+const (
+	SequenceEnrollmentGetResponseHistorySourceNodeEvents   SequenceEnrollmentGetResponseHistorySource = "node_events"
+	SequenceEnrollmentGetResponseHistorySourceTokenContext SequenceEnrollmentGetResponseHistorySource = "token_context"
+	SequenceEnrollmentGetResponseHistorySourceBoth         SequenceEnrollmentGetResponseHistorySource = "both"
+	SequenceEnrollmentGetResponseHistorySourceNone         SequenceEnrollmentGetResponseHistorySource = "none"
+)
+
+func NewSequenceEnrollmentGetResponseHistorySourceFromString(s string) (SequenceEnrollmentGetResponseHistorySource, error) {
+	switch s {
+	case "node_events":
+		return SequenceEnrollmentGetResponseHistorySourceNodeEvents, nil
+	case "token_context":
+		return SequenceEnrollmentGetResponseHistorySourceTokenContext, nil
+	case "both":
+		return SequenceEnrollmentGetResponseHistorySourceBoth, nil
+	case "none":
+		return SequenceEnrollmentGetResponseHistorySourceNone, nil
+	}
+	var t SequenceEnrollmentGetResponseHistorySource
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SequenceEnrollmentGetResponseHistorySource) Ptr() *SequenceEnrollmentGetResponseHistorySource {
+	return &s
+}
+
+var (
+	sequenceEnrollmentGetResponseNodeHistoryItemFieldBranchDecision = big.NewInt(1 << 0)
+	sequenceEnrollmentGetResponseNodeHistoryItemFieldEventTime      = big.NewInt(1 << 1)
+	sequenceEnrollmentGetResponseNodeHistoryItemFieldEventType      = big.NewInt(1 << 2)
+	sequenceEnrollmentGetResponseNodeHistoryItemFieldNodeID         = big.NewInt(1 << 3)
+	sequenceEnrollmentGetResponseNodeHistoryItemFieldNodeLabel      = big.NewInt(1 << 4)
+	sequenceEnrollmentGetResponseNodeHistoryItemFieldNodeType       = big.NewInt(1 << 5)
+)
+
+type SequenceEnrollmentGetResponseNodeHistoryItem struct {
+	BranchDecision *SequenceEnrollmentBranchDecision `json:"branchDecision,omitempty" url:"branchDecision,omitempty"`
+	EventTime      *time.Time                        `json:"eventTime,omitempty" url:"eventTime,omitempty"`
+	EventType      *string                           `json:"eventType,omitempty" url:"eventType,omitempty"`
+	NodeID         *string                           `json:"nodeId,omitempty" url:"nodeId,omitempty"`
+	NodeLabel      *string                           `json:"nodeLabel,omitempty" url:"nodeLabel,omitempty"`
+	NodeType       *string                           `json:"nodeType,omitempty" url:"nodeType,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequenceEnrollmentGetResponseNodeHistoryItem) GetBranchDecision() *SequenceEnrollmentBranchDecision {
+	if s == nil {
+		return nil
+	}
+	return s.BranchDecision
+}
+
+func (s *SequenceEnrollmentGetResponseNodeHistoryItem) GetEventTime() *time.Time {
+	if s == nil {
+		return nil
+	}
+	return s.EventTime
+}
+
+func (s *SequenceEnrollmentGetResponseNodeHistoryItem) GetEventType() *string {
+	if s == nil {
+		return nil
+	}
+	return s.EventType
+}
+
+func (s *SequenceEnrollmentGetResponseNodeHistoryItem) GetNodeID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.NodeID
+}
+
+func (s *SequenceEnrollmentGetResponseNodeHistoryItem) GetNodeLabel() *string {
+	if s == nil {
+		return nil
+	}
+	return s.NodeLabel
+}
+
+func (s *SequenceEnrollmentGetResponseNodeHistoryItem) GetNodeType() *string {
+	if s == nil {
+		return nil
+	}
+	return s.NodeType
+}
+
+func (s *SequenceEnrollmentGetResponseNodeHistoryItem) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequenceEnrollmentGetResponseNodeHistoryItem) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetBranchDecision sets the BranchDecision field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponseNodeHistoryItem) SetBranchDecision(branchDecision *SequenceEnrollmentBranchDecision) {
+	s.BranchDecision = branchDecision
+	s.require(sequenceEnrollmentGetResponseNodeHistoryItemFieldBranchDecision)
+}
+
+// SetEventTime sets the EventTime field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponseNodeHistoryItem) SetEventTime(eventTime *time.Time) {
+	s.EventTime = eventTime
+	s.require(sequenceEnrollmentGetResponseNodeHistoryItemFieldEventTime)
+}
+
+// SetEventType sets the EventType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponseNodeHistoryItem) SetEventType(eventType *string) {
+	s.EventType = eventType
+	s.require(sequenceEnrollmentGetResponseNodeHistoryItemFieldEventType)
+}
+
+// SetNodeID sets the NodeID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponseNodeHistoryItem) SetNodeID(nodeID *string) {
+	s.NodeID = nodeID
+	s.require(sequenceEnrollmentGetResponseNodeHistoryItemFieldNodeID)
+}
+
+// SetNodeLabel sets the NodeLabel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponseNodeHistoryItem) SetNodeLabel(nodeLabel *string) {
+	s.NodeLabel = nodeLabel
+	s.require(sequenceEnrollmentGetResponseNodeHistoryItemFieldNodeLabel)
+}
+
+// SetNodeType sets the NodeType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponseNodeHistoryItem) SetNodeType(nodeType *string) {
+	s.NodeType = nodeType
+	s.require(sequenceEnrollmentGetResponseNodeHistoryItemFieldNodeType)
+}
+
+func (s *SequenceEnrollmentGetResponseNodeHistoryItem) UnmarshalJSON(data []byte) error {
+	type embed SequenceEnrollmentGetResponseNodeHistoryItem
+	var unmarshaler = struct {
+		embed
+		EventTime *internal.DateTime `json:"eventTime,omitempty"`
+	}{
+		embed: embed(*s),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*s = SequenceEnrollmentGetResponseNodeHistoryItem(unmarshaler.embed)
+	s.EventTime = unmarshaler.EventTime.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceEnrollmentGetResponseNodeHistoryItem) MarshalJSON() ([]byte, error) {
+	type embed SequenceEnrollmentGetResponseNodeHistoryItem
+	var marshaler = struct {
+		embed
+		EventTime *internal.DateTime `json:"eventTime,omitempty"`
+	}{
+		embed:     embed(*s),
+		EventTime: internal.NewOptionalDateTime(s.EventTime),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequenceEnrollmentGetResponseNodeHistoryItem) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
 var (
 	sequenceEnrollmentListResponseFieldEnrollments                      = big.NewInt(1 << 0)
 	sequenceEnrollmentListResponseFieldPagination                       = big.NewInt(1 << 1)
@@ -8913,32 +10936,42 @@ func (s *SequenceEnrollmentListResponse) String() string {
 }
 
 var (
-	sequenceEnrollmentListResponseEnrollmentsItemFieldCurrentNodeID            = big.NewInt(1 << 0)
-	sequenceEnrollmentListResponseEnrollmentsItemFieldCurrentNodeLabel         = big.NewInt(1 << 1)
-	sequenceEnrollmentListResponseEnrollmentsItemFieldCurrentNodeMissing       = big.NewInt(1 << 2)
-	sequenceEnrollmentListResponseEnrollmentsItemFieldCurrentNodeType          = big.NewInt(1 << 3)
-	sequenceEnrollmentListResponseEnrollmentsItemFieldEmail                    = big.NewInt(1 << 4)
-	sequenceEnrollmentListResponseEnrollmentsItemFieldEnrollmentID             = big.NewInt(1 << 5)
-	sequenceEnrollmentListResponseEnrollmentsItemFieldEnrollmentKey            = big.NewInt(1 << 6)
-	sequenceEnrollmentListResponseEnrollmentsItemFieldEnrollmentStartedAt      = big.NewInt(1 << 7)
-	sequenceEnrollmentListResponseEnrollmentsItemFieldEnteredVia               = big.NewInt(1 << 8)
-	sequenceEnrollmentListResponseEnrollmentsItemFieldFailedReason             = big.NewInt(1 << 9)
-	sequenceEnrollmentListResponseEnrollmentsItemFieldFirstName                = big.NewInt(1 << 10)
-	sequenceEnrollmentListResponseEnrollmentsItemFieldLastName                 = big.NewInt(1 << 11)
-	sequenceEnrollmentListResponseEnrollmentsItemFieldLastUpdatedAt            = big.NewInt(1 << 12)
-	sequenceEnrollmentListResponseEnrollmentsItemFieldMovedAt                  = big.NewInt(1 << 13)
-	sequenceEnrollmentListResponseEnrollmentsItemFieldMovedFromNodeID          = big.NewInt(1 << 14)
-	sequenceEnrollmentListResponseEnrollmentsItemFieldMoveReason               = big.NewInt(1 << 15)
-	sequenceEnrollmentListResponseEnrollmentsItemFieldSequenceID               = big.NewInt(1 << 16)
-	sequenceEnrollmentListResponseEnrollmentsItemFieldStatus                   = big.NewInt(1 << 17)
-	sequenceEnrollmentListResponseEnrollmentsItemFieldStopConditionMatches     = big.NewInt(1 << 18)
-	sequenceEnrollmentListResponseEnrollmentsItemFieldStopConditionMatchReason = big.NewInt(1 << 19)
-	sequenceEnrollmentListResponseEnrollmentsItemFieldSubscriberID             = big.NewInt(1 << 20)
-	sequenceEnrollmentListResponseEnrollmentsItemFieldSubscriberStatus         = big.NewInt(1 << 21)
-	sequenceEnrollmentListResponseEnrollmentsItemFieldWaitUntil                = big.NewInt(1 << 22)
+	sequenceEnrollmentListResponseEnrollmentsItemFieldBranchDecisionCount      = big.NewInt(1 << 0)
+	sequenceEnrollmentListResponseEnrollmentsItemFieldBranchDecisions          = big.NewInt(1 << 1)
+	sequenceEnrollmentListResponseEnrollmentsItemFieldBranchDecisionsTruncated = big.NewInt(1 << 2)
+	sequenceEnrollmentListResponseEnrollmentsItemFieldCurrentNodeID            = big.NewInt(1 << 3)
+	sequenceEnrollmentListResponseEnrollmentsItemFieldCurrentNodeLabel         = big.NewInt(1 << 4)
+	sequenceEnrollmentListResponseEnrollmentsItemFieldCurrentNodeMissing       = big.NewInt(1 << 5)
+	sequenceEnrollmentListResponseEnrollmentsItemFieldCurrentNodeType          = big.NewInt(1 << 6)
+	sequenceEnrollmentListResponseEnrollmentsItemFieldEmail                    = big.NewInt(1 << 7)
+	sequenceEnrollmentListResponseEnrollmentsItemFieldEnrollmentID             = big.NewInt(1 << 8)
+	sequenceEnrollmentListResponseEnrollmentsItemFieldEnrollmentKey            = big.NewInt(1 << 9)
+	sequenceEnrollmentListResponseEnrollmentsItemFieldEnrollmentStartedAt      = big.NewInt(1 << 10)
+	sequenceEnrollmentListResponseEnrollmentsItemFieldEnteredVia               = big.NewInt(1 << 11)
+	sequenceEnrollmentListResponseEnrollmentsItemFieldEntryContext             = big.NewInt(1 << 12)
+	sequenceEnrollmentListResponseEnrollmentsItemFieldFailedReason             = big.NewInt(1 << 13)
+	sequenceEnrollmentListResponseEnrollmentsItemFieldFirstName                = big.NewInt(1 << 14)
+	sequenceEnrollmentListResponseEnrollmentsItemFieldLastName                 = big.NewInt(1 << 15)
+	sequenceEnrollmentListResponseEnrollmentsItemFieldLastUpdatedAt            = big.NewInt(1 << 16)
+	sequenceEnrollmentListResponseEnrollmentsItemFieldMovedAt                  = big.NewInt(1 << 17)
+	sequenceEnrollmentListResponseEnrollmentsItemFieldMovedFromNodeID          = big.NewInt(1 << 18)
+	sequenceEnrollmentListResponseEnrollmentsItemFieldMoveReason               = big.NewInt(1 << 19)
+	sequenceEnrollmentListResponseEnrollmentsItemFieldSequenceID               = big.NewInt(1 << 20)
+	sequenceEnrollmentListResponseEnrollmentsItemFieldStatus                   = big.NewInt(1 << 21)
+	sequenceEnrollmentListResponseEnrollmentsItemFieldStopConditionMatches     = big.NewInt(1 << 22)
+	sequenceEnrollmentListResponseEnrollmentsItemFieldStopConditionMatchReason = big.NewInt(1 << 23)
+	sequenceEnrollmentListResponseEnrollmentsItemFieldSubscriberID             = big.NewInt(1 << 24)
+	sequenceEnrollmentListResponseEnrollmentsItemFieldSubscriberStatus         = big.NewInt(1 << 25)
+	sequenceEnrollmentListResponseEnrollmentsItemFieldWaitUntil                = big.NewInt(1 << 26)
 )
 
 type SequenceEnrollmentListResponseEnrollmentsItem struct {
+	// Total decisions taken, including decisions omitted from the bounded array.
+	BranchDecisionCount *int `json:"branchDecisionCount,omitempty" url:"branchDecisionCount,omitempty"`
+	// Bounded redacted if/else and random-split verdicts, oldest first within the retained window. Compared values are summaries (missing, empty, nonempty, equals_expected), never the raw field or event-property value. Empty on enrollments recorded before this field existed; use GET /sequences/{sequenceId}/enrollments/{enrollmentId} to reconstruct those from ClickHouse.
+	BranchDecisions []*SequenceEnrollmentBranchDecision `json:"branchDecisions,omitempty" url:"branchDecisions,omitempty"`
+	// Whether older decisions were omitted from branchDecisions.
+	BranchDecisionsTruncated *bool `json:"branchDecisionsTruncated,omitempty" url:"branchDecisionsTruncated,omitempty"`
 	// Sequence node this enrollment is currently sitting on.
 	CurrentNodeID *string `json:"currentNodeId,omitempty" url:"currentNodeId,omitempty"`
 	// Node label or email subject when available.
@@ -8953,7 +10986,8 @@ type SequenceEnrollmentListResponseEnrollmentsItem struct {
 	EnrollmentKey       *string    `json:"enrollmentKey,omitempty" url:"enrollmentKey,omitempty"`
 	EnrollmentStartedAt *time.Time `json:"enrollmentStartedAt,omitempty" url:"enrollmentStartedAt,omitempty"`
 	// What put this contact into the sequence. The distinguishing detail when a trigger covers several lists or tags.
-	EnteredVia *SequenceEnrollmentListResponseEnrollmentsItemEnteredVia `json:"enteredVia,omitempty" url:"enteredVia,omitempty"`
+	EnteredVia   *SequenceEnrollmentListResponseEnrollmentsItemEnteredVia `json:"enteredVia,omitempty" url:"enteredVia,omitempty"`
+	EntryContext *SequenceEnrollmentEntryContext                          `json:"entryContext,omitempty" url:"entryContext,omitempty"`
 	// Why this enrollment stopped, for status `failed`. Null for every other status and for failures recorded before this field existed. The same reason repeated across enrollments on one `currentNodeId` points at that step rather than at the contacts.
 	FailedReason *string `json:"failedReason,omitempty" url:"failedReason,omitempty"`
 	FirstName    *string `json:"firstName,omitempty" url:"firstName,omitempty"`
@@ -8982,6 +11016,27 @@ type SequenceEnrollmentListResponseEnrollmentsItem struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (s *SequenceEnrollmentListResponseEnrollmentsItem) GetBranchDecisionCount() *int {
+	if s == nil {
+		return nil
+	}
+	return s.BranchDecisionCount
+}
+
+func (s *SequenceEnrollmentListResponseEnrollmentsItem) GetBranchDecisions() []*SequenceEnrollmentBranchDecision {
+	if s == nil {
+		return nil
+	}
+	return s.BranchDecisions
+}
+
+func (s *SequenceEnrollmentListResponseEnrollmentsItem) GetBranchDecisionsTruncated() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.BranchDecisionsTruncated
 }
 
 func (s *SequenceEnrollmentListResponseEnrollmentsItem) GetCurrentNodeID() *string {
@@ -9045,6 +11100,13 @@ func (s *SequenceEnrollmentListResponseEnrollmentsItem) GetEnteredVia() *Sequenc
 		return nil
 	}
 	return s.EnteredVia
+}
+
+func (s *SequenceEnrollmentListResponseEnrollmentsItem) GetEntryContext() *SequenceEnrollmentEntryContext {
+	if s == nil {
+		return nil
+	}
+	return s.EntryContext
 }
 
 func (s *SequenceEnrollmentListResponseEnrollmentsItem) GetFailedReason() *string {
@@ -9159,6 +11221,27 @@ func (s *SequenceEnrollmentListResponseEnrollmentsItem) require(field *big.Int) 
 	s.explicitFields.Or(s.explicitFields, field)
 }
 
+// SetBranchDecisionCount sets the BranchDecisionCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentListResponseEnrollmentsItem) SetBranchDecisionCount(branchDecisionCount *int) {
+	s.BranchDecisionCount = branchDecisionCount
+	s.require(sequenceEnrollmentListResponseEnrollmentsItemFieldBranchDecisionCount)
+}
+
+// SetBranchDecisions sets the BranchDecisions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentListResponseEnrollmentsItem) SetBranchDecisions(branchDecisions []*SequenceEnrollmentBranchDecision) {
+	s.BranchDecisions = branchDecisions
+	s.require(sequenceEnrollmentListResponseEnrollmentsItemFieldBranchDecisions)
+}
+
+// SetBranchDecisionsTruncated sets the BranchDecisionsTruncated field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentListResponseEnrollmentsItem) SetBranchDecisionsTruncated(branchDecisionsTruncated *bool) {
+	s.BranchDecisionsTruncated = branchDecisionsTruncated
+	s.require(sequenceEnrollmentListResponseEnrollmentsItemFieldBranchDecisionsTruncated)
+}
+
 // SetCurrentNodeID sets the CurrentNodeID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *SequenceEnrollmentListResponseEnrollmentsItem) SetCurrentNodeID(currentNodeID *string) {
@@ -9220,6 +11303,13 @@ func (s *SequenceEnrollmentListResponseEnrollmentsItem) SetEnrollmentStartedAt(e
 func (s *SequenceEnrollmentListResponseEnrollmentsItem) SetEnteredVia(enteredVia *SequenceEnrollmentListResponseEnrollmentsItemEnteredVia) {
 	s.EnteredVia = enteredVia
 	s.require(sequenceEnrollmentListResponseEnrollmentsItemFieldEnteredVia)
+}
+
+// SetEntryContext sets the EntryContext field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentListResponseEnrollmentsItem) SetEntryContext(entryContext *SequenceEnrollmentEntryContext) {
+	s.EntryContext = entryContext
+	s.require(sequenceEnrollmentListResponseEnrollmentsItemFieldEntryContext)
 }
 
 // SetFailedReason sets the FailedReason field and marks it as non-optional;

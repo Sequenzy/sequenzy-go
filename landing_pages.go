@@ -333,6 +333,72 @@ func (g *GetDedicatedDomainLandingPagesRequest) SetLandingPageID(landingPageID s
 }
 
 var (
+	getStatsLandingPagesRequestFieldLandingPageID = big.NewInt(1 << 0)
+	getStatsLandingPagesRequestFieldEnd           = big.NewInt(1 << 1)
+	getStatsLandingPagesRequestFieldIncludeBots   = big.NewInt(1 << 2)
+	getStatsLandingPagesRequestFieldPeriod        = big.NewInt(1 << 3)
+	getStatsLandingPagesRequestFieldStart         = big.NewInt(1 << 4)
+)
+
+type GetStatsLandingPagesRequest struct {
+	// Landing page ID
+	LandingPageID string `json:"-" url:"-"`
+	// Custom range end as an ISO 8601 timestamp
+	End *string `json:"-" url:"end,omitempty"`
+	// Include known crawlers in visit totals
+	IncludeBots *bool `json:"-" url:"includeBots,omitempty"`
+	// Time window. One of 7d, 30d, 90d, or all.
+	Period *GetStatsLandingPagesRequestPeriod `json:"-" url:"period,omitempty"`
+	// Custom range start as an ISO 8601 timestamp
+	Start *string `json:"-" url:"start,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (g *GetStatsLandingPagesRequest) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetLandingPageID sets the LandingPageID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetStatsLandingPagesRequest) SetLandingPageID(landingPageID string) {
+	g.LandingPageID = landingPageID
+	g.require(getStatsLandingPagesRequestFieldLandingPageID)
+}
+
+// SetEnd sets the End field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetStatsLandingPagesRequest) SetEnd(end *string) {
+	g.End = end
+	g.require(getStatsLandingPagesRequestFieldEnd)
+}
+
+// SetIncludeBots sets the IncludeBots field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetStatsLandingPagesRequest) SetIncludeBots(includeBots *bool) {
+	g.IncludeBots = includeBots
+	g.require(getStatsLandingPagesRequestFieldIncludeBots)
+}
+
+// SetPeriod sets the Period field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetStatsLandingPagesRequest) SetPeriod(period *GetStatsLandingPagesRequestPeriod) {
+	g.Period = period
+	g.require(getStatsLandingPagesRequestFieldPeriod)
+}
+
+// SetStart sets the Start field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetStatsLandingPagesRequest) SetStart(start *string) {
+	g.Start = start
+	g.require(getStatsLandingPagesRequestFieldStart)
+}
+
+var (
 	publishLandingPagesRequestFieldLandingPageID = big.NewInt(1 << 0)
 	publishLandingPagesRequestFieldContent       = big.NewInt(1 << 1)
 	publishLandingPagesRequestFieldName          = big.NewInt(1 << 2)
@@ -2633,6 +2699,134 @@ func (g *GetLandingPagesResponse) MarshalJSON() ([]byte, error) {
 }
 
 func (g *GetLandingPagesResponse) String() string {
+	if g == nil {
+		return "<nil>"
+	}
+	if len(g.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(g.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(g); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", g)
+}
+
+type GetStatsLandingPagesRequestPeriod string
+
+const (
+	GetStatsLandingPagesRequestPeriodSevenD  GetStatsLandingPagesRequestPeriod = "7d"
+	GetStatsLandingPagesRequestPeriodThirtyD GetStatsLandingPagesRequestPeriod = "30d"
+	GetStatsLandingPagesRequestPeriodNinetyD GetStatsLandingPagesRequestPeriod = "90d"
+	GetStatsLandingPagesRequestPeriodAll     GetStatsLandingPagesRequestPeriod = "all"
+)
+
+func NewGetStatsLandingPagesRequestPeriodFromString(s string) (GetStatsLandingPagesRequestPeriod, error) {
+	switch s {
+	case "7d":
+		return GetStatsLandingPagesRequestPeriodSevenD, nil
+	case "30d":
+		return GetStatsLandingPagesRequestPeriodThirtyD, nil
+	case "90d":
+		return GetStatsLandingPagesRequestPeriodNinetyD, nil
+	case "all":
+		return GetStatsLandingPagesRequestPeriodAll, nil
+	}
+	var t GetStatsLandingPagesRequestPeriod
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (g GetStatsLandingPagesRequestPeriod) Ptr() *GetStatsLandingPagesRequestPeriod {
+	return &g
+}
+
+var (
+	getStatsLandingPagesResponseFieldStats   = big.NewInt(1 << 0)
+	getStatsLandingPagesResponseFieldSuccess = big.NewInt(1 << 1)
+)
+
+type GetStatsLandingPagesResponse struct {
+	Stats   map[string]any `json:"stats,omitempty" url:"stats,omitempty"`
+	Success *bool          `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (g *GetStatsLandingPagesResponse) GetStats() map[string]any {
+	if g == nil {
+		return nil
+	}
+	return g.Stats
+}
+
+func (g *GetStatsLandingPagesResponse) GetSuccess() *bool {
+	if g == nil {
+		return nil
+	}
+	return g.Success
+}
+
+func (g *GetStatsLandingPagesResponse) GetExtraProperties() map[string]interface{} {
+	if g == nil {
+		return nil
+	}
+	return g.extraProperties
+}
+
+func (g *GetStatsLandingPagesResponse) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetStats sets the Stats field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetStatsLandingPagesResponse) SetStats(stats map[string]any) {
+	g.Stats = stats
+	g.require(getStatsLandingPagesResponseFieldStats)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetStatsLandingPagesResponse) SetSuccess(success *bool) {
+	g.Success = success
+	g.require(getStatsLandingPagesResponseFieldSuccess)
+}
+
+func (g *GetStatsLandingPagesResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler GetStatsLandingPagesResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*g = GetStatsLandingPagesResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *g)
+	if err != nil {
+		return err
+	}
+	g.extraProperties = extraProperties
+	g.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (g *GetStatsLandingPagesResponse) MarshalJSON() ([]byte, error) {
+	type embed GetStatsLandingPagesResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*g),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (g *GetStatsLandingPagesResponse) String() string {
 	if g == nil {
 		return "<nil>"
 	}

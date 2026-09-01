@@ -3398,7 +3398,7 @@ client.Campaigns.Create(
 <dl>
 <dd>
 
-**style:** `*string` — Generation style; valid only with prompt.
+**style:** `*string` — Generation style; valid only with prompt. Pass designed or plain to force the designed or plain-text email style; other values are freeform prompt guidance. Defaults to the company's email style preference.
     
 </dd>
 </dl>
@@ -7433,7 +7433,7 @@ client.Generation.GenerateEmail(
 <dl>
 <dd>
 
-**style:** `*string` — Optional style guidance.
+**style:** `*string` — Optional style guidance. Pass "designed" or "plain" to force the designed or plain-text email style; other values (such as "minimal", "branded", or "promotional") are freeform prompt guidance. Defaults to the company's email style preference (designed unless the company chose plain text).
     
 </dd>
 </dl>
@@ -7662,7 +7662,7 @@ client.Integrations.ActivatePixel(
 <dl>
 <dd>
 
-Connects an API-key / webhook-secret integration: polar, paddle, dodo, whop, creem, chargebee, clerk, posthog, segment, or affonso. Credentials are validated against the provider where possible, stored encrypted, and never returned. Payment providers queue their initial revenue backfill; Affonso queues its affiliate backfill; PostHog and Segment can optionally import event history. The response includes the webhookUrl to configure at the provider with the same secret. Reconnecting replaces stored credentials. OAuth and app-install providers (Stripe, Shopify, Supabase, GitHub, WooCommerce, Meta) return a 400 pointing at the dashboard. Requires the integrations:manage scope.
+Connects an API-key / webhook-secret integration: polar, paddle, dodo, whop, creem, chargebee, clerk, posthog, segment, affonso, or attio. Credentials are validated against the provider where possible, stored encrypted, and never returned. Payment providers queue their initial revenue backfill; Affonso queues its affiliate backfill; PostHog and Segment can optionally import event history. Attio is outbound-only and returns an empty webhookUrl. Other providers include the webhookUrl to configure at the provider with the same secret. Reconnecting replaces stored credentials. OAuth and app-install providers (Stripe, Shopify, Supabase, GitHub, WooCommerce, Meta) return a 400 pointing at the dashboard. Requires the integrations:manage scope.
 </dd>
 </dl>
 </dd>
@@ -7679,7 +7679,6 @@ Connects an API-key / webhook-secret integration: polar, paddle, dodo, whop, cre
 ```go
 request := &sequenzygo.ConnectIntegrationsRequest{
     Provider: sequenzygo.ConnectIntegrationsRequestProviderPolar,
-    WebhookSecret: "webhookSecret",
 }
 client.Integrations.Connect(
     context.TODO(),
@@ -7699,7 +7698,7 @@ client.Integrations.Connect(
 <dl>
 <dd>
 
-**apiKey:** `*string` — Provider API key. Required for every provider except clerk, posthog, and segment.
+**apiKey:** `*string` — Provider API key. Required for polar, paddle, dodo, whop, creem, chargebee, affonso, and attio. Attio uses the workspace access token.
     
 </dd>
 </dl>
@@ -7731,7 +7730,7 @@ client.Integrations.Connect(
 <dl>
 <dd>
 
-**settings:** `*sequenzygo.ConnectIntegrationsRequestSettings` — PostHog and Segment only. Event delivery scope. PostHog defaults to every non-internal event; new Segment connections skip automatic page/screen calls unless explicitly allowlisted.
+**settings:** `*sequenzygo.ConnectIntegrationsRequestSettings` — PostHog and Segment: event delivery scope. Attio: listMap (Sequenzy list id to Attio list id or slug) and syncCompanyFromDomain.
     
 </dd>
 </dl>
@@ -7739,7 +7738,7 @@ client.Integrations.Connect(
 <dl>
 <dd>
 
-**webhookSecret:** `string` — Signing secret of the webhook created at the provider. For Chargebee, the webhook's basic-auth credentials as username:password. For Segment, the secret is your own choice and must be between 16 and 153 UTF-8 bytes.
+**webhookSecret:** `*string` — Signing secret of the webhook created at the provider. Required except for attio, which is outbound-only. For Chargebee, the webhook's basic-auth credentials as username:password. For Segment, the secret is your own choice and must be between 16 and 153 UTF-8 bytes.
     
 </dd>
 </dl>
@@ -7800,6 +7799,66 @@ client.Integrations.Get(
 <dd>
 
 **id:** `string` — Integration ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Integrations.GetAttioMapping(ID) -> *sequenzygo.IntegrationAttioMapping</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Reads a connected Attio integration's saved Sequenzy-to-Attio list map, this company's Sequenzy lists, and live Attio people-lists using the stored access token. Call this before updating mappings so you have Attio list ids or slugs. Attio only. Requires the account:read and lists:read scopes.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.GetAttioMappingRequest{
+    ID: "id",
+}
+client.Integrations.GetAttioMapping(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Attio integration ID.
     
 </dd>
 </dl>
@@ -8057,7 +8116,7 @@ client.Integrations.ListCapabilities(
 <dl>
 <dd>
 
-**category:** `*string` — Filter by category: payments, ecommerce, auth, analytics, ads, affiliate, cms, or developer.
+**category:** `*string` — Filter by category: payments, ecommerce, auth, analytics, ads, affiliate, cms, crm, or developer.
     
 </dd>
 </dl>
@@ -8126,6 +8185,82 @@ client.Integrations.Sync(
 <dd>
 
 **id:** `string` — Integration ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Integrations.UpdateAttioSettings(ID, request) -> *sequenzygo.IntegrationAttioMapping</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Saves Sequenzy-to-Attio list mappings and/or company-matching on an already-connected Attio integration using the stored access token. Does not require the secret again. listMap is a full replacement when provided; an empty object clears every mapping. Provide at least one of listMap or syncCompanyFromDomain. Idempotent. Attio only. Requires the integrations:manage scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.UpdateAttioSettingsRequest{
+    ID: "id",
+}
+client.Integrations.UpdateAttioSettings(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Attio integration ID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**listMap:** `map[string]string` — Complete Sequenzy list id to Attio list UUID or api slug map. Replaces the saved map. Pass {} to clear every mapping.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**syncCompanyFromDomain:** `*bool` — When true, upsert a company from the person's non-free-mail email domain.
     
 </dd>
 </dl>
@@ -8720,6 +8855,98 @@ client.LandingPages.GetDomain(
     context.TODO(),
 )
 ```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.LandingPages.GetStats(LandingPageID) -> *sequenzygo.GetStatsLandingPagesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns visits, unique visits, clicks, subscribes, conversion rate, a daily histogram, referrers, UTM sources, and crawler hits. Default totals exclude known crawlers. Preview URLs and the editor never count. The all period covers retained analytics only; dataAvailableFrom marks the beginning of available event coverage.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.GetStatsLandingPagesRequest{
+    LandingPageID: "landingPageId",
+}
+client.LandingPages.GetStats(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**landingPageID:** `string` — Landing page ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**end:** `*string` — Custom range end as an ISO 8601 timestamp
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**includeBots:** `*bool` — Include known crawlers in visit totals
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**period:** `*sequenzygo.GetStatsLandingPagesRequestPeriod` — Time window. One of 7d, 30d, 90d, or all.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**start:** `*string` — Custom range start as an ISO 8601 timestamp
+    
 </dd>
 </dl>
 </dd>
@@ -13261,6 +13488,75 @@ client.Sequences.Get(
 </dl>
 </details>
 
+<details><summary><code>client.Sequences.GetEnrollment(SequenceID, EnrollmentID) -> *sequenzygo.SequenceEnrollmentGetResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Reads one enrollment token, including how it entered, which branches it already took, and the bounded recorded graph walk from ClickHouse. Use this when list enrollments shows a completed token with enteredVia unknown or sitting on the completion node and you need to know why the first branch took its else path. Compared values are summaries (missing, empty, nonempty, equals_expected), never the raw field or event-property value. Legacy node-completion metadata that stored an unredacted evaluation reason is redacted on read. Check nodeHistoryTruncated and branchDecisionsTruncated before treating either history as complete.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.GetEnrollmentSequencesRequest{
+    SequenceID: "sequenceId",
+    EnrollmentID: "enrollmentId",
+}
+client.Sequences.GetEnrollment(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**sequenceID:** `string` — Sequence ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**enrollmentID:** `string` — Enrollment token ID from list sequence enrollments (enrollmentId).
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Sequences.GetEnrollmentRealignment(SequenceID, JobID) -> *sequenzygo.SequenceEnrollmentRealignJobResponse</code></summary>
 <dl>
 <dd>
@@ -15139,7 +15435,7 @@ client.Sms.GetSettings(
 <dl>
 <dd>
 
-Sends a real test text message. Test sends charge credits, bypass quiet hours, are excluded from step stats, and are limited to 5 per company per hour. Requires the SMS add-on with a verified number.
+Sends a real test text message. Test sends charge credits, bypass quiet hours, are excluded from step stats, and are limited to 100 per company in a rolling 24-hour window. Requires the SMS add-on with a verified number.
 </dd>
 </dl>
 </dd>
@@ -18663,7 +18959,7 @@ client.Templates.Create(
 <dl>
 <dd>
 
-**style:** `*string` — Generation style; valid only with prompt.
+**style:** `*string` — Generation style; valid only with prompt. Pass designed or plain to force the designed or plain-text email style; other values are freeform prompt guidance. Defaults to the company's email style preference.
     
 </dd>
 </dl>
@@ -19621,7 +19917,7 @@ client.Transactional.Create(
 <dl>
 <dd>
 
-**style:** `*string` — Generation style; valid only with prompt.
+**style:** `*string` — Generation style; valid only with prompt. Pass designed or plain to force the designed or plain-text email style; other values are freeform prompt guidance. Defaults to the company's email style preference.
     
 </dd>
 </dl>

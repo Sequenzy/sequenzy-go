@@ -24,7 +24,7 @@ type GenerateEmailRequest struct {
 	EmailType *GenerateEmailRequestEmailType `json:"emailType,omitempty" url:"-"`
 	// What you want the email to say or accomplish.
 	Prompt string `json:"prompt" url:"-"`
-	// Optional style guidance.
+	// Optional style guidance. Pass "designed" or "plain" to force the designed or plain-text email style; other values (such as "minimal", "branded", or "promotional") are freeform prompt guidance. Defaults to the company's email style preference (designed unless the company chose plain text).
 	Style *string `json:"style,omitempty" url:"-"`
 	// Optional tone guidance.
 	Tone *string `json:"tone,omitempty" url:"-"`

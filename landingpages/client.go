@@ -251,6 +251,33 @@ func (c *Client) GetDomain(
 	return response.Body, nil
 }
 
+// Returns visits, unique visits, clicks, subscribes, conversion rate, a daily histogram, referrers, UTM sources, and crawler hits. Default totals exclude known crawlers. Preview URLs and the editor never count. The all period covers retained analytics only; dataAvailableFrom marks the beginning of available event coverage.
+//
+// Example:
+//
+//	request := &sequenzygo.GetStatsLandingPagesRequest{
+//	    LandingPageID: "landingPageId",
+//	}
+//	client.LandingPages.GetStats(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) GetStats(
+	ctx context.Context,
+	request *sequenzygo.GetStatsLandingPagesRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.GetStatsLandingPagesResponse, error) {
+	response, err := c.WithRawResponse.GetStats(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Lists landing pages for the authenticated company.
 //
 // Example:

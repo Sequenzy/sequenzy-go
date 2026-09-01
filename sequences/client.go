@@ -395,6 +395,34 @@ func (c *Client) Get(
 	return response.Body, nil
 }
 
+// Reads one enrollment token, including how it entered, which branches it already took, and the bounded recorded graph walk from ClickHouse. Use this when list enrollments shows a completed token with enteredVia unknown or sitting on the completion node and you need to know why the first branch took its else path. Compared values are summaries (missing, empty, nonempty, equals_expected), never the raw field or event-property value. Legacy node-completion metadata that stored an unredacted evaluation reason is redacted on read. Check nodeHistoryTruncated and branchDecisionsTruncated before treating either history as complete.
+//
+// Example:
+//
+//	request := &sequenzygo.GetEnrollmentSequencesRequest{
+//	    SequenceID: "sequenceId",
+//	    EnrollmentID: "enrollmentId",
+//	}
+//	client.Sequences.GetEnrollment(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) GetEnrollment(
+	ctx context.Context,
+	request *sequenzygo.GetEnrollmentSequencesRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.SequenceEnrollmentGetResponse, error) {
+	response, err := c.WithRawResponse.GetEnrollment(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Returns the state of an applied realignment job. When status is completed, result contains the bounded realignment result and any continuation cursor.
 //
 // Example:

@@ -425,6 +425,33 @@ func TestSequencesGetWithWireMock(
 	VerifyRequestCount(t, "TestSequencesGetWithWireMock", "GET", "/sequences/sequenceId", nil, 1)
 }
 
+func TestSequencesGetEnrollmentWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.GetEnrollmentSequencesRequest{
+		SequenceID:   "sequenceId",
+		EnrollmentID: "enrollmentId",
+	}
+	_, invocationErr := client.Sequences.GetEnrollment(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestSequencesGetEnrollmentWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestSequencesGetEnrollmentWithWireMock", "GET", "/sequences/sequenceId/enrollments/enrollmentId", nil, 1)
+}
+
 func TestSequencesGetEnrollmentRealignmentWithWireMock(
 	t *testing.T,
 ) {

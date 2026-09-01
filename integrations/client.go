@@ -61,13 +61,12 @@ func (c *Client) ActivatePixel(
 	return response.Body, nil
 }
 
-// Connects an API-key / webhook-secret integration: polar, paddle, dodo, whop, creem, chargebee, clerk, posthog, segment, or affonso. Credentials are validated against the provider where possible, stored encrypted, and never returned. Payment providers queue their initial revenue backfill; Affonso queues its affiliate backfill; PostHog and Segment can optionally import event history. The response includes the webhookUrl to configure at the provider with the same secret. Reconnecting replaces stored credentials. OAuth and app-install providers (Stripe, Shopify, Supabase, GitHub, WooCommerce, Meta) return a 400 pointing at the dashboard. Requires the integrations:manage scope.
+// Connects an API-key / webhook-secret integration: polar, paddle, dodo, whop, creem, chargebee, clerk, posthog, segment, affonso, or attio. Credentials are validated against the provider where possible, stored encrypted, and never returned. Payment providers queue their initial revenue backfill; Affonso queues its affiliate backfill; PostHog and Segment can optionally import event history. Attio is outbound-only and returns an empty webhookUrl. Other providers include the webhookUrl to configure at the provider with the same secret. Reconnecting replaces stored credentials. OAuth and app-install providers (Stripe, Shopify, Supabase, GitHub, WooCommerce, Meta) return a 400 pointing at the dashboard. Requires the integrations:manage scope.
 //
 // Example:
 //
 //	request := &sequenzygo.ConnectIntegrationsRequest{
 //	    Provider: sequenzygo.ConnectIntegrationsRequestProviderPolar,
-//	    WebhookSecret: "webhookSecret",
 //	}
 //	client.Integrations.Connect(
 //	    context.TODO(),
@@ -106,6 +105,33 @@ func (c *Client) Get(
 	opts ...option.RequestOption,
 ) (*sequenzygo.IntegrationDetail, error) {
 	response, err := c.WithRawResponse.Get(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Reads a connected Attio integration's saved Sequenzy-to-Attio list map, this company's Sequenzy lists, and live Attio people-lists using the stored access token. Call this before updating mappings so you have Attio list ids or slugs. Attio only. Requires the account:read and lists:read scopes.
+//
+// Example:
+//
+//	request := &sequenzygo.GetAttioMappingRequest{
+//	    ID: "id",
+//	}
+//	client.Integrations.GetAttioMapping(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) GetAttioMapping(
+	ctx context.Context,
+	request *sequenzygo.GetAttioMappingRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.IntegrationAttioMapping, error) {
+	response, err := c.WithRawResponse.GetAttioMapping(
 		ctx,
 		request,
 		opts...,
@@ -235,6 +261,33 @@ func (c *Client) Sync(
 	opts ...option.RequestOption,
 ) (*sequenzygo.SyncIntegrationsResponse, error) {
 	response, err := c.WithRawResponse.Sync(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Saves Sequenzy-to-Attio list mappings and/or company-matching on an already-connected Attio integration using the stored access token. Does not require the secret again. listMap is a full replacement when provided; an empty object clears every mapping. Provide at least one of listMap or syncCompanyFromDomain. Idempotent. Attio only. Requires the integrations:manage scope.
+//
+// Example:
+//
+//	request := &sequenzygo.UpdateAttioSettingsRequest{
+//	    ID: "id",
+//	}
+//	client.Integrations.UpdateAttioSettings(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) UpdateAttioSettings(
+	ctx context.Context,
+	request *sequenzygo.UpdateAttioSettingsRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.IntegrationAttioMapping, error) {
+	response, err := c.WithRawResponse.UpdateAttioSettings(
 		ctx,
 		request,
 		opts...,

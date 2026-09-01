@@ -115,8 +115,7 @@ func TestIntegrationsConnectWithWireMock(
 		option.WithAPIKey("test-token"),
 	)
 	request := &sequenzygo.ConnectIntegrationsRequest{
-		Provider:      sequenzygo.ConnectIntegrationsRequestProviderPolar,
-		WebhookSecret: "webhookSecret",
+		Provider: sequenzygo.ConnectIntegrationsRequestProviderPolar,
 	}
 	_, invocationErr := client.Integrations.Connect(
 		context.TODO(),
@@ -154,6 +153,32 @@ func TestIntegrationsGetWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestIntegrationsGetWithWireMock", "GET", "/integrations/id", nil, 1)
+}
+
+func TestIntegrationsGetAttioMappingWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.GetAttioMappingRequest{
+		ID: "id",
+	}
+	_, invocationErr := client.Integrations.GetAttioMapping(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestIntegrationsGetAttioMappingWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestIntegrationsGetAttioMappingWithWireMock", "GET", "/integrations/id/attio", nil, 1)
 }
 
 func TestIntegrationsGetPixelWithWireMock(
@@ -278,6 +303,32 @@ func TestIntegrationsSyncWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestIntegrationsSyncWithWireMock", "POST", "/integrations/id/sync", nil, 1)
+}
+
+func TestIntegrationsUpdateAttioSettingsWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.UpdateAttioSettingsRequest{
+		ID: "id",
+	}
+	_, invocationErr := client.Integrations.UpdateAttioSettings(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestIntegrationsUpdateAttioSettingsWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestIntegrationsUpdateAttioSettingsWithWireMock", "PATCH", "/integrations/id/attio", nil, 1)
 }
 
 func TestIntegrationsUpdateSyncWithWireMock(

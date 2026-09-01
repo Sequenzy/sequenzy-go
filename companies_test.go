@@ -236,6 +236,14 @@ func TestSettersCompany(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetEmailBranding", func(t *testing.T) {
+		obj := &Company{}
+		var fernTestValueEmailBranding *CompanyEmailBranding
+		obj.SetEmailBranding(fernTestValueEmailBranding)
+		assert.Equal(t, fernTestValueEmailBranding, obj.EmailBranding)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetEmailDesignPrompt", func(t *testing.T) {
 		obj := &Company{}
 		var fernTestValueEmailDesignPrompt *string
@@ -849,6 +857,39 @@ func TestGettersCompany(t *testing.T) {
 			}
 		}()
 		_ = obj.GetDescription() // Should return zero value
+	})
+
+	t.Run("GetEmailBranding", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Company{}
+		var expected *CompanyEmailBranding
+		obj.EmailBranding = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetEmailBranding(), "getter should return the property value")
+	})
+
+	t.Run("GetEmailBranding_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Company{}
+		obj.EmailBranding = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetEmailBranding(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetEmailBranding_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Company
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetEmailBranding() // Should return zero value
 	})
 
 	t.Run("GetEmailDesignPrompt", func(t *testing.T) {
@@ -2117,6 +2158,37 @@ func TestSettersMarkExplicitCompany(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetEmailBranding_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Company{}
+		var fernTestValueEmailBranding *CompanyEmailBranding
+
+		// Act
+		obj.SetEmailBranding(fernTestValueEmailBranding)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetEmailDesignPrompt_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -2931,6 +3003,531 @@ func TestSettersMarkExplicitCompany(t *testing.T) {
 
 		// Act
 		obj.SetWebsiteURL(fernTestValueWebsiteURL)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersCompanyEmailBranding(t *testing.T) {
+	t.Run("SetManagedBy", func(t *testing.T) {
+		obj := &CompanyEmailBranding{}
+		var fernTestValueManagedBy CompanyEmailBrandingManagedBy
+		obj.SetManagedBy(fernTestValueManagedBy)
+		assert.Equal(t, fernTestValueManagedBy, obj.ManagedBy)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetReason", func(t *testing.T) {
+		obj := &CompanyEmailBranding{}
+		var fernTestValueReason CompanyEmailBrandingReason
+		obj.SetReason(fernTestValueReason)
+		assert.Equal(t, fernTestValueReason, obj.Reason)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetRemovalAction", func(t *testing.T) {
+		obj := &CompanyEmailBranding{}
+		var fernTestValueRemovalAction CompanyEmailBrandingRemovalAction
+		obj.SetRemovalAction(fernTestValueRemovalAction)
+		assert.Equal(t, fernTestValueRemovalAction, obj.RemovalAction)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetRemovalEntitled", func(t *testing.T) {
+		obj := &CompanyEmailBranding{}
+		var fernTestValueRemovalEntitled bool
+		obj.SetRemovalEntitled(fernTestValueRemovalEntitled)
+		assert.Equal(t, fernTestValueRemovalEntitled, obj.RemovalEntitled)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetSubscriptionStatus", func(t *testing.T) {
+		obj := &CompanyEmailBranding{}
+		var fernTestValueSubscriptionStatus *CompanyEmailBrandingSubscriptionStatus
+		obj.SetSubscriptionStatus(fernTestValueSubscriptionStatus)
+		assert.Equal(t, fernTestValueSubscriptionStatus, obj.SubscriptionStatus)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetSubscriptionTier", func(t *testing.T) {
+		obj := &CompanyEmailBranding{}
+		var fernTestValueSubscriptionTier *CompanyEmailBrandingSubscriptionTier
+		obj.SetSubscriptionTier(fernTestValueSubscriptionTier)
+		assert.Equal(t, fernTestValueSubscriptionTier, obj.SubscriptionTier)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetSubscriptionURL", func(t *testing.T) {
+		obj := &CompanyEmailBranding{}
+		var fernTestValueSubscriptionURL string
+		obj.SetSubscriptionURL(fernTestValueSubscriptionURL)
+		assert.Equal(t, fernTestValueSubscriptionURL, obj.SubscriptionURL)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetVisible", func(t *testing.T) {
+		obj := &CompanyEmailBranding{}
+		var fernTestValueVisible bool
+		obj.SetVisible(fernTestValueVisible)
+		assert.Equal(t, fernTestValueVisible, obj.Visible)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersCompanyEmailBranding(t *testing.T) {
+	t.Run("GetManagedBy", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CompanyEmailBranding{}
+		var expected CompanyEmailBrandingManagedBy
+		obj.ManagedBy = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetManagedBy(), "getter should return the property value")
+	})
+
+	t.Run("GetManagedBy_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CompanyEmailBranding
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetManagedBy() // Should return zero value
+	})
+
+	t.Run("GetReason", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CompanyEmailBranding{}
+		var expected CompanyEmailBrandingReason
+		obj.Reason = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetReason(), "getter should return the property value")
+	})
+
+	t.Run("GetReason_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CompanyEmailBranding
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetReason() // Should return zero value
+	})
+
+	t.Run("GetRemovalAction", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CompanyEmailBranding{}
+		var expected CompanyEmailBrandingRemovalAction
+		obj.RemovalAction = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetRemovalAction(), "getter should return the property value")
+	})
+
+	t.Run("GetRemovalAction_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CompanyEmailBranding
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetRemovalAction() // Should return zero value
+	})
+
+	t.Run("GetRemovalEntitled", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CompanyEmailBranding{}
+		var expected bool
+		obj.RemovalEntitled = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetRemovalEntitled(), "getter should return the property value")
+	})
+
+	t.Run("GetRemovalEntitled_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CompanyEmailBranding
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetRemovalEntitled() // Should return zero value
+	})
+
+	t.Run("GetSubscriptionStatus", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CompanyEmailBranding{}
+		var expected *CompanyEmailBrandingSubscriptionStatus
+		obj.SubscriptionStatus = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSubscriptionStatus(), "getter should return the property value")
+	})
+
+	t.Run("GetSubscriptionStatus_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CompanyEmailBranding{}
+		obj.SubscriptionStatus = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSubscriptionStatus(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSubscriptionStatus_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CompanyEmailBranding
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSubscriptionStatus() // Should return zero value
+	})
+
+	t.Run("GetSubscriptionTier", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CompanyEmailBranding{}
+		var expected *CompanyEmailBrandingSubscriptionTier
+		obj.SubscriptionTier = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSubscriptionTier(), "getter should return the property value")
+	})
+
+	t.Run("GetSubscriptionTier_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CompanyEmailBranding{}
+		obj.SubscriptionTier = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSubscriptionTier(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSubscriptionTier_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CompanyEmailBranding
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSubscriptionTier() // Should return zero value
+	})
+
+	t.Run("GetSubscriptionURL", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CompanyEmailBranding{}
+		var expected string
+		obj.SubscriptionURL = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSubscriptionURL(), "getter should return the property value")
+	})
+
+	t.Run("GetSubscriptionURL_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CompanyEmailBranding
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSubscriptionURL() // Should return zero value
+	})
+
+	t.Run("GetVisible", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CompanyEmailBranding{}
+		var expected bool
+		obj.Visible = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetVisible(), "getter should return the property value")
+	})
+
+	t.Run("GetVisible_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CompanyEmailBranding
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetVisible() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitCompanyEmailBranding(t *testing.T) {
+	t.Run("SetManagedBy_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CompanyEmailBranding{}
+		var fernTestValueManagedBy CompanyEmailBrandingManagedBy
+
+		// Act
+		obj.SetManagedBy(fernTestValueManagedBy)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetReason_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CompanyEmailBranding{}
+		var fernTestValueReason CompanyEmailBrandingReason
+
+		// Act
+		obj.SetReason(fernTestValueReason)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetRemovalAction_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CompanyEmailBranding{}
+		var fernTestValueRemovalAction CompanyEmailBrandingRemovalAction
+
+		// Act
+		obj.SetRemovalAction(fernTestValueRemovalAction)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetRemovalEntitled_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CompanyEmailBranding{}
+		var fernTestValueRemovalEntitled bool
+
+		// Act
+		obj.SetRemovalEntitled(fernTestValueRemovalEntitled)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSubscriptionStatus_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CompanyEmailBranding{}
+		var fernTestValueSubscriptionStatus *CompanyEmailBrandingSubscriptionStatus
+
+		// Act
+		obj.SetSubscriptionStatus(fernTestValueSubscriptionStatus)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSubscriptionTier_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CompanyEmailBranding{}
+		var fernTestValueSubscriptionTier *CompanyEmailBrandingSubscriptionTier
+
+		// Act
+		obj.SetSubscriptionTier(fernTestValueSubscriptionTier)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSubscriptionURL_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CompanyEmailBranding{}
+		var fernTestValueSubscriptionURL string
+
+		// Act
+		obj.SetSubscriptionURL(fernTestValueSubscriptionURL)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetVisible_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CompanyEmailBranding{}
+		var fernTestValueVisible bool
+
+		// Act
+		obj.SetVisible(fernTestValueVisible)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -7852,6 +8449,39 @@ func TestJSONMarshalingCompany(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingCompanyEmailBranding(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CompanyEmailBranding{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled CompanyEmailBranding
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj CompanyEmailBranding
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj CompanyEmailBranding
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingCreateCompaniesResponse(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -8165,6 +8795,22 @@ func TestStringCompany(t *testing.T) {
 	})
 }
 
+func TestStringCompanyEmailBranding(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &CompanyEmailBranding{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CompanyEmailBranding
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
 func TestStringCreateCompaniesResponse(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
@@ -8306,6 +8952,277 @@ func TestStringUpdateCompaniesResponse(t *testing.T) {
 		var obj *UpdateCompaniesResponse
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestEnumCompanyEmailBrandingManagedBy(t *testing.T) {
+	t.Run("NewFromString_owner_subscription", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyEmailBrandingManagedByFromString("owner_subscription")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyEmailBrandingManagedBy("owner_subscription"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewCompanyEmailBrandingManagedByFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewCompanyEmailBrandingManagedByFromString("owner_subscription")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumCompanyEmailBrandingReason(t *testing.T) {
+	t.Run("NewFromString_free_plan", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyEmailBrandingReasonFromString("free_plan")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyEmailBrandingReason("free_plan"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_paid_plan", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyEmailBrandingReasonFromString("paid_plan")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyEmailBrandingReason("paid_plan"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_email_partner", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyEmailBrandingReasonFromString("email_partner")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyEmailBrandingReason("email_partner"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_inactive_subscription", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyEmailBrandingReasonFromString("inactive_subscription")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyEmailBrandingReason("inactive_subscription"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_company_not_found", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyEmailBrandingReasonFromString("company_not_found")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyEmailBrandingReason("company_not_found"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewCompanyEmailBrandingReasonFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewCompanyEmailBrandingReasonFromString("free_plan")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumCompanyEmailBrandingRemovalAction(t *testing.T) {
+	t.Run("NewFromString_none", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyEmailBrandingRemovalActionFromString("none")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyEmailBrandingRemovalAction("none"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_upgrade", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyEmailBrandingRemovalActionFromString("upgrade")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyEmailBrandingRemovalAction("upgrade"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_renew_subscription", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyEmailBrandingRemovalActionFromString("renew_subscription")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyEmailBrandingRemovalAction("renew_subscription"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewCompanyEmailBrandingRemovalActionFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewCompanyEmailBrandingRemovalActionFromString("none")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumCompanyEmailBrandingSubscriptionStatus(t *testing.T) {
+	t.Run("NewFromString_active", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyEmailBrandingSubscriptionStatusFromString("active")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyEmailBrandingSubscriptionStatus("active"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_past_due", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyEmailBrandingSubscriptionStatusFromString("past_due")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyEmailBrandingSubscriptionStatus("past_due"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_canceled", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyEmailBrandingSubscriptionStatusFromString("canceled")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyEmailBrandingSubscriptionStatus("canceled"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_trialing", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyEmailBrandingSubscriptionStatusFromString("trialing")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyEmailBrandingSubscriptionStatus("trialing"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_incomplete", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyEmailBrandingSubscriptionStatusFromString("incomplete")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyEmailBrandingSubscriptionStatus("incomplete"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewCompanyEmailBrandingSubscriptionStatusFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewCompanyEmailBrandingSubscriptionStatusFromString("active")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumCompanyEmailBrandingSubscriptionTier(t *testing.T) {
+	t.Run("NewFromString_free", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyEmailBrandingSubscriptionTierFromString("free")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyEmailBrandingSubscriptionTier("free"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_pro_1k", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyEmailBrandingSubscriptionTierFromString("pro_1k")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyEmailBrandingSubscriptionTier("pro_1k"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_pro_5k", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyEmailBrandingSubscriptionTierFromString("pro_5k")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyEmailBrandingSubscriptionTier("pro_5k"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_pro_10k", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyEmailBrandingSubscriptionTierFromString("pro_10k")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyEmailBrandingSubscriptionTier("pro_10k"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_pro_25k", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyEmailBrandingSubscriptionTierFromString("pro_25k")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyEmailBrandingSubscriptionTier("pro_25k"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_pro_30k", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyEmailBrandingSubscriptionTierFromString("pro_30k")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyEmailBrandingSubscriptionTier("pro_30k"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_pro_50k", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyEmailBrandingSubscriptionTierFromString("pro_50k")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyEmailBrandingSubscriptionTier("pro_50k"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_pro_100k", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyEmailBrandingSubscriptionTierFromString("pro_100k")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyEmailBrandingSubscriptionTier("pro_100k"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_pro_150k", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyEmailBrandingSubscriptionTierFromString("pro_150k")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyEmailBrandingSubscriptionTier("pro_150k"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_pro_2m", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyEmailBrandingSubscriptionTierFromString("pro_2m")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyEmailBrandingSubscriptionTier("pro_2m"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_pro_3m", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyEmailBrandingSubscriptionTierFromString("pro_3m")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyEmailBrandingSubscriptionTier("pro_3m"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_pro_4m", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyEmailBrandingSubscriptionTierFromString("pro_4m")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyEmailBrandingSubscriptionTier("pro_4m"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_pro_5m", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyEmailBrandingSubscriptionTierFromString("pro_5m")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyEmailBrandingSubscriptionTier("pro_5m"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_enterprise", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyEmailBrandingSubscriptionTierFromString("enterprise")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyEmailBrandingSubscriptionTier("enterprise"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewCompanyEmailBrandingSubscriptionTierFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewCompanyEmailBrandingSubscriptionTierFromString("free")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
 	})
 }
 
@@ -8558,6 +9475,29 @@ func TestExtraPropertiesCompany(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *Company
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesCompanyEmailBranding(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &CompanyEmailBranding{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CompanyEmailBranding
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})

@@ -34,7 +34,7 @@ type CreateTransactionalRequest struct {
 	Prompt *string `json:"prompt,omitempty" url:"-"`
 	// Optional API slug used when sending by slug. If omitted, one is generated from the name.
 	Slug *string `json:"slug,omitempty" url:"-"`
-	// Generation style; valid only with prompt.
+	// Generation style; valid only with prompt. Pass designed or plain to force the designed or plain-text email style; other values are freeform prompt guidance. Defaults to the company's email style preference.
 	Style *string `json:"style,omitempty" url:"-"`
 	// Required with HTML or blocks; optional with prompt, where it overrides the generated subject.
 	Subject *string `json:"subject,omitempty" url:"-"`

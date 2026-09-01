@@ -106,7 +106,7 @@ type CreateCampaignsRequest struct {
 	SentAt *time.Time `json:"sentAt,omitempty" url:"-"`
 	// Initial status. Defaults to draft. Use sent only for imported/already-sent campaigns.
 	Status *CreateCampaignsRequestStatus `json:"status,omitempty" url:"-"`
-	// Generation style; valid only with prompt.
+	// Generation style; valid only with prompt. Pass designed or plain to force the designed or plain-text email style; other values are freeform prompt guidance. Defaults to the company's email style preference.
 	Style *string `json:"style,omitempty" url:"-"`
 	// Required with HTML, blocks, or templateId; optional with prompt, where it overrides the generated subject.
 	Subject *string `json:"subject,omitempty" url:"-"`
