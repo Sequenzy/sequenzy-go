@@ -88,8 +88,10 @@ func TestNotificationPreferencesGetWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithAPIKey("test-token"),
 	)
+	request := &sequenzygo.GetNotificationPreferencesRequest{}
 	_, invocationErr := client.NotificationPreferences.Get(
 		context.TODO(),
+		request,
 		option.WithHTTPHeader(
 			http.Header{"X-Test-Id": []string{"TestNotificationPreferencesGetWithWireMock"}},
 		),

@@ -10,14 +10,40 @@ import (
 )
 
 var (
+	getNotificationPreferencesRequestFieldSequenzyClient = big.NewInt(1 << 0)
+)
+
+type GetNotificationPreferencesRequest struct {
+	// Identifies a client that supports the complete notification event list, including weekly_report. Any non-empty value opts a default Node or Undici client into the full response.
+	SequenzyClient *string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (g *GetNotificationPreferencesRequest) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetSequenzyClient sets the SequenzyClient field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetNotificationPreferencesRequest) SetSequenzyClient(sequenzyClient *string) {
+	g.SequenzyClient = sequenzyClient
+	g.require(getNotificationPreferencesRequestFieldSequenzyClient)
+}
+
+var (
 	notificationPreferenceFieldEvent = big.NewInt(1 << 0)
 	notificationPreferenceFieldMode  = big.NewInt(1 << 1)
 )
 
 type NotificationPreference struct {
-	// Which notification to configure.
+	// Which notification to configure. weekly_report is the Monday summary of last week's sends, engagement, new subscribers, revenue, goals, and sequence trends; it is on by default and only sent for weeks with more than 10 emails sent.
 	Event NotificationPreferenceEvent `json:"event" url:"event"`
-	// How to receive it. "instant" sends one email per occurrence, "daily" one summary per day. Instant form_submitted notifications stop after 50 per workspace per UTC day. "daily" is not supported for form_submitted or campaign_completed.
+	// How to receive it. "instant" sends one email per occurrence, "daily" one summary per day, "weekly" one report per week. Instant form_submitted notifications stop after 50 per workspace per UTC day. "daily" is not supported for form_submitted or campaign_completed; weekly_report accepts only "off" or "weekly".
 	Mode NotificationPreferenceMode `json:"mode" url:"mode"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -111,13 +137,14 @@ func (n *NotificationPreference) String() string {
 	return fmt.Sprintf("%#v", n)
 }
 
-// Which notification to configure.
+// Which notification to configure. weekly_report is the Monday summary of last week's sends, engagement, new subscribers, revenue, goals, and sequence trends; it is on by default and only sent for weeks with more than 10 emails sent.
 type NotificationPreferenceEvent string
 
 const (
 	NotificationPreferenceEventNewSubscriber     NotificationPreferenceEvent = "new_subscriber"
 	NotificationPreferenceEventFormSubmitted     NotificationPreferenceEvent = "form_submitted"
 	NotificationPreferenceEventCampaignCompleted NotificationPreferenceEvent = "campaign_completed"
+	NotificationPreferenceEventWeeklyReport      NotificationPreferenceEvent = "weekly_report"
 )
 
 func NewNotificationPreferenceEventFromString(s string) (NotificationPreferenceEvent, error) {
@@ -128,6 +155,8 @@ func NewNotificationPreferenceEventFromString(s string) (NotificationPreferenceE
 		return NotificationPreferenceEventFormSubmitted, nil
 	case "campaign_completed":
 		return NotificationPreferenceEventCampaignCompleted, nil
+	case "weekly_report":
+		return NotificationPreferenceEventWeeklyReport, nil
 	}
 	var t NotificationPreferenceEvent
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -137,13 +166,14 @@ func (n NotificationPreferenceEvent) Ptr() *NotificationPreferenceEvent {
 	return &n
 }
 
-// How to receive it. "instant" sends one email per occurrence, "daily" one summary per day. Instant form_submitted notifications stop after 50 per workspace per UTC day. "daily" is not supported for form_submitted or campaign_completed.
+// How to receive it. "instant" sends one email per occurrence, "daily" one summary per day, "weekly" one report per week. Instant form_submitted notifications stop after 50 per workspace per UTC day. "daily" is not supported for form_submitted or campaign_completed; weekly_report accepts only "off" or "weekly".
 type NotificationPreferenceMode string
 
 const (
 	NotificationPreferenceModeOff     NotificationPreferenceMode = "off"
 	NotificationPreferenceModeInstant NotificationPreferenceMode = "instant"
 	NotificationPreferenceModeDaily   NotificationPreferenceMode = "daily"
+	NotificationPreferenceModeWeekly  NotificationPreferenceMode = "weekly"
 )
 
 func NewNotificationPreferenceModeFromString(s string) (NotificationPreferenceMode, error) {
@@ -154,6 +184,8 @@ func NewNotificationPreferenceModeFromString(s string) (NotificationPreferenceMo
 		return NotificationPreferenceModeInstant, nil
 	case "daily":
 		return NotificationPreferenceModeDaily, nil
+	case "weekly":
+		return NotificationPreferenceModeWeekly, nil
 	}
 	var t NotificationPreferenceMode
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -173,7 +205,7 @@ var (
 type NotificationPreferences struct {
 	// Mode each event uses when the user has never configured it.
 	Defaults map[string]string `json:"defaults,omitempty" url:"defaults,omitempty"`
-	// Every notification event with its current mode, defaults included.
+	// Every notification event available to this client with its current mode, defaults included. Node and Undici clients that omit x-sequenzy-client receive the three legacy events for compatibility.
 	NotificationPreferences []*NotificationPreference `json:"notificationPreferences,omitempty" url:"notificationPreferences,omitempty"`
 	Success                 *bool                     `json:"success,omitempty" url:"success,omitempty"`
 	// Modes each event accepts, keyed by event.
@@ -299,10 +331,13 @@ func (n *NotificationPreferences) String() string {
 }
 
 var (
-	updateNotificationPreferencesRequestFieldNotificationPreferences = big.NewInt(1 << 0)
+	updateNotificationPreferencesRequestFieldSequenzyClient          = big.NewInt(1 << 0)
+	updateNotificationPreferencesRequestFieldNotificationPreferences = big.NewInt(1 << 1)
 )
 
 type UpdateNotificationPreferencesRequest struct {
+	// Identifies a client that supports the complete notification event list, including weekly_report. Any non-empty value opts a default Node or Undici client into the full response.
+	SequenzyClient *string `json:"-" url:"-"`
 	// Preferences to set. Events not listed are left unchanged.
 	NotificationPreferences []*NotificationPreference `json:"notificationPreferences" url:"-"`
 
@@ -315,6 +350,13 @@ func (u *UpdateNotificationPreferencesRequest) require(field *big.Int) {
 		u.explicitFields = big.NewInt(0)
 	}
 	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetSequenzyClient sets the SequenzyClient field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateNotificationPreferencesRequest) SetSequenzyClient(sequenzyClient *string) {
+	u.SequenzyClient = sequenzyClient
+	u.require(updateNotificationPreferencesRequestFieldSequenzyClient)
 }
 
 // SetNotificationPreferences sets the NotificationPreferences field and marks it as non-optional;

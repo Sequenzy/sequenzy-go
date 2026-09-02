@@ -18,7 +18,7 @@ var (
 type GetSuppressionsRequest struct {
 	// Exact recipient email address
 	Email string `json:"-" url:"-"`
-	// Optional AWS SES region. Omit to check the default region and regions used by the company's sending domains.
+	// Deprecated: accepted and ignored. It previously limited a provider-side suppression lookup, which no longer happens.
 	Region *string `json:"-" url:"region,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -122,7 +122,7 @@ var (
 type RemoveSuppressionsRequest struct {
 	// Exact company-associated recipient email address
 	Email string `json:"-" url:"-"`
-	// Optional AWS SES region used to limit the remaining-suppression inspection. It never authorizes removal of an SES account-level entry.
+	// Deprecated: accepted and ignored. It previously limited a provider-side suppression lookup, which no longer happens.
 	Region *string `json:"-" url:"region,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -1573,7 +1573,7 @@ type RemoveSuppressionsResponse struct {
 	RemainingSuppression map[string]any `json:"remainingSuppression,omitempty" url:"remainingSuppression,omitempty"`
 	Removed              *bool          `json:"removed,omitempty" url:"removed,omitempty"`
 	RemovedLocalBounce   *bool          `json:"removedLocalBounce,omitempty" url:"removedLocalBounce,omitempty"`
-	// Always empty for company-authenticated removal; SES account-level suppressions are protected.
+	// Always empty. Sequenzy suppresses solely from its own bounce records and neither reads nor writes the email provider's suppression list. Retained for response compatibility.
 	RemovedSesRegions []string `json:"removedSesRegions,omitempty" url:"removedSesRegions,omitempty"`
 	Success           *bool    `json:"success,omitempty" url:"success,omitempty"`
 

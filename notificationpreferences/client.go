@@ -34,19 +34,23 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Returns the account notification settings for the API key's own user in the active company, along with the modes each event supports and the platform defaults. Every event is always present; an event the user has never configured reports its default. There is no way to read another member's preferences through this API. Requires account:read.
+// Returns the account notification settings for the API key's own user in the active company, along with the modes each event supports and the platform defaults. Every event available to the requesting client is present; an event the user has never configured reports its default. Default Node and Undici clients must send x-sequenzy-client to receive weekly_report. There is no way to read another member's preferences through this API. Requires account:read.
 //
 // Example:
 //
+//	request := &sequenzygo.GetNotificationPreferencesRequest{}
 //	client.NotificationPreferences.Get(
 //	    context.TODO(),
+//	    request,
 //	)
 func (c *Client) Get(
 	ctx context.Context,
+	request *sequenzygo.GetNotificationPreferencesRequest,
 	opts ...option.RequestOption,
 ) (*sequenzygo.NotificationPreferences, error) {
 	response, err := c.WithRawResponse.Get(
 		ctx,
+		request,
 		opts...,
 	)
 	if err != nil {

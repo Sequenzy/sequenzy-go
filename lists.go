@@ -101,8 +101,9 @@ var (
 )
 
 type CreateListsRequest struct {
+	// Optional internal workspace metadata. Never shown in hosted or embedded subscriber preferences.
 	Description *string `json:"description,omitempty" url:"-"`
-	// Set to true to keep the list internal and omit it from individual controls on the hosted subscriber email preferences/unsubscribe page. Public lists expose their name and description on that page. List privacy does not override a subscriber's global unsubscribe. Defaults to false when omitted.
+	// Set to true to keep the list internal and omit it from individual controls on the hosted subscriber email preferences/unsubscribe page. Public lists expose only their name on that page; descriptions remain internal. List privacy does not override a subscriber's global unsubscribe. Defaults to false when omitted.
 	IsPrivate *bool  `json:"isPrivate,omitempty" url:"-"`
 	Name      string `json:"name" url:"-"`
 
@@ -266,9 +267,10 @@ type SubscriberList struct {
 	// Current list members with status=active. May include phone-only contacts without an email address.
 	ActiveSubscriberCount *int       `json:"activeSubscriberCount,omitempty" url:"activeSubscriberCount,omitempty"`
 	CreatedAt             *time.Time `json:"createdAt,omitempty" url:"createdAt,omitempty"`
-	Description           *string    `json:"description,omitempty" url:"description,omitempty"`
-	ID                    *string    `json:"id,omitempty" url:"id,omitempty"`
-	// Whether the list is private. Private lists are omitted from the hosted subscriber email preferences/unsubscribe page and cannot be subscribed to or unsubscribed from individually there. Public lists expose their name and description on that page. List privacy does not override a subscriber's global unsubscribe.
+	// Internal workspace metadata returned only through authenticated list-management surfaces. Never shown in hosted or embedded subscriber preferences.
+	Description *string `json:"description,omitempty" url:"description,omitempty"`
+	ID          *string `json:"id,omitempty" url:"id,omitempty"`
+	// Whether the list is private. Private lists are omitted from the hosted subscriber email preferences/unsubscribe page and cannot be subscribed to or unsubscribed from individually there. Public lists expose only their name on that page; descriptions remain internal. List privacy does not override a subscriber's global unsubscribe.
 	IsPrivate *bool   `json:"isPrivate,omitempty" url:"isPrivate,omitempty"`
 	Name      *string `json:"name,omitempty" url:"name,omitempty"`
 	// Current list members of any status. Memberships with unsubscribedAt set are excluded.
@@ -1462,9 +1464,9 @@ var (
 type UpdateListsRequest struct {
 	// Subscriber list ID.
 	ListID string `json:"-" url:"-"`
-	// New list description. Pass null to clear it.
+	// New internal list description. Never shown in hosted or embedded subscriber preferences. Pass null to clear it.
 	Description *string `json:"description,omitempty" url:"-"`
-	// Set to true to keep the list internal and omit it from individual controls on the hosted subscriber email preferences/unsubscribe page. Set to false to expose its name and description on that page. List privacy does not override a subscriber's global unsubscribe. Omit this field to leave the current visibility unchanged.
+	// Set to true to keep the list internal and omit it from individual controls on the hosted subscriber email preferences/unsubscribe page. Set to false to expose only its name on that page; descriptions remain internal. List privacy does not override a subscriber's global unsubscribe. Omit this field to leave the current visibility unchanged.
 	IsPrivate *bool `json:"isPrivate,omitempty" url:"-"`
 	// New list name.
 	Name *string `json:"name,omitempty" url:"-"`

@@ -9,6 +9,51 @@ import (
 	testing "testing"
 )
 
+func TestSettersGetNotificationPreferencesRequest(t *testing.T) {
+	t.Run("SetSequenzyClient", func(t *testing.T) {
+		obj := &GetNotificationPreferencesRequest{}
+		var fernTestValueSequenzyClient *string
+		obj.SetSequenzyClient(fernTestValueSequenzyClient)
+		assert.Equal(t, fernTestValueSequenzyClient, obj.SequenzyClient)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestSettersMarkExplicitGetNotificationPreferencesRequest(t *testing.T) {
+	t.Run("SetSequenzyClient_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetNotificationPreferencesRequest{}
+		var fernTestValueSequenzyClient *string
+
+		// Act
+		obj.SetSequenzyClient(fernTestValueSequenzyClient)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
 func TestSettersNotificationPreference(t *testing.T) {
 	t.Run("SetEvent", func(t *testing.T) {
 		obj := &NotificationPreference{}
@@ -440,6 +485,14 @@ func TestSettersMarkExplicitNotificationPreferences(t *testing.T) {
 }
 
 func TestSettersUpdateNotificationPreferencesRequest(t *testing.T) {
+	t.Run("SetSequenzyClient", func(t *testing.T) {
+		obj := &UpdateNotificationPreferencesRequest{}
+		var fernTestValueSequenzyClient *string
+		obj.SetSequenzyClient(fernTestValueSequenzyClient)
+		assert.Equal(t, fernTestValueSequenzyClient, obj.SequenzyClient)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetNotificationPreferences", func(t *testing.T) {
 		obj := &UpdateNotificationPreferencesRequest{}
 		var fernTestValueNotificationPreferences []*NotificationPreference
@@ -451,6 +504,37 @@ func TestSettersUpdateNotificationPreferencesRequest(t *testing.T) {
 }
 
 func TestSettersMarkExplicitUpdateNotificationPreferencesRequest(t *testing.T) {
+	t.Run("SetSequenzyClient_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateNotificationPreferencesRequest{}
+		var fernTestValueSequenzyClient *string
+
+		// Act
+		obj.SetSequenzyClient(fernTestValueSequenzyClient)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetNotificationPreferences_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -604,6 +688,13 @@ func TestEnumNotificationPreferenceEvent(t *testing.T) {
 		assert.Equal(t, NotificationPreferenceEvent("campaign_completed"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_weekly_report", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewNotificationPreferenceEventFromString("weekly_report")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, NotificationPreferenceEvent("weekly_report"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewNotificationPreferenceEventFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -638,6 +729,13 @@ func TestEnumNotificationPreferenceMode(t *testing.T) {
 		val, err := NewNotificationPreferenceModeFromString("daily")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, NotificationPreferenceMode("daily"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_weekly", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewNotificationPreferenceModeFromString("weekly")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, NotificationPreferenceMode("weekly"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {

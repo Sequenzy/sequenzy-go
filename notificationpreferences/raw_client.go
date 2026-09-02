@@ -34,6 +34,7 @@ func NewRawClient(options *core.RequestOptions) *RawClient {
 
 func (r *RawClient) Get(
 	ctx context.Context,
+	request *sequenzygo.GetNotificationPreferencesRequest,
 	opts ...option.RequestOption,
 ) (*core.Response[*sequenzygo.NotificationPreferences], error) {
 	options := core.NewRequestOptions(opts...)
@@ -47,6 +48,10 @@ func (r *RawClient) Get(
 		r.options.ToHeader(),
 		options.ToHeader(),
 	)
+	if request.SequenzyClient != nil {
+		headers.Add("x-sequenzy-client", *request.SequenzyClient)
+	}
+
 	var response *sequenzygo.NotificationPreferences
 	raw, err := r.caller.Call(
 		ctx,
@@ -89,6 +94,9 @@ func (r *RawClient) Update(
 		r.options.ToHeader(),
 		options.ToHeader(),
 	)
+	if request.SequenzyClient != nil {
+		headers.Add("x-sequenzy-client", *request.SequenzyClient)
+	}
 	headers.Add("Content-Type", "application/json")
 	var response *sequenzygo.NotificationPreferences
 	raw, err := r.caller.Call(
