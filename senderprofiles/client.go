@@ -34,6 +34,33 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
+// Permanently deletes one sender (From) profile. Refuses to delete the company's last sender or a profile used by a live campaign, active sequence (including step-level overrides), or transactional email. Eligible draft and rejected campaigns plus the account default are reassigned to the best remaining sender when needed. Requires companies:manage.
+//
+// Example:
+//
+//	request := &sequenzygo.DeleteSenderProfilesRequest{
+//	    ID: "id",
+//	}
+//	client.SenderProfiles.Delete(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Delete(
+	ctx context.Context,
+	request *sequenzygo.DeleteSenderProfilesRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.DeleteSenderProfilesResponse, error) {
+	response, err := c.WithRawResponse.Delete(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Lists sender (From) and reply-to profiles, which are the account defaults, and whether each sender address sits on a verified sending domain. SMTP submission sends into Sequenzy; outbound delivery remains Sequenzy-managed through SES or Sequenzy's MTA, so customer-managed SMTP relays are not supported.
 //
 // Example:

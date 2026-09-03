@@ -5213,6 +5213,42 @@
       }
     },
     {
+      "id": "99e6128a-0fcf-4b2a-b358-6345fa54536a",
+      "name": "Delete a sender profile - default",
+      "request": {
+        "urlPathTemplate": "/sender-profiles/{id}",
+        "method": "DELETE",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"deletedSenderProfileId\": \"deletedSenderProfileId\",\n  \"fallbackSenderProfileId\": \"fallbackSenderProfileId\",\n  \"message\": \"message\",\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "99e6128a-0fcf-4b2a-b358-6345fa54536a",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "ae857d0f-dca7-4b0a-a643-331c8b1f6668",
       "name": "List sender and reply-to profiles - default",
       "request": {
@@ -9925,6 +9961,6 @@
     }
   ],
   "meta": {
-    "total": 287
+    "total": 288
   }
 }

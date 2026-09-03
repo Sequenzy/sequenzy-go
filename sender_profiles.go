@@ -11,6 +11,32 @@ import (
 )
 
 var (
+	deleteSenderProfilesRequestFieldID = big.NewInt(1 << 0)
+)
+
+type DeleteSenderProfilesRequest struct {
+	// Sender profile ID, from GET /v1/sender-profiles.
+	ID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (d *DeleteSenderProfilesRequest) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteSenderProfilesRequest) SetID(id string) {
+	d.ID = id
+	d.require(deleteSenderProfilesRequestFieldID)
+}
+
+var (
 	replyProfileSummaryFieldCreatedAt = big.NewInt(1 << 0)
 	replyProfileSummaryFieldEmail     = big.NewInt(1 << 1)
 	replyProfileSummaryFieldID        = big.NewInt(1 << 2)
@@ -386,6 +412,140 @@ func (s *SenderProfileSummary) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	deleteSenderProfilesResponseFieldDeletedSenderProfileID  = big.NewInt(1 << 0)
+	deleteSenderProfilesResponseFieldFallbackSenderProfileID = big.NewInt(1 << 1)
+	deleteSenderProfilesResponseFieldMessage                 = big.NewInt(1 << 2)
+	deleteSenderProfilesResponseFieldSuccess                 = big.NewInt(1 << 3)
+)
+
+type DeleteSenderProfilesResponse struct {
+	// ID of the profile that was deleted.
+	DeletedSenderProfileID string `json:"deletedSenderProfileId" url:"deletedSenderProfileId"`
+	// Remaining profile selected for defaults and eligible drafts when reassignment was needed.
+	FallbackSenderProfileID *string `json:"fallbackSenderProfileId,omitempty" url:"fallbackSenderProfileId,omitempty"`
+	Message                 string  `json:"message" url:"message"`
+	Success                 bool    `json:"success" url:"success"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DeleteSenderProfilesResponse) GetDeletedSenderProfileID() string {
+	if d == nil {
+		return ""
+	}
+	return d.DeletedSenderProfileID
+}
+
+func (d *DeleteSenderProfilesResponse) GetFallbackSenderProfileID() *string {
+	if d == nil {
+		return nil
+	}
+	return d.FallbackSenderProfileID
+}
+
+func (d *DeleteSenderProfilesResponse) GetMessage() string {
+	if d == nil {
+		return ""
+	}
+	return d.Message
+}
+
+func (d *DeleteSenderProfilesResponse) GetSuccess() bool {
+	if d == nil {
+		return false
+	}
+	return d.Success
+}
+
+func (d *DeleteSenderProfilesResponse) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DeleteSenderProfilesResponse) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetDeletedSenderProfileID sets the DeletedSenderProfileID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteSenderProfilesResponse) SetDeletedSenderProfileID(deletedSenderProfileID string) {
+	d.DeletedSenderProfileID = deletedSenderProfileID
+	d.require(deleteSenderProfilesResponseFieldDeletedSenderProfileID)
+}
+
+// SetFallbackSenderProfileID sets the FallbackSenderProfileID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteSenderProfilesResponse) SetFallbackSenderProfileID(fallbackSenderProfileID *string) {
+	d.FallbackSenderProfileID = fallbackSenderProfileID
+	d.require(deleteSenderProfilesResponseFieldFallbackSenderProfileID)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteSenderProfilesResponse) SetMessage(message string) {
+	d.Message = message
+	d.require(deleteSenderProfilesResponseFieldMessage)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteSenderProfilesResponse) SetSuccess(success bool) {
+	d.Success = success
+	d.require(deleteSenderProfilesResponseFieldSuccess)
+}
+
+func (d *DeleteSenderProfilesResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler DeleteSenderProfilesResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DeleteSenderProfilesResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DeleteSenderProfilesResponse) MarshalJSON() ([]byte, error) {
+	type embed DeleteSenderProfilesResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DeleteSenderProfilesResponse) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
 }
 
 var (
