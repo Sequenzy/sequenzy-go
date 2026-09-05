@@ -27,6 +27,14 @@ func TestSettersCreateTemplatesRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetIsTemplate", func(t *testing.T) {
+		obj := &CreateTemplatesRequest{}
+		var fernTestValueIsTemplate *bool
+		obj.SetIsTemplate(fernTestValueIsTemplate)
+		assert.Equal(t, fernTestValueIsTemplate, obj.IsTemplate)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetLabel", func(t *testing.T) {
 		obj := &CreateTemplatesRequest{}
 		var fernTestValueLabel []string
@@ -133,6 +141,37 @@ func TestSettersMarkExplicitCreateTemplatesRequest(t *testing.T) {
 
 		// Act
 		obj.SetHTML(fernTestValueHTML)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetIsTemplate_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateTemplatesRequest{}
+		var fernTestValueIsTemplate *bool
+
+		// Act
+		obj.SetIsTemplate(fernTestValueIsTemplate)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -542,6 +581,14 @@ func TestSettersMarkExplicitGetTemplatesRequest(t *testing.T) {
 }
 
 func TestSettersListTemplatesRequest(t *testing.T) {
+	t.Run("SetIsTemplate", func(t *testing.T) {
+		obj := &ListTemplatesRequest{}
+		var fernTestValueIsTemplate *bool
+		obj.SetIsTemplate(fernTestValueIsTemplate)
+		assert.Equal(t, fernTestValueIsTemplate, obj.IsTemplate)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetLabel", func(t *testing.T) {
 		obj := &ListTemplatesRequest{}
 		var fernTestValueLabel *string
@@ -569,6 +616,37 @@ func TestSettersListTemplatesRequest(t *testing.T) {
 }
 
 func TestSettersMarkExplicitListTemplatesRequest(t *testing.T) {
+	t.Run("SetIsTemplate_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListTemplatesRequest{}
+		var fernTestValueIsTemplate *bool
+
+		// Act
+		obj.SetIsTemplate(fernTestValueIsTemplate)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetLabel_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -1451,6 +1529,14 @@ func TestSettersTemplateDetail(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetIsTemplate", func(t *testing.T) {
+		obj := &TemplateDetail{}
+		var fernTestValueIsTemplate *bool
+		obj.SetIsTemplate(fernTestValueIsTemplate)
+		assert.Equal(t, fernTestValueIsTemplate, obj.IsTemplate)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetLabels", func(t *testing.T) {
 		obj := &TemplateDetail{}
 		var fernTestValueLabels []string
@@ -1647,6 +1733,39 @@ func TestGettersTemplateDetail(t *testing.T) {
 			}
 		}()
 		_ = obj.GetID() // Should return zero value
+	})
+
+	t.Run("GetIsTemplate", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TemplateDetail{}
+		var expected *bool
+		obj.IsTemplate = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetIsTemplate(), "getter should return the property value")
+	})
+
+	t.Run("GetIsTemplate_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TemplateDetail{}
+		obj.IsTemplate = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetIsTemplate(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetIsTemplate_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *TemplateDetail
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetIsTemplate() // Should return zero value
 	})
 
 	t.Run("GetLabels", func(t *testing.T) {
@@ -2118,6 +2237,37 @@ func TestSettersMarkExplicitTemplateDetail(t *testing.T) {
 
 		// Act
 		obj.SetID(fernTestValueID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetIsTemplate_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TemplateDetail{}
+		var fernTestValueIsTemplate *bool
+
+		// Act
+		obj.SetIsTemplate(fernTestValueIsTemplate)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -3269,6 +3419,14 @@ func TestSettersTemplateSummary(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetIsTemplate", func(t *testing.T) {
+		obj := &TemplateSummary{}
+		var fernTestValueIsTemplate *bool
+		obj.SetIsTemplate(fernTestValueIsTemplate)
+		assert.Equal(t, fernTestValueIsTemplate, obj.IsTemplate)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetLabels", func(t *testing.T) {
 		obj := &TemplateSummary{}
 		var fernTestValueLabels []string
@@ -3417,6 +3575,39 @@ func TestGettersTemplateSummary(t *testing.T) {
 			}
 		}()
 		_ = obj.GetID() // Should return zero value
+	})
+
+	t.Run("GetIsTemplate", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TemplateSummary{}
+		var expected *bool
+		obj.IsTemplate = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetIsTemplate(), "getter should return the property value")
+	})
+
+	t.Run("GetIsTemplate_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TemplateSummary{}
+		obj.IsTemplate = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetIsTemplate(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetIsTemplate_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *TemplateSummary
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetIsTemplate() // Should return zero value
 	})
 
 	t.Run("GetLabels", func(t *testing.T) {
@@ -3690,6 +3881,37 @@ func TestSettersMarkExplicitTemplateSummary(t *testing.T) {
 
 		// Act
 		obj.SetID(fernTestValueID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetIsTemplate_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TemplateSummary{}
+		var fernTestValueIsTemplate *bool
+
+		// Act
+		obj.SetIsTemplate(fernTestValueIsTemplate)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -4432,6 +4654,14 @@ func TestSettersCreateTemplatesResponseTemplate(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetIsTemplate", func(t *testing.T) {
+		obj := &CreateTemplatesResponseTemplate{}
+		var fernTestValueIsTemplate *bool
+		obj.SetIsTemplate(fernTestValueIsTemplate)
+		assert.Equal(t, fernTestValueIsTemplate, obj.IsTemplate)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetLabels", func(t *testing.T) {
 		obj := &CreateTemplatesResponseTemplate{}
 		var fernTestValueLabels []string
@@ -4490,6 +4720,39 @@ func TestGettersCreateTemplatesResponseTemplate(t *testing.T) {
 			}
 		}()
 		_ = obj.GetID() // Should return zero value
+	})
+
+	t.Run("GetIsTemplate", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateTemplatesResponseTemplate{}
+		var expected *bool
+		obj.IsTemplate = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetIsTemplate(), "getter should return the property value")
+	})
+
+	t.Run("GetIsTemplate_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateTemplatesResponseTemplate{}
+		obj.IsTemplate = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetIsTemplate(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetIsTemplate_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateTemplatesResponseTemplate
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetIsTemplate() // Should return zero value
 	})
 
 	t.Run("GetLabels", func(t *testing.T) {
@@ -4602,6 +4865,37 @@ func TestSettersMarkExplicitCreateTemplatesResponseTemplate(t *testing.T) {
 
 		// Act
 		obj.SetID(fernTestValueID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetIsTemplate_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateTemplatesResponseTemplate{}
+		var fernTestValueIsTemplate *bool
+
+		// Act
+		obj.SetIsTemplate(fernTestValueIsTemplate)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -6961,6 +7255,14 @@ func TestSettersUpdateTemplatesResponseTemplate(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetIsTemplate", func(t *testing.T) {
+		obj := &UpdateTemplatesResponseTemplate{}
+		var fernTestValueIsTemplate *bool
+		obj.SetIsTemplate(fernTestValueIsTemplate)
+		assert.Equal(t, fernTestValueIsTemplate, obj.IsTemplate)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetLabels", func(t *testing.T) {
 		obj := &UpdateTemplatesResponseTemplate{}
 		var fernTestValueLabels []string
@@ -7027,6 +7329,39 @@ func TestGettersUpdateTemplatesResponseTemplate(t *testing.T) {
 			}
 		}()
 		_ = obj.GetID() // Should return zero value
+	})
+
+	t.Run("GetIsTemplate", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateTemplatesResponseTemplate{}
+		var expected *bool
+		obj.IsTemplate = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetIsTemplate(), "getter should return the property value")
+	})
+
+	t.Run("GetIsTemplate_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateTemplatesResponseTemplate{}
+		obj.IsTemplate = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetIsTemplate(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetIsTemplate_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateTemplatesResponseTemplate
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetIsTemplate() // Should return zero value
 	})
 
 	t.Run("GetLabels", func(t *testing.T) {
@@ -7172,6 +7507,37 @@ func TestSettersMarkExplicitUpdateTemplatesResponseTemplate(t *testing.T) {
 
 		// Act
 		obj.SetID(fernTestValueID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetIsTemplate_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateTemplatesResponseTemplate{}
+		var fernTestValueIsTemplate *bool
+
+		// Act
+		obj.SetIsTemplate(fernTestValueIsTemplate)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -7346,6 +7712,14 @@ func TestSettersUpdateTemplatesRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetIsTemplate", func(t *testing.T) {
+		obj := &UpdateTemplatesRequest{}
+		var fernTestValueIsTemplate *bool
+		obj.SetIsTemplate(fernTestValueIsTemplate)
+		assert.Equal(t, fernTestValueIsTemplate, obj.IsTemplate)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetLabel", func(t *testing.T) {
 		obj := &UpdateTemplatesRequest{}
 		var fernTestValueLabel []string
@@ -7467,6 +7841,37 @@ func TestSettersMarkExplicitUpdateTemplatesRequest(t *testing.T) {
 
 		// Act
 		obj.SetHTML(fernTestValueHTML)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetIsTemplate_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateTemplatesRequest{}
+		var fernTestValueIsTemplate *bool
+
+		// Act
+		obj.SetIsTemplate(fernTestValueIsTemplate)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)

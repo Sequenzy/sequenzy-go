@@ -3181,7 +3181,7 @@ client.Campaigns.Cancel(
 <dl>
 <dd>
 
-Creates a campaign and linked email from at most one of prompt, HTML, Sequenzy blocks, or an existing template. Omit all content sources to create an empty draft. Optional From/Reply-To inputs create or select profiles; From addresses require a verified sending domain. Defaults to draft. Use status `sent` only to archive an imported/already-sent campaign.
+Creates a campaign and linked email from at most one of prompt, HTML, Sequenzy blocks, or an existing template. Omit all content sources to create an empty draft. Optional From/Reply-To inputs create or select profiles; From addresses require a verified sending domain. Defaults to draft. Use status `sent` only to archive an imported/already-sent campaign. Marketer account keys must choose existing sender and Reply-To profiles; requests requiring new profiles return 400 before creating profiles, labels, or campaign/sequence changes, including nested steps and branches.
 </dd>
 </dl>
 </dd>
@@ -4719,7 +4719,7 @@ client.Campaigns.Unschedule(
 <dl>
 <dd>
 
-Update a draft campaign's name, labels, content, audience, From/Reply-To settings, campaign personalization data, or delivery pacing (sendTimeOptimization and sendTimeWindowHours). Direct addresses create profiles when needed. Send Time Optimization is campaign-only; sequences use sendingWindow.
+Update a draft campaign's name, labels, content, audience, From/Reply-To settings, campaign personalization data, or delivery pacing (sendTimeOptimization and sendTimeWindowHours). Direct addresses create profiles when needed. Send Time Optimization is campaign-only; sequences use sendingWindow. Marketer account keys must choose existing sender and Reply-To profiles; requests requiring new profiles return 400 before creating profiles, labels, or campaign/sequence changes, including nested steps and branches.
 </dd>
 </dl>
 </dd>
@@ -11827,7 +11827,7 @@ client.Segments.Delete(
 <dl>
 <dd>
 
-Returns the current subscriber count for a saved segment.
+Recalculates the active subscriber count from a saved segment's filters. Matches activeSubscriberCount from listSegments when underlying data is unchanged. Custom-attribute updates sync asynchronously and may take roughly 30–35 seconds or longer to appear, even after an import completes.
 </dd>
 </dl>
 </dd>
@@ -11887,7 +11887,7 @@ client.Segments.GetCount(
 <dl>
 <dd>
 
-Lists saved segments and subscriber counts for the authenticated company.
+Lists saved segments with counts recalculated from their filters for the authenticated company. subscriberCount includes every status; activeSubscriberCount includes only active subscribers. Custom-attribute updates sync asynchronously and may take roughly 30–35 seconds or longer to appear, even after an import completes.
 </dd>
 </dl>
 </dd>
@@ -12624,7 +12624,7 @@ client.Sequences.ConfigureInboundWebhook(
 <dl>
 <dd>
 
-Creates a draft automation sequence using AI-generated content, explicit email/action steps, or a blank trigger-to-completion graph when both are omitted. Discount action steps dynamically generate Stripe or Shopify codes that later emails can reference with discount merge tags.
+Creates a draft automation sequence using AI-generated content, explicit email/action steps, or a blank trigger-to-completion graph when both are omitted. Discount action steps dynamically generate Stripe or Shopify codes that later emails can reference with discount merge tags. Marketer account keys must choose existing sender and Reply-To profiles; requests requiring new profiles return 400 before creating profiles, labels, or campaign/sequence changes, including nested steps and branches.
 </dd>
 </dl>
 </dd>
@@ -14871,7 +14871,7 @@ client.Sequences.Unarchive(
 <dl>
 <dd>
 
-Updates sequence settings and content, inserts linear or branching steps, or performs revision-guarded graph edits.
+Updates sequence settings and content, inserts linear or branching steps, or performs revision-guarded graph edits. Marketer account keys must choose existing sender and Reply-To profiles; requests requiring new profiles return 400 before creating profiles, labels, or campaign/sequence changes, including nested steps and branches.
 </dd>
 </dl>
 </dd>
@@ -16859,7 +16859,7 @@ client.Subscribers.GetByExternalIDPath(
 <dl>
 <dd>
 
-Returns progress, counts, and failure summaries by import ID or batch ID. Every excluded row is explained - skippedReasons sums to skippedCount and failedReasons sums to failedCount.
+Returns progress, counts, and failure summaries by import ID or batch ID. Every excluded row is explained - skippedReasons sums to skippedCount and failedReasons sums to failedCount. Status completed means row processing has finished; custom-attribute sync can still be pending, so attribute-based segment counts may take roughly 30–35 seconds or longer to reflect the updates.
 </dd>
 </dl>
 </dd>
@@ -18886,7 +18886,7 @@ client.Team.Invite(
 <dl>
 <dd>
 
-**role:** `*sequenzygo.InviteTeamRequestRole` — Role for the new member. Restricted members can open direct campaign links only.
+**role:** `*sequenzygo.InviteTeamRequestRole` — Role for the new member. Marketers create, edit, and send campaigns and sequences and manage subscribers but cannot access transactional emails, settings, billing, or the team. Restricted members can open direct campaign links only.
     
 </dd>
 </dl>
@@ -18952,7 +18952,7 @@ client.Team.List(
 <dl>
 <dd>
 
-Creates a reusable email template from exactly one of prompt, HTML, or Sequenzy blocks.
+Creates a reusable email template from exactly one of prompt, HTML, or Sequenzy blocks. Creating a standalone copy of a saved email or gallery design and AI rewriting within its layout are currently dashboard-only workflows. This endpoint has no source-template copy operation; prompt generates new content without preserving an existing layout. See /concepts/email-templates#availability-across-interfaces for the documented interface exception and supported alternatives.
 </dd>
 </dl>
 </dd>
@@ -18997,6 +18997,14 @@ client.Templates.Create(
 <dd>
 
 **html:** `*string` — Raw HTML body. Mutually exclusive with blocks.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**isTemplate:** `*bool` — Save as a reusable master design that sequence steps and campaigns can start from (always as an independent copy).
     
 </dd>
 </dl>
@@ -19294,6 +19302,14 @@ client.Templates.List(
 
 <dl>
 <dd>
+
+<dl>
+<dd>
+
+**isTemplate:** `*bool` — Filter to reusable master designs (`true`) or everything else (`false`). Omit to list every body.
+    
+</dd>
+</dl>
 
 <dl>
 <dd>
@@ -19690,6 +19706,14 @@ client.Templates.Update(
 <dd>
 
 **html:** `*string` — Replacement HTML body. Mutually exclusive with blocks.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**isTemplate:** `*bool` — Mark (true) or unmark (false) this email as a reusable master design.
     
 </dd>
 </dl>

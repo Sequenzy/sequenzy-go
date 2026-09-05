@@ -462,7 +462,7 @@ func (c *Client) GetByExternalIDPath(
 	return response.Body, nil
 }
 
-// Returns progress, counts, and failure summaries by import ID or batch ID. Every excluded row is explained - skippedReasons sums to skippedCount and failedReasons sums to failedCount.
+// Returns progress, counts, and failure summaries by import ID or batch ID. Every excluded row is explained - skippedReasons sums to skippedCount and failedReasons sums to failedCount. Status completed means row processing has finished; custom-attribute sync can still be pending, so attribute-based segment counts may take roughly 30–35 seconds or longer to reflect the updates.
 //
 // Example:
 //

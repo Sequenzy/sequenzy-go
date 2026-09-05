@@ -1211,8 +1211,9 @@ var (
 	getAccountResponseAPIKeyPermissionsFieldMissingLiveDeliveryScopes  = big.NewInt(1 << 8)
 	getAccountResponseAPIKeyPermissionsFieldMissingMarketingReadScopes = big.NewInt(1 << 9)
 	getAccountResponseAPIKeyPermissionsFieldPreset                     = big.NewInt(1 << 10)
-	getAccountResponseAPIKeyPermissionsFieldScopes                     = big.NewInt(1 << 11)
-	getAccountResponseAPIKeyPermissionsFieldSelectedScopeCount         = big.NewInt(1 << 12)
+	getAccountResponseAPIKeyPermissionsFieldRoleRestrictedScopes       = big.NewInt(1 << 11)
+	getAccountResponseAPIKeyPermissionsFieldScopes                     = big.NewInt(1 << 12)
+	getAccountResponseAPIKeyPermissionsFieldSelectedScopeCount         = big.NewInt(1 << 13)
 )
 
 type GetAccountResponseAPIKeyPermissions struct {
@@ -1227,7 +1228,7 @@ type GetAccountResponseAPIKeyPermissions struct {
 	// Human-readable explanation of the effective permission selection.
 	Description *string `json:"description,omitempty" url:"description,omitempty"`
 	FullAccess  *bool   `json:"fullAccess,omitempty" url:"fullAccess,omitempty"`
-	// Whether the authenticated user's role in the selected workspace blocks sending regardless of key scopes. Personal keys held by a viewer are read-only, so widening the key's permissions does not enable delivery; the role has to change.
+	// Whether the authenticated user's role in the selected workspace blocks every kind of sending regardless of key scopes. Personal keys held by a viewer are read-only, so widening the key's permissions does not enable delivery; the role has to change. A marketer is not blocked here because they can still send campaigns; their transactional restriction is listed in roleRestrictedScopes.
 	LiveDeliveryBlockedByRole *bool `json:"liveDeliveryBlockedByRole,omitempty" url:"liveDeliveryBlockedByRole,omitempty"`
 	// Direct management URL for the authenticated key. Personal keys open Account API Keys; company keys open the selected workspace's API Keys settings.
 	ManageURL *string `json:"manageUrl,omitempty" url:"manageUrl,omitempty"`
@@ -1235,7 +1236,9 @@ type GetAccountResponseAPIKeyPermissions struct {
 	MissingLiveDeliveryScopes  []string                                   `json:"missingLiveDeliveryScopes,omitempty" url:"missingLiveDeliveryScopes,omitempty"`
 	MissingMarketingReadScopes []string                                   `json:"missingMarketingReadScopes,omitempty" url:"missingMarketingReadScopes,omitempty"`
 	Preset                     *GetAccountResponseAPIKeyPermissionsPreset `json:"preset,omitempty" url:"preset,omitempty"`
-	Scopes                     []string                                   `json:"scopes,omitempty" url:"scopes,omitempty"`
+	// Scopes the authenticated user's workspace role cannot use through a personal key, such as transactional:send or team:manage for a marketer. Empty for owners, admins, and company keys.
+	RoleRestrictedScopes []string `json:"roleRestrictedScopes,omitempty" url:"roleRestrictedScopes,omitempty"`
+	Scopes               []string `json:"scopes,omitempty" url:"scopes,omitempty"`
 	// Number of currently defined scopes enabled for the key. For full-access keys this equals currentScopeCount, while fullAccess still indicates future-scope access.
 	SelectedScopeCount *int `json:"selectedScopeCount,omitempty" url:"selectedScopeCount,omitempty"`
 
@@ -1321,6 +1324,13 @@ func (g *GetAccountResponseAPIKeyPermissions) GetPreset() *GetAccountResponseAPI
 		return nil
 	}
 	return g.Preset
+}
+
+func (g *GetAccountResponseAPIKeyPermissions) GetRoleRestrictedScopes() []string {
+	if g == nil {
+		return nil
+	}
+	return g.RoleRestrictedScopes
 }
 
 func (g *GetAccountResponseAPIKeyPermissions) GetScopes() []string {
@@ -1426,6 +1436,13 @@ func (g *GetAccountResponseAPIKeyPermissions) SetMissingMarketingReadScopes(miss
 func (g *GetAccountResponseAPIKeyPermissions) SetPreset(preset *GetAccountResponseAPIKeyPermissionsPreset) {
 	g.Preset = preset
 	g.require(getAccountResponseAPIKeyPermissionsFieldPreset)
+}
+
+// SetRoleRestrictedScopes sets the RoleRestrictedScopes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetAccountResponseAPIKeyPermissions) SetRoleRestrictedScopes(roleRestrictedScopes []string) {
+	g.RoleRestrictedScopes = roleRestrictedScopes
+	g.require(getAccountResponseAPIKeyPermissionsFieldRoleRestrictedScopes)
 }
 
 // SetScopes sets the Scopes field and marks it as non-optional;
@@ -1692,7 +1709,7 @@ var (
 type GetAccountResponseCompaniesItem struct {
 	ID   *string `json:"id,omitempty" url:"id,omitempty"`
 	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// Account-key access role. Viewer access remains read-only regardless of key scopes.
+	// Account-key access role. Viewer access remains read-only regardless of key scopes; marketer access is limited to marketing scopes (no transactional, settings, integration, webhook, team, or API-key scopes).
 	Role *GetAccountResponseCompaniesItemRole `json:"role,omitempty" url:"role,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -1800,13 +1817,14 @@ func (g *GetAccountResponseCompaniesItem) String() string {
 	return fmt.Sprintf("%#v", g)
 }
 
-// Account-key access role. Viewer access remains read-only regardless of key scopes.
+// Account-key access role. Viewer access remains read-only regardless of key scopes; marketer access is limited to marketing scopes (no transactional, settings, integration, webhook, team, or API-key scopes).
 type GetAccountResponseCompaniesItemRole string
 
 const (
-	GetAccountResponseCompaniesItemRoleOwner  GetAccountResponseCompaniesItemRole = "owner"
-	GetAccountResponseCompaniesItemRoleAdmin  GetAccountResponseCompaniesItemRole = "admin"
-	GetAccountResponseCompaniesItemRoleViewer GetAccountResponseCompaniesItemRole = "viewer"
+	GetAccountResponseCompaniesItemRoleOwner    GetAccountResponseCompaniesItemRole = "owner"
+	GetAccountResponseCompaniesItemRoleAdmin    GetAccountResponseCompaniesItemRole = "admin"
+	GetAccountResponseCompaniesItemRoleMarketer GetAccountResponseCompaniesItemRole = "marketer"
+	GetAccountResponseCompaniesItemRoleViewer   GetAccountResponseCompaniesItemRole = "viewer"
 )
 
 func NewGetAccountResponseCompaniesItemRoleFromString(s string) (GetAccountResponseCompaniesItemRole, error) {
@@ -1815,6 +1833,8 @@ func NewGetAccountResponseCompaniesItemRoleFromString(s string) (GetAccountRespo
 		return GetAccountResponseCompaniesItemRoleOwner, nil
 	case "admin":
 		return GetAccountResponseCompaniesItemRoleAdmin, nil
+	case "marketer":
+		return GetAccountResponseCompaniesItemRoleMarketer, nil
 	case "viewer":
 		return GetAccountResponseCompaniesItemRoleViewer, nil
 	}

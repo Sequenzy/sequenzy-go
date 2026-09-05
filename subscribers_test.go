@@ -17567,6 +17567,14 @@ func TestSettersMarkExplicitGetAccountInfoResponse(t *testing.T) {
 }
 
 func TestSettersGetAccountInfoResponseAccount(t *testing.T) {
+	t.Run("SetAPIKeyType", func(t *testing.T) {
+		obj := &GetAccountInfoResponseAccount{}
+		var fernTestValueAPIKeyType *GetAccountInfoResponseAccountAPIKeyType
+		obj.SetAPIKeyType(fernTestValueAPIKeyType)
+		assert.Equal(t, fernTestValueAPIKeyType, obj.APIKeyType)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetCompanyID", func(t *testing.T) {
 		obj := &GetAccountInfoResponseAccount{}
 		var fernTestValueCompanyID *string
@@ -17586,6 +17594,39 @@ func TestSettersGetAccountInfoResponseAccount(t *testing.T) {
 }
 
 func TestGettersGetAccountInfoResponseAccount(t *testing.T) {
+	t.Run("GetAPIKeyType", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetAccountInfoResponseAccount{}
+		var expected *GetAccountInfoResponseAccountAPIKeyType
+		obj.APIKeyType = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAPIKeyType(), "getter should return the property value")
+	})
+
+	t.Run("GetAPIKeyType_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetAccountInfoResponseAccount{}
+		obj.APIKeyType = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetAPIKeyType(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetAPIKeyType_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *GetAccountInfoResponseAccount
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAPIKeyType() // Should return zero value
+	})
+
 	t.Run("GetCompanyID", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -17655,6 +17696,37 @@ func TestGettersGetAccountInfoResponseAccount(t *testing.T) {
 }
 
 func TestSettersMarkExplicitGetAccountInfoResponseAccount(t *testing.T) {
+	t.Run("SetAPIKeyType_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetAccountInfoResponseAccount{}
+		var fernTestValueAPIKeyType *GetAccountInfoResponseAccountAPIKeyType
+
+		// Act
+		obj.SetAPIKeyType(fernTestValueAPIKeyType)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetCompanyID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -24727,6 +24799,35 @@ func TestEnumCreateSubscribersRequestStatus(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewCreateSubscribersRequestStatusFromString("active")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumGetAccountInfoResponseAccountAPIKeyType(t *testing.T) {
+	t.Run("NewFromString_company", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewGetAccountInfoResponseAccountAPIKeyTypeFromString("company")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, GetAccountInfoResponseAccountAPIKeyType("company"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_personal", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewGetAccountInfoResponseAccountAPIKeyTypeFromString("personal")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, GetAccountInfoResponseAccountAPIKeyType("personal"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewGetAccountInfoResponseAccountAPIKeyTypeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewGetAccountInfoResponseAccountAPIKeyTypeFromString("company")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)

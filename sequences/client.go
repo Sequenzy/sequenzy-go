@@ -124,7 +124,7 @@ func (c *Client) ConfigureInboundWebhook(
 	return response.Body, nil
 }
 
-// Creates a draft automation sequence using AI-generated content, explicit email/action steps, or a blank trigger-to-completion graph when both are omitted. Discount action steps dynamically generate Stripe or Shopify codes that later emails can reference with discount merge tags.
+// Creates a draft automation sequence using AI-generated content, explicit email/action steps, or a blank trigger-to-completion graph when both are omitted. Discount action steps dynamically generate Stripe or Shopify codes that later emails can reference with discount merge tags. Marketer account keys must choose existing sender and Reply-To profiles; requests requiring new profiles return 400 before creating profiles, labels, or campaign/sequence changes, including nested steps and branches.
 //
 // Example:
 //
@@ -849,7 +849,7 @@ func (c *Client) Unarchive(
 	return response.Body, nil
 }
 
-// Updates sequence settings and content, inserts linear or branching steps, or performs revision-guarded graph edits.
+// Updates sequence settings and content, inserts linear or branching steps, or performs revision-guarded graph edits. Marketer account keys must choose existing sender and Reply-To profiles; requests requiring new profiles return 400 before creating profiles, labels, or campaign/sequence changes, including nested steps and branches.
 //
 // Example:
 //

@@ -13,14 +13,15 @@ import (
 var (
 	createTemplatesRequestFieldBlocks      = big.NewInt(1 << 0)
 	createTemplatesRequestFieldHTML        = big.NewInt(1 << 1)
-	createTemplatesRequestFieldLabel       = big.NewInt(1 << 2)
-	createTemplatesRequestFieldLabels      = big.NewInt(1 << 3)
-	createTemplatesRequestFieldName        = big.NewInt(1 << 4)
-	createTemplatesRequestFieldPreviewText = big.NewInt(1 << 5)
-	createTemplatesRequestFieldPrompt      = big.NewInt(1 << 6)
-	createTemplatesRequestFieldStyle       = big.NewInt(1 << 7)
-	createTemplatesRequestFieldSubject     = big.NewInt(1 << 8)
-	createTemplatesRequestFieldTone        = big.NewInt(1 << 9)
+	createTemplatesRequestFieldIsTemplate  = big.NewInt(1 << 2)
+	createTemplatesRequestFieldLabel       = big.NewInt(1 << 3)
+	createTemplatesRequestFieldLabels      = big.NewInt(1 << 4)
+	createTemplatesRequestFieldName        = big.NewInt(1 << 5)
+	createTemplatesRequestFieldPreviewText = big.NewInt(1 << 6)
+	createTemplatesRequestFieldPrompt      = big.NewInt(1 << 7)
+	createTemplatesRequestFieldStyle       = big.NewInt(1 << 8)
+	createTemplatesRequestFieldSubject     = big.NewInt(1 << 9)
+	createTemplatesRequestFieldTone        = big.NewInt(1 << 10)
 )
 
 type CreateTemplatesRequest struct {
@@ -28,6 +29,8 @@ type CreateTemplatesRequest struct {
 	Blocks []map[string]any `json:"blocks,omitempty" url:"-"`
 	// Raw HTML body. Mutually exclusive with blocks.
 	HTML *string `json:"html,omitempty" url:"-"`
+	// Save as a reusable master design that sequence steps and campaigns can start from (always as an independent copy).
+	IsTemplate *bool `json:"isTemplate,omitempty" url:"-"`
 	// Compatibility alias for labels.
 	Label []string `json:"label,omitempty" url:"-"`
 	// Label names to assign. Missing labels are created automatically.
@@ -66,6 +69,13 @@ func (c *CreateTemplatesRequest) SetBlocks(blocks []map[string]any) {
 func (c *CreateTemplatesRequest) SetHTML(html *string) {
 	c.HTML = html
 	c.require(createTemplatesRequestFieldHTML)
+}
+
+// SetIsTemplate sets the IsTemplate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTemplatesRequest) SetIsTemplate(isTemplate *bool) {
+	c.IsTemplate = isTemplate
+	c.require(createTemplatesRequestFieldIsTemplate)
 }
 
 // SetLabel sets the Label field and marks it as non-optional;
@@ -224,12 +234,15 @@ func (g *GetTemplatesRequest) SetTemplateID(templateID string) {
 }
 
 var (
-	listTemplatesRequestFieldLabel  = big.NewInt(1 << 0)
-	listTemplatesRequestFieldLimit  = big.NewInt(1 << 1)
-	listTemplatesRequestFieldOffset = big.NewInt(1 << 2)
+	listTemplatesRequestFieldIsTemplate = big.NewInt(1 << 0)
+	listTemplatesRequestFieldLabel      = big.NewInt(1 << 1)
+	listTemplatesRequestFieldLimit      = big.NewInt(1 << 2)
+	listTemplatesRequestFieldOffset     = big.NewInt(1 << 3)
 )
 
 type ListTemplatesRequest struct {
+	// Filter to reusable master designs (`true`) or everything else (`false`). Omit to list every body.
+	IsTemplate *bool `json:"-" url:"isTemplate,omitempty"`
 	// Optional label name filter. Only templates assigned this label are returned.
 	Label *string `json:"-" url:"label,omitempty"`
 	// Templates per page. Values above 100 are clamped to 100.
@@ -246,6 +259,13 @@ func (l *ListTemplatesRequest) require(field *big.Int) {
 		l.explicitFields = big.NewInt(0)
 	}
 	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetIsTemplate sets the IsTemplate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTemplatesRequest) SetIsTemplate(isTemplate *bool) {
+	l.IsTemplate = isTemplate
+	l.require(listTemplatesRequestFieldIsTemplate)
 }
 
 // SetLabel sets the Label field and marks it as non-optional;
@@ -709,24 +729,30 @@ var (
 	templateDetailFieldCreatedAt               = big.NewInt(1 << 0)
 	templateDetailFieldEmailPreset             = big.NewInt(1 << 1)
 	templateDetailFieldID                      = big.NewInt(1 << 2)
-	templateDetailFieldLabels                  = big.NewInt(1 << 3)
-	templateDetailFieldLocalizations           = big.NewInt(1 << 4)
-	templateDetailFieldName                    = big.NewInt(1 << 5)
-	templateDetailFieldPreviewText             = big.NewInt(1 << 6)
-	templateDetailFieldSubject                 = big.NewInt(1 << 7)
-	templateDetailFieldUpdatedAt               = big.NewInt(1 << 8)
-	templateDetailFieldAbTests                 = big.NewInt(1 << 9)
-	templateDetailFieldBlocks                  = big.NewInt(1 << 10)
-	templateDetailFieldCompanyID               = big.NewInt(1 << 11)
-	templateDetailFieldEmailLocalizationConfig = big.NewInt(1 << 12)
-	templateDetailFieldFontFamily              = big.NewInt(1 << 13)
-	templateDetailFieldShareURL                = big.NewInt(1 << 14)
+	templateDetailFieldIsTemplate              = big.NewInt(1 << 3)
+	templateDetailFieldLabels                  = big.NewInt(1 << 4)
+	templateDetailFieldLocalizations           = big.NewInt(1 << 5)
+	templateDetailFieldName                    = big.NewInt(1 << 6)
+	templateDetailFieldPreviewText             = big.NewInt(1 << 7)
+	templateDetailFieldSubject                 = big.NewInt(1 << 8)
+	templateDetailFieldUpdatedAt               = big.NewInt(1 << 9)
+	templateDetailFieldAbTests                 = big.NewInt(1 << 10)
+	templateDetailFieldBlocks                  = big.NewInt(1 << 11)
+	templateDetailFieldCompanyID               = big.NewInt(1 << 12)
+	templateDetailFieldEmailLocalizationConfig = big.NewInt(1 << 13)
+	templateDetailFieldFontFamily              = big.NewInt(1 << 14)
+	templateDetailFieldShareURL                = big.NewInt(1 << 15)
 )
 
 type TemplateDetail struct {
 	CreatedAt   *time.Time   `json:"createdAt,omitempty" url:"createdAt,omitempty"`
 	EmailPreset *EmailPreset `json:"emailPreset,omitempty" url:"emailPreset,omitempty"`
 	ID          *string      `json:"id,omitempty" url:"id,omitempty"`
+	// True when this email is marked as a reusable master design.
+	// Master designs are offered first when a sequence step or campaign
+	// starts from an existing email, and starting from one always creates
+	// an independent copy (never a shared link).
+	IsTemplate *bool `json:"isTemplate,omitempty" url:"isTemplate,omitempty"`
 	// Label names assigned to this template.
 	Labels        []string         `json:"labels,omitempty" url:"labels,omitempty"`
 	Localizations []map[string]any `json:"localizations,omitempty" url:"localizations,omitempty"`
@@ -774,6 +800,13 @@ func (t *TemplateDetail) GetID() *string {
 		return nil
 	}
 	return t.ID
+}
+
+func (t *TemplateDetail) GetIsTemplate() *bool {
+	if t == nil {
+		return nil
+	}
+	return t.IsTemplate
 }
 
 func (t *TemplateDetail) GetLabels() []string {
@@ -893,6 +926,13 @@ func (t *TemplateDetail) SetEmailPreset(emailPreset *EmailPreset) {
 func (t *TemplateDetail) SetID(id *string) {
 	t.ID = id
 	t.require(templateDetailFieldID)
+}
+
+// SetIsTemplate sets the IsTemplate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TemplateDetail) SetIsTemplate(isTemplate *bool) {
+	t.IsTemplate = isTemplate
+	t.require(templateDetailFieldIsTemplate)
 }
 
 // SetLabels sets the Labels field and marks it as non-optional;
@@ -1309,18 +1349,24 @@ var (
 	templateSummaryFieldCreatedAt     = big.NewInt(1 << 0)
 	templateSummaryFieldEmailPreset   = big.NewInt(1 << 1)
 	templateSummaryFieldID            = big.NewInt(1 << 2)
-	templateSummaryFieldLabels        = big.NewInt(1 << 3)
-	templateSummaryFieldLocalizations = big.NewInt(1 << 4)
-	templateSummaryFieldName          = big.NewInt(1 << 5)
-	templateSummaryFieldPreviewText   = big.NewInt(1 << 6)
-	templateSummaryFieldSubject       = big.NewInt(1 << 7)
-	templateSummaryFieldUpdatedAt     = big.NewInt(1 << 8)
+	templateSummaryFieldIsTemplate    = big.NewInt(1 << 3)
+	templateSummaryFieldLabels        = big.NewInt(1 << 4)
+	templateSummaryFieldLocalizations = big.NewInt(1 << 5)
+	templateSummaryFieldName          = big.NewInt(1 << 6)
+	templateSummaryFieldPreviewText   = big.NewInt(1 << 7)
+	templateSummaryFieldSubject       = big.NewInt(1 << 8)
+	templateSummaryFieldUpdatedAt     = big.NewInt(1 << 9)
 )
 
 type TemplateSummary struct {
 	CreatedAt   *time.Time   `json:"createdAt,omitempty" url:"createdAt,omitempty"`
 	EmailPreset *EmailPreset `json:"emailPreset,omitempty" url:"emailPreset,omitempty"`
 	ID          *string      `json:"id,omitempty" url:"id,omitempty"`
+	// True when this email is marked as a reusable master design.
+	// Master designs are offered first when a sequence step or campaign
+	// starts from an existing email, and starting from one always creates
+	// an independent copy (never a shared link).
+	IsTemplate *bool `json:"isTemplate,omitempty" url:"isTemplate,omitempty"`
 	// Label names assigned to this template.
 	Labels        []string         `json:"labels,omitempty" url:"labels,omitempty"`
 	Localizations []map[string]any `json:"localizations,omitempty" url:"localizations,omitempty"`
@@ -1355,6 +1401,13 @@ func (t *TemplateSummary) GetID() *string {
 		return nil
 	}
 	return t.ID
+}
+
+func (t *TemplateSummary) GetIsTemplate() *bool {
+	if t == nil {
+		return nil
+	}
+	return t.IsTemplate
 }
 
 func (t *TemplateSummary) GetLabels() []string {
@@ -1432,6 +1485,13 @@ func (t *TemplateSummary) SetEmailPreset(emailPreset *EmailPreset) {
 func (t *TemplateSummary) SetID(id *string) {
 	t.ID = id
 	t.require(templateSummaryFieldID)
+}
+
+// SetIsTemplate sets the IsTemplate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TemplateSummary) SetIsTemplate(isTemplate *bool) {
+	t.IsTemplate = isTemplate
+	t.require(templateSummaryFieldIsTemplate)
 }
 
 // SetLabels sets the Labels field and marks it as non-optional;
@@ -1782,17 +1842,19 @@ func (c *CreateTemplatesResponse) String() string {
 }
 
 var (
-	createTemplatesResponseTemplateFieldID      = big.NewInt(1 << 0)
-	createTemplatesResponseTemplateFieldLabels  = big.NewInt(1 << 1)
-	createTemplatesResponseTemplateFieldName    = big.NewInt(1 << 2)
-	createTemplatesResponseTemplateFieldSubject = big.NewInt(1 << 3)
+	createTemplatesResponseTemplateFieldID         = big.NewInt(1 << 0)
+	createTemplatesResponseTemplateFieldIsTemplate = big.NewInt(1 << 1)
+	createTemplatesResponseTemplateFieldLabels     = big.NewInt(1 << 2)
+	createTemplatesResponseTemplateFieldName       = big.NewInt(1 << 3)
+	createTemplatesResponseTemplateFieldSubject    = big.NewInt(1 << 4)
 )
 
 type CreateTemplatesResponseTemplate struct {
-	ID      *string  `json:"id,omitempty" url:"id,omitempty"`
-	Labels  []string `json:"labels,omitempty" url:"labels,omitempty"`
-	Name    *string  `json:"name,omitempty" url:"name,omitempty"`
-	Subject *string  `json:"subject,omitempty" url:"subject,omitempty"`
+	ID         *string  `json:"id,omitempty" url:"id,omitempty"`
+	IsTemplate *bool    `json:"isTemplate,omitempty" url:"isTemplate,omitempty"`
+	Labels     []string `json:"labels,omitempty" url:"labels,omitempty"`
+	Name       *string  `json:"name,omitempty" url:"name,omitempty"`
+	Subject    *string  `json:"subject,omitempty" url:"subject,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1806,6 +1868,13 @@ func (c *CreateTemplatesResponseTemplate) GetID() *string {
 		return nil
 	}
 	return c.ID
+}
+
+func (c *CreateTemplatesResponseTemplate) GetIsTemplate() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.IsTemplate
 }
 
 func (c *CreateTemplatesResponseTemplate) GetLabels() []string {
@@ -1848,6 +1917,13 @@ func (c *CreateTemplatesResponseTemplate) require(field *big.Int) {
 func (c *CreateTemplatesResponseTemplate) SetID(id *string) {
 	c.ID = id
 	c.require(createTemplatesResponseTemplateFieldID)
+}
+
+// SetIsTemplate sets the IsTemplate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTemplatesResponseTemplate) SetIsTemplate(isTemplate *bool) {
+	c.IsTemplate = isTemplate
+	c.require(createTemplatesResponseTemplateFieldIsTemplate)
 }
 
 // SetLabels sets the Labels field and marks it as non-optional;
@@ -2942,14 +3018,16 @@ func (u *UpdateTemplatesResponse) String() string {
 
 var (
 	updateTemplatesResponseTemplateFieldID          = big.NewInt(1 << 0)
-	updateTemplatesResponseTemplateFieldLabels      = big.NewInt(1 << 1)
-	updateTemplatesResponseTemplateFieldName        = big.NewInt(1 << 2)
-	updateTemplatesResponseTemplateFieldPreviewText = big.NewInt(1 << 3)
-	updateTemplatesResponseTemplateFieldSubject     = big.NewInt(1 << 4)
+	updateTemplatesResponseTemplateFieldIsTemplate  = big.NewInt(1 << 1)
+	updateTemplatesResponseTemplateFieldLabels      = big.NewInt(1 << 2)
+	updateTemplatesResponseTemplateFieldName        = big.NewInt(1 << 3)
+	updateTemplatesResponseTemplateFieldPreviewText = big.NewInt(1 << 4)
+	updateTemplatesResponseTemplateFieldSubject     = big.NewInt(1 << 5)
 )
 
 type UpdateTemplatesResponseTemplate struct {
 	ID          *string  `json:"id,omitempty" url:"id,omitempty"`
+	IsTemplate  *bool    `json:"isTemplate,omitempty" url:"isTemplate,omitempty"`
 	Labels      []string `json:"labels,omitempty" url:"labels,omitempty"`
 	Name        *string  `json:"name,omitempty" url:"name,omitempty"`
 	PreviewText *string  `json:"previewText,omitempty" url:"previewText,omitempty"`
@@ -2967,6 +3045,13 @@ func (u *UpdateTemplatesResponseTemplate) GetID() *string {
 		return nil
 	}
 	return u.ID
+}
+
+func (u *UpdateTemplatesResponseTemplate) GetIsTemplate() *bool {
+	if u == nil {
+		return nil
+	}
+	return u.IsTemplate
 }
 
 func (u *UpdateTemplatesResponseTemplate) GetLabels() []string {
@@ -3016,6 +3101,13 @@ func (u *UpdateTemplatesResponseTemplate) require(field *big.Int) {
 func (u *UpdateTemplatesResponseTemplate) SetID(id *string) {
 	u.ID = id
 	u.require(updateTemplatesResponseTemplateFieldID)
+}
+
+// SetIsTemplate sets the IsTemplate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateTemplatesResponseTemplate) SetIsTemplate(isTemplate *bool) {
+	u.IsTemplate = isTemplate
+	u.require(updateTemplatesResponseTemplateFieldIsTemplate)
 }
 
 // SetLabels sets the Labels field and marks it as non-optional;
@@ -3092,12 +3184,13 @@ var (
 	updateTemplatesRequestFieldTemplateID  = big.NewInt(1 << 0)
 	updateTemplatesRequestFieldBlocks      = big.NewInt(1 << 1)
 	updateTemplatesRequestFieldHTML        = big.NewInt(1 << 2)
-	updateTemplatesRequestFieldLabel       = big.NewInt(1 << 3)
-	updateTemplatesRequestFieldLabels      = big.NewInt(1 << 4)
-	updateTemplatesRequestFieldName        = big.NewInt(1 << 5)
-	updateTemplatesRequestFieldPreviewText = big.NewInt(1 << 6)
-	updateTemplatesRequestFieldSubject     = big.NewInt(1 << 7)
-	updateTemplatesRequestFieldUpdates     = big.NewInt(1 << 8)
+	updateTemplatesRequestFieldIsTemplate  = big.NewInt(1 << 3)
+	updateTemplatesRequestFieldLabel       = big.NewInt(1 << 4)
+	updateTemplatesRequestFieldLabels      = big.NewInt(1 << 5)
+	updateTemplatesRequestFieldName        = big.NewInt(1 << 6)
+	updateTemplatesRequestFieldPreviewText = big.NewInt(1 << 7)
+	updateTemplatesRequestFieldSubject     = big.NewInt(1 << 8)
+	updateTemplatesRequestFieldUpdates     = big.NewInt(1 << 9)
 )
 
 type UpdateTemplatesRequest struct {
@@ -3107,6 +3200,8 @@ type UpdateTemplatesRequest struct {
 	Blocks []map[string]any `json:"blocks,omitempty" url:"-"`
 	// Replacement HTML body. Mutually exclusive with blocks.
 	HTML *string `json:"html,omitempty" url:"-"`
+	// Mark (true) or unmark (false) this email as a reusable master design.
+	IsTemplate *bool `json:"isTemplate,omitempty" url:"-"`
 	// Compatibility alias for labels.
 	Label []string `json:"label,omitempty" url:"-"`
 	// Replacement label names. Send an empty array to clear labels. Missing labels are created automatically.
@@ -3148,6 +3243,13 @@ func (u *UpdateTemplatesRequest) SetBlocks(blocks []map[string]any) {
 func (u *UpdateTemplatesRequest) SetHTML(html *string) {
 	u.HTML = html
 	u.require(updateTemplatesRequestFieldHTML)
+}
+
+// SetIsTemplate sets the IsTemplate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateTemplatesRequest) SetIsTemplate(isTemplate *bool) {
+	u.IsTemplate = isTemplate
+	u.require(updateTemplatesRequestFieldIsTemplate)
 }
 
 // SetLabel sets the Label field and marks it as non-optional;

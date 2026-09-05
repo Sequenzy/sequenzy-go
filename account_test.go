@@ -2864,6 +2864,14 @@ func TestSettersGetAccountResponseAPIKeyPermissions(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetRoleRestrictedScopes", func(t *testing.T) {
+		obj := &GetAccountResponseAPIKeyPermissions{}
+		var fernTestValueRoleRestrictedScopes []string
+		obj.SetRoleRestrictedScopes(fernTestValueRoleRestrictedScopes)
+		assert.Equal(t, fernTestValueRoleRestrictedScopes, obj.RoleRestrictedScopes)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetScopes", func(t *testing.T) {
 		obj := &GetAccountResponseAPIKeyPermissions{}
 		var fernTestValueScopes []string
@@ -3244,6 +3252,39 @@ func TestGettersGetAccountResponseAPIKeyPermissions(t *testing.T) {
 			}
 		}()
 		_ = obj.GetPreset() // Should return zero value
+	})
+
+	t.Run("GetRoleRestrictedScopes", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetAccountResponseAPIKeyPermissions{}
+		var expected []string
+		obj.RoleRestrictedScopes = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetRoleRestrictedScopes(), "getter should return the property value")
+	})
+
+	t.Run("GetRoleRestrictedScopes_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetAccountResponseAPIKeyPermissions{}
+		obj.RoleRestrictedScopes = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetRoleRestrictedScopes(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetRoleRestrictedScopes_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *GetAccountResponseAPIKeyPermissions
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetRoleRestrictedScopes() // Should return zero value
 	})
 
 	t.Run("GetScopes", func(t *testing.T) {
@@ -3633,6 +3674,37 @@ func TestSettersMarkExplicitGetAccountResponseAPIKeyPermissions(t *testing.T) {
 
 		// Act
 		obj.SetPreset(fernTestValuePreset)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetRoleRestrictedScopes_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetAccountResponseAPIKeyPermissions{}
+		var fernTestValueRoleRestrictedScopes []string
+
+		// Act
+		obj.SetRoleRestrictedScopes(fernTestValueRoleRestrictedScopes)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -7717,6 +7789,13 @@ func TestEnumGetAccountResponseCompaniesItemRole(t *testing.T) {
 		val, err := NewGetAccountResponseCompaniesItemRoleFromString("admin")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, GetAccountResponseCompaniesItemRole("admin"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_marketer", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewGetAccountResponseCompaniesItemRoleFromString("marketer")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, GetAccountResponseCompaniesItemRole("marketer"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_viewer", func(t *testing.T) {

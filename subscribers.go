@@ -6941,19 +6941,29 @@ func (g *GetAccountInfoResponse) String() string {
 }
 
 var (
-	getAccountInfoResponseAccountFieldCompanyID   = big.NewInt(1 << 0)
-	getAccountInfoResponseAccountFieldCompanyName = big.NewInt(1 << 1)
+	getAccountInfoResponseAccountFieldAPIKeyType  = big.NewInt(1 << 0)
+	getAccountInfoResponseAccountFieldCompanyID   = big.NewInt(1 << 1)
+	getAccountInfoResponseAccountFieldCompanyName = big.NewInt(1 << 2)
 )
 
 type GetAccountInfoResponseAccount struct {
-	CompanyID   *string `json:"companyId,omitempty" url:"companyId,omitempty"`
-	CompanyName *string `json:"companyName,omitempty" url:"companyName,omitempty"`
+	// API key ownership type. Workspace-bound integrations should require company so requests cannot silently select another workspace.
+	APIKeyType  *GetAccountInfoResponseAccountAPIKeyType `json:"apiKeyType,omitempty" url:"apiKeyType,omitempty"`
+	CompanyID   *string                                  `json:"companyId,omitempty" url:"companyId,omitempty"`
+	CompanyName *string                                  `json:"companyName,omitempty" url:"companyName,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (g *GetAccountInfoResponseAccount) GetAPIKeyType() *GetAccountInfoResponseAccountAPIKeyType {
+	if g == nil {
+		return nil
+	}
+	return g.APIKeyType
 }
 
 func (g *GetAccountInfoResponseAccount) GetCompanyID() *string {
@@ -6982,6 +6992,13 @@ func (g *GetAccountInfoResponseAccount) require(field *big.Int) {
 		g.explicitFields = big.NewInt(0)
 	}
 	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetAPIKeyType sets the APIKeyType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetAccountInfoResponseAccount) SetAPIKeyType(apiKeyType *GetAccountInfoResponseAccountAPIKeyType) {
+	g.APIKeyType = apiKeyType
+	g.require(getAccountInfoResponseAccountFieldAPIKeyType)
 }
 
 // SetCompanyID sets the CompanyID field and marks it as non-optional;
@@ -7038,6 +7055,29 @@ func (g *GetAccountInfoResponseAccount) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", g)
+}
+
+// API key ownership type. Workspace-bound integrations should require company so requests cannot silently select another workspace.
+type GetAccountInfoResponseAccountAPIKeyType string
+
+const (
+	GetAccountInfoResponseAccountAPIKeyTypeCompany  GetAccountInfoResponseAccountAPIKeyType = "company"
+	GetAccountInfoResponseAccountAPIKeyTypePersonal GetAccountInfoResponseAccountAPIKeyType = "personal"
+)
+
+func NewGetAccountInfoResponseAccountAPIKeyTypeFromString(s string) (GetAccountInfoResponseAccountAPIKeyType, error) {
+	switch s {
+	case "company":
+		return GetAccountInfoResponseAccountAPIKeyTypeCompany, nil
+	case "personal":
+		return GetAccountInfoResponseAccountAPIKeyTypePersonal, nil
+	}
+	var t GetAccountInfoResponseAccountAPIKeyType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (g GetAccountInfoResponseAccountAPIKeyType) Ptr() *GetAccountInfoResponseAccountAPIKeyType {
+	return &g
 }
 
 var (

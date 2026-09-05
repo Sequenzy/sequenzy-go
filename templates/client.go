@@ -34,7 +34,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Creates a reusable email template from exactly one of prompt, HTML, or Sequenzy blocks.
+// Creates a reusable email template from exactly one of prompt, HTML, or Sequenzy blocks. Creating a standalone copy of a saved email or gallery design and AI rewriting within its layout are currently dashboard-only workflows. This endpoint has no source-template copy operation; prompt generates new content without preserving an existing layout. See /concepts/email-templates#availability-across-interfaces for the documented interface exception and supported alternatives.
 //
 // Example:
 //

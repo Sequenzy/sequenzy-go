@@ -47,7 +47,7 @@ type InviteTeamRequest struct {
 	CanManageBilling *bool `json:"canManageBilling,omitempty" url:"-"`
 	// Email address to invite.
 	Email string `json:"email" url:"-"`
-	// Role for the new member. Restricted members can open direct campaign links only.
+	// Role for the new member. Marketers create, edit, and send campaigns and sequences and manage subscribers but cannot access transactional emails, settings, billing, or the team. Restricted members can open direct campaign links only.
 	Role InviteTeamRequestRole `json:"role" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -510,6 +510,7 @@ type TeamMemberRole string
 const (
 	TeamMemberRoleOwner      TeamMemberRole = "owner"
 	TeamMemberRoleAdmin      TeamMemberRole = "admin"
+	TeamMemberRoleMarketer   TeamMemberRole = "marketer"
 	TeamMemberRoleViewer     TeamMemberRole = "viewer"
 	TeamMemberRoleRestricted TeamMemberRole = "restricted"
 )
@@ -520,6 +521,8 @@ func NewTeamMemberRoleFromString(s string) (TeamMemberRole, error) {
 		return TeamMemberRoleOwner, nil
 	case "admin":
 		return TeamMemberRoleAdmin, nil
+	case "marketer":
+		return TeamMemberRoleMarketer, nil
 	case "viewer":
 		return TeamMemberRoleViewer, nil
 	case "restricted":
@@ -774,11 +777,12 @@ func (c *CancelInvitationTeamResponse) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Role for the new member. Restricted members can open direct campaign links only.
+// Role for the new member. Marketers create, edit, and send campaigns and sequences and manage subscribers but cannot access transactional emails, settings, billing, or the team. Restricted members can open direct campaign links only.
 type InviteTeamRequestRole string
 
 const (
 	InviteTeamRequestRoleAdmin      InviteTeamRequestRole = "admin"
+	InviteTeamRequestRoleMarketer   InviteTeamRequestRole = "marketer"
 	InviteTeamRequestRoleViewer     InviteTeamRequestRole = "viewer"
 	InviteTeamRequestRoleRestricted InviteTeamRequestRole = "restricted"
 )
@@ -787,6 +791,8 @@ func NewInviteTeamRequestRoleFromString(s string) (InviteTeamRequestRole, error)
 	switch s {
 	case "admin":
 		return InviteTeamRequestRoleAdmin, nil
+	case "marketer":
+		return InviteTeamRequestRoleMarketer, nil
 	case "viewer":
 		return InviteTeamRequestRoleViewer, nil
 	case "restricted":
@@ -1112,6 +1118,7 @@ type InviteTeamResponseInvitationRole string
 
 const (
 	InviteTeamResponseInvitationRoleAdmin      InviteTeamResponseInvitationRole = "admin"
+	InviteTeamResponseInvitationRoleMarketer   InviteTeamResponseInvitationRole = "marketer"
 	InviteTeamResponseInvitationRoleViewer     InviteTeamResponseInvitationRole = "viewer"
 	InviteTeamResponseInvitationRoleRestricted InviteTeamResponseInvitationRole = "restricted"
 )
@@ -1120,6 +1127,8 @@ func NewInviteTeamResponseInvitationRoleFromString(s string) (InviteTeamResponse
 	switch s {
 	case "admin":
 		return InviteTeamResponseInvitationRoleAdmin, nil
+	case "marketer":
+		return InviteTeamResponseInvitationRoleMarketer, nil
 	case "viewer":
 		return InviteTeamResponseInvitationRoleViewer, nil
 	case "restricted":
