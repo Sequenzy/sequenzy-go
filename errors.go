@@ -58,11 +58,11 @@ func (c *ConflictError) Unwrap() error {
 // Required scope or company role is missing
 type ForbiddenError struct {
 	*core.APIError
-	Body *Error
+	Body any
 }
 
 func (f *ForbiddenError) UnmarshalJSON(data []byte) error {
-	var body *Error
+	var body any
 	if err := json.Unmarshal(data, &body); err != nil {
 		return err
 	}

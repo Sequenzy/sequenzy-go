@@ -3071,6 +3071,43 @@
       "postServeActions": []
     },
     {
+      "id": "be3a7668-3ee6-4ddb-a831-1ba9d1dae974",
+      "name": "Get latest received event sample - default",
+      "request": {
+        "urlPathTemplate": "/events/sample",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "queryParameters": {
+          "eventName": {
+            "equalTo": "eventName"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"eventName\": \"eventName\",\n  \"sample\": {\n    \"eventTime\": \"eventTime\",\n    \"properties\": {\n      \"key\": \"value\"\n    },\n    \"subscriberId\": \"subscriberId\"\n  }\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "be3a7668-3ee6-4ddb-a831-1ba9d1dae974",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
       "id": "599ef37f-12a9-4085-a728-54f2b14e85e2",
       "name": "Get event schemas - default",
       "request": {
@@ -6157,6 +6194,45 @@
       }
     },
     {
+      "id": "dd98f55f-0053-4bb0-888a-c8b1125028c2",
+      "name": "Get live sequence test - default",
+      "request": {
+        "urlPathTemplate": "/sequences/{sequenceId}/test-runs/{runId}",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "runId": {
+            "equalTo": "runId"
+          },
+          "sequenceId": {
+            "equalTo": "sequenceId"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"run\": {\n    \"automationId\": \"automationId\",\n    \"companyId\": \"companyId\",\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"errorMessage\": \"errorMessage\",\n    \"finishedAt\": \"2024-01-15T09:30:00Z\",\n    \"id\": \"id\",\n    \"initiatedByUserId\": \"initiatedByUserId\",\n    \"jobId\": \"jobId\",\n    \"recipientEmails\": [\n      \"recipientEmails\"\n    ],\n    \"speedMultiplier\": 1,\n    \"startedAt\": \"2024-01-15T09:30:00Z\",\n    \"status\": \"queued\",\n    \"steps\": [\n      {\n        \"key\": \"value\"\n      }\n    ],\n    \"subscriberId\": \"subscriberId\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\"\n  }\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "dd98f55f-0053-4bb0-888a-c8b1125028c2",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "b520a663-d780-4830-a85e-934abe72e3d8",
       "name": "List sequences - default",
       "request": {
@@ -6557,6 +6633,42 @@
         }
       },
       "uuid": "c24e72fa-85f9-438a-9620-528ddf16d9d6",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "6ec9022e-a674-4da7-b5e8-e029478a18d9",
+      "name": "Start live sequence test - default",
+      "request": {
+        "urlPathTemplate": "/sequences/{sequenceId}/test-runs",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "sequenceId": {
+            "equalTo": "sequenceId"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"run\": {\n    \"automationId\": \"automationId\",\n    \"companyId\": \"companyId\",\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"errorMessage\": \"errorMessage\",\n    \"finishedAt\": \"2024-01-15T09:30:00Z\",\n    \"id\": \"id\",\n    \"initiatedByUserId\": \"initiatedByUserId\",\n    \"jobId\": \"jobId\",\n    \"recipientEmails\": [\n      \"recipientEmails\"\n    ],\n    \"speedMultiplier\": 1,\n    \"startedAt\": \"2024-01-15T09:30:00Z\",\n    \"status\": \"queued\",\n    \"steps\": [\n      {\n        \"key\": \"value\"\n      }\n    ],\n    \"subscriberId\": \"subscriberId\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\"\n  }\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "6ec9022e-a674-4da7-b5e8-e029478a18d9",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -10294,6 +10406,6 @@
     }
   ],
   "meta": {
-    "total": 298
+    "total": 301
   }
 }

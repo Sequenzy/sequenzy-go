@@ -34,6 +34,33 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
+// Requires subscribers:read and company access. Reads the latest retained exact-name event across workspace subscribers, including older history. Trims surrounding whitespace; does not resolve aliases. No additional recent-only cutoff. Equal timestamps have no guaranteed tie order. Copy sample.properties into a sequence test run customVariables object; the test recipient is unchanged. This read has no side effects and can be retried safely.
+//
+// Example:
+//
+//	request := &sequenzygo.GetSampleEventsRequest{
+//	    EventName: "eventName",
+//	}
+//	client.Events.GetSample(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) GetSample(
+	ctx context.Context,
+	request *sequenzygo.GetSampleEventsRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.GetSampleEventsResponse, error) {
+	response, err := c.WithRawResponse.GetSample(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Returns the published payload of a built-in event - a real example payload per provider, plus every property path with its type, the merge tag that resolves it, and a description wherever the example alone is ambiguous (a null sample, an empty list, a unit that is not obvious, or a type that differs per provider). Omit eventName to list every documented event. Static reference data describing the shape of an event, not what the account has received. An event with no published payload returns documented false; it is still valid to trigger and to build a sequence on, because custom events carry exactly the properties you send.
 //
 // Example:

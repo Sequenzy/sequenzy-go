@@ -7497,6 +7497,66 @@ client.EmailSends.List(
 </details>
 
 ## Events
+<details><summary><code>client.Events.GetSample() -> *sequenzygo.GetSampleEventsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Requires subscribers:read and company access. Reads the latest retained exact-name event across workspace subscribers, including older history. Trims surrounding whitespace; does not resolve aliases. No additional recent-only cutoff. Equal timestamps have no guaranteed tie order. Copy sample.properties into a sequence test run customVariables object; the test recipient is unchanged. This read has no side effects and can be retried safely.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.GetSampleEventsRequest{
+    EventName: "eventName",
+}
+client.Events.GetSample(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**eventName:** `string` — Exact recorded event name, including custom names. Must not be blank.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Events.GetSchemas() -> *sequenzygo.GetSchemasEventsResponse</code></summary>
 <dl>
 <dd>
@@ -14191,6 +14251,75 @@ client.Sequences.GetStats(
 </dl>
 </details>
 
+<details><summary><code>client.Sequences.GetTestRun(SequenceID, RunID) -> *sequenzygo.SequenceTestRunResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Read status and step logs for a same-company sequence test run. Requires sequences:read and subscribers:read.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.GetTestRunSequencesRequest{
+    SequenceID: "sequenceId",
+    RunID: "runId",
+}
+client.Sequences.GetTestRun(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**sequenceID:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**runID:** `string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Sequences.List() -> *sequenzygo.ListSequencesResponse</code></summary>
 <dl>
 <dd>
@@ -15124,6 +15253,91 @@ client.Sequences.Simulate(
 <dd>
 
 **subscriberID:** `*string` — Optional stored subscriber to walk through the graph. Do not pass with email.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Sequences.StartTestRun(SequenceID, request) -> *sequenzygo.SequenceTestRunResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Runs real sequence actions for one active subscriber. Emails are marked as tests. Requires sequences:activate and subscribers:read. Does not enable the sequence or record a trigger event. Ordinary failure retries are disabled; stalled-job recovery can replay actions after worker loss. Completed side effects are not rolled back. Inspect before starting another run.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.StartTestRunSequencesRequest{
+    SequenceID: "sequenceId",
+    SubscriberID: "subscriberId",
+}
+client.Sequences.StartTestRun(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**sequenceID:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**customVariables:** `map[string]any` — Trigger event properties available as event.* in sequence actions. Supports nested objects and arrays. Omit or use an empty object for no event properties. Null is invalid. No event is recorded and subscriber attributes are not changed by supplying this object.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**speedMultiplier:** `*int` — Delay acceleration. Existing live-test wait caps still apply.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**subscriberID:** `string` — Active subscriber in the same company with an email address.
     
 </dd>
 </dl>
@@ -16424,6 +16638,8 @@ client.Subscribers.CancelOperation(
 
 Creates a new subscriber or handles existing ones based on the `duplicateStrategy` parameter.
 
+Requires `subscribers:write`. Supplying a nonempty `lists` array also requires `lists:write`. Explicit sequence enrollment and writes that can send a double opt-in confirmation require `automations:trigger`.
+
 **Duplicate Strategies:**
 - `skip` (default): Don't update existing subscribers
 - `merge`: Only fill in missing fields, never overwrite existing values
@@ -16530,7 +16746,7 @@ How to handle existing subscribers:
 <dl>
 <dd>
 
-**lists:** `[]string` — List IDs to add subscriber to. If not provided, a subscriber this call creates follows the workspace default lists setting and an existing subscriber keeps the memberships they already have, so an attribute-only upsert never changes list membership. If empty array, subscriber is added to NO lists.
+**lists:** `[]string` — List IDs to add subscriber to. A nonempty array requires the lists:write scope. If not provided, a subscriber this call creates follows the workspace default lists setting and an existing subscriber keeps the memberships they already have, so an attribute-only upsert never changes list membership. If empty array, subscriber is added to NO lists.
     
 </dd>
 </dl>

@@ -10,6 +10,32 @@ import (
 )
 
 var (
+	getSampleEventsRequestFieldEventName = big.NewInt(1 << 0)
+)
+
+type GetSampleEventsRequest struct {
+	// Exact recorded event name, including custom names. Must not be blank.
+	EventName string `json:"-" url:"eventName"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (g *GetSampleEventsRequest) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetEventName sets the EventName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetSampleEventsRequest) SetEventName(eventName string) {
+	g.EventName = eventName
+	g.require(getSampleEventsRequestFieldEventName)
+}
+
+var (
 	getSchemasEventsRequestFieldEventName = big.NewInt(1 << 0)
 	getSchemasEventsRequestFieldProvider  = big.NewInt(1 << 1)
 )
@@ -592,6 +618,225 @@ func NewEventSchemaProvidersItemProviderFromString(s string) (EventSchemaProvide
 
 func (e EventSchemaProvidersItemProvider) Ptr() *EventSchemaProvidersItemProvider {
 	return &e
+}
+
+var (
+	getSampleEventsResponseFieldEventName = big.NewInt(1 << 0)
+	getSampleEventsResponseFieldSample    = big.NewInt(1 << 1)
+)
+
+type GetSampleEventsResponse struct {
+	EventName string                         `json:"eventName" url:"eventName"`
+	Sample    *GetSampleEventsResponseSample `json:"sample,omitempty" url:"sample,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (g *GetSampleEventsResponse) GetEventName() string {
+	if g == nil {
+		return ""
+	}
+	return g.EventName
+}
+
+func (g *GetSampleEventsResponse) GetSample() *GetSampleEventsResponseSample {
+	if g == nil {
+		return nil
+	}
+	return g.Sample
+}
+
+func (g *GetSampleEventsResponse) GetExtraProperties() map[string]interface{} {
+	if g == nil {
+		return nil
+	}
+	return g.extraProperties
+}
+
+func (g *GetSampleEventsResponse) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetEventName sets the EventName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetSampleEventsResponse) SetEventName(eventName string) {
+	g.EventName = eventName
+	g.require(getSampleEventsResponseFieldEventName)
+}
+
+// SetSample sets the Sample field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetSampleEventsResponse) SetSample(sample *GetSampleEventsResponseSample) {
+	g.Sample = sample
+	g.require(getSampleEventsResponseFieldSample)
+}
+
+func (g *GetSampleEventsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler GetSampleEventsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*g = GetSampleEventsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *g)
+	if err != nil {
+		return err
+	}
+	g.extraProperties = extraProperties
+	g.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (g *GetSampleEventsResponse) MarshalJSON() ([]byte, error) {
+	type embed GetSampleEventsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*g),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (g *GetSampleEventsResponse) String() string {
+	if g == nil {
+		return "<nil>"
+	}
+	if len(g.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(g.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(g); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", g)
+}
+
+var (
+	getSampleEventsResponseSampleFieldEventTime    = big.NewInt(1 << 0)
+	getSampleEventsResponseSampleFieldProperties   = big.NewInt(1 << 1)
+	getSampleEventsResponseSampleFieldSubscriberID = big.NewInt(1 << 2)
+)
+
+type GetSampleEventsResponseSample struct {
+	// UTC event timestamp
+	EventTime string `json:"eventTime" url:"eventTime"`
+	// Recorded payload, preserving nested JSON; may be empty
+	Properties map[string]any `json:"properties" url:"properties"`
+	// Source subscriber ID; may differ from your test recipient
+	SubscriberID string `json:"subscriberId" url:"subscriberId"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (g *GetSampleEventsResponseSample) GetEventTime() string {
+	if g == nil {
+		return ""
+	}
+	return g.EventTime
+}
+
+func (g *GetSampleEventsResponseSample) GetProperties() map[string]any {
+	if g == nil {
+		return nil
+	}
+	return g.Properties
+}
+
+func (g *GetSampleEventsResponseSample) GetSubscriberID() string {
+	if g == nil {
+		return ""
+	}
+	return g.SubscriberID
+}
+
+func (g *GetSampleEventsResponseSample) GetExtraProperties() map[string]interface{} {
+	if g == nil {
+		return nil
+	}
+	return g.extraProperties
+}
+
+func (g *GetSampleEventsResponseSample) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetEventTime sets the EventTime field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetSampleEventsResponseSample) SetEventTime(eventTime string) {
+	g.EventTime = eventTime
+	g.require(getSampleEventsResponseSampleFieldEventTime)
+}
+
+// SetProperties sets the Properties field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetSampleEventsResponseSample) SetProperties(properties map[string]any) {
+	g.Properties = properties
+	g.require(getSampleEventsResponseSampleFieldProperties)
+}
+
+// SetSubscriberID sets the SubscriberID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetSampleEventsResponseSample) SetSubscriberID(subscriberID string) {
+	g.SubscriberID = subscriberID
+	g.require(getSampleEventsResponseSampleFieldSubscriberID)
+}
+
+func (g *GetSampleEventsResponseSample) UnmarshalJSON(data []byte) error {
+	type unmarshaler GetSampleEventsResponseSample
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*g = GetSampleEventsResponseSample(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *g)
+	if err != nil {
+		return err
+	}
+	g.extraProperties = extraProperties
+	g.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (g *GetSampleEventsResponseSample) MarshalJSON() ([]byte, error) {
+	type embed GetSampleEventsResponseSample
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*g),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (g *GetSampleEventsResponseSample) String() string {
+	if g == nil {
+		return "<nil>"
+	}
+	if len(g.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(g.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(g); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", g)
 }
 
 type GetSchemasEventsRequestProvider string

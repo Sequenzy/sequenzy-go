@@ -505,6 +505,34 @@ func (c *Client) GetStats(
 	return response.Body, nil
 }
 
+// Read status and step logs for a same-company sequence test run. Requires sequences:read and subscribers:read.
+//
+// Example:
+//
+//	request := &sequenzygo.GetTestRunSequencesRequest{
+//	    SequenceID: "sequenceId",
+//	    RunID: "runId",
+//	}
+//	client.Sequences.GetTestRun(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) GetTestRun(
+	ctx context.Context,
+	request *sequenzygo.GetTestRunSequencesRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.SequenceTestRunResponse, error) {
+	response, err := c.WithRawResponse.GetTestRun(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Returns matching automation sequences, newest first. Omit limit and offset to return all matches; either parameter enables pagination (default page size 50, capped at 100).
 //
 // Example:
@@ -812,6 +840,34 @@ func (c *Client) Simulate(
 	opts ...option.RequestOption,
 ) (*sequenzygo.SimulateSequencesResponse, error) {
 	response, err := c.WithRawResponse.Simulate(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Runs real sequence actions for one active subscriber. Emails are marked as tests. Requires sequences:activate and subscribers:read. Does not enable the sequence or record a trigger event. Ordinary failure retries are disabled; stalled-job recovery can replay actions after worker loss. Completed side effects are not rolled back. Inspect before starting another run.
+//
+// Example:
+//
+//	request := &sequenzygo.StartTestRunSequencesRequest{
+//	    SequenceID: "sequenceId",
+//	    SubscriberID: "subscriberId",
+//	}
+//	client.Sequences.StartTestRun(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) StartTestRun(
+	ctx context.Context,
+	request *sequenzygo.StartTestRunSequencesRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.SequenceTestRunResponse, error) {
+	response, err := c.WithRawResponse.StartTestRun(
 		ctx,
 		request,
 		opts...,

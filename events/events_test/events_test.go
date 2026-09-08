@@ -77,6 +77,32 @@ func VerifyRequestCount(
 	require.Equal(t, expected, len(result.Requests))
 }
 
+func TestEventsGetSampleWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.GetSampleEventsRequest{
+		EventName: "eventName",
+	}
+	_, invocationErr := client.Events.GetSample(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestEventsGetSampleWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestEventsGetSampleWithWireMock", "GET", "/events/sample", map[string]interface{}{"eventName": "eventName"}, 1)
+}
+
 func TestEventsGetSchemasWithWireMock(
 	t *testing.T,
 ) {

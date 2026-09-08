@@ -531,6 +531,33 @@ func TestSequencesGetStatsWithWireMock(
 	VerifyRequestCount(t, "TestSequencesGetStatsWithWireMock", "GET", "/sequences/sequenceId/stats", nil, 1)
 }
 
+func TestSequencesGetTestRunWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.GetTestRunSequencesRequest{
+		SequenceID: "sequenceId",
+		RunID:      "runId",
+	}
+	_, invocationErr := client.Sequences.GetTestRun(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestSequencesGetTestRunWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestSequencesGetTestRunWithWireMock", "GET", "/sequences/sequenceId/test-runs/runId", nil, 1)
+}
+
 func TestSequencesListWithWireMock(
 	t *testing.T,
 ) {
@@ -835,6 +862,33 @@ func TestSequencesSimulateWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestSequencesSimulateWithWireMock", "GET", "/sequences/sequenceId/simulate", nil, 1)
+}
+
+func TestSequencesStartTestRunWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.StartTestRunSequencesRequest{
+		SequenceID:   "sequenceId",
+		SubscriberID: "subscriberId",
+	}
+	_, invocationErr := client.Sequences.StartTestRun(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestSequencesStartTestRunWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestSequencesStartTestRunWithWireMock", "POST", "/sequences/sequenceId/test-runs", nil, 1)
 }
 
 func TestSequencesUnarchiveWithWireMock(

@@ -1198,6 +1198,40 @@ func (g *GetStatsSequencesRequest) SetStart(start *time.Time) {
 }
 
 var (
+	getTestRunSequencesRequestFieldSequenceID = big.NewInt(1 << 0)
+	getTestRunSequencesRequestFieldRunID      = big.NewInt(1 << 1)
+)
+
+type GetTestRunSequencesRequest struct {
+	SequenceID string `json:"-" url:"-"`
+	RunID      string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (g *GetTestRunSequencesRequest) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetSequenceID sets the SequenceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetTestRunSequencesRequest) SetSequenceID(sequenceID string) {
+	g.SequenceID = sequenceID
+	g.require(getTestRunSequencesRequestFieldSequenceID)
+}
+
+// SetRunID sets the RunID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetTestRunSequencesRequest) SetRunID(runID string) {
+	g.RunID = runID
+	g.require(getTestRunSequencesRequestFieldRunID)
+}
+
+var (
 	listSequencesRequestFieldLabel  = big.NewInt(1 << 0)
 	listSequencesRequestFieldLabels = big.NewInt(1 << 1)
 	listSequencesRequestFieldLimit  = big.NewInt(1 << 2)
@@ -1874,6 +1908,82 @@ func (s *SimulateSequencesRequest) SetLimit(limit *int) {
 func (s *SimulateSequencesRequest) SetSubscriberID(subscriberID *string) {
 	s.SubscriberID = subscriberID
 	s.require(simulateSequencesRequestFieldSubscriberID)
+}
+
+var (
+	startTestRunSequencesRequestFieldSequenceID      = big.NewInt(1 << 0)
+	startTestRunSequencesRequestFieldCustomVariables = big.NewInt(1 << 1)
+	startTestRunSequencesRequestFieldSpeedMultiplier = big.NewInt(1 << 2)
+	startTestRunSequencesRequestFieldSubscriberID    = big.NewInt(1 << 3)
+)
+
+type StartTestRunSequencesRequest struct {
+	SequenceID string `json:"-" url:"-"`
+	// Trigger event properties available as event.* in sequence actions. Supports nested objects and arrays. Omit or use an empty object for no event properties. Null is invalid. No event is recorded and subscriber attributes are not changed by supplying this object.
+	CustomVariables map[string]any `json:"customVariables,omitempty" url:"-"`
+	// Delay acceleration. Existing live-test wait caps still apply.
+	SpeedMultiplier *int `json:"speedMultiplier,omitempty" url:"-"`
+	// Active subscriber in the same company with an email address.
+	SubscriberID string `json:"subscriberId" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (s *StartTestRunSequencesRequest) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetSequenceID sets the SequenceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *StartTestRunSequencesRequest) SetSequenceID(sequenceID string) {
+	s.SequenceID = sequenceID
+	s.require(startTestRunSequencesRequestFieldSequenceID)
+}
+
+// SetCustomVariables sets the CustomVariables field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *StartTestRunSequencesRequest) SetCustomVariables(customVariables map[string]any) {
+	s.CustomVariables = customVariables
+	s.require(startTestRunSequencesRequestFieldCustomVariables)
+}
+
+// SetSpeedMultiplier sets the SpeedMultiplier field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *StartTestRunSequencesRequest) SetSpeedMultiplier(speedMultiplier *int) {
+	s.SpeedMultiplier = speedMultiplier
+	s.require(startTestRunSequencesRequestFieldSpeedMultiplier)
+}
+
+// SetSubscriberID sets the SubscriberID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *StartTestRunSequencesRequest) SetSubscriberID(subscriberID string) {
+	s.SubscriberID = subscriberID
+	s.require(startTestRunSequencesRequestFieldSubscriberID)
+}
+
+func (s *StartTestRunSequencesRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler StartTestRunSequencesRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*s = StartTestRunSequencesRequest(body)
+	return nil
+}
+
+func (s *StartTestRunSequencesRequest) MarshalJSON() ([]byte, error) {
+	type embed StartTestRunSequencesRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
 }
 
 // Partial visual theme patch. Omitted fields keep their current value, so {"colors": {"background": "#f3f4f6"}} repaints only the outer canvas, while content controls the inner card the blocks sit on. Colors are 6-digit hex; numeric values are clamped to their supported ranges. Null clears the stored theme.
@@ -19541,6 +19651,451 @@ func (s *SequenceSummaryPausedByUser) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	sequenceTestRunResponseFieldRun = big.NewInt(1 << 0)
+)
+
+type SequenceTestRunResponse struct {
+	Run *SequenceTestRunResponseRun `json:"run" url:"run"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequenceTestRunResponse) GetRun() *SequenceTestRunResponseRun {
+	if s == nil {
+		return nil
+	}
+	return s.Run
+}
+
+func (s *SequenceTestRunResponse) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequenceTestRunResponse) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetRun sets the Run field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceTestRunResponse) SetRun(run *SequenceTestRunResponseRun) {
+	s.Run = run
+	s.require(sequenceTestRunResponseFieldRun)
+}
+
+func (s *SequenceTestRunResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler SequenceTestRunResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SequenceTestRunResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceTestRunResponse) MarshalJSON() ([]byte, error) {
+	type embed SequenceTestRunResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequenceTestRunResponse) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	sequenceTestRunResponseRunFieldAutomationID      = big.NewInt(1 << 0)
+	sequenceTestRunResponseRunFieldCompanyID         = big.NewInt(1 << 1)
+	sequenceTestRunResponseRunFieldCreatedAt         = big.NewInt(1 << 2)
+	sequenceTestRunResponseRunFieldErrorMessage      = big.NewInt(1 << 3)
+	sequenceTestRunResponseRunFieldFinishedAt        = big.NewInt(1 << 4)
+	sequenceTestRunResponseRunFieldID                = big.NewInt(1 << 5)
+	sequenceTestRunResponseRunFieldInitiatedByUserID = big.NewInt(1 << 6)
+	sequenceTestRunResponseRunFieldJobID             = big.NewInt(1 << 7)
+	sequenceTestRunResponseRunFieldRecipientEmails   = big.NewInt(1 << 8)
+	sequenceTestRunResponseRunFieldSpeedMultiplier   = big.NewInt(1 << 9)
+	sequenceTestRunResponseRunFieldStartedAt         = big.NewInt(1 << 10)
+	sequenceTestRunResponseRunFieldStatus            = big.NewInt(1 << 11)
+	sequenceTestRunResponseRunFieldSteps             = big.NewInt(1 << 12)
+	sequenceTestRunResponseRunFieldSubscriberID      = big.NewInt(1 << 13)
+	sequenceTestRunResponseRunFieldUpdatedAt         = big.NewInt(1 << 14)
+)
+
+type SequenceTestRunResponseRun struct {
+	// Sequence ID.
+	AutomationID string     `json:"automationId" url:"automationId"`
+	CompanyID    string     `json:"companyId" url:"companyId"`
+	CreatedAt    time.Time  `json:"createdAt" url:"createdAt"`
+	ErrorMessage *string    `json:"errorMessage,omitempty" url:"errorMessage,omitempty"`
+	FinishedAt   *time.Time `json:"finishedAt,omitempty" url:"finishedAt,omitempty"`
+	// Test run ID.
+	ID                string  `json:"id" url:"id"`
+	InitiatedByUserID *string `json:"initiatedByUserId,omitempty" url:"initiatedByUserId,omitempty"`
+	// Queue job ID on creation only. Empty if unavailable.
+	JobID           *string                          `json:"jobId,omitempty" url:"jobId,omitempty"`
+	RecipientEmails []string                         `json:"recipientEmails" url:"recipientEmails"`
+	SpeedMultiplier int                              `json:"speedMultiplier" url:"speedMultiplier"`
+	StartedAt       *time.Time                       `json:"startedAt,omitempty" url:"startedAt,omitempty"`
+	Status          SequenceTestRunResponseRunStatus `json:"status" url:"status"`
+	// Step execution logs including nodeId, status, message, timing and action-specific metadata when available.
+	Steps []map[string]any `json:"steps" url:"steps"`
+	// Subscriber ID, or null on historical runs.
+	SubscriberID *string   `json:"subscriberId,omitempty" url:"subscriberId,omitempty"`
+	UpdatedAt    time.Time `json:"updatedAt" url:"updatedAt"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequenceTestRunResponseRun) GetAutomationID() string {
+	if s == nil {
+		return ""
+	}
+	return s.AutomationID
+}
+
+func (s *SequenceTestRunResponseRun) GetCompanyID() string {
+	if s == nil {
+		return ""
+	}
+	return s.CompanyID
+}
+
+func (s *SequenceTestRunResponseRun) GetCreatedAt() time.Time {
+	if s == nil {
+		return time.Time{}
+	}
+	return s.CreatedAt
+}
+
+func (s *SequenceTestRunResponseRun) GetErrorMessage() *string {
+	if s == nil {
+		return nil
+	}
+	return s.ErrorMessage
+}
+
+func (s *SequenceTestRunResponseRun) GetFinishedAt() *time.Time {
+	if s == nil {
+		return nil
+	}
+	return s.FinishedAt
+}
+
+func (s *SequenceTestRunResponseRun) GetID() string {
+	if s == nil {
+		return ""
+	}
+	return s.ID
+}
+
+func (s *SequenceTestRunResponseRun) GetInitiatedByUserID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.InitiatedByUserID
+}
+
+func (s *SequenceTestRunResponseRun) GetJobID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.JobID
+}
+
+func (s *SequenceTestRunResponseRun) GetRecipientEmails() []string {
+	if s == nil {
+		return nil
+	}
+	return s.RecipientEmails
+}
+
+func (s *SequenceTestRunResponseRun) GetSpeedMultiplier() int {
+	if s == nil {
+		return 0
+	}
+	return s.SpeedMultiplier
+}
+
+func (s *SequenceTestRunResponseRun) GetStartedAt() *time.Time {
+	if s == nil {
+		return nil
+	}
+	return s.StartedAt
+}
+
+func (s *SequenceTestRunResponseRun) GetStatus() SequenceTestRunResponseRunStatus {
+	if s == nil {
+		return ""
+	}
+	return s.Status
+}
+
+func (s *SequenceTestRunResponseRun) GetSteps() []map[string]any {
+	if s == nil {
+		return nil
+	}
+	return s.Steps
+}
+
+func (s *SequenceTestRunResponseRun) GetSubscriberID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.SubscriberID
+}
+
+func (s *SequenceTestRunResponseRun) GetUpdatedAt() time.Time {
+	if s == nil {
+		return time.Time{}
+	}
+	return s.UpdatedAt
+}
+
+func (s *SequenceTestRunResponseRun) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequenceTestRunResponseRun) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetAutomationID sets the AutomationID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceTestRunResponseRun) SetAutomationID(automationID string) {
+	s.AutomationID = automationID
+	s.require(sequenceTestRunResponseRunFieldAutomationID)
+}
+
+// SetCompanyID sets the CompanyID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceTestRunResponseRun) SetCompanyID(companyID string) {
+	s.CompanyID = companyID
+	s.require(sequenceTestRunResponseRunFieldCompanyID)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceTestRunResponseRun) SetCreatedAt(createdAt time.Time) {
+	s.CreatedAt = createdAt
+	s.require(sequenceTestRunResponseRunFieldCreatedAt)
+}
+
+// SetErrorMessage sets the ErrorMessage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceTestRunResponseRun) SetErrorMessage(errorMessage *string) {
+	s.ErrorMessage = errorMessage
+	s.require(sequenceTestRunResponseRunFieldErrorMessage)
+}
+
+// SetFinishedAt sets the FinishedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceTestRunResponseRun) SetFinishedAt(finishedAt *time.Time) {
+	s.FinishedAt = finishedAt
+	s.require(sequenceTestRunResponseRunFieldFinishedAt)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceTestRunResponseRun) SetID(id string) {
+	s.ID = id
+	s.require(sequenceTestRunResponseRunFieldID)
+}
+
+// SetInitiatedByUserID sets the InitiatedByUserID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceTestRunResponseRun) SetInitiatedByUserID(initiatedByUserID *string) {
+	s.InitiatedByUserID = initiatedByUserID
+	s.require(sequenceTestRunResponseRunFieldInitiatedByUserID)
+}
+
+// SetJobID sets the JobID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceTestRunResponseRun) SetJobID(jobID *string) {
+	s.JobID = jobID
+	s.require(sequenceTestRunResponseRunFieldJobID)
+}
+
+// SetRecipientEmails sets the RecipientEmails field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceTestRunResponseRun) SetRecipientEmails(recipientEmails []string) {
+	s.RecipientEmails = recipientEmails
+	s.require(sequenceTestRunResponseRunFieldRecipientEmails)
+}
+
+// SetSpeedMultiplier sets the SpeedMultiplier field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceTestRunResponseRun) SetSpeedMultiplier(speedMultiplier int) {
+	s.SpeedMultiplier = speedMultiplier
+	s.require(sequenceTestRunResponseRunFieldSpeedMultiplier)
+}
+
+// SetStartedAt sets the StartedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceTestRunResponseRun) SetStartedAt(startedAt *time.Time) {
+	s.StartedAt = startedAt
+	s.require(sequenceTestRunResponseRunFieldStartedAt)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceTestRunResponseRun) SetStatus(status SequenceTestRunResponseRunStatus) {
+	s.Status = status
+	s.require(sequenceTestRunResponseRunFieldStatus)
+}
+
+// SetSteps sets the Steps field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceTestRunResponseRun) SetSteps(steps []map[string]any) {
+	s.Steps = steps
+	s.require(sequenceTestRunResponseRunFieldSteps)
+}
+
+// SetSubscriberID sets the SubscriberID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceTestRunResponseRun) SetSubscriberID(subscriberID *string) {
+	s.SubscriberID = subscriberID
+	s.require(sequenceTestRunResponseRunFieldSubscriberID)
+}
+
+// SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceTestRunResponseRun) SetUpdatedAt(updatedAt time.Time) {
+	s.UpdatedAt = updatedAt
+	s.require(sequenceTestRunResponseRunFieldUpdatedAt)
+}
+
+func (s *SequenceTestRunResponseRun) UnmarshalJSON(data []byte) error {
+	type embed SequenceTestRunResponseRun
+	var unmarshaler = struct {
+		embed
+		CreatedAt  *internal.DateTime `json:"createdAt"`
+		FinishedAt *internal.DateTime `json:"finishedAt,omitempty"`
+		StartedAt  *internal.DateTime `json:"startedAt,omitempty"`
+		UpdatedAt  *internal.DateTime `json:"updatedAt"`
+	}{
+		embed: embed(*s),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*s = SequenceTestRunResponseRun(unmarshaler.embed)
+	s.CreatedAt = unmarshaler.CreatedAt.Time()
+	s.FinishedAt = unmarshaler.FinishedAt.TimePtr()
+	s.StartedAt = unmarshaler.StartedAt.TimePtr()
+	s.UpdatedAt = unmarshaler.UpdatedAt.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceTestRunResponseRun) MarshalJSON() ([]byte, error) {
+	type embed SequenceTestRunResponseRun
+	var marshaler = struct {
+		embed
+		CreatedAt  *internal.DateTime `json:"createdAt"`
+		FinishedAt *internal.DateTime `json:"finishedAt,omitempty"`
+		StartedAt  *internal.DateTime `json:"startedAt,omitempty"`
+		UpdatedAt  *internal.DateTime `json:"updatedAt"`
+	}{
+		embed:      embed(*s),
+		CreatedAt:  internal.NewDateTime(s.CreatedAt),
+		FinishedAt: internal.NewOptionalDateTime(s.FinishedAt),
+		StartedAt:  internal.NewOptionalDateTime(s.StartedAt),
+		UpdatedAt:  internal.NewDateTime(s.UpdatedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequenceTestRunResponseRun) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+type SequenceTestRunResponseRunStatus string
+
+const (
+	SequenceTestRunResponseRunStatusQueued    SequenceTestRunResponseRunStatus = "queued"
+	SequenceTestRunResponseRunStatusRunning   SequenceTestRunResponseRunStatus = "running"
+	SequenceTestRunResponseRunStatusCompleted SequenceTestRunResponseRunStatus = "completed"
+	SequenceTestRunResponseRunStatusFailed    SequenceTestRunResponseRunStatus = "failed"
+)
+
+func NewSequenceTestRunResponseRunStatusFromString(s string) (SequenceTestRunResponseRunStatus, error) {
+	switch s {
+	case "queued":
+		return SequenceTestRunResponseRunStatusQueued, nil
+	case "running":
+		return SequenceTestRunResponseRunStatusRunning, nil
+	case "completed":
+		return SequenceTestRunResponseRunStatusCompleted, nil
+	case "failed":
+		return SequenceTestRunResponseRunStatusFailed, nil
+	}
+	var t SequenceTestRunResponseRunStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SequenceTestRunResponseRunStatus) Ptr() *SequenceTestRunResponseRunStatus {
+	return &s
 }
 
 var (

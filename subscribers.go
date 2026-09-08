@@ -166,7 +166,7 @@ type CreateSubscribersRequest struct {
 	ExternalID *string `json:"externalId,omitempty" url:"-"`
 	FirstName  *string `json:"firstName,omitempty" url:"-"`
 	LastName   *string `json:"lastName,omitempty" url:"-"`
-	// List IDs to add subscriber to. If not provided, a subscriber this call creates follows the workspace default lists setting and an existing subscriber keeps the memberships they already have, so an attribute-only upsert never changes list membership. If empty array, subscriber is added to NO lists.
+	// List IDs to add subscriber to. A nonempty array requires the lists:write scope. If not provided, a subscriber this call creates follows the workspace default lists setting and an existing subscriber keeps the memberships they already have, so an attribute-only upsert never changes list membership. If empty array, subscriber is added to NO lists.
 	Lists []string `json:"lists,omitempty" url:"-"`
 	// Consent handling for this request:
 	// - `default`: obey the company double opt-in setting for new active subscribers; existing unsubscribed contacts are not sent confirmation email
