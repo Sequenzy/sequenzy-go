@@ -166,7 +166,7 @@ func (c *Client) CancelOperation(
 
 // Creates a new subscriber or handles existing ones based on the `duplicateStrategy` parameter.
 //
-// Requires `subscribers:write`. Supplying a nonempty `lists` array also requires `lists:write`. Explicit sequence enrollment and writes that can send a double opt-in confirmation require `automations:trigger`.
+// Requires `subscribers:write`, including when supplying a nonempty `lists` array. Explicit sequence enrollment and writes that can send a double opt-in confirmation require `automations:trigger`.
 //
 // **Duplicate Strategies:**
 // - `skip` (default): Don't update existing subscribers
