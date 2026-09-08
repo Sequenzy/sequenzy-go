@@ -1105,6 +1105,5615 @@ func (s *SubmitSignupFormRequest) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
+var (
+	captureButtonBlockFieldAlign     = big.NewInt(1 << 0)
+	captureButtonBlockFieldID        = big.NewInt(1 << 1)
+	captureButtonBlockFieldSectionID = big.NewInt(1 << 2)
+	captureButtonBlockFieldText      = big.NewInt(1 << 3)
+	captureButtonBlockFieldURL       = big.NewInt(1 << 4)
+	captureButtonBlockFieldVariant   = big.NewInt(1 << 5)
+)
+
+type CaptureButtonBlock struct {
+	Align     CaptureButtonBlockAlign   `json:"align" url:"align"`
+	ID        string                    `json:"id" url:"id"`
+	SectionID *string                   `json:"sectionId,omitempty" url:"sectionId,omitempty"`
+	Text      string                    `json:"text" url:"text"`
+	URL       string                    `json:"url" url:"url"`
+	Variant   CaptureButtonBlockVariant `json:"variant" url:"variant"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CaptureButtonBlock) GetAlign() CaptureButtonBlockAlign {
+	if c == nil {
+		return ""
+	}
+	return c.Align
+}
+
+func (c *CaptureButtonBlock) GetID() string {
+	if c == nil {
+		return ""
+	}
+	return c.ID
+}
+
+func (c *CaptureButtonBlock) GetSectionID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.SectionID
+}
+
+func (c *CaptureButtonBlock) GetText() string {
+	if c == nil {
+		return ""
+	}
+	return c.Text
+}
+
+func (c *CaptureButtonBlock) GetURL() string {
+	if c == nil {
+		return ""
+	}
+	return c.URL
+}
+
+func (c *CaptureButtonBlock) GetVariant() CaptureButtonBlockVariant {
+	if c == nil {
+		return ""
+	}
+	return c.Variant
+}
+
+func (c *CaptureButtonBlock) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CaptureButtonBlock) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetAlign sets the Align field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureButtonBlock) SetAlign(align CaptureButtonBlockAlign) {
+	c.Align = align
+	c.require(captureButtonBlockFieldAlign)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureButtonBlock) SetID(id string) {
+	c.ID = id
+	c.require(captureButtonBlockFieldID)
+}
+
+// SetSectionID sets the SectionID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureButtonBlock) SetSectionID(sectionID *string) {
+	c.SectionID = sectionID
+	c.require(captureButtonBlockFieldSectionID)
+}
+
+// SetText sets the Text field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureButtonBlock) SetText(text string) {
+	c.Text = text
+	c.require(captureButtonBlockFieldText)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureButtonBlock) SetURL(url string) {
+	c.URL = url
+	c.require(captureButtonBlockFieldURL)
+}
+
+// SetVariant sets the Variant field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureButtonBlock) SetVariant(variant CaptureButtonBlockVariant) {
+	c.Variant = variant
+	c.require(captureButtonBlockFieldVariant)
+}
+
+func (c *CaptureButtonBlock) UnmarshalJSON(data []byte) error {
+	type unmarshaler CaptureButtonBlock
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CaptureButtonBlock(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CaptureButtonBlock) MarshalJSON() ([]byte, error) {
+	type embed CaptureButtonBlock
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CaptureButtonBlock) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+type CaptureButtonBlockAlign string
+
+const (
+	CaptureButtonBlockAlignLeft   CaptureButtonBlockAlign = "left"
+	CaptureButtonBlockAlignCenter CaptureButtonBlockAlign = "center"
+	CaptureButtonBlockAlignRight  CaptureButtonBlockAlign = "right"
+)
+
+func NewCaptureButtonBlockAlignFromString(s string) (CaptureButtonBlockAlign, error) {
+	switch s {
+	case "left":
+		return CaptureButtonBlockAlignLeft, nil
+	case "center":
+		return CaptureButtonBlockAlignCenter, nil
+	case "right":
+		return CaptureButtonBlockAlignRight, nil
+	}
+	var t CaptureButtonBlockAlign
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CaptureButtonBlockAlign) Ptr() *CaptureButtonBlockAlign {
+	return &c
+}
+
+type CaptureButtonBlockVariant string
+
+const (
+	CaptureButtonBlockVariantPrimary   CaptureButtonBlockVariant = "primary"
+	CaptureButtonBlockVariantSecondary CaptureButtonBlockVariant = "secondary"
+)
+
+func NewCaptureButtonBlockVariantFromString(s string) (CaptureButtonBlockVariant, error) {
+	switch s {
+	case "primary":
+		return CaptureButtonBlockVariantPrimary, nil
+	case "secondary":
+		return CaptureButtonBlockVariantSecondary, nil
+	}
+	var t CaptureButtonBlockVariant
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CaptureButtonBlockVariant) Ptr() *CaptureButtonBlockVariant {
+	return &c
+}
+
+var (
+	captureCountdownBlockFieldEndsAt    = big.NewInt(1 << 0)
+	captureCountdownBlockFieldID        = big.NewInt(1 << 1)
+	captureCountdownBlockFieldLabel     = big.NewInt(1 << 2)
+	captureCountdownBlockFieldSectionID = big.NewInt(1 << 3)
+)
+
+type CaptureCountdownBlock struct {
+	EndsAt    string  `json:"endsAt" url:"endsAt"`
+	ID        string  `json:"id" url:"id"`
+	Label     string  `json:"label" url:"label"`
+	SectionID *string `json:"sectionId,omitempty" url:"sectionId,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CaptureCountdownBlock) GetEndsAt() string {
+	if c == nil {
+		return ""
+	}
+	return c.EndsAt
+}
+
+func (c *CaptureCountdownBlock) GetID() string {
+	if c == nil {
+		return ""
+	}
+	return c.ID
+}
+
+func (c *CaptureCountdownBlock) GetLabel() string {
+	if c == nil {
+		return ""
+	}
+	return c.Label
+}
+
+func (c *CaptureCountdownBlock) GetSectionID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.SectionID
+}
+
+func (c *CaptureCountdownBlock) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CaptureCountdownBlock) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetEndsAt sets the EndsAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureCountdownBlock) SetEndsAt(endsAt string) {
+	c.EndsAt = endsAt
+	c.require(captureCountdownBlockFieldEndsAt)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureCountdownBlock) SetID(id string) {
+	c.ID = id
+	c.require(captureCountdownBlockFieldID)
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureCountdownBlock) SetLabel(label string) {
+	c.Label = label
+	c.require(captureCountdownBlockFieldLabel)
+}
+
+// SetSectionID sets the SectionID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureCountdownBlock) SetSectionID(sectionID *string) {
+	c.SectionID = sectionID
+	c.require(captureCountdownBlockFieldSectionID)
+}
+
+func (c *CaptureCountdownBlock) UnmarshalJSON(data []byte) error {
+	type unmarshaler CaptureCountdownBlock
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CaptureCountdownBlock(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CaptureCountdownBlock) MarshalJSON() ([]byte, error) {
+	type embed CaptureCountdownBlock
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CaptureCountdownBlock) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	captureCustomHTMLBlockFieldHeight    = big.NewInt(1 << 0)
+	captureCustomHTMLBlockFieldHTML      = big.NewInt(1 << 1)
+	captureCustomHTMLBlockFieldID        = big.NewInt(1 << 2)
+	captureCustomHTMLBlockFieldSectionID = big.NewInt(1 << 3)
+)
+
+type CaptureCustomHTMLBlock struct {
+	Height    int     `json:"height" url:"height"`
+	HTML      string  `json:"html" url:"html"`
+	ID        string  `json:"id" url:"id"`
+	SectionID *string `json:"sectionId,omitempty" url:"sectionId,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CaptureCustomHTMLBlock) GetHeight() int {
+	if c == nil {
+		return 0
+	}
+	return c.Height
+}
+
+func (c *CaptureCustomHTMLBlock) GetHTML() string {
+	if c == nil {
+		return ""
+	}
+	return c.HTML
+}
+
+func (c *CaptureCustomHTMLBlock) GetID() string {
+	if c == nil {
+		return ""
+	}
+	return c.ID
+}
+
+func (c *CaptureCustomHTMLBlock) GetSectionID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.SectionID
+}
+
+func (c *CaptureCustomHTMLBlock) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CaptureCustomHTMLBlock) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetHeight sets the Height field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureCustomHTMLBlock) SetHeight(height int) {
+	c.Height = height
+	c.require(captureCustomHTMLBlockFieldHeight)
+}
+
+// SetHTML sets the HTML field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureCustomHTMLBlock) SetHTML(html string) {
+	c.HTML = html
+	c.require(captureCustomHTMLBlockFieldHTML)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureCustomHTMLBlock) SetID(id string) {
+	c.ID = id
+	c.require(captureCustomHTMLBlockFieldID)
+}
+
+// SetSectionID sets the SectionID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureCustomHTMLBlock) SetSectionID(sectionID *string) {
+	c.SectionID = sectionID
+	c.require(captureCustomHTMLBlockFieldSectionID)
+}
+
+func (c *CaptureCustomHTMLBlock) UnmarshalJSON(data []byte) error {
+	type unmarshaler CaptureCustomHTMLBlock
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CaptureCustomHTMLBlock(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CaptureCustomHTMLBlock) MarshalJSON() ([]byte, error) {
+	type embed CaptureCustomHTMLBlock
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CaptureCustomHTMLBlock) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	captureDividerBlockFieldID        = big.NewInt(1 << 0)
+	captureDividerBlockFieldSectionID = big.NewInt(1 << 1)
+)
+
+type CaptureDividerBlock struct {
+	ID        string  `json:"id" url:"id"`
+	SectionID *string `json:"sectionId,omitempty" url:"sectionId,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CaptureDividerBlock) GetID() string {
+	if c == nil {
+		return ""
+	}
+	return c.ID
+}
+
+func (c *CaptureDividerBlock) GetSectionID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.SectionID
+}
+
+func (c *CaptureDividerBlock) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CaptureDividerBlock) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureDividerBlock) SetID(id string) {
+	c.ID = id
+	c.require(captureDividerBlockFieldID)
+}
+
+// SetSectionID sets the SectionID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureDividerBlock) SetSectionID(sectionID *string) {
+	c.SectionID = sectionID
+	c.require(captureDividerBlockFieldSectionID)
+}
+
+func (c *CaptureDividerBlock) UnmarshalJSON(data []byte) error {
+	type unmarshaler CaptureDividerBlock
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CaptureDividerBlock(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CaptureDividerBlock) MarshalJSON() ([]byte, error) {
+	type embed CaptureDividerBlock
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CaptureDividerBlock) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+// At least one of title or description must contain visible text.
+var (
+	captureFeatureFieldDescription = big.NewInt(1 << 0)
+	captureFeatureFieldTitle       = big.NewInt(1 << 1)
+)
+
+type CaptureFeature struct {
+	// Inline HTML is sanitized. Visible text after stripping markup and trimming must contain at most 300 characters. maxLength limits the raw markup separately.
+	Description string `json:"description" url:"description"`
+	// Inline HTML is sanitized. Visible text after stripping markup and trimming must contain at most 120 characters. maxLength limits the raw markup separately.
+	Title string `json:"title" url:"title"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CaptureFeature) GetDescription() string {
+	if c == nil {
+		return ""
+	}
+	return c.Description
+}
+
+func (c *CaptureFeature) GetTitle() string {
+	if c == nil {
+		return ""
+	}
+	return c.Title
+}
+
+func (c *CaptureFeature) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CaptureFeature) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetDescription sets the Description field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureFeature) SetDescription(description string) {
+	c.Description = description
+	c.require(captureFeatureFieldDescription)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureFeature) SetTitle(title string) {
+	c.Title = title
+	c.require(captureFeatureFieldTitle)
+}
+
+func (c *CaptureFeature) UnmarshalJSON(data []byte) error {
+	type unmarshaler CaptureFeature
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CaptureFeature(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CaptureFeature) MarshalJSON() ([]byte, error) {
+	type embed CaptureFeature
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CaptureFeature) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	captureFeatureGridBlockFieldColumns   = big.NewInt(1 << 0)
+	captureFeatureGridBlockFieldFeatures  = big.NewInt(1 << 1)
+	captureFeatureGridBlockFieldID        = big.NewInt(1 << 2)
+	captureFeatureGridBlockFieldSectionID = big.NewInt(1 << 3)
+)
+
+type CaptureFeatureGridBlock struct {
+	Columns   int               `json:"columns" url:"columns"`
+	Features  []*CaptureFeature `json:"features" url:"features"`
+	ID        string            `json:"id" url:"id"`
+	SectionID *string           `json:"sectionId,omitempty" url:"sectionId,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CaptureFeatureGridBlock) GetColumns() int {
+	if c == nil {
+		return 0
+	}
+	return c.Columns
+}
+
+func (c *CaptureFeatureGridBlock) GetFeatures() []*CaptureFeature {
+	if c == nil {
+		return nil
+	}
+	return c.Features
+}
+
+func (c *CaptureFeatureGridBlock) GetID() string {
+	if c == nil {
+		return ""
+	}
+	return c.ID
+}
+
+func (c *CaptureFeatureGridBlock) GetSectionID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.SectionID
+}
+
+func (c *CaptureFeatureGridBlock) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CaptureFeatureGridBlock) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetColumns sets the Columns field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureFeatureGridBlock) SetColumns(columns int) {
+	c.Columns = columns
+	c.require(captureFeatureGridBlockFieldColumns)
+}
+
+// SetFeatures sets the Features field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureFeatureGridBlock) SetFeatures(features []*CaptureFeature) {
+	c.Features = features
+	c.require(captureFeatureGridBlockFieldFeatures)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureFeatureGridBlock) SetID(id string) {
+	c.ID = id
+	c.require(captureFeatureGridBlockFieldID)
+}
+
+// SetSectionID sets the SectionID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureFeatureGridBlock) SetSectionID(sectionID *string) {
+	c.SectionID = sectionID
+	c.require(captureFeatureGridBlockFieldSectionID)
+}
+
+func (c *CaptureFeatureGridBlock) UnmarshalJSON(data []byte) error {
+	type unmarshaler CaptureFeatureGridBlock
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CaptureFeatureGridBlock(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CaptureFeatureGridBlock) MarshalJSON() ([]byte, error) {
+	type embed CaptureFeatureGridBlock
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CaptureFeatureGridBlock) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	captureGroupBlockFieldChildren        = big.NewInt(1 << 0)
+	captureGroupBlockFieldColumns         = big.NewInt(1 << 1)
+	captureGroupBlockFieldGap             = big.NewInt(1 << 2)
+	captureGroupBlockFieldID              = big.NewInt(1 << 3)
+	captureGroupBlockFieldLabel           = big.NewInt(1 << 4)
+	captureGroupBlockFieldLayout          = big.NewInt(1 << 5)
+	captureGroupBlockFieldOverlayColor    = big.NewInt(1 << 6)
+	captureGroupBlockFieldOverlayPosition = big.NewInt(1 << 7)
+	captureGroupBlockFieldOverlayShade    = big.NewInt(1 << 8)
+	captureGroupBlockFieldPadding         = big.NewInt(1 << 9)
+	captureGroupBlockFieldSectionID       = big.NewInt(1 << 10)
+)
+
+type CaptureGroupBlock struct {
+	Children        []*FormCaptureBlock              `json:"children" url:"children"`
+	Columns         int                              `json:"columns" url:"columns"`
+	Gap             int                              `json:"gap" url:"gap"`
+	ID              string                           `json:"id" url:"id"`
+	Label           string                           `json:"label" url:"label"`
+	Layout          CaptureGroupBlockLayout          `json:"layout" url:"layout"`
+	OverlayColor    string                           `json:"overlayColor" url:"overlayColor"`
+	OverlayPosition CaptureGroupBlockOverlayPosition `json:"overlayPosition" url:"overlayPosition"`
+	OverlayShade    int                              `json:"overlayShade" url:"overlayShade"`
+	Padding         int                              `json:"padding" url:"padding"`
+	SectionID       *string                          `json:"sectionId,omitempty" url:"sectionId,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CaptureGroupBlock) GetChildren() []*FormCaptureBlock {
+	if c == nil {
+		return nil
+	}
+	return c.Children
+}
+
+func (c *CaptureGroupBlock) GetColumns() int {
+	if c == nil {
+		return 0
+	}
+	return c.Columns
+}
+
+func (c *CaptureGroupBlock) GetGap() int {
+	if c == nil {
+		return 0
+	}
+	return c.Gap
+}
+
+func (c *CaptureGroupBlock) GetID() string {
+	if c == nil {
+		return ""
+	}
+	return c.ID
+}
+
+func (c *CaptureGroupBlock) GetLabel() string {
+	if c == nil {
+		return ""
+	}
+	return c.Label
+}
+
+func (c *CaptureGroupBlock) GetLayout() CaptureGroupBlockLayout {
+	if c == nil {
+		return ""
+	}
+	return c.Layout
+}
+
+func (c *CaptureGroupBlock) GetOverlayColor() string {
+	if c == nil {
+		return ""
+	}
+	return c.OverlayColor
+}
+
+func (c *CaptureGroupBlock) GetOverlayPosition() CaptureGroupBlockOverlayPosition {
+	if c == nil {
+		return ""
+	}
+	return c.OverlayPosition
+}
+
+func (c *CaptureGroupBlock) GetOverlayShade() int {
+	if c == nil {
+		return 0
+	}
+	return c.OverlayShade
+}
+
+func (c *CaptureGroupBlock) GetPadding() int {
+	if c == nil {
+		return 0
+	}
+	return c.Padding
+}
+
+func (c *CaptureGroupBlock) GetSectionID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.SectionID
+}
+
+func (c *CaptureGroupBlock) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CaptureGroupBlock) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetChildren sets the Children field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureGroupBlock) SetChildren(children []*FormCaptureBlock) {
+	c.Children = children
+	c.require(captureGroupBlockFieldChildren)
+}
+
+// SetColumns sets the Columns field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureGroupBlock) SetColumns(columns int) {
+	c.Columns = columns
+	c.require(captureGroupBlockFieldColumns)
+}
+
+// SetGap sets the Gap field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureGroupBlock) SetGap(gap int) {
+	c.Gap = gap
+	c.require(captureGroupBlockFieldGap)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureGroupBlock) SetID(id string) {
+	c.ID = id
+	c.require(captureGroupBlockFieldID)
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureGroupBlock) SetLabel(label string) {
+	c.Label = label
+	c.require(captureGroupBlockFieldLabel)
+}
+
+// SetLayout sets the Layout field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureGroupBlock) SetLayout(layout CaptureGroupBlockLayout) {
+	c.Layout = layout
+	c.require(captureGroupBlockFieldLayout)
+}
+
+// SetOverlayColor sets the OverlayColor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureGroupBlock) SetOverlayColor(overlayColor string) {
+	c.OverlayColor = overlayColor
+	c.require(captureGroupBlockFieldOverlayColor)
+}
+
+// SetOverlayPosition sets the OverlayPosition field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureGroupBlock) SetOverlayPosition(overlayPosition CaptureGroupBlockOverlayPosition) {
+	c.OverlayPosition = overlayPosition
+	c.require(captureGroupBlockFieldOverlayPosition)
+}
+
+// SetOverlayShade sets the OverlayShade field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureGroupBlock) SetOverlayShade(overlayShade int) {
+	c.OverlayShade = overlayShade
+	c.require(captureGroupBlockFieldOverlayShade)
+}
+
+// SetPadding sets the Padding field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureGroupBlock) SetPadding(padding int) {
+	c.Padding = padding
+	c.require(captureGroupBlockFieldPadding)
+}
+
+// SetSectionID sets the SectionID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureGroupBlock) SetSectionID(sectionID *string) {
+	c.SectionID = sectionID
+	c.require(captureGroupBlockFieldSectionID)
+}
+
+func (c *CaptureGroupBlock) UnmarshalJSON(data []byte) error {
+	type unmarshaler CaptureGroupBlock
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CaptureGroupBlock(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CaptureGroupBlock) MarshalJSON() ([]byte, error) {
+	type embed CaptureGroupBlock
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CaptureGroupBlock) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+type CaptureGroupBlockLayout string
+
+const (
+	CaptureGroupBlockLayoutStack   CaptureGroupBlockLayout = "stack"
+	CaptureGroupBlockLayoutRow     CaptureGroupBlockLayout = "row"
+	CaptureGroupBlockLayoutGrid    CaptureGroupBlockLayout = "grid"
+	CaptureGroupBlockLayoutOverlay CaptureGroupBlockLayout = "overlay"
+)
+
+func NewCaptureGroupBlockLayoutFromString(s string) (CaptureGroupBlockLayout, error) {
+	switch s {
+	case "stack":
+		return CaptureGroupBlockLayoutStack, nil
+	case "row":
+		return CaptureGroupBlockLayoutRow, nil
+	case "grid":
+		return CaptureGroupBlockLayoutGrid, nil
+	case "overlay":
+		return CaptureGroupBlockLayoutOverlay, nil
+	}
+	var t CaptureGroupBlockLayout
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CaptureGroupBlockLayout) Ptr() *CaptureGroupBlockLayout {
+	return &c
+}
+
+type CaptureGroupBlockOverlayPosition string
+
+const (
+	CaptureGroupBlockOverlayPositionTop    CaptureGroupBlockOverlayPosition = "top"
+	CaptureGroupBlockOverlayPositionCenter CaptureGroupBlockOverlayPosition = "center"
+	CaptureGroupBlockOverlayPositionBottom CaptureGroupBlockOverlayPosition = "bottom"
+)
+
+func NewCaptureGroupBlockOverlayPositionFromString(s string) (CaptureGroupBlockOverlayPosition, error) {
+	switch s {
+	case "top":
+		return CaptureGroupBlockOverlayPositionTop, nil
+	case "center":
+		return CaptureGroupBlockOverlayPositionCenter, nil
+	case "bottom":
+		return CaptureGroupBlockOverlayPositionBottom, nil
+	}
+	var t CaptureGroupBlockOverlayPosition
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CaptureGroupBlockOverlayPosition) Ptr() *CaptureGroupBlockOverlayPosition {
+	return &c
+}
+
+var (
+	captureHeadingBlockFieldAlign     = big.NewInt(1 << 0)
+	captureHeadingBlockFieldContent   = big.NewInt(1 << 1)
+	captureHeadingBlockFieldID        = big.NewInt(1 << 2)
+	captureHeadingBlockFieldLevel     = big.NewInt(1 << 3)
+	captureHeadingBlockFieldSectionID = big.NewInt(1 << 4)
+)
+
+type CaptureHeadingBlock struct {
+	Align CaptureHeadingBlockAlign `json:"align" url:"align"`
+	// Inline HTML is sanitized. Visible text after stripping markup and trimming must contain 1 to 180 characters. maxLength limits the raw markup separately.
+	Content   string  `json:"content" url:"content"`
+	ID        string  `json:"id" url:"id"`
+	Level     int     `json:"level" url:"level"`
+	SectionID *string `json:"sectionId,omitempty" url:"sectionId,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CaptureHeadingBlock) GetAlign() CaptureHeadingBlockAlign {
+	if c == nil {
+		return ""
+	}
+	return c.Align
+}
+
+func (c *CaptureHeadingBlock) GetContent() string {
+	if c == nil {
+		return ""
+	}
+	return c.Content
+}
+
+func (c *CaptureHeadingBlock) GetID() string {
+	if c == nil {
+		return ""
+	}
+	return c.ID
+}
+
+func (c *CaptureHeadingBlock) GetLevel() int {
+	if c == nil {
+		return 0
+	}
+	return c.Level
+}
+
+func (c *CaptureHeadingBlock) GetSectionID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.SectionID
+}
+
+func (c *CaptureHeadingBlock) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CaptureHeadingBlock) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetAlign sets the Align field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureHeadingBlock) SetAlign(align CaptureHeadingBlockAlign) {
+	c.Align = align
+	c.require(captureHeadingBlockFieldAlign)
+}
+
+// SetContent sets the Content field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureHeadingBlock) SetContent(content string) {
+	c.Content = content
+	c.require(captureHeadingBlockFieldContent)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureHeadingBlock) SetID(id string) {
+	c.ID = id
+	c.require(captureHeadingBlockFieldID)
+}
+
+// SetLevel sets the Level field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureHeadingBlock) SetLevel(level int) {
+	c.Level = level
+	c.require(captureHeadingBlockFieldLevel)
+}
+
+// SetSectionID sets the SectionID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureHeadingBlock) SetSectionID(sectionID *string) {
+	c.SectionID = sectionID
+	c.require(captureHeadingBlockFieldSectionID)
+}
+
+func (c *CaptureHeadingBlock) UnmarshalJSON(data []byte) error {
+	type unmarshaler CaptureHeadingBlock
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CaptureHeadingBlock(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CaptureHeadingBlock) MarshalJSON() ([]byte, error) {
+	type embed CaptureHeadingBlock
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CaptureHeadingBlock) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+type CaptureHeadingBlockAlign string
+
+const (
+	CaptureHeadingBlockAlignLeft   CaptureHeadingBlockAlign = "left"
+	CaptureHeadingBlockAlignCenter CaptureHeadingBlockAlign = "center"
+	CaptureHeadingBlockAlignRight  CaptureHeadingBlockAlign = "right"
+)
+
+func NewCaptureHeadingBlockAlignFromString(s string) (CaptureHeadingBlockAlign, error) {
+	switch s {
+	case "left":
+		return CaptureHeadingBlockAlignLeft, nil
+	case "center":
+		return CaptureHeadingBlockAlignCenter, nil
+	case "right":
+		return CaptureHeadingBlockAlignRight, nil
+	}
+	var t CaptureHeadingBlockAlign
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CaptureHeadingBlockAlign) Ptr() *CaptureHeadingBlockAlign {
+	return &c
+}
+
+var (
+	captureImageBlockFieldAlt       = big.NewInt(1 << 0)
+	captureImageBlockFieldFit       = big.NewInt(1 << 1)
+	captureImageBlockFieldID        = big.NewInt(1 << 2)
+	captureImageBlockFieldSectionID = big.NewInt(1 << 3)
+	captureImageBlockFieldSrc       = big.NewInt(1 << 4)
+)
+
+type CaptureImageBlock struct {
+	Alt       string               `json:"alt" url:"alt"`
+	Fit       CaptureImageBlockFit `json:"fit" url:"fit"`
+	ID        string               `json:"id" url:"id"`
+	SectionID *string              `json:"sectionId,omitempty" url:"sectionId,omitempty"`
+	Src       string               `json:"src" url:"src"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CaptureImageBlock) GetAlt() string {
+	if c == nil {
+		return ""
+	}
+	return c.Alt
+}
+
+func (c *CaptureImageBlock) GetFit() CaptureImageBlockFit {
+	if c == nil {
+		return ""
+	}
+	return c.Fit
+}
+
+func (c *CaptureImageBlock) GetID() string {
+	if c == nil {
+		return ""
+	}
+	return c.ID
+}
+
+func (c *CaptureImageBlock) GetSectionID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.SectionID
+}
+
+func (c *CaptureImageBlock) GetSrc() string {
+	if c == nil {
+		return ""
+	}
+	return c.Src
+}
+
+func (c *CaptureImageBlock) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CaptureImageBlock) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetAlt sets the Alt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureImageBlock) SetAlt(alt string) {
+	c.Alt = alt
+	c.require(captureImageBlockFieldAlt)
+}
+
+// SetFit sets the Fit field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureImageBlock) SetFit(fit CaptureImageBlockFit) {
+	c.Fit = fit
+	c.require(captureImageBlockFieldFit)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureImageBlock) SetID(id string) {
+	c.ID = id
+	c.require(captureImageBlockFieldID)
+}
+
+// SetSectionID sets the SectionID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureImageBlock) SetSectionID(sectionID *string) {
+	c.SectionID = sectionID
+	c.require(captureImageBlockFieldSectionID)
+}
+
+// SetSrc sets the Src field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureImageBlock) SetSrc(src string) {
+	c.Src = src
+	c.require(captureImageBlockFieldSrc)
+}
+
+func (c *CaptureImageBlock) UnmarshalJSON(data []byte) error {
+	type unmarshaler CaptureImageBlock
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CaptureImageBlock(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CaptureImageBlock) MarshalJSON() ([]byte, error) {
+	type embed CaptureImageBlock
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CaptureImageBlock) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+type CaptureImageBlockFit string
+
+const (
+	CaptureImageBlockFitCover   CaptureImageBlockFit = "cover"
+	CaptureImageBlockFitContain CaptureImageBlockFit = "contain"
+)
+
+func NewCaptureImageBlockFitFromString(s string) (CaptureImageBlockFit, error) {
+	switch s {
+	case "cover":
+		return CaptureImageBlockFitCover, nil
+	case "contain":
+		return CaptureImageBlockFitContain, nil
+	}
+	var t CaptureImageBlockFit
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CaptureImageBlockFit) Ptr() *CaptureImageBlockFit {
+	return &c
+}
+
+var (
+	captureSpacerBlockFieldHeight    = big.NewInt(1 << 0)
+	captureSpacerBlockFieldID        = big.NewInt(1 << 1)
+	captureSpacerBlockFieldSectionID = big.NewInt(1 << 2)
+)
+
+type CaptureSpacerBlock struct {
+	Height    int     `json:"height" url:"height"`
+	ID        string  `json:"id" url:"id"`
+	SectionID *string `json:"sectionId,omitempty" url:"sectionId,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CaptureSpacerBlock) GetHeight() int {
+	if c == nil {
+		return 0
+	}
+	return c.Height
+}
+
+func (c *CaptureSpacerBlock) GetID() string {
+	if c == nil {
+		return ""
+	}
+	return c.ID
+}
+
+func (c *CaptureSpacerBlock) GetSectionID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.SectionID
+}
+
+func (c *CaptureSpacerBlock) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CaptureSpacerBlock) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetHeight sets the Height field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureSpacerBlock) SetHeight(height int) {
+	c.Height = height
+	c.require(captureSpacerBlockFieldHeight)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureSpacerBlock) SetID(id string) {
+	c.ID = id
+	c.require(captureSpacerBlockFieldID)
+}
+
+// SetSectionID sets the SectionID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureSpacerBlock) SetSectionID(sectionID *string) {
+	c.SectionID = sectionID
+	c.require(captureSpacerBlockFieldSectionID)
+}
+
+func (c *CaptureSpacerBlock) UnmarshalJSON(data []byte) error {
+	type unmarshaler CaptureSpacerBlock
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CaptureSpacerBlock(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CaptureSpacerBlock) MarshalJSON() ([]byte, error) {
+	type embed CaptureSpacerBlock
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CaptureSpacerBlock) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	captureTestimonialFieldName  = big.NewInt(1 << 0)
+	captureTestimonialFieldQuote = big.NewInt(1 << 1)
+	captureTestimonialFieldRole  = big.NewInt(1 << 2)
+)
+
+type CaptureTestimonial struct {
+	Name string `json:"name" url:"name"`
+	// Inline HTML is sanitized. Visible text after stripping markup and trimming must contain 1 to 500 characters. maxLength limits the raw markup separately.
+	Quote string `json:"quote" url:"quote"`
+	Role  string `json:"role" url:"role"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CaptureTestimonial) GetName() string {
+	if c == nil {
+		return ""
+	}
+	return c.Name
+}
+
+func (c *CaptureTestimonial) GetQuote() string {
+	if c == nil {
+		return ""
+	}
+	return c.Quote
+}
+
+func (c *CaptureTestimonial) GetRole() string {
+	if c == nil {
+		return ""
+	}
+	return c.Role
+}
+
+func (c *CaptureTestimonial) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CaptureTestimonial) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureTestimonial) SetName(name string) {
+	c.Name = name
+	c.require(captureTestimonialFieldName)
+}
+
+// SetQuote sets the Quote field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureTestimonial) SetQuote(quote string) {
+	c.Quote = quote
+	c.require(captureTestimonialFieldQuote)
+}
+
+// SetRole sets the Role field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureTestimonial) SetRole(role string) {
+	c.Role = role
+	c.require(captureTestimonialFieldRole)
+}
+
+func (c *CaptureTestimonial) UnmarshalJSON(data []byte) error {
+	type unmarshaler CaptureTestimonial
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CaptureTestimonial(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CaptureTestimonial) MarshalJSON() ([]byte, error) {
+	type embed CaptureTestimonial
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CaptureTestimonial) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	captureTestimonialBlockFieldID           = big.NewInt(1 << 0)
+	captureTestimonialBlockFieldSectionID    = big.NewInt(1 << 1)
+	captureTestimonialBlockFieldTestimonials = big.NewInt(1 << 2)
+)
+
+type CaptureTestimonialBlock struct {
+	ID           string                `json:"id" url:"id"`
+	SectionID    *string               `json:"sectionId,omitempty" url:"sectionId,omitempty"`
+	Testimonials []*CaptureTestimonial `json:"testimonials" url:"testimonials"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CaptureTestimonialBlock) GetID() string {
+	if c == nil {
+		return ""
+	}
+	return c.ID
+}
+
+func (c *CaptureTestimonialBlock) GetSectionID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.SectionID
+}
+
+func (c *CaptureTestimonialBlock) GetTestimonials() []*CaptureTestimonial {
+	if c == nil {
+		return nil
+	}
+	return c.Testimonials
+}
+
+func (c *CaptureTestimonialBlock) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CaptureTestimonialBlock) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureTestimonialBlock) SetID(id string) {
+	c.ID = id
+	c.require(captureTestimonialBlockFieldID)
+}
+
+// SetSectionID sets the SectionID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureTestimonialBlock) SetSectionID(sectionID *string) {
+	c.SectionID = sectionID
+	c.require(captureTestimonialBlockFieldSectionID)
+}
+
+// SetTestimonials sets the Testimonials field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureTestimonialBlock) SetTestimonials(testimonials []*CaptureTestimonial) {
+	c.Testimonials = testimonials
+	c.require(captureTestimonialBlockFieldTestimonials)
+}
+
+func (c *CaptureTestimonialBlock) UnmarshalJSON(data []byte) error {
+	type unmarshaler CaptureTestimonialBlock
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CaptureTestimonialBlock(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CaptureTestimonialBlock) MarshalJSON() ([]byte, error) {
+	type embed CaptureTestimonialBlock
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CaptureTestimonialBlock) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	captureTextBlockFieldAlign     = big.NewInt(1 << 0)
+	captureTextBlockFieldContent   = big.NewInt(1 << 1)
+	captureTextBlockFieldID        = big.NewInt(1 << 2)
+	captureTextBlockFieldSectionID = big.NewInt(1 << 3)
+	captureTextBlockFieldVariant   = big.NewInt(1 << 4)
+)
+
+type CaptureTextBlock struct {
+	Align CaptureTextBlockAlign `json:"align" url:"align"`
+	// Inline HTML is sanitized. Visible text after stripping markup and trimming must contain at most 700 characters. maxLength limits the raw markup separately.
+	Content   string                  `json:"content" url:"content"`
+	ID        string                  `json:"id" url:"id"`
+	SectionID *string                 `json:"sectionId,omitempty" url:"sectionId,omitempty"`
+	Variant   CaptureTextBlockVariant `json:"variant" url:"variant"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CaptureTextBlock) GetAlign() CaptureTextBlockAlign {
+	if c == nil {
+		return ""
+	}
+	return c.Align
+}
+
+func (c *CaptureTextBlock) GetContent() string {
+	if c == nil {
+		return ""
+	}
+	return c.Content
+}
+
+func (c *CaptureTextBlock) GetID() string {
+	if c == nil {
+		return ""
+	}
+	return c.ID
+}
+
+func (c *CaptureTextBlock) GetSectionID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.SectionID
+}
+
+func (c *CaptureTextBlock) GetVariant() CaptureTextBlockVariant {
+	if c == nil {
+		return ""
+	}
+	return c.Variant
+}
+
+func (c *CaptureTextBlock) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CaptureTextBlock) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetAlign sets the Align field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureTextBlock) SetAlign(align CaptureTextBlockAlign) {
+	c.Align = align
+	c.require(captureTextBlockFieldAlign)
+}
+
+// SetContent sets the Content field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureTextBlock) SetContent(content string) {
+	c.Content = content
+	c.require(captureTextBlockFieldContent)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureTextBlock) SetID(id string) {
+	c.ID = id
+	c.require(captureTextBlockFieldID)
+}
+
+// SetSectionID sets the SectionID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureTextBlock) SetSectionID(sectionID *string) {
+	c.SectionID = sectionID
+	c.require(captureTextBlockFieldSectionID)
+}
+
+// SetVariant sets the Variant field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureTextBlock) SetVariant(variant CaptureTextBlockVariant) {
+	c.Variant = variant
+	c.require(captureTextBlockFieldVariant)
+}
+
+func (c *CaptureTextBlock) UnmarshalJSON(data []byte) error {
+	type unmarshaler CaptureTextBlock
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CaptureTextBlock(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CaptureTextBlock) MarshalJSON() ([]byte, error) {
+	type embed CaptureTextBlock
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CaptureTextBlock) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+type CaptureTextBlockAlign string
+
+const (
+	CaptureTextBlockAlignLeft   CaptureTextBlockAlign = "left"
+	CaptureTextBlockAlignCenter CaptureTextBlockAlign = "center"
+	CaptureTextBlockAlignRight  CaptureTextBlockAlign = "right"
+)
+
+func NewCaptureTextBlockAlignFromString(s string) (CaptureTextBlockAlign, error) {
+	switch s {
+	case "left":
+		return CaptureTextBlockAlignLeft, nil
+	case "center":
+		return CaptureTextBlockAlignCenter, nil
+	case "right":
+		return CaptureTextBlockAlignRight, nil
+	}
+	var t CaptureTextBlockAlign
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CaptureTextBlockAlign) Ptr() *CaptureTextBlockAlign {
+	return &c
+}
+
+type CaptureTextBlockVariant string
+
+const (
+	CaptureTextBlockVariantParagraph CaptureTextBlockVariant = "paragraph"
+	CaptureTextBlockVariantEyebrow   CaptureTextBlockVariant = "eyebrow"
+	CaptureTextBlockVariantCaption   CaptureTextBlockVariant = "caption"
+)
+
+func NewCaptureTextBlockVariantFromString(s string) (CaptureTextBlockVariant, error) {
+	switch s {
+	case "paragraph":
+		return CaptureTextBlockVariantParagraph, nil
+	case "eyebrow":
+		return CaptureTextBlockVariantEyebrow, nil
+	case "caption":
+		return CaptureTextBlockVariantCaption, nil
+	}
+	var t CaptureTextBlockVariant
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CaptureTextBlockVariant) Ptr() *CaptureTextBlockVariant {
+	return &c
+}
+
+var (
+	captureThemeFieldAccentColor       = big.NewInt(1 << 0)
+	captureThemeFieldBackgroundColor   = big.NewInt(1 << 1)
+	captureThemeFieldBodyFontFamily    = big.NewInt(1 << 2)
+	captureThemeFieldBorderColor       = big.NewInt(1 << 3)
+	captureThemeFieldBorderRadius      = big.NewInt(1 << 4)
+	captureThemeFieldCardColor         = big.NewInt(1 << 5)
+	captureThemeFieldDensity           = big.NewInt(1 << 6)
+	captureThemeFieldHeadingFontFamily = big.NewInt(1 << 7)
+	captureThemeFieldMutedTextColor    = big.NewInt(1 << 8)
+	captureThemeFieldTextColor         = big.NewInt(1 << 9)
+)
+
+type CaptureTheme struct {
+	AccentColor       string              `json:"accentColor" url:"accentColor"`
+	BackgroundColor   string              `json:"backgroundColor" url:"backgroundColor"`
+	BodyFontFamily    string              `json:"bodyFontFamily" url:"bodyFontFamily"`
+	BorderColor       string              `json:"borderColor" url:"borderColor"`
+	BorderRadius      int                 `json:"borderRadius" url:"borderRadius"`
+	CardColor         string              `json:"cardColor" url:"cardColor"`
+	Density           CaptureThemeDensity `json:"density" url:"density"`
+	HeadingFontFamily string              `json:"headingFontFamily" url:"headingFontFamily"`
+	MutedTextColor    string              `json:"mutedTextColor" url:"mutedTextColor"`
+	TextColor         string              `json:"textColor" url:"textColor"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CaptureTheme) GetAccentColor() string {
+	if c == nil {
+		return ""
+	}
+	return c.AccentColor
+}
+
+func (c *CaptureTheme) GetBackgroundColor() string {
+	if c == nil {
+		return ""
+	}
+	return c.BackgroundColor
+}
+
+func (c *CaptureTheme) GetBodyFontFamily() string {
+	if c == nil {
+		return ""
+	}
+	return c.BodyFontFamily
+}
+
+func (c *CaptureTheme) GetBorderColor() string {
+	if c == nil {
+		return ""
+	}
+	return c.BorderColor
+}
+
+func (c *CaptureTheme) GetBorderRadius() int {
+	if c == nil {
+		return 0
+	}
+	return c.BorderRadius
+}
+
+func (c *CaptureTheme) GetCardColor() string {
+	if c == nil {
+		return ""
+	}
+	return c.CardColor
+}
+
+func (c *CaptureTheme) GetDensity() CaptureThemeDensity {
+	if c == nil {
+		return ""
+	}
+	return c.Density
+}
+
+func (c *CaptureTheme) GetHeadingFontFamily() string {
+	if c == nil {
+		return ""
+	}
+	return c.HeadingFontFamily
+}
+
+func (c *CaptureTheme) GetMutedTextColor() string {
+	if c == nil {
+		return ""
+	}
+	return c.MutedTextColor
+}
+
+func (c *CaptureTheme) GetTextColor() string {
+	if c == nil {
+		return ""
+	}
+	return c.TextColor
+}
+
+func (c *CaptureTheme) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CaptureTheme) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetAccentColor sets the AccentColor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureTheme) SetAccentColor(accentColor string) {
+	c.AccentColor = accentColor
+	c.require(captureThemeFieldAccentColor)
+}
+
+// SetBackgroundColor sets the BackgroundColor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureTheme) SetBackgroundColor(backgroundColor string) {
+	c.BackgroundColor = backgroundColor
+	c.require(captureThemeFieldBackgroundColor)
+}
+
+// SetBodyFontFamily sets the BodyFontFamily field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureTheme) SetBodyFontFamily(bodyFontFamily string) {
+	c.BodyFontFamily = bodyFontFamily
+	c.require(captureThemeFieldBodyFontFamily)
+}
+
+// SetBorderColor sets the BorderColor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureTheme) SetBorderColor(borderColor string) {
+	c.BorderColor = borderColor
+	c.require(captureThemeFieldBorderColor)
+}
+
+// SetBorderRadius sets the BorderRadius field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureTheme) SetBorderRadius(borderRadius int) {
+	c.BorderRadius = borderRadius
+	c.require(captureThemeFieldBorderRadius)
+}
+
+// SetCardColor sets the CardColor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureTheme) SetCardColor(cardColor string) {
+	c.CardColor = cardColor
+	c.require(captureThemeFieldCardColor)
+}
+
+// SetDensity sets the Density field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureTheme) SetDensity(density CaptureThemeDensity) {
+	c.Density = density
+	c.require(captureThemeFieldDensity)
+}
+
+// SetHeadingFontFamily sets the HeadingFontFamily field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureTheme) SetHeadingFontFamily(headingFontFamily string) {
+	c.HeadingFontFamily = headingFontFamily
+	c.require(captureThemeFieldHeadingFontFamily)
+}
+
+// SetMutedTextColor sets the MutedTextColor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureTheme) SetMutedTextColor(mutedTextColor string) {
+	c.MutedTextColor = mutedTextColor
+	c.require(captureThemeFieldMutedTextColor)
+}
+
+// SetTextColor sets the TextColor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CaptureTheme) SetTextColor(textColor string) {
+	c.TextColor = textColor
+	c.require(captureThemeFieldTextColor)
+}
+
+func (c *CaptureTheme) UnmarshalJSON(data []byte) error {
+	type unmarshaler CaptureTheme
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CaptureTheme(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CaptureTheme) MarshalJSON() ([]byte, error) {
+	type embed CaptureTheme
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CaptureTheme) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+type CaptureThemeDensity string
+
+const (
+	CaptureThemeDensityCompact  CaptureThemeDensity = "compact"
+	CaptureThemeDensityBalanced CaptureThemeDensity = "balanced"
+	CaptureThemeDensitySpacious CaptureThemeDensity = "spacious"
+)
+
+func NewCaptureThemeDensityFromString(s string) (CaptureThemeDensity, error) {
+	switch s {
+	case "compact":
+		return CaptureThemeDensityCompact, nil
+	case "balanced":
+		return CaptureThemeDensityBalanced, nil
+	case "spacious":
+		return CaptureThemeDensitySpacious, nil
+	}
+	var t CaptureThemeDensity
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CaptureThemeDensity) Ptr() *CaptureThemeDensity {
+	return &c
+}
+
+// Form content block, selected by kind. Returned content includes normalized defaults.
+type FormCaptureBlock struct {
+	Kind          string
+	Button        *CaptureButtonBlock
+	Countdown     *CaptureCountdownBlock
+	CustomHTML    *CaptureCustomHTMLBlock
+	Divider       *CaptureDividerBlock
+	ErrorState    *FormCaptureErrorStateBlock
+	FeatureGrid   *CaptureFeatureGridBlock
+	FormField     *FormCaptureFieldBlock
+	FormStep      *FormCaptureStepBlock
+	Group         *CaptureGroupBlock
+	Heading       *CaptureHeadingBlock
+	Image         *CaptureImageBlock
+	Spacer        *CaptureSpacerBlock
+	SubmitButton  *FormCaptureSubmitButtonBlock
+	SuccessScreen *FormCaptureSuccessScreenBlock
+	Testimonial   *CaptureTestimonialBlock
+	Text          *CaptureTextBlock
+
+	rawJSON json.RawMessage
+}
+
+func (f *FormCaptureBlock) GetKind() string {
+	if f == nil {
+		return ""
+	}
+	return f.Kind
+}
+
+func (f *FormCaptureBlock) GetButton() *CaptureButtonBlock {
+	if f == nil {
+		return nil
+	}
+	return f.Button
+}
+
+func (f *FormCaptureBlock) GetCountdown() *CaptureCountdownBlock {
+	if f == nil {
+		return nil
+	}
+	return f.Countdown
+}
+
+func (f *FormCaptureBlock) GetCustomHTML() *CaptureCustomHTMLBlock {
+	if f == nil {
+		return nil
+	}
+	return f.CustomHTML
+}
+
+func (f *FormCaptureBlock) GetDivider() *CaptureDividerBlock {
+	if f == nil {
+		return nil
+	}
+	return f.Divider
+}
+
+func (f *FormCaptureBlock) GetErrorState() *FormCaptureErrorStateBlock {
+	if f == nil {
+		return nil
+	}
+	return f.ErrorState
+}
+
+func (f *FormCaptureBlock) GetFeatureGrid() *CaptureFeatureGridBlock {
+	if f == nil {
+		return nil
+	}
+	return f.FeatureGrid
+}
+
+func (f *FormCaptureBlock) GetFormField() *FormCaptureFieldBlock {
+	if f == nil {
+		return nil
+	}
+	return f.FormField
+}
+
+func (f *FormCaptureBlock) GetFormStep() *FormCaptureStepBlock {
+	if f == nil {
+		return nil
+	}
+	return f.FormStep
+}
+
+func (f *FormCaptureBlock) GetGroup() *CaptureGroupBlock {
+	if f == nil {
+		return nil
+	}
+	return f.Group
+}
+
+func (f *FormCaptureBlock) GetHeading() *CaptureHeadingBlock {
+	if f == nil {
+		return nil
+	}
+	return f.Heading
+}
+
+func (f *FormCaptureBlock) GetImage() *CaptureImageBlock {
+	if f == nil {
+		return nil
+	}
+	return f.Image
+}
+
+func (f *FormCaptureBlock) GetSpacer() *CaptureSpacerBlock {
+	if f == nil {
+		return nil
+	}
+	return f.Spacer
+}
+
+func (f *FormCaptureBlock) GetSubmitButton() *FormCaptureSubmitButtonBlock {
+	if f == nil {
+		return nil
+	}
+	return f.SubmitButton
+}
+
+func (f *FormCaptureBlock) GetSuccessScreen() *FormCaptureSuccessScreenBlock {
+	if f == nil {
+		return nil
+	}
+	return f.SuccessScreen
+}
+
+func (f *FormCaptureBlock) GetTestimonial() *CaptureTestimonialBlock {
+	if f == nil {
+		return nil
+	}
+	return f.Testimonial
+}
+
+func (f *FormCaptureBlock) GetText() *CaptureTextBlock {
+	if f == nil {
+		return nil
+	}
+	return f.Text
+}
+
+func (f *FormCaptureBlock) UnmarshalJSON(data []byte) error {
+	var unmarshaler struct {
+		Kind string `json:"kind"`
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	f.Kind = unmarshaler.Kind
+	if unmarshaler.Kind == "" {
+		return fmt.Errorf("%T did not include discriminant kind", f)
+	}
+	switch unmarshaler.Kind {
+	case "button":
+		value := new(CaptureButtonBlock)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		f.Button = value
+	case "countdown":
+		value := new(CaptureCountdownBlock)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		f.Countdown = value
+	case "custom-html":
+		value := new(CaptureCustomHTMLBlock)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		f.CustomHTML = value
+	case "divider":
+		value := new(CaptureDividerBlock)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		f.Divider = value
+	case "error-state":
+		value := new(FormCaptureErrorStateBlock)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		f.ErrorState = value
+	case "feature-grid":
+		value := new(CaptureFeatureGridBlock)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		f.FeatureGrid = value
+	case "form-field":
+		value := new(FormCaptureFieldBlock)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		f.FormField = value
+	case "form-step":
+		value := new(FormCaptureStepBlock)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		f.FormStep = value
+	case "group":
+		value := new(CaptureGroupBlock)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		f.Group = value
+	case "heading":
+		value := new(CaptureHeadingBlock)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		f.Heading = value
+	case "image":
+		value := new(CaptureImageBlock)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		f.Image = value
+	case "spacer":
+		value := new(CaptureSpacerBlock)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		f.Spacer = value
+	case "submit-button":
+		value := new(FormCaptureSubmitButtonBlock)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		f.SubmitButton = value
+	case "success-screen":
+		value := new(FormCaptureSuccessScreenBlock)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		f.SuccessScreen = value
+	case "testimonial":
+		value := new(CaptureTestimonialBlock)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		f.Testimonial = value
+	case "text":
+		value := new(CaptureTextBlock)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		f.Text = value
+	}
+	f.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (f FormCaptureBlock) MarshalJSON() ([]byte, error) {
+	if err := f.validate(); err != nil {
+		return nil, err
+	}
+	if f.Button != nil {
+		return internal.MarshalJSONWithExtraProperty(f.Button, "kind", "button")
+	}
+	if f.Countdown != nil {
+		return internal.MarshalJSONWithExtraProperty(f.Countdown, "kind", "countdown")
+	}
+	if f.CustomHTML != nil {
+		return internal.MarshalJSONWithExtraProperty(f.CustomHTML, "kind", "custom-html")
+	}
+	if f.Divider != nil {
+		return internal.MarshalJSONWithExtraProperty(f.Divider, "kind", "divider")
+	}
+	if f.ErrorState != nil {
+		return internal.MarshalJSONWithExtraProperty(f.ErrorState, "kind", "error-state")
+	}
+	if f.FeatureGrid != nil {
+		return internal.MarshalJSONWithExtraProperty(f.FeatureGrid, "kind", "feature-grid")
+	}
+	if f.FormField != nil {
+		return internal.MarshalJSONWithExtraProperty(f.FormField, "kind", "form-field")
+	}
+	if f.FormStep != nil {
+		return internal.MarshalJSONWithExtraProperty(f.FormStep, "kind", "form-step")
+	}
+	if f.Group != nil {
+		return internal.MarshalJSONWithExtraProperty(f.Group, "kind", "group")
+	}
+	if f.Heading != nil {
+		return internal.MarshalJSONWithExtraProperty(f.Heading, "kind", "heading")
+	}
+	if f.Image != nil {
+		return internal.MarshalJSONWithExtraProperty(f.Image, "kind", "image")
+	}
+	if f.Spacer != nil {
+		return internal.MarshalJSONWithExtraProperty(f.Spacer, "kind", "spacer")
+	}
+	if f.SubmitButton != nil {
+		return internal.MarshalJSONWithExtraProperty(f.SubmitButton, "kind", "submit-button")
+	}
+	if f.SuccessScreen != nil {
+		return internal.MarshalJSONWithExtraProperty(f.SuccessScreen, "kind", "success-screen")
+	}
+	if f.Testimonial != nil {
+		return internal.MarshalJSONWithExtraProperty(f.Testimonial, "kind", "testimonial")
+	}
+	if f.Text != nil {
+		return internal.MarshalJSONWithExtraProperty(f.Text, "kind", "text")
+	}
+	if len(f.rawJSON) > 0 {
+		return f.rawJSON, nil
+	}
+	return nil, fmt.Errorf("type %T does not define a non-empty union type", f)
+}
+
+type FormCaptureBlockVisitor interface {
+	VisitButton(*CaptureButtonBlock) error
+	VisitCountdown(*CaptureCountdownBlock) error
+	VisitCustomHTML(*CaptureCustomHTMLBlock) error
+	VisitDivider(*CaptureDividerBlock) error
+	VisitErrorState(*FormCaptureErrorStateBlock) error
+	VisitFeatureGrid(*CaptureFeatureGridBlock) error
+	VisitFormField(*FormCaptureFieldBlock) error
+	VisitFormStep(*FormCaptureStepBlock) error
+	VisitGroup(*CaptureGroupBlock) error
+	VisitHeading(*CaptureHeadingBlock) error
+	VisitImage(*CaptureImageBlock) error
+	VisitSpacer(*CaptureSpacerBlock) error
+	VisitSubmitButton(*FormCaptureSubmitButtonBlock) error
+	VisitSuccessScreen(*FormCaptureSuccessScreenBlock) error
+	VisitTestimonial(*CaptureTestimonialBlock) error
+	VisitText(*CaptureTextBlock) error
+}
+
+func (f *FormCaptureBlock) Accept(visitor FormCaptureBlockVisitor) error {
+	if f.Button != nil {
+		return visitor.VisitButton(f.Button)
+	}
+	if f.Countdown != nil {
+		return visitor.VisitCountdown(f.Countdown)
+	}
+	if f.CustomHTML != nil {
+		return visitor.VisitCustomHTML(f.CustomHTML)
+	}
+	if f.Divider != nil {
+		return visitor.VisitDivider(f.Divider)
+	}
+	if f.ErrorState != nil {
+		return visitor.VisitErrorState(f.ErrorState)
+	}
+	if f.FeatureGrid != nil {
+		return visitor.VisitFeatureGrid(f.FeatureGrid)
+	}
+	if f.FormField != nil {
+		return visitor.VisitFormField(f.FormField)
+	}
+	if f.FormStep != nil {
+		return visitor.VisitFormStep(f.FormStep)
+	}
+	if f.Group != nil {
+		return visitor.VisitGroup(f.Group)
+	}
+	if f.Heading != nil {
+		return visitor.VisitHeading(f.Heading)
+	}
+	if f.Image != nil {
+		return visitor.VisitImage(f.Image)
+	}
+	if f.Spacer != nil {
+		return visitor.VisitSpacer(f.Spacer)
+	}
+	if f.SubmitButton != nil {
+		return visitor.VisitSubmitButton(f.SubmitButton)
+	}
+	if f.SuccessScreen != nil {
+		return visitor.VisitSuccessScreen(f.SuccessScreen)
+	}
+	if f.Testimonial != nil {
+		return visitor.VisitTestimonial(f.Testimonial)
+	}
+	if f.Text != nil {
+		return visitor.VisitText(f.Text)
+	}
+	return fmt.Errorf("type %T does not define a non-empty union type", f)
+}
+
+func (f *FormCaptureBlock) validate() error {
+	if f == nil {
+		return fmt.Errorf("type %T is nil", f)
+	}
+	var fields []string
+	if f.Button != nil {
+		fields = append(fields, "button")
+	}
+	if f.Countdown != nil {
+		fields = append(fields, "countdown")
+	}
+	if f.CustomHTML != nil {
+		fields = append(fields, "custom-html")
+	}
+	if f.Divider != nil {
+		fields = append(fields, "divider")
+	}
+	if f.ErrorState != nil {
+		fields = append(fields, "error-state")
+	}
+	if f.FeatureGrid != nil {
+		fields = append(fields, "feature-grid")
+	}
+	if f.FormField != nil {
+		fields = append(fields, "form-field")
+	}
+	if f.FormStep != nil {
+		fields = append(fields, "form-step")
+	}
+	if f.Group != nil {
+		fields = append(fields, "group")
+	}
+	if f.Heading != nil {
+		fields = append(fields, "heading")
+	}
+	if f.Image != nil {
+		fields = append(fields, "image")
+	}
+	if f.Spacer != nil {
+		fields = append(fields, "spacer")
+	}
+	if f.SubmitButton != nil {
+		fields = append(fields, "submit-button")
+	}
+	if f.SuccessScreen != nil {
+		fields = append(fields, "success-screen")
+	}
+	if f.Testimonial != nil {
+		fields = append(fields, "testimonial")
+	}
+	if f.Text != nil {
+		fields = append(fields, "text")
+	}
+	if len(fields) == 0 {
+		if f.Kind != "" {
+			if len(f.rawJSON) > 0 {
+				return nil
+			}
+			return fmt.Errorf("type %T defines a discriminant set to %q but the field is not set", f, f.Kind)
+		}
+		return fmt.Errorf("type %T is empty", f)
+	}
+	if len(fields) > 1 {
+		return fmt.Errorf("type %T defines values for %s, but only one value is allowed", f, fields)
+	}
+	if f.Kind != "" {
+		field := fields[0]
+		if f.Kind != field {
+			return fmt.Errorf(
+				"type %T defines a discriminant set to %q, but it does not match the %T field; either remove or update the discriminant to match",
+				f,
+				f.Kind,
+				f,
+			)
+		}
+	}
+	return nil
+}
+
+var (
+	formCaptureErrorStateBlockFieldID        = big.NewInt(1 << 0)
+	formCaptureErrorStateBlockFieldMessage   = big.NewInt(1 << 1)
+	formCaptureErrorStateBlockFieldSectionID = big.NewInt(1 << 2)
+)
+
+type FormCaptureErrorStateBlock struct {
+	ID        string  `json:"id" url:"id"`
+	Message   string  `json:"message" url:"message"`
+	SectionID *string `json:"sectionId,omitempty" url:"sectionId,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (f *FormCaptureErrorStateBlock) GetID() string {
+	if f == nil {
+		return ""
+	}
+	return f.ID
+}
+
+func (f *FormCaptureErrorStateBlock) GetMessage() string {
+	if f == nil {
+		return ""
+	}
+	return f.Message
+}
+
+func (f *FormCaptureErrorStateBlock) GetSectionID() *string {
+	if f == nil {
+		return nil
+	}
+	return f.SectionID
+}
+
+func (f *FormCaptureErrorStateBlock) GetExtraProperties() map[string]interface{} {
+	if f == nil {
+		return nil
+	}
+	return f.extraProperties
+}
+
+func (f *FormCaptureErrorStateBlock) require(field *big.Int) {
+	if f.explicitFields == nil {
+		f.explicitFields = big.NewInt(0)
+	}
+	f.explicitFields.Or(f.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FormCaptureErrorStateBlock) SetID(id string) {
+	f.ID = id
+	f.require(formCaptureErrorStateBlockFieldID)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FormCaptureErrorStateBlock) SetMessage(message string) {
+	f.Message = message
+	f.require(formCaptureErrorStateBlockFieldMessage)
+}
+
+// SetSectionID sets the SectionID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FormCaptureErrorStateBlock) SetSectionID(sectionID *string) {
+	f.SectionID = sectionID
+	f.require(formCaptureErrorStateBlockFieldSectionID)
+}
+
+func (f *FormCaptureErrorStateBlock) UnmarshalJSON(data []byte) error {
+	type unmarshaler FormCaptureErrorStateBlock
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*f = FormCaptureErrorStateBlock(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+	f.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (f *FormCaptureErrorStateBlock) MarshalJSON() ([]byte, error) {
+	type embed FormCaptureErrorStateBlock
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*f),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, f.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (f *FormCaptureErrorStateBlock) String() string {
+	if f == nil {
+		return "<nil>"
+	}
+	if len(f.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(f.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(f); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", f)
+}
+
+var (
+	formCaptureFieldBlockFieldConsentText  = big.NewInt(1 << 0)
+	formCaptureFieldBlockFieldDefaultValue = big.NewInt(1 << 1)
+	formCaptureFieldBlockFieldFieldType    = big.NewInt(1 << 2)
+	formCaptureFieldBlockFieldID           = big.NewInt(1 << 3)
+	formCaptureFieldBlockFieldLabel        = big.NewInt(1 << 4)
+	formCaptureFieldBlockFieldMapsTo       = big.NewInt(1 << 5)
+	formCaptureFieldBlockFieldName         = big.NewInt(1 << 6)
+	formCaptureFieldBlockFieldOptions      = big.NewInt(1 << 7)
+	formCaptureFieldBlockFieldPlaceholder  = big.NewInt(1 << 8)
+	formCaptureFieldBlockFieldRequired     = big.NewInt(1 << 9)
+	formCaptureFieldBlockFieldSectionID    = big.NewInt(1 << 10)
+	formCaptureFieldBlockFieldShowLabel    = big.NewInt(1 << 11)
+	formCaptureFieldBlockFieldWidth        = big.NewInt(1 << 12)
+)
+
+type FormCaptureFieldBlock struct {
+	ConsentText  string                         `json:"consentText" url:"consentText"`
+	DefaultValue string                         `json:"defaultValue" url:"defaultValue"`
+	FieldType    FormCaptureFieldBlockFieldType `json:"fieldType" url:"fieldType"`
+	ID           string                         `json:"id" url:"id"`
+	Label        string                         `json:"label" url:"label"`
+	MapsTo       FormCaptureFieldBlockMapsTo    `json:"mapsTo" url:"mapsTo"`
+	Name         string                         `json:"name" url:"name"`
+	Options      []*FormCaptureFieldOption      `json:"options" url:"options"`
+	Placeholder  string                         `json:"placeholder" url:"placeholder"`
+	Required     bool                           `json:"required" url:"required"`
+	SectionID    *string                        `json:"sectionId,omitempty" url:"sectionId,omitempty"`
+	ShowLabel    bool                           `json:"showLabel" url:"showLabel"`
+	Width        *FormCaptureFieldBlockWidth    `json:"width,omitempty" url:"width,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (f *FormCaptureFieldBlock) GetConsentText() string {
+	if f == nil {
+		return ""
+	}
+	return f.ConsentText
+}
+
+func (f *FormCaptureFieldBlock) GetDefaultValue() string {
+	if f == nil {
+		return ""
+	}
+	return f.DefaultValue
+}
+
+func (f *FormCaptureFieldBlock) GetFieldType() FormCaptureFieldBlockFieldType {
+	if f == nil {
+		return ""
+	}
+	return f.FieldType
+}
+
+func (f *FormCaptureFieldBlock) GetID() string {
+	if f == nil {
+		return ""
+	}
+	return f.ID
+}
+
+func (f *FormCaptureFieldBlock) GetLabel() string {
+	if f == nil {
+		return ""
+	}
+	return f.Label
+}
+
+func (f *FormCaptureFieldBlock) GetMapsTo() FormCaptureFieldBlockMapsTo {
+	if f == nil {
+		return ""
+	}
+	return f.MapsTo
+}
+
+func (f *FormCaptureFieldBlock) GetName() string {
+	if f == nil {
+		return ""
+	}
+	return f.Name
+}
+
+func (f *FormCaptureFieldBlock) GetOptions() []*FormCaptureFieldOption {
+	if f == nil {
+		return nil
+	}
+	return f.Options
+}
+
+func (f *FormCaptureFieldBlock) GetPlaceholder() string {
+	if f == nil {
+		return ""
+	}
+	return f.Placeholder
+}
+
+func (f *FormCaptureFieldBlock) GetRequired() bool {
+	if f == nil {
+		return false
+	}
+	return f.Required
+}
+
+func (f *FormCaptureFieldBlock) GetSectionID() *string {
+	if f == nil {
+		return nil
+	}
+	return f.SectionID
+}
+
+func (f *FormCaptureFieldBlock) GetShowLabel() bool {
+	if f == nil {
+		return false
+	}
+	return f.ShowLabel
+}
+
+func (f *FormCaptureFieldBlock) GetWidth() *FormCaptureFieldBlockWidth {
+	if f == nil {
+		return nil
+	}
+	return f.Width
+}
+
+func (f *FormCaptureFieldBlock) GetExtraProperties() map[string]interface{} {
+	if f == nil {
+		return nil
+	}
+	return f.extraProperties
+}
+
+func (f *FormCaptureFieldBlock) require(field *big.Int) {
+	if f.explicitFields == nil {
+		f.explicitFields = big.NewInt(0)
+	}
+	f.explicitFields.Or(f.explicitFields, field)
+}
+
+// SetConsentText sets the ConsentText field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FormCaptureFieldBlock) SetConsentText(consentText string) {
+	f.ConsentText = consentText
+	f.require(formCaptureFieldBlockFieldConsentText)
+}
+
+// SetDefaultValue sets the DefaultValue field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FormCaptureFieldBlock) SetDefaultValue(defaultValue string) {
+	f.DefaultValue = defaultValue
+	f.require(formCaptureFieldBlockFieldDefaultValue)
+}
+
+// SetFieldType sets the FieldType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FormCaptureFieldBlock) SetFieldType(fieldType FormCaptureFieldBlockFieldType) {
+	f.FieldType = fieldType
+	f.require(formCaptureFieldBlockFieldFieldType)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FormCaptureFieldBlock) SetID(id string) {
+	f.ID = id
+	f.require(formCaptureFieldBlockFieldID)
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FormCaptureFieldBlock) SetLabel(label string) {
+	f.Label = label
+	f.require(formCaptureFieldBlockFieldLabel)
+}
+
+// SetMapsTo sets the MapsTo field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FormCaptureFieldBlock) SetMapsTo(mapsTo FormCaptureFieldBlockMapsTo) {
+	f.MapsTo = mapsTo
+	f.require(formCaptureFieldBlockFieldMapsTo)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FormCaptureFieldBlock) SetName(name string) {
+	f.Name = name
+	f.require(formCaptureFieldBlockFieldName)
+}
+
+// SetOptions sets the Options field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FormCaptureFieldBlock) SetOptions(options []*FormCaptureFieldOption) {
+	f.Options = options
+	f.require(formCaptureFieldBlockFieldOptions)
+}
+
+// SetPlaceholder sets the Placeholder field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FormCaptureFieldBlock) SetPlaceholder(placeholder string) {
+	f.Placeholder = placeholder
+	f.require(formCaptureFieldBlockFieldPlaceholder)
+}
+
+// SetRequired sets the Required field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FormCaptureFieldBlock) SetRequired(required bool) {
+	f.Required = required
+	f.require(formCaptureFieldBlockFieldRequired)
+}
+
+// SetSectionID sets the SectionID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FormCaptureFieldBlock) SetSectionID(sectionID *string) {
+	f.SectionID = sectionID
+	f.require(formCaptureFieldBlockFieldSectionID)
+}
+
+// SetShowLabel sets the ShowLabel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FormCaptureFieldBlock) SetShowLabel(showLabel bool) {
+	f.ShowLabel = showLabel
+	f.require(formCaptureFieldBlockFieldShowLabel)
+}
+
+// SetWidth sets the Width field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FormCaptureFieldBlock) SetWidth(width *FormCaptureFieldBlockWidth) {
+	f.Width = width
+	f.require(formCaptureFieldBlockFieldWidth)
+}
+
+func (f *FormCaptureFieldBlock) UnmarshalJSON(data []byte) error {
+	type unmarshaler FormCaptureFieldBlock
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*f = FormCaptureFieldBlock(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+	f.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (f *FormCaptureFieldBlock) MarshalJSON() ([]byte, error) {
+	type embed FormCaptureFieldBlock
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*f),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, f.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (f *FormCaptureFieldBlock) String() string {
+	if f == nil {
+		return "<nil>"
+	}
+	if len(f.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(f.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(f); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", f)
+}
+
+type FormCaptureFieldBlockFieldType string
+
+const (
+	FormCaptureFieldBlockFieldTypeText     FormCaptureFieldBlockFieldType = "text"
+	FormCaptureFieldBlockFieldTypeEmail    FormCaptureFieldBlockFieldType = "email"
+	FormCaptureFieldBlockFieldTypePhone    FormCaptureFieldBlockFieldType = "phone"
+	FormCaptureFieldBlockFieldTypeNumber   FormCaptureFieldBlockFieldType = "number"
+	FormCaptureFieldBlockFieldTypeTextarea FormCaptureFieldBlockFieldType = "textarea"
+	FormCaptureFieldBlockFieldTypeSelect   FormCaptureFieldBlockFieldType = "select"
+	FormCaptureFieldBlockFieldTypeRadio    FormCaptureFieldBlockFieldType = "radio"
+	FormCaptureFieldBlockFieldTypeCheckbox FormCaptureFieldBlockFieldType = "checkbox"
+	FormCaptureFieldBlockFieldTypeConsent  FormCaptureFieldBlockFieldType = "consent"
+	FormCaptureFieldBlockFieldTypeHidden   FormCaptureFieldBlockFieldType = "hidden"
+)
+
+func NewFormCaptureFieldBlockFieldTypeFromString(s string) (FormCaptureFieldBlockFieldType, error) {
+	switch s {
+	case "text":
+		return FormCaptureFieldBlockFieldTypeText, nil
+	case "email":
+		return FormCaptureFieldBlockFieldTypeEmail, nil
+	case "phone":
+		return FormCaptureFieldBlockFieldTypePhone, nil
+	case "number":
+		return FormCaptureFieldBlockFieldTypeNumber, nil
+	case "textarea":
+		return FormCaptureFieldBlockFieldTypeTextarea, nil
+	case "select":
+		return FormCaptureFieldBlockFieldTypeSelect, nil
+	case "radio":
+		return FormCaptureFieldBlockFieldTypeRadio, nil
+	case "checkbox":
+		return FormCaptureFieldBlockFieldTypeCheckbox, nil
+	case "consent":
+		return FormCaptureFieldBlockFieldTypeConsent, nil
+	case "hidden":
+		return FormCaptureFieldBlockFieldTypeHidden, nil
+	}
+	var t FormCaptureFieldBlockFieldType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (f FormCaptureFieldBlockFieldType) Ptr() *FormCaptureFieldBlockFieldType {
+	return &f
+}
+
+type FormCaptureFieldBlockMapsTo string
+
+const (
+	FormCaptureFieldBlockMapsToEmail           FormCaptureFieldBlockMapsTo = "email"
+	FormCaptureFieldBlockMapsToFirstName       FormCaptureFieldBlockMapsTo = "firstName"
+	FormCaptureFieldBlockMapsToLastName        FormCaptureFieldBlockMapsTo = "lastName"
+	FormCaptureFieldBlockMapsToPhone           FormCaptureFieldBlockMapsTo = "phone"
+	FormCaptureFieldBlockMapsToCustomAttribute FormCaptureFieldBlockMapsTo = "customAttribute"
+)
+
+func NewFormCaptureFieldBlockMapsToFromString(s string) (FormCaptureFieldBlockMapsTo, error) {
+	switch s {
+	case "email":
+		return FormCaptureFieldBlockMapsToEmail, nil
+	case "firstName":
+		return FormCaptureFieldBlockMapsToFirstName, nil
+	case "lastName":
+		return FormCaptureFieldBlockMapsToLastName, nil
+	case "phone":
+		return FormCaptureFieldBlockMapsToPhone, nil
+	case "customAttribute":
+		return FormCaptureFieldBlockMapsToCustomAttribute, nil
+	}
+	var t FormCaptureFieldBlockMapsTo
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (f FormCaptureFieldBlockMapsTo) Ptr() *FormCaptureFieldBlockMapsTo {
+	return &f
+}
+
+type FormCaptureFieldBlockWidth string
+
+const (
+	FormCaptureFieldBlockWidthFull FormCaptureFieldBlockWidth = "full"
+	FormCaptureFieldBlockWidthHalf FormCaptureFieldBlockWidth = "half"
+)
+
+func NewFormCaptureFieldBlockWidthFromString(s string) (FormCaptureFieldBlockWidth, error) {
+	switch s {
+	case "full":
+		return FormCaptureFieldBlockWidthFull, nil
+	case "half":
+		return FormCaptureFieldBlockWidthHalf, nil
+	}
+	var t FormCaptureFieldBlockWidth
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (f FormCaptureFieldBlockWidth) Ptr() *FormCaptureFieldBlockWidth {
+	return &f
+}
+
+// Choice option. Supply value; id and label are derived from it when omitted. Read responses include the normalized id and label.
+var (
+	formCaptureFieldOptionFieldID    = big.NewInt(1 << 0)
+	formCaptureFieldOptionFieldLabel = big.NewInt(1 << 1)
+	formCaptureFieldOptionFieldValue = big.NewInt(1 << 2)
+)
+
+type FormCaptureFieldOption struct {
+	ID    string `json:"id" url:"id"`
+	Label string `json:"label" url:"label"`
+	Value string `json:"value" url:"value"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (f *FormCaptureFieldOption) GetID() string {
+	if f == nil {
+		return ""
+	}
+	return f.ID
+}
+
+func (f *FormCaptureFieldOption) GetLabel() string {
+	if f == nil {
+		return ""
+	}
+	return f.Label
+}
+
+func (f *FormCaptureFieldOption) GetValue() string {
+	if f == nil {
+		return ""
+	}
+	return f.Value
+}
+
+func (f *FormCaptureFieldOption) GetExtraProperties() map[string]interface{} {
+	if f == nil {
+		return nil
+	}
+	return f.extraProperties
+}
+
+func (f *FormCaptureFieldOption) require(field *big.Int) {
+	if f.explicitFields == nil {
+		f.explicitFields = big.NewInt(0)
+	}
+	f.explicitFields.Or(f.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FormCaptureFieldOption) SetID(id string) {
+	f.ID = id
+	f.require(formCaptureFieldOptionFieldID)
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FormCaptureFieldOption) SetLabel(label string) {
+	f.Label = label
+	f.require(formCaptureFieldOptionFieldLabel)
+}
+
+// SetValue sets the Value field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FormCaptureFieldOption) SetValue(value string) {
+	f.Value = value
+	f.require(formCaptureFieldOptionFieldValue)
+}
+
+func (f *FormCaptureFieldOption) UnmarshalJSON(data []byte) error {
+	type unmarshaler FormCaptureFieldOption
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*f = FormCaptureFieldOption(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+	f.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (f *FormCaptureFieldOption) MarshalJSON() ([]byte, error) {
+	type embed FormCaptureFieldOption
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*f),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, f.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (f *FormCaptureFieldOption) String() string {
+	if f == nil {
+		return "<nil>"
+	}
+	if len(f.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(f.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(f); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", f)
+}
+
+var (
+	formCaptureSettingsFieldAfterSubmission   = big.NewInt(1 << 0)
+	formCaptureSettingsFieldDuplicateStrategy = big.NewInt(1 << 1)
+	formCaptureSettingsFieldListIDs           = big.NewInt(1 << 2)
+	formCaptureSettingsFieldListMode          = big.NewInt(1 << 3)
+	formCaptureSettingsFieldRedirectURL       = big.NewInt(1 << 4)
+	formCaptureSettingsFieldTagIDs            = big.NewInt(1 << 5)
+)
+
+type FormCaptureSettings struct {
+	AfterSubmission   FormCaptureSettingsAfterSubmission   `json:"afterSubmission" url:"afterSubmission"`
+	DuplicateStrategy FormCaptureSettingsDuplicateStrategy `json:"duplicateStrategy" url:"duplicateStrategy"`
+	ListIDs           []string                             `json:"listIds" url:"listIds"`
+	ListMode          FormCaptureSettingsListMode          `json:"listMode" url:"listMode"`
+	RedirectURL       string                               `json:"redirectUrl" url:"redirectUrl"`
+	TagIDs            []string                             `json:"tagIds" url:"tagIds"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (f *FormCaptureSettings) GetAfterSubmission() FormCaptureSettingsAfterSubmission {
+	if f == nil {
+		return ""
+	}
+	return f.AfterSubmission
+}
+
+func (f *FormCaptureSettings) GetDuplicateStrategy() FormCaptureSettingsDuplicateStrategy {
+	if f == nil {
+		return ""
+	}
+	return f.DuplicateStrategy
+}
+
+func (f *FormCaptureSettings) GetListIDs() []string {
+	if f == nil {
+		return nil
+	}
+	return f.ListIDs
+}
+
+func (f *FormCaptureSettings) GetListMode() FormCaptureSettingsListMode {
+	if f == nil {
+		return ""
+	}
+	return f.ListMode
+}
+
+func (f *FormCaptureSettings) GetRedirectURL() string {
+	if f == nil {
+		return ""
+	}
+	return f.RedirectURL
+}
+
+func (f *FormCaptureSettings) GetTagIDs() []string {
+	if f == nil {
+		return nil
+	}
+	return f.TagIDs
+}
+
+func (f *FormCaptureSettings) GetExtraProperties() map[string]interface{} {
+	if f == nil {
+		return nil
+	}
+	return f.extraProperties
+}
+
+func (f *FormCaptureSettings) require(field *big.Int) {
+	if f.explicitFields == nil {
+		f.explicitFields = big.NewInt(0)
+	}
+	f.explicitFields.Or(f.explicitFields, field)
+}
+
+// SetAfterSubmission sets the AfterSubmission field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FormCaptureSettings) SetAfterSubmission(afterSubmission FormCaptureSettingsAfterSubmission) {
+	f.AfterSubmission = afterSubmission
+	f.require(formCaptureSettingsFieldAfterSubmission)
+}
+
+// SetDuplicateStrategy sets the DuplicateStrategy field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FormCaptureSettings) SetDuplicateStrategy(duplicateStrategy FormCaptureSettingsDuplicateStrategy) {
+	f.DuplicateStrategy = duplicateStrategy
+	f.require(formCaptureSettingsFieldDuplicateStrategy)
+}
+
+// SetListIDs sets the ListIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FormCaptureSettings) SetListIDs(listIDs []string) {
+	f.ListIDs = listIDs
+	f.require(formCaptureSettingsFieldListIDs)
+}
+
+// SetListMode sets the ListMode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FormCaptureSettings) SetListMode(listMode FormCaptureSettingsListMode) {
+	f.ListMode = listMode
+	f.require(formCaptureSettingsFieldListMode)
+}
+
+// SetRedirectURL sets the RedirectURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FormCaptureSettings) SetRedirectURL(redirectURL string) {
+	f.RedirectURL = redirectURL
+	f.require(formCaptureSettingsFieldRedirectURL)
+}
+
+// SetTagIDs sets the TagIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FormCaptureSettings) SetTagIDs(tagIDs []string) {
+	f.TagIDs = tagIDs
+	f.require(formCaptureSettingsFieldTagIDs)
+}
+
+func (f *FormCaptureSettings) UnmarshalJSON(data []byte) error {
+	type unmarshaler FormCaptureSettings
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*f = FormCaptureSettings(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+	f.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (f *FormCaptureSettings) MarshalJSON() ([]byte, error) {
+	type embed FormCaptureSettings
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*f),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, f.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (f *FormCaptureSettings) String() string {
+	if f == nil {
+		return "<nil>"
+	}
+	if len(f.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(f.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(f); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", f)
+}
+
+type FormCaptureSettingsAfterSubmission string
+
+const (
+	FormCaptureSettingsAfterSubmissionMessage  FormCaptureSettingsAfterSubmission = "message"
+	FormCaptureSettingsAfterSubmissionRedirect FormCaptureSettingsAfterSubmission = "redirect"
+)
+
+func NewFormCaptureSettingsAfterSubmissionFromString(s string) (FormCaptureSettingsAfterSubmission, error) {
+	switch s {
+	case "message":
+		return FormCaptureSettingsAfterSubmissionMessage, nil
+	case "redirect":
+		return FormCaptureSettingsAfterSubmissionRedirect, nil
+	}
+	var t FormCaptureSettingsAfterSubmission
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (f FormCaptureSettingsAfterSubmission) Ptr() *FormCaptureSettingsAfterSubmission {
+	return &f
+}
+
+type FormCaptureSettingsDuplicateStrategy string
+
+const (
+	FormCaptureSettingsDuplicateStrategySkip      FormCaptureSettingsDuplicateStrategy = "skip"
+	FormCaptureSettingsDuplicateStrategyMerge     FormCaptureSettingsDuplicateStrategy = "merge"
+	FormCaptureSettingsDuplicateStrategyOverwrite FormCaptureSettingsDuplicateStrategy = "overwrite"
+)
+
+func NewFormCaptureSettingsDuplicateStrategyFromString(s string) (FormCaptureSettingsDuplicateStrategy, error) {
+	switch s {
+	case "skip":
+		return FormCaptureSettingsDuplicateStrategySkip, nil
+	case "merge":
+		return FormCaptureSettingsDuplicateStrategyMerge, nil
+	case "overwrite":
+		return FormCaptureSettingsDuplicateStrategyOverwrite, nil
+	}
+	var t FormCaptureSettingsDuplicateStrategy
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (f FormCaptureSettingsDuplicateStrategy) Ptr() *FormCaptureSettingsDuplicateStrategy {
+	return &f
+}
+
+type FormCaptureSettingsListMode string
+
+const (
+	FormCaptureSettingsListModeAll      FormCaptureSettingsListMode = "all"
+	FormCaptureSettingsListModeNone     FormCaptureSettingsListMode = "none"
+	FormCaptureSettingsListModeSpecific FormCaptureSettingsListMode = "specific"
+)
+
+func NewFormCaptureSettingsListModeFromString(s string) (FormCaptureSettingsListMode, error) {
+	switch s {
+	case "all":
+		return FormCaptureSettingsListModeAll, nil
+	case "none":
+		return FormCaptureSettingsListModeNone, nil
+	case "specific":
+		return FormCaptureSettingsListModeSpecific, nil
+	}
+	var t FormCaptureSettingsListMode
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (f FormCaptureSettingsListMode) Ptr() *FormCaptureSettingsListMode {
+	return &f
+}
+
+var (
+	formCaptureStepBlockFieldBlockIDs    = big.NewInt(1 << 0)
+	formCaptureStepBlockFieldDescription = big.NewInt(1 << 1)
+	formCaptureStepBlockFieldID          = big.NewInt(1 << 2)
+	formCaptureStepBlockFieldSectionID   = big.NewInt(1 << 3)
+	formCaptureStepBlockFieldTitle       = big.NewInt(1 << 4)
+)
+
+type FormCaptureStepBlock struct {
+	BlockIDs    []string `json:"blockIds" url:"blockIds"`
+	Description string   `json:"description" url:"description"`
+	ID          string   `json:"id" url:"id"`
+	SectionID   *string  `json:"sectionId,omitempty" url:"sectionId,omitempty"`
+	Title       string   `json:"title" url:"title"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (f *FormCaptureStepBlock) GetBlockIDs() []string {
+	if f == nil {
+		return nil
+	}
+	return f.BlockIDs
+}
+
+func (f *FormCaptureStepBlock) GetDescription() string {
+	if f == nil {
+		return ""
+	}
+	return f.Description
+}
+
+func (f *FormCaptureStepBlock) GetID() string {
+	if f == nil {
+		return ""
+	}
+	return f.ID
+}
+
+func (f *FormCaptureStepBlock) GetSectionID() *string {
+	if f == nil {
+		return nil
+	}
+	return f.SectionID
+}
+
+func (f *FormCaptureStepBlock) GetTitle() string {
+	if f == nil {
+		return ""
+	}
+	return f.Title
+}
+
+func (f *FormCaptureStepBlock) GetExtraProperties() map[string]interface{} {
+	if f == nil {
+		return nil
+	}
+	return f.extraProperties
+}
+
+func (f *FormCaptureStepBlock) require(field *big.Int) {
+	if f.explicitFields == nil {
+		f.explicitFields = big.NewInt(0)
+	}
+	f.explicitFields.Or(f.explicitFields, field)
+}
+
+// SetBlockIDs sets the BlockIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FormCaptureStepBlock) SetBlockIDs(blockIDs []string) {
+	f.BlockIDs = blockIDs
+	f.require(formCaptureStepBlockFieldBlockIDs)
+}
+
+// SetDescription sets the Description field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FormCaptureStepBlock) SetDescription(description string) {
+	f.Description = description
+	f.require(formCaptureStepBlockFieldDescription)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FormCaptureStepBlock) SetID(id string) {
+	f.ID = id
+	f.require(formCaptureStepBlockFieldID)
+}
+
+// SetSectionID sets the SectionID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FormCaptureStepBlock) SetSectionID(sectionID *string) {
+	f.SectionID = sectionID
+	f.require(formCaptureStepBlockFieldSectionID)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FormCaptureStepBlock) SetTitle(title string) {
+	f.Title = title
+	f.require(formCaptureStepBlockFieldTitle)
+}
+
+func (f *FormCaptureStepBlock) UnmarshalJSON(data []byte) error {
+	type unmarshaler FormCaptureStepBlock
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*f = FormCaptureStepBlock(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+	f.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (f *FormCaptureStepBlock) MarshalJSON() ([]byte, error) {
+	type embed FormCaptureStepBlock
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*f),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, f.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (f *FormCaptureStepBlock) String() string {
+	if f == nil {
+		return "<nil>"
+	}
+	if len(f.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(f.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(f); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", f)
+}
+
+var (
+	formCaptureSubmitButtonBlockFieldID        = big.NewInt(1 << 0)
+	formCaptureSubmitButtonBlockFieldSectionID = big.NewInt(1 << 1)
+	formCaptureSubmitButtonBlockFieldText      = big.NewInt(1 << 2)
+	formCaptureSubmitButtonBlockFieldWidth     = big.NewInt(1 << 3)
+)
+
+type FormCaptureSubmitButtonBlock struct {
+	ID        string                             `json:"id" url:"id"`
+	SectionID *string                            `json:"sectionId,omitempty" url:"sectionId,omitempty"`
+	Text      string                             `json:"text" url:"text"`
+	Width     *FormCaptureSubmitButtonBlockWidth `json:"width,omitempty" url:"width,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (f *FormCaptureSubmitButtonBlock) GetID() string {
+	if f == nil {
+		return ""
+	}
+	return f.ID
+}
+
+func (f *FormCaptureSubmitButtonBlock) GetSectionID() *string {
+	if f == nil {
+		return nil
+	}
+	return f.SectionID
+}
+
+func (f *FormCaptureSubmitButtonBlock) GetText() string {
+	if f == nil {
+		return ""
+	}
+	return f.Text
+}
+
+func (f *FormCaptureSubmitButtonBlock) GetWidth() *FormCaptureSubmitButtonBlockWidth {
+	if f == nil {
+		return nil
+	}
+	return f.Width
+}
+
+func (f *FormCaptureSubmitButtonBlock) GetExtraProperties() map[string]interface{} {
+	if f == nil {
+		return nil
+	}
+	return f.extraProperties
+}
+
+func (f *FormCaptureSubmitButtonBlock) require(field *big.Int) {
+	if f.explicitFields == nil {
+		f.explicitFields = big.NewInt(0)
+	}
+	f.explicitFields.Or(f.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FormCaptureSubmitButtonBlock) SetID(id string) {
+	f.ID = id
+	f.require(formCaptureSubmitButtonBlockFieldID)
+}
+
+// SetSectionID sets the SectionID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FormCaptureSubmitButtonBlock) SetSectionID(sectionID *string) {
+	f.SectionID = sectionID
+	f.require(formCaptureSubmitButtonBlockFieldSectionID)
+}
+
+// SetText sets the Text field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FormCaptureSubmitButtonBlock) SetText(text string) {
+	f.Text = text
+	f.require(formCaptureSubmitButtonBlockFieldText)
+}
+
+// SetWidth sets the Width field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FormCaptureSubmitButtonBlock) SetWidth(width *FormCaptureSubmitButtonBlockWidth) {
+	f.Width = width
+	f.require(formCaptureSubmitButtonBlockFieldWidth)
+}
+
+func (f *FormCaptureSubmitButtonBlock) UnmarshalJSON(data []byte) error {
+	type unmarshaler FormCaptureSubmitButtonBlock
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*f = FormCaptureSubmitButtonBlock(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+	f.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (f *FormCaptureSubmitButtonBlock) MarshalJSON() ([]byte, error) {
+	type embed FormCaptureSubmitButtonBlock
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*f),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, f.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (f *FormCaptureSubmitButtonBlock) String() string {
+	if f == nil {
+		return "<nil>"
+	}
+	if len(f.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(f.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(f); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", f)
+}
+
+type FormCaptureSubmitButtonBlockWidth string
+
+const (
+	FormCaptureSubmitButtonBlockWidthFull FormCaptureSubmitButtonBlockWidth = "full"
+	FormCaptureSubmitButtonBlockWidthHalf FormCaptureSubmitButtonBlockWidth = "half"
+)
+
+func NewFormCaptureSubmitButtonBlockWidthFromString(s string) (FormCaptureSubmitButtonBlockWidth, error) {
+	switch s {
+	case "full":
+		return FormCaptureSubmitButtonBlockWidthFull, nil
+	case "half":
+		return FormCaptureSubmitButtonBlockWidthHalf, nil
+	}
+	var t FormCaptureSubmitButtonBlockWidth
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (f FormCaptureSubmitButtonBlockWidth) Ptr() *FormCaptureSubmitButtonBlockWidth {
+	return &f
+}
+
+var (
+	formCaptureSuccessScreenBlockFieldHeading   = big.NewInt(1 << 0)
+	formCaptureSuccessScreenBlockFieldID        = big.NewInt(1 << 1)
+	formCaptureSuccessScreenBlockFieldMessage   = big.NewInt(1 << 2)
+	formCaptureSuccessScreenBlockFieldSectionID = big.NewInt(1 << 3)
+)
+
+type FormCaptureSuccessScreenBlock struct {
+	// Inline HTML is sanitized. Visible text after stripping markup and trimming must contain at most 120 characters. maxLength limits the raw markup separately.
+	Heading string `json:"heading" url:"heading"`
+	ID      string `json:"id" url:"id"`
+	// Inline HTML is sanitized. Visible text after stripping markup and trimming must contain 1 to 240 characters. maxLength limits the raw markup separately.
+	Message   string  `json:"message" url:"message"`
+	SectionID *string `json:"sectionId,omitempty" url:"sectionId,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (f *FormCaptureSuccessScreenBlock) GetHeading() string {
+	if f == nil {
+		return ""
+	}
+	return f.Heading
+}
+
+func (f *FormCaptureSuccessScreenBlock) GetID() string {
+	if f == nil {
+		return ""
+	}
+	return f.ID
+}
+
+func (f *FormCaptureSuccessScreenBlock) GetMessage() string {
+	if f == nil {
+		return ""
+	}
+	return f.Message
+}
+
+func (f *FormCaptureSuccessScreenBlock) GetSectionID() *string {
+	if f == nil {
+		return nil
+	}
+	return f.SectionID
+}
+
+func (f *FormCaptureSuccessScreenBlock) GetExtraProperties() map[string]interface{} {
+	if f == nil {
+		return nil
+	}
+	return f.extraProperties
+}
+
+func (f *FormCaptureSuccessScreenBlock) require(field *big.Int) {
+	if f.explicitFields == nil {
+		f.explicitFields = big.NewInt(0)
+	}
+	f.explicitFields.Or(f.explicitFields, field)
+}
+
+// SetHeading sets the Heading field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FormCaptureSuccessScreenBlock) SetHeading(heading string) {
+	f.Heading = heading
+	f.require(formCaptureSuccessScreenBlockFieldHeading)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FormCaptureSuccessScreenBlock) SetID(id string) {
+	f.ID = id
+	f.require(formCaptureSuccessScreenBlockFieldID)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FormCaptureSuccessScreenBlock) SetMessage(message string) {
+	f.Message = message
+	f.require(formCaptureSuccessScreenBlockFieldMessage)
+}
+
+// SetSectionID sets the SectionID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FormCaptureSuccessScreenBlock) SetSectionID(sectionID *string) {
+	f.SectionID = sectionID
+	f.require(formCaptureSuccessScreenBlockFieldSectionID)
+}
+
+func (f *FormCaptureSuccessScreenBlock) UnmarshalJSON(data []byte) error {
+	type unmarshaler FormCaptureSuccessScreenBlock
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*f = FormCaptureSuccessScreenBlock(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+	f.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (f *FormCaptureSuccessScreenBlock) MarshalJSON() ([]byte, error) {
+	type embed FormCaptureSuccessScreenBlock
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*f),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, f.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (f *FormCaptureSuccessScreenBlock) String() string {
+	if f == nil {
+		return "<nil>"
+	}
+	if len(f.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(f.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(f); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", f)
+}
+
+var (
+	savedFormFieldActionURL       = big.NewInt(1 << 0)
+	savedFormFieldContent         = big.NewInt(1 << 1)
+	savedFormFieldCreatedAt       = big.NewInt(1 << 2)
+	savedFormFieldID              = big.NewInt(1 << 3)
+	savedFormFieldName            = big.NewInt(1 << 4)
+	savedFormFieldPublishedAt     = big.NewInt(1 << 5)
+	savedFormFieldSettings        = big.NewInt(1 << 6)
+	savedFormFieldStatus          = big.NewInt(1 << 7)
+	savedFormFieldSubmissionCount = big.NewInt(1 << 8)
+	savedFormFieldUpdatedAt       = big.NewInt(1 << 9)
+	savedFormFieldURL             = big.NewInt(1 << 10)
+)
+
+type SavedForm struct {
+	ActionURL string            `json:"actionUrl" url:"actionUrl"`
+	Content   *SavedFormContent `json:"content" url:"content"`
+	CreatedAt time.Time         `json:"createdAt" url:"createdAt"`
+	ID        string            `json:"id" url:"id"`
+	Name      string            `json:"name" url:"name"`
+	// Publication timestamp; unpublishing may preserve it. Use status to determine whether the form is currently published.
+	PublishedAt     *time.Time         `json:"publishedAt,omitempty" url:"publishedAt,omitempty"`
+	Settings        *SavedFormSettings `json:"settings" url:"settings"`
+	Status          SavedFormStatus    `json:"status" url:"status"`
+	SubmissionCount int                `json:"submissionCount" url:"submissionCount"`
+	UpdatedAt       time.Time          `json:"updatedAt" url:"updatedAt"`
+	// Dashboard URL for this form.
+	URL string `json:"url" url:"url"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SavedForm) GetActionURL() string {
+	if s == nil {
+		return ""
+	}
+	return s.ActionURL
+}
+
+func (s *SavedForm) GetContent() *SavedFormContent {
+	if s == nil {
+		return nil
+	}
+	return s.Content
+}
+
+func (s *SavedForm) GetCreatedAt() time.Time {
+	if s == nil {
+		return time.Time{}
+	}
+	return s.CreatedAt
+}
+
+func (s *SavedForm) GetID() string {
+	if s == nil {
+		return ""
+	}
+	return s.ID
+}
+
+func (s *SavedForm) GetName() string {
+	if s == nil {
+		return ""
+	}
+	return s.Name
+}
+
+func (s *SavedForm) GetPublishedAt() *time.Time {
+	if s == nil {
+		return nil
+	}
+	return s.PublishedAt
+}
+
+func (s *SavedForm) GetSettings() *SavedFormSettings {
+	if s == nil {
+		return nil
+	}
+	return s.Settings
+}
+
+func (s *SavedForm) GetStatus() SavedFormStatus {
+	if s == nil {
+		return ""
+	}
+	return s.Status
+}
+
+func (s *SavedForm) GetSubmissionCount() int {
+	if s == nil {
+		return 0
+	}
+	return s.SubmissionCount
+}
+
+func (s *SavedForm) GetUpdatedAt() time.Time {
+	if s == nil {
+		return time.Time{}
+	}
+	return s.UpdatedAt
+}
+
+func (s *SavedForm) GetURL() string {
+	if s == nil {
+		return ""
+	}
+	return s.URL
+}
+
+func (s *SavedForm) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SavedForm) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetActionURL sets the ActionURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedForm) SetActionURL(actionURL string) {
+	s.ActionURL = actionURL
+	s.require(savedFormFieldActionURL)
+}
+
+// SetContent sets the Content field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedForm) SetContent(content *SavedFormContent) {
+	s.Content = content
+	s.require(savedFormFieldContent)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedForm) SetCreatedAt(createdAt time.Time) {
+	s.CreatedAt = createdAt
+	s.require(savedFormFieldCreatedAt)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedForm) SetID(id string) {
+	s.ID = id
+	s.require(savedFormFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedForm) SetName(name string) {
+	s.Name = name
+	s.require(savedFormFieldName)
+}
+
+// SetPublishedAt sets the PublishedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedForm) SetPublishedAt(publishedAt *time.Time) {
+	s.PublishedAt = publishedAt
+	s.require(savedFormFieldPublishedAt)
+}
+
+// SetSettings sets the Settings field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedForm) SetSettings(settings *SavedFormSettings) {
+	s.Settings = settings
+	s.require(savedFormFieldSettings)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedForm) SetStatus(status SavedFormStatus) {
+	s.Status = status
+	s.require(savedFormFieldStatus)
+}
+
+// SetSubmissionCount sets the SubmissionCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedForm) SetSubmissionCount(submissionCount int) {
+	s.SubmissionCount = submissionCount
+	s.require(savedFormFieldSubmissionCount)
+}
+
+// SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedForm) SetUpdatedAt(updatedAt time.Time) {
+	s.UpdatedAt = updatedAt
+	s.require(savedFormFieldUpdatedAt)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedForm) SetURL(url string) {
+	s.URL = url
+	s.require(savedFormFieldURL)
+}
+
+func (s *SavedForm) UnmarshalJSON(data []byte) error {
+	type embed SavedForm
+	var unmarshaler = struct {
+		embed
+		CreatedAt   *internal.DateTime `json:"createdAt"`
+		PublishedAt *internal.DateTime `json:"publishedAt,omitempty"`
+		UpdatedAt   *internal.DateTime `json:"updatedAt"`
+	}{
+		embed: embed(*s),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*s = SavedForm(unmarshaler.embed)
+	s.CreatedAt = unmarshaler.CreatedAt.Time()
+	s.PublishedAt = unmarshaler.PublishedAt.TimePtr()
+	s.UpdatedAt = unmarshaler.UpdatedAt.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SavedForm) MarshalJSON() ([]byte, error) {
+	type embed SavedForm
+	var marshaler = struct {
+		embed
+		CreatedAt   *internal.DateTime `json:"createdAt"`
+		PublishedAt *internal.DateTime `json:"publishedAt,omitempty"`
+		UpdatedAt   *internal.DateTime `json:"updatedAt"`
+	}{
+		embed:       embed(*s),
+		CreatedAt:   internal.NewDateTime(s.CreatedAt),
+		PublishedAt: internal.NewOptionalDateTime(s.PublishedAt),
+		UpdatedAt:   internal.NewDateTime(s.UpdatedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SavedForm) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+// Complete version 1 form builder document. Read content.blocks before replacing the array. Exactly one required email field and one submit button are required. Block IDs and field names must be unique. At most 200 total blocks and three levels of groups. See /api-reference/widgets/update-saved-form#content-blocks for writable fields and placement rules. Read responses include template, theme, settings and all defaulted properties after normalization.
+var (
+	savedFormContentFieldBlocks   = big.NewInt(1 << 0)
+	savedFormContentFieldSettings = big.NewInt(1 << 1)
+	savedFormContentFieldSurface  = big.NewInt(1 << 2)
+	savedFormContentFieldTemplate = big.NewInt(1 << 3)
+	savedFormContentFieldTheme    = big.NewInt(1 << 4)
+	savedFormContentFieldVersion  = big.NewInt(1 << 5)
+)
+
+type SavedFormContent struct {
+	Blocks   []*FormCaptureBlock     `json:"blocks" url:"blocks"`
+	Settings *FormCaptureSettings    `json:"settings" url:"settings"`
+	Surface  SavedFormContentSurface `json:"surface" url:"surface"`
+	Template string                  `json:"template" url:"template"`
+	Theme    *CaptureTheme           `json:"theme" url:"theme"`
+	Version  float64                 `json:"version" url:"version"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SavedFormContent) GetBlocks() []*FormCaptureBlock {
+	if s == nil {
+		return nil
+	}
+	return s.Blocks
+}
+
+func (s *SavedFormContent) GetSettings() *FormCaptureSettings {
+	if s == nil {
+		return nil
+	}
+	return s.Settings
+}
+
+func (s *SavedFormContent) GetSurface() SavedFormContentSurface {
+	if s == nil {
+		return ""
+	}
+	return s.Surface
+}
+
+func (s *SavedFormContent) GetTemplate() string {
+	if s == nil {
+		return ""
+	}
+	return s.Template
+}
+
+func (s *SavedFormContent) GetTheme() *CaptureTheme {
+	if s == nil {
+		return nil
+	}
+	return s.Theme
+}
+
+func (s *SavedFormContent) GetVersion() float64 {
+	if s == nil {
+		return 0
+	}
+	return s.Version
+}
+
+func (s *SavedFormContent) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SavedFormContent) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetBlocks sets the Blocks field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormContent) SetBlocks(blocks []*FormCaptureBlock) {
+	s.Blocks = blocks
+	s.require(savedFormContentFieldBlocks)
+}
+
+// SetSettings sets the Settings field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormContent) SetSettings(settings *FormCaptureSettings) {
+	s.Settings = settings
+	s.require(savedFormContentFieldSettings)
+}
+
+// SetSurface sets the Surface field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormContent) SetSurface(surface SavedFormContentSurface) {
+	s.Surface = surface
+	s.require(savedFormContentFieldSurface)
+}
+
+// SetTemplate sets the Template field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormContent) SetTemplate(template string) {
+	s.Template = template
+	s.require(savedFormContentFieldTemplate)
+}
+
+// SetTheme sets the Theme field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormContent) SetTheme(theme *CaptureTheme) {
+	s.Theme = theme
+	s.require(savedFormContentFieldTheme)
+}
+
+// SetVersion sets the Version field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormContent) SetVersion(version float64) {
+	s.Version = version
+	s.require(savedFormContentFieldVersion)
+}
+
+func (s *SavedFormContent) UnmarshalJSON(data []byte) error {
+	type unmarshaler SavedFormContent
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SavedFormContent(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SavedFormContent) MarshalJSON() ([]byte, error) {
+	type embed SavedFormContent
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SavedFormContent) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+type SavedFormContentSurface string
+
+const (
+	SavedFormContentSurfaceForm SavedFormContentSurface = "form"
+)
+
+func NewSavedFormContentSurfaceFromString(s string) (SavedFormContentSurface, error) {
+	switch s {
+	case "form":
+		return SavedFormContentSurfaceForm, nil
+	}
+	var t SavedFormContentSurface
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SavedFormContentSurface) Ptr() *SavedFormContentSurface {
+	return &s
+}
+
+var (
+	savedFormEmbedFieldActionURL          = big.NewInt(1 << 0)
+	savedFormEmbedFieldFetch              = big.NewInt(1 << 1)
+	savedFormEmbedFieldJavascript         = big.NewInt(1 << 2)
+	savedFormEmbedFieldNativeForm         = big.NewInt(1 << 3)
+	savedFormEmbedFieldScriptURL          = big.NewInt(1 << 4)
+	savedFormEmbedFieldSupportedPlatforms = big.NewInt(1 << 5)
+)
+
+type SavedFormEmbed struct {
+	ActionURL string `json:"actionUrl" url:"actionUrl"`
+	// Fetch-enhanced embed markup.
+	Fetch string `json:"fetch" url:"fetch"`
+	// Hosted JavaScript embed markup.
+	Javascript string `json:"javascript" url:"javascript"`
+	// Native HTML form embed markup.
+	NativeForm         string   `json:"nativeForm" url:"nativeForm"`
+	ScriptURL          string   `json:"scriptUrl" url:"scriptUrl"`
+	SupportedPlatforms []string `json:"supportedPlatforms" url:"supportedPlatforms"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SavedFormEmbed) GetActionURL() string {
+	if s == nil {
+		return ""
+	}
+	return s.ActionURL
+}
+
+func (s *SavedFormEmbed) GetFetch() string {
+	if s == nil {
+		return ""
+	}
+	return s.Fetch
+}
+
+func (s *SavedFormEmbed) GetJavascript() string {
+	if s == nil {
+		return ""
+	}
+	return s.Javascript
+}
+
+func (s *SavedFormEmbed) GetNativeForm() string {
+	if s == nil {
+		return ""
+	}
+	return s.NativeForm
+}
+
+func (s *SavedFormEmbed) GetScriptURL() string {
+	if s == nil {
+		return ""
+	}
+	return s.ScriptURL
+}
+
+func (s *SavedFormEmbed) GetSupportedPlatforms() []string {
+	if s == nil {
+		return nil
+	}
+	return s.SupportedPlatforms
+}
+
+func (s *SavedFormEmbed) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SavedFormEmbed) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetActionURL sets the ActionURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormEmbed) SetActionURL(actionURL string) {
+	s.ActionURL = actionURL
+	s.require(savedFormEmbedFieldActionURL)
+}
+
+// SetFetch sets the Fetch field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormEmbed) SetFetch(fetch string) {
+	s.Fetch = fetch
+	s.require(savedFormEmbedFieldFetch)
+}
+
+// SetJavascript sets the Javascript field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormEmbed) SetJavascript(javascript string) {
+	s.Javascript = javascript
+	s.require(savedFormEmbedFieldJavascript)
+}
+
+// SetNativeForm sets the NativeForm field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormEmbed) SetNativeForm(nativeForm string) {
+	s.NativeForm = nativeForm
+	s.require(savedFormEmbedFieldNativeForm)
+}
+
+// SetScriptURL sets the ScriptURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormEmbed) SetScriptURL(scriptURL string) {
+	s.ScriptURL = scriptURL
+	s.require(savedFormEmbedFieldScriptURL)
+}
+
+// SetSupportedPlatforms sets the SupportedPlatforms field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormEmbed) SetSupportedPlatforms(supportedPlatforms []string) {
+	s.SupportedPlatforms = supportedPlatforms
+	s.require(savedFormEmbedFieldSupportedPlatforms)
+}
+
+func (s *SavedFormEmbed) UnmarshalJSON(data []byte) error {
+	type unmarshaler SavedFormEmbed
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SavedFormEmbed(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SavedFormEmbed) MarshalJSON() ([]byte, error) {
+	type embed SavedFormEmbed
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SavedFormEmbed) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	savedFormSettingsFieldAfterSubmission      = big.NewInt(1 << 0)
+	savedFormSettingsFieldBorderRadius         = big.NewInt(1 << 1)
+	savedFormSettingsFieldButtonColor          = big.NewInt(1 << 2)
+	savedFormSettingsFieldButtonText           = big.NewInt(1 << 3)
+	savedFormSettingsFieldCustomFields         = big.NewInt(1 << 4)
+	savedFormSettingsFieldDescription          = big.NewInt(1 << 5)
+	savedFormSettingsFieldDuplicateStrategy    = big.NewInt(1 << 6)
+	savedFormSettingsFieldErrorMessage         = big.NewInt(1 << 7)
+	savedFormSettingsFieldEyebrowText          = big.NewInt(1 << 8)
+	savedFormSettingsFieldFieldOrder           = big.NewInt(1 << 9)
+	savedFormSettingsFieldFirstNameRequired    = big.NewInt(1 << 10)
+	savedFormSettingsFieldFontColor            = big.NewInt(1 << 11)
+	savedFormSettingsFieldFontFamily           = big.NewInt(1 << 12)
+	savedFormSettingsFieldFontSize             = big.NewInt(1 << 13)
+	savedFormSettingsFieldFormStyle            = big.NewInt(1 << 14)
+	savedFormSettingsFieldHeadline             = big.NewInt(1 << 15)
+	savedFormSettingsFieldImageAlt             = big.NewInt(1 << 16)
+	savedFormSettingsFieldImageURL             = big.NewInt(1 << 17)
+	savedFormSettingsFieldLastNameRequired     = big.NewInt(1 << 18)
+	savedFormSettingsFieldListIDs              = big.NewInt(1 << 19)
+	savedFormSettingsFieldListMode             = big.NewInt(1 << 20)
+	savedFormSettingsFieldOverlayColor         = big.NewInt(1 << 21)
+	savedFormSettingsFieldOverlayOpacity       = big.NewInt(1 << 22)
+	savedFormSettingsFieldPlaceholderEmail     = big.NewInt(1 << 23)
+	savedFormSettingsFieldPlaceholderFirstName = big.NewInt(1 << 24)
+	savedFormSettingsFieldPlaceholderLastName  = big.NewInt(1 << 25)
+	savedFormSettingsFieldRedirectURL          = big.NewInt(1 << 26)
+	savedFormSettingsFieldShowFirstName        = big.NewInt(1 << 27)
+	savedFormSettingsFieldShowLastName         = big.NewInt(1 << 28)
+	savedFormSettingsFieldSuccessFontColor     = big.NewInt(1 << 29)
+	savedFormSettingsFieldSuccessFontSize      = big.NewInt(1 << 30)
+	savedFormSettingsFieldSuccessMessage       = big.NewInt(1 << 31)
+	savedFormSettingsFieldTagIDs               = big.NewInt(1 << 32)
+	savedFormSettingsFieldTemplateID           = big.NewInt(1 << 33)
+	savedFormSettingsFieldThemeMode            = big.NewInt(1 << 34)
+	savedFormSettingsFieldVisualPlacement      = big.NewInt(1 << 35)
+)
+
+type SavedFormSettings struct {
+	AfterSubmission      SavedFormSettingsAfterSubmission     `json:"afterSubmission" url:"afterSubmission"`
+	BorderRadius         *string                              `json:"borderRadius,omitempty" url:"borderRadius,omitempty"`
+	ButtonColor          *string                              `json:"buttonColor,omitempty" url:"buttonColor,omitempty"`
+	ButtonText           string                               `json:"buttonText" url:"buttonText"`
+	CustomFields         []*SavedFormSettingsCustomFieldsItem `json:"customFields" url:"customFields"`
+	Description          string                               `json:"description" url:"description"`
+	DuplicateStrategy    SavedFormSettingsDuplicateStrategy   `json:"duplicateStrategy" url:"duplicateStrategy"`
+	ErrorMessage         string                               `json:"errorMessage" url:"errorMessage"`
+	EyebrowText          string                               `json:"eyebrowText" url:"eyebrowText"`
+	FieldOrder           []string                             `json:"fieldOrder" url:"fieldOrder"`
+	FirstNameRequired    bool                                 `json:"firstNameRequired" url:"firstNameRequired"`
+	FontColor            *string                              `json:"fontColor,omitempty" url:"fontColor,omitempty"`
+	FontFamily           *string                              `json:"fontFamily,omitempty" url:"fontFamily,omitempty"`
+	FontSize             *string                              `json:"fontSize,omitempty" url:"fontSize,omitempty"`
+	FormStyle            SavedFormSettingsFormStyle           `json:"formStyle" url:"formStyle"`
+	Headline             string                               `json:"headline" url:"headline"`
+	ImageAlt             string                               `json:"imageAlt" url:"imageAlt"`
+	ImageURL             *string                              `json:"imageUrl,omitempty" url:"imageUrl,omitempty"`
+	LastNameRequired     bool                                 `json:"lastNameRequired" url:"lastNameRequired"`
+	ListIDs              []string                             `json:"listIds" url:"listIds"`
+	ListMode             SavedFormSettingsListMode            `json:"listMode" url:"listMode"`
+	OverlayColor         *string                              `json:"overlayColor,omitempty" url:"overlayColor,omitempty"`
+	OverlayOpacity       float64                              `json:"overlayOpacity" url:"overlayOpacity"`
+	PlaceholderEmail     string                               `json:"placeholderEmail" url:"placeholderEmail"`
+	PlaceholderFirstName string                               `json:"placeholderFirstName" url:"placeholderFirstName"`
+	PlaceholderLastName  string                               `json:"placeholderLastName" url:"placeholderLastName"`
+	RedirectURL          string                               `json:"redirectUrl" url:"redirectUrl"`
+	ShowFirstName        bool                                 `json:"showFirstName" url:"showFirstName"`
+	ShowLastName         bool                                 `json:"showLastName" url:"showLastName"`
+	SuccessFontColor     *string                              `json:"successFontColor,omitempty" url:"successFontColor,omitempty"`
+	SuccessFontSize      string                               `json:"successFontSize" url:"successFontSize"`
+	SuccessMessage       string                               `json:"successMessage" url:"successMessage"`
+	TagIDs               []string                             `json:"tagIds" url:"tagIds"`
+	TemplateID           SavedFormSettingsTemplateID          `json:"templateId" url:"templateId"`
+	ThemeMode            SavedFormSettingsThemeMode           `json:"themeMode" url:"themeMode"`
+	VisualPlacement      SavedFormSettingsVisualPlacement     `json:"visualPlacement" url:"visualPlacement"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SavedFormSettings) GetAfterSubmission() SavedFormSettingsAfterSubmission {
+	if s == nil {
+		return ""
+	}
+	return s.AfterSubmission
+}
+
+func (s *SavedFormSettings) GetBorderRadius() *string {
+	if s == nil {
+		return nil
+	}
+	return s.BorderRadius
+}
+
+func (s *SavedFormSettings) GetButtonColor() *string {
+	if s == nil {
+		return nil
+	}
+	return s.ButtonColor
+}
+
+func (s *SavedFormSettings) GetButtonText() string {
+	if s == nil {
+		return ""
+	}
+	return s.ButtonText
+}
+
+func (s *SavedFormSettings) GetCustomFields() []*SavedFormSettingsCustomFieldsItem {
+	if s == nil {
+		return nil
+	}
+	return s.CustomFields
+}
+
+func (s *SavedFormSettings) GetDescription() string {
+	if s == nil {
+		return ""
+	}
+	return s.Description
+}
+
+func (s *SavedFormSettings) GetDuplicateStrategy() SavedFormSettingsDuplicateStrategy {
+	if s == nil {
+		return ""
+	}
+	return s.DuplicateStrategy
+}
+
+func (s *SavedFormSettings) GetErrorMessage() string {
+	if s == nil {
+		return ""
+	}
+	return s.ErrorMessage
+}
+
+func (s *SavedFormSettings) GetEyebrowText() string {
+	if s == nil {
+		return ""
+	}
+	return s.EyebrowText
+}
+
+func (s *SavedFormSettings) GetFieldOrder() []string {
+	if s == nil {
+		return nil
+	}
+	return s.FieldOrder
+}
+
+func (s *SavedFormSettings) GetFirstNameRequired() bool {
+	if s == nil {
+		return false
+	}
+	return s.FirstNameRequired
+}
+
+func (s *SavedFormSettings) GetFontColor() *string {
+	if s == nil {
+		return nil
+	}
+	return s.FontColor
+}
+
+func (s *SavedFormSettings) GetFontFamily() *string {
+	if s == nil {
+		return nil
+	}
+	return s.FontFamily
+}
+
+func (s *SavedFormSettings) GetFontSize() *string {
+	if s == nil {
+		return nil
+	}
+	return s.FontSize
+}
+
+func (s *SavedFormSettings) GetFormStyle() SavedFormSettingsFormStyle {
+	if s == nil {
+		return ""
+	}
+	return s.FormStyle
+}
+
+func (s *SavedFormSettings) GetHeadline() string {
+	if s == nil {
+		return ""
+	}
+	return s.Headline
+}
+
+func (s *SavedFormSettings) GetImageAlt() string {
+	if s == nil {
+		return ""
+	}
+	return s.ImageAlt
+}
+
+func (s *SavedFormSettings) GetImageURL() *string {
+	if s == nil {
+		return nil
+	}
+	return s.ImageURL
+}
+
+func (s *SavedFormSettings) GetLastNameRequired() bool {
+	if s == nil {
+		return false
+	}
+	return s.LastNameRequired
+}
+
+func (s *SavedFormSettings) GetListIDs() []string {
+	if s == nil {
+		return nil
+	}
+	return s.ListIDs
+}
+
+func (s *SavedFormSettings) GetListMode() SavedFormSettingsListMode {
+	if s == nil {
+		return ""
+	}
+	return s.ListMode
+}
+
+func (s *SavedFormSettings) GetOverlayColor() *string {
+	if s == nil {
+		return nil
+	}
+	return s.OverlayColor
+}
+
+func (s *SavedFormSettings) GetOverlayOpacity() float64 {
+	if s == nil {
+		return 0
+	}
+	return s.OverlayOpacity
+}
+
+func (s *SavedFormSettings) GetPlaceholderEmail() string {
+	if s == nil {
+		return ""
+	}
+	return s.PlaceholderEmail
+}
+
+func (s *SavedFormSettings) GetPlaceholderFirstName() string {
+	if s == nil {
+		return ""
+	}
+	return s.PlaceholderFirstName
+}
+
+func (s *SavedFormSettings) GetPlaceholderLastName() string {
+	if s == nil {
+		return ""
+	}
+	return s.PlaceholderLastName
+}
+
+func (s *SavedFormSettings) GetRedirectURL() string {
+	if s == nil {
+		return ""
+	}
+	return s.RedirectURL
+}
+
+func (s *SavedFormSettings) GetShowFirstName() bool {
+	if s == nil {
+		return false
+	}
+	return s.ShowFirstName
+}
+
+func (s *SavedFormSettings) GetShowLastName() bool {
+	if s == nil {
+		return false
+	}
+	return s.ShowLastName
+}
+
+func (s *SavedFormSettings) GetSuccessFontColor() *string {
+	if s == nil {
+		return nil
+	}
+	return s.SuccessFontColor
+}
+
+func (s *SavedFormSettings) GetSuccessFontSize() string {
+	if s == nil {
+		return ""
+	}
+	return s.SuccessFontSize
+}
+
+func (s *SavedFormSettings) GetSuccessMessage() string {
+	if s == nil {
+		return ""
+	}
+	return s.SuccessMessage
+}
+
+func (s *SavedFormSettings) GetTagIDs() []string {
+	if s == nil {
+		return nil
+	}
+	return s.TagIDs
+}
+
+func (s *SavedFormSettings) GetTemplateID() SavedFormSettingsTemplateID {
+	if s == nil {
+		return ""
+	}
+	return s.TemplateID
+}
+
+func (s *SavedFormSettings) GetThemeMode() SavedFormSettingsThemeMode {
+	if s == nil {
+		return ""
+	}
+	return s.ThemeMode
+}
+
+func (s *SavedFormSettings) GetVisualPlacement() SavedFormSettingsVisualPlacement {
+	if s == nil {
+		return ""
+	}
+	return s.VisualPlacement
+}
+
+func (s *SavedFormSettings) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SavedFormSettings) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetAfterSubmission sets the AfterSubmission field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormSettings) SetAfterSubmission(afterSubmission SavedFormSettingsAfterSubmission) {
+	s.AfterSubmission = afterSubmission
+	s.require(savedFormSettingsFieldAfterSubmission)
+}
+
+// SetBorderRadius sets the BorderRadius field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormSettings) SetBorderRadius(borderRadius *string) {
+	s.BorderRadius = borderRadius
+	s.require(savedFormSettingsFieldBorderRadius)
+}
+
+// SetButtonColor sets the ButtonColor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormSettings) SetButtonColor(buttonColor *string) {
+	s.ButtonColor = buttonColor
+	s.require(savedFormSettingsFieldButtonColor)
+}
+
+// SetButtonText sets the ButtonText field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormSettings) SetButtonText(buttonText string) {
+	s.ButtonText = buttonText
+	s.require(savedFormSettingsFieldButtonText)
+}
+
+// SetCustomFields sets the CustomFields field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormSettings) SetCustomFields(customFields []*SavedFormSettingsCustomFieldsItem) {
+	s.CustomFields = customFields
+	s.require(savedFormSettingsFieldCustomFields)
+}
+
+// SetDescription sets the Description field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormSettings) SetDescription(description string) {
+	s.Description = description
+	s.require(savedFormSettingsFieldDescription)
+}
+
+// SetDuplicateStrategy sets the DuplicateStrategy field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormSettings) SetDuplicateStrategy(duplicateStrategy SavedFormSettingsDuplicateStrategy) {
+	s.DuplicateStrategy = duplicateStrategy
+	s.require(savedFormSettingsFieldDuplicateStrategy)
+}
+
+// SetErrorMessage sets the ErrorMessage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormSettings) SetErrorMessage(errorMessage string) {
+	s.ErrorMessage = errorMessage
+	s.require(savedFormSettingsFieldErrorMessage)
+}
+
+// SetEyebrowText sets the EyebrowText field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormSettings) SetEyebrowText(eyebrowText string) {
+	s.EyebrowText = eyebrowText
+	s.require(savedFormSettingsFieldEyebrowText)
+}
+
+// SetFieldOrder sets the FieldOrder field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormSettings) SetFieldOrder(fieldOrder []string) {
+	s.FieldOrder = fieldOrder
+	s.require(savedFormSettingsFieldFieldOrder)
+}
+
+// SetFirstNameRequired sets the FirstNameRequired field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormSettings) SetFirstNameRequired(firstNameRequired bool) {
+	s.FirstNameRequired = firstNameRequired
+	s.require(savedFormSettingsFieldFirstNameRequired)
+}
+
+// SetFontColor sets the FontColor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormSettings) SetFontColor(fontColor *string) {
+	s.FontColor = fontColor
+	s.require(savedFormSettingsFieldFontColor)
+}
+
+// SetFontFamily sets the FontFamily field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormSettings) SetFontFamily(fontFamily *string) {
+	s.FontFamily = fontFamily
+	s.require(savedFormSettingsFieldFontFamily)
+}
+
+// SetFontSize sets the FontSize field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormSettings) SetFontSize(fontSize *string) {
+	s.FontSize = fontSize
+	s.require(savedFormSettingsFieldFontSize)
+}
+
+// SetFormStyle sets the FormStyle field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormSettings) SetFormStyle(formStyle SavedFormSettingsFormStyle) {
+	s.FormStyle = formStyle
+	s.require(savedFormSettingsFieldFormStyle)
+}
+
+// SetHeadline sets the Headline field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormSettings) SetHeadline(headline string) {
+	s.Headline = headline
+	s.require(savedFormSettingsFieldHeadline)
+}
+
+// SetImageAlt sets the ImageAlt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormSettings) SetImageAlt(imageAlt string) {
+	s.ImageAlt = imageAlt
+	s.require(savedFormSettingsFieldImageAlt)
+}
+
+// SetImageURL sets the ImageURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormSettings) SetImageURL(imageURL *string) {
+	s.ImageURL = imageURL
+	s.require(savedFormSettingsFieldImageURL)
+}
+
+// SetLastNameRequired sets the LastNameRequired field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormSettings) SetLastNameRequired(lastNameRequired bool) {
+	s.LastNameRequired = lastNameRequired
+	s.require(savedFormSettingsFieldLastNameRequired)
+}
+
+// SetListIDs sets the ListIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormSettings) SetListIDs(listIDs []string) {
+	s.ListIDs = listIDs
+	s.require(savedFormSettingsFieldListIDs)
+}
+
+// SetListMode sets the ListMode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormSettings) SetListMode(listMode SavedFormSettingsListMode) {
+	s.ListMode = listMode
+	s.require(savedFormSettingsFieldListMode)
+}
+
+// SetOverlayColor sets the OverlayColor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormSettings) SetOverlayColor(overlayColor *string) {
+	s.OverlayColor = overlayColor
+	s.require(savedFormSettingsFieldOverlayColor)
+}
+
+// SetOverlayOpacity sets the OverlayOpacity field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormSettings) SetOverlayOpacity(overlayOpacity float64) {
+	s.OverlayOpacity = overlayOpacity
+	s.require(savedFormSettingsFieldOverlayOpacity)
+}
+
+// SetPlaceholderEmail sets the PlaceholderEmail field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormSettings) SetPlaceholderEmail(placeholderEmail string) {
+	s.PlaceholderEmail = placeholderEmail
+	s.require(savedFormSettingsFieldPlaceholderEmail)
+}
+
+// SetPlaceholderFirstName sets the PlaceholderFirstName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormSettings) SetPlaceholderFirstName(placeholderFirstName string) {
+	s.PlaceholderFirstName = placeholderFirstName
+	s.require(savedFormSettingsFieldPlaceholderFirstName)
+}
+
+// SetPlaceholderLastName sets the PlaceholderLastName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormSettings) SetPlaceholderLastName(placeholderLastName string) {
+	s.PlaceholderLastName = placeholderLastName
+	s.require(savedFormSettingsFieldPlaceholderLastName)
+}
+
+// SetRedirectURL sets the RedirectURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormSettings) SetRedirectURL(redirectURL string) {
+	s.RedirectURL = redirectURL
+	s.require(savedFormSettingsFieldRedirectURL)
+}
+
+// SetShowFirstName sets the ShowFirstName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormSettings) SetShowFirstName(showFirstName bool) {
+	s.ShowFirstName = showFirstName
+	s.require(savedFormSettingsFieldShowFirstName)
+}
+
+// SetShowLastName sets the ShowLastName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormSettings) SetShowLastName(showLastName bool) {
+	s.ShowLastName = showLastName
+	s.require(savedFormSettingsFieldShowLastName)
+}
+
+// SetSuccessFontColor sets the SuccessFontColor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormSettings) SetSuccessFontColor(successFontColor *string) {
+	s.SuccessFontColor = successFontColor
+	s.require(savedFormSettingsFieldSuccessFontColor)
+}
+
+// SetSuccessFontSize sets the SuccessFontSize field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormSettings) SetSuccessFontSize(successFontSize string) {
+	s.SuccessFontSize = successFontSize
+	s.require(savedFormSettingsFieldSuccessFontSize)
+}
+
+// SetSuccessMessage sets the SuccessMessage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormSettings) SetSuccessMessage(successMessage string) {
+	s.SuccessMessage = successMessage
+	s.require(savedFormSettingsFieldSuccessMessage)
+}
+
+// SetTagIDs sets the TagIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormSettings) SetTagIDs(tagIDs []string) {
+	s.TagIDs = tagIDs
+	s.require(savedFormSettingsFieldTagIDs)
+}
+
+// SetTemplateID sets the TemplateID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormSettings) SetTemplateID(templateID SavedFormSettingsTemplateID) {
+	s.TemplateID = templateID
+	s.require(savedFormSettingsFieldTemplateID)
+}
+
+// SetThemeMode sets the ThemeMode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormSettings) SetThemeMode(themeMode SavedFormSettingsThemeMode) {
+	s.ThemeMode = themeMode
+	s.require(savedFormSettingsFieldThemeMode)
+}
+
+// SetVisualPlacement sets the VisualPlacement field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormSettings) SetVisualPlacement(visualPlacement SavedFormSettingsVisualPlacement) {
+	s.VisualPlacement = visualPlacement
+	s.require(savedFormSettingsFieldVisualPlacement)
+}
+
+func (s *SavedFormSettings) UnmarshalJSON(data []byte) error {
+	type unmarshaler SavedFormSettings
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SavedFormSettings(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SavedFormSettings) MarshalJSON() ([]byte, error) {
+	type embed SavedFormSettings
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SavedFormSettings) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+type SavedFormSettingsAfterSubmission string
+
+const (
+	SavedFormSettingsAfterSubmissionMessage  SavedFormSettingsAfterSubmission = "message"
+	SavedFormSettingsAfterSubmissionRedirect SavedFormSettingsAfterSubmission = "redirect"
+)
+
+func NewSavedFormSettingsAfterSubmissionFromString(s string) (SavedFormSettingsAfterSubmission, error) {
+	switch s {
+	case "message":
+		return SavedFormSettingsAfterSubmissionMessage, nil
+	case "redirect":
+		return SavedFormSettingsAfterSubmissionRedirect, nil
+	}
+	var t SavedFormSettingsAfterSubmission
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SavedFormSettingsAfterSubmission) Ptr() *SavedFormSettingsAfterSubmission {
+	return &s
+}
+
+var (
+	savedFormSettingsCustomFieldsItemFieldID          = big.NewInt(1 << 0)
+	savedFormSettingsCustomFieldsItemFieldLabel       = big.NewInt(1 << 1)
+	savedFormSettingsCustomFieldsItemFieldName        = big.NewInt(1 << 2)
+	savedFormSettingsCustomFieldsItemFieldPlaceholder = big.NewInt(1 << 3)
+	savedFormSettingsCustomFieldsItemFieldRequired    = big.NewInt(1 << 4)
+)
+
+type SavedFormSettingsCustomFieldsItem struct {
+	ID          string  `json:"id" url:"id"`
+	Label       string  `json:"label" url:"label"`
+	Name        string  `json:"name" url:"name"`
+	Placeholder *string `json:"placeholder,omitempty" url:"placeholder,omitempty"`
+	Required    *bool   `json:"required,omitempty" url:"required,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SavedFormSettingsCustomFieldsItem) GetID() string {
+	if s == nil {
+		return ""
+	}
+	return s.ID
+}
+
+func (s *SavedFormSettingsCustomFieldsItem) GetLabel() string {
+	if s == nil {
+		return ""
+	}
+	return s.Label
+}
+
+func (s *SavedFormSettingsCustomFieldsItem) GetName() string {
+	if s == nil {
+		return ""
+	}
+	return s.Name
+}
+
+func (s *SavedFormSettingsCustomFieldsItem) GetPlaceholder() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Placeholder
+}
+
+func (s *SavedFormSettingsCustomFieldsItem) GetRequired() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.Required
+}
+
+func (s *SavedFormSettingsCustomFieldsItem) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SavedFormSettingsCustomFieldsItem) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormSettingsCustomFieldsItem) SetID(id string) {
+	s.ID = id
+	s.require(savedFormSettingsCustomFieldsItemFieldID)
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormSettingsCustomFieldsItem) SetLabel(label string) {
+	s.Label = label
+	s.require(savedFormSettingsCustomFieldsItemFieldLabel)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormSettingsCustomFieldsItem) SetName(name string) {
+	s.Name = name
+	s.require(savedFormSettingsCustomFieldsItemFieldName)
+}
+
+// SetPlaceholder sets the Placeholder field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormSettingsCustomFieldsItem) SetPlaceholder(placeholder *string) {
+	s.Placeholder = placeholder
+	s.require(savedFormSettingsCustomFieldsItemFieldPlaceholder)
+}
+
+// SetRequired sets the Required field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormSettingsCustomFieldsItem) SetRequired(required *bool) {
+	s.Required = required
+	s.require(savedFormSettingsCustomFieldsItemFieldRequired)
+}
+
+func (s *SavedFormSettingsCustomFieldsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler SavedFormSettingsCustomFieldsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SavedFormSettingsCustomFieldsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SavedFormSettingsCustomFieldsItem) MarshalJSON() ([]byte, error) {
+	type embed SavedFormSettingsCustomFieldsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SavedFormSettingsCustomFieldsItem) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+type SavedFormSettingsDuplicateStrategy string
+
+const (
+	SavedFormSettingsDuplicateStrategySkip      SavedFormSettingsDuplicateStrategy = "skip"
+	SavedFormSettingsDuplicateStrategyMerge     SavedFormSettingsDuplicateStrategy = "merge"
+	SavedFormSettingsDuplicateStrategyOverwrite SavedFormSettingsDuplicateStrategy = "overwrite"
+)
+
+func NewSavedFormSettingsDuplicateStrategyFromString(s string) (SavedFormSettingsDuplicateStrategy, error) {
+	switch s {
+	case "skip":
+		return SavedFormSettingsDuplicateStrategySkip, nil
+	case "merge":
+		return SavedFormSettingsDuplicateStrategyMerge, nil
+	case "overwrite":
+		return SavedFormSettingsDuplicateStrategyOverwrite, nil
+	}
+	var t SavedFormSettingsDuplicateStrategy
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SavedFormSettingsDuplicateStrategy) Ptr() *SavedFormSettingsDuplicateStrategy {
+	return &s
+}
+
+type SavedFormSettingsFormStyle string
+
+const (
+	SavedFormSettingsFormStyleButtonBelow  SavedFormSettingsFormStyle = "button-below"
+	SavedFormSettingsFormStyleButtonInline SavedFormSettingsFormStyle = "button-inline"
+)
+
+func NewSavedFormSettingsFormStyleFromString(s string) (SavedFormSettingsFormStyle, error) {
+	switch s {
+	case "button-below":
+		return SavedFormSettingsFormStyleButtonBelow, nil
+	case "button-inline":
+		return SavedFormSettingsFormStyleButtonInline, nil
+	}
+	var t SavedFormSettingsFormStyle
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SavedFormSettingsFormStyle) Ptr() *SavedFormSettingsFormStyle {
+	return &s
+}
+
+type SavedFormSettingsListMode string
+
+const (
+	SavedFormSettingsListModeAll      SavedFormSettingsListMode = "all"
+	SavedFormSettingsListModeNone     SavedFormSettingsListMode = "none"
+	SavedFormSettingsListModeSpecific SavedFormSettingsListMode = "specific"
+)
+
+func NewSavedFormSettingsListModeFromString(s string) (SavedFormSettingsListMode, error) {
+	switch s {
+	case "all":
+		return SavedFormSettingsListModeAll, nil
+	case "none":
+		return SavedFormSettingsListModeNone, nil
+	case "specific":
+		return SavedFormSettingsListModeSpecific, nil
+	}
+	var t SavedFormSettingsListMode
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SavedFormSettingsListMode) Ptr() *SavedFormSettingsListMode {
+	return &s
+}
+
+type SavedFormSettingsTemplateID string
+
+const (
+	SavedFormSettingsTemplateIDMinimal         SavedFormSettingsTemplateID = "minimal"
+	SavedFormSettingsTemplateIDInline          SavedFormSettingsTemplateID = "inline"
+	SavedFormSettingsTemplateIDCard            SavedFormSettingsTemplateID = "card"
+	SavedFormSettingsTemplateIDCompact         SavedFormSettingsTemplateID = "compact"
+	SavedFormSettingsTemplateIDEditorialSplit  SavedFormSettingsTemplateID = "editorial-split"
+	SavedFormSettingsTemplateIDFullPageWelcome SavedFormSettingsTemplateID = "full-page-welcome"
+	SavedFormSettingsTemplateIDInlineBanner    SavedFormSettingsTemplateID = "inline-banner"
+	SavedFormSettingsTemplateIDFloatingBar     SavedFormSettingsTemplateID = "floating-bar"
+)
+
+func NewSavedFormSettingsTemplateIDFromString(s string) (SavedFormSettingsTemplateID, error) {
+	switch s {
+	case "minimal":
+		return SavedFormSettingsTemplateIDMinimal, nil
+	case "inline":
+		return SavedFormSettingsTemplateIDInline, nil
+	case "card":
+		return SavedFormSettingsTemplateIDCard, nil
+	case "compact":
+		return SavedFormSettingsTemplateIDCompact, nil
+	case "editorial-split":
+		return SavedFormSettingsTemplateIDEditorialSplit, nil
+	case "full-page-welcome":
+		return SavedFormSettingsTemplateIDFullPageWelcome, nil
+	case "inline-banner":
+		return SavedFormSettingsTemplateIDInlineBanner, nil
+	case "floating-bar":
+		return SavedFormSettingsTemplateIDFloatingBar, nil
+	}
+	var t SavedFormSettingsTemplateID
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SavedFormSettingsTemplateID) Ptr() *SavedFormSettingsTemplateID {
+	return &s
+}
+
+type SavedFormSettingsThemeMode string
+
+const (
+	SavedFormSettingsThemeModeDesignSystem SavedFormSettingsThemeMode = "design-system"
+	SavedFormSettingsThemeModeCustom       SavedFormSettingsThemeMode = "custom"
+)
+
+func NewSavedFormSettingsThemeModeFromString(s string) (SavedFormSettingsThemeMode, error) {
+	switch s {
+	case "design-system":
+		return SavedFormSettingsThemeModeDesignSystem, nil
+	case "custom":
+		return SavedFormSettingsThemeModeCustom, nil
+	}
+	var t SavedFormSettingsThemeMode
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SavedFormSettingsThemeMode) Ptr() *SavedFormSettingsThemeMode {
+	return &s
+}
+
+type SavedFormSettingsVisualPlacement string
+
+const (
+	SavedFormSettingsVisualPlacementNone       SavedFormSettingsVisualPlacement = "none"
+	SavedFormSettingsVisualPlacementBackground SavedFormSettingsVisualPlacement = "background"
+	SavedFormSettingsVisualPlacementLeft       SavedFormSettingsVisualPlacement = "left"
+	SavedFormSettingsVisualPlacementRight      SavedFormSettingsVisualPlacement = "right"
+	SavedFormSettingsVisualPlacementTop        SavedFormSettingsVisualPlacement = "top"
+)
+
+func NewSavedFormSettingsVisualPlacementFromString(s string) (SavedFormSettingsVisualPlacement, error) {
+	switch s {
+	case "none":
+		return SavedFormSettingsVisualPlacementNone, nil
+	case "background":
+		return SavedFormSettingsVisualPlacementBackground, nil
+	case "left":
+		return SavedFormSettingsVisualPlacementLeft, nil
+	case "right":
+		return SavedFormSettingsVisualPlacementRight, nil
+	case "top":
+		return SavedFormSettingsVisualPlacementTop, nil
+	}
+	var t SavedFormSettingsVisualPlacement
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SavedFormSettingsVisualPlacement) Ptr() *SavedFormSettingsVisualPlacement {
+	return &s
+}
+
+type SavedFormStatus string
+
+const (
+	SavedFormStatusDraft     SavedFormStatus = "draft"
+	SavedFormStatusPublished SavedFormStatus = "published"
+)
+
+func NewSavedFormStatusFromString(s string) (SavedFormStatus, error) {
+	switch s {
+	case "draft":
+		return SavedFormStatusDraft, nil
+	case "published":
+		return SavedFormStatusPublished, nil
+	}
+	var t SavedFormStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SavedFormStatus) Ptr() *SavedFormStatus {
+	return &s
+}
+
 // A saved on-site signup popup.
 var (
 	savedPopupFieldContent         = big.NewInt(1 << 0)
@@ -2546,9 +8155,9 @@ var (
 )
 
 type CreateSavedFormResponse struct {
-	Embed   map[string]any `json:"embed,omitempty" url:"embed,omitempty"`
-	Form    map[string]any `json:"form,omitempty" url:"form,omitempty"`
-	Success *bool          `json:"success,omitempty" url:"success,omitempty"`
+	Embed   *SavedFormEmbed `json:"embed,omitempty" url:"embed,omitempty"`
+	Form    *SavedForm      `json:"form,omitempty" url:"form,omitempty"`
+	Success *bool           `json:"success,omitempty" url:"success,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -2557,14 +8166,14 @@ type CreateSavedFormResponse struct {
 	rawJSON         json.RawMessage
 }
 
-func (c *CreateSavedFormResponse) GetEmbed() map[string]any {
+func (c *CreateSavedFormResponse) GetEmbed() *SavedFormEmbed {
 	if c == nil {
 		return nil
 	}
 	return c.Embed
 }
 
-func (c *CreateSavedFormResponse) GetForm() map[string]any {
+func (c *CreateSavedFormResponse) GetForm() *SavedForm {
 	if c == nil {
 		return nil
 	}
@@ -2594,14 +8203,14 @@ func (c *CreateSavedFormResponse) require(field *big.Int) {
 
 // SetEmbed sets the Embed field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateSavedFormResponse) SetEmbed(embed map[string]any) {
+func (c *CreateSavedFormResponse) SetEmbed(embed *SavedFormEmbed) {
 	c.Embed = embed
 	c.require(createSavedFormResponseFieldEmbed)
 }
 
 // SetForm sets the Form field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateSavedFormResponse) SetForm(form map[string]any) {
+func (c *CreateSavedFormResponse) SetForm(form *SavedForm) {
 	c.Form = form
 	c.require(createSavedFormResponseFieldForm)
 }
@@ -3185,9 +8794,9 @@ var (
 )
 
 type GetSavedFormEmbedResponse struct {
-	Embed   *GetSavedFormEmbedResponseEmbed `json:"embed,omitempty" url:"embed,omitempty"`
-	Form    map[string]any                  `json:"form,omitempty" url:"form,omitempty"`
-	Success *bool                           `json:"success,omitempty" url:"success,omitempty"`
+	Embed   *SavedFormEmbed `json:"embed,omitempty" url:"embed,omitempty"`
+	Form    *SavedForm      `json:"form,omitempty" url:"form,omitempty"`
+	Success *bool           `json:"success,omitempty" url:"success,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -3196,14 +8805,14 @@ type GetSavedFormEmbedResponse struct {
 	rawJSON         json.RawMessage
 }
 
-func (g *GetSavedFormEmbedResponse) GetEmbed() *GetSavedFormEmbedResponseEmbed {
+func (g *GetSavedFormEmbedResponse) GetEmbed() *SavedFormEmbed {
 	if g == nil {
 		return nil
 	}
 	return g.Embed
 }
 
-func (g *GetSavedFormEmbedResponse) GetForm() map[string]any {
+func (g *GetSavedFormEmbedResponse) GetForm() *SavedForm {
 	if g == nil {
 		return nil
 	}
@@ -3233,14 +8842,14 @@ func (g *GetSavedFormEmbedResponse) require(field *big.Int) {
 
 // SetEmbed sets the Embed field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (g *GetSavedFormEmbedResponse) SetEmbed(embed *GetSavedFormEmbedResponseEmbed) {
+func (g *GetSavedFormEmbedResponse) SetEmbed(embed *SavedFormEmbed) {
 	g.Embed = embed
 	g.require(getSavedFormEmbedResponseFieldEmbed)
 }
 
 // SetForm sets the Form field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (g *GetSavedFormEmbedResponse) SetForm(form map[string]any) {
+func (g *GetSavedFormEmbedResponse) SetForm(form *SavedForm) {
 	g.Form = form
 	g.require(getSavedFormEmbedResponseFieldForm)
 }
@@ -3280,170 +8889,6 @@ func (g *GetSavedFormEmbedResponse) MarshalJSON() ([]byte, error) {
 }
 
 func (g *GetSavedFormEmbedResponse) String() string {
-	if g == nil {
-		return "<nil>"
-	}
-	if len(g.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(g.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(g); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", g)
-}
-
-var (
-	getSavedFormEmbedResponseEmbedFieldActionURL          = big.NewInt(1 << 0)
-	getSavedFormEmbedResponseEmbedFieldFetch              = big.NewInt(1 << 1)
-	getSavedFormEmbedResponseEmbedFieldJavascript         = big.NewInt(1 << 2)
-	getSavedFormEmbedResponseEmbedFieldNativeForm         = big.NewInt(1 << 3)
-	getSavedFormEmbedResponseEmbedFieldScriptURL          = big.NewInt(1 << 4)
-	getSavedFormEmbedResponseEmbedFieldSupportedPlatforms = big.NewInt(1 << 5)
-)
-
-type GetSavedFormEmbedResponseEmbed struct {
-	ActionURL          *string  `json:"actionUrl,omitempty" url:"actionUrl,omitempty"`
-	Fetch              *string  `json:"fetch,omitempty" url:"fetch,omitempty"`
-	Javascript         *string  `json:"javascript,omitempty" url:"javascript,omitempty"`
-	NativeForm         *string  `json:"nativeForm,omitempty" url:"nativeForm,omitempty"`
-	ScriptURL          *string  `json:"scriptUrl,omitempty" url:"scriptUrl,omitempty"`
-	SupportedPlatforms []string `json:"supportedPlatforms,omitempty" url:"supportedPlatforms,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (g *GetSavedFormEmbedResponseEmbed) GetActionURL() *string {
-	if g == nil {
-		return nil
-	}
-	return g.ActionURL
-}
-
-func (g *GetSavedFormEmbedResponseEmbed) GetFetch() *string {
-	if g == nil {
-		return nil
-	}
-	return g.Fetch
-}
-
-func (g *GetSavedFormEmbedResponseEmbed) GetJavascript() *string {
-	if g == nil {
-		return nil
-	}
-	return g.Javascript
-}
-
-func (g *GetSavedFormEmbedResponseEmbed) GetNativeForm() *string {
-	if g == nil {
-		return nil
-	}
-	return g.NativeForm
-}
-
-func (g *GetSavedFormEmbedResponseEmbed) GetScriptURL() *string {
-	if g == nil {
-		return nil
-	}
-	return g.ScriptURL
-}
-
-func (g *GetSavedFormEmbedResponseEmbed) GetSupportedPlatforms() []string {
-	if g == nil {
-		return nil
-	}
-	return g.SupportedPlatforms
-}
-
-func (g *GetSavedFormEmbedResponseEmbed) GetExtraProperties() map[string]interface{} {
-	if g == nil {
-		return nil
-	}
-	return g.extraProperties
-}
-
-func (g *GetSavedFormEmbedResponseEmbed) require(field *big.Int) {
-	if g.explicitFields == nil {
-		g.explicitFields = big.NewInt(0)
-	}
-	g.explicitFields.Or(g.explicitFields, field)
-}
-
-// SetActionURL sets the ActionURL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (g *GetSavedFormEmbedResponseEmbed) SetActionURL(actionURL *string) {
-	g.ActionURL = actionURL
-	g.require(getSavedFormEmbedResponseEmbedFieldActionURL)
-}
-
-// SetFetch sets the Fetch field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (g *GetSavedFormEmbedResponseEmbed) SetFetch(fetch *string) {
-	g.Fetch = fetch
-	g.require(getSavedFormEmbedResponseEmbedFieldFetch)
-}
-
-// SetJavascript sets the Javascript field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (g *GetSavedFormEmbedResponseEmbed) SetJavascript(javascript *string) {
-	g.Javascript = javascript
-	g.require(getSavedFormEmbedResponseEmbedFieldJavascript)
-}
-
-// SetNativeForm sets the NativeForm field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (g *GetSavedFormEmbedResponseEmbed) SetNativeForm(nativeForm *string) {
-	g.NativeForm = nativeForm
-	g.require(getSavedFormEmbedResponseEmbedFieldNativeForm)
-}
-
-// SetScriptURL sets the ScriptURL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (g *GetSavedFormEmbedResponseEmbed) SetScriptURL(scriptURL *string) {
-	g.ScriptURL = scriptURL
-	g.require(getSavedFormEmbedResponseEmbedFieldScriptURL)
-}
-
-// SetSupportedPlatforms sets the SupportedPlatforms field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (g *GetSavedFormEmbedResponseEmbed) SetSupportedPlatforms(supportedPlatforms []string) {
-	g.SupportedPlatforms = supportedPlatforms
-	g.require(getSavedFormEmbedResponseEmbedFieldSupportedPlatforms)
-}
-
-func (g *GetSavedFormEmbedResponseEmbed) UnmarshalJSON(data []byte) error {
-	type unmarshaler GetSavedFormEmbedResponseEmbed
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*g = GetSavedFormEmbedResponseEmbed(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *g)
-	if err != nil {
-		return err
-	}
-	g.extraProperties = extraProperties
-	g.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (g *GetSavedFormEmbedResponseEmbed) MarshalJSON() ([]byte, error) {
-	type embed GetSavedFormEmbedResponseEmbed
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*g),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (g *GetSavedFormEmbedResponseEmbed) String() string {
 	if g == nil {
 		return "<nil>"
 	}
@@ -3694,12 +9139,15 @@ var (
 	listSavedFormsResponseFieldCompanyID = big.NewInt(1 << 0)
 	listSavedFormsResponseFieldForms     = big.NewInt(1 << 1)
 	listSavedFormsResponseFieldSuccess   = big.NewInt(1 << 2)
+	listSavedFormsResponseFieldURL       = big.NewInt(1 << 3)
 )
 
 type ListSavedFormsResponse struct {
-	CompanyID string                             `json:"companyId" url:"companyId"`
-	Forms     []*ListSavedFormsResponseFormsItem `json:"forms" url:"forms"`
-	Success   bool                               `json:"success" url:"success"`
+	CompanyID string       `json:"companyId" url:"companyId"`
+	Forms     []*SavedForm `json:"forms" url:"forms"`
+	Success   bool         `json:"success" url:"success"`
+	// Forms dashboard URL.
+	URL *string `json:"url,omitempty" url:"url,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -3715,7 +9163,7 @@ func (l *ListSavedFormsResponse) GetCompanyID() string {
 	return l.CompanyID
 }
 
-func (l *ListSavedFormsResponse) GetForms() []*ListSavedFormsResponseFormsItem {
+func (l *ListSavedFormsResponse) GetForms() []*SavedForm {
 	if l == nil {
 		return nil
 	}
@@ -3727,6 +9175,13 @@ func (l *ListSavedFormsResponse) GetSuccess() bool {
 		return false
 	}
 	return l.Success
+}
+
+func (l *ListSavedFormsResponse) GetURL() *string {
+	if l == nil {
+		return nil
+	}
+	return l.URL
 }
 
 func (l *ListSavedFormsResponse) GetExtraProperties() map[string]interface{} {
@@ -3752,7 +9207,7 @@ func (l *ListSavedFormsResponse) SetCompanyID(companyID string) {
 
 // SetForms sets the Forms field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListSavedFormsResponse) SetForms(forms []*ListSavedFormsResponseFormsItem) {
+func (l *ListSavedFormsResponse) SetForms(forms []*SavedForm) {
 	l.Forms = forms
 	l.require(listSavedFormsResponseFieldForms)
 }
@@ -3762,6 +9217,13 @@ func (l *ListSavedFormsResponse) SetForms(forms []*ListSavedFormsResponseFormsIt
 func (l *ListSavedFormsResponse) SetSuccess(success bool) {
 	l.Success = success
 	l.require(listSavedFormsResponseFieldSuccess)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSavedFormsResponse) SetURL(url *string) {
+	l.URL = url
+	l.require(listSavedFormsResponseFieldURL)
 }
 
 func (l *ListSavedFormsResponse) UnmarshalJSON(data []byte) error {
@@ -3792,154 +9254,6 @@ func (l *ListSavedFormsResponse) MarshalJSON() ([]byte, error) {
 }
 
 func (l *ListSavedFormsResponse) String() string {
-	if l == nil {
-		return "<nil>"
-	}
-	if len(l.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(l); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", l)
-}
-
-var (
-	listSavedFormsResponseFormsItemFieldActionURL = big.NewInt(1 << 0)
-	listSavedFormsResponseFormsItemFieldID        = big.NewInt(1 << 1)
-	listSavedFormsResponseFormsItemFieldName      = big.NewInt(1 << 2)
-	listSavedFormsResponseFormsItemFieldSettings  = big.NewInt(1 << 3)
-	listSavedFormsResponseFormsItemFieldStatus    = big.NewInt(1 << 4)
-)
-
-type ListSavedFormsResponseFormsItem struct {
-	ActionURL *string        `json:"actionUrl,omitempty" url:"actionUrl,omitempty"`
-	ID        *string        `json:"id,omitempty" url:"id,omitempty"`
-	Name      *string        `json:"name,omitempty" url:"name,omitempty"`
-	Settings  map[string]any `json:"settings,omitempty" url:"settings,omitempty"`
-	Status    *string        `json:"status,omitempty" url:"status,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (l *ListSavedFormsResponseFormsItem) GetActionURL() *string {
-	if l == nil {
-		return nil
-	}
-	return l.ActionURL
-}
-
-func (l *ListSavedFormsResponseFormsItem) GetID() *string {
-	if l == nil {
-		return nil
-	}
-	return l.ID
-}
-
-func (l *ListSavedFormsResponseFormsItem) GetName() *string {
-	if l == nil {
-		return nil
-	}
-	return l.Name
-}
-
-func (l *ListSavedFormsResponseFormsItem) GetSettings() map[string]any {
-	if l == nil {
-		return nil
-	}
-	return l.Settings
-}
-
-func (l *ListSavedFormsResponseFormsItem) GetStatus() *string {
-	if l == nil {
-		return nil
-	}
-	return l.Status
-}
-
-func (l *ListSavedFormsResponseFormsItem) GetExtraProperties() map[string]interface{} {
-	if l == nil {
-		return nil
-	}
-	return l.extraProperties
-}
-
-func (l *ListSavedFormsResponseFormsItem) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
-	}
-	l.explicitFields.Or(l.explicitFields, field)
-}
-
-// SetActionURL sets the ActionURL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListSavedFormsResponseFormsItem) SetActionURL(actionURL *string) {
-	l.ActionURL = actionURL
-	l.require(listSavedFormsResponseFormsItemFieldActionURL)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListSavedFormsResponseFormsItem) SetID(id *string) {
-	l.ID = id
-	l.require(listSavedFormsResponseFormsItemFieldID)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListSavedFormsResponseFormsItem) SetName(name *string) {
-	l.Name = name
-	l.require(listSavedFormsResponseFormsItemFieldName)
-}
-
-// SetSettings sets the Settings field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListSavedFormsResponseFormsItem) SetSettings(settings map[string]any) {
-	l.Settings = settings
-	l.require(listSavedFormsResponseFormsItemFieldSettings)
-}
-
-// SetStatus sets the Status field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListSavedFormsResponseFormsItem) SetStatus(status *string) {
-	l.Status = status
-	l.require(listSavedFormsResponseFormsItemFieldStatus)
-}
-
-func (l *ListSavedFormsResponseFormsItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler ListSavedFormsResponseFormsItem
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*l = ListSavedFormsResponseFormsItem(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *l)
-	if err != nil {
-		return err
-	}
-	l.extraProperties = extraProperties
-	l.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (l *ListSavedFormsResponseFormsItem) MarshalJSON() ([]byte, error) {
-	type embed ListSavedFormsResponseFormsItem
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*l),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (l *ListSavedFormsResponseFormsItem) String() string {
 	if l == nil {
 		return "<nil>"
 	}
@@ -4479,11 +9793,11 @@ var (
 )
 
 type UpdateSavedFormResponse struct {
-	// Embed recipes, present when the form is published.
-	Embed   map[string]any `json:"embed,omitempty" url:"embed,omitempty"`
-	Form    map[string]any `json:"form,omitempty" url:"form,omitempty"`
-	Message *string        `json:"message,omitempty" url:"message,omitempty"`
-	Success *bool          `json:"success,omitempty" url:"success,omitempty"`
+	// Included only when the updated form is published.
+	Embed   *SavedFormEmbed `json:"embed,omitempty" url:"embed,omitempty"`
+	Form    *SavedForm      `json:"form,omitempty" url:"form,omitempty"`
+	Message *string         `json:"message,omitempty" url:"message,omitempty"`
+	Success *bool           `json:"success,omitempty" url:"success,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -4492,14 +9806,14 @@ type UpdateSavedFormResponse struct {
 	rawJSON         json.RawMessage
 }
 
-func (u *UpdateSavedFormResponse) GetEmbed() map[string]any {
+func (u *UpdateSavedFormResponse) GetEmbed() *SavedFormEmbed {
 	if u == nil {
 		return nil
 	}
 	return u.Embed
 }
 
-func (u *UpdateSavedFormResponse) GetForm() map[string]any {
+func (u *UpdateSavedFormResponse) GetForm() *SavedForm {
 	if u == nil {
 		return nil
 	}
@@ -4536,14 +9850,14 @@ func (u *UpdateSavedFormResponse) require(field *big.Int) {
 
 // SetEmbed sets the Embed field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateSavedFormResponse) SetEmbed(embed map[string]any) {
+func (u *UpdateSavedFormResponse) SetEmbed(embed *SavedFormEmbed) {
 	u.Embed = embed
 	u.require(updateSavedFormResponseFieldEmbed)
 }
 
 // SetForm sets the Form field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateSavedFormResponse) SetForm(form map[string]any) {
+func (u *UpdateSavedFormResponse) SetForm(form *SavedForm) {
 	u.Form = form
 	u.require(updateSavedFormResponseFieldForm)
 }

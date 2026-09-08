@@ -34,7 +34,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Returns open, click, and unsubscribe tracking flags, the default attribution window, automatic UTM tagging, the dedicated click-tracking domain, inbound reply tracking settings, and whether double opt-in is required for new contacts.
+// Returns account-wide and Transactional API open/click tracking flags, unsubscribe tracking, attribution, UTM tagging, tracking domain, inbound reply settings and signup consent settings.
 //
 // Example:
 //
@@ -55,7 +55,7 @@ func (c *Client) Get(
 	return response.Body, nil
 }
 
-// Updates the account-wide tracking defaults - open, click, and unsubscribe tracking, strict bot filtering, the default attribution window, and automatic UTM tagging - plus the double opt-in requirement for new contacts. Applies to emails sent afterwards; already-sent emails keep the links they were rendered with. Reply tracking is updated through the company endpoint.
+// Updates the account-wide and Transactional API tracking defaults - open, click, and unsubscribe tracking, strict bot filtering, the default attribution window, and automatic UTM tagging - plus the double opt-in requirement for new contacts. Applies to emails sent afterwards; already-sent emails keep the links they were rendered with. Reply tracking is updated through the company endpoint.
 //
 // Example:
 //

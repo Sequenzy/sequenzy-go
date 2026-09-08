@@ -523,55 +523,1116 @@ func (r *RenderLandingPagesRequest) SetLandingPageID(landingPageID string) {
 	r.require(renderLandingPagesRequestFieldLandingPageID)
 }
 
-// Landing page builder JSON.
-var (
-	landingPageContentFieldBlocks   = big.NewInt(1 << 0)
-	landingPageContentFieldSeo      = big.NewInt(1 << 1)
-	landingPageContentFieldTemplate = big.NewInt(1 << 2)
-	landingPageContentFieldTheme    = big.NewInt(1 << 3)
-	landingPageContentFieldVersion  = big.NewInt(1 << 4)
-)
-
-type LandingPageContent struct {
-	// Page blocks. Each block has a `slot`, rendered in order: `top` (full-width band above the hero), `hero`, `form` (the card beside the hero), `body`, `footer`. A `video` block embeds a pasted YouTube URL from its `url`; other providers and direct video files are not supported. It accepts an optional `aspectRatio` of 16:9, 4:3, 1:1, or 9:16. Button `url` and pricing `buttonUrl` accept an https URL or an in-page anchor: `#form` scrolls to the page's form block, `#section-<sectionId>` and `#block-<blockId>` scroll to any section or block, and `#top` returns to the top. Anchor CTAs open in the same tab.
-	Blocks []map[string]any `json:"blocks" url:"blocks"`
-	// Search and browser metadata for the published page.
-	Seo      *LandingPageContentSeo `json:"seo,omitempty" url:"seo,omitempty"`
-	Template *string                `json:"template,omitempty" url:"template,omitempty"`
-	// Page-wide design settings.
-	Theme   *LandingPageContentTheme `json:"theme,omitempty" url:"theme,omitempty"`
-	Version int                      `json:"version" url:"version"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	ExtraProperties map[string]interface{} `json:"-" url:"-"`
+type LandingPageBlock struct {
+	Kind        string
+	Button      *LandingPageButtonBlock
+	CustomHTML  *LandingPageCustomHTMLBlock
+	Divider     *LandingPageDividerBlock
+	Faq         *LandingPageFaqBlock
+	FeatureGrid *LandingPageFeatureGridBlock
+	Footer      *LandingPageFooterBlock
+	Form        *LandingPageFormBlock
+	Group       *LandingPageGroupBlock
+	Heading     *LandingPageHeadingBlock
+	Image       *LandingPageImageBlock
+	LogoCloud   *LandingPageLogoCloudBlock
+	Pricing     *LandingPagePricingBlock
+	Spacer      *LandingPageSpacerBlock
+	Stats       *LandingPageStatsBlock
+	Testimonial *LandingPageTestimonialBlock
+	Text        *LandingPageTextBlock
+	Video       *LandingPageVideoBlock
 
 	rawJSON json.RawMessage
 }
 
-func (l *LandingPageContent) GetBlocks() []map[string]any {
+func (l *LandingPageBlock) GetKind() string {
+	if l == nil {
+		return ""
+	}
+	return l.Kind
+}
+
+func (l *LandingPageBlock) GetButton() *LandingPageButtonBlock {
+	if l == nil {
+		return nil
+	}
+	return l.Button
+}
+
+func (l *LandingPageBlock) GetCustomHTML() *LandingPageCustomHTMLBlock {
+	if l == nil {
+		return nil
+	}
+	return l.CustomHTML
+}
+
+func (l *LandingPageBlock) GetDivider() *LandingPageDividerBlock {
+	if l == nil {
+		return nil
+	}
+	return l.Divider
+}
+
+func (l *LandingPageBlock) GetFaq() *LandingPageFaqBlock {
+	if l == nil {
+		return nil
+	}
+	return l.Faq
+}
+
+func (l *LandingPageBlock) GetFeatureGrid() *LandingPageFeatureGridBlock {
+	if l == nil {
+		return nil
+	}
+	return l.FeatureGrid
+}
+
+func (l *LandingPageBlock) GetFooter() *LandingPageFooterBlock {
+	if l == nil {
+		return nil
+	}
+	return l.Footer
+}
+
+func (l *LandingPageBlock) GetForm() *LandingPageFormBlock {
+	if l == nil {
+		return nil
+	}
+	return l.Form
+}
+
+func (l *LandingPageBlock) GetGroup() *LandingPageGroupBlock {
+	if l == nil {
+		return nil
+	}
+	return l.Group
+}
+
+func (l *LandingPageBlock) GetHeading() *LandingPageHeadingBlock {
+	if l == nil {
+		return nil
+	}
+	return l.Heading
+}
+
+func (l *LandingPageBlock) GetImage() *LandingPageImageBlock {
+	if l == nil {
+		return nil
+	}
+	return l.Image
+}
+
+func (l *LandingPageBlock) GetLogoCloud() *LandingPageLogoCloudBlock {
+	if l == nil {
+		return nil
+	}
+	return l.LogoCloud
+}
+
+func (l *LandingPageBlock) GetPricing() *LandingPagePricingBlock {
+	if l == nil {
+		return nil
+	}
+	return l.Pricing
+}
+
+func (l *LandingPageBlock) GetSpacer() *LandingPageSpacerBlock {
+	if l == nil {
+		return nil
+	}
+	return l.Spacer
+}
+
+func (l *LandingPageBlock) GetStats() *LandingPageStatsBlock {
+	if l == nil {
+		return nil
+	}
+	return l.Stats
+}
+
+func (l *LandingPageBlock) GetTestimonial() *LandingPageTestimonialBlock {
+	if l == nil {
+		return nil
+	}
+	return l.Testimonial
+}
+
+func (l *LandingPageBlock) GetText() *LandingPageTextBlock {
+	if l == nil {
+		return nil
+	}
+	return l.Text
+}
+
+func (l *LandingPageBlock) GetVideo() *LandingPageVideoBlock {
+	if l == nil {
+		return nil
+	}
+	return l.Video
+}
+
+func (l *LandingPageBlock) UnmarshalJSON(data []byte) error {
+	var unmarshaler struct {
+		Kind string `json:"kind"`
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	l.Kind = unmarshaler.Kind
+	if unmarshaler.Kind == "" {
+		return fmt.Errorf("%T did not include discriminant kind", l)
+	}
+	switch unmarshaler.Kind {
+	case "button":
+		value := new(LandingPageButtonBlock)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		l.Button = value
+	case "custom-html":
+		value := new(LandingPageCustomHTMLBlock)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		l.CustomHTML = value
+	case "divider":
+		value := new(LandingPageDividerBlock)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		l.Divider = value
+	case "faq":
+		value := new(LandingPageFaqBlock)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		l.Faq = value
+	case "feature-grid":
+		value := new(LandingPageFeatureGridBlock)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		l.FeatureGrid = value
+	case "footer":
+		value := new(LandingPageFooterBlock)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		l.Footer = value
+	case "form":
+		value := new(LandingPageFormBlock)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		l.Form = value
+	case "group":
+		value := new(LandingPageGroupBlock)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		l.Group = value
+	case "heading":
+		value := new(LandingPageHeadingBlock)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		l.Heading = value
+	case "image":
+		value := new(LandingPageImageBlock)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		l.Image = value
+	case "logo-cloud":
+		value := new(LandingPageLogoCloudBlock)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		l.LogoCloud = value
+	case "pricing":
+		value := new(LandingPagePricingBlock)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		l.Pricing = value
+	case "spacer":
+		value := new(LandingPageSpacerBlock)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		l.Spacer = value
+	case "stats":
+		value := new(LandingPageStatsBlock)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		l.Stats = value
+	case "testimonial":
+		value := new(LandingPageTestimonialBlock)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		l.Testimonial = value
+	case "text":
+		value := new(LandingPageTextBlock)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		l.Text = value
+	case "video":
+		value := new(LandingPageVideoBlock)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		l.Video = value
+	}
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l LandingPageBlock) MarshalJSON() ([]byte, error) {
+	if err := l.validate(); err != nil {
+		return nil, err
+	}
+	if l.Button != nil {
+		return internal.MarshalJSONWithExtraProperty(l.Button, "kind", "button")
+	}
+	if l.CustomHTML != nil {
+		return internal.MarshalJSONWithExtraProperty(l.CustomHTML, "kind", "custom-html")
+	}
+	if l.Divider != nil {
+		return internal.MarshalJSONWithExtraProperty(l.Divider, "kind", "divider")
+	}
+	if l.Faq != nil {
+		return internal.MarshalJSONWithExtraProperty(l.Faq, "kind", "faq")
+	}
+	if l.FeatureGrid != nil {
+		return internal.MarshalJSONWithExtraProperty(l.FeatureGrid, "kind", "feature-grid")
+	}
+	if l.Footer != nil {
+		return internal.MarshalJSONWithExtraProperty(l.Footer, "kind", "footer")
+	}
+	if l.Form != nil {
+		return internal.MarshalJSONWithExtraProperty(l.Form, "kind", "form")
+	}
+	if l.Group != nil {
+		return internal.MarshalJSONWithExtraProperty(l.Group, "kind", "group")
+	}
+	if l.Heading != nil {
+		return internal.MarshalJSONWithExtraProperty(l.Heading, "kind", "heading")
+	}
+	if l.Image != nil {
+		return internal.MarshalJSONWithExtraProperty(l.Image, "kind", "image")
+	}
+	if l.LogoCloud != nil {
+		return internal.MarshalJSONWithExtraProperty(l.LogoCloud, "kind", "logo-cloud")
+	}
+	if l.Pricing != nil {
+		return internal.MarshalJSONWithExtraProperty(l.Pricing, "kind", "pricing")
+	}
+	if l.Spacer != nil {
+		return internal.MarshalJSONWithExtraProperty(l.Spacer, "kind", "spacer")
+	}
+	if l.Stats != nil {
+		return internal.MarshalJSONWithExtraProperty(l.Stats, "kind", "stats")
+	}
+	if l.Testimonial != nil {
+		return internal.MarshalJSONWithExtraProperty(l.Testimonial, "kind", "testimonial")
+	}
+	if l.Text != nil {
+		return internal.MarshalJSONWithExtraProperty(l.Text, "kind", "text")
+	}
+	if l.Video != nil {
+		return internal.MarshalJSONWithExtraProperty(l.Video, "kind", "video")
+	}
+	if len(l.rawJSON) > 0 {
+		return l.rawJSON, nil
+	}
+	return nil, fmt.Errorf("type %T does not define a non-empty union type", l)
+}
+
+type LandingPageBlockVisitor interface {
+	VisitButton(*LandingPageButtonBlock) error
+	VisitCustomHTML(*LandingPageCustomHTMLBlock) error
+	VisitDivider(*LandingPageDividerBlock) error
+	VisitFaq(*LandingPageFaqBlock) error
+	VisitFeatureGrid(*LandingPageFeatureGridBlock) error
+	VisitFooter(*LandingPageFooterBlock) error
+	VisitForm(*LandingPageFormBlock) error
+	VisitGroup(*LandingPageGroupBlock) error
+	VisitHeading(*LandingPageHeadingBlock) error
+	VisitImage(*LandingPageImageBlock) error
+	VisitLogoCloud(*LandingPageLogoCloudBlock) error
+	VisitPricing(*LandingPagePricingBlock) error
+	VisitSpacer(*LandingPageSpacerBlock) error
+	VisitStats(*LandingPageStatsBlock) error
+	VisitTestimonial(*LandingPageTestimonialBlock) error
+	VisitText(*LandingPageTextBlock) error
+	VisitVideo(*LandingPageVideoBlock) error
+}
+
+func (l *LandingPageBlock) Accept(visitor LandingPageBlockVisitor) error {
+	if l.Button != nil {
+		return visitor.VisitButton(l.Button)
+	}
+	if l.CustomHTML != nil {
+		return visitor.VisitCustomHTML(l.CustomHTML)
+	}
+	if l.Divider != nil {
+		return visitor.VisitDivider(l.Divider)
+	}
+	if l.Faq != nil {
+		return visitor.VisitFaq(l.Faq)
+	}
+	if l.FeatureGrid != nil {
+		return visitor.VisitFeatureGrid(l.FeatureGrid)
+	}
+	if l.Footer != nil {
+		return visitor.VisitFooter(l.Footer)
+	}
+	if l.Form != nil {
+		return visitor.VisitForm(l.Form)
+	}
+	if l.Group != nil {
+		return visitor.VisitGroup(l.Group)
+	}
+	if l.Heading != nil {
+		return visitor.VisitHeading(l.Heading)
+	}
+	if l.Image != nil {
+		return visitor.VisitImage(l.Image)
+	}
+	if l.LogoCloud != nil {
+		return visitor.VisitLogoCloud(l.LogoCloud)
+	}
+	if l.Pricing != nil {
+		return visitor.VisitPricing(l.Pricing)
+	}
+	if l.Spacer != nil {
+		return visitor.VisitSpacer(l.Spacer)
+	}
+	if l.Stats != nil {
+		return visitor.VisitStats(l.Stats)
+	}
+	if l.Testimonial != nil {
+		return visitor.VisitTestimonial(l.Testimonial)
+	}
+	if l.Text != nil {
+		return visitor.VisitText(l.Text)
+	}
+	if l.Video != nil {
+		return visitor.VisitVideo(l.Video)
+	}
+	return fmt.Errorf("type %T does not define a non-empty union type", l)
+}
+
+func (l *LandingPageBlock) validate() error {
+	if l == nil {
+		return fmt.Errorf("type %T is nil", l)
+	}
+	var fields []string
+	if l.Button != nil {
+		fields = append(fields, "button")
+	}
+	if l.CustomHTML != nil {
+		fields = append(fields, "custom-html")
+	}
+	if l.Divider != nil {
+		fields = append(fields, "divider")
+	}
+	if l.Faq != nil {
+		fields = append(fields, "faq")
+	}
+	if l.FeatureGrid != nil {
+		fields = append(fields, "feature-grid")
+	}
+	if l.Footer != nil {
+		fields = append(fields, "footer")
+	}
+	if l.Form != nil {
+		fields = append(fields, "form")
+	}
+	if l.Group != nil {
+		fields = append(fields, "group")
+	}
+	if l.Heading != nil {
+		fields = append(fields, "heading")
+	}
+	if l.Image != nil {
+		fields = append(fields, "image")
+	}
+	if l.LogoCloud != nil {
+		fields = append(fields, "logo-cloud")
+	}
+	if l.Pricing != nil {
+		fields = append(fields, "pricing")
+	}
+	if l.Spacer != nil {
+		fields = append(fields, "spacer")
+	}
+	if l.Stats != nil {
+		fields = append(fields, "stats")
+	}
+	if l.Testimonial != nil {
+		fields = append(fields, "testimonial")
+	}
+	if l.Text != nil {
+		fields = append(fields, "text")
+	}
+	if l.Video != nil {
+		fields = append(fields, "video")
+	}
+	if len(fields) == 0 {
+		if l.Kind != "" {
+			if len(l.rawJSON) > 0 {
+				return nil
+			}
+			return fmt.Errorf("type %T defines a discriminant set to %q but the field is not set", l, l.Kind)
+		}
+		return fmt.Errorf("type %T is empty", l)
+	}
+	if len(fields) > 1 {
+		return fmt.Errorf("type %T defines values for %s, but only one value is allowed", l, fields)
+	}
+	if l.Kind != "" {
+		field := fields[0]
+		if l.Kind != field {
+			return fmt.Errorf(
+				"type %T defines a discriminant set to %q, but it does not match the %T field; either remove or update the discriminant to match",
+				l,
+				l.Kind,
+				l,
+			)
+		}
+	}
+	return nil
+}
+
+var (
+	landingPageBlockBaseFieldID             = big.NewInt(1 << 0)
+	landingPageBlockBaseFieldSectionAlign   = big.NewInt(1 << 1)
+	landingPageBlockBaseFieldSectionID      = big.NewInt(1 << 2)
+	landingPageBlockBaseFieldSectionKind    = big.NewInt(1 << 3)
+	landingPageBlockBaseFieldSectionLabel   = big.NewInt(1 << 4)
+	landingPageBlockBaseFieldSectionLayout  = big.NewInt(1 << 5)
+	landingPageBlockBaseFieldSectionVariant = big.NewInt(1 << 6)
+)
+
+type LandingPageBlockBase struct {
+	ID             string                             `json:"id" url:"id"`
+	SectionAlign   *LandingPageBlockBaseSectionAlign  `json:"sectionAlign,omitempty" url:"sectionAlign,omitempty"`
+	SectionID      *string                            `json:"sectionId,omitempty" url:"sectionId,omitempty"`
+	SectionKind    *string                            `json:"sectionKind,omitempty" url:"sectionKind,omitempty"`
+	SectionLabel   *string                            `json:"sectionLabel,omitempty" url:"sectionLabel,omitempty"`
+	SectionLayout  *LandingPageBlockBaseSectionLayout `json:"sectionLayout,omitempty" url:"sectionLayout,omitempty"`
+	SectionVariant *string                            `json:"sectionVariant,omitempty" url:"sectionVariant,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LandingPageBlockBase) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LandingPageBlockBase) GetSectionAlign() *LandingPageBlockBaseSectionAlign {
+	if l == nil {
+		return nil
+	}
+	return l.SectionAlign
+}
+
+func (l *LandingPageBlockBase) GetSectionID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionID
+}
+
+func (l *LandingPageBlockBase) GetSectionKind() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionKind
+}
+
+func (l *LandingPageBlockBase) GetSectionLabel() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionLabel
+}
+
+func (l *LandingPageBlockBase) GetSectionLayout() *LandingPageBlockBaseSectionLayout {
+	if l == nil {
+		return nil
+	}
+	return l.SectionLayout
+}
+
+func (l *LandingPageBlockBase) GetSectionVariant() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionVariant
+}
+
+func (l *LandingPageBlockBase) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LandingPageBlockBase) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageBlockBase) SetID(id string) {
+	l.ID = id
+	l.require(landingPageBlockBaseFieldID)
+}
+
+// SetSectionAlign sets the SectionAlign field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageBlockBase) SetSectionAlign(sectionAlign *LandingPageBlockBaseSectionAlign) {
+	l.SectionAlign = sectionAlign
+	l.require(landingPageBlockBaseFieldSectionAlign)
+}
+
+// SetSectionID sets the SectionID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageBlockBase) SetSectionID(sectionID *string) {
+	l.SectionID = sectionID
+	l.require(landingPageBlockBaseFieldSectionID)
+}
+
+// SetSectionKind sets the SectionKind field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageBlockBase) SetSectionKind(sectionKind *string) {
+	l.SectionKind = sectionKind
+	l.require(landingPageBlockBaseFieldSectionKind)
+}
+
+// SetSectionLabel sets the SectionLabel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageBlockBase) SetSectionLabel(sectionLabel *string) {
+	l.SectionLabel = sectionLabel
+	l.require(landingPageBlockBaseFieldSectionLabel)
+}
+
+// SetSectionLayout sets the SectionLayout field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageBlockBase) SetSectionLayout(sectionLayout *LandingPageBlockBaseSectionLayout) {
+	l.SectionLayout = sectionLayout
+	l.require(landingPageBlockBaseFieldSectionLayout)
+}
+
+// SetSectionVariant sets the SectionVariant field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageBlockBase) SetSectionVariant(sectionVariant *string) {
+	l.SectionVariant = sectionVariant
+	l.require(landingPageBlockBaseFieldSectionVariant)
+}
+
+func (l *LandingPageBlockBase) UnmarshalJSON(data []byte) error {
+	type unmarshaler LandingPageBlockBase
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LandingPageBlockBase(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LandingPageBlockBase) MarshalJSON() ([]byte, error) {
+	type embed LandingPageBlockBase
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LandingPageBlockBase) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type LandingPageBlockBaseSectionAlign string
+
+const (
+	LandingPageBlockBaseSectionAlignLeft   LandingPageBlockBaseSectionAlign = "left"
+	LandingPageBlockBaseSectionAlignCenter LandingPageBlockBaseSectionAlign = "center"
+	LandingPageBlockBaseSectionAlignRight  LandingPageBlockBaseSectionAlign = "right"
+)
+
+func NewLandingPageBlockBaseSectionAlignFromString(s string) (LandingPageBlockBaseSectionAlign, error) {
+	switch s {
+	case "left":
+		return LandingPageBlockBaseSectionAlignLeft, nil
+	case "center":
+		return LandingPageBlockBaseSectionAlignCenter, nil
+	case "right":
+		return LandingPageBlockBaseSectionAlignRight, nil
+	}
+	var t LandingPageBlockBaseSectionAlign
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageBlockBaseSectionAlign) Ptr() *LandingPageBlockBaseSectionAlign {
+	return &l
+}
+
+type LandingPageBlockBaseSectionLayout string
+
+const (
+	LandingPageBlockBaseSectionLayoutStack  LandingPageBlockBaseSectionLayout = "stack"
+	LandingPageBlockBaseSectionLayoutSplit  LandingPageBlockBaseSectionLayout = "split"
+	LandingPageBlockBaseSectionLayoutCenter LandingPageBlockBaseSectionLayout = "center"
+)
+
+func NewLandingPageBlockBaseSectionLayoutFromString(s string) (LandingPageBlockBaseSectionLayout, error) {
+	switch s {
+	case "stack":
+		return LandingPageBlockBaseSectionLayoutStack, nil
+	case "split":
+		return LandingPageBlockBaseSectionLayoutSplit, nil
+	case "center":
+		return LandingPageBlockBaseSectionLayoutCenter, nil
+	}
+	var t LandingPageBlockBaseSectionLayout
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageBlockBaseSectionLayout) Ptr() *LandingPageBlockBaseSectionLayout {
+	return &l
+}
+
+// CTA url accepts an HTTPS URL or an in-page anchor such as #form, #section-<sectionId>, #block-<blockId>, or #top. Anchor links open in the same tab.
+var (
+	landingPageButtonBlockFieldID             = big.NewInt(1 << 0)
+	landingPageButtonBlockFieldSectionAlign   = big.NewInt(1 << 1)
+	landingPageButtonBlockFieldSectionID      = big.NewInt(1 << 2)
+	landingPageButtonBlockFieldSectionKind    = big.NewInt(1 << 3)
+	landingPageButtonBlockFieldSectionLabel   = big.NewInt(1 << 4)
+	landingPageButtonBlockFieldSectionLayout  = big.NewInt(1 << 5)
+	landingPageButtonBlockFieldSectionVariant = big.NewInt(1 << 6)
+	landingPageButtonBlockFieldAlign          = big.NewInt(1 << 7)
+	landingPageButtonBlockFieldSlot           = big.NewInt(1 << 8)
+	landingPageButtonBlockFieldText           = big.NewInt(1 << 9)
+	landingPageButtonBlockFieldURL            = big.NewInt(1 << 10)
+	landingPageButtonBlockFieldVariant        = big.NewInt(1 << 11)
+)
+
+type LandingPageButtonBlock struct {
+	ID             string                             `json:"id" url:"id"`
+	SectionAlign   *LandingPageBlockBaseSectionAlign  `json:"sectionAlign,omitempty" url:"sectionAlign,omitempty"`
+	SectionID      *string                            `json:"sectionId,omitempty" url:"sectionId,omitempty"`
+	SectionKind    *string                            `json:"sectionKind,omitempty" url:"sectionKind,omitempty"`
+	SectionLabel   *string                            `json:"sectionLabel,omitempty" url:"sectionLabel,omitempty"`
+	SectionLayout  *LandingPageBlockBaseSectionLayout `json:"sectionLayout,omitempty" url:"sectionLayout,omitempty"`
+	SectionVariant *string                            `json:"sectionVariant,omitempty" url:"sectionVariant,omitempty"`
+	Align          *LandingPageButtonBlockAlign       `json:"align,omitempty" url:"align,omitempty"`
+	Slot           LandingPageButtonBlockSlot         `json:"slot" url:"slot"`
+	Text           string                             `json:"text" url:"text"`
+	URL            *string                            `json:"url,omitempty" url:"url,omitempty"`
+	Variant        *LandingPageButtonBlockVariant     `json:"variant,omitempty" url:"variant,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LandingPageButtonBlock) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LandingPageButtonBlock) GetSectionAlign() *LandingPageBlockBaseSectionAlign {
+	if l == nil {
+		return nil
+	}
+	return l.SectionAlign
+}
+
+func (l *LandingPageButtonBlock) GetSectionID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionID
+}
+
+func (l *LandingPageButtonBlock) GetSectionKind() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionKind
+}
+
+func (l *LandingPageButtonBlock) GetSectionLabel() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionLabel
+}
+
+func (l *LandingPageButtonBlock) GetSectionLayout() *LandingPageBlockBaseSectionLayout {
+	if l == nil {
+		return nil
+	}
+	return l.SectionLayout
+}
+
+func (l *LandingPageButtonBlock) GetSectionVariant() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionVariant
+}
+
+func (l *LandingPageButtonBlock) GetAlign() *LandingPageButtonBlockAlign {
+	if l == nil {
+		return nil
+	}
+	return l.Align
+}
+
+func (l *LandingPageButtonBlock) GetSlot() LandingPageButtonBlockSlot {
+	if l == nil {
+		return ""
+	}
+	return l.Slot
+}
+
+func (l *LandingPageButtonBlock) GetText() string {
+	if l == nil {
+		return ""
+	}
+	return l.Text
+}
+
+func (l *LandingPageButtonBlock) GetURL() *string {
+	if l == nil {
+		return nil
+	}
+	return l.URL
+}
+
+func (l *LandingPageButtonBlock) GetVariant() *LandingPageButtonBlockVariant {
+	if l == nil {
+		return nil
+	}
+	return l.Variant
+}
+
+func (l *LandingPageButtonBlock) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LandingPageButtonBlock) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageButtonBlock) SetID(id string) {
+	l.ID = id
+	l.require(landingPageButtonBlockFieldID)
+}
+
+// SetSectionAlign sets the SectionAlign field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageButtonBlock) SetSectionAlign(sectionAlign *LandingPageBlockBaseSectionAlign) {
+	l.SectionAlign = sectionAlign
+	l.require(landingPageButtonBlockFieldSectionAlign)
+}
+
+// SetSectionID sets the SectionID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageButtonBlock) SetSectionID(sectionID *string) {
+	l.SectionID = sectionID
+	l.require(landingPageButtonBlockFieldSectionID)
+}
+
+// SetSectionKind sets the SectionKind field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageButtonBlock) SetSectionKind(sectionKind *string) {
+	l.SectionKind = sectionKind
+	l.require(landingPageButtonBlockFieldSectionKind)
+}
+
+// SetSectionLabel sets the SectionLabel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageButtonBlock) SetSectionLabel(sectionLabel *string) {
+	l.SectionLabel = sectionLabel
+	l.require(landingPageButtonBlockFieldSectionLabel)
+}
+
+// SetSectionLayout sets the SectionLayout field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageButtonBlock) SetSectionLayout(sectionLayout *LandingPageBlockBaseSectionLayout) {
+	l.SectionLayout = sectionLayout
+	l.require(landingPageButtonBlockFieldSectionLayout)
+}
+
+// SetSectionVariant sets the SectionVariant field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageButtonBlock) SetSectionVariant(sectionVariant *string) {
+	l.SectionVariant = sectionVariant
+	l.require(landingPageButtonBlockFieldSectionVariant)
+}
+
+// SetAlign sets the Align field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageButtonBlock) SetAlign(align *LandingPageButtonBlockAlign) {
+	l.Align = align
+	l.require(landingPageButtonBlockFieldAlign)
+}
+
+// SetSlot sets the Slot field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageButtonBlock) SetSlot(slot LandingPageButtonBlockSlot) {
+	l.Slot = slot
+	l.require(landingPageButtonBlockFieldSlot)
+}
+
+// SetText sets the Text field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageButtonBlock) SetText(text string) {
+	l.Text = text
+	l.require(landingPageButtonBlockFieldText)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageButtonBlock) SetURL(url *string) {
+	l.URL = url
+	l.require(landingPageButtonBlockFieldURL)
+}
+
+// SetVariant sets the Variant field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageButtonBlock) SetVariant(variant *LandingPageButtonBlockVariant) {
+	l.Variant = variant
+	l.require(landingPageButtonBlockFieldVariant)
+}
+
+func (l *LandingPageButtonBlock) UnmarshalJSON(data []byte) error {
+	type unmarshaler LandingPageButtonBlock
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LandingPageButtonBlock(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LandingPageButtonBlock) MarshalJSON() ([]byte, error) {
+	type embed LandingPageButtonBlock
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LandingPageButtonBlock) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type LandingPageButtonBlockAlign string
+
+const (
+	LandingPageButtonBlockAlignLeft   LandingPageButtonBlockAlign = "left"
+	LandingPageButtonBlockAlignCenter LandingPageButtonBlockAlign = "center"
+	LandingPageButtonBlockAlignRight  LandingPageButtonBlockAlign = "right"
+)
+
+func NewLandingPageButtonBlockAlignFromString(s string) (LandingPageButtonBlockAlign, error) {
+	switch s {
+	case "left":
+		return LandingPageButtonBlockAlignLeft, nil
+	case "center":
+		return LandingPageButtonBlockAlignCenter, nil
+	case "right":
+		return LandingPageButtonBlockAlignRight, nil
+	}
+	var t LandingPageButtonBlockAlign
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageButtonBlockAlign) Ptr() *LandingPageButtonBlockAlign {
+	return &l
+}
+
+type LandingPageButtonBlockSlot string
+
+const (
+	LandingPageButtonBlockSlotTop    LandingPageButtonBlockSlot = "top"
+	LandingPageButtonBlockSlotHero   LandingPageButtonBlockSlot = "hero"
+	LandingPageButtonBlockSlotForm   LandingPageButtonBlockSlot = "form"
+	LandingPageButtonBlockSlotBody   LandingPageButtonBlockSlot = "body"
+	LandingPageButtonBlockSlotFooter LandingPageButtonBlockSlot = "footer"
+)
+
+func NewLandingPageButtonBlockSlotFromString(s string) (LandingPageButtonBlockSlot, error) {
+	switch s {
+	case "top":
+		return LandingPageButtonBlockSlotTop, nil
+	case "hero":
+		return LandingPageButtonBlockSlotHero, nil
+	case "form":
+		return LandingPageButtonBlockSlotForm, nil
+	case "body":
+		return LandingPageButtonBlockSlotBody, nil
+	case "footer":
+		return LandingPageButtonBlockSlotFooter, nil
+	}
+	var t LandingPageButtonBlockSlot
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageButtonBlockSlot) Ptr() *LandingPageButtonBlockSlot {
+	return &l
+}
+
+type LandingPageButtonBlockVariant string
+
+const (
+	LandingPageButtonBlockVariantPrimary   LandingPageButtonBlockVariant = "primary"
+	LandingPageButtonBlockVariantSecondary LandingPageButtonBlockVariant = "secondary"
+)
+
+func NewLandingPageButtonBlockVariantFromString(s string) (LandingPageButtonBlockVariant, error) {
+	switch s {
+	case "primary":
+		return LandingPageButtonBlockVariantPrimary, nil
+	case "secondary":
+		return LandingPageButtonBlockVariantSecondary, nil
+	}
+	var t LandingPageButtonBlockVariant
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageButtonBlockVariant) Ptr() *LandingPageButtonBlockVariant {
+	return &l
+}
+
+// Version 2 landing page builder document. Providing content on update replaces the whole document. Block IDs must be unique throughout the tree. A missing footer is appended automatically; after normalization exactly one footer and at most one form are allowed. Groups may nest at most eight levels, and every child must share its parent slot. See /api-reference/landing-pages/content for block examples and semantic validation. Form and footer blocks must stay at the root, outside groups.
+var (
+	landingPageContentFieldBlocks   = big.NewInt(1 << 0)
+	landingPageContentFieldHeader   = big.NewInt(1 << 1)
+	landingPageContentFieldSeo      = big.NewInt(1 << 2)
+	landingPageContentFieldTemplate = big.NewInt(1 << 3)
+	landingPageContentFieldTheme    = big.NewInt(1 << 4)
+	landingPageContentFieldVersion  = big.NewInt(1 << 5)
+)
+
+type LandingPageContent struct {
+	// Blocks render in slot order: top, hero, form, body, footer, preserving order within each slot. Includes nested group children. An empty array is accepted: a default footer is appended whenever no footer is present. The stored document has exactly one footer.
+	Blocks   []*LandingPageBlock         `json:"blocks" url:"blocks"`
+	Header   *LandingPageHeader          `json:"header,omitempty" url:"header,omitempty"`
+	Seo      *LandingPageSeo             `json:"seo,omitempty" url:"seo,omitempty"`
+	Template *LandingPageContentTemplate `json:"template,omitempty" url:"template,omitempty"`
+	Theme    *LandingPageTheme           `json:"theme,omitempty" url:"theme,omitempty"`
+	Version  int                         `json:"version" url:"version"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LandingPageContent) GetBlocks() []*LandingPageBlock {
 	if l == nil {
 		return nil
 	}
 	return l.Blocks
 }
 
-func (l *LandingPageContent) GetSeo() *LandingPageContentSeo {
+func (l *LandingPageContent) GetHeader() *LandingPageHeader {
+	if l == nil {
+		return nil
+	}
+	return l.Header
+}
+
+func (l *LandingPageContent) GetSeo() *LandingPageSeo {
 	if l == nil {
 		return nil
 	}
 	return l.Seo
 }
 
-func (l *LandingPageContent) GetTemplate() *string {
+func (l *LandingPageContent) GetTemplate() *LandingPageContentTemplate {
 	if l == nil {
 		return nil
 	}
 	return l.Template
 }
 
-func (l *LandingPageContent) GetTheme() *LandingPageContentTheme {
+func (l *LandingPageContent) GetTheme() *LandingPageTheme {
 	if l == nil {
 		return nil
 	}
@@ -589,7 +1650,7 @@ func (l *LandingPageContent) GetExtraProperties() map[string]interface{} {
 	if l == nil {
 		return nil
 	}
-	return l.ExtraProperties
+	return l.extraProperties
 }
 
 func (l *LandingPageContent) require(field *big.Int) {
@@ -601,28 +1662,35 @@ func (l *LandingPageContent) require(field *big.Int) {
 
 // SetBlocks sets the Blocks field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LandingPageContent) SetBlocks(blocks []map[string]any) {
+func (l *LandingPageContent) SetBlocks(blocks []*LandingPageBlock) {
 	l.Blocks = blocks
 	l.require(landingPageContentFieldBlocks)
 }
 
+// SetHeader sets the Header field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageContent) SetHeader(header *LandingPageHeader) {
+	l.Header = header
+	l.require(landingPageContentFieldHeader)
+}
+
 // SetSeo sets the Seo field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LandingPageContent) SetSeo(seo *LandingPageContentSeo) {
+func (l *LandingPageContent) SetSeo(seo *LandingPageSeo) {
 	l.Seo = seo
 	l.require(landingPageContentFieldSeo)
 }
 
 // SetTemplate sets the Template field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LandingPageContent) SetTemplate(template *string) {
+func (l *LandingPageContent) SetTemplate(template *LandingPageContentTemplate) {
 	l.Template = template
 	l.require(landingPageContentFieldTemplate)
 }
 
 // SetTheme sets the Theme field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LandingPageContent) SetTheme(theme *LandingPageContentTheme) {
+func (l *LandingPageContent) SetTheme(theme *LandingPageTheme) {
 	l.Theme = theme
 	l.require(landingPageContentFieldTheme)
 }
@@ -635,21 +1703,17 @@ func (l *LandingPageContent) SetVersion(version int) {
 }
 
 func (l *LandingPageContent) UnmarshalJSON(data []byte) error {
-	type embed LandingPageContent
-	var unmarshaler = struct {
-		embed
-	}{
-		embed: embed(*l),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+	type unmarshaler LandingPageContent
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*l = LandingPageContent(unmarshaler.embed)
+	*l = LandingPageContent(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *l)
 	if err != nil {
 		return err
 	}
-	l.ExtraProperties = extraProperties
+	l.extraProperties = extraProperties
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -662,7 +1726,7 @@ func (l *LandingPageContent) MarshalJSON() ([]byte, error) {
 		embed: embed(*l),
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
-	return internal.MarshalJSONWithExtraProperties(explicitMarshaler, l.ExtraProperties)
+	return json.Marshal(explicitMarshaler)
 }
 
 func (l *LandingPageContent) String() string {
@@ -680,306 +1744,538 @@ func (l *LandingPageContent) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// Search and browser metadata for the published page.
-var (
-	landingPageContentSeoFieldDescription           = big.NewInt(1 << 0)
-	landingPageContentSeoFieldFaviconURL            = big.NewInt(1 << 1)
-	landingPageContentSeoFieldHideFromSearchEngines = big.NewInt(1 << 2)
-	landingPageContentSeoFieldTitle                 = big.NewInt(1 << 3)
-)
-
-type LandingPageContentSeo struct {
-	Description *string `json:"description,omitempty" url:"description,omitempty"`
-	// Browser tab icon for the published page. Leave empty to fall back to the company logo.
-	FaviconURL *string `json:"faviconUrl,omitempty" url:"faviconUrl,omitempty"`
-	// Adds a noindex, nofollow tag so crawlers keep the page out of search results. The page stays reachable by direct link.
-	HideFromSearchEngines *bool   `json:"hideFromSearchEngines,omitempty" url:"hideFromSearchEngines,omitempty"`
-	Title                 *string `json:"title,omitempty" url:"title,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	ExtraProperties map[string]interface{} `json:"-" url:"-"`
-
-	rawJSON json.RawMessage
-}
-
-func (l *LandingPageContentSeo) GetDescription() *string {
-	if l == nil {
-		return nil
-	}
-	return l.Description
-}
-
-func (l *LandingPageContentSeo) GetFaviconURL() *string {
-	if l == nil {
-		return nil
-	}
-	return l.FaviconURL
-}
-
-func (l *LandingPageContentSeo) GetHideFromSearchEngines() *bool {
-	if l == nil {
-		return nil
-	}
-	return l.HideFromSearchEngines
-}
-
-func (l *LandingPageContentSeo) GetTitle() *string {
-	if l == nil {
-		return nil
-	}
-	return l.Title
-}
-
-func (l *LandingPageContentSeo) GetExtraProperties() map[string]interface{} {
-	if l == nil {
-		return nil
-	}
-	return l.ExtraProperties
-}
-
-func (l *LandingPageContentSeo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
-	}
-	l.explicitFields.Or(l.explicitFields, field)
-}
-
-// SetDescription sets the Description field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LandingPageContentSeo) SetDescription(description *string) {
-	l.Description = description
-	l.require(landingPageContentSeoFieldDescription)
-}
-
-// SetFaviconURL sets the FaviconURL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LandingPageContentSeo) SetFaviconURL(faviconURL *string) {
-	l.FaviconURL = faviconURL
-	l.require(landingPageContentSeoFieldFaviconURL)
-}
-
-// SetHideFromSearchEngines sets the HideFromSearchEngines field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LandingPageContentSeo) SetHideFromSearchEngines(hideFromSearchEngines *bool) {
-	l.HideFromSearchEngines = hideFromSearchEngines
-	l.require(landingPageContentSeoFieldHideFromSearchEngines)
-}
-
-// SetTitle sets the Title field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LandingPageContentSeo) SetTitle(title *string) {
-	l.Title = title
-	l.require(landingPageContentSeoFieldTitle)
-}
-
-func (l *LandingPageContentSeo) UnmarshalJSON(data []byte) error {
-	type embed LandingPageContentSeo
-	var unmarshaler = struct {
-		embed
-	}{
-		embed: embed(*l),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	*l = LandingPageContentSeo(unmarshaler.embed)
-	extraProperties, err := internal.ExtractExtraProperties(data, *l)
-	if err != nil {
-		return err
-	}
-	l.ExtraProperties = extraProperties
-	l.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (l *LandingPageContentSeo) MarshalJSON() ([]byte, error) {
-	type embed LandingPageContentSeo
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*l),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
-	return internal.MarshalJSONWithExtraProperties(explicitMarshaler, l.ExtraProperties)
-}
-
-func (l *LandingPageContentSeo) String() string {
-	if l == nil {
-		return "<nil>"
-	}
-	if len(l.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(l); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", l)
-}
-
-// Page-wide design settings.
-var (
-	landingPageContentThemeFieldSectionAnimation      = big.NewInt(1 << 0)
-	landingPageContentThemeFieldSectionAnimationSpeed = big.NewInt(1 << 1)
-)
-
-type LandingPageContentTheme struct {
-	// Scroll reveal each section plays as it enters the viewport on the published page. Skipped for visitors who prefer reduced motion.
-	SectionAnimation *LandingPageContentThemeSectionAnimation `json:"sectionAnimation,omitempty" url:"sectionAnimation,omitempty"`
-	// How quickly the scroll reveal settles.
-	SectionAnimationSpeed *LandingPageContentThemeSectionAnimationSpeed `json:"sectionAnimationSpeed,omitempty" url:"sectionAnimationSpeed,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	ExtraProperties map[string]interface{} `json:"-" url:"-"`
-
-	rawJSON json.RawMessage
-}
-
-func (l *LandingPageContentTheme) GetSectionAnimation() *LandingPageContentThemeSectionAnimation {
-	if l == nil {
-		return nil
-	}
-	return l.SectionAnimation
-}
-
-func (l *LandingPageContentTheme) GetSectionAnimationSpeed() *LandingPageContentThemeSectionAnimationSpeed {
-	if l == nil {
-		return nil
-	}
-	return l.SectionAnimationSpeed
-}
-
-func (l *LandingPageContentTheme) GetExtraProperties() map[string]interface{} {
-	if l == nil {
-		return nil
-	}
-	return l.ExtraProperties
-}
-
-func (l *LandingPageContentTheme) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
-	}
-	l.explicitFields.Or(l.explicitFields, field)
-}
-
-// SetSectionAnimation sets the SectionAnimation field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LandingPageContentTheme) SetSectionAnimation(sectionAnimation *LandingPageContentThemeSectionAnimation) {
-	l.SectionAnimation = sectionAnimation
-	l.require(landingPageContentThemeFieldSectionAnimation)
-}
-
-// SetSectionAnimationSpeed sets the SectionAnimationSpeed field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LandingPageContentTheme) SetSectionAnimationSpeed(sectionAnimationSpeed *LandingPageContentThemeSectionAnimationSpeed) {
-	l.SectionAnimationSpeed = sectionAnimationSpeed
-	l.require(landingPageContentThemeFieldSectionAnimationSpeed)
-}
-
-func (l *LandingPageContentTheme) UnmarshalJSON(data []byte) error {
-	type embed LandingPageContentTheme
-	var unmarshaler = struct {
-		embed
-	}{
-		embed: embed(*l),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	*l = LandingPageContentTheme(unmarshaler.embed)
-	extraProperties, err := internal.ExtractExtraProperties(data, *l)
-	if err != nil {
-		return err
-	}
-	l.ExtraProperties = extraProperties
-	l.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (l *LandingPageContentTheme) MarshalJSON() ([]byte, error) {
-	type embed LandingPageContentTheme
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*l),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
-	return internal.MarshalJSONWithExtraProperties(explicitMarshaler, l.ExtraProperties)
-}
-
-func (l *LandingPageContentTheme) String() string {
-	if l == nil {
-		return "<nil>"
-	}
-	if len(l.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(l); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", l)
-}
-
-// Scroll reveal each section plays as it enters the viewport on the published page. Skipped for visitors who prefer reduced motion.
-type LandingPageContentThemeSectionAnimation string
+type LandingPageContentTemplate string
 
 const (
-	LandingPageContentThemeSectionAnimationNone    LandingPageContentThemeSectionAnimation = "none"
-	LandingPageContentThemeSectionAnimationFade    LandingPageContentThemeSectionAnimation = "fade"
-	LandingPageContentThemeSectionAnimationSlideUp LandingPageContentThemeSectionAnimation = "slide-up"
-	LandingPageContentThemeSectionAnimationZoomIn  LandingPageContentThemeSectionAnimation = "zoom-in"
+	LandingPageContentTemplateFromScratch         LandingPageContentTemplate = "from-scratch"
+	LandingPageContentTemplateWaitlist            LandingPageContentTemplate = "waitlist"
+	LandingPageContentTemplateLeadMagnet          LandingPageContentTemplate = "lead-magnet"
+	LandingPageContentTemplateLaunch              LandingPageContentTemplate = "launch"
+	LandingPageContentTemplateDemoRequest         LandingPageContentTemplate = "demo-request"
+	LandingPageContentTemplateWebinar             LandingPageContentTemplate = "webinar"
+	LandingPageContentTemplateNewsletter          LandingPageContentTemplate = "newsletter"
+	LandingPageContentTemplateProductHunt         LandingPageContentTemplate = "product-hunt"
+	LandingPageContentTemplatePricingOffer        LandingPageContentTemplate = "pricing-offer"
+	LandingPageContentTemplateAgencyLeadGen       LandingPageContentTemplate = "agency-lead-gen"
+	LandingPageContentTemplateFeatureAnnouncement LandingPageContentTemplate = "feature-announcement"
 )
 
-func NewLandingPageContentThemeSectionAnimationFromString(s string) (LandingPageContentThemeSectionAnimation, error) {
+func NewLandingPageContentTemplateFromString(s string) (LandingPageContentTemplate, error) {
 	switch s {
-	case "none":
-		return LandingPageContentThemeSectionAnimationNone, nil
-	case "fade":
-		return LandingPageContentThemeSectionAnimationFade, nil
-	case "slide-up":
-		return LandingPageContentThemeSectionAnimationSlideUp, nil
-	case "zoom-in":
-		return LandingPageContentThemeSectionAnimationZoomIn, nil
+	case "from-scratch":
+		return LandingPageContentTemplateFromScratch, nil
+	case "waitlist":
+		return LandingPageContentTemplateWaitlist, nil
+	case "lead-magnet":
+		return LandingPageContentTemplateLeadMagnet, nil
+	case "launch":
+		return LandingPageContentTemplateLaunch, nil
+	case "demo-request":
+		return LandingPageContentTemplateDemoRequest, nil
+	case "webinar":
+		return LandingPageContentTemplateWebinar, nil
+	case "newsletter":
+		return LandingPageContentTemplateNewsletter, nil
+	case "product-hunt":
+		return LandingPageContentTemplateProductHunt, nil
+	case "pricing-offer":
+		return LandingPageContentTemplatePricingOffer, nil
+	case "agency-lead-gen":
+		return LandingPageContentTemplateAgencyLeadGen, nil
+	case "feature-announcement":
+		return LandingPageContentTemplateFeatureAnnouncement, nil
 	}
-	var t LandingPageContentThemeSectionAnimation
+	var t LandingPageContentTemplate
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (l LandingPageContentThemeSectionAnimation) Ptr() *LandingPageContentThemeSectionAnimation {
+func (l LandingPageContentTemplate) Ptr() *LandingPageContentTemplate {
 	return &l
 }
 
-// How quickly the scroll reveal settles.
-type LandingPageContentThemeSectionAnimationSpeed string
-
-const (
-	LandingPageContentThemeSectionAnimationSpeedSlow   LandingPageContentThemeSectionAnimationSpeed = "slow"
-	LandingPageContentThemeSectionAnimationSpeedNormal LandingPageContentThemeSectionAnimationSpeed = "normal"
-	LandingPageContentThemeSectionAnimationSpeedFast   LandingPageContentThemeSectionAnimationSpeed = "fast"
+var (
+	landingPageCustomHTMLBlockFieldID             = big.NewInt(1 << 0)
+	landingPageCustomHTMLBlockFieldSectionAlign   = big.NewInt(1 << 1)
+	landingPageCustomHTMLBlockFieldSectionID      = big.NewInt(1 << 2)
+	landingPageCustomHTMLBlockFieldSectionKind    = big.NewInt(1 << 3)
+	landingPageCustomHTMLBlockFieldSectionLabel   = big.NewInt(1 << 4)
+	landingPageCustomHTMLBlockFieldSectionLayout  = big.NewInt(1 << 5)
+	landingPageCustomHTMLBlockFieldSectionVariant = big.NewInt(1 << 6)
+	landingPageCustomHTMLBlockFieldHeight         = big.NewInt(1 << 7)
+	landingPageCustomHTMLBlockFieldHTML           = big.NewInt(1 << 8)
+	landingPageCustomHTMLBlockFieldSlot           = big.NewInt(1 << 9)
 )
 
-func NewLandingPageContentThemeSectionAnimationSpeedFromString(s string) (LandingPageContentThemeSectionAnimationSpeed, error) {
-	switch s {
-	case "slow":
-		return LandingPageContentThemeSectionAnimationSpeedSlow, nil
-	case "normal":
-		return LandingPageContentThemeSectionAnimationSpeedNormal, nil
-	case "fast":
-		return LandingPageContentThemeSectionAnimationSpeedFast, nil
+type LandingPageCustomHTMLBlock struct {
+	ID             string                             `json:"id" url:"id"`
+	SectionAlign   *LandingPageBlockBaseSectionAlign  `json:"sectionAlign,omitempty" url:"sectionAlign,omitempty"`
+	SectionID      *string                            `json:"sectionId,omitempty" url:"sectionId,omitempty"`
+	SectionKind    *string                            `json:"sectionKind,omitempty" url:"sectionKind,omitempty"`
+	SectionLabel   *string                            `json:"sectionLabel,omitempty" url:"sectionLabel,omitempty"`
+	SectionLayout  *LandingPageBlockBaseSectionLayout `json:"sectionLayout,omitempty" url:"sectionLayout,omitempty"`
+	SectionVariant *string                            `json:"sectionVariant,omitempty" url:"sectionVariant,omitempty"`
+	Height         *int                               `json:"height,omitempty" url:"height,omitempty"`
+	HTML           *string                            `json:"html,omitempty" url:"html,omitempty"`
+	Slot           LandingPageCustomHTMLBlockSlot     `json:"slot" url:"slot"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LandingPageCustomHTMLBlock) GetID() string {
+	if l == nil {
+		return ""
 	}
-	var t LandingPageContentThemeSectionAnimationSpeed
+	return l.ID
+}
+
+func (l *LandingPageCustomHTMLBlock) GetSectionAlign() *LandingPageBlockBaseSectionAlign {
+	if l == nil {
+		return nil
+	}
+	return l.SectionAlign
+}
+
+func (l *LandingPageCustomHTMLBlock) GetSectionID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionID
+}
+
+func (l *LandingPageCustomHTMLBlock) GetSectionKind() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionKind
+}
+
+func (l *LandingPageCustomHTMLBlock) GetSectionLabel() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionLabel
+}
+
+func (l *LandingPageCustomHTMLBlock) GetSectionLayout() *LandingPageBlockBaseSectionLayout {
+	if l == nil {
+		return nil
+	}
+	return l.SectionLayout
+}
+
+func (l *LandingPageCustomHTMLBlock) GetSectionVariant() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionVariant
+}
+
+func (l *LandingPageCustomHTMLBlock) GetHeight() *int {
+	if l == nil {
+		return nil
+	}
+	return l.Height
+}
+
+func (l *LandingPageCustomHTMLBlock) GetHTML() *string {
+	if l == nil {
+		return nil
+	}
+	return l.HTML
+}
+
+func (l *LandingPageCustomHTMLBlock) GetSlot() LandingPageCustomHTMLBlockSlot {
+	if l == nil {
+		return ""
+	}
+	return l.Slot
+}
+
+func (l *LandingPageCustomHTMLBlock) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LandingPageCustomHTMLBlock) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageCustomHTMLBlock) SetID(id string) {
+	l.ID = id
+	l.require(landingPageCustomHTMLBlockFieldID)
+}
+
+// SetSectionAlign sets the SectionAlign field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageCustomHTMLBlock) SetSectionAlign(sectionAlign *LandingPageBlockBaseSectionAlign) {
+	l.SectionAlign = sectionAlign
+	l.require(landingPageCustomHTMLBlockFieldSectionAlign)
+}
+
+// SetSectionID sets the SectionID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageCustomHTMLBlock) SetSectionID(sectionID *string) {
+	l.SectionID = sectionID
+	l.require(landingPageCustomHTMLBlockFieldSectionID)
+}
+
+// SetSectionKind sets the SectionKind field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageCustomHTMLBlock) SetSectionKind(sectionKind *string) {
+	l.SectionKind = sectionKind
+	l.require(landingPageCustomHTMLBlockFieldSectionKind)
+}
+
+// SetSectionLabel sets the SectionLabel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageCustomHTMLBlock) SetSectionLabel(sectionLabel *string) {
+	l.SectionLabel = sectionLabel
+	l.require(landingPageCustomHTMLBlockFieldSectionLabel)
+}
+
+// SetSectionLayout sets the SectionLayout field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageCustomHTMLBlock) SetSectionLayout(sectionLayout *LandingPageBlockBaseSectionLayout) {
+	l.SectionLayout = sectionLayout
+	l.require(landingPageCustomHTMLBlockFieldSectionLayout)
+}
+
+// SetSectionVariant sets the SectionVariant field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageCustomHTMLBlock) SetSectionVariant(sectionVariant *string) {
+	l.SectionVariant = sectionVariant
+	l.require(landingPageCustomHTMLBlockFieldSectionVariant)
+}
+
+// SetHeight sets the Height field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageCustomHTMLBlock) SetHeight(height *int) {
+	l.Height = height
+	l.require(landingPageCustomHTMLBlockFieldHeight)
+}
+
+// SetHTML sets the HTML field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageCustomHTMLBlock) SetHTML(html *string) {
+	l.HTML = html
+	l.require(landingPageCustomHTMLBlockFieldHTML)
+}
+
+// SetSlot sets the Slot field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageCustomHTMLBlock) SetSlot(slot LandingPageCustomHTMLBlockSlot) {
+	l.Slot = slot
+	l.require(landingPageCustomHTMLBlockFieldSlot)
+}
+
+func (l *LandingPageCustomHTMLBlock) UnmarshalJSON(data []byte) error {
+	type unmarshaler LandingPageCustomHTMLBlock
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LandingPageCustomHTMLBlock(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LandingPageCustomHTMLBlock) MarshalJSON() ([]byte, error) {
+	type embed LandingPageCustomHTMLBlock
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LandingPageCustomHTMLBlock) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type LandingPageCustomHTMLBlockSlot string
+
+const (
+	LandingPageCustomHTMLBlockSlotTop    LandingPageCustomHTMLBlockSlot = "top"
+	LandingPageCustomHTMLBlockSlotHero   LandingPageCustomHTMLBlockSlot = "hero"
+	LandingPageCustomHTMLBlockSlotForm   LandingPageCustomHTMLBlockSlot = "form"
+	LandingPageCustomHTMLBlockSlotBody   LandingPageCustomHTMLBlockSlot = "body"
+	LandingPageCustomHTMLBlockSlotFooter LandingPageCustomHTMLBlockSlot = "footer"
+)
+
+func NewLandingPageCustomHTMLBlockSlotFromString(s string) (LandingPageCustomHTMLBlockSlot, error) {
+	switch s {
+	case "top":
+		return LandingPageCustomHTMLBlockSlotTop, nil
+	case "hero":
+		return LandingPageCustomHTMLBlockSlotHero, nil
+	case "form":
+		return LandingPageCustomHTMLBlockSlotForm, nil
+	case "body":
+		return LandingPageCustomHTMLBlockSlotBody, nil
+	case "footer":
+		return LandingPageCustomHTMLBlockSlotFooter, nil
+	}
+	var t LandingPageCustomHTMLBlockSlot
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (l LandingPageContentThemeSectionAnimationSpeed) Ptr() *LandingPageContentThemeSectionAnimationSpeed {
+func (l LandingPageCustomHTMLBlockSlot) Ptr() *LandingPageCustomHTMLBlockSlot {
+	return &l
+}
+
+var (
+	landingPageDividerBlockFieldID             = big.NewInt(1 << 0)
+	landingPageDividerBlockFieldSectionAlign   = big.NewInt(1 << 1)
+	landingPageDividerBlockFieldSectionID      = big.NewInt(1 << 2)
+	landingPageDividerBlockFieldSectionKind    = big.NewInt(1 << 3)
+	landingPageDividerBlockFieldSectionLabel   = big.NewInt(1 << 4)
+	landingPageDividerBlockFieldSectionLayout  = big.NewInt(1 << 5)
+	landingPageDividerBlockFieldSectionVariant = big.NewInt(1 << 6)
+	landingPageDividerBlockFieldSlot           = big.NewInt(1 << 7)
+)
+
+type LandingPageDividerBlock struct {
+	ID             string                             `json:"id" url:"id"`
+	SectionAlign   *LandingPageBlockBaseSectionAlign  `json:"sectionAlign,omitempty" url:"sectionAlign,omitempty"`
+	SectionID      *string                            `json:"sectionId,omitempty" url:"sectionId,omitempty"`
+	SectionKind    *string                            `json:"sectionKind,omitempty" url:"sectionKind,omitempty"`
+	SectionLabel   *string                            `json:"sectionLabel,omitempty" url:"sectionLabel,omitempty"`
+	SectionLayout  *LandingPageBlockBaseSectionLayout `json:"sectionLayout,omitempty" url:"sectionLayout,omitempty"`
+	SectionVariant *string                            `json:"sectionVariant,omitempty" url:"sectionVariant,omitempty"`
+	Slot           LandingPageDividerBlockSlot        `json:"slot" url:"slot"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LandingPageDividerBlock) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LandingPageDividerBlock) GetSectionAlign() *LandingPageBlockBaseSectionAlign {
+	if l == nil {
+		return nil
+	}
+	return l.SectionAlign
+}
+
+func (l *LandingPageDividerBlock) GetSectionID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionID
+}
+
+func (l *LandingPageDividerBlock) GetSectionKind() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionKind
+}
+
+func (l *LandingPageDividerBlock) GetSectionLabel() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionLabel
+}
+
+func (l *LandingPageDividerBlock) GetSectionLayout() *LandingPageBlockBaseSectionLayout {
+	if l == nil {
+		return nil
+	}
+	return l.SectionLayout
+}
+
+func (l *LandingPageDividerBlock) GetSectionVariant() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionVariant
+}
+
+func (l *LandingPageDividerBlock) GetSlot() LandingPageDividerBlockSlot {
+	if l == nil {
+		return ""
+	}
+	return l.Slot
+}
+
+func (l *LandingPageDividerBlock) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LandingPageDividerBlock) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageDividerBlock) SetID(id string) {
+	l.ID = id
+	l.require(landingPageDividerBlockFieldID)
+}
+
+// SetSectionAlign sets the SectionAlign field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageDividerBlock) SetSectionAlign(sectionAlign *LandingPageBlockBaseSectionAlign) {
+	l.SectionAlign = sectionAlign
+	l.require(landingPageDividerBlockFieldSectionAlign)
+}
+
+// SetSectionID sets the SectionID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageDividerBlock) SetSectionID(sectionID *string) {
+	l.SectionID = sectionID
+	l.require(landingPageDividerBlockFieldSectionID)
+}
+
+// SetSectionKind sets the SectionKind field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageDividerBlock) SetSectionKind(sectionKind *string) {
+	l.SectionKind = sectionKind
+	l.require(landingPageDividerBlockFieldSectionKind)
+}
+
+// SetSectionLabel sets the SectionLabel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageDividerBlock) SetSectionLabel(sectionLabel *string) {
+	l.SectionLabel = sectionLabel
+	l.require(landingPageDividerBlockFieldSectionLabel)
+}
+
+// SetSectionLayout sets the SectionLayout field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageDividerBlock) SetSectionLayout(sectionLayout *LandingPageBlockBaseSectionLayout) {
+	l.SectionLayout = sectionLayout
+	l.require(landingPageDividerBlockFieldSectionLayout)
+}
+
+// SetSectionVariant sets the SectionVariant field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageDividerBlock) SetSectionVariant(sectionVariant *string) {
+	l.SectionVariant = sectionVariant
+	l.require(landingPageDividerBlockFieldSectionVariant)
+}
+
+// SetSlot sets the Slot field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageDividerBlock) SetSlot(slot LandingPageDividerBlockSlot) {
+	l.Slot = slot
+	l.require(landingPageDividerBlockFieldSlot)
+}
+
+func (l *LandingPageDividerBlock) UnmarshalJSON(data []byte) error {
+	type unmarshaler LandingPageDividerBlock
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LandingPageDividerBlock(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LandingPageDividerBlock) MarshalJSON() ([]byte, error) {
+	type embed LandingPageDividerBlock
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LandingPageDividerBlock) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type LandingPageDividerBlockSlot string
+
+const (
+	LandingPageDividerBlockSlotTop    LandingPageDividerBlockSlot = "top"
+	LandingPageDividerBlockSlotHero   LandingPageDividerBlockSlot = "hero"
+	LandingPageDividerBlockSlotForm   LandingPageDividerBlockSlot = "form"
+	LandingPageDividerBlockSlotBody   LandingPageDividerBlockSlot = "body"
+	LandingPageDividerBlockSlotFooter LandingPageDividerBlockSlot = "footer"
+)
+
+func NewLandingPageDividerBlockSlotFromString(s string) (LandingPageDividerBlockSlot, error) {
+	switch s {
+	case "top":
+		return LandingPageDividerBlockSlotTop, nil
+	case "hero":
+		return LandingPageDividerBlockSlotHero, nil
+	case "form":
+		return LandingPageDividerBlockSlotForm, nil
+	case "body":
+		return LandingPageDividerBlockSlotBody, nil
+	case "footer":
+		return LandingPageDividerBlockSlotFooter, nil
+	}
+	var t LandingPageDividerBlockSlot
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageDividerBlockSlot) Ptr() *LandingPageDividerBlockSlot {
 	return &l
 }
 
@@ -1373,6 +2669,5235 @@ func NewLandingPageDomainDomainScopeFromString(s string) (LandingPageDomainDomai
 }
 
 func (l LandingPageDomainDomainScope) Ptr() *LandingPageDomainDomainScope {
+	return &l
+}
+
+var (
+	landingPageFaqBlockFieldID             = big.NewInt(1 << 0)
+	landingPageFaqBlockFieldSectionAlign   = big.NewInt(1 << 1)
+	landingPageFaqBlockFieldSectionID      = big.NewInt(1 << 2)
+	landingPageFaqBlockFieldSectionKind    = big.NewInt(1 << 3)
+	landingPageFaqBlockFieldSectionLabel   = big.NewInt(1 << 4)
+	landingPageFaqBlockFieldSectionLayout  = big.NewInt(1 << 5)
+	landingPageFaqBlockFieldSectionVariant = big.NewInt(1 << 6)
+	landingPageFaqBlockFieldAlign          = big.NewInt(1 << 7)
+	landingPageFaqBlockFieldHeading        = big.NewInt(1 << 8)
+	landingPageFaqBlockFieldItems          = big.NewInt(1 << 9)
+	landingPageFaqBlockFieldSlot           = big.NewInt(1 << 10)
+)
+
+type LandingPageFaqBlock struct {
+	ID             string                             `json:"id" url:"id"`
+	SectionAlign   *LandingPageBlockBaseSectionAlign  `json:"sectionAlign,omitempty" url:"sectionAlign,omitempty"`
+	SectionID      *string                            `json:"sectionId,omitempty" url:"sectionId,omitempty"`
+	SectionKind    *string                            `json:"sectionKind,omitempty" url:"sectionKind,omitempty"`
+	SectionLabel   *string                            `json:"sectionLabel,omitempty" url:"sectionLabel,omitempty"`
+	SectionLayout  *LandingPageBlockBaseSectionLayout `json:"sectionLayout,omitempty" url:"sectionLayout,omitempty"`
+	SectionVariant *string                            `json:"sectionVariant,omitempty" url:"sectionVariant,omitempty"`
+	Align          *LandingPageFaqBlockAlign          `json:"align,omitempty" url:"align,omitempty"`
+	Heading        *string                            `json:"heading,omitempty" url:"heading,omitempty"`
+	Items          []*LandingPageFaqItem              `json:"items" url:"items"`
+	Slot           LandingPageFaqBlockSlot            `json:"slot" url:"slot"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LandingPageFaqBlock) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LandingPageFaqBlock) GetSectionAlign() *LandingPageBlockBaseSectionAlign {
+	if l == nil {
+		return nil
+	}
+	return l.SectionAlign
+}
+
+func (l *LandingPageFaqBlock) GetSectionID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionID
+}
+
+func (l *LandingPageFaqBlock) GetSectionKind() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionKind
+}
+
+func (l *LandingPageFaqBlock) GetSectionLabel() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionLabel
+}
+
+func (l *LandingPageFaqBlock) GetSectionLayout() *LandingPageBlockBaseSectionLayout {
+	if l == nil {
+		return nil
+	}
+	return l.SectionLayout
+}
+
+func (l *LandingPageFaqBlock) GetSectionVariant() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionVariant
+}
+
+func (l *LandingPageFaqBlock) GetAlign() *LandingPageFaqBlockAlign {
+	if l == nil {
+		return nil
+	}
+	return l.Align
+}
+
+func (l *LandingPageFaqBlock) GetHeading() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Heading
+}
+
+func (l *LandingPageFaqBlock) GetItems() []*LandingPageFaqItem {
+	if l == nil {
+		return nil
+	}
+	return l.Items
+}
+
+func (l *LandingPageFaqBlock) GetSlot() LandingPageFaqBlockSlot {
+	if l == nil {
+		return ""
+	}
+	return l.Slot
+}
+
+func (l *LandingPageFaqBlock) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LandingPageFaqBlock) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFaqBlock) SetID(id string) {
+	l.ID = id
+	l.require(landingPageFaqBlockFieldID)
+}
+
+// SetSectionAlign sets the SectionAlign field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFaqBlock) SetSectionAlign(sectionAlign *LandingPageBlockBaseSectionAlign) {
+	l.SectionAlign = sectionAlign
+	l.require(landingPageFaqBlockFieldSectionAlign)
+}
+
+// SetSectionID sets the SectionID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFaqBlock) SetSectionID(sectionID *string) {
+	l.SectionID = sectionID
+	l.require(landingPageFaqBlockFieldSectionID)
+}
+
+// SetSectionKind sets the SectionKind field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFaqBlock) SetSectionKind(sectionKind *string) {
+	l.SectionKind = sectionKind
+	l.require(landingPageFaqBlockFieldSectionKind)
+}
+
+// SetSectionLabel sets the SectionLabel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFaqBlock) SetSectionLabel(sectionLabel *string) {
+	l.SectionLabel = sectionLabel
+	l.require(landingPageFaqBlockFieldSectionLabel)
+}
+
+// SetSectionLayout sets the SectionLayout field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFaqBlock) SetSectionLayout(sectionLayout *LandingPageBlockBaseSectionLayout) {
+	l.SectionLayout = sectionLayout
+	l.require(landingPageFaqBlockFieldSectionLayout)
+}
+
+// SetSectionVariant sets the SectionVariant field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFaqBlock) SetSectionVariant(sectionVariant *string) {
+	l.SectionVariant = sectionVariant
+	l.require(landingPageFaqBlockFieldSectionVariant)
+}
+
+// SetAlign sets the Align field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFaqBlock) SetAlign(align *LandingPageFaqBlockAlign) {
+	l.Align = align
+	l.require(landingPageFaqBlockFieldAlign)
+}
+
+// SetHeading sets the Heading field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFaqBlock) SetHeading(heading *string) {
+	l.Heading = heading
+	l.require(landingPageFaqBlockFieldHeading)
+}
+
+// SetItems sets the Items field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFaqBlock) SetItems(items []*LandingPageFaqItem) {
+	l.Items = items
+	l.require(landingPageFaqBlockFieldItems)
+}
+
+// SetSlot sets the Slot field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFaqBlock) SetSlot(slot LandingPageFaqBlockSlot) {
+	l.Slot = slot
+	l.require(landingPageFaqBlockFieldSlot)
+}
+
+func (l *LandingPageFaqBlock) UnmarshalJSON(data []byte) error {
+	type unmarshaler LandingPageFaqBlock
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LandingPageFaqBlock(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LandingPageFaqBlock) MarshalJSON() ([]byte, error) {
+	type embed LandingPageFaqBlock
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LandingPageFaqBlock) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type LandingPageFaqBlockAlign string
+
+const (
+	LandingPageFaqBlockAlignLeft   LandingPageFaqBlockAlign = "left"
+	LandingPageFaqBlockAlignCenter LandingPageFaqBlockAlign = "center"
+	LandingPageFaqBlockAlignRight  LandingPageFaqBlockAlign = "right"
+)
+
+func NewLandingPageFaqBlockAlignFromString(s string) (LandingPageFaqBlockAlign, error) {
+	switch s {
+	case "left":
+		return LandingPageFaqBlockAlignLeft, nil
+	case "center":
+		return LandingPageFaqBlockAlignCenter, nil
+	case "right":
+		return LandingPageFaqBlockAlignRight, nil
+	}
+	var t LandingPageFaqBlockAlign
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageFaqBlockAlign) Ptr() *LandingPageFaqBlockAlign {
+	return &l
+}
+
+type LandingPageFaqBlockSlot string
+
+const (
+	LandingPageFaqBlockSlotTop    LandingPageFaqBlockSlot = "top"
+	LandingPageFaqBlockSlotHero   LandingPageFaqBlockSlot = "hero"
+	LandingPageFaqBlockSlotForm   LandingPageFaqBlockSlot = "form"
+	LandingPageFaqBlockSlotBody   LandingPageFaqBlockSlot = "body"
+	LandingPageFaqBlockSlotFooter LandingPageFaqBlockSlot = "footer"
+)
+
+func NewLandingPageFaqBlockSlotFromString(s string) (LandingPageFaqBlockSlot, error) {
+	switch s {
+	case "top":
+		return LandingPageFaqBlockSlotTop, nil
+	case "hero":
+		return LandingPageFaqBlockSlotHero, nil
+	case "form":
+		return LandingPageFaqBlockSlotForm, nil
+	case "body":
+		return LandingPageFaqBlockSlotBody, nil
+	case "footer":
+		return LandingPageFaqBlockSlotFooter, nil
+	}
+	var t LandingPageFaqBlockSlot
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageFaqBlockSlot) Ptr() *LandingPageFaqBlockSlot {
+	return &l
+}
+
+var (
+	landingPageFaqItemFieldAnswer   = big.NewInt(1 << 0)
+	landingPageFaqItemFieldQuestion = big.NewInt(1 << 1)
+)
+
+type LandingPageFaqItem struct {
+	Answer   string `json:"answer" url:"answer"`
+	Question string `json:"question" url:"question"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LandingPageFaqItem) GetAnswer() string {
+	if l == nil {
+		return ""
+	}
+	return l.Answer
+}
+
+func (l *LandingPageFaqItem) GetQuestion() string {
+	if l == nil {
+		return ""
+	}
+	return l.Question
+}
+
+func (l *LandingPageFaqItem) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LandingPageFaqItem) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetAnswer sets the Answer field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFaqItem) SetAnswer(answer string) {
+	l.Answer = answer
+	l.require(landingPageFaqItemFieldAnswer)
+}
+
+// SetQuestion sets the Question field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFaqItem) SetQuestion(question string) {
+	l.Question = question
+	l.require(landingPageFaqItemFieldQuestion)
+}
+
+func (l *LandingPageFaqItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler LandingPageFaqItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LandingPageFaqItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LandingPageFaqItem) MarshalJSON() ([]byte, error) {
+	type embed LandingPageFaqItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LandingPageFaqItem) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	landingPageFeatureFieldDescription = big.NewInt(1 << 0)
+	landingPageFeatureFieldTitle       = big.NewInt(1 << 1)
+)
+
+type LandingPageFeature struct {
+	Description string `json:"description" url:"description"`
+	Title       string `json:"title" url:"title"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LandingPageFeature) GetDescription() string {
+	if l == nil {
+		return ""
+	}
+	return l.Description
+}
+
+func (l *LandingPageFeature) GetTitle() string {
+	if l == nil {
+		return ""
+	}
+	return l.Title
+}
+
+func (l *LandingPageFeature) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LandingPageFeature) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetDescription sets the Description field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFeature) SetDescription(description string) {
+	l.Description = description
+	l.require(landingPageFeatureFieldDescription)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFeature) SetTitle(title string) {
+	l.Title = title
+	l.require(landingPageFeatureFieldTitle)
+}
+
+func (l *LandingPageFeature) UnmarshalJSON(data []byte) error {
+	type unmarshaler LandingPageFeature
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LandingPageFeature(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LandingPageFeature) MarshalJSON() ([]byte, error) {
+	type embed LandingPageFeature
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LandingPageFeature) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	landingPageFeatureGridBlockFieldID             = big.NewInt(1 << 0)
+	landingPageFeatureGridBlockFieldSectionAlign   = big.NewInt(1 << 1)
+	landingPageFeatureGridBlockFieldSectionID      = big.NewInt(1 << 2)
+	landingPageFeatureGridBlockFieldSectionKind    = big.NewInt(1 << 3)
+	landingPageFeatureGridBlockFieldSectionLabel   = big.NewInt(1 << 4)
+	landingPageFeatureGridBlockFieldSectionLayout  = big.NewInt(1 << 5)
+	landingPageFeatureGridBlockFieldSectionVariant = big.NewInt(1 << 6)
+	landingPageFeatureGridBlockFieldAlign          = big.NewInt(1 << 7)
+	landingPageFeatureGridBlockFieldColumns        = big.NewInt(1 << 8)
+	landingPageFeatureGridBlockFieldFeatures       = big.NewInt(1 << 9)
+	landingPageFeatureGridBlockFieldLayout         = big.NewInt(1 << 10)
+	landingPageFeatureGridBlockFieldSlot           = big.NewInt(1 << 11)
+)
+
+type LandingPageFeatureGridBlock struct {
+	ID             string                             `json:"id" url:"id"`
+	SectionAlign   *LandingPageBlockBaseSectionAlign  `json:"sectionAlign,omitempty" url:"sectionAlign,omitempty"`
+	SectionID      *string                            `json:"sectionId,omitempty" url:"sectionId,omitempty"`
+	SectionKind    *string                            `json:"sectionKind,omitempty" url:"sectionKind,omitempty"`
+	SectionLabel   *string                            `json:"sectionLabel,omitempty" url:"sectionLabel,omitempty"`
+	SectionLayout  *LandingPageBlockBaseSectionLayout `json:"sectionLayout,omitempty" url:"sectionLayout,omitempty"`
+	SectionVariant *string                            `json:"sectionVariant,omitempty" url:"sectionVariant,omitempty"`
+	Align          *LandingPageFeatureGridBlockAlign  `json:"align,omitempty" url:"align,omitempty"`
+	Columns        *int                               `json:"columns,omitempty" url:"columns,omitempty"`
+	Features       []*LandingPageFeature              `json:"features" url:"features"`
+	Layout         *LandingPageFeatureGridBlockLayout `json:"layout,omitempty" url:"layout,omitempty"`
+	Slot           LandingPageFeatureGridBlockSlot    `json:"slot" url:"slot"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LandingPageFeatureGridBlock) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LandingPageFeatureGridBlock) GetSectionAlign() *LandingPageBlockBaseSectionAlign {
+	if l == nil {
+		return nil
+	}
+	return l.SectionAlign
+}
+
+func (l *LandingPageFeatureGridBlock) GetSectionID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionID
+}
+
+func (l *LandingPageFeatureGridBlock) GetSectionKind() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionKind
+}
+
+func (l *LandingPageFeatureGridBlock) GetSectionLabel() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionLabel
+}
+
+func (l *LandingPageFeatureGridBlock) GetSectionLayout() *LandingPageBlockBaseSectionLayout {
+	if l == nil {
+		return nil
+	}
+	return l.SectionLayout
+}
+
+func (l *LandingPageFeatureGridBlock) GetSectionVariant() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionVariant
+}
+
+func (l *LandingPageFeatureGridBlock) GetAlign() *LandingPageFeatureGridBlockAlign {
+	if l == nil {
+		return nil
+	}
+	return l.Align
+}
+
+func (l *LandingPageFeatureGridBlock) GetColumns() *int {
+	if l == nil {
+		return nil
+	}
+	return l.Columns
+}
+
+func (l *LandingPageFeatureGridBlock) GetFeatures() []*LandingPageFeature {
+	if l == nil {
+		return nil
+	}
+	return l.Features
+}
+
+func (l *LandingPageFeatureGridBlock) GetLayout() *LandingPageFeatureGridBlockLayout {
+	if l == nil {
+		return nil
+	}
+	return l.Layout
+}
+
+func (l *LandingPageFeatureGridBlock) GetSlot() LandingPageFeatureGridBlockSlot {
+	if l == nil {
+		return ""
+	}
+	return l.Slot
+}
+
+func (l *LandingPageFeatureGridBlock) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LandingPageFeatureGridBlock) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFeatureGridBlock) SetID(id string) {
+	l.ID = id
+	l.require(landingPageFeatureGridBlockFieldID)
+}
+
+// SetSectionAlign sets the SectionAlign field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFeatureGridBlock) SetSectionAlign(sectionAlign *LandingPageBlockBaseSectionAlign) {
+	l.SectionAlign = sectionAlign
+	l.require(landingPageFeatureGridBlockFieldSectionAlign)
+}
+
+// SetSectionID sets the SectionID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFeatureGridBlock) SetSectionID(sectionID *string) {
+	l.SectionID = sectionID
+	l.require(landingPageFeatureGridBlockFieldSectionID)
+}
+
+// SetSectionKind sets the SectionKind field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFeatureGridBlock) SetSectionKind(sectionKind *string) {
+	l.SectionKind = sectionKind
+	l.require(landingPageFeatureGridBlockFieldSectionKind)
+}
+
+// SetSectionLabel sets the SectionLabel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFeatureGridBlock) SetSectionLabel(sectionLabel *string) {
+	l.SectionLabel = sectionLabel
+	l.require(landingPageFeatureGridBlockFieldSectionLabel)
+}
+
+// SetSectionLayout sets the SectionLayout field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFeatureGridBlock) SetSectionLayout(sectionLayout *LandingPageBlockBaseSectionLayout) {
+	l.SectionLayout = sectionLayout
+	l.require(landingPageFeatureGridBlockFieldSectionLayout)
+}
+
+// SetSectionVariant sets the SectionVariant field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFeatureGridBlock) SetSectionVariant(sectionVariant *string) {
+	l.SectionVariant = sectionVariant
+	l.require(landingPageFeatureGridBlockFieldSectionVariant)
+}
+
+// SetAlign sets the Align field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFeatureGridBlock) SetAlign(align *LandingPageFeatureGridBlockAlign) {
+	l.Align = align
+	l.require(landingPageFeatureGridBlockFieldAlign)
+}
+
+// SetColumns sets the Columns field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFeatureGridBlock) SetColumns(columns *int) {
+	l.Columns = columns
+	l.require(landingPageFeatureGridBlockFieldColumns)
+}
+
+// SetFeatures sets the Features field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFeatureGridBlock) SetFeatures(features []*LandingPageFeature) {
+	l.Features = features
+	l.require(landingPageFeatureGridBlockFieldFeatures)
+}
+
+// SetLayout sets the Layout field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFeatureGridBlock) SetLayout(layout *LandingPageFeatureGridBlockLayout) {
+	l.Layout = layout
+	l.require(landingPageFeatureGridBlockFieldLayout)
+}
+
+// SetSlot sets the Slot field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFeatureGridBlock) SetSlot(slot LandingPageFeatureGridBlockSlot) {
+	l.Slot = slot
+	l.require(landingPageFeatureGridBlockFieldSlot)
+}
+
+func (l *LandingPageFeatureGridBlock) UnmarshalJSON(data []byte) error {
+	type unmarshaler LandingPageFeatureGridBlock
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LandingPageFeatureGridBlock(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LandingPageFeatureGridBlock) MarshalJSON() ([]byte, error) {
+	type embed LandingPageFeatureGridBlock
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LandingPageFeatureGridBlock) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type LandingPageFeatureGridBlockAlign string
+
+const (
+	LandingPageFeatureGridBlockAlignLeft   LandingPageFeatureGridBlockAlign = "left"
+	LandingPageFeatureGridBlockAlignCenter LandingPageFeatureGridBlockAlign = "center"
+	LandingPageFeatureGridBlockAlignRight  LandingPageFeatureGridBlockAlign = "right"
+)
+
+func NewLandingPageFeatureGridBlockAlignFromString(s string) (LandingPageFeatureGridBlockAlign, error) {
+	switch s {
+	case "left":
+		return LandingPageFeatureGridBlockAlignLeft, nil
+	case "center":
+		return LandingPageFeatureGridBlockAlignCenter, nil
+	case "right":
+		return LandingPageFeatureGridBlockAlignRight, nil
+	}
+	var t LandingPageFeatureGridBlockAlign
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageFeatureGridBlockAlign) Ptr() *LandingPageFeatureGridBlockAlign {
+	return &l
+}
+
+type LandingPageFeatureGridBlockLayout string
+
+const (
+	LandingPageFeatureGridBlockLayoutRow    LandingPageFeatureGridBlockLayout = "row"
+	LandingPageFeatureGridBlockLayoutColumn LandingPageFeatureGridBlockLayout = "column"
+)
+
+func NewLandingPageFeatureGridBlockLayoutFromString(s string) (LandingPageFeatureGridBlockLayout, error) {
+	switch s {
+	case "row":
+		return LandingPageFeatureGridBlockLayoutRow, nil
+	case "column":
+		return LandingPageFeatureGridBlockLayoutColumn, nil
+	}
+	var t LandingPageFeatureGridBlockLayout
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageFeatureGridBlockLayout) Ptr() *LandingPageFeatureGridBlockLayout {
+	return &l
+}
+
+type LandingPageFeatureGridBlockSlot string
+
+const (
+	LandingPageFeatureGridBlockSlotTop    LandingPageFeatureGridBlockSlot = "top"
+	LandingPageFeatureGridBlockSlotHero   LandingPageFeatureGridBlockSlot = "hero"
+	LandingPageFeatureGridBlockSlotForm   LandingPageFeatureGridBlockSlot = "form"
+	LandingPageFeatureGridBlockSlotBody   LandingPageFeatureGridBlockSlot = "body"
+	LandingPageFeatureGridBlockSlotFooter LandingPageFeatureGridBlockSlot = "footer"
+)
+
+func NewLandingPageFeatureGridBlockSlotFromString(s string) (LandingPageFeatureGridBlockSlot, error) {
+	switch s {
+	case "top":
+		return LandingPageFeatureGridBlockSlotTop, nil
+	case "hero":
+		return LandingPageFeatureGridBlockSlotHero, nil
+	case "form":
+		return LandingPageFeatureGridBlockSlotForm, nil
+	case "body":
+		return LandingPageFeatureGridBlockSlotBody, nil
+	case "footer":
+		return LandingPageFeatureGridBlockSlotFooter, nil
+	}
+	var t LandingPageFeatureGridBlockSlot
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageFeatureGridBlockSlot) Ptr() *LandingPageFeatureGridBlockSlot {
+	return &l
+}
+
+var (
+	landingPageFooterBlockFieldID              = big.NewInt(1 << 0)
+	landingPageFooterBlockFieldSectionAlign    = big.NewInt(1 << 1)
+	landingPageFooterBlockFieldSectionID       = big.NewInt(1 << 2)
+	landingPageFooterBlockFieldSectionKind     = big.NewInt(1 << 3)
+	landingPageFooterBlockFieldSectionLabel    = big.NewInt(1 << 4)
+	landingPageFooterBlockFieldSectionLayout   = big.NewInt(1 << 5)
+	landingPageFooterBlockFieldSectionVariant  = big.NewInt(1 << 6)
+	landingPageFooterBlockFieldBrandText       = big.NewInt(1 << 7)
+	landingPageFooterBlockFieldPrivacyLabel    = big.NewInt(1 << 8)
+	landingPageFooterBlockFieldPrivacyURL      = big.NewInt(1 << 9)
+	landingPageFooterBlockFieldShowBrandText   = big.NewInt(1 << 10)
+	landingPageFooterBlockFieldShowPrivacyLink = big.NewInt(1 << 11)
+	landingPageFooterBlockFieldShowTermsLink   = big.NewInt(1 << 12)
+	landingPageFooterBlockFieldSlot            = big.NewInt(1 << 13)
+	landingPageFooterBlockFieldTermsLabel      = big.NewInt(1 << 14)
+	landingPageFooterBlockFieldTermsURL        = big.NewInt(1 << 15)
+)
+
+type LandingPageFooterBlock struct {
+	ID              string                             `json:"id" url:"id"`
+	SectionAlign    *LandingPageBlockBaseSectionAlign  `json:"sectionAlign,omitempty" url:"sectionAlign,omitempty"`
+	SectionID       *string                            `json:"sectionId,omitempty" url:"sectionId,omitempty"`
+	SectionKind     *string                            `json:"sectionKind,omitempty" url:"sectionKind,omitempty"`
+	SectionLabel    *string                            `json:"sectionLabel,omitempty" url:"sectionLabel,omitempty"`
+	SectionLayout   *LandingPageBlockBaseSectionLayout `json:"sectionLayout,omitempty" url:"sectionLayout,omitempty"`
+	SectionVariant  *string                            `json:"sectionVariant,omitempty" url:"sectionVariant,omitempty"`
+	BrandText       *string                            `json:"brandText,omitempty" url:"brandText,omitempty"`
+	PrivacyLabel    *string                            `json:"privacyLabel,omitempty" url:"privacyLabel,omitempty"`
+	PrivacyURL      *string                            `json:"privacyUrl,omitempty" url:"privacyUrl,omitempty"`
+	ShowBrandText   *bool                              `json:"showBrandText,omitempty" url:"showBrandText,omitempty"`
+	ShowPrivacyLink *bool                              `json:"showPrivacyLink,omitempty" url:"showPrivacyLink,omitempty"`
+	ShowTermsLink   *bool                              `json:"showTermsLink,omitempty" url:"showTermsLink,omitempty"`
+	Slot            LandingPageFooterBlockSlot         `json:"slot" url:"slot"`
+	TermsLabel      *string                            `json:"termsLabel,omitempty" url:"termsLabel,omitempty"`
+	TermsURL        *string                            `json:"termsUrl,omitempty" url:"termsUrl,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LandingPageFooterBlock) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LandingPageFooterBlock) GetSectionAlign() *LandingPageBlockBaseSectionAlign {
+	if l == nil {
+		return nil
+	}
+	return l.SectionAlign
+}
+
+func (l *LandingPageFooterBlock) GetSectionID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionID
+}
+
+func (l *LandingPageFooterBlock) GetSectionKind() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionKind
+}
+
+func (l *LandingPageFooterBlock) GetSectionLabel() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionLabel
+}
+
+func (l *LandingPageFooterBlock) GetSectionLayout() *LandingPageBlockBaseSectionLayout {
+	if l == nil {
+		return nil
+	}
+	return l.SectionLayout
+}
+
+func (l *LandingPageFooterBlock) GetSectionVariant() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionVariant
+}
+
+func (l *LandingPageFooterBlock) GetBrandText() *string {
+	if l == nil {
+		return nil
+	}
+	return l.BrandText
+}
+
+func (l *LandingPageFooterBlock) GetPrivacyLabel() *string {
+	if l == nil {
+		return nil
+	}
+	return l.PrivacyLabel
+}
+
+func (l *LandingPageFooterBlock) GetPrivacyURL() *string {
+	if l == nil {
+		return nil
+	}
+	return l.PrivacyURL
+}
+
+func (l *LandingPageFooterBlock) GetShowBrandText() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.ShowBrandText
+}
+
+func (l *LandingPageFooterBlock) GetShowPrivacyLink() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.ShowPrivacyLink
+}
+
+func (l *LandingPageFooterBlock) GetShowTermsLink() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.ShowTermsLink
+}
+
+func (l *LandingPageFooterBlock) GetSlot() LandingPageFooterBlockSlot {
+	if l == nil {
+		return ""
+	}
+	return l.Slot
+}
+
+func (l *LandingPageFooterBlock) GetTermsLabel() *string {
+	if l == nil {
+		return nil
+	}
+	return l.TermsLabel
+}
+
+func (l *LandingPageFooterBlock) GetTermsURL() *string {
+	if l == nil {
+		return nil
+	}
+	return l.TermsURL
+}
+
+func (l *LandingPageFooterBlock) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LandingPageFooterBlock) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFooterBlock) SetID(id string) {
+	l.ID = id
+	l.require(landingPageFooterBlockFieldID)
+}
+
+// SetSectionAlign sets the SectionAlign field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFooterBlock) SetSectionAlign(sectionAlign *LandingPageBlockBaseSectionAlign) {
+	l.SectionAlign = sectionAlign
+	l.require(landingPageFooterBlockFieldSectionAlign)
+}
+
+// SetSectionID sets the SectionID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFooterBlock) SetSectionID(sectionID *string) {
+	l.SectionID = sectionID
+	l.require(landingPageFooterBlockFieldSectionID)
+}
+
+// SetSectionKind sets the SectionKind field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFooterBlock) SetSectionKind(sectionKind *string) {
+	l.SectionKind = sectionKind
+	l.require(landingPageFooterBlockFieldSectionKind)
+}
+
+// SetSectionLabel sets the SectionLabel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFooterBlock) SetSectionLabel(sectionLabel *string) {
+	l.SectionLabel = sectionLabel
+	l.require(landingPageFooterBlockFieldSectionLabel)
+}
+
+// SetSectionLayout sets the SectionLayout field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFooterBlock) SetSectionLayout(sectionLayout *LandingPageBlockBaseSectionLayout) {
+	l.SectionLayout = sectionLayout
+	l.require(landingPageFooterBlockFieldSectionLayout)
+}
+
+// SetSectionVariant sets the SectionVariant field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFooterBlock) SetSectionVariant(sectionVariant *string) {
+	l.SectionVariant = sectionVariant
+	l.require(landingPageFooterBlockFieldSectionVariant)
+}
+
+// SetBrandText sets the BrandText field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFooterBlock) SetBrandText(brandText *string) {
+	l.BrandText = brandText
+	l.require(landingPageFooterBlockFieldBrandText)
+}
+
+// SetPrivacyLabel sets the PrivacyLabel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFooterBlock) SetPrivacyLabel(privacyLabel *string) {
+	l.PrivacyLabel = privacyLabel
+	l.require(landingPageFooterBlockFieldPrivacyLabel)
+}
+
+// SetPrivacyURL sets the PrivacyURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFooterBlock) SetPrivacyURL(privacyURL *string) {
+	l.PrivacyURL = privacyURL
+	l.require(landingPageFooterBlockFieldPrivacyURL)
+}
+
+// SetShowBrandText sets the ShowBrandText field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFooterBlock) SetShowBrandText(showBrandText *bool) {
+	l.ShowBrandText = showBrandText
+	l.require(landingPageFooterBlockFieldShowBrandText)
+}
+
+// SetShowPrivacyLink sets the ShowPrivacyLink field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFooterBlock) SetShowPrivacyLink(showPrivacyLink *bool) {
+	l.ShowPrivacyLink = showPrivacyLink
+	l.require(landingPageFooterBlockFieldShowPrivacyLink)
+}
+
+// SetShowTermsLink sets the ShowTermsLink field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFooterBlock) SetShowTermsLink(showTermsLink *bool) {
+	l.ShowTermsLink = showTermsLink
+	l.require(landingPageFooterBlockFieldShowTermsLink)
+}
+
+// SetSlot sets the Slot field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFooterBlock) SetSlot(slot LandingPageFooterBlockSlot) {
+	l.Slot = slot
+	l.require(landingPageFooterBlockFieldSlot)
+}
+
+// SetTermsLabel sets the TermsLabel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFooterBlock) SetTermsLabel(termsLabel *string) {
+	l.TermsLabel = termsLabel
+	l.require(landingPageFooterBlockFieldTermsLabel)
+}
+
+// SetTermsURL sets the TermsURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFooterBlock) SetTermsURL(termsURL *string) {
+	l.TermsURL = termsURL
+	l.require(landingPageFooterBlockFieldTermsURL)
+}
+
+func (l *LandingPageFooterBlock) UnmarshalJSON(data []byte) error {
+	type unmarshaler LandingPageFooterBlock
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LandingPageFooterBlock(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LandingPageFooterBlock) MarshalJSON() ([]byte, error) {
+	type embed LandingPageFooterBlock
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LandingPageFooterBlock) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type LandingPageFooterBlockSlot string
+
+const (
+	LandingPageFooterBlockSlotFooter LandingPageFooterBlockSlot = "footer"
+)
+
+func NewLandingPageFooterBlockSlotFromString(s string) (LandingPageFooterBlockSlot, error) {
+	switch s {
+	case "footer":
+		return LandingPageFooterBlockSlotFooter, nil
+	}
+	var t LandingPageFooterBlockSlot
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageFooterBlockSlot) Ptr() *LandingPageFooterBlockSlot {
+	return &l
+}
+
+var (
+	landingPageFormBlockFieldID             = big.NewInt(1 << 0)
+	landingPageFormBlockFieldSectionAlign   = big.NewInt(1 << 1)
+	landingPageFormBlockFieldSectionID      = big.NewInt(1 << 2)
+	landingPageFormBlockFieldSectionKind    = big.NewInt(1 << 3)
+	landingPageFormBlockFieldSectionLabel   = big.NewInt(1 << 4)
+	landingPageFormBlockFieldSectionLayout  = big.NewInt(1 << 5)
+	landingPageFormBlockFieldSectionVariant = big.NewInt(1 << 6)
+	landingPageFormBlockFieldCardTilt       = big.NewInt(1 << 7)
+	landingPageFormBlockFieldCardWidth      = big.NewInt(1 << 8)
+	landingPageFormBlockFieldDescription    = big.NewInt(1 << 9)
+	landingPageFormBlockFieldForm           = big.NewInt(1 << 10)
+	landingPageFormBlockFieldHeading        = big.NewInt(1 << 11)
+	landingPageFormBlockFieldSlot           = big.NewInt(1 << 12)
+)
+
+type LandingPageFormBlock struct {
+	ID             string                             `json:"id" url:"id"`
+	SectionAlign   *LandingPageBlockBaseSectionAlign  `json:"sectionAlign,omitempty" url:"sectionAlign,omitempty"`
+	SectionID      *string                            `json:"sectionId,omitempty" url:"sectionId,omitempty"`
+	SectionKind    *string                            `json:"sectionKind,omitempty" url:"sectionKind,omitempty"`
+	SectionLabel   *string                            `json:"sectionLabel,omitempty" url:"sectionLabel,omitempty"`
+	SectionLayout  *LandingPageBlockBaseSectionLayout `json:"sectionLayout,omitempty" url:"sectionLayout,omitempty"`
+	SectionVariant *string                            `json:"sectionVariant,omitempty" url:"sectionVariant,omitempty"`
+	CardTilt       *int                               `json:"cardTilt,omitempty" url:"cardTilt,omitempty"`
+	CardWidth      *LandingPageFormBlockCardWidth     `json:"cardWidth,omitempty" url:"cardWidth,omitempty"`
+	Description    *string                            `json:"description,omitempty" url:"description,omitempty"`
+	Form           *LandingPageFormConfig             `json:"form,omitempty" url:"form,omitempty"`
+	Heading        *string                            `json:"heading,omitempty" url:"heading,omitempty"`
+	Slot           LandingPageFormBlockSlot           `json:"slot" url:"slot"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LandingPageFormBlock) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LandingPageFormBlock) GetSectionAlign() *LandingPageBlockBaseSectionAlign {
+	if l == nil {
+		return nil
+	}
+	return l.SectionAlign
+}
+
+func (l *LandingPageFormBlock) GetSectionID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionID
+}
+
+func (l *LandingPageFormBlock) GetSectionKind() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionKind
+}
+
+func (l *LandingPageFormBlock) GetSectionLabel() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionLabel
+}
+
+func (l *LandingPageFormBlock) GetSectionLayout() *LandingPageBlockBaseSectionLayout {
+	if l == nil {
+		return nil
+	}
+	return l.SectionLayout
+}
+
+func (l *LandingPageFormBlock) GetSectionVariant() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionVariant
+}
+
+func (l *LandingPageFormBlock) GetCardTilt() *int {
+	if l == nil {
+		return nil
+	}
+	return l.CardTilt
+}
+
+func (l *LandingPageFormBlock) GetCardWidth() *LandingPageFormBlockCardWidth {
+	if l == nil {
+		return nil
+	}
+	return l.CardWidth
+}
+
+func (l *LandingPageFormBlock) GetDescription() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Description
+}
+
+func (l *LandingPageFormBlock) GetForm() *LandingPageFormConfig {
+	if l == nil {
+		return nil
+	}
+	return l.Form
+}
+
+func (l *LandingPageFormBlock) GetHeading() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Heading
+}
+
+func (l *LandingPageFormBlock) GetSlot() LandingPageFormBlockSlot {
+	if l == nil {
+		return ""
+	}
+	return l.Slot
+}
+
+func (l *LandingPageFormBlock) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LandingPageFormBlock) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFormBlock) SetID(id string) {
+	l.ID = id
+	l.require(landingPageFormBlockFieldID)
+}
+
+// SetSectionAlign sets the SectionAlign field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFormBlock) SetSectionAlign(sectionAlign *LandingPageBlockBaseSectionAlign) {
+	l.SectionAlign = sectionAlign
+	l.require(landingPageFormBlockFieldSectionAlign)
+}
+
+// SetSectionID sets the SectionID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFormBlock) SetSectionID(sectionID *string) {
+	l.SectionID = sectionID
+	l.require(landingPageFormBlockFieldSectionID)
+}
+
+// SetSectionKind sets the SectionKind field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFormBlock) SetSectionKind(sectionKind *string) {
+	l.SectionKind = sectionKind
+	l.require(landingPageFormBlockFieldSectionKind)
+}
+
+// SetSectionLabel sets the SectionLabel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFormBlock) SetSectionLabel(sectionLabel *string) {
+	l.SectionLabel = sectionLabel
+	l.require(landingPageFormBlockFieldSectionLabel)
+}
+
+// SetSectionLayout sets the SectionLayout field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFormBlock) SetSectionLayout(sectionLayout *LandingPageBlockBaseSectionLayout) {
+	l.SectionLayout = sectionLayout
+	l.require(landingPageFormBlockFieldSectionLayout)
+}
+
+// SetSectionVariant sets the SectionVariant field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFormBlock) SetSectionVariant(sectionVariant *string) {
+	l.SectionVariant = sectionVariant
+	l.require(landingPageFormBlockFieldSectionVariant)
+}
+
+// SetCardTilt sets the CardTilt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFormBlock) SetCardTilt(cardTilt *int) {
+	l.CardTilt = cardTilt
+	l.require(landingPageFormBlockFieldCardTilt)
+}
+
+// SetCardWidth sets the CardWidth field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFormBlock) SetCardWidth(cardWidth *LandingPageFormBlockCardWidth) {
+	l.CardWidth = cardWidth
+	l.require(landingPageFormBlockFieldCardWidth)
+}
+
+// SetDescription sets the Description field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFormBlock) SetDescription(description *string) {
+	l.Description = description
+	l.require(landingPageFormBlockFieldDescription)
+}
+
+// SetForm sets the Form field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFormBlock) SetForm(form *LandingPageFormConfig) {
+	l.Form = form
+	l.require(landingPageFormBlockFieldForm)
+}
+
+// SetHeading sets the Heading field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFormBlock) SetHeading(heading *string) {
+	l.Heading = heading
+	l.require(landingPageFormBlockFieldHeading)
+}
+
+// SetSlot sets the Slot field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFormBlock) SetSlot(slot LandingPageFormBlockSlot) {
+	l.Slot = slot
+	l.require(landingPageFormBlockFieldSlot)
+}
+
+func (l *LandingPageFormBlock) UnmarshalJSON(data []byte) error {
+	type unmarshaler LandingPageFormBlock
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LandingPageFormBlock(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LandingPageFormBlock) MarshalJSON() ([]byte, error) {
+	type embed LandingPageFormBlock
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LandingPageFormBlock) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type LandingPageFormBlockCardWidth string
+
+const (
+	LandingPageFormBlockCardWidthNarrow LandingPageFormBlockCardWidth = "narrow"
+	LandingPageFormBlockCardWidthMedium LandingPageFormBlockCardWidth = "medium"
+	LandingPageFormBlockCardWidthWide   LandingPageFormBlockCardWidth = "wide"
+)
+
+func NewLandingPageFormBlockCardWidthFromString(s string) (LandingPageFormBlockCardWidth, error) {
+	switch s {
+	case "narrow":
+		return LandingPageFormBlockCardWidthNarrow, nil
+	case "medium":
+		return LandingPageFormBlockCardWidthMedium, nil
+	case "wide":
+		return LandingPageFormBlockCardWidthWide, nil
+	}
+	var t LandingPageFormBlockCardWidth
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageFormBlockCardWidth) Ptr() *LandingPageFormBlockCardWidth {
+	return &l
+}
+
+type LandingPageFormBlockSlot string
+
+const (
+	LandingPageFormBlockSlotForm LandingPageFormBlockSlot = "form"
+)
+
+func NewLandingPageFormBlockSlotFromString(s string) (LandingPageFormBlockSlot, error) {
+	switch s {
+	case "form":
+		return LandingPageFormBlockSlotForm, nil
+	}
+	var t LandingPageFormBlockSlot
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageFormBlockSlot) Ptr() *LandingPageFormBlockSlot {
+	return &l
+}
+
+// Form audience and submission settings. listMode default uses the workspace default lists; none joins no lists; specific uses listIds. All listIds and tagIds must belong to your company. Custom field names must be unique and cannot be email, firstName, lastName or website. Redirect URLs must pass HTTP/HTTPS validation.
+var (
+	landingPageFormConfigFieldButtonText           = big.NewInt(1 << 0)
+	landingPageFormConfigFieldCustomFields         = big.NewInt(1 << 1)
+	landingPageFormConfigFieldDuplicateStrategy    = big.NewInt(1 << 2)
+	landingPageFormConfigFieldEmailPlaceholder     = big.NewInt(1 << 3)
+	landingPageFormConfigFieldEnabled              = big.NewInt(1 << 4)
+	landingPageFormConfigFieldFirstNamePlaceholder = big.NewInt(1 << 5)
+	landingPageFormConfigFieldFirstNameRequired    = big.NewInt(1 << 6)
+	landingPageFormConfigFieldLastNamePlaceholder  = big.NewInt(1 << 7)
+	landingPageFormConfigFieldLastNameRequired     = big.NewInt(1 << 8)
+	landingPageFormConfigFieldListIDs              = big.NewInt(1 << 9)
+	landingPageFormConfigFieldListMode             = big.NewInt(1 << 10)
+	landingPageFormConfigFieldPhonePlaceholder     = big.NewInt(1 << 11)
+	landingPageFormConfigFieldPhoneRequired        = big.NewInt(1 << 12)
+	landingPageFormConfigFieldRedirectURL          = big.NewInt(1 << 13)
+	landingPageFormConfigFieldShowFirstName        = big.NewInt(1 << 14)
+	landingPageFormConfigFieldShowLastName         = big.NewInt(1 << 15)
+	landingPageFormConfigFieldShowPhone            = big.NewInt(1 << 16)
+	landingPageFormConfigFieldSuccessMessage       = big.NewInt(1 << 17)
+	landingPageFormConfigFieldTagIDs               = big.NewInt(1 << 18)
+)
+
+type LandingPageFormConfig struct {
+	ButtonText *string `json:"buttonText,omitempty" url:"buttonText,omitempty"`
+	// Up to eight custom subscriber attributes. Names use letters, numbers, underscores, dots or dashes and must start with a letter. Use unique names; email, firstName, lastName and website are reserved.
+	CustomFields         []*LandingPageFormCustomField           `json:"customFields,omitempty" url:"customFields,omitempty"`
+	DuplicateStrategy    *LandingPageFormConfigDuplicateStrategy `json:"duplicateStrategy,omitempty" url:"duplicateStrategy,omitempty"`
+	EmailPlaceholder     *string                                 `json:"emailPlaceholder,omitempty" url:"emailPlaceholder,omitempty"`
+	Enabled              *bool                                   `json:"enabled,omitempty" url:"enabled,omitempty"`
+	FirstNamePlaceholder *string                                 `json:"firstNamePlaceholder,omitempty" url:"firstNamePlaceholder,omitempty"`
+	FirstNameRequired    *bool                                   `json:"firstNameRequired,omitempty" url:"firstNameRequired,omitempty"`
+	LastNamePlaceholder  *string                                 `json:"lastNamePlaceholder,omitempty" url:"lastNamePlaceholder,omitempty"`
+	LastNameRequired     *bool                                   `json:"lastNameRequired,omitempty" url:"lastNameRequired,omitempty"`
+	ListIDs              []string                                `json:"listIds,omitempty" url:"listIds,omitempty"`
+	ListMode             *LandingPageFormConfigListMode          `json:"listMode,omitempty" url:"listMode,omitempty"`
+	PhonePlaceholder     *string                                 `json:"phonePlaceholder,omitempty" url:"phonePlaceholder,omitempty"`
+	PhoneRequired        *bool                                   `json:"phoneRequired,omitempty" url:"phoneRequired,omitempty"`
+	RedirectURL          *string                                 `json:"redirectUrl,omitempty" url:"redirectUrl,omitempty"`
+	ShowFirstName        *bool                                   `json:"showFirstName,omitempty" url:"showFirstName,omitempty"`
+	ShowLastName         *bool                                   `json:"showLastName,omitempty" url:"showLastName,omitempty"`
+	ShowPhone            *bool                                   `json:"showPhone,omitempty" url:"showPhone,omitempty"`
+	SuccessMessage       *string                                 `json:"successMessage,omitempty" url:"successMessage,omitempty"`
+	TagIDs               []string                                `json:"tagIds,omitempty" url:"tagIds,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LandingPageFormConfig) GetButtonText() *string {
+	if l == nil {
+		return nil
+	}
+	return l.ButtonText
+}
+
+func (l *LandingPageFormConfig) GetCustomFields() []*LandingPageFormCustomField {
+	if l == nil {
+		return nil
+	}
+	return l.CustomFields
+}
+
+func (l *LandingPageFormConfig) GetDuplicateStrategy() *LandingPageFormConfigDuplicateStrategy {
+	if l == nil {
+		return nil
+	}
+	return l.DuplicateStrategy
+}
+
+func (l *LandingPageFormConfig) GetEmailPlaceholder() *string {
+	if l == nil {
+		return nil
+	}
+	return l.EmailPlaceholder
+}
+
+func (l *LandingPageFormConfig) GetEnabled() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.Enabled
+}
+
+func (l *LandingPageFormConfig) GetFirstNamePlaceholder() *string {
+	if l == nil {
+		return nil
+	}
+	return l.FirstNamePlaceholder
+}
+
+func (l *LandingPageFormConfig) GetFirstNameRequired() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.FirstNameRequired
+}
+
+func (l *LandingPageFormConfig) GetLastNamePlaceholder() *string {
+	if l == nil {
+		return nil
+	}
+	return l.LastNamePlaceholder
+}
+
+func (l *LandingPageFormConfig) GetLastNameRequired() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.LastNameRequired
+}
+
+func (l *LandingPageFormConfig) GetListIDs() []string {
+	if l == nil {
+		return nil
+	}
+	return l.ListIDs
+}
+
+func (l *LandingPageFormConfig) GetListMode() *LandingPageFormConfigListMode {
+	if l == nil {
+		return nil
+	}
+	return l.ListMode
+}
+
+func (l *LandingPageFormConfig) GetPhonePlaceholder() *string {
+	if l == nil {
+		return nil
+	}
+	return l.PhonePlaceholder
+}
+
+func (l *LandingPageFormConfig) GetPhoneRequired() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.PhoneRequired
+}
+
+func (l *LandingPageFormConfig) GetRedirectURL() *string {
+	if l == nil {
+		return nil
+	}
+	return l.RedirectURL
+}
+
+func (l *LandingPageFormConfig) GetShowFirstName() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.ShowFirstName
+}
+
+func (l *LandingPageFormConfig) GetShowLastName() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.ShowLastName
+}
+
+func (l *LandingPageFormConfig) GetShowPhone() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.ShowPhone
+}
+
+func (l *LandingPageFormConfig) GetSuccessMessage() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SuccessMessage
+}
+
+func (l *LandingPageFormConfig) GetTagIDs() []string {
+	if l == nil {
+		return nil
+	}
+	return l.TagIDs
+}
+
+func (l *LandingPageFormConfig) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LandingPageFormConfig) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetButtonText sets the ButtonText field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFormConfig) SetButtonText(buttonText *string) {
+	l.ButtonText = buttonText
+	l.require(landingPageFormConfigFieldButtonText)
+}
+
+// SetCustomFields sets the CustomFields field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFormConfig) SetCustomFields(customFields []*LandingPageFormCustomField) {
+	l.CustomFields = customFields
+	l.require(landingPageFormConfigFieldCustomFields)
+}
+
+// SetDuplicateStrategy sets the DuplicateStrategy field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFormConfig) SetDuplicateStrategy(duplicateStrategy *LandingPageFormConfigDuplicateStrategy) {
+	l.DuplicateStrategy = duplicateStrategy
+	l.require(landingPageFormConfigFieldDuplicateStrategy)
+}
+
+// SetEmailPlaceholder sets the EmailPlaceholder field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFormConfig) SetEmailPlaceholder(emailPlaceholder *string) {
+	l.EmailPlaceholder = emailPlaceholder
+	l.require(landingPageFormConfigFieldEmailPlaceholder)
+}
+
+// SetEnabled sets the Enabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFormConfig) SetEnabled(enabled *bool) {
+	l.Enabled = enabled
+	l.require(landingPageFormConfigFieldEnabled)
+}
+
+// SetFirstNamePlaceholder sets the FirstNamePlaceholder field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFormConfig) SetFirstNamePlaceholder(firstNamePlaceholder *string) {
+	l.FirstNamePlaceholder = firstNamePlaceholder
+	l.require(landingPageFormConfigFieldFirstNamePlaceholder)
+}
+
+// SetFirstNameRequired sets the FirstNameRequired field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFormConfig) SetFirstNameRequired(firstNameRequired *bool) {
+	l.FirstNameRequired = firstNameRequired
+	l.require(landingPageFormConfigFieldFirstNameRequired)
+}
+
+// SetLastNamePlaceholder sets the LastNamePlaceholder field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFormConfig) SetLastNamePlaceholder(lastNamePlaceholder *string) {
+	l.LastNamePlaceholder = lastNamePlaceholder
+	l.require(landingPageFormConfigFieldLastNamePlaceholder)
+}
+
+// SetLastNameRequired sets the LastNameRequired field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFormConfig) SetLastNameRequired(lastNameRequired *bool) {
+	l.LastNameRequired = lastNameRequired
+	l.require(landingPageFormConfigFieldLastNameRequired)
+}
+
+// SetListIDs sets the ListIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFormConfig) SetListIDs(listIDs []string) {
+	l.ListIDs = listIDs
+	l.require(landingPageFormConfigFieldListIDs)
+}
+
+// SetListMode sets the ListMode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFormConfig) SetListMode(listMode *LandingPageFormConfigListMode) {
+	l.ListMode = listMode
+	l.require(landingPageFormConfigFieldListMode)
+}
+
+// SetPhonePlaceholder sets the PhonePlaceholder field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFormConfig) SetPhonePlaceholder(phonePlaceholder *string) {
+	l.PhonePlaceholder = phonePlaceholder
+	l.require(landingPageFormConfigFieldPhonePlaceholder)
+}
+
+// SetPhoneRequired sets the PhoneRequired field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFormConfig) SetPhoneRequired(phoneRequired *bool) {
+	l.PhoneRequired = phoneRequired
+	l.require(landingPageFormConfigFieldPhoneRequired)
+}
+
+// SetRedirectURL sets the RedirectURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFormConfig) SetRedirectURL(redirectURL *string) {
+	l.RedirectURL = redirectURL
+	l.require(landingPageFormConfigFieldRedirectURL)
+}
+
+// SetShowFirstName sets the ShowFirstName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFormConfig) SetShowFirstName(showFirstName *bool) {
+	l.ShowFirstName = showFirstName
+	l.require(landingPageFormConfigFieldShowFirstName)
+}
+
+// SetShowLastName sets the ShowLastName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFormConfig) SetShowLastName(showLastName *bool) {
+	l.ShowLastName = showLastName
+	l.require(landingPageFormConfigFieldShowLastName)
+}
+
+// SetShowPhone sets the ShowPhone field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFormConfig) SetShowPhone(showPhone *bool) {
+	l.ShowPhone = showPhone
+	l.require(landingPageFormConfigFieldShowPhone)
+}
+
+// SetSuccessMessage sets the SuccessMessage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFormConfig) SetSuccessMessage(successMessage *string) {
+	l.SuccessMessage = successMessage
+	l.require(landingPageFormConfigFieldSuccessMessage)
+}
+
+// SetTagIDs sets the TagIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFormConfig) SetTagIDs(tagIDs []string) {
+	l.TagIDs = tagIDs
+	l.require(landingPageFormConfigFieldTagIDs)
+}
+
+func (l *LandingPageFormConfig) UnmarshalJSON(data []byte) error {
+	type unmarshaler LandingPageFormConfig
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LandingPageFormConfig(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LandingPageFormConfig) MarshalJSON() ([]byte, error) {
+	type embed LandingPageFormConfig
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LandingPageFormConfig) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type LandingPageFormConfigDuplicateStrategy string
+
+const (
+	LandingPageFormConfigDuplicateStrategySkip      LandingPageFormConfigDuplicateStrategy = "skip"
+	LandingPageFormConfigDuplicateStrategyMerge     LandingPageFormConfigDuplicateStrategy = "merge"
+	LandingPageFormConfigDuplicateStrategyOverwrite LandingPageFormConfigDuplicateStrategy = "overwrite"
+)
+
+func NewLandingPageFormConfigDuplicateStrategyFromString(s string) (LandingPageFormConfigDuplicateStrategy, error) {
+	switch s {
+	case "skip":
+		return LandingPageFormConfigDuplicateStrategySkip, nil
+	case "merge":
+		return LandingPageFormConfigDuplicateStrategyMerge, nil
+	case "overwrite":
+		return LandingPageFormConfigDuplicateStrategyOverwrite, nil
+	}
+	var t LandingPageFormConfigDuplicateStrategy
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageFormConfigDuplicateStrategy) Ptr() *LandingPageFormConfigDuplicateStrategy {
+	return &l
+}
+
+type LandingPageFormConfigListMode string
+
+const (
+	LandingPageFormConfigListModeDefault  LandingPageFormConfigListMode = "default"
+	LandingPageFormConfigListModeNone     LandingPageFormConfigListMode = "none"
+	LandingPageFormConfigListModeSpecific LandingPageFormConfigListMode = "specific"
+)
+
+func NewLandingPageFormConfigListModeFromString(s string) (LandingPageFormConfigListMode, error) {
+	switch s {
+	case "default":
+		return LandingPageFormConfigListModeDefault, nil
+	case "none":
+		return LandingPageFormConfigListModeNone, nil
+	case "specific":
+		return LandingPageFormConfigListModeSpecific, nil
+	}
+	var t LandingPageFormConfigListMode
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageFormConfigListMode) Ptr() *LandingPageFormConfigListMode {
+	return &l
+}
+
+var (
+	landingPageFormCustomFieldFieldConsentText  = big.NewInt(1 << 0)
+	landingPageFormCustomFieldFieldDefaultValue = big.NewInt(1 << 1)
+	landingPageFormCustomFieldFieldInputType    = big.NewInt(1 << 2)
+	landingPageFormCustomFieldFieldLabel        = big.NewInt(1 << 3)
+	landingPageFormCustomFieldFieldName         = big.NewInt(1 << 4)
+	landingPageFormCustomFieldFieldOptions      = big.NewInt(1 << 5)
+	landingPageFormCustomFieldFieldPlaceholder  = big.NewInt(1 << 6)
+	landingPageFormCustomFieldFieldRequired     = big.NewInt(1 << 7)
+)
+
+type LandingPageFormCustomField struct {
+	ConsentText  *string                                  `json:"consentText,omitempty" url:"consentText,omitempty"`
+	DefaultValue *string                                  `json:"defaultValue,omitempty" url:"defaultValue,omitempty"`
+	InputType    *LandingPageFormCustomFieldInputType     `json:"inputType,omitempty" url:"inputType,omitempty"`
+	Label        *string                                  `json:"label,omitempty" url:"label,omitempty"`
+	Name         string                                   `json:"name" url:"name"`
+	Options      []*LandingPageFormCustomFieldOptionsItem `json:"options,omitempty" url:"options,omitempty"`
+	Placeholder  *string                                  `json:"placeholder,omitempty" url:"placeholder,omitempty"`
+	Required     *bool                                    `json:"required,omitempty" url:"required,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LandingPageFormCustomField) GetConsentText() *string {
+	if l == nil {
+		return nil
+	}
+	return l.ConsentText
+}
+
+func (l *LandingPageFormCustomField) GetDefaultValue() *string {
+	if l == nil {
+		return nil
+	}
+	return l.DefaultValue
+}
+
+func (l *LandingPageFormCustomField) GetInputType() *LandingPageFormCustomFieldInputType {
+	if l == nil {
+		return nil
+	}
+	return l.InputType
+}
+
+func (l *LandingPageFormCustomField) GetLabel() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Label
+}
+
+func (l *LandingPageFormCustomField) GetName() string {
+	if l == nil {
+		return ""
+	}
+	return l.Name
+}
+
+func (l *LandingPageFormCustomField) GetOptions() []*LandingPageFormCustomFieldOptionsItem {
+	if l == nil {
+		return nil
+	}
+	return l.Options
+}
+
+func (l *LandingPageFormCustomField) GetPlaceholder() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Placeholder
+}
+
+func (l *LandingPageFormCustomField) GetRequired() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.Required
+}
+
+func (l *LandingPageFormCustomField) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LandingPageFormCustomField) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetConsentText sets the ConsentText field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFormCustomField) SetConsentText(consentText *string) {
+	l.ConsentText = consentText
+	l.require(landingPageFormCustomFieldFieldConsentText)
+}
+
+// SetDefaultValue sets the DefaultValue field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFormCustomField) SetDefaultValue(defaultValue *string) {
+	l.DefaultValue = defaultValue
+	l.require(landingPageFormCustomFieldFieldDefaultValue)
+}
+
+// SetInputType sets the InputType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFormCustomField) SetInputType(inputType *LandingPageFormCustomFieldInputType) {
+	l.InputType = inputType
+	l.require(landingPageFormCustomFieldFieldInputType)
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFormCustomField) SetLabel(label *string) {
+	l.Label = label
+	l.require(landingPageFormCustomFieldFieldLabel)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFormCustomField) SetName(name string) {
+	l.Name = name
+	l.require(landingPageFormCustomFieldFieldName)
+}
+
+// SetOptions sets the Options field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFormCustomField) SetOptions(options []*LandingPageFormCustomFieldOptionsItem) {
+	l.Options = options
+	l.require(landingPageFormCustomFieldFieldOptions)
+}
+
+// SetPlaceholder sets the Placeholder field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFormCustomField) SetPlaceholder(placeholder *string) {
+	l.Placeholder = placeholder
+	l.require(landingPageFormCustomFieldFieldPlaceholder)
+}
+
+// SetRequired sets the Required field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFormCustomField) SetRequired(required *bool) {
+	l.Required = required
+	l.require(landingPageFormCustomFieldFieldRequired)
+}
+
+func (l *LandingPageFormCustomField) UnmarshalJSON(data []byte) error {
+	type unmarshaler LandingPageFormCustomField
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LandingPageFormCustomField(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LandingPageFormCustomField) MarshalJSON() ([]byte, error) {
+	type embed LandingPageFormCustomField
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LandingPageFormCustomField) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type LandingPageFormCustomFieldInputType string
+
+const (
+	LandingPageFormCustomFieldInputTypeText     LandingPageFormCustomFieldInputType = "text"
+	LandingPageFormCustomFieldInputTypePhone    LandingPageFormCustomFieldInputType = "phone"
+	LandingPageFormCustomFieldInputTypeNumber   LandingPageFormCustomFieldInputType = "number"
+	LandingPageFormCustomFieldInputTypeTextarea LandingPageFormCustomFieldInputType = "textarea"
+	LandingPageFormCustomFieldInputTypeSelect   LandingPageFormCustomFieldInputType = "select"
+	LandingPageFormCustomFieldInputTypeRadio    LandingPageFormCustomFieldInputType = "radio"
+	LandingPageFormCustomFieldInputTypeCheckbox LandingPageFormCustomFieldInputType = "checkbox"
+	LandingPageFormCustomFieldInputTypeConsent  LandingPageFormCustomFieldInputType = "consent"
+	LandingPageFormCustomFieldInputTypeHidden   LandingPageFormCustomFieldInputType = "hidden"
+)
+
+func NewLandingPageFormCustomFieldInputTypeFromString(s string) (LandingPageFormCustomFieldInputType, error) {
+	switch s {
+	case "text":
+		return LandingPageFormCustomFieldInputTypeText, nil
+	case "phone":
+		return LandingPageFormCustomFieldInputTypePhone, nil
+	case "number":
+		return LandingPageFormCustomFieldInputTypeNumber, nil
+	case "textarea":
+		return LandingPageFormCustomFieldInputTypeTextarea, nil
+	case "select":
+		return LandingPageFormCustomFieldInputTypeSelect, nil
+	case "radio":
+		return LandingPageFormCustomFieldInputTypeRadio, nil
+	case "checkbox":
+		return LandingPageFormCustomFieldInputTypeCheckbox, nil
+	case "consent":
+		return LandingPageFormCustomFieldInputTypeConsent, nil
+	case "hidden":
+		return LandingPageFormCustomFieldInputTypeHidden, nil
+	}
+	var t LandingPageFormCustomFieldInputType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageFormCustomFieldInputType) Ptr() *LandingPageFormCustomFieldInputType {
+	return &l
+}
+
+var (
+	landingPageFormCustomFieldOptionsItemFieldLabel = big.NewInt(1 << 0)
+	landingPageFormCustomFieldOptionsItemFieldValue = big.NewInt(1 << 1)
+)
+
+type LandingPageFormCustomFieldOptionsItem struct {
+	Label string `json:"label" url:"label"`
+	Value string `json:"value" url:"value"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LandingPageFormCustomFieldOptionsItem) GetLabel() string {
+	if l == nil {
+		return ""
+	}
+	return l.Label
+}
+
+func (l *LandingPageFormCustomFieldOptionsItem) GetValue() string {
+	if l == nil {
+		return ""
+	}
+	return l.Value
+}
+
+func (l *LandingPageFormCustomFieldOptionsItem) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LandingPageFormCustomFieldOptionsItem) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFormCustomFieldOptionsItem) SetLabel(label string) {
+	l.Label = label
+	l.require(landingPageFormCustomFieldOptionsItemFieldLabel)
+}
+
+// SetValue sets the Value field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageFormCustomFieldOptionsItem) SetValue(value string) {
+	l.Value = value
+	l.require(landingPageFormCustomFieldOptionsItemFieldValue)
+}
+
+func (l *LandingPageFormCustomFieldOptionsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler LandingPageFormCustomFieldOptionsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LandingPageFormCustomFieldOptionsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LandingPageFormCustomFieldOptionsItem) MarshalJSON() ([]byte, error) {
+	type embed LandingPageFormCustomFieldOptionsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LandingPageFormCustomFieldOptionsItem) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+// Children share the parent slot. Overlay needs exactly one direct image block with at most one gallery image; other overlay groups normalize to stack. Maximum group depth is eight.
+var (
+	landingPageGroupBlockFieldID              = big.NewInt(1 << 0)
+	landingPageGroupBlockFieldSectionAlign    = big.NewInt(1 << 1)
+	landingPageGroupBlockFieldSectionID       = big.NewInt(1 << 2)
+	landingPageGroupBlockFieldSectionKind     = big.NewInt(1 << 3)
+	landingPageGroupBlockFieldSectionLabel    = big.NewInt(1 << 4)
+	landingPageGroupBlockFieldSectionLayout   = big.NewInt(1 << 5)
+	landingPageGroupBlockFieldSectionVariant  = big.NewInt(1 << 6)
+	landingPageGroupBlockFieldChildren        = big.NewInt(1 << 7)
+	landingPageGroupBlockFieldColumns         = big.NewInt(1 << 8)
+	landingPageGroupBlockFieldGap             = big.NewInt(1 << 9)
+	landingPageGroupBlockFieldLabel           = big.NewInt(1 << 10)
+	landingPageGroupBlockFieldLayout          = big.NewInt(1 << 11)
+	landingPageGroupBlockFieldOverlayColor    = big.NewInt(1 << 12)
+	landingPageGroupBlockFieldOverlayPosition = big.NewInt(1 << 13)
+	landingPageGroupBlockFieldOverlayShade    = big.NewInt(1 << 14)
+	landingPageGroupBlockFieldPadding         = big.NewInt(1 << 15)
+	landingPageGroupBlockFieldSlot            = big.NewInt(1 << 16)
+)
+
+type LandingPageGroupBlock struct {
+	ID              string                                `json:"id" url:"id"`
+	SectionAlign    *LandingPageBlockBaseSectionAlign     `json:"sectionAlign,omitempty" url:"sectionAlign,omitempty"`
+	SectionID       *string                               `json:"sectionId,omitempty" url:"sectionId,omitempty"`
+	SectionKind     *string                               `json:"sectionKind,omitempty" url:"sectionKind,omitempty"`
+	SectionLabel    *string                               `json:"sectionLabel,omitempty" url:"sectionLabel,omitempty"`
+	SectionLayout   *LandingPageBlockBaseSectionLayout    `json:"sectionLayout,omitempty" url:"sectionLayout,omitempty"`
+	SectionVariant  *string                               `json:"sectionVariant,omitempty" url:"sectionVariant,omitempty"`
+	Children        []*LandingPageBlock                   `json:"children,omitempty" url:"children,omitempty"`
+	Columns         *int                                  `json:"columns,omitempty" url:"columns,omitempty"`
+	Gap             *int                                  `json:"gap,omitempty" url:"gap,omitempty"`
+	Label           *string                               `json:"label,omitempty" url:"label,omitempty"`
+	Layout          *LandingPageGroupBlockLayout          `json:"layout,omitempty" url:"layout,omitempty"`
+	OverlayColor    *string                               `json:"overlayColor,omitempty" url:"overlayColor,omitempty"`
+	OverlayPosition *LandingPageGroupBlockOverlayPosition `json:"overlayPosition,omitempty" url:"overlayPosition,omitempty"`
+	OverlayShade    *int                                  `json:"overlayShade,omitempty" url:"overlayShade,omitempty"`
+	Padding         *int                                  `json:"padding,omitempty" url:"padding,omitempty"`
+	Slot            LandingPageGroupBlockSlot             `json:"slot" url:"slot"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LandingPageGroupBlock) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LandingPageGroupBlock) GetSectionAlign() *LandingPageBlockBaseSectionAlign {
+	if l == nil {
+		return nil
+	}
+	return l.SectionAlign
+}
+
+func (l *LandingPageGroupBlock) GetSectionID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionID
+}
+
+func (l *LandingPageGroupBlock) GetSectionKind() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionKind
+}
+
+func (l *LandingPageGroupBlock) GetSectionLabel() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionLabel
+}
+
+func (l *LandingPageGroupBlock) GetSectionLayout() *LandingPageBlockBaseSectionLayout {
+	if l == nil {
+		return nil
+	}
+	return l.SectionLayout
+}
+
+func (l *LandingPageGroupBlock) GetSectionVariant() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionVariant
+}
+
+func (l *LandingPageGroupBlock) GetChildren() []*LandingPageBlock {
+	if l == nil {
+		return nil
+	}
+	return l.Children
+}
+
+func (l *LandingPageGroupBlock) GetColumns() *int {
+	if l == nil {
+		return nil
+	}
+	return l.Columns
+}
+
+func (l *LandingPageGroupBlock) GetGap() *int {
+	if l == nil {
+		return nil
+	}
+	return l.Gap
+}
+
+func (l *LandingPageGroupBlock) GetLabel() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Label
+}
+
+func (l *LandingPageGroupBlock) GetLayout() *LandingPageGroupBlockLayout {
+	if l == nil {
+		return nil
+	}
+	return l.Layout
+}
+
+func (l *LandingPageGroupBlock) GetOverlayColor() *string {
+	if l == nil {
+		return nil
+	}
+	return l.OverlayColor
+}
+
+func (l *LandingPageGroupBlock) GetOverlayPosition() *LandingPageGroupBlockOverlayPosition {
+	if l == nil {
+		return nil
+	}
+	return l.OverlayPosition
+}
+
+func (l *LandingPageGroupBlock) GetOverlayShade() *int {
+	if l == nil {
+		return nil
+	}
+	return l.OverlayShade
+}
+
+func (l *LandingPageGroupBlock) GetPadding() *int {
+	if l == nil {
+		return nil
+	}
+	return l.Padding
+}
+
+func (l *LandingPageGroupBlock) GetSlot() LandingPageGroupBlockSlot {
+	if l == nil {
+		return ""
+	}
+	return l.Slot
+}
+
+func (l *LandingPageGroupBlock) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LandingPageGroupBlock) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageGroupBlock) SetID(id string) {
+	l.ID = id
+	l.require(landingPageGroupBlockFieldID)
+}
+
+// SetSectionAlign sets the SectionAlign field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageGroupBlock) SetSectionAlign(sectionAlign *LandingPageBlockBaseSectionAlign) {
+	l.SectionAlign = sectionAlign
+	l.require(landingPageGroupBlockFieldSectionAlign)
+}
+
+// SetSectionID sets the SectionID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageGroupBlock) SetSectionID(sectionID *string) {
+	l.SectionID = sectionID
+	l.require(landingPageGroupBlockFieldSectionID)
+}
+
+// SetSectionKind sets the SectionKind field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageGroupBlock) SetSectionKind(sectionKind *string) {
+	l.SectionKind = sectionKind
+	l.require(landingPageGroupBlockFieldSectionKind)
+}
+
+// SetSectionLabel sets the SectionLabel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageGroupBlock) SetSectionLabel(sectionLabel *string) {
+	l.SectionLabel = sectionLabel
+	l.require(landingPageGroupBlockFieldSectionLabel)
+}
+
+// SetSectionLayout sets the SectionLayout field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageGroupBlock) SetSectionLayout(sectionLayout *LandingPageBlockBaseSectionLayout) {
+	l.SectionLayout = sectionLayout
+	l.require(landingPageGroupBlockFieldSectionLayout)
+}
+
+// SetSectionVariant sets the SectionVariant field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageGroupBlock) SetSectionVariant(sectionVariant *string) {
+	l.SectionVariant = sectionVariant
+	l.require(landingPageGroupBlockFieldSectionVariant)
+}
+
+// SetChildren sets the Children field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageGroupBlock) SetChildren(children []*LandingPageBlock) {
+	l.Children = children
+	l.require(landingPageGroupBlockFieldChildren)
+}
+
+// SetColumns sets the Columns field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageGroupBlock) SetColumns(columns *int) {
+	l.Columns = columns
+	l.require(landingPageGroupBlockFieldColumns)
+}
+
+// SetGap sets the Gap field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageGroupBlock) SetGap(gap *int) {
+	l.Gap = gap
+	l.require(landingPageGroupBlockFieldGap)
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageGroupBlock) SetLabel(label *string) {
+	l.Label = label
+	l.require(landingPageGroupBlockFieldLabel)
+}
+
+// SetLayout sets the Layout field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageGroupBlock) SetLayout(layout *LandingPageGroupBlockLayout) {
+	l.Layout = layout
+	l.require(landingPageGroupBlockFieldLayout)
+}
+
+// SetOverlayColor sets the OverlayColor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageGroupBlock) SetOverlayColor(overlayColor *string) {
+	l.OverlayColor = overlayColor
+	l.require(landingPageGroupBlockFieldOverlayColor)
+}
+
+// SetOverlayPosition sets the OverlayPosition field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageGroupBlock) SetOverlayPosition(overlayPosition *LandingPageGroupBlockOverlayPosition) {
+	l.OverlayPosition = overlayPosition
+	l.require(landingPageGroupBlockFieldOverlayPosition)
+}
+
+// SetOverlayShade sets the OverlayShade field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageGroupBlock) SetOverlayShade(overlayShade *int) {
+	l.OverlayShade = overlayShade
+	l.require(landingPageGroupBlockFieldOverlayShade)
+}
+
+// SetPadding sets the Padding field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageGroupBlock) SetPadding(padding *int) {
+	l.Padding = padding
+	l.require(landingPageGroupBlockFieldPadding)
+}
+
+// SetSlot sets the Slot field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageGroupBlock) SetSlot(slot LandingPageGroupBlockSlot) {
+	l.Slot = slot
+	l.require(landingPageGroupBlockFieldSlot)
+}
+
+func (l *LandingPageGroupBlock) UnmarshalJSON(data []byte) error {
+	type unmarshaler LandingPageGroupBlock
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LandingPageGroupBlock(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LandingPageGroupBlock) MarshalJSON() ([]byte, error) {
+	type embed LandingPageGroupBlock
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LandingPageGroupBlock) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type LandingPageGroupBlockLayout string
+
+const (
+	LandingPageGroupBlockLayoutStack   LandingPageGroupBlockLayout = "stack"
+	LandingPageGroupBlockLayoutRow     LandingPageGroupBlockLayout = "row"
+	LandingPageGroupBlockLayoutGrid    LandingPageGroupBlockLayout = "grid"
+	LandingPageGroupBlockLayoutOverlay LandingPageGroupBlockLayout = "overlay"
+)
+
+func NewLandingPageGroupBlockLayoutFromString(s string) (LandingPageGroupBlockLayout, error) {
+	switch s {
+	case "stack":
+		return LandingPageGroupBlockLayoutStack, nil
+	case "row":
+		return LandingPageGroupBlockLayoutRow, nil
+	case "grid":
+		return LandingPageGroupBlockLayoutGrid, nil
+	case "overlay":
+		return LandingPageGroupBlockLayoutOverlay, nil
+	}
+	var t LandingPageGroupBlockLayout
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageGroupBlockLayout) Ptr() *LandingPageGroupBlockLayout {
+	return &l
+}
+
+type LandingPageGroupBlockOverlayPosition string
+
+const (
+	LandingPageGroupBlockOverlayPositionTop    LandingPageGroupBlockOverlayPosition = "top"
+	LandingPageGroupBlockOverlayPositionCenter LandingPageGroupBlockOverlayPosition = "center"
+	LandingPageGroupBlockOverlayPositionBottom LandingPageGroupBlockOverlayPosition = "bottom"
+)
+
+func NewLandingPageGroupBlockOverlayPositionFromString(s string) (LandingPageGroupBlockOverlayPosition, error) {
+	switch s {
+	case "top":
+		return LandingPageGroupBlockOverlayPositionTop, nil
+	case "center":
+		return LandingPageGroupBlockOverlayPositionCenter, nil
+	case "bottom":
+		return LandingPageGroupBlockOverlayPositionBottom, nil
+	}
+	var t LandingPageGroupBlockOverlayPosition
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageGroupBlockOverlayPosition) Ptr() *LandingPageGroupBlockOverlayPosition {
+	return &l
+}
+
+type LandingPageGroupBlockSlot string
+
+const (
+	LandingPageGroupBlockSlotTop    LandingPageGroupBlockSlot = "top"
+	LandingPageGroupBlockSlotHero   LandingPageGroupBlockSlot = "hero"
+	LandingPageGroupBlockSlotForm   LandingPageGroupBlockSlot = "form"
+	LandingPageGroupBlockSlotBody   LandingPageGroupBlockSlot = "body"
+	LandingPageGroupBlockSlotFooter LandingPageGroupBlockSlot = "footer"
+)
+
+func NewLandingPageGroupBlockSlotFromString(s string) (LandingPageGroupBlockSlot, error) {
+	switch s {
+	case "top":
+		return LandingPageGroupBlockSlotTop, nil
+	case "hero":
+		return LandingPageGroupBlockSlotHero, nil
+	case "form":
+		return LandingPageGroupBlockSlotForm, nil
+	case "body":
+		return LandingPageGroupBlockSlotBody, nil
+	case "footer":
+		return LandingPageGroupBlockSlotFooter, nil
+	}
+	var t LandingPageGroupBlockSlot
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageGroupBlockSlot) Ptr() *LandingPageGroupBlockSlot {
+	return &l
+}
+
+var (
+	landingPageHeaderFieldEnabled  = big.NewInt(1 << 0)
+	landingPageHeaderFieldLogoSize = big.NewInt(1 << 1)
+	landingPageHeaderFieldLogoURL  = big.NewInt(1 << 2)
+	landingPageHeaderFieldName     = big.NewInt(1 << 3)
+	landingPageHeaderFieldShowLogo = big.NewInt(1 << 4)
+	landingPageHeaderFieldShowName = big.NewInt(1 << 5)
+)
+
+type LandingPageHeader struct {
+	Enabled  *bool   `json:"enabled,omitempty" url:"enabled,omitempty"`
+	LogoSize *int    `json:"logoSize,omitempty" url:"logoSize,omitempty"`
+	LogoURL  *string `json:"logoUrl,omitempty" url:"logoUrl,omitempty"`
+	Name     *string `json:"name,omitempty" url:"name,omitempty"`
+	ShowLogo *bool   `json:"showLogo,omitempty" url:"showLogo,omitempty"`
+	ShowName *bool   `json:"showName,omitempty" url:"showName,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LandingPageHeader) GetEnabled() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.Enabled
+}
+
+func (l *LandingPageHeader) GetLogoSize() *int {
+	if l == nil {
+		return nil
+	}
+	return l.LogoSize
+}
+
+func (l *LandingPageHeader) GetLogoURL() *string {
+	if l == nil {
+		return nil
+	}
+	return l.LogoURL
+}
+
+func (l *LandingPageHeader) GetName() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Name
+}
+
+func (l *LandingPageHeader) GetShowLogo() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.ShowLogo
+}
+
+func (l *LandingPageHeader) GetShowName() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.ShowName
+}
+
+func (l *LandingPageHeader) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LandingPageHeader) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetEnabled sets the Enabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageHeader) SetEnabled(enabled *bool) {
+	l.Enabled = enabled
+	l.require(landingPageHeaderFieldEnabled)
+}
+
+// SetLogoSize sets the LogoSize field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageHeader) SetLogoSize(logoSize *int) {
+	l.LogoSize = logoSize
+	l.require(landingPageHeaderFieldLogoSize)
+}
+
+// SetLogoURL sets the LogoURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageHeader) SetLogoURL(logoURL *string) {
+	l.LogoURL = logoURL
+	l.require(landingPageHeaderFieldLogoURL)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageHeader) SetName(name *string) {
+	l.Name = name
+	l.require(landingPageHeaderFieldName)
+}
+
+// SetShowLogo sets the ShowLogo field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageHeader) SetShowLogo(showLogo *bool) {
+	l.ShowLogo = showLogo
+	l.require(landingPageHeaderFieldShowLogo)
+}
+
+// SetShowName sets the ShowName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageHeader) SetShowName(showName *bool) {
+	l.ShowName = showName
+	l.require(landingPageHeaderFieldShowName)
+}
+
+func (l *LandingPageHeader) UnmarshalJSON(data []byte) error {
+	type unmarshaler LandingPageHeader
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LandingPageHeader(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LandingPageHeader) MarshalJSON() ([]byte, error) {
+	type embed LandingPageHeader
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LandingPageHeader) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	landingPageHeadingBlockFieldID             = big.NewInt(1 << 0)
+	landingPageHeadingBlockFieldSectionAlign   = big.NewInt(1 << 1)
+	landingPageHeadingBlockFieldSectionID      = big.NewInt(1 << 2)
+	landingPageHeadingBlockFieldSectionKind    = big.NewInt(1 << 3)
+	landingPageHeadingBlockFieldSectionLabel   = big.NewInt(1 << 4)
+	landingPageHeadingBlockFieldSectionLayout  = big.NewInt(1 << 5)
+	landingPageHeadingBlockFieldSectionVariant = big.NewInt(1 << 6)
+	landingPageHeadingBlockFieldAlign          = big.NewInt(1 << 7)
+	landingPageHeadingBlockFieldContent        = big.NewInt(1 << 8)
+	landingPageHeadingBlockFieldLevel          = big.NewInt(1 << 9)
+	landingPageHeadingBlockFieldSlot           = big.NewInt(1 << 10)
+)
+
+type LandingPageHeadingBlock struct {
+	ID             string                             `json:"id" url:"id"`
+	SectionAlign   *LandingPageBlockBaseSectionAlign  `json:"sectionAlign,omitempty" url:"sectionAlign,omitempty"`
+	SectionID      *string                            `json:"sectionId,omitempty" url:"sectionId,omitempty"`
+	SectionKind    *string                            `json:"sectionKind,omitempty" url:"sectionKind,omitempty"`
+	SectionLabel   *string                            `json:"sectionLabel,omitempty" url:"sectionLabel,omitempty"`
+	SectionLayout  *LandingPageBlockBaseSectionLayout `json:"sectionLayout,omitempty" url:"sectionLayout,omitempty"`
+	SectionVariant *string                            `json:"sectionVariant,omitempty" url:"sectionVariant,omitempty"`
+	Align          *LandingPageHeadingBlockAlign      `json:"align,omitempty" url:"align,omitempty"`
+	Content        string                             `json:"content" url:"content"`
+	Level          *int                               `json:"level,omitempty" url:"level,omitempty"`
+	Slot           LandingPageHeadingBlockSlot        `json:"slot" url:"slot"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LandingPageHeadingBlock) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LandingPageHeadingBlock) GetSectionAlign() *LandingPageBlockBaseSectionAlign {
+	if l == nil {
+		return nil
+	}
+	return l.SectionAlign
+}
+
+func (l *LandingPageHeadingBlock) GetSectionID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionID
+}
+
+func (l *LandingPageHeadingBlock) GetSectionKind() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionKind
+}
+
+func (l *LandingPageHeadingBlock) GetSectionLabel() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionLabel
+}
+
+func (l *LandingPageHeadingBlock) GetSectionLayout() *LandingPageBlockBaseSectionLayout {
+	if l == nil {
+		return nil
+	}
+	return l.SectionLayout
+}
+
+func (l *LandingPageHeadingBlock) GetSectionVariant() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionVariant
+}
+
+func (l *LandingPageHeadingBlock) GetAlign() *LandingPageHeadingBlockAlign {
+	if l == nil {
+		return nil
+	}
+	return l.Align
+}
+
+func (l *LandingPageHeadingBlock) GetContent() string {
+	if l == nil {
+		return ""
+	}
+	return l.Content
+}
+
+func (l *LandingPageHeadingBlock) GetLevel() *int {
+	if l == nil {
+		return nil
+	}
+	return l.Level
+}
+
+func (l *LandingPageHeadingBlock) GetSlot() LandingPageHeadingBlockSlot {
+	if l == nil {
+		return ""
+	}
+	return l.Slot
+}
+
+func (l *LandingPageHeadingBlock) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LandingPageHeadingBlock) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageHeadingBlock) SetID(id string) {
+	l.ID = id
+	l.require(landingPageHeadingBlockFieldID)
+}
+
+// SetSectionAlign sets the SectionAlign field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageHeadingBlock) SetSectionAlign(sectionAlign *LandingPageBlockBaseSectionAlign) {
+	l.SectionAlign = sectionAlign
+	l.require(landingPageHeadingBlockFieldSectionAlign)
+}
+
+// SetSectionID sets the SectionID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageHeadingBlock) SetSectionID(sectionID *string) {
+	l.SectionID = sectionID
+	l.require(landingPageHeadingBlockFieldSectionID)
+}
+
+// SetSectionKind sets the SectionKind field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageHeadingBlock) SetSectionKind(sectionKind *string) {
+	l.SectionKind = sectionKind
+	l.require(landingPageHeadingBlockFieldSectionKind)
+}
+
+// SetSectionLabel sets the SectionLabel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageHeadingBlock) SetSectionLabel(sectionLabel *string) {
+	l.SectionLabel = sectionLabel
+	l.require(landingPageHeadingBlockFieldSectionLabel)
+}
+
+// SetSectionLayout sets the SectionLayout field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageHeadingBlock) SetSectionLayout(sectionLayout *LandingPageBlockBaseSectionLayout) {
+	l.SectionLayout = sectionLayout
+	l.require(landingPageHeadingBlockFieldSectionLayout)
+}
+
+// SetSectionVariant sets the SectionVariant field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageHeadingBlock) SetSectionVariant(sectionVariant *string) {
+	l.SectionVariant = sectionVariant
+	l.require(landingPageHeadingBlockFieldSectionVariant)
+}
+
+// SetAlign sets the Align field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageHeadingBlock) SetAlign(align *LandingPageHeadingBlockAlign) {
+	l.Align = align
+	l.require(landingPageHeadingBlockFieldAlign)
+}
+
+// SetContent sets the Content field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageHeadingBlock) SetContent(content string) {
+	l.Content = content
+	l.require(landingPageHeadingBlockFieldContent)
+}
+
+// SetLevel sets the Level field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageHeadingBlock) SetLevel(level *int) {
+	l.Level = level
+	l.require(landingPageHeadingBlockFieldLevel)
+}
+
+// SetSlot sets the Slot field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageHeadingBlock) SetSlot(slot LandingPageHeadingBlockSlot) {
+	l.Slot = slot
+	l.require(landingPageHeadingBlockFieldSlot)
+}
+
+func (l *LandingPageHeadingBlock) UnmarshalJSON(data []byte) error {
+	type unmarshaler LandingPageHeadingBlock
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LandingPageHeadingBlock(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LandingPageHeadingBlock) MarshalJSON() ([]byte, error) {
+	type embed LandingPageHeadingBlock
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LandingPageHeadingBlock) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type LandingPageHeadingBlockAlign string
+
+const (
+	LandingPageHeadingBlockAlignLeft   LandingPageHeadingBlockAlign = "left"
+	LandingPageHeadingBlockAlignCenter LandingPageHeadingBlockAlign = "center"
+	LandingPageHeadingBlockAlignRight  LandingPageHeadingBlockAlign = "right"
+)
+
+func NewLandingPageHeadingBlockAlignFromString(s string) (LandingPageHeadingBlockAlign, error) {
+	switch s {
+	case "left":
+		return LandingPageHeadingBlockAlignLeft, nil
+	case "center":
+		return LandingPageHeadingBlockAlignCenter, nil
+	case "right":
+		return LandingPageHeadingBlockAlignRight, nil
+	}
+	var t LandingPageHeadingBlockAlign
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageHeadingBlockAlign) Ptr() *LandingPageHeadingBlockAlign {
+	return &l
+}
+
+type LandingPageHeadingBlockSlot string
+
+const (
+	LandingPageHeadingBlockSlotTop    LandingPageHeadingBlockSlot = "top"
+	LandingPageHeadingBlockSlotHero   LandingPageHeadingBlockSlot = "hero"
+	LandingPageHeadingBlockSlotForm   LandingPageHeadingBlockSlot = "form"
+	LandingPageHeadingBlockSlotBody   LandingPageHeadingBlockSlot = "body"
+	LandingPageHeadingBlockSlotFooter LandingPageHeadingBlockSlot = "footer"
+)
+
+func NewLandingPageHeadingBlockSlotFromString(s string) (LandingPageHeadingBlockSlot, error) {
+	switch s {
+	case "top":
+		return LandingPageHeadingBlockSlotTop, nil
+	case "hero":
+		return LandingPageHeadingBlockSlotHero, nil
+	case "form":
+		return LandingPageHeadingBlockSlotForm, nil
+	case "body":
+		return LandingPageHeadingBlockSlotBody, nil
+	case "footer":
+		return LandingPageHeadingBlockSlotFooter, nil
+	}
+	var t LandingPageHeadingBlockSlot
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageHeadingBlockSlot) Ptr() *LandingPageHeadingBlockSlot {
+	return &l
+}
+
+var (
+	landingPageImageBlockFieldID             = big.NewInt(1 << 0)
+	landingPageImageBlockFieldSectionAlign   = big.NewInt(1 << 1)
+	landingPageImageBlockFieldSectionID      = big.NewInt(1 << 2)
+	landingPageImageBlockFieldSectionKind    = big.NewInt(1 << 3)
+	landingPageImageBlockFieldSectionLabel   = big.NewInt(1 << 4)
+	landingPageImageBlockFieldSectionLayout  = big.NewInt(1 << 5)
+	landingPageImageBlockFieldSectionVariant = big.NewInt(1 << 6)
+	landingPageImageBlockFieldAlign          = big.NewInt(1 << 7)
+	landingPageImageBlockFieldAlt            = big.NewInt(1 << 8)
+	landingPageImageBlockFieldFit            = big.NewInt(1 << 9)
+	landingPageImageBlockFieldHeight         = big.NewInt(1 << 10)
+	landingPageImageBlockFieldImages         = big.NewInt(1 << 11)
+	landingPageImageBlockFieldSlot           = big.NewInt(1 << 12)
+	landingPageImageBlockFieldSrc            = big.NewInt(1 << 13)
+	landingPageImageBlockFieldWidth          = big.NewInt(1 << 14)
+)
+
+type LandingPageImageBlock struct {
+	ID             string                             `json:"id" url:"id"`
+	SectionAlign   *LandingPageBlockBaseSectionAlign  `json:"sectionAlign,omitempty" url:"sectionAlign,omitempty"`
+	SectionID      *string                            `json:"sectionId,omitempty" url:"sectionId,omitempty"`
+	SectionKind    *string                            `json:"sectionKind,omitempty" url:"sectionKind,omitempty"`
+	SectionLabel   *string                            `json:"sectionLabel,omitempty" url:"sectionLabel,omitempty"`
+	SectionLayout  *LandingPageBlockBaseSectionLayout `json:"sectionLayout,omitempty" url:"sectionLayout,omitempty"`
+	SectionVariant *string                            `json:"sectionVariant,omitempty" url:"sectionVariant,omitempty"`
+	Align          *LandingPageImageBlockAlign        `json:"align,omitempty" url:"align,omitempty"`
+	Alt            *string                            `json:"alt,omitempty" url:"alt,omitempty"`
+	Fit            *LandingPageImageBlockFit          `json:"fit,omitempty" url:"fit,omitempty"`
+	Height         *int                               `json:"height,omitempty" url:"height,omitempty"`
+	Images         []*LandingPageImageItem            `json:"images,omitempty" url:"images,omitempty"`
+	Slot           LandingPageImageBlockSlot          `json:"slot" url:"slot"`
+	Src            *string                            `json:"src,omitempty" url:"src,omitempty"`
+	Width          *int                               `json:"width,omitempty" url:"width,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LandingPageImageBlock) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LandingPageImageBlock) GetSectionAlign() *LandingPageBlockBaseSectionAlign {
+	if l == nil {
+		return nil
+	}
+	return l.SectionAlign
+}
+
+func (l *LandingPageImageBlock) GetSectionID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionID
+}
+
+func (l *LandingPageImageBlock) GetSectionKind() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionKind
+}
+
+func (l *LandingPageImageBlock) GetSectionLabel() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionLabel
+}
+
+func (l *LandingPageImageBlock) GetSectionLayout() *LandingPageBlockBaseSectionLayout {
+	if l == nil {
+		return nil
+	}
+	return l.SectionLayout
+}
+
+func (l *LandingPageImageBlock) GetSectionVariant() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionVariant
+}
+
+func (l *LandingPageImageBlock) GetAlign() *LandingPageImageBlockAlign {
+	if l == nil {
+		return nil
+	}
+	return l.Align
+}
+
+func (l *LandingPageImageBlock) GetAlt() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Alt
+}
+
+func (l *LandingPageImageBlock) GetFit() *LandingPageImageBlockFit {
+	if l == nil {
+		return nil
+	}
+	return l.Fit
+}
+
+func (l *LandingPageImageBlock) GetHeight() *int {
+	if l == nil {
+		return nil
+	}
+	return l.Height
+}
+
+func (l *LandingPageImageBlock) GetImages() []*LandingPageImageItem {
+	if l == nil {
+		return nil
+	}
+	return l.Images
+}
+
+func (l *LandingPageImageBlock) GetSlot() LandingPageImageBlockSlot {
+	if l == nil {
+		return ""
+	}
+	return l.Slot
+}
+
+func (l *LandingPageImageBlock) GetSrc() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Src
+}
+
+func (l *LandingPageImageBlock) GetWidth() *int {
+	if l == nil {
+		return nil
+	}
+	return l.Width
+}
+
+func (l *LandingPageImageBlock) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LandingPageImageBlock) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageImageBlock) SetID(id string) {
+	l.ID = id
+	l.require(landingPageImageBlockFieldID)
+}
+
+// SetSectionAlign sets the SectionAlign field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageImageBlock) SetSectionAlign(sectionAlign *LandingPageBlockBaseSectionAlign) {
+	l.SectionAlign = sectionAlign
+	l.require(landingPageImageBlockFieldSectionAlign)
+}
+
+// SetSectionID sets the SectionID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageImageBlock) SetSectionID(sectionID *string) {
+	l.SectionID = sectionID
+	l.require(landingPageImageBlockFieldSectionID)
+}
+
+// SetSectionKind sets the SectionKind field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageImageBlock) SetSectionKind(sectionKind *string) {
+	l.SectionKind = sectionKind
+	l.require(landingPageImageBlockFieldSectionKind)
+}
+
+// SetSectionLabel sets the SectionLabel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageImageBlock) SetSectionLabel(sectionLabel *string) {
+	l.SectionLabel = sectionLabel
+	l.require(landingPageImageBlockFieldSectionLabel)
+}
+
+// SetSectionLayout sets the SectionLayout field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageImageBlock) SetSectionLayout(sectionLayout *LandingPageBlockBaseSectionLayout) {
+	l.SectionLayout = sectionLayout
+	l.require(landingPageImageBlockFieldSectionLayout)
+}
+
+// SetSectionVariant sets the SectionVariant field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageImageBlock) SetSectionVariant(sectionVariant *string) {
+	l.SectionVariant = sectionVariant
+	l.require(landingPageImageBlockFieldSectionVariant)
+}
+
+// SetAlign sets the Align field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageImageBlock) SetAlign(align *LandingPageImageBlockAlign) {
+	l.Align = align
+	l.require(landingPageImageBlockFieldAlign)
+}
+
+// SetAlt sets the Alt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageImageBlock) SetAlt(alt *string) {
+	l.Alt = alt
+	l.require(landingPageImageBlockFieldAlt)
+}
+
+// SetFit sets the Fit field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageImageBlock) SetFit(fit *LandingPageImageBlockFit) {
+	l.Fit = fit
+	l.require(landingPageImageBlockFieldFit)
+}
+
+// SetHeight sets the Height field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageImageBlock) SetHeight(height *int) {
+	l.Height = height
+	l.require(landingPageImageBlockFieldHeight)
+}
+
+// SetImages sets the Images field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageImageBlock) SetImages(images []*LandingPageImageItem) {
+	l.Images = images
+	l.require(landingPageImageBlockFieldImages)
+}
+
+// SetSlot sets the Slot field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageImageBlock) SetSlot(slot LandingPageImageBlockSlot) {
+	l.Slot = slot
+	l.require(landingPageImageBlockFieldSlot)
+}
+
+// SetSrc sets the Src field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageImageBlock) SetSrc(src *string) {
+	l.Src = src
+	l.require(landingPageImageBlockFieldSrc)
+}
+
+// SetWidth sets the Width field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageImageBlock) SetWidth(width *int) {
+	l.Width = width
+	l.require(landingPageImageBlockFieldWidth)
+}
+
+func (l *LandingPageImageBlock) UnmarshalJSON(data []byte) error {
+	type unmarshaler LandingPageImageBlock
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LandingPageImageBlock(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LandingPageImageBlock) MarshalJSON() ([]byte, error) {
+	type embed LandingPageImageBlock
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LandingPageImageBlock) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type LandingPageImageBlockAlign string
+
+const (
+	LandingPageImageBlockAlignLeft   LandingPageImageBlockAlign = "left"
+	LandingPageImageBlockAlignCenter LandingPageImageBlockAlign = "center"
+	LandingPageImageBlockAlignRight  LandingPageImageBlockAlign = "right"
+)
+
+func NewLandingPageImageBlockAlignFromString(s string) (LandingPageImageBlockAlign, error) {
+	switch s {
+	case "left":
+		return LandingPageImageBlockAlignLeft, nil
+	case "center":
+		return LandingPageImageBlockAlignCenter, nil
+	case "right":
+		return LandingPageImageBlockAlignRight, nil
+	}
+	var t LandingPageImageBlockAlign
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageImageBlockAlign) Ptr() *LandingPageImageBlockAlign {
+	return &l
+}
+
+type LandingPageImageBlockFit string
+
+const (
+	LandingPageImageBlockFitCover   LandingPageImageBlockFit = "cover"
+	LandingPageImageBlockFitContain LandingPageImageBlockFit = "contain"
+)
+
+func NewLandingPageImageBlockFitFromString(s string) (LandingPageImageBlockFit, error) {
+	switch s {
+	case "cover":
+		return LandingPageImageBlockFitCover, nil
+	case "contain":
+		return LandingPageImageBlockFitContain, nil
+	}
+	var t LandingPageImageBlockFit
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageImageBlockFit) Ptr() *LandingPageImageBlockFit {
+	return &l
+}
+
+type LandingPageImageBlockSlot string
+
+const (
+	LandingPageImageBlockSlotTop    LandingPageImageBlockSlot = "top"
+	LandingPageImageBlockSlotHero   LandingPageImageBlockSlot = "hero"
+	LandingPageImageBlockSlotForm   LandingPageImageBlockSlot = "form"
+	LandingPageImageBlockSlotBody   LandingPageImageBlockSlot = "body"
+	LandingPageImageBlockSlotFooter LandingPageImageBlockSlot = "footer"
+)
+
+func NewLandingPageImageBlockSlotFromString(s string) (LandingPageImageBlockSlot, error) {
+	switch s {
+	case "top":
+		return LandingPageImageBlockSlotTop, nil
+	case "hero":
+		return LandingPageImageBlockSlotHero, nil
+	case "form":
+		return LandingPageImageBlockSlotForm, nil
+	case "body":
+		return LandingPageImageBlockSlotBody, nil
+	case "footer":
+		return LandingPageImageBlockSlotFooter, nil
+	}
+	var t LandingPageImageBlockSlot
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageImageBlockSlot) Ptr() *LandingPageImageBlockSlot {
+	return &l
+}
+
+var (
+	landingPageImageItemFieldAlt     = big.NewInt(1 << 0)
+	landingPageImageItemFieldLinkURL = big.NewInt(1 << 1)
+	landingPageImageItemFieldSrc     = big.NewInt(1 << 2)
+)
+
+type LandingPageImageItem struct {
+	Alt     *string `json:"alt,omitempty" url:"alt,omitempty"`
+	LinkURL *string `json:"linkUrl,omitempty" url:"linkUrl,omitempty"`
+	Src     *string `json:"src,omitempty" url:"src,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LandingPageImageItem) GetAlt() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Alt
+}
+
+func (l *LandingPageImageItem) GetLinkURL() *string {
+	if l == nil {
+		return nil
+	}
+	return l.LinkURL
+}
+
+func (l *LandingPageImageItem) GetSrc() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Src
+}
+
+func (l *LandingPageImageItem) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LandingPageImageItem) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetAlt sets the Alt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageImageItem) SetAlt(alt *string) {
+	l.Alt = alt
+	l.require(landingPageImageItemFieldAlt)
+}
+
+// SetLinkURL sets the LinkURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageImageItem) SetLinkURL(linkURL *string) {
+	l.LinkURL = linkURL
+	l.require(landingPageImageItemFieldLinkURL)
+}
+
+// SetSrc sets the Src field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageImageItem) SetSrc(src *string) {
+	l.Src = src
+	l.require(landingPageImageItemFieldSrc)
+}
+
+func (l *LandingPageImageItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler LandingPageImageItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LandingPageImageItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LandingPageImageItem) MarshalJSON() ([]byte, error) {
+	type embed LandingPageImageItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LandingPageImageItem) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	landingPageLogoFieldName = big.NewInt(1 << 0)
+)
+
+type LandingPageLogo struct {
+	Name string `json:"name" url:"name"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LandingPageLogo) GetName() string {
+	if l == nil {
+		return ""
+	}
+	return l.Name
+}
+
+func (l *LandingPageLogo) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LandingPageLogo) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageLogo) SetName(name string) {
+	l.Name = name
+	l.require(landingPageLogoFieldName)
+}
+
+func (l *LandingPageLogo) UnmarshalJSON(data []byte) error {
+	type unmarshaler LandingPageLogo
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LandingPageLogo(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LandingPageLogo) MarshalJSON() ([]byte, error) {
+	type embed LandingPageLogo
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LandingPageLogo) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	landingPageLogoCloudBlockFieldID             = big.NewInt(1 << 0)
+	landingPageLogoCloudBlockFieldSectionAlign   = big.NewInt(1 << 1)
+	landingPageLogoCloudBlockFieldSectionID      = big.NewInt(1 << 2)
+	landingPageLogoCloudBlockFieldSectionKind    = big.NewInt(1 << 3)
+	landingPageLogoCloudBlockFieldSectionLabel   = big.NewInt(1 << 4)
+	landingPageLogoCloudBlockFieldSectionLayout  = big.NewInt(1 << 5)
+	landingPageLogoCloudBlockFieldSectionVariant = big.NewInt(1 << 6)
+	landingPageLogoCloudBlockFieldAlign          = big.NewInt(1 << 7)
+	landingPageLogoCloudBlockFieldColumns        = big.NewInt(1 << 8)
+	landingPageLogoCloudBlockFieldHeading        = big.NewInt(1 << 9)
+	landingPageLogoCloudBlockFieldLogos          = big.NewInt(1 << 10)
+	landingPageLogoCloudBlockFieldSlot           = big.NewInt(1 << 11)
+)
+
+type LandingPageLogoCloudBlock struct {
+	ID             string                             `json:"id" url:"id"`
+	SectionAlign   *LandingPageBlockBaseSectionAlign  `json:"sectionAlign,omitempty" url:"sectionAlign,omitempty"`
+	SectionID      *string                            `json:"sectionId,omitempty" url:"sectionId,omitempty"`
+	SectionKind    *string                            `json:"sectionKind,omitempty" url:"sectionKind,omitempty"`
+	SectionLabel   *string                            `json:"sectionLabel,omitempty" url:"sectionLabel,omitempty"`
+	SectionLayout  *LandingPageBlockBaseSectionLayout `json:"sectionLayout,omitempty" url:"sectionLayout,omitempty"`
+	SectionVariant *string                            `json:"sectionVariant,omitempty" url:"sectionVariant,omitempty"`
+	Align          *LandingPageLogoCloudBlockAlign    `json:"align,omitempty" url:"align,omitempty"`
+	Columns        *int                               `json:"columns,omitempty" url:"columns,omitempty"`
+	Heading        *string                            `json:"heading,omitempty" url:"heading,omitempty"`
+	Logos          []*LandingPageLogo                 `json:"logos" url:"logos"`
+	Slot           LandingPageLogoCloudBlockSlot      `json:"slot" url:"slot"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LandingPageLogoCloudBlock) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LandingPageLogoCloudBlock) GetSectionAlign() *LandingPageBlockBaseSectionAlign {
+	if l == nil {
+		return nil
+	}
+	return l.SectionAlign
+}
+
+func (l *LandingPageLogoCloudBlock) GetSectionID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionID
+}
+
+func (l *LandingPageLogoCloudBlock) GetSectionKind() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionKind
+}
+
+func (l *LandingPageLogoCloudBlock) GetSectionLabel() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionLabel
+}
+
+func (l *LandingPageLogoCloudBlock) GetSectionLayout() *LandingPageBlockBaseSectionLayout {
+	if l == nil {
+		return nil
+	}
+	return l.SectionLayout
+}
+
+func (l *LandingPageLogoCloudBlock) GetSectionVariant() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionVariant
+}
+
+func (l *LandingPageLogoCloudBlock) GetAlign() *LandingPageLogoCloudBlockAlign {
+	if l == nil {
+		return nil
+	}
+	return l.Align
+}
+
+func (l *LandingPageLogoCloudBlock) GetColumns() *int {
+	if l == nil {
+		return nil
+	}
+	return l.Columns
+}
+
+func (l *LandingPageLogoCloudBlock) GetHeading() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Heading
+}
+
+func (l *LandingPageLogoCloudBlock) GetLogos() []*LandingPageLogo {
+	if l == nil {
+		return nil
+	}
+	return l.Logos
+}
+
+func (l *LandingPageLogoCloudBlock) GetSlot() LandingPageLogoCloudBlockSlot {
+	if l == nil {
+		return ""
+	}
+	return l.Slot
+}
+
+func (l *LandingPageLogoCloudBlock) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LandingPageLogoCloudBlock) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageLogoCloudBlock) SetID(id string) {
+	l.ID = id
+	l.require(landingPageLogoCloudBlockFieldID)
+}
+
+// SetSectionAlign sets the SectionAlign field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageLogoCloudBlock) SetSectionAlign(sectionAlign *LandingPageBlockBaseSectionAlign) {
+	l.SectionAlign = sectionAlign
+	l.require(landingPageLogoCloudBlockFieldSectionAlign)
+}
+
+// SetSectionID sets the SectionID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageLogoCloudBlock) SetSectionID(sectionID *string) {
+	l.SectionID = sectionID
+	l.require(landingPageLogoCloudBlockFieldSectionID)
+}
+
+// SetSectionKind sets the SectionKind field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageLogoCloudBlock) SetSectionKind(sectionKind *string) {
+	l.SectionKind = sectionKind
+	l.require(landingPageLogoCloudBlockFieldSectionKind)
+}
+
+// SetSectionLabel sets the SectionLabel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageLogoCloudBlock) SetSectionLabel(sectionLabel *string) {
+	l.SectionLabel = sectionLabel
+	l.require(landingPageLogoCloudBlockFieldSectionLabel)
+}
+
+// SetSectionLayout sets the SectionLayout field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageLogoCloudBlock) SetSectionLayout(sectionLayout *LandingPageBlockBaseSectionLayout) {
+	l.SectionLayout = sectionLayout
+	l.require(landingPageLogoCloudBlockFieldSectionLayout)
+}
+
+// SetSectionVariant sets the SectionVariant field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageLogoCloudBlock) SetSectionVariant(sectionVariant *string) {
+	l.SectionVariant = sectionVariant
+	l.require(landingPageLogoCloudBlockFieldSectionVariant)
+}
+
+// SetAlign sets the Align field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageLogoCloudBlock) SetAlign(align *LandingPageLogoCloudBlockAlign) {
+	l.Align = align
+	l.require(landingPageLogoCloudBlockFieldAlign)
+}
+
+// SetColumns sets the Columns field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageLogoCloudBlock) SetColumns(columns *int) {
+	l.Columns = columns
+	l.require(landingPageLogoCloudBlockFieldColumns)
+}
+
+// SetHeading sets the Heading field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageLogoCloudBlock) SetHeading(heading *string) {
+	l.Heading = heading
+	l.require(landingPageLogoCloudBlockFieldHeading)
+}
+
+// SetLogos sets the Logos field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageLogoCloudBlock) SetLogos(logos []*LandingPageLogo) {
+	l.Logos = logos
+	l.require(landingPageLogoCloudBlockFieldLogos)
+}
+
+// SetSlot sets the Slot field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageLogoCloudBlock) SetSlot(slot LandingPageLogoCloudBlockSlot) {
+	l.Slot = slot
+	l.require(landingPageLogoCloudBlockFieldSlot)
+}
+
+func (l *LandingPageLogoCloudBlock) UnmarshalJSON(data []byte) error {
+	type unmarshaler LandingPageLogoCloudBlock
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LandingPageLogoCloudBlock(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LandingPageLogoCloudBlock) MarshalJSON() ([]byte, error) {
+	type embed LandingPageLogoCloudBlock
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LandingPageLogoCloudBlock) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type LandingPageLogoCloudBlockAlign string
+
+const (
+	LandingPageLogoCloudBlockAlignLeft   LandingPageLogoCloudBlockAlign = "left"
+	LandingPageLogoCloudBlockAlignCenter LandingPageLogoCloudBlockAlign = "center"
+	LandingPageLogoCloudBlockAlignRight  LandingPageLogoCloudBlockAlign = "right"
+)
+
+func NewLandingPageLogoCloudBlockAlignFromString(s string) (LandingPageLogoCloudBlockAlign, error) {
+	switch s {
+	case "left":
+		return LandingPageLogoCloudBlockAlignLeft, nil
+	case "center":
+		return LandingPageLogoCloudBlockAlignCenter, nil
+	case "right":
+		return LandingPageLogoCloudBlockAlignRight, nil
+	}
+	var t LandingPageLogoCloudBlockAlign
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageLogoCloudBlockAlign) Ptr() *LandingPageLogoCloudBlockAlign {
+	return &l
+}
+
+type LandingPageLogoCloudBlockSlot string
+
+const (
+	LandingPageLogoCloudBlockSlotTop    LandingPageLogoCloudBlockSlot = "top"
+	LandingPageLogoCloudBlockSlotHero   LandingPageLogoCloudBlockSlot = "hero"
+	LandingPageLogoCloudBlockSlotForm   LandingPageLogoCloudBlockSlot = "form"
+	LandingPageLogoCloudBlockSlotBody   LandingPageLogoCloudBlockSlot = "body"
+	LandingPageLogoCloudBlockSlotFooter LandingPageLogoCloudBlockSlot = "footer"
+)
+
+func NewLandingPageLogoCloudBlockSlotFromString(s string) (LandingPageLogoCloudBlockSlot, error) {
+	switch s {
+	case "top":
+		return LandingPageLogoCloudBlockSlotTop, nil
+	case "hero":
+		return LandingPageLogoCloudBlockSlotHero, nil
+	case "form":
+		return LandingPageLogoCloudBlockSlotForm, nil
+	case "body":
+		return LandingPageLogoCloudBlockSlotBody, nil
+	case "footer":
+		return LandingPageLogoCloudBlockSlotFooter, nil
+	}
+	var t LandingPageLogoCloudBlockSlot
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageLogoCloudBlockSlot) Ptr() *LandingPageLogoCloudBlockSlot {
+	return &l
+}
+
+// Pricing buttonUrl accepts an HTTPS URL or an in-page anchor such as #form.
+var (
+	landingPagePricingBlockFieldID             = big.NewInt(1 << 0)
+	landingPagePricingBlockFieldSectionAlign   = big.NewInt(1 << 1)
+	landingPagePricingBlockFieldSectionID      = big.NewInt(1 << 2)
+	landingPagePricingBlockFieldSectionKind    = big.NewInt(1 << 3)
+	landingPagePricingBlockFieldSectionLabel   = big.NewInt(1 << 4)
+	landingPagePricingBlockFieldSectionLayout  = big.NewInt(1 << 5)
+	landingPagePricingBlockFieldSectionVariant = big.NewInt(1 << 6)
+	landingPagePricingBlockFieldAlign          = big.NewInt(1 << 7)
+	landingPagePricingBlockFieldButtonText     = big.NewInt(1 << 8)
+	landingPagePricingBlockFieldButtonURL      = big.NewInt(1 << 9)
+	landingPagePricingBlockFieldDescription    = big.NewInt(1 << 10)
+	landingPagePricingBlockFieldEyebrow        = big.NewInt(1 << 11)
+	landingPagePricingBlockFieldFeatures       = big.NewInt(1 << 12)
+	landingPagePricingBlockFieldHeading        = big.NewInt(1 << 13)
+	landingPagePricingBlockFieldPeriod         = big.NewInt(1 << 14)
+	landingPagePricingBlockFieldPrice          = big.NewInt(1 << 15)
+	landingPagePricingBlockFieldSlot           = big.NewInt(1 << 16)
+)
+
+type LandingPagePricingBlock struct {
+	ID             string                             `json:"id" url:"id"`
+	SectionAlign   *LandingPageBlockBaseSectionAlign  `json:"sectionAlign,omitempty" url:"sectionAlign,omitempty"`
+	SectionID      *string                            `json:"sectionId,omitempty" url:"sectionId,omitempty"`
+	SectionKind    *string                            `json:"sectionKind,omitempty" url:"sectionKind,omitempty"`
+	SectionLabel   *string                            `json:"sectionLabel,omitempty" url:"sectionLabel,omitempty"`
+	SectionLayout  *LandingPageBlockBaseSectionLayout `json:"sectionLayout,omitempty" url:"sectionLayout,omitempty"`
+	SectionVariant *string                            `json:"sectionVariant,omitempty" url:"sectionVariant,omitempty"`
+	Align          *LandingPagePricingBlockAlign      `json:"align,omitempty" url:"align,omitempty"`
+	ButtonText     string                             `json:"buttonText" url:"buttonText"`
+	ButtonURL      *string                            `json:"buttonUrl,omitempty" url:"buttonUrl,omitempty"`
+	Description    *string                            `json:"description,omitempty" url:"description,omitempty"`
+	Eyebrow        *string                            `json:"eyebrow,omitempty" url:"eyebrow,omitempty"`
+	Features       []string                           `json:"features" url:"features"`
+	Heading        string                             `json:"heading" url:"heading"`
+	Period         *string                            `json:"period,omitempty" url:"period,omitempty"`
+	Price          string                             `json:"price" url:"price"`
+	Slot           LandingPagePricingBlockSlot        `json:"slot" url:"slot"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LandingPagePricingBlock) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LandingPagePricingBlock) GetSectionAlign() *LandingPageBlockBaseSectionAlign {
+	if l == nil {
+		return nil
+	}
+	return l.SectionAlign
+}
+
+func (l *LandingPagePricingBlock) GetSectionID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionID
+}
+
+func (l *LandingPagePricingBlock) GetSectionKind() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionKind
+}
+
+func (l *LandingPagePricingBlock) GetSectionLabel() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionLabel
+}
+
+func (l *LandingPagePricingBlock) GetSectionLayout() *LandingPageBlockBaseSectionLayout {
+	if l == nil {
+		return nil
+	}
+	return l.SectionLayout
+}
+
+func (l *LandingPagePricingBlock) GetSectionVariant() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionVariant
+}
+
+func (l *LandingPagePricingBlock) GetAlign() *LandingPagePricingBlockAlign {
+	if l == nil {
+		return nil
+	}
+	return l.Align
+}
+
+func (l *LandingPagePricingBlock) GetButtonText() string {
+	if l == nil {
+		return ""
+	}
+	return l.ButtonText
+}
+
+func (l *LandingPagePricingBlock) GetButtonURL() *string {
+	if l == nil {
+		return nil
+	}
+	return l.ButtonURL
+}
+
+func (l *LandingPagePricingBlock) GetDescription() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Description
+}
+
+func (l *LandingPagePricingBlock) GetEyebrow() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Eyebrow
+}
+
+func (l *LandingPagePricingBlock) GetFeatures() []string {
+	if l == nil {
+		return nil
+	}
+	return l.Features
+}
+
+func (l *LandingPagePricingBlock) GetHeading() string {
+	if l == nil {
+		return ""
+	}
+	return l.Heading
+}
+
+func (l *LandingPagePricingBlock) GetPeriod() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Period
+}
+
+func (l *LandingPagePricingBlock) GetPrice() string {
+	if l == nil {
+		return ""
+	}
+	return l.Price
+}
+
+func (l *LandingPagePricingBlock) GetSlot() LandingPagePricingBlockSlot {
+	if l == nil {
+		return ""
+	}
+	return l.Slot
+}
+
+func (l *LandingPagePricingBlock) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LandingPagePricingBlock) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPagePricingBlock) SetID(id string) {
+	l.ID = id
+	l.require(landingPagePricingBlockFieldID)
+}
+
+// SetSectionAlign sets the SectionAlign field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPagePricingBlock) SetSectionAlign(sectionAlign *LandingPageBlockBaseSectionAlign) {
+	l.SectionAlign = sectionAlign
+	l.require(landingPagePricingBlockFieldSectionAlign)
+}
+
+// SetSectionID sets the SectionID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPagePricingBlock) SetSectionID(sectionID *string) {
+	l.SectionID = sectionID
+	l.require(landingPagePricingBlockFieldSectionID)
+}
+
+// SetSectionKind sets the SectionKind field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPagePricingBlock) SetSectionKind(sectionKind *string) {
+	l.SectionKind = sectionKind
+	l.require(landingPagePricingBlockFieldSectionKind)
+}
+
+// SetSectionLabel sets the SectionLabel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPagePricingBlock) SetSectionLabel(sectionLabel *string) {
+	l.SectionLabel = sectionLabel
+	l.require(landingPagePricingBlockFieldSectionLabel)
+}
+
+// SetSectionLayout sets the SectionLayout field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPagePricingBlock) SetSectionLayout(sectionLayout *LandingPageBlockBaseSectionLayout) {
+	l.SectionLayout = sectionLayout
+	l.require(landingPagePricingBlockFieldSectionLayout)
+}
+
+// SetSectionVariant sets the SectionVariant field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPagePricingBlock) SetSectionVariant(sectionVariant *string) {
+	l.SectionVariant = sectionVariant
+	l.require(landingPagePricingBlockFieldSectionVariant)
+}
+
+// SetAlign sets the Align field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPagePricingBlock) SetAlign(align *LandingPagePricingBlockAlign) {
+	l.Align = align
+	l.require(landingPagePricingBlockFieldAlign)
+}
+
+// SetButtonText sets the ButtonText field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPagePricingBlock) SetButtonText(buttonText string) {
+	l.ButtonText = buttonText
+	l.require(landingPagePricingBlockFieldButtonText)
+}
+
+// SetButtonURL sets the ButtonURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPagePricingBlock) SetButtonURL(buttonURL *string) {
+	l.ButtonURL = buttonURL
+	l.require(landingPagePricingBlockFieldButtonURL)
+}
+
+// SetDescription sets the Description field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPagePricingBlock) SetDescription(description *string) {
+	l.Description = description
+	l.require(landingPagePricingBlockFieldDescription)
+}
+
+// SetEyebrow sets the Eyebrow field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPagePricingBlock) SetEyebrow(eyebrow *string) {
+	l.Eyebrow = eyebrow
+	l.require(landingPagePricingBlockFieldEyebrow)
+}
+
+// SetFeatures sets the Features field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPagePricingBlock) SetFeatures(features []string) {
+	l.Features = features
+	l.require(landingPagePricingBlockFieldFeatures)
+}
+
+// SetHeading sets the Heading field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPagePricingBlock) SetHeading(heading string) {
+	l.Heading = heading
+	l.require(landingPagePricingBlockFieldHeading)
+}
+
+// SetPeriod sets the Period field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPagePricingBlock) SetPeriod(period *string) {
+	l.Period = period
+	l.require(landingPagePricingBlockFieldPeriod)
+}
+
+// SetPrice sets the Price field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPagePricingBlock) SetPrice(price string) {
+	l.Price = price
+	l.require(landingPagePricingBlockFieldPrice)
+}
+
+// SetSlot sets the Slot field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPagePricingBlock) SetSlot(slot LandingPagePricingBlockSlot) {
+	l.Slot = slot
+	l.require(landingPagePricingBlockFieldSlot)
+}
+
+func (l *LandingPagePricingBlock) UnmarshalJSON(data []byte) error {
+	type unmarshaler LandingPagePricingBlock
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LandingPagePricingBlock(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LandingPagePricingBlock) MarshalJSON() ([]byte, error) {
+	type embed LandingPagePricingBlock
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LandingPagePricingBlock) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type LandingPagePricingBlockAlign string
+
+const (
+	LandingPagePricingBlockAlignLeft   LandingPagePricingBlockAlign = "left"
+	LandingPagePricingBlockAlignCenter LandingPagePricingBlockAlign = "center"
+	LandingPagePricingBlockAlignRight  LandingPagePricingBlockAlign = "right"
+)
+
+func NewLandingPagePricingBlockAlignFromString(s string) (LandingPagePricingBlockAlign, error) {
+	switch s {
+	case "left":
+		return LandingPagePricingBlockAlignLeft, nil
+	case "center":
+		return LandingPagePricingBlockAlignCenter, nil
+	case "right":
+		return LandingPagePricingBlockAlignRight, nil
+	}
+	var t LandingPagePricingBlockAlign
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPagePricingBlockAlign) Ptr() *LandingPagePricingBlockAlign {
+	return &l
+}
+
+type LandingPagePricingBlockSlot string
+
+const (
+	LandingPagePricingBlockSlotTop    LandingPagePricingBlockSlot = "top"
+	LandingPagePricingBlockSlotHero   LandingPagePricingBlockSlot = "hero"
+	LandingPagePricingBlockSlotForm   LandingPagePricingBlockSlot = "form"
+	LandingPagePricingBlockSlotBody   LandingPagePricingBlockSlot = "body"
+	LandingPagePricingBlockSlotFooter LandingPagePricingBlockSlot = "footer"
+)
+
+func NewLandingPagePricingBlockSlotFromString(s string) (LandingPagePricingBlockSlot, error) {
+	switch s {
+	case "top":
+		return LandingPagePricingBlockSlotTop, nil
+	case "hero":
+		return LandingPagePricingBlockSlotHero, nil
+	case "form":
+		return LandingPagePricingBlockSlotForm, nil
+	case "body":
+		return LandingPagePricingBlockSlotBody, nil
+	case "footer":
+		return LandingPagePricingBlockSlotFooter, nil
+	}
+	var t LandingPagePricingBlockSlot
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPagePricingBlockSlot) Ptr() *LandingPagePricingBlockSlot {
+	return &l
+}
+
+var (
+	landingPageSeoFieldDescription           = big.NewInt(1 << 0)
+	landingPageSeoFieldFaviconURL            = big.NewInt(1 << 1)
+	landingPageSeoFieldHideFromSearchEngines = big.NewInt(1 << 2)
+	landingPageSeoFieldTitle                 = big.NewInt(1 << 3)
+)
+
+type LandingPageSeo struct {
+	Description *string `json:"description,omitempty" url:"description,omitempty"`
+	// Empty falls back to the company logo.
+	FaviconURL *string `json:"faviconUrl,omitempty" url:"faviconUrl,omitempty"`
+	// Adds noindex, nofollow. The page stays reachable by direct link.
+	HideFromSearchEngines *bool   `json:"hideFromSearchEngines,omitempty" url:"hideFromSearchEngines,omitempty"`
+	Title                 *string `json:"title,omitempty" url:"title,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LandingPageSeo) GetDescription() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Description
+}
+
+func (l *LandingPageSeo) GetFaviconURL() *string {
+	if l == nil {
+		return nil
+	}
+	return l.FaviconURL
+}
+
+func (l *LandingPageSeo) GetHideFromSearchEngines() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.HideFromSearchEngines
+}
+
+func (l *LandingPageSeo) GetTitle() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Title
+}
+
+func (l *LandingPageSeo) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LandingPageSeo) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetDescription sets the Description field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageSeo) SetDescription(description *string) {
+	l.Description = description
+	l.require(landingPageSeoFieldDescription)
+}
+
+// SetFaviconURL sets the FaviconURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageSeo) SetFaviconURL(faviconURL *string) {
+	l.FaviconURL = faviconURL
+	l.require(landingPageSeoFieldFaviconURL)
+}
+
+// SetHideFromSearchEngines sets the HideFromSearchEngines field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageSeo) SetHideFromSearchEngines(hideFromSearchEngines *bool) {
+	l.HideFromSearchEngines = hideFromSearchEngines
+	l.require(landingPageSeoFieldHideFromSearchEngines)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageSeo) SetTitle(title *string) {
+	l.Title = title
+	l.require(landingPageSeoFieldTitle)
+}
+
+func (l *LandingPageSeo) UnmarshalJSON(data []byte) error {
+	type unmarshaler LandingPageSeo
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LandingPageSeo(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LandingPageSeo) MarshalJSON() ([]byte, error) {
+	type embed LandingPageSeo
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LandingPageSeo) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	landingPageSpacerBlockFieldID             = big.NewInt(1 << 0)
+	landingPageSpacerBlockFieldSectionAlign   = big.NewInt(1 << 1)
+	landingPageSpacerBlockFieldSectionID      = big.NewInt(1 << 2)
+	landingPageSpacerBlockFieldSectionKind    = big.NewInt(1 << 3)
+	landingPageSpacerBlockFieldSectionLabel   = big.NewInt(1 << 4)
+	landingPageSpacerBlockFieldSectionLayout  = big.NewInt(1 << 5)
+	landingPageSpacerBlockFieldSectionVariant = big.NewInt(1 << 6)
+	landingPageSpacerBlockFieldHeight         = big.NewInt(1 << 7)
+	landingPageSpacerBlockFieldSlot           = big.NewInt(1 << 8)
+)
+
+type LandingPageSpacerBlock struct {
+	ID             string                             `json:"id" url:"id"`
+	SectionAlign   *LandingPageBlockBaseSectionAlign  `json:"sectionAlign,omitempty" url:"sectionAlign,omitempty"`
+	SectionID      *string                            `json:"sectionId,omitempty" url:"sectionId,omitempty"`
+	SectionKind    *string                            `json:"sectionKind,omitempty" url:"sectionKind,omitempty"`
+	SectionLabel   *string                            `json:"sectionLabel,omitempty" url:"sectionLabel,omitempty"`
+	SectionLayout  *LandingPageBlockBaseSectionLayout `json:"sectionLayout,omitempty" url:"sectionLayout,omitempty"`
+	SectionVariant *string                            `json:"sectionVariant,omitempty" url:"sectionVariant,omitempty"`
+	Height         *int                               `json:"height,omitempty" url:"height,omitempty"`
+	Slot           LandingPageSpacerBlockSlot         `json:"slot" url:"slot"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LandingPageSpacerBlock) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LandingPageSpacerBlock) GetSectionAlign() *LandingPageBlockBaseSectionAlign {
+	if l == nil {
+		return nil
+	}
+	return l.SectionAlign
+}
+
+func (l *LandingPageSpacerBlock) GetSectionID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionID
+}
+
+func (l *LandingPageSpacerBlock) GetSectionKind() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionKind
+}
+
+func (l *LandingPageSpacerBlock) GetSectionLabel() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionLabel
+}
+
+func (l *LandingPageSpacerBlock) GetSectionLayout() *LandingPageBlockBaseSectionLayout {
+	if l == nil {
+		return nil
+	}
+	return l.SectionLayout
+}
+
+func (l *LandingPageSpacerBlock) GetSectionVariant() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionVariant
+}
+
+func (l *LandingPageSpacerBlock) GetHeight() *int {
+	if l == nil {
+		return nil
+	}
+	return l.Height
+}
+
+func (l *LandingPageSpacerBlock) GetSlot() LandingPageSpacerBlockSlot {
+	if l == nil {
+		return ""
+	}
+	return l.Slot
+}
+
+func (l *LandingPageSpacerBlock) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LandingPageSpacerBlock) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageSpacerBlock) SetID(id string) {
+	l.ID = id
+	l.require(landingPageSpacerBlockFieldID)
+}
+
+// SetSectionAlign sets the SectionAlign field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageSpacerBlock) SetSectionAlign(sectionAlign *LandingPageBlockBaseSectionAlign) {
+	l.SectionAlign = sectionAlign
+	l.require(landingPageSpacerBlockFieldSectionAlign)
+}
+
+// SetSectionID sets the SectionID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageSpacerBlock) SetSectionID(sectionID *string) {
+	l.SectionID = sectionID
+	l.require(landingPageSpacerBlockFieldSectionID)
+}
+
+// SetSectionKind sets the SectionKind field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageSpacerBlock) SetSectionKind(sectionKind *string) {
+	l.SectionKind = sectionKind
+	l.require(landingPageSpacerBlockFieldSectionKind)
+}
+
+// SetSectionLabel sets the SectionLabel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageSpacerBlock) SetSectionLabel(sectionLabel *string) {
+	l.SectionLabel = sectionLabel
+	l.require(landingPageSpacerBlockFieldSectionLabel)
+}
+
+// SetSectionLayout sets the SectionLayout field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageSpacerBlock) SetSectionLayout(sectionLayout *LandingPageBlockBaseSectionLayout) {
+	l.SectionLayout = sectionLayout
+	l.require(landingPageSpacerBlockFieldSectionLayout)
+}
+
+// SetSectionVariant sets the SectionVariant field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageSpacerBlock) SetSectionVariant(sectionVariant *string) {
+	l.SectionVariant = sectionVariant
+	l.require(landingPageSpacerBlockFieldSectionVariant)
+}
+
+// SetHeight sets the Height field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageSpacerBlock) SetHeight(height *int) {
+	l.Height = height
+	l.require(landingPageSpacerBlockFieldHeight)
+}
+
+// SetSlot sets the Slot field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageSpacerBlock) SetSlot(slot LandingPageSpacerBlockSlot) {
+	l.Slot = slot
+	l.require(landingPageSpacerBlockFieldSlot)
+}
+
+func (l *LandingPageSpacerBlock) UnmarshalJSON(data []byte) error {
+	type unmarshaler LandingPageSpacerBlock
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LandingPageSpacerBlock(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LandingPageSpacerBlock) MarshalJSON() ([]byte, error) {
+	type embed LandingPageSpacerBlock
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LandingPageSpacerBlock) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type LandingPageSpacerBlockSlot string
+
+const (
+	LandingPageSpacerBlockSlotTop    LandingPageSpacerBlockSlot = "top"
+	LandingPageSpacerBlockSlotHero   LandingPageSpacerBlockSlot = "hero"
+	LandingPageSpacerBlockSlotForm   LandingPageSpacerBlockSlot = "form"
+	LandingPageSpacerBlockSlotBody   LandingPageSpacerBlockSlot = "body"
+	LandingPageSpacerBlockSlotFooter LandingPageSpacerBlockSlot = "footer"
+)
+
+func NewLandingPageSpacerBlockSlotFromString(s string) (LandingPageSpacerBlockSlot, error) {
+	switch s {
+	case "top":
+		return LandingPageSpacerBlockSlotTop, nil
+	case "hero":
+		return LandingPageSpacerBlockSlotHero, nil
+	case "form":
+		return LandingPageSpacerBlockSlotForm, nil
+	case "body":
+		return LandingPageSpacerBlockSlotBody, nil
+	case "footer":
+		return LandingPageSpacerBlockSlotFooter, nil
+	}
+	var t LandingPageSpacerBlockSlot
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageSpacerBlockSlot) Ptr() *LandingPageSpacerBlockSlot {
+	return &l
+}
+
+var (
+	landingPageStatisticFieldLabel = big.NewInt(1 << 0)
+	landingPageStatisticFieldValue = big.NewInt(1 << 1)
+)
+
+type LandingPageStatistic struct {
+	Label string `json:"label" url:"label"`
+	Value string `json:"value" url:"value"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LandingPageStatistic) GetLabel() string {
+	if l == nil {
+		return ""
+	}
+	return l.Label
+}
+
+func (l *LandingPageStatistic) GetValue() string {
+	if l == nil {
+		return ""
+	}
+	return l.Value
+}
+
+func (l *LandingPageStatistic) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LandingPageStatistic) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageStatistic) SetLabel(label string) {
+	l.Label = label
+	l.require(landingPageStatisticFieldLabel)
+}
+
+// SetValue sets the Value field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageStatistic) SetValue(value string) {
+	l.Value = value
+	l.require(landingPageStatisticFieldValue)
+}
+
+func (l *LandingPageStatistic) UnmarshalJSON(data []byte) error {
+	type unmarshaler LandingPageStatistic
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LandingPageStatistic(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LandingPageStatistic) MarshalJSON() ([]byte, error) {
+	type embed LandingPageStatistic
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LandingPageStatistic) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	landingPageStatsBlockFieldID             = big.NewInt(1 << 0)
+	landingPageStatsBlockFieldSectionAlign   = big.NewInt(1 << 1)
+	landingPageStatsBlockFieldSectionID      = big.NewInt(1 << 2)
+	landingPageStatsBlockFieldSectionKind    = big.NewInt(1 << 3)
+	landingPageStatsBlockFieldSectionLabel   = big.NewInt(1 << 4)
+	landingPageStatsBlockFieldSectionLayout  = big.NewInt(1 << 5)
+	landingPageStatsBlockFieldSectionVariant = big.NewInt(1 << 6)
+	landingPageStatsBlockFieldAlign          = big.NewInt(1 << 7)
+	landingPageStatsBlockFieldColumns        = big.NewInt(1 << 8)
+	landingPageStatsBlockFieldSlot           = big.NewInt(1 << 9)
+	landingPageStatsBlockFieldStats          = big.NewInt(1 << 10)
+)
+
+type LandingPageStatsBlock struct {
+	ID             string                             `json:"id" url:"id"`
+	SectionAlign   *LandingPageBlockBaseSectionAlign  `json:"sectionAlign,omitempty" url:"sectionAlign,omitempty"`
+	SectionID      *string                            `json:"sectionId,omitempty" url:"sectionId,omitempty"`
+	SectionKind    *string                            `json:"sectionKind,omitempty" url:"sectionKind,omitempty"`
+	SectionLabel   *string                            `json:"sectionLabel,omitempty" url:"sectionLabel,omitempty"`
+	SectionLayout  *LandingPageBlockBaseSectionLayout `json:"sectionLayout,omitempty" url:"sectionLayout,omitempty"`
+	SectionVariant *string                            `json:"sectionVariant,omitempty" url:"sectionVariant,omitempty"`
+	Align          *LandingPageStatsBlockAlign        `json:"align,omitempty" url:"align,omitempty"`
+	Columns        *int                               `json:"columns,omitempty" url:"columns,omitempty"`
+	Slot           LandingPageStatsBlockSlot          `json:"slot" url:"slot"`
+	Stats          []*LandingPageStatistic            `json:"stats" url:"stats"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LandingPageStatsBlock) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LandingPageStatsBlock) GetSectionAlign() *LandingPageBlockBaseSectionAlign {
+	if l == nil {
+		return nil
+	}
+	return l.SectionAlign
+}
+
+func (l *LandingPageStatsBlock) GetSectionID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionID
+}
+
+func (l *LandingPageStatsBlock) GetSectionKind() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionKind
+}
+
+func (l *LandingPageStatsBlock) GetSectionLabel() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionLabel
+}
+
+func (l *LandingPageStatsBlock) GetSectionLayout() *LandingPageBlockBaseSectionLayout {
+	if l == nil {
+		return nil
+	}
+	return l.SectionLayout
+}
+
+func (l *LandingPageStatsBlock) GetSectionVariant() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionVariant
+}
+
+func (l *LandingPageStatsBlock) GetAlign() *LandingPageStatsBlockAlign {
+	if l == nil {
+		return nil
+	}
+	return l.Align
+}
+
+func (l *LandingPageStatsBlock) GetColumns() *int {
+	if l == nil {
+		return nil
+	}
+	return l.Columns
+}
+
+func (l *LandingPageStatsBlock) GetSlot() LandingPageStatsBlockSlot {
+	if l == nil {
+		return ""
+	}
+	return l.Slot
+}
+
+func (l *LandingPageStatsBlock) GetStats() []*LandingPageStatistic {
+	if l == nil {
+		return nil
+	}
+	return l.Stats
+}
+
+func (l *LandingPageStatsBlock) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LandingPageStatsBlock) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageStatsBlock) SetID(id string) {
+	l.ID = id
+	l.require(landingPageStatsBlockFieldID)
+}
+
+// SetSectionAlign sets the SectionAlign field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageStatsBlock) SetSectionAlign(sectionAlign *LandingPageBlockBaseSectionAlign) {
+	l.SectionAlign = sectionAlign
+	l.require(landingPageStatsBlockFieldSectionAlign)
+}
+
+// SetSectionID sets the SectionID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageStatsBlock) SetSectionID(sectionID *string) {
+	l.SectionID = sectionID
+	l.require(landingPageStatsBlockFieldSectionID)
+}
+
+// SetSectionKind sets the SectionKind field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageStatsBlock) SetSectionKind(sectionKind *string) {
+	l.SectionKind = sectionKind
+	l.require(landingPageStatsBlockFieldSectionKind)
+}
+
+// SetSectionLabel sets the SectionLabel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageStatsBlock) SetSectionLabel(sectionLabel *string) {
+	l.SectionLabel = sectionLabel
+	l.require(landingPageStatsBlockFieldSectionLabel)
+}
+
+// SetSectionLayout sets the SectionLayout field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageStatsBlock) SetSectionLayout(sectionLayout *LandingPageBlockBaseSectionLayout) {
+	l.SectionLayout = sectionLayout
+	l.require(landingPageStatsBlockFieldSectionLayout)
+}
+
+// SetSectionVariant sets the SectionVariant field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageStatsBlock) SetSectionVariant(sectionVariant *string) {
+	l.SectionVariant = sectionVariant
+	l.require(landingPageStatsBlockFieldSectionVariant)
+}
+
+// SetAlign sets the Align field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageStatsBlock) SetAlign(align *LandingPageStatsBlockAlign) {
+	l.Align = align
+	l.require(landingPageStatsBlockFieldAlign)
+}
+
+// SetColumns sets the Columns field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageStatsBlock) SetColumns(columns *int) {
+	l.Columns = columns
+	l.require(landingPageStatsBlockFieldColumns)
+}
+
+// SetSlot sets the Slot field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageStatsBlock) SetSlot(slot LandingPageStatsBlockSlot) {
+	l.Slot = slot
+	l.require(landingPageStatsBlockFieldSlot)
+}
+
+// SetStats sets the Stats field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageStatsBlock) SetStats(stats []*LandingPageStatistic) {
+	l.Stats = stats
+	l.require(landingPageStatsBlockFieldStats)
+}
+
+func (l *LandingPageStatsBlock) UnmarshalJSON(data []byte) error {
+	type unmarshaler LandingPageStatsBlock
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LandingPageStatsBlock(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LandingPageStatsBlock) MarshalJSON() ([]byte, error) {
+	type embed LandingPageStatsBlock
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LandingPageStatsBlock) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type LandingPageStatsBlockAlign string
+
+const (
+	LandingPageStatsBlockAlignLeft   LandingPageStatsBlockAlign = "left"
+	LandingPageStatsBlockAlignCenter LandingPageStatsBlockAlign = "center"
+	LandingPageStatsBlockAlignRight  LandingPageStatsBlockAlign = "right"
+)
+
+func NewLandingPageStatsBlockAlignFromString(s string) (LandingPageStatsBlockAlign, error) {
+	switch s {
+	case "left":
+		return LandingPageStatsBlockAlignLeft, nil
+	case "center":
+		return LandingPageStatsBlockAlignCenter, nil
+	case "right":
+		return LandingPageStatsBlockAlignRight, nil
+	}
+	var t LandingPageStatsBlockAlign
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageStatsBlockAlign) Ptr() *LandingPageStatsBlockAlign {
+	return &l
+}
+
+type LandingPageStatsBlockSlot string
+
+const (
+	LandingPageStatsBlockSlotTop    LandingPageStatsBlockSlot = "top"
+	LandingPageStatsBlockSlotHero   LandingPageStatsBlockSlot = "hero"
+	LandingPageStatsBlockSlotForm   LandingPageStatsBlockSlot = "form"
+	LandingPageStatsBlockSlotBody   LandingPageStatsBlockSlot = "body"
+	LandingPageStatsBlockSlotFooter LandingPageStatsBlockSlot = "footer"
+)
+
+func NewLandingPageStatsBlockSlotFromString(s string) (LandingPageStatsBlockSlot, error) {
+	switch s {
+	case "top":
+		return LandingPageStatsBlockSlotTop, nil
+	case "hero":
+		return LandingPageStatsBlockSlotHero, nil
+	case "form":
+		return LandingPageStatsBlockSlotForm, nil
+	case "body":
+		return LandingPageStatsBlockSlotBody, nil
+	case "footer":
+		return LandingPageStatsBlockSlotFooter, nil
+	}
+	var t LandingPageStatsBlockSlot
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageStatsBlockSlot) Ptr() *LandingPageStatsBlockSlot {
 	return &l
 }
 
@@ -1780,6 +8305,1624 @@ func NewLandingPageSummaryStatusFromString(s string) (LandingPageSummaryStatus, 
 }
 
 func (l LandingPageSummaryStatus) Ptr() *LandingPageSummaryStatus {
+	return &l
+}
+
+var (
+	landingPageTestimonialFieldAvatarURL = big.NewInt(1 << 0)
+	landingPageTestimonialFieldName      = big.NewInt(1 << 1)
+	landingPageTestimonialFieldQuote     = big.NewInt(1 << 2)
+	landingPageTestimonialFieldRole      = big.NewInt(1 << 3)
+)
+
+type LandingPageTestimonial struct {
+	AvatarURL *string `json:"avatarUrl,omitempty" url:"avatarUrl,omitempty"`
+	Name      string  `json:"name" url:"name"`
+	Quote     string  `json:"quote" url:"quote"`
+	Role      *string `json:"role,omitempty" url:"role,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LandingPageTestimonial) GetAvatarURL() *string {
+	if l == nil {
+		return nil
+	}
+	return l.AvatarURL
+}
+
+func (l *LandingPageTestimonial) GetName() string {
+	if l == nil {
+		return ""
+	}
+	return l.Name
+}
+
+func (l *LandingPageTestimonial) GetQuote() string {
+	if l == nil {
+		return ""
+	}
+	return l.Quote
+}
+
+func (l *LandingPageTestimonial) GetRole() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Role
+}
+
+func (l *LandingPageTestimonial) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LandingPageTestimonial) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetAvatarURL sets the AvatarURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageTestimonial) SetAvatarURL(avatarURL *string) {
+	l.AvatarURL = avatarURL
+	l.require(landingPageTestimonialFieldAvatarURL)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageTestimonial) SetName(name string) {
+	l.Name = name
+	l.require(landingPageTestimonialFieldName)
+}
+
+// SetQuote sets the Quote field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageTestimonial) SetQuote(quote string) {
+	l.Quote = quote
+	l.require(landingPageTestimonialFieldQuote)
+}
+
+// SetRole sets the Role field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageTestimonial) SetRole(role *string) {
+	l.Role = role
+	l.require(landingPageTestimonialFieldRole)
+}
+
+func (l *LandingPageTestimonial) UnmarshalJSON(data []byte) error {
+	type unmarshaler LandingPageTestimonial
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LandingPageTestimonial(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LandingPageTestimonial) MarshalJSON() ([]byte, error) {
+	type embed LandingPageTestimonial
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LandingPageTestimonial) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	landingPageTestimonialBlockFieldID             = big.NewInt(1 << 0)
+	landingPageTestimonialBlockFieldSectionAlign   = big.NewInt(1 << 1)
+	landingPageTestimonialBlockFieldSectionID      = big.NewInt(1 << 2)
+	landingPageTestimonialBlockFieldSectionKind    = big.NewInt(1 << 3)
+	landingPageTestimonialBlockFieldSectionLabel   = big.NewInt(1 << 4)
+	landingPageTestimonialBlockFieldSectionLayout  = big.NewInt(1 << 5)
+	landingPageTestimonialBlockFieldSectionVariant = big.NewInt(1 << 6)
+	landingPageTestimonialBlockFieldAlign          = big.NewInt(1 << 7)
+	landingPageTestimonialBlockFieldColumns        = big.NewInt(1 << 8)
+	landingPageTestimonialBlockFieldLayout         = big.NewInt(1 << 9)
+	landingPageTestimonialBlockFieldSlot           = big.NewInt(1 << 10)
+	landingPageTestimonialBlockFieldTestimonials   = big.NewInt(1 << 11)
+)
+
+type LandingPageTestimonialBlock struct {
+	ID             string                             `json:"id" url:"id"`
+	SectionAlign   *LandingPageBlockBaseSectionAlign  `json:"sectionAlign,omitempty" url:"sectionAlign,omitempty"`
+	SectionID      *string                            `json:"sectionId,omitempty" url:"sectionId,omitempty"`
+	SectionKind    *string                            `json:"sectionKind,omitempty" url:"sectionKind,omitempty"`
+	SectionLabel   *string                            `json:"sectionLabel,omitempty" url:"sectionLabel,omitempty"`
+	SectionLayout  *LandingPageBlockBaseSectionLayout `json:"sectionLayout,omitempty" url:"sectionLayout,omitempty"`
+	SectionVariant *string                            `json:"sectionVariant,omitempty" url:"sectionVariant,omitempty"`
+	Align          *LandingPageTestimonialBlockAlign  `json:"align,omitempty" url:"align,omitempty"`
+	Columns        *int                               `json:"columns,omitempty" url:"columns,omitempty"`
+	Layout         *LandingPageTestimonialBlockLayout `json:"layout,omitempty" url:"layout,omitempty"`
+	Slot           LandingPageTestimonialBlockSlot    `json:"slot" url:"slot"`
+	Testimonials   []*LandingPageTestimonial          `json:"testimonials" url:"testimonials"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LandingPageTestimonialBlock) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LandingPageTestimonialBlock) GetSectionAlign() *LandingPageBlockBaseSectionAlign {
+	if l == nil {
+		return nil
+	}
+	return l.SectionAlign
+}
+
+func (l *LandingPageTestimonialBlock) GetSectionID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionID
+}
+
+func (l *LandingPageTestimonialBlock) GetSectionKind() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionKind
+}
+
+func (l *LandingPageTestimonialBlock) GetSectionLabel() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionLabel
+}
+
+func (l *LandingPageTestimonialBlock) GetSectionLayout() *LandingPageBlockBaseSectionLayout {
+	if l == nil {
+		return nil
+	}
+	return l.SectionLayout
+}
+
+func (l *LandingPageTestimonialBlock) GetSectionVariant() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionVariant
+}
+
+func (l *LandingPageTestimonialBlock) GetAlign() *LandingPageTestimonialBlockAlign {
+	if l == nil {
+		return nil
+	}
+	return l.Align
+}
+
+func (l *LandingPageTestimonialBlock) GetColumns() *int {
+	if l == nil {
+		return nil
+	}
+	return l.Columns
+}
+
+func (l *LandingPageTestimonialBlock) GetLayout() *LandingPageTestimonialBlockLayout {
+	if l == nil {
+		return nil
+	}
+	return l.Layout
+}
+
+func (l *LandingPageTestimonialBlock) GetSlot() LandingPageTestimonialBlockSlot {
+	if l == nil {
+		return ""
+	}
+	return l.Slot
+}
+
+func (l *LandingPageTestimonialBlock) GetTestimonials() []*LandingPageTestimonial {
+	if l == nil {
+		return nil
+	}
+	return l.Testimonials
+}
+
+func (l *LandingPageTestimonialBlock) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LandingPageTestimonialBlock) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageTestimonialBlock) SetID(id string) {
+	l.ID = id
+	l.require(landingPageTestimonialBlockFieldID)
+}
+
+// SetSectionAlign sets the SectionAlign field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageTestimonialBlock) SetSectionAlign(sectionAlign *LandingPageBlockBaseSectionAlign) {
+	l.SectionAlign = sectionAlign
+	l.require(landingPageTestimonialBlockFieldSectionAlign)
+}
+
+// SetSectionID sets the SectionID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageTestimonialBlock) SetSectionID(sectionID *string) {
+	l.SectionID = sectionID
+	l.require(landingPageTestimonialBlockFieldSectionID)
+}
+
+// SetSectionKind sets the SectionKind field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageTestimonialBlock) SetSectionKind(sectionKind *string) {
+	l.SectionKind = sectionKind
+	l.require(landingPageTestimonialBlockFieldSectionKind)
+}
+
+// SetSectionLabel sets the SectionLabel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageTestimonialBlock) SetSectionLabel(sectionLabel *string) {
+	l.SectionLabel = sectionLabel
+	l.require(landingPageTestimonialBlockFieldSectionLabel)
+}
+
+// SetSectionLayout sets the SectionLayout field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageTestimonialBlock) SetSectionLayout(sectionLayout *LandingPageBlockBaseSectionLayout) {
+	l.SectionLayout = sectionLayout
+	l.require(landingPageTestimonialBlockFieldSectionLayout)
+}
+
+// SetSectionVariant sets the SectionVariant field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageTestimonialBlock) SetSectionVariant(sectionVariant *string) {
+	l.SectionVariant = sectionVariant
+	l.require(landingPageTestimonialBlockFieldSectionVariant)
+}
+
+// SetAlign sets the Align field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageTestimonialBlock) SetAlign(align *LandingPageTestimonialBlockAlign) {
+	l.Align = align
+	l.require(landingPageTestimonialBlockFieldAlign)
+}
+
+// SetColumns sets the Columns field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageTestimonialBlock) SetColumns(columns *int) {
+	l.Columns = columns
+	l.require(landingPageTestimonialBlockFieldColumns)
+}
+
+// SetLayout sets the Layout field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageTestimonialBlock) SetLayout(layout *LandingPageTestimonialBlockLayout) {
+	l.Layout = layout
+	l.require(landingPageTestimonialBlockFieldLayout)
+}
+
+// SetSlot sets the Slot field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageTestimonialBlock) SetSlot(slot LandingPageTestimonialBlockSlot) {
+	l.Slot = slot
+	l.require(landingPageTestimonialBlockFieldSlot)
+}
+
+// SetTestimonials sets the Testimonials field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageTestimonialBlock) SetTestimonials(testimonials []*LandingPageTestimonial) {
+	l.Testimonials = testimonials
+	l.require(landingPageTestimonialBlockFieldTestimonials)
+}
+
+func (l *LandingPageTestimonialBlock) UnmarshalJSON(data []byte) error {
+	type unmarshaler LandingPageTestimonialBlock
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LandingPageTestimonialBlock(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LandingPageTestimonialBlock) MarshalJSON() ([]byte, error) {
+	type embed LandingPageTestimonialBlock
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LandingPageTestimonialBlock) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type LandingPageTestimonialBlockAlign string
+
+const (
+	LandingPageTestimonialBlockAlignLeft   LandingPageTestimonialBlockAlign = "left"
+	LandingPageTestimonialBlockAlignCenter LandingPageTestimonialBlockAlign = "center"
+	LandingPageTestimonialBlockAlignRight  LandingPageTestimonialBlockAlign = "right"
+)
+
+func NewLandingPageTestimonialBlockAlignFromString(s string) (LandingPageTestimonialBlockAlign, error) {
+	switch s {
+	case "left":
+		return LandingPageTestimonialBlockAlignLeft, nil
+	case "center":
+		return LandingPageTestimonialBlockAlignCenter, nil
+	case "right":
+		return LandingPageTestimonialBlockAlignRight, nil
+	}
+	var t LandingPageTestimonialBlockAlign
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageTestimonialBlockAlign) Ptr() *LandingPageTestimonialBlockAlign {
+	return &l
+}
+
+type LandingPageTestimonialBlockLayout string
+
+const (
+	LandingPageTestimonialBlockLayoutRow    LandingPageTestimonialBlockLayout = "row"
+	LandingPageTestimonialBlockLayoutColumn LandingPageTestimonialBlockLayout = "column"
+)
+
+func NewLandingPageTestimonialBlockLayoutFromString(s string) (LandingPageTestimonialBlockLayout, error) {
+	switch s {
+	case "row":
+		return LandingPageTestimonialBlockLayoutRow, nil
+	case "column":
+		return LandingPageTestimonialBlockLayoutColumn, nil
+	}
+	var t LandingPageTestimonialBlockLayout
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageTestimonialBlockLayout) Ptr() *LandingPageTestimonialBlockLayout {
+	return &l
+}
+
+type LandingPageTestimonialBlockSlot string
+
+const (
+	LandingPageTestimonialBlockSlotTop    LandingPageTestimonialBlockSlot = "top"
+	LandingPageTestimonialBlockSlotHero   LandingPageTestimonialBlockSlot = "hero"
+	LandingPageTestimonialBlockSlotForm   LandingPageTestimonialBlockSlot = "form"
+	LandingPageTestimonialBlockSlotBody   LandingPageTestimonialBlockSlot = "body"
+	LandingPageTestimonialBlockSlotFooter LandingPageTestimonialBlockSlot = "footer"
+)
+
+func NewLandingPageTestimonialBlockSlotFromString(s string) (LandingPageTestimonialBlockSlot, error) {
+	switch s {
+	case "top":
+		return LandingPageTestimonialBlockSlotTop, nil
+	case "hero":
+		return LandingPageTestimonialBlockSlotHero, nil
+	case "form":
+		return LandingPageTestimonialBlockSlotForm, nil
+	case "body":
+		return LandingPageTestimonialBlockSlotBody, nil
+	case "footer":
+		return LandingPageTestimonialBlockSlotFooter, nil
+	}
+	var t LandingPageTestimonialBlockSlot
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageTestimonialBlockSlot) Ptr() *LandingPageTestimonialBlockSlot {
+	return &l
+}
+
+var (
+	landingPageTextBlockFieldID             = big.NewInt(1 << 0)
+	landingPageTextBlockFieldSectionAlign   = big.NewInt(1 << 1)
+	landingPageTextBlockFieldSectionID      = big.NewInt(1 << 2)
+	landingPageTextBlockFieldSectionKind    = big.NewInt(1 << 3)
+	landingPageTextBlockFieldSectionLabel   = big.NewInt(1 << 4)
+	landingPageTextBlockFieldSectionLayout  = big.NewInt(1 << 5)
+	landingPageTextBlockFieldSectionVariant = big.NewInt(1 << 6)
+	landingPageTextBlockFieldAlign          = big.NewInt(1 << 7)
+	landingPageTextBlockFieldContent        = big.NewInt(1 << 8)
+	landingPageTextBlockFieldSlot           = big.NewInt(1 << 9)
+	landingPageTextBlockFieldVariant        = big.NewInt(1 << 10)
+)
+
+type LandingPageTextBlock struct {
+	ID             string                             `json:"id" url:"id"`
+	SectionAlign   *LandingPageBlockBaseSectionAlign  `json:"sectionAlign,omitempty" url:"sectionAlign,omitempty"`
+	SectionID      *string                            `json:"sectionId,omitempty" url:"sectionId,omitempty"`
+	SectionKind    *string                            `json:"sectionKind,omitempty" url:"sectionKind,omitempty"`
+	SectionLabel   *string                            `json:"sectionLabel,omitempty" url:"sectionLabel,omitempty"`
+	SectionLayout  *LandingPageBlockBaseSectionLayout `json:"sectionLayout,omitempty" url:"sectionLayout,omitempty"`
+	SectionVariant *string                            `json:"sectionVariant,omitempty" url:"sectionVariant,omitempty"`
+	Align          *LandingPageTextBlockAlign         `json:"align,omitempty" url:"align,omitempty"`
+	Content        string                             `json:"content" url:"content"`
+	Slot           LandingPageTextBlockSlot           `json:"slot" url:"slot"`
+	Variant        *LandingPageTextBlockVariant       `json:"variant,omitempty" url:"variant,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LandingPageTextBlock) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LandingPageTextBlock) GetSectionAlign() *LandingPageBlockBaseSectionAlign {
+	if l == nil {
+		return nil
+	}
+	return l.SectionAlign
+}
+
+func (l *LandingPageTextBlock) GetSectionID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionID
+}
+
+func (l *LandingPageTextBlock) GetSectionKind() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionKind
+}
+
+func (l *LandingPageTextBlock) GetSectionLabel() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionLabel
+}
+
+func (l *LandingPageTextBlock) GetSectionLayout() *LandingPageBlockBaseSectionLayout {
+	if l == nil {
+		return nil
+	}
+	return l.SectionLayout
+}
+
+func (l *LandingPageTextBlock) GetSectionVariant() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionVariant
+}
+
+func (l *LandingPageTextBlock) GetAlign() *LandingPageTextBlockAlign {
+	if l == nil {
+		return nil
+	}
+	return l.Align
+}
+
+func (l *LandingPageTextBlock) GetContent() string {
+	if l == nil {
+		return ""
+	}
+	return l.Content
+}
+
+func (l *LandingPageTextBlock) GetSlot() LandingPageTextBlockSlot {
+	if l == nil {
+		return ""
+	}
+	return l.Slot
+}
+
+func (l *LandingPageTextBlock) GetVariant() *LandingPageTextBlockVariant {
+	if l == nil {
+		return nil
+	}
+	return l.Variant
+}
+
+func (l *LandingPageTextBlock) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LandingPageTextBlock) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageTextBlock) SetID(id string) {
+	l.ID = id
+	l.require(landingPageTextBlockFieldID)
+}
+
+// SetSectionAlign sets the SectionAlign field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageTextBlock) SetSectionAlign(sectionAlign *LandingPageBlockBaseSectionAlign) {
+	l.SectionAlign = sectionAlign
+	l.require(landingPageTextBlockFieldSectionAlign)
+}
+
+// SetSectionID sets the SectionID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageTextBlock) SetSectionID(sectionID *string) {
+	l.SectionID = sectionID
+	l.require(landingPageTextBlockFieldSectionID)
+}
+
+// SetSectionKind sets the SectionKind field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageTextBlock) SetSectionKind(sectionKind *string) {
+	l.SectionKind = sectionKind
+	l.require(landingPageTextBlockFieldSectionKind)
+}
+
+// SetSectionLabel sets the SectionLabel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageTextBlock) SetSectionLabel(sectionLabel *string) {
+	l.SectionLabel = sectionLabel
+	l.require(landingPageTextBlockFieldSectionLabel)
+}
+
+// SetSectionLayout sets the SectionLayout field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageTextBlock) SetSectionLayout(sectionLayout *LandingPageBlockBaseSectionLayout) {
+	l.SectionLayout = sectionLayout
+	l.require(landingPageTextBlockFieldSectionLayout)
+}
+
+// SetSectionVariant sets the SectionVariant field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageTextBlock) SetSectionVariant(sectionVariant *string) {
+	l.SectionVariant = sectionVariant
+	l.require(landingPageTextBlockFieldSectionVariant)
+}
+
+// SetAlign sets the Align field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageTextBlock) SetAlign(align *LandingPageTextBlockAlign) {
+	l.Align = align
+	l.require(landingPageTextBlockFieldAlign)
+}
+
+// SetContent sets the Content field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageTextBlock) SetContent(content string) {
+	l.Content = content
+	l.require(landingPageTextBlockFieldContent)
+}
+
+// SetSlot sets the Slot field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageTextBlock) SetSlot(slot LandingPageTextBlockSlot) {
+	l.Slot = slot
+	l.require(landingPageTextBlockFieldSlot)
+}
+
+// SetVariant sets the Variant field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageTextBlock) SetVariant(variant *LandingPageTextBlockVariant) {
+	l.Variant = variant
+	l.require(landingPageTextBlockFieldVariant)
+}
+
+func (l *LandingPageTextBlock) UnmarshalJSON(data []byte) error {
+	type unmarshaler LandingPageTextBlock
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LandingPageTextBlock(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LandingPageTextBlock) MarshalJSON() ([]byte, error) {
+	type embed LandingPageTextBlock
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LandingPageTextBlock) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type LandingPageTextBlockAlign string
+
+const (
+	LandingPageTextBlockAlignLeft   LandingPageTextBlockAlign = "left"
+	LandingPageTextBlockAlignCenter LandingPageTextBlockAlign = "center"
+	LandingPageTextBlockAlignRight  LandingPageTextBlockAlign = "right"
+)
+
+func NewLandingPageTextBlockAlignFromString(s string) (LandingPageTextBlockAlign, error) {
+	switch s {
+	case "left":
+		return LandingPageTextBlockAlignLeft, nil
+	case "center":
+		return LandingPageTextBlockAlignCenter, nil
+	case "right":
+		return LandingPageTextBlockAlignRight, nil
+	}
+	var t LandingPageTextBlockAlign
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageTextBlockAlign) Ptr() *LandingPageTextBlockAlign {
+	return &l
+}
+
+type LandingPageTextBlockSlot string
+
+const (
+	LandingPageTextBlockSlotTop    LandingPageTextBlockSlot = "top"
+	LandingPageTextBlockSlotHero   LandingPageTextBlockSlot = "hero"
+	LandingPageTextBlockSlotForm   LandingPageTextBlockSlot = "form"
+	LandingPageTextBlockSlotBody   LandingPageTextBlockSlot = "body"
+	LandingPageTextBlockSlotFooter LandingPageTextBlockSlot = "footer"
+)
+
+func NewLandingPageTextBlockSlotFromString(s string) (LandingPageTextBlockSlot, error) {
+	switch s {
+	case "top":
+		return LandingPageTextBlockSlotTop, nil
+	case "hero":
+		return LandingPageTextBlockSlotHero, nil
+	case "form":
+		return LandingPageTextBlockSlotForm, nil
+	case "body":
+		return LandingPageTextBlockSlotBody, nil
+	case "footer":
+		return LandingPageTextBlockSlotFooter, nil
+	}
+	var t LandingPageTextBlockSlot
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageTextBlockSlot) Ptr() *LandingPageTextBlockSlot {
+	return &l
+}
+
+type LandingPageTextBlockVariant string
+
+const (
+	LandingPageTextBlockVariantParagraph LandingPageTextBlockVariant = "paragraph"
+	LandingPageTextBlockVariantEyebrow   LandingPageTextBlockVariant = "eyebrow"
+	LandingPageTextBlockVariantCaption   LandingPageTextBlockVariant = "caption"
+)
+
+func NewLandingPageTextBlockVariantFromString(s string) (LandingPageTextBlockVariant, error) {
+	switch s {
+	case "paragraph":
+		return LandingPageTextBlockVariantParagraph, nil
+	case "eyebrow":
+		return LandingPageTextBlockVariantEyebrow, nil
+	case "caption":
+		return LandingPageTextBlockVariantCaption, nil
+	}
+	var t LandingPageTextBlockVariant
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageTextBlockVariant) Ptr() *LandingPageTextBlockVariant {
+	return &l
+}
+
+var (
+	landingPageThemeFieldAccentColor           = big.NewInt(1 << 0)
+	landingPageThemeFieldAccentStyle           = big.NewInt(1 << 1)
+	landingPageThemeFieldBackgroundColor       = big.NewInt(1 << 2)
+	landingPageThemeFieldBodyFontFamily        = big.NewInt(1 << 3)
+	landingPageThemeFieldBorderRadius          = big.NewInt(1 << 4)
+	landingPageThemeFieldCardColor             = big.NewInt(1 << 5)
+	landingPageThemeFieldDensity               = big.NewInt(1 << 6)
+	landingPageThemeFieldFontPair              = big.NewInt(1 << 7)
+	landingPageThemeFieldHeadingFontFamily     = big.NewInt(1 << 8)
+	landingPageThemeFieldMutedTextColor        = big.NewInt(1 << 9)
+	landingPageThemeFieldSectionAnimation      = big.NewInt(1 << 10)
+	landingPageThemeFieldSectionAnimationSpeed = big.NewInt(1 << 11)
+	landingPageThemeFieldSurfaceStyle          = big.NewInt(1 << 12)
+	landingPageThemeFieldTextColor             = big.NewInt(1 << 13)
+)
+
+type LandingPageTheme struct {
+	AccentColor       *string                      `json:"accentColor,omitempty" url:"accentColor,omitempty"`
+	AccentStyle       *LandingPageThemeAccentStyle `json:"accentStyle,omitempty" url:"accentStyle,omitempty"`
+	BackgroundColor   *string                      `json:"backgroundColor,omitempty" url:"backgroundColor,omitempty"`
+	BodyFontFamily    *string                      `json:"bodyFontFamily,omitempty" url:"bodyFontFamily,omitempty"`
+	BorderRadius      *int                         `json:"borderRadius,omitempty" url:"borderRadius,omitempty"`
+	CardColor         *string                      `json:"cardColor,omitempty" url:"cardColor,omitempty"`
+	Density           *LandingPageThemeDensity     `json:"density,omitempty" url:"density,omitempty"`
+	FontPair          *LandingPageThemeFontPair    `json:"fontPair,omitempty" url:"fontPair,omitempty"`
+	HeadingFontFamily *string                      `json:"headingFontFamily,omitempty" url:"headingFontFamily,omitempty"`
+	MutedTextColor    *string                      `json:"mutedTextColor,omitempty" url:"mutedTextColor,omitempty"`
+	// Scroll reveal animation; skipped for visitors who prefer reduced motion.
+	SectionAnimation      *LandingPageThemeSectionAnimation      `json:"sectionAnimation,omitempty" url:"sectionAnimation,omitempty"`
+	SectionAnimationSpeed *LandingPageThemeSectionAnimationSpeed `json:"sectionAnimationSpeed,omitempty" url:"sectionAnimationSpeed,omitempty"`
+	SurfaceStyle          *LandingPageThemeSurfaceStyle          `json:"surfaceStyle,omitempty" url:"surfaceStyle,omitempty"`
+	TextColor             *string                                `json:"textColor,omitempty" url:"textColor,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LandingPageTheme) GetAccentColor() *string {
+	if l == nil {
+		return nil
+	}
+	return l.AccentColor
+}
+
+func (l *LandingPageTheme) GetAccentStyle() *LandingPageThemeAccentStyle {
+	if l == nil {
+		return nil
+	}
+	return l.AccentStyle
+}
+
+func (l *LandingPageTheme) GetBackgroundColor() *string {
+	if l == nil {
+		return nil
+	}
+	return l.BackgroundColor
+}
+
+func (l *LandingPageTheme) GetBodyFontFamily() *string {
+	if l == nil {
+		return nil
+	}
+	return l.BodyFontFamily
+}
+
+func (l *LandingPageTheme) GetBorderRadius() *int {
+	if l == nil {
+		return nil
+	}
+	return l.BorderRadius
+}
+
+func (l *LandingPageTheme) GetCardColor() *string {
+	if l == nil {
+		return nil
+	}
+	return l.CardColor
+}
+
+func (l *LandingPageTheme) GetDensity() *LandingPageThemeDensity {
+	if l == nil {
+		return nil
+	}
+	return l.Density
+}
+
+func (l *LandingPageTheme) GetFontPair() *LandingPageThemeFontPair {
+	if l == nil {
+		return nil
+	}
+	return l.FontPair
+}
+
+func (l *LandingPageTheme) GetHeadingFontFamily() *string {
+	if l == nil {
+		return nil
+	}
+	return l.HeadingFontFamily
+}
+
+func (l *LandingPageTheme) GetMutedTextColor() *string {
+	if l == nil {
+		return nil
+	}
+	return l.MutedTextColor
+}
+
+func (l *LandingPageTheme) GetSectionAnimation() *LandingPageThemeSectionAnimation {
+	if l == nil {
+		return nil
+	}
+	return l.SectionAnimation
+}
+
+func (l *LandingPageTheme) GetSectionAnimationSpeed() *LandingPageThemeSectionAnimationSpeed {
+	if l == nil {
+		return nil
+	}
+	return l.SectionAnimationSpeed
+}
+
+func (l *LandingPageTheme) GetSurfaceStyle() *LandingPageThemeSurfaceStyle {
+	if l == nil {
+		return nil
+	}
+	return l.SurfaceStyle
+}
+
+func (l *LandingPageTheme) GetTextColor() *string {
+	if l == nil {
+		return nil
+	}
+	return l.TextColor
+}
+
+func (l *LandingPageTheme) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LandingPageTheme) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetAccentColor sets the AccentColor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageTheme) SetAccentColor(accentColor *string) {
+	l.AccentColor = accentColor
+	l.require(landingPageThemeFieldAccentColor)
+}
+
+// SetAccentStyle sets the AccentStyle field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageTheme) SetAccentStyle(accentStyle *LandingPageThemeAccentStyle) {
+	l.AccentStyle = accentStyle
+	l.require(landingPageThemeFieldAccentStyle)
+}
+
+// SetBackgroundColor sets the BackgroundColor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageTheme) SetBackgroundColor(backgroundColor *string) {
+	l.BackgroundColor = backgroundColor
+	l.require(landingPageThemeFieldBackgroundColor)
+}
+
+// SetBodyFontFamily sets the BodyFontFamily field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageTheme) SetBodyFontFamily(bodyFontFamily *string) {
+	l.BodyFontFamily = bodyFontFamily
+	l.require(landingPageThemeFieldBodyFontFamily)
+}
+
+// SetBorderRadius sets the BorderRadius field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageTheme) SetBorderRadius(borderRadius *int) {
+	l.BorderRadius = borderRadius
+	l.require(landingPageThemeFieldBorderRadius)
+}
+
+// SetCardColor sets the CardColor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageTheme) SetCardColor(cardColor *string) {
+	l.CardColor = cardColor
+	l.require(landingPageThemeFieldCardColor)
+}
+
+// SetDensity sets the Density field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageTheme) SetDensity(density *LandingPageThemeDensity) {
+	l.Density = density
+	l.require(landingPageThemeFieldDensity)
+}
+
+// SetFontPair sets the FontPair field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageTheme) SetFontPair(fontPair *LandingPageThemeFontPair) {
+	l.FontPair = fontPair
+	l.require(landingPageThemeFieldFontPair)
+}
+
+// SetHeadingFontFamily sets the HeadingFontFamily field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageTheme) SetHeadingFontFamily(headingFontFamily *string) {
+	l.HeadingFontFamily = headingFontFamily
+	l.require(landingPageThemeFieldHeadingFontFamily)
+}
+
+// SetMutedTextColor sets the MutedTextColor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageTheme) SetMutedTextColor(mutedTextColor *string) {
+	l.MutedTextColor = mutedTextColor
+	l.require(landingPageThemeFieldMutedTextColor)
+}
+
+// SetSectionAnimation sets the SectionAnimation field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageTheme) SetSectionAnimation(sectionAnimation *LandingPageThemeSectionAnimation) {
+	l.SectionAnimation = sectionAnimation
+	l.require(landingPageThemeFieldSectionAnimation)
+}
+
+// SetSectionAnimationSpeed sets the SectionAnimationSpeed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageTheme) SetSectionAnimationSpeed(sectionAnimationSpeed *LandingPageThemeSectionAnimationSpeed) {
+	l.SectionAnimationSpeed = sectionAnimationSpeed
+	l.require(landingPageThemeFieldSectionAnimationSpeed)
+}
+
+// SetSurfaceStyle sets the SurfaceStyle field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageTheme) SetSurfaceStyle(surfaceStyle *LandingPageThemeSurfaceStyle) {
+	l.SurfaceStyle = surfaceStyle
+	l.require(landingPageThemeFieldSurfaceStyle)
+}
+
+// SetTextColor sets the TextColor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageTheme) SetTextColor(textColor *string) {
+	l.TextColor = textColor
+	l.require(landingPageThemeFieldTextColor)
+}
+
+func (l *LandingPageTheme) UnmarshalJSON(data []byte) error {
+	type unmarshaler LandingPageTheme
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LandingPageTheme(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LandingPageTheme) MarshalJSON() ([]byte, error) {
+	type embed LandingPageTheme
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LandingPageTheme) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type LandingPageThemeAccentStyle string
+
+const (
+	LandingPageThemeAccentStylePill      LandingPageThemeAccentStyle = "pill"
+	LandingPageThemeAccentStyleUnderline LandingPageThemeAccentStyle = "underline"
+	LandingPageThemeAccentStyleBar       LandingPageThemeAccentStyle = "bar"
+	LandingPageThemeAccentStyleBadge     LandingPageThemeAccentStyle = "badge"
+)
+
+func NewLandingPageThemeAccentStyleFromString(s string) (LandingPageThemeAccentStyle, error) {
+	switch s {
+	case "pill":
+		return LandingPageThemeAccentStylePill, nil
+	case "underline":
+		return LandingPageThemeAccentStyleUnderline, nil
+	case "bar":
+		return LandingPageThemeAccentStyleBar, nil
+	case "badge":
+		return LandingPageThemeAccentStyleBadge, nil
+	}
+	var t LandingPageThemeAccentStyle
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageThemeAccentStyle) Ptr() *LandingPageThemeAccentStyle {
+	return &l
+}
+
+type LandingPageThemeDensity string
+
+const (
+	LandingPageThemeDensityCompact  LandingPageThemeDensity = "compact"
+	LandingPageThemeDensityBalanced LandingPageThemeDensity = "balanced"
+	LandingPageThemeDensitySpacious LandingPageThemeDensity = "spacious"
+)
+
+func NewLandingPageThemeDensityFromString(s string) (LandingPageThemeDensity, error) {
+	switch s {
+	case "compact":
+		return LandingPageThemeDensityCompact, nil
+	case "balanced":
+		return LandingPageThemeDensityBalanced, nil
+	case "spacious":
+		return LandingPageThemeDensitySpacious, nil
+	}
+	var t LandingPageThemeDensity
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageThemeDensity) Ptr() *LandingPageThemeDensity {
+	return &l
+}
+
+type LandingPageThemeFontPair string
+
+const (
+	LandingPageThemeFontPairModernSans      LandingPageThemeFontPair = "modern-sans"
+	LandingPageThemeFontPairEditorialSerif  LandingPageThemeFontPair = "editorial-serif"
+	LandingPageThemeFontPairClassicSerif    LandingPageThemeFontPair = "classic-serif"
+	LandingPageThemeFontPairFriendlyRounded LandingPageThemeFontPair = "friendly-rounded"
+	LandingPageThemeFontPairCommerceSans    LandingPageThemeFontPair = "commerce-sans"
+	LandingPageThemeFontPairTechnicalMono   LandingPageThemeFontPair = "technical-mono"
+)
+
+func NewLandingPageThemeFontPairFromString(s string) (LandingPageThemeFontPair, error) {
+	switch s {
+	case "modern-sans":
+		return LandingPageThemeFontPairModernSans, nil
+	case "editorial-serif":
+		return LandingPageThemeFontPairEditorialSerif, nil
+	case "classic-serif":
+		return LandingPageThemeFontPairClassicSerif, nil
+	case "friendly-rounded":
+		return LandingPageThemeFontPairFriendlyRounded, nil
+	case "commerce-sans":
+		return LandingPageThemeFontPairCommerceSans, nil
+	case "technical-mono":
+		return LandingPageThemeFontPairTechnicalMono, nil
+	}
+	var t LandingPageThemeFontPair
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageThemeFontPair) Ptr() *LandingPageThemeFontPair {
+	return &l
+}
+
+// Scroll reveal animation; skipped for visitors who prefer reduced motion.
+type LandingPageThemeSectionAnimation string
+
+const (
+	LandingPageThemeSectionAnimationNone    LandingPageThemeSectionAnimation = "none"
+	LandingPageThemeSectionAnimationFade    LandingPageThemeSectionAnimation = "fade"
+	LandingPageThemeSectionAnimationSlideUp LandingPageThemeSectionAnimation = "slide-up"
+	LandingPageThemeSectionAnimationZoomIn  LandingPageThemeSectionAnimation = "zoom-in"
+)
+
+func NewLandingPageThemeSectionAnimationFromString(s string) (LandingPageThemeSectionAnimation, error) {
+	switch s {
+	case "none":
+		return LandingPageThemeSectionAnimationNone, nil
+	case "fade":
+		return LandingPageThemeSectionAnimationFade, nil
+	case "slide-up":
+		return LandingPageThemeSectionAnimationSlideUp, nil
+	case "zoom-in":
+		return LandingPageThemeSectionAnimationZoomIn, nil
+	}
+	var t LandingPageThemeSectionAnimation
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageThemeSectionAnimation) Ptr() *LandingPageThemeSectionAnimation {
+	return &l
+}
+
+type LandingPageThemeSectionAnimationSpeed string
+
+const (
+	LandingPageThemeSectionAnimationSpeedSlow   LandingPageThemeSectionAnimationSpeed = "slow"
+	LandingPageThemeSectionAnimationSpeedNormal LandingPageThemeSectionAnimationSpeed = "normal"
+	LandingPageThemeSectionAnimationSpeedFast   LandingPageThemeSectionAnimationSpeed = "fast"
+)
+
+func NewLandingPageThemeSectionAnimationSpeedFromString(s string) (LandingPageThemeSectionAnimationSpeed, error) {
+	switch s {
+	case "slow":
+		return LandingPageThemeSectionAnimationSpeedSlow, nil
+	case "normal":
+		return LandingPageThemeSectionAnimationSpeedNormal, nil
+	case "fast":
+		return LandingPageThemeSectionAnimationSpeedFast, nil
+	}
+	var t LandingPageThemeSectionAnimationSpeed
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageThemeSectionAnimationSpeed) Ptr() *LandingPageThemeSectionAnimationSpeed {
+	return &l
+}
+
+type LandingPageThemeSurfaceStyle string
+
+const (
+	LandingPageThemeSurfaceStyleSoft     LandingPageThemeSurfaceStyle = "soft"
+	LandingPageThemeSurfaceStyleOutlined LandingPageThemeSurfaceStyle = "outlined"
+	LandingPageThemeSurfaceStyleSolid    LandingPageThemeSurfaceStyle = "solid"
+	LandingPageThemeSurfaceStyleMinimal  LandingPageThemeSurfaceStyle = "minimal"
+)
+
+func NewLandingPageThemeSurfaceStyleFromString(s string) (LandingPageThemeSurfaceStyle, error) {
+	switch s {
+	case "soft":
+		return LandingPageThemeSurfaceStyleSoft, nil
+	case "outlined":
+		return LandingPageThemeSurfaceStyleOutlined, nil
+	case "solid":
+		return LandingPageThemeSurfaceStyleSolid, nil
+	case "minimal":
+		return LandingPageThemeSurfaceStyleMinimal, nil
+	}
+	var t LandingPageThemeSurfaceStyle
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageThemeSurfaceStyle) Ptr() *LandingPageThemeSurfaceStyle {
+	return &l
+}
+
+// Embeds a YouTube share URL. Other video providers and direct video files are not supported.
+var (
+	landingPageVideoBlockFieldID             = big.NewInt(1 << 0)
+	landingPageVideoBlockFieldSectionAlign   = big.NewInt(1 << 1)
+	landingPageVideoBlockFieldSectionID      = big.NewInt(1 << 2)
+	landingPageVideoBlockFieldSectionKind    = big.NewInt(1 << 3)
+	landingPageVideoBlockFieldSectionLabel   = big.NewInt(1 << 4)
+	landingPageVideoBlockFieldSectionLayout  = big.NewInt(1 << 5)
+	landingPageVideoBlockFieldSectionVariant = big.NewInt(1 << 6)
+	landingPageVideoBlockFieldAlign          = big.NewInt(1 << 7)
+	landingPageVideoBlockFieldAspectRatio    = big.NewInt(1 << 8)
+	landingPageVideoBlockFieldSlot           = big.NewInt(1 << 9)
+	landingPageVideoBlockFieldTitle          = big.NewInt(1 << 10)
+	landingPageVideoBlockFieldURL            = big.NewInt(1 << 11)
+	landingPageVideoBlockFieldWidth          = big.NewInt(1 << 12)
+)
+
+type LandingPageVideoBlock struct {
+	ID             string                             `json:"id" url:"id"`
+	SectionAlign   *LandingPageBlockBaseSectionAlign  `json:"sectionAlign,omitempty" url:"sectionAlign,omitempty"`
+	SectionID      *string                            `json:"sectionId,omitempty" url:"sectionId,omitempty"`
+	SectionKind    *string                            `json:"sectionKind,omitempty" url:"sectionKind,omitempty"`
+	SectionLabel   *string                            `json:"sectionLabel,omitempty" url:"sectionLabel,omitempty"`
+	SectionLayout  *LandingPageBlockBaseSectionLayout `json:"sectionLayout,omitempty" url:"sectionLayout,omitempty"`
+	SectionVariant *string                            `json:"sectionVariant,omitempty" url:"sectionVariant,omitempty"`
+	Align          *LandingPageVideoBlockAlign        `json:"align,omitempty" url:"align,omitempty"`
+	AspectRatio    *LandingPageVideoBlockAspectRatio  `json:"aspectRatio,omitempty" url:"aspectRatio,omitempty"`
+	Slot           LandingPageVideoBlockSlot          `json:"slot" url:"slot"`
+	Title          *string                            `json:"title,omitempty" url:"title,omitempty"`
+	URL            *string                            `json:"url,omitempty" url:"url,omitempty"`
+	Width          *int                               `json:"width,omitempty" url:"width,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LandingPageVideoBlock) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LandingPageVideoBlock) GetSectionAlign() *LandingPageBlockBaseSectionAlign {
+	if l == nil {
+		return nil
+	}
+	return l.SectionAlign
+}
+
+func (l *LandingPageVideoBlock) GetSectionID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionID
+}
+
+func (l *LandingPageVideoBlock) GetSectionKind() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionKind
+}
+
+func (l *LandingPageVideoBlock) GetSectionLabel() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionLabel
+}
+
+func (l *LandingPageVideoBlock) GetSectionLayout() *LandingPageBlockBaseSectionLayout {
+	if l == nil {
+		return nil
+	}
+	return l.SectionLayout
+}
+
+func (l *LandingPageVideoBlock) GetSectionVariant() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SectionVariant
+}
+
+func (l *LandingPageVideoBlock) GetAlign() *LandingPageVideoBlockAlign {
+	if l == nil {
+		return nil
+	}
+	return l.Align
+}
+
+func (l *LandingPageVideoBlock) GetAspectRatio() *LandingPageVideoBlockAspectRatio {
+	if l == nil {
+		return nil
+	}
+	return l.AspectRatio
+}
+
+func (l *LandingPageVideoBlock) GetSlot() LandingPageVideoBlockSlot {
+	if l == nil {
+		return ""
+	}
+	return l.Slot
+}
+
+func (l *LandingPageVideoBlock) GetTitle() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Title
+}
+
+func (l *LandingPageVideoBlock) GetURL() *string {
+	if l == nil {
+		return nil
+	}
+	return l.URL
+}
+
+func (l *LandingPageVideoBlock) GetWidth() *int {
+	if l == nil {
+		return nil
+	}
+	return l.Width
+}
+
+func (l *LandingPageVideoBlock) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LandingPageVideoBlock) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageVideoBlock) SetID(id string) {
+	l.ID = id
+	l.require(landingPageVideoBlockFieldID)
+}
+
+// SetSectionAlign sets the SectionAlign field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageVideoBlock) SetSectionAlign(sectionAlign *LandingPageBlockBaseSectionAlign) {
+	l.SectionAlign = sectionAlign
+	l.require(landingPageVideoBlockFieldSectionAlign)
+}
+
+// SetSectionID sets the SectionID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageVideoBlock) SetSectionID(sectionID *string) {
+	l.SectionID = sectionID
+	l.require(landingPageVideoBlockFieldSectionID)
+}
+
+// SetSectionKind sets the SectionKind field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageVideoBlock) SetSectionKind(sectionKind *string) {
+	l.SectionKind = sectionKind
+	l.require(landingPageVideoBlockFieldSectionKind)
+}
+
+// SetSectionLabel sets the SectionLabel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageVideoBlock) SetSectionLabel(sectionLabel *string) {
+	l.SectionLabel = sectionLabel
+	l.require(landingPageVideoBlockFieldSectionLabel)
+}
+
+// SetSectionLayout sets the SectionLayout field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageVideoBlock) SetSectionLayout(sectionLayout *LandingPageBlockBaseSectionLayout) {
+	l.SectionLayout = sectionLayout
+	l.require(landingPageVideoBlockFieldSectionLayout)
+}
+
+// SetSectionVariant sets the SectionVariant field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageVideoBlock) SetSectionVariant(sectionVariant *string) {
+	l.SectionVariant = sectionVariant
+	l.require(landingPageVideoBlockFieldSectionVariant)
+}
+
+// SetAlign sets the Align field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageVideoBlock) SetAlign(align *LandingPageVideoBlockAlign) {
+	l.Align = align
+	l.require(landingPageVideoBlockFieldAlign)
+}
+
+// SetAspectRatio sets the AspectRatio field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageVideoBlock) SetAspectRatio(aspectRatio *LandingPageVideoBlockAspectRatio) {
+	l.AspectRatio = aspectRatio
+	l.require(landingPageVideoBlockFieldAspectRatio)
+}
+
+// SetSlot sets the Slot field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageVideoBlock) SetSlot(slot LandingPageVideoBlockSlot) {
+	l.Slot = slot
+	l.require(landingPageVideoBlockFieldSlot)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageVideoBlock) SetTitle(title *string) {
+	l.Title = title
+	l.require(landingPageVideoBlockFieldTitle)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageVideoBlock) SetURL(url *string) {
+	l.URL = url
+	l.require(landingPageVideoBlockFieldURL)
+}
+
+// SetWidth sets the Width field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LandingPageVideoBlock) SetWidth(width *int) {
+	l.Width = width
+	l.require(landingPageVideoBlockFieldWidth)
+}
+
+func (l *LandingPageVideoBlock) UnmarshalJSON(data []byte) error {
+	type unmarshaler LandingPageVideoBlock
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LandingPageVideoBlock(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LandingPageVideoBlock) MarshalJSON() ([]byte, error) {
+	type embed LandingPageVideoBlock
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LandingPageVideoBlock) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type LandingPageVideoBlockAlign string
+
+const (
+	LandingPageVideoBlockAlignLeft   LandingPageVideoBlockAlign = "left"
+	LandingPageVideoBlockAlignCenter LandingPageVideoBlockAlign = "center"
+	LandingPageVideoBlockAlignRight  LandingPageVideoBlockAlign = "right"
+)
+
+func NewLandingPageVideoBlockAlignFromString(s string) (LandingPageVideoBlockAlign, error) {
+	switch s {
+	case "left":
+		return LandingPageVideoBlockAlignLeft, nil
+	case "center":
+		return LandingPageVideoBlockAlignCenter, nil
+	case "right":
+		return LandingPageVideoBlockAlignRight, nil
+	}
+	var t LandingPageVideoBlockAlign
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageVideoBlockAlign) Ptr() *LandingPageVideoBlockAlign {
+	return &l
+}
+
+type LandingPageVideoBlockAspectRatio string
+
+const (
+	LandingPageVideoBlockAspectRatioSixteen9 LandingPageVideoBlockAspectRatio = "16:9"
+	LandingPageVideoBlockAspectRatioFour3    LandingPageVideoBlockAspectRatio = "4:3"
+	LandingPageVideoBlockAspectRatioOne1     LandingPageVideoBlockAspectRatio = "1:1"
+	LandingPageVideoBlockAspectRatioNine16   LandingPageVideoBlockAspectRatio = "9:16"
+)
+
+func NewLandingPageVideoBlockAspectRatioFromString(s string) (LandingPageVideoBlockAspectRatio, error) {
+	switch s {
+	case "16:9":
+		return LandingPageVideoBlockAspectRatioSixteen9, nil
+	case "4:3":
+		return LandingPageVideoBlockAspectRatioFour3, nil
+	case "1:1":
+		return LandingPageVideoBlockAspectRatioOne1, nil
+	case "9:16":
+		return LandingPageVideoBlockAspectRatioNine16, nil
+	}
+	var t LandingPageVideoBlockAspectRatio
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageVideoBlockAspectRatio) Ptr() *LandingPageVideoBlockAspectRatio {
+	return &l
+}
+
+type LandingPageVideoBlockSlot string
+
+const (
+	LandingPageVideoBlockSlotTop    LandingPageVideoBlockSlot = "top"
+	LandingPageVideoBlockSlotHero   LandingPageVideoBlockSlot = "hero"
+	LandingPageVideoBlockSlotForm   LandingPageVideoBlockSlot = "form"
+	LandingPageVideoBlockSlotBody   LandingPageVideoBlockSlot = "body"
+	LandingPageVideoBlockSlotFooter LandingPageVideoBlockSlot = "footer"
+)
+
+func NewLandingPageVideoBlockSlotFromString(s string) (LandingPageVideoBlockSlot, error) {
+	switch s {
+	case "top":
+		return LandingPageVideoBlockSlotTop, nil
+	case "hero":
+		return LandingPageVideoBlockSlotHero, nil
+	case "form":
+		return LandingPageVideoBlockSlotForm, nil
+	case "body":
+		return LandingPageVideoBlockSlotBody, nil
+	case "footer":
+		return LandingPageVideoBlockSlotFooter, nil
+	}
+	var t LandingPageVideoBlockSlot
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LandingPageVideoBlockSlot) Ptr() *LandingPageVideoBlockSlot {
 	return &l
 }
 
@@ -3075,11 +11218,13 @@ func (p *PublishLandingPagesResponse) String() string {
 
 var (
 	removeDedicatedDomainLandingPagesResponseFieldDomain  = big.NewInt(1 << 0)
-	removeDedicatedDomainLandingPagesResponseFieldSuccess = big.NewInt(1 << 1)
+	removeDedicatedDomainLandingPagesResponseFieldMessage = big.NewInt(1 << 1)
+	removeDedicatedDomainLandingPagesResponseFieldSuccess = big.NewInt(1 << 2)
 )
 
 type RemoveDedicatedDomainLandingPagesResponse struct {
 	Domain  *LandingPageDomain `json:"domain,omitempty" url:"domain,omitempty"`
+	Message *string            `json:"message,omitempty" url:"message,omitempty"`
 	Success *bool              `json:"success,omitempty" url:"success,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -3094,6 +11239,13 @@ func (r *RemoveDedicatedDomainLandingPagesResponse) GetDomain() *LandingPageDoma
 		return nil
 	}
 	return r.Domain
+}
+
+func (r *RemoveDedicatedDomainLandingPagesResponse) GetMessage() *string {
+	if r == nil {
+		return nil
+	}
+	return r.Message
 }
 
 func (r *RemoveDedicatedDomainLandingPagesResponse) GetSuccess() *bool {
@@ -3122,6 +11274,13 @@ func (r *RemoveDedicatedDomainLandingPagesResponse) require(field *big.Int) {
 func (r *RemoveDedicatedDomainLandingPagesResponse) SetDomain(domain *LandingPageDomain) {
 	r.Domain = domain
 	r.require(removeDedicatedDomainLandingPagesResponseFieldDomain)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RemoveDedicatedDomainLandingPagesResponse) SetMessage(message *string) {
+	r.Message = message
+	r.require(removeDedicatedDomainLandingPagesResponseFieldMessage)
 }
 
 // SetSuccess sets the Success field and marks it as non-optional;

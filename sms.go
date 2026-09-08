@@ -7,18 +7,48 @@ import (
 	fmt "fmt"
 	internal "github.com/sequenzy/sequenzy-go/internal"
 	big "math/big"
+	time "time"
 )
 
 var (
-	sendTestSmsRequestFieldBlocks    = big.NewInt(1 << 0)
-	sendTestSmsRequestFieldImageURLs = big.NewInt(1 << 1)
-	sendTestSmsRequestFieldText      = big.NewInt(1 << 2)
-	sendTestSmsRequestFieldTo        = big.NewInt(1 << 3)
+	releaseNumberSmsRequestFieldNumberID = big.NewInt(1 << 0)
+)
+
+type ReleaseNumberSmsRequest struct {
+	// SMS number ID from GET /sms/settings.
+	NumberID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (r *ReleaseNumberSmsRequest) require(field *big.Int) {
+	if r.explicitFields == nil {
+		r.explicitFields = big.NewInt(0)
+	}
+	r.explicitFields.Or(r.explicitFields, field)
+}
+
+// SetNumberID sets the NumberID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReleaseNumberSmsRequest) SetNumberID(numberID string) {
+	r.NumberID = numberID
+	r.require(releaseNumberSmsRequestFieldNumberID)
+}
+
+var (
+	sendTestSmsRequestFieldBlocks       = big.NewInt(1 << 0)
+	sendTestSmsRequestFieldFromNumberID = big.NewInt(1 << 1)
+	sendTestSmsRequestFieldImageURLs    = big.NewInt(1 << 2)
+	sendTestSmsRequestFieldText         = big.NewInt(1 << 3)
+	sendTestSmsRequestFieldTo           = big.NewInt(1 << 4)
 )
 
 type SendTestSmsRequest struct {
 	// SMS content blocks (text + image subset). Provide text or blocks, not both.
 	Blocks []map[string]any `json:"blocks,omitempty" url:"-"`
+	// Verified sending number ID from GET /sms/settings. Omit to use the oldest verified company number. An invalid explicit selection returns 400 instead of falling back.
+	FromNumberID *string `json:"fromNumberId,omitempty" url:"-"`
 	// Up to 2 publicly reachable image URLs sent as MMS media (US/CA only).
 	ImageURLs []string `json:"imageUrls,omitempty" url:"-"`
 	// Plain-text message body. Provide text or blocks, not both.
@@ -42,6 +72,13 @@ func (s *SendTestSmsRequest) require(field *big.Int) {
 func (s *SendTestSmsRequest) SetBlocks(blocks []map[string]any) {
 	s.Blocks = blocks
 	s.require(sendTestSmsRequestFieldBlocks)
+}
+
+// SetFromNumberID sets the FromNumberID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendTestSmsRequest) SetFromNumberID(fromNumberID *string) {
+	s.FromNumberID = fromNumberID
+	s.require(sendTestSmsRequestFieldFromNumberID)
 }
 
 // SetImageURLs sets the ImageURLs field and marks it as non-optional;
@@ -514,6 +551,530 @@ func (g *GetSettingsSmsResponseSmsNumbersItem) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", g)
+}
+
+var (
+	getUsageSmsResponseFieldSuccess = big.NewInt(1 << 0)
+	getUsageSmsResponseFieldUsage   = big.NewInt(1 << 1)
+)
+
+type GetUsageSmsResponse struct {
+	Success bool                            `json:"success" url:"success"`
+	Usage   []*GetUsageSmsResponseUsageItem `json:"usage" url:"usage"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (g *GetUsageSmsResponse) GetSuccess() bool {
+	if g == nil {
+		return false
+	}
+	return g.Success
+}
+
+func (g *GetUsageSmsResponse) GetUsage() []*GetUsageSmsResponseUsageItem {
+	if g == nil {
+		return nil
+	}
+	return g.Usage
+}
+
+func (g *GetUsageSmsResponse) GetExtraProperties() map[string]interface{} {
+	if g == nil {
+		return nil
+	}
+	return g.extraProperties
+}
+
+func (g *GetUsageSmsResponse) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetUsageSmsResponse) SetSuccess(success bool) {
+	g.Success = success
+	g.require(getUsageSmsResponseFieldSuccess)
+}
+
+// SetUsage sets the Usage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetUsageSmsResponse) SetUsage(usage []*GetUsageSmsResponseUsageItem) {
+	g.Usage = usage
+	g.require(getUsageSmsResponseFieldUsage)
+}
+
+func (g *GetUsageSmsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler GetUsageSmsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*g = GetUsageSmsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *g)
+	if err != nil {
+		return err
+	}
+	g.extraProperties = extraProperties
+	g.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (g *GetUsageSmsResponse) MarshalJSON() ([]byte, error) {
+	type embed GetUsageSmsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*g),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (g *GetUsageSmsResponse) String() string {
+	if g == nil {
+		return "<nil>"
+	}
+	if len(g.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(g.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(g); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", g)
+}
+
+var (
+	getUsageSmsResponseUsageItemFieldCreditsCharged = big.NewInt(1 << 0)
+	getUsageSmsResponseUsageItemFieldDelivered      = big.NewInt(1 << 1)
+	getUsageSmsResponseUsageItemFieldFailed         = big.NewInt(1 << 2)
+	getUsageSmsResponseUsageItemFieldFromNumber     = big.NewInt(1 << 3)
+	getUsageSmsResponseUsageItemFieldLastSentAt     = big.NewInt(1 << 4)
+	getUsageSmsResponseUsageItemFieldTestSends      = big.NewInt(1 << 5)
+	getUsageSmsResponseUsageItemFieldTotalSends     = big.NewInt(1 << 6)
+)
+
+type GetUsageSmsResponseUsageItem struct {
+	CreditsCharged float64 `json:"creditsCharged" url:"creditsCharged"`
+	Delivered      int     `json:"delivered" url:"delivered"`
+	Failed         int     `json:"failed" url:"failed"`
+	// Sending phone number.
+	FromNumber string     `json:"fromNumber" url:"fromNumber"`
+	LastSentAt *time.Time `json:"lastSentAt,omitempty" url:"lastSentAt,omitempty"`
+	TestSends  int        `json:"testSends" url:"testSends"`
+	TotalSends int        `json:"totalSends" url:"totalSends"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (g *GetUsageSmsResponseUsageItem) GetCreditsCharged() float64 {
+	if g == nil {
+		return 0
+	}
+	return g.CreditsCharged
+}
+
+func (g *GetUsageSmsResponseUsageItem) GetDelivered() int {
+	if g == nil {
+		return 0
+	}
+	return g.Delivered
+}
+
+func (g *GetUsageSmsResponseUsageItem) GetFailed() int {
+	if g == nil {
+		return 0
+	}
+	return g.Failed
+}
+
+func (g *GetUsageSmsResponseUsageItem) GetFromNumber() string {
+	if g == nil {
+		return ""
+	}
+	return g.FromNumber
+}
+
+func (g *GetUsageSmsResponseUsageItem) GetLastSentAt() *time.Time {
+	if g == nil {
+		return nil
+	}
+	return g.LastSentAt
+}
+
+func (g *GetUsageSmsResponseUsageItem) GetTestSends() int {
+	if g == nil {
+		return 0
+	}
+	return g.TestSends
+}
+
+func (g *GetUsageSmsResponseUsageItem) GetTotalSends() int {
+	if g == nil {
+		return 0
+	}
+	return g.TotalSends
+}
+
+func (g *GetUsageSmsResponseUsageItem) GetExtraProperties() map[string]interface{} {
+	if g == nil {
+		return nil
+	}
+	return g.extraProperties
+}
+
+func (g *GetUsageSmsResponseUsageItem) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetCreditsCharged sets the CreditsCharged field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetUsageSmsResponseUsageItem) SetCreditsCharged(creditsCharged float64) {
+	g.CreditsCharged = creditsCharged
+	g.require(getUsageSmsResponseUsageItemFieldCreditsCharged)
+}
+
+// SetDelivered sets the Delivered field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetUsageSmsResponseUsageItem) SetDelivered(delivered int) {
+	g.Delivered = delivered
+	g.require(getUsageSmsResponseUsageItemFieldDelivered)
+}
+
+// SetFailed sets the Failed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetUsageSmsResponseUsageItem) SetFailed(failed int) {
+	g.Failed = failed
+	g.require(getUsageSmsResponseUsageItemFieldFailed)
+}
+
+// SetFromNumber sets the FromNumber field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetUsageSmsResponseUsageItem) SetFromNumber(fromNumber string) {
+	g.FromNumber = fromNumber
+	g.require(getUsageSmsResponseUsageItemFieldFromNumber)
+}
+
+// SetLastSentAt sets the LastSentAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetUsageSmsResponseUsageItem) SetLastSentAt(lastSentAt *time.Time) {
+	g.LastSentAt = lastSentAt
+	g.require(getUsageSmsResponseUsageItemFieldLastSentAt)
+}
+
+// SetTestSends sets the TestSends field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetUsageSmsResponseUsageItem) SetTestSends(testSends int) {
+	g.TestSends = testSends
+	g.require(getUsageSmsResponseUsageItemFieldTestSends)
+}
+
+// SetTotalSends sets the TotalSends field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetUsageSmsResponseUsageItem) SetTotalSends(totalSends int) {
+	g.TotalSends = totalSends
+	g.require(getUsageSmsResponseUsageItemFieldTotalSends)
+}
+
+func (g *GetUsageSmsResponseUsageItem) UnmarshalJSON(data []byte) error {
+	type embed GetUsageSmsResponseUsageItem
+	var unmarshaler = struct {
+		embed
+		LastSentAt *internal.DateTime `json:"lastSentAt,omitempty"`
+	}{
+		embed: embed(*g),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*g = GetUsageSmsResponseUsageItem(unmarshaler.embed)
+	g.LastSentAt = unmarshaler.LastSentAt.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *g)
+	if err != nil {
+		return err
+	}
+	g.extraProperties = extraProperties
+	g.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (g *GetUsageSmsResponseUsageItem) MarshalJSON() ([]byte, error) {
+	type embed GetUsageSmsResponseUsageItem
+	var marshaler = struct {
+		embed
+		LastSentAt *internal.DateTime `json:"lastSentAt,omitempty"`
+	}{
+		embed:      embed(*g),
+		LastSentAt: internal.NewOptionalDateTime(g.LastSentAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (g *GetUsageSmsResponseUsageItem) String() string {
+	if g == nil {
+		return "<nil>"
+	}
+	if len(g.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(g.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(g); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", g)
+}
+
+var (
+	releaseNumberSmsResponseFieldMessage = big.NewInt(1 << 0)
+	releaseNumberSmsResponseFieldNumber  = big.NewInt(1 << 1)
+	releaseNumberSmsResponseFieldSuccess = big.NewInt(1 << 2)
+)
+
+type ReleaseNumberSmsResponse struct {
+	Message string                          `json:"message" url:"message"`
+	Number  *ReleaseNumberSmsResponseNumber `json:"number" url:"number"`
+	Success bool                            `json:"success" url:"success"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *ReleaseNumberSmsResponse) GetMessage() string {
+	if r == nil {
+		return ""
+	}
+	return r.Message
+}
+
+func (r *ReleaseNumberSmsResponse) GetNumber() *ReleaseNumberSmsResponseNumber {
+	if r == nil {
+		return nil
+	}
+	return r.Number
+}
+
+func (r *ReleaseNumberSmsResponse) GetSuccess() bool {
+	if r == nil {
+		return false
+	}
+	return r.Success
+}
+
+func (r *ReleaseNumberSmsResponse) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *ReleaseNumberSmsResponse) require(field *big.Int) {
+	if r.explicitFields == nil {
+		r.explicitFields = big.NewInt(0)
+	}
+	r.explicitFields.Or(r.explicitFields, field)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReleaseNumberSmsResponse) SetMessage(message string) {
+	r.Message = message
+	r.require(releaseNumberSmsResponseFieldMessage)
+}
+
+// SetNumber sets the Number field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReleaseNumberSmsResponse) SetNumber(number *ReleaseNumberSmsResponseNumber) {
+	r.Number = number
+	r.require(releaseNumberSmsResponseFieldNumber)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReleaseNumberSmsResponse) SetSuccess(success bool) {
+	r.Success = success
+	r.require(releaseNumberSmsResponseFieldSuccess)
+}
+
+func (r *ReleaseNumberSmsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler ReleaseNumberSmsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = ReleaseNumberSmsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *ReleaseNumberSmsResponse) MarshalJSON() ([]byte, error) {
+	type embed ReleaseNumberSmsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *ReleaseNumberSmsResponse) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+var (
+	releaseNumberSmsResponseNumberFieldID     = big.NewInt(1 << 0)
+	releaseNumberSmsResponseNumberFieldStatus = big.NewInt(1 << 1)
+)
+
+type ReleaseNumberSmsResponseNumber struct {
+	ID     string                               `json:"id" url:"id"`
+	Status ReleaseNumberSmsResponseNumberStatus `json:"status" url:"status"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *ReleaseNumberSmsResponseNumber) GetID() string {
+	if r == nil {
+		return ""
+	}
+	return r.ID
+}
+
+func (r *ReleaseNumberSmsResponseNumber) GetStatus() ReleaseNumberSmsResponseNumberStatus {
+	if r == nil {
+		return ""
+	}
+	return r.Status
+}
+
+func (r *ReleaseNumberSmsResponseNumber) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *ReleaseNumberSmsResponseNumber) require(field *big.Int) {
+	if r.explicitFields == nil {
+		r.explicitFields = big.NewInt(0)
+	}
+	r.explicitFields.Or(r.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReleaseNumberSmsResponseNumber) SetID(id string) {
+	r.ID = id
+	r.require(releaseNumberSmsResponseNumberFieldID)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReleaseNumberSmsResponseNumber) SetStatus(status ReleaseNumberSmsResponseNumberStatus) {
+	r.Status = status
+	r.require(releaseNumberSmsResponseNumberFieldStatus)
+}
+
+func (r *ReleaseNumberSmsResponseNumber) UnmarshalJSON(data []byte) error {
+	type unmarshaler ReleaseNumberSmsResponseNumber
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = ReleaseNumberSmsResponseNumber(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *ReleaseNumberSmsResponseNumber) MarshalJSON() ([]byte, error) {
+	type embed ReleaseNumberSmsResponseNumber
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *ReleaseNumberSmsResponseNumber) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+type ReleaseNumberSmsResponseNumberStatus string
+
+const (
+	ReleaseNumberSmsResponseNumberStatusReleased ReleaseNumberSmsResponseNumberStatus = "released"
+)
+
+func NewReleaseNumberSmsResponseNumberStatusFromString(s string) (ReleaseNumberSmsResponseNumberStatus, error) {
+	switch s {
+	case "released":
+		return ReleaseNumberSmsResponseNumberStatusReleased, nil
+	}
+	var t ReleaseNumberSmsResponseNumberStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r ReleaseNumberSmsResponseNumberStatus) Ptr() *ReleaseNumberSmsResponseNumberStatus {
+	return &r
 }
 
 var (

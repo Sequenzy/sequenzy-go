@@ -55,6 +55,54 @@ func (c *Client) GetSettings(
 	return response.Body, nil
 }
 
+// Per-number outbound SMS usage for the selected company. Requires account:read. Test sends count only toward testSends, not totalSends, delivered, failed or creditsCharged. lastSentAt may include a test send. Rows are ordered by totalSends descending.
+//
+// Example:
+//
+//	client.Sms.GetUsage(
+//	    context.TODO(),
+//	)
+func (c *Client) GetUsage(
+	ctx context.Context,
+	opts ...option.RequestOption,
+) (*sequenzygo.GetUsageSmsResponse, error) {
+	response, err := c.WithRawResponse.GetUsage(
+		ctx,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Release a toll-free number and free its workspace slot. Requires companies:manage. Steps explicitly pinned to this number do not switch to another number. This action cannot reclaim the number after release.
+//
+// Example:
+//
+//	request := &sequenzygo.ReleaseNumberSmsRequest{
+//	    NumberID: "numberId",
+//	}
+//	client.Sms.ReleaseNumber(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) ReleaseNumber(
+	ctx context.Context,
+	request *sequenzygo.ReleaseNumberSmsRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.ReleaseNumberSmsResponse, error) {
+	response, err := c.WithRawResponse.ReleaseNumber(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Sends a real test text message. Test sends charge credits, bypass quiet hours, are excluded from step stats, and are limited to 100 per company in a rolling 24-hour window. Requires the SMS add-on with a verified number.
 //
 // Example:

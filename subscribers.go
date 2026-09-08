@@ -106,6 +106,31 @@ func (a *AddTagsBulkRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
+	cancelOperationSubscribersRequestFieldID = big.NewInt(1 << 0)
+)
+
+type CancelOperationSubscribersRequest struct {
+	ID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (c *CancelOperationSubscribersRequest) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelOperationSubscribersRequest) SetID(id string) {
+	c.ID = id
+	c.require(cancelOperationSubscribersRequestFieldID)
+}
+
+var (
 	createSubscribersRequestFieldCreatedAt         = big.NewInt(1 << 0)
 	createSubscribersRequestFieldCustomAttributes  = big.NewInt(1 << 1)
 	createSubscribersRequestFieldDuplicateStrategy = big.NewInt(1 << 2)
@@ -125,7 +150,7 @@ var (
 )
 
 type CreateSubscribersRequest struct {
-	// Original signup date, for importing history from another platform. Preserves the real date so date-relative segments are correct immediately. An existing contact's date only ever moves earlier, regardless of duplicateStrategy. Supplying this defaults enrollInSequences to false, and updatedAt is never backdated.
+	// Original signup date, for importing history from another platform. Preserves the real date so date-relative segments are correct immediately. An existing contact's date only ever moves earlier, regardless of duplicateStrategy. Supplying this defaults enrollInSequences to false, and updatedAt is never backdated. New-subscriber account notifications remain eligible when the signup date is at most one hour old; older dates do not notify on creation. Double opt-in confirmation can notify even for imported contacts. Your notification preferences, double opt-in and the daily cap still apply.
 	CreatedAt        *time.Time     `json:"createdAt,omitempty" url:"-"`
 	CustomAttributes map[string]any `json:"customAttributes,omitempty" url:"-"`
 	// How to handle existing subscribers:
@@ -778,6 +803,31 @@ func (g *GetImportSubscribersRequest) SetImportID(importID string) {
 }
 
 var (
+	getOperationSubscribersRequestFieldID = big.NewInt(1 << 0)
+)
+
+type GetOperationSubscribersRequest struct {
+	ID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (g *GetOperationSubscribersRequest) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetOperationSubscribersRequest) SetID(id string) {
+	g.ID = id
+	g.require(getOperationSubscribersRequestFieldID)
+}
+
+var (
 	importEventsSubscribersRequestFieldEvents = big.NewInt(1 << 0)
 )
 
@@ -1050,6 +1100,92 @@ func (l *ListNotesByExternalIDSubscribersRequest) require(field *big.Int) {
 func (l *ListNotesByExternalIDSubscribersRequest) SetExternalID(externalID string) {
 	l.ExternalID = externalID
 	l.require(listNotesByExternalIDSubscribersRequestFieldExternalID)
+}
+
+var (
+	subscriberOperationStartFieldAudience           = big.NewInt(1 << 0)
+	subscriberOperationStartFieldKind               = big.NewInt(1 << 1)
+	subscriberOperationStartFieldRequestKey         = big.NewInt(1 << 2)
+	subscriberOperationStartFieldTags               = big.NewInt(1 << 3)
+	subscriberOperationStartFieldTriggerAutomations = big.NewInt(1 << 4)
+)
+
+type SubscriberOperationStart struct {
+	// Defaults to all contacts. Selection walks live pages before mutations, excludes contacts created after the request, and is not a point-in-time database snapshot. Provide root or filters, never both.
+	Audience *SubscriberOperationStartAudience `json:"audience,omitempty" url:"-"`
+	Kind     SubscriberOperationStartKind      `json:"kind" url:"-"`
+	// Reuse after an uncertain response. Different normalized settings with the same company/key return 409.
+	RequestKey string `json:"requestKey" url:"-"`
+	// Tag names, normalized like single-contact tags.
+	Tags []string `json:"tags" url:"-"`
+	// Requires automations:trigger.
+	TriggerAutomations *bool `json:"triggerAutomations,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (s *SubscriberOperationStart) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetAudience sets the Audience field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubscriberOperationStart) SetAudience(audience *SubscriberOperationStartAudience) {
+	s.Audience = audience
+	s.require(subscriberOperationStartFieldAudience)
+}
+
+// SetKind sets the Kind field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubscriberOperationStart) SetKind(kind SubscriberOperationStartKind) {
+	s.Kind = kind
+	s.require(subscriberOperationStartFieldKind)
+}
+
+// SetRequestKey sets the RequestKey field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubscriberOperationStart) SetRequestKey(requestKey string) {
+	s.RequestKey = requestKey
+	s.require(subscriberOperationStartFieldRequestKey)
+}
+
+// SetTags sets the Tags field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubscriberOperationStart) SetTags(tags []string) {
+	s.Tags = tags
+	s.require(subscriberOperationStartFieldTags)
+}
+
+// SetTriggerAutomations sets the TriggerAutomations field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubscriberOperationStart) SetTriggerAutomations(triggerAutomations *bool) {
+	s.TriggerAutomations = triggerAutomations
+	s.require(subscriberOperationStartFieldTriggerAutomations)
+}
+
+func (s *SubscriberOperationStart) UnmarshalJSON(data []byte) error {
+	type unmarshaler SubscriberOperationStart
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*s = SubscriberOperationStart(body)
+	return nil
+}
+
+func (s *SubscriberOperationStart) MarshalJSON() ([]byte, error) {
+	type embed SubscriberOperationStart
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
 }
 
 // Provide tags plus at least one identifier list. Identifier lists may be combined and total at most 500 entries per request.
@@ -1701,17 +1837,18 @@ var (
 	detailedSubscriberFieldID                  = big.NewInt(1 << 6)
 	detailedSubscriberFieldLastName            = big.NewInt(1 << 7)
 	detailedSubscriberFieldPhone               = big.NewInt(1 << 8)
-	detailedSubscriberFieldSmsStatus           = big.NewInt(1 << 9)
-	detailedSubscriberFieldStatus              = big.NewInt(1 << 10)
-	detailedSubscriberFieldTags                = big.NewInt(1 << 11)
-	detailedSubscriberFieldTimezone            = big.NewInt(1 << 12)
-	detailedSubscriberFieldUnsubscribedAt      = big.NewInt(1 << 13)
-	detailedSubscriberFieldUpdatedAt           = big.NewInt(1 << 14)
-	detailedSubscriberFieldActivity            = big.NewInt(1 << 15)
-	detailedSubscriberFieldEmailStats          = big.NewInt(1 << 16)
-	detailedSubscriberFieldLists               = big.NewInt(1 << 17)
-	detailedSubscriberFieldNotes               = big.NewInt(1 << 18)
-	detailedSubscriberFieldSequenceEnrollments = big.NewInt(1 << 19)
+	detailedSubscriberFieldPhoneCountry        = big.NewInt(1 << 9)
+	detailedSubscriberFieldSmsStatus           = big.NewInt(1 << 10)
+	detailedSubscriberFieldStatus              = big.NewInt(1 << 11)
+	detailedSubscriberFieldTags                = big.NewInt(1 << 12)
+	detailedSubscriberFieldTimezone            = big.NewInt(1 << 13)
+	detailedSubscriberFieldUnsubscribedAt      = big.NewInt(1 << 14)
+	detailedSubscriberFieldUpdatedAt           = big.NewInt(1 << 15)
+	detailedSubscriberFieldActivity            = big.NewInt(1 << 16)
+	detailedSubscriberFieldEmailStats          = big.NewInt(1 << 17)
+	detailedSubscriberFieldLists               = big.NewInt(1 << 18)
+	detailedSubscriberFieldNotes               = big.NewInt(1 << 19)
+	detailedSubscriberFieldSequenceEnrollments = big.NewInt(1 << 20)
 )
 
 type DetailedSubscriber struct {
@@ -1727,6 +1864,8 @@ type DetailedSubscriber struct {
 	LastName   *string `json:"lastName,omitempty" url:"lastName,omitempty"`
 	// Phone number in E.164 format
 	Phone *string `json:"phone,omitempty" url:"phone,omitempty"`
+	// Two-letter ISO country code associated with the normalized phone number, or null when unavailable.
+	PhoneCountry *string `json:"phoneCountry,omitempty" url:"phoneCountry,omitempty"`
 	// SMS marketing consent status, independent of the email status
 	SmsStatus *SubscriberSmsStatus `json:"smsStatus,omitempty" url:"smsStatus,omitempty"`
 	Status    *SubscriberStatus    `json:"status,omitempty" url:"status,omitempty"`
@@ -1810,6 +1949,13 @@ func (d *DetailedSubscriber) GetPhone() *string {
 		return nil
 	}
 	return d.Phone
+}
+
+func (d *DetailedSubscriber) GetPhoneCountry() *string {
+	if d == nil {
+		return nil
+	}
+	return d.PhoneCountry
 }
 
 func (d *DetailedSubscriber) GetSmsStatus() *SubscriberSmsStatus {
@@ -1966,6 +2112,13 @@ func (d *DetailedSubscriber) SetPhone(phone *string) {
 	d.require(detailedSubscriberFieldPhone)
 }
 
+// SetPhoneCountry sets the PhoneCountry field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DetailedSubscriber) SetPhoneCountry(phoneCountry *string) {
+	d.PhoneCountry = phoneCountry
+	d.require(detailedSubscriberFieldPhoneCountry)
+}
+
 // SetSmsStatus sets the SmsStatus field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (d *DetailedSubscriber) SetSmsStatus(smsStatus *SubscriberSmsStatus) {
@@ -2111,12 +2264,13 @@ var (
 	subscriberFieldID               = big.NewInt(1 << 6)
 	subscriberFieldLastName         = big.NewInt(1 << 7)
 	subscriberFieldPhone            = big.NewInt(1 << 8)
-	subscriberFieldSmsStatus        = big.NewInt(1 << 9)
-	subscriberFieldStatus           = big.NewInt(1 << 10)
-	subscriberFieldTags             = big.NewInt(1 << 11)
-	subscriberFieldTimezone         = big.NewInt(1 << 12)
-	subscriberFieldUnsubscribedAt   = big.NewInt(1 << 13)
-	subscriberFieldUpdatedAt        = big.NewInt(1 << 14)
+	subscriberFieldPhoneCountry     = big.NewInt(1 << 9)
+	subscriberFieldSmsStatus        = big.NewInt(1 << 10)
+	subscriberFieldStatus           = big.NewInt(1 << 11)
+	subscriberFieldTags             = big.NewInt(1 << 12)
+	subscriberFieldTimezone         = big.NewInt(1 << 13)
+	subscriberFieldUnsubscribedAt   = big.NewInt(1 << 14)
+	subscriberFieldUpdatedAt        = big.NewInt(1 << 15)
 )
 
 type Subscriber struct {
@@ -2132,6 +2286,8 @@ type Subscriber struct {
 	LastName   *string `json:"lastName,omitempty" url:"lastName,omitempty"`
 	// Phone number in E.164 format
 	Phone *string `json:"phone,omitempty" url:"phone,omitempty"`
+	// Two-letter ISO country code associated with the normalized phone number, or null when unavailable.
+	PhoneCountry *string `json:"phoneCountry,omitempty" url:"phoneCountry,omitempty"`
 	// SMS marketing consent status, independent of the email status
 	SmsStatus *SubscriberSmsStatus `json:"smsStatus,omitempty" url:"smsStatus,omitempty"`
 	Status    *SubscriberStatus    `json:"status,omitempty" url:"status,omitempty"`
@@ -2210,6 +2366,13 @@ func (s *Subscriber) GetPhone() *string {
 		return nil
 	}
 	return s.Phone
+}
+
+func (s *Subscriber) GetPhoneCountry() *string {
+	if s == nil {
+		return nil
+	}
+	return s.PhoneCountry
 }
 
 func (s *Subscriber) GetSmsStatus() *SubscriberSmsStatus {
@@ -2329,6 +2492,13 @@ func (s *Subscriber) SetLastName(lastName *string) {
 func (s *Subscriber) SetPhone(phone *string) {
 	s.Phone = phone
 	s.require(subscriberFieldPhone)
+}
+
+// SetPhoneCountry sets the PhoneCountry field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *Subscriber) SetPhoneCountry(phoneCountry *string) {
+	s.PhoneCountry = phoneCountry
+	s.require(subscriberFieldPhoneCountry)
 }
 
 // SetSmsStatus sets the SmsStatus field and marks it as non-optional;
@@ -4561,6 +4731,550 @@ func (s *SubscriberNoteAuthor) String() string {
 }
 
 var (
+	subscriberOperationFieldCompanyID   = big.NewInt(1 << 0)
+	subscriberOperationFieldCompletedAt = big.NewInt(1 << 1)
+	subscriberOperationFieldCreatedAt   = big.NewInt(1 << 2)
+	subscriberOperationFieldError       = big.NewInt(1 << 3)
+	subscriberOperationFieldExpiresAt   = big.NewInt(1 << 4)
+	subscriberOperationFieldFailed      = big.NewInt(1 << 5)
+	subscriberOperationFieldFailures    = big.NewInt(1 << 6)
+	subscriberOperationFieldID          = big.NewInt(1 << 7)
+	subscriberOperationFieldKind        = big.NewInt(1 << 8)
+	subscriberOperationFieldProcessed   = big.NewInt(1 << 9)
+	subscriberOperationFieldStatus      = big.NewInt(1 << 10)
+	subscriberOperationFieldSucceeded   = big.NewInt(1 << 11)
+	subscriberOperationFieldTotal       = big.NewInt(1 << 12)
+)
+
+type SubscriberOperation struct {
+	CompanyID   string     `json:"companyId" url:"companyId"`
+	CompletedAt *time.Time `json:"completedAt,omitempty" url:"completedAt,omitempty"`
+	CreatedAt   time.Time  `json:"createdAt" url:"createdAt"`
+	Error       *string    `json:"error,omitempty" url:"error,omitempty"`
+	// Processing deadline while active; retention deadline after completion.
+	ExpiresAt time.Time                          `json:"expiresAt" url:"expiresAt"`
+	Failed    int                                `json:"failed" url:"failed"`
+	Failures  []*SubscriberOperationFailuresItem `json:"failures" url:"failures"`
+	ID        string                             `json:"id" url:"id"`
+	Kind      SubscriberOperationKind            `json:"kind" url:"kind"`
+	Processed int                                `json:"processed" url:"processed"`
+	Status    SubscriberOperationStatus          `json:"status" url:"status"`
+	Succeeded int                                `json:"succeeded" url:"succeeded"`
+	// Selected contacts; grows while selection is queued.
+	Total int `json:"total" url:"total"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SubscriberOperation) GetCompanyID() string {
+	if s == nil {
+		return ""
+	}
+	return s.CompanyID
+}
+
+func (s *SubscriberOperation) GetCompletedAt() *time.Time {
+	if s == nil {
+		return nil
+	}
+	return s.CompletedAt
+}
+
+func (s *SubscriberOperation) GetCreatedAt() time.Time {
+	if s == nil {
+		return time.Time{}
+	}
+	return s.CreatedAt
+}
+
+func (s *SubscriberOperation) GetError() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Error
+}
+
+func (s *SubscriberOperation) GetExpiresAt() time.Time {
+	if s == nil {
+		return time.Time{}
+	}
+	return s.ExpiresAt
+}
+
+func (s *SubscriberOperation) GetFailed() int {
+	if s == nil {
+		return 0
+	}
+	return s.Failed
+}
+
+func (s *SubscriberOperation) GetFailures() []*SubscriberOperationFailuresItem {
+	if s == nil {
+		return nil
+	}
+	return s.Failures
+}
+
+func (s *SubscriberOperation) GetID() string {
+	if s == nil {
+		return ""
+	}
+	return s.ID
+}
+
+func (s *SubscriberOperation) GetKind() SubscriberOperationKind {
+	if s == nil {
+		return ""
+	}
+	return s.Kind
+}
+
+func (s *SubscriberOperation) GetProcessed() int {
+	if s == nil {
+		return 0
+	}
+	return s.Processed
+}
+
+func (s *SubscriberOperation) GetStatus() SubscriberOperationStatus {
+	if s == nil {
+		return ""
+	}
+	return s.Status
+}
+
+func (s *SubscriberOperation) GetSucceeded() int {
+	if s == nil {
+		return 0
+	}
+	return s.Succeeded
+}
+
+func (s *SubscriberOperation) GetTotal() int {
+	if s == nil {
+		return 0
+	}
+	return s.Total
+}
+
+func (s *SubscriberOperation) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SubscriberOperation) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetCompanyID sets the CompanyID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubscriberOperation) SetCompanyID(companyID string) {
+	s.CompanyID = companyID
+	s.require(subscriberOperationFieldCompanyID)
+}
+
+// SetCompletedAt sets the CompletedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubscriberOperation) SetCompletedAt(completedAt *time.Time) {
+	s.CompletedAt = completedAt
+	s.require(subscriberOperationFieldCompletedAt)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubscriberOperation) SetCreatedAt(createdAt time.Time) {
+	s.CreatedAt = createdAt
+	s.require(subscriberOperationFieldCreatedAt)
+}
+
+// SetError sets the Error field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubscriberOperation) SetError(error_ *string) {
+	s.Error = error_
+	s.require(subscriberOperationFieldError)
+}
+
+// SetExpiresAt sets the ExpiresAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubscriberOperation) SetExpiresAt(expiresAt time.Time) {
+	s.ExpiresAt = expiresAt
+	s.require(subscriberOperationFieldExpiresAt)
+}
+
+// SetFailed sets the Failed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubscriberOperation) SetFailed(failed int) {
+	s.Failed = failed
+	s.require(subscriberOperationFieldFailed)
+}
+
+// SetFailures sets the Failures field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubscriberOperation) SetFailures(failures []*SubscriberOperationFailuresItem) {
+	s.Failures = failures
+	s.require(subscriberOperationFieldFailures)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubscriberOperation) SetID(id string) {
+	s.ID = id
+	s.require(subscriberOperationFieldID)
+}
+
+// SetKind sets the Kind field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubscriberOperation) SetKind(kind SubscriberOperationKind) {
+	s.Kind = kind
+	s.require(subscriberOperationFieldKind)
+}
+
+// SetProcessed sets the Processed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubscriberOperation) SetProcessed(processed int) {
+	s.Processed = processed
+	s.require(subscriberOperationFieldProcessed)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubscriberOperation) SetStatus(status SubscriberOperationStatus) {
+	s.Status = status
+	s.require(subscriberOperationFieldStatus)
+}
+
+// SetSucceeded sets the Succeeded field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubscriberOperation) SetSucceeded(succeeded int) {
+	s.Succeeded = succeeded
+	s.require(subscriberOperationFieldSucceeded)
+}
+
+// SetTotal sets the Total field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubscriberOperation) SetTotal(total int) {
+	s.Total = total
+	s.require(subscriberOperationFieldTotal)
+}
+
+func (s *SubscriberOperation) UnmarshalJSON(data []byte) error {
+	type embed SubscriberOperation
+	var unmarshaler = struct {
+		embed
+		CompletedAt *internal.DateTime `json:"completedAt,omitempty"`
+		CreatedAt   *internal.DateTime `json:"createdAt"`
+		ExpiresAt   *internal.DateTime `json:"expiresAt"`
+	}{
+		embed: embed(*s),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*s = SubscriberOperation(unmarshaler.embed)
+	s.CompletedAt = unmarshaler.CompletedAt.TimePtr()
+	s.CreatedAt = unmarshaler.CreatedAt.Time()
+	s.ExpiresAt = unmarshaler.ExpiresAt.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SubscriberOperation) MarshalJSON() ([]byte, error) {
+	type embed SubscriberOperation
+	var marshaler = struct {
+		embed
+		CompletedAt *internal.DateTime `json:"completedAt,omitempty"`
+		CreatedAt   *internal.DateTime `json:"createdAt"`
+		ExpiresAt   *internal.DateTime `json:"expiresAt"`
+	}{
+		embed:       embed(*s),
+		CompletedAt: internal.NewOptionalDateTime(s.CompletedAt),
+		CreatedAt:   internal.NewDateTime(s.CreatedAt),
+		ExpiresAt:   internal.NewDateTime(s.ExpiresAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SubscriberOperation) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	subscriberOperationFailuresItemFieldError        = big.NewInt(1 << 0)
+	subscriberOperationFailuresItemFieldSubscriberID = big.NewInt(1 << 1)
+)
+
+type SubscriberOperationFailuresItem struct {
+	Error        string `json:"error" url:"error"`
+	SubscriberID string `json:"subscriberId" url:"subscriberId"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SubscriberOperationFailuresItem) GetError() string {
+	if s == nil {
+		return ""
+	}
+	return s.Error
+}
+
+func (s *SubscriberOperationFailuresItem) GetSubscriberID() string {
+	if s == nil {
+		return ""
+	}
+	return s.SubscriberID
+}
+
+func (s *SubscriberOperationFailuresItem) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SubscriberOperationFailuresItem) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetError sets the Error field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubscriberOperationFailuresItem) SetError(error_ string) {
+	s.Error = error_
+	s.require(subscriberOperationFailuresItemFieldError)
+}
+
+// SetSubscriberID sets the SubscriberID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubscriberOperationFailuresItem) SetSubscriberID(subscriberID string) {
+	s.SubscriberID = subscriberID
+	s.require(subscriberOperationFailuresItemFieldSubscriberID)
+}
+
+func (s *SubscriberOperationFailuresItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler SubscriberOperationFailuresItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SubscriberOperationFailuresItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SubscriberOperationFailuresItem) MarshalJSON() ([]byte, error) {
+	type embed SubscriberOperationFailuresItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SubscriberOperationFailuresItem) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+type SubscriberOperationKind string
+
+const (
+	SubscriberOperationKindAddTags SubscriberOperationKind = "add_tags"
+)
+
+func NewSubscriberOperationKindFromString(s string) (SubscriberOperationKind, error) {
+	switch s {
+	case "add_tags":
+		return SubscriberOperationKindAddTags, nil
+	}
+	var t SubscriberOperationKind
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SubscriberOperationKind) Ptr() *SubscriberOperationKind {
+	return &s
+}
+
+var (
+	subscriberOperationResponseFieldOperation = big.NewInt(1 << 0)
+	subscriberOperationResponseFieldSuccess   = big.NewInt(1 << 1)
+)
+
+type SubscriberOperationResponse struct {
+	Operation *SubscriberOperation `json:"operation" url:"operation"`
+	Success   bool                 `json:"success" url:"success"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SubscriberOperationResponse) GetOperation() *SubscriberOperation {
+	if s == nil {
+		return nil
+	}
+	return s.Operation
+}
+
+func (s *SubscriberOperationResponse) GetSuccess() bool {
+	if s == nil {
+		return false
+	}
+	return s.Success
+}
+
+func (s *SubscriberOperationResponse) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SubscriberOperationResponse) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetOperation sets the Operation field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubscriberOperationResponse) SetOperation(operation *SubscriberOperation) {
+	s.Operation = operation
+	s.require(subscriberOperationResponseFieldOperation)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubscriberOperationResponse) SetSuccess(success bool) {
+	s.Success = success
+	s.require(subscriberOperationResponseFieldSuccess)
+}
+
+func (s *SubscriberOperationResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler SubscriberOperationResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SubscriberOperationResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SubscriberOperationResponse) MarshalJSON() ([]byte, error) {
+	type embed SubscriberOperationResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SubscriberOperationResponse) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+type SubscriberOperationStatus string
+
+const (
+	SubscriberOperationStatusQueued    SubscriberOperationStatus = "queued"
+	SubscriberOperationStatusRunning   SubscriberOperationStatus = "running"
+	SubscriberOperationStatusCompleted SubscriberOperationStatus = "completed"
+	SubscriberOperationStatusFailed    SubscriberOperationStatus = "failed"
+	SubscriberOperationStatusCancelled SubscriberOperationStatus = "cancelled"
+)
+
+func NewSubscriberOperationStatusFromString(s string) (SubscriberOperationStatus, error) {
+	switch s {
+	case "queued":
+		return SubscriberOperationStatusQueued, nil
+	case "running":
+		return SubscriberOperationStatusRunning, nil
+	case "completed":
+		return SubscriberOperationStatusCompleted, nil
+	case "failed":
+		return SubscriberOperationStatusFailed, nil
+	case "cancelled":
+		return SubscriberOperationStatusCancelled, nil
+	}
+	var t SubscriberOperationStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SubscriberOperationStatus) Ptr() *SubscriberOperationStatus {
+	return &s
+}
+
+var (
 	subscriberSequenceEnrollmentFieldCurrentNodeID    = big.NewInt(1 << 0)
 	subscriberSequenceEnrollmentFieldCurrentNodeLabel = big.NewInt(1 << 1)
 	subscriberSequenceEnrollmentFieldCurrentNodeType  = big.NewInt(1 << 2)
@@ -6037,15 +6751,16 @@ var (
 	createSubscribersResponseSubscriberFieldID               = big.NewInt(1 << 6)
 	createSubscribersResponseSubscriberFieldLastName         = big.NewInt(1 << 7)
 	createSubscribersResponseSubscriberFieldPhone            = big.NewInt(1 << 8)
-	createSubscribersResponseSubscriberFieldSmsStatus        = big.NewInt(1 << 9)
-	createSubscribersResponseSubscriberFieldStatus           = big.NewInt(1 << 10)
-	createSubscribersResponseSubscriberFieldTags             = big.NewInt(1 << 11)
-	createSubscribersResponseSubscriberFieldTimezone         = big.NewInt(1 << 12)
-	createSubscribersResponseSubscriberFieldUnsubscribedAt   = big.NewInt(1 << 13)
-	createSubscribersResponseSubscriberFieldUpdatedAt        = big.NewInt(1 << 14)
-	createSubscribersResponseSubscriberFieldCreated          = big.NewInt(1 << 15)
-	createSubscribersResponseSubscriberFieldSkipped          = big.NewInt(1 << 16)
-	createSubscribersResponseSubscriberFieldUpdated          = big.NewInt(1 << 17)
+	createSubscribersResponseSubscriberFieldPhoneCountry     = big.NewInt(1 << 9)
+	createSubscribersResponseSubscriberFieldSmsStatus        = big.NewInt(1 << 10)
+	createSubscribersResponseSubscriberFieldStatus           = big.NewInt(1 << 11)
+	createSubscribersResponseSubscriberFieldTags             = big.NewInt(1 << 12)
+	createSubscribersResponseSubscriberFieldTimezone         = big.NewInt(1 << 13)
+	createSubscribersResponseSubscriberFieldUnsubscribedAt   = big.NewInt(1 << 14)
+	createSubscribersResponseSubscriberFieldUpdatedAt        = big.NewInt(1 << 15)
+	createSubscribersResponseSubscriberFieldCreated          = big.NewInt(1 << 16)
+	createSubscribersResponseSubscriberFieldSkipped          = big.NewInt(1 << 17)
+	createSubscribersResponseSubscriberFieldUpdated          = big.NewInt(1 << 18)
 )
 
 type CreateSubscribersResponseSubscriber struct {
@@ -6061,6 +6776,8 @@ type CreateSubscribersResponseSubscriber struct {
 	LastName   *string `json:"lastName,omitempty" url:"lastName,omitempty"`
 	// Phone number in E.164 format
 	Phone *string `json:"phone,omitempty" url:"phone,omitempty"`
+	// Two-letter ISO country code associated with the normalized phone number, or null when unavailable.
+	PhoneCountry *string `json:"phoneCountry,omitempty" url:"phoneCountry,omitempty"`
 	// SMS marketing consent status, independent of the email status
 	SmsStatus *SubscriberSmsStatus `json:"smsStatus,omitempty" url:"smsStatus,omitempty"`
 	Status    *SubscriberStatus    `json:"status,omitempty" url:"status,omitempty"`
@@ -6145,6 +6862,13 @@ func (c *CreateSubscribersResponseSubscriber) GetPhone() *string {
 		return nil
 	}
 	return c.Phone
+}
+
+func (c *CreateSubscribersResponseSubscriber) GetPhoneCountry() *string {
+	if c == nil {
+		return nil
+	}
+	return c.PhoneCountry
 }
 
 func (c *CreateSubscribersResponseSubscriber) GetSmsStatus() *SubscriberSmsStatus {
@@ -6285,6 +7009,13 @@ func (c *CreateSubscribersResponseSubscriber) SetLastName(lastName *string) {
 func (c *CreateSubscribersResponseSubscriber) SetPhone(phone *string) {
 	c.Phone = phone
 	c.require(createSubscribersResponseSubscriberFieldPhone)
+}
+
+// SetPhoneCountry sets the PhoneCountry field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateSubscribersResponseSubscriber) SetPhoneCountry(phoneCountry *string) {
+	c.PhoneCountry = phoneCountry
+	c.require(createSubscribersResponseSubscriberFieldPhoneCountry)
 }
 
 // SetSmsStatus sets the SmsStatus field and marks it as non-optional;
@@ -8311,6 +9042,106 @@ func (l *ListNotesSubscribersResponse) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
+var (
+	listOperationsSubscribersResponseFieldOperations = big.NewInt(1 << 0)
+	listOperationsSubscribersResponseFieldSuccess    = big.NewInt(1 << 1)
+)
+
+type ListOperationsSubscribersResponse struct {
+	Operations []*SubscriberOperation `json:"operations" url:"operations"`
+	Success    bool                   `json:"success" url:"success"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListOperationsSubscribersResponse) GetOperations() []*SubscriberOperation {
+	if l == nil {
+		return nil
+	}
+	return l.Operations
+}
+
+func (l *ListOperationsSubscribersResponse) GetSuccess() bool {
+	if l == nil {
+		return false
+	}
+	return l.Success
+}
+
+func (l *ListOperationsSubscribersResponse) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListOperationsSubscribersResponse) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetOperations sets the Operations field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListOperationsSubscribersResponse) SetOperations(operations []*SubscriberOperation) {
+	l.Operations = operations
+	l.require(listOperationsSubscribersResponseFieldOperations)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListOperationsSubscribersResponse) SetSuccess(success bool) {
+	l.Success = success
+	l.require(listOperationsSubscribersResponseFieldSuccess)
+}
+
+func (l *ListOperationsSubscribersResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListOperationsSubscribersResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListOperationsSubscribersResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListOperationsSubscribersResponse) MarshalJSON() ([]byte, error) {
+	type embed ListOperationsSubscribersResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListOperationsSubscribersResponse) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
 type ListSubscribersRequestAttributeOperator string
 
 const (
@@ -8509,6 +9340,228 @@ func (l *ListSubscribersResponse) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", l)
+}
+
+// Defaults to all contacts. Selection walks live pages before mutations, excludes contacts created after the request, and is not a point-in-time database snapshot. Provide root or filters, never both.
+var (
+	subscriberOperationStartAudienceFieldActiveOnly         = big.NewInt(1 << 0)
+	subscriberOperationStartAudienceFieldFilterJoinOperator = big.NewInt(1 << 1)
+	subscriberOperationStartAudienceFieldFilters            = big.NewInt(1 << 2)
+	subscriberOperationStartAudienceFieldListID             = big.NewInt(1 << 3)
+	subscriberOperationStartAudienceFieldRoot               = big.NewInt(1 << 4)
+	subscriberOperationStartAudienceFieldSearch             = big.NewInt(1 << 5)
+	subscriberOperationStartAudienceFieldSubscriberIDs      = big.NewInt(1 << 6)
+)
+
+type SubscriberOperationStartAudience struct {
+	ActiveOnly         *bool                                               `json:"activeOnly,omitempty" url:"activeOnly,omitempty"`
+	FilterJoinOperator *SubscriberOperationStartAudienceFilterJoinOperator `json:"filterJoinOperator,omitempty" url:"filterJoinOperator,omitempty"`
+	Filters            []*FilterLeaf                                       `json:"filters,omitempty" url:"filters,omitempty"`
+	ListID             *string                                             `json:"listId,omitempty" url:"listId,omitempty"`
+	Root               *FilterGroup                                        `json:"root,omitempty" url:"root,omitempty"`
+	Search             *string                                             `json:"search,omitempty" url:"search,omitempty"`
+	SubscriberIDs      []string                                            `json:"subscriberIds,omitempty" url:"subscriberIds,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SubscriberOperationStartAudience) GetActiveOnly() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.ActiveOnly
+}
+
+func (s *SubscriberOperationStartAudience) GetFilterJoinOperator() *SubscriberOperationStartAudienceFilterJoinOperator {
+	if s == nil {
+		return nil
+	}
+	return s.FilterJoinOperator
+}
+
+func (s *SubscriberOperationStartAudience) GetFilters() []*FilterLeaf {
+	if s == nil {
+		return nil
+	}
+	return s.Filters
+}
+
+func (s *SubscriberOperationStartAudience) GetListID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.ListID
+}
+
+func (s *SubscriberOperationStartAudience) GetRoot() *FilterGroup {
+	if s == nil {
+		return nil
+	}
+	return s.Root
+}
+
+func (s *SubscriberOperationStartAudience) GetSearch() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Search
+}
+
+func (s *SubscriberOperationStartAudience) GetSubscriberIDs() []string {
+	if s == nil {
+		return nil
+	}
+	return s.SubscriberIDs
+}
+
+func (s *SubscriberOperationStartAudience) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SubscriberOperationStartAudience) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetActiveOnly sets the ActiveOnly field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubscriberOperationStartAudience) SetActiveOnly(activeOnly *bool) {
+	s.ActiveOnly = activeOnly
+	s.require(subscriberOperationStartAudienceFieldActiveOnly)
+}
+
+// SetFilterJoinOperator sets the FilterJoinOperator field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubscriberOperationStartAudience) SetFilterJoinOperator(filterJoinOperator *SubscriberOperationStartAudienceFilterJoinOperator) {
+	s.FilterJoinOperator = filterJoinOperator
+	s.require(subscriberOperationStartAudienceFieldFilterJoinOperator)
+}
+
+// SetFilters sets the Filters field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubscriberOperationStartAudience) SetFilters(filters []*FilterLeaf) {
+	s.Filters = filters
+	s.require(subscriberOperationStartAudienceFieldFilters)
+}
+
+// SetListID sets the ListID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubscriberOperationStartAudience) SetListID(listID *string) {
+	s.ListID = listID
+	s.require(subscriberOperationStartAudienceFieldListID)
+}
+
+// SetRoot sets the Root field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubscriberOperationStartAudience) SetRoot(root *FilterGroup) {
+	s.Root = root
+	s.require(subscriberOperationStartAudienceFieldRoot)
+}
+
+// SetSearch sets the Search field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubscriberOperationStartAudience) SetSearch(search *string) {
+	s.Search = search
+	s.require(subscriberOperationStartAudienceFieldSearch)
+}
+
+// SetSubscriberIDs sets the SubscriberIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubscriberOperationStartAudience) SetSubscriberIDs(subscriberIDs []string) {
+	s.SubscriberIDs = subscriberIDs
+	s.require(subscriberOperationStartAudienceFieldSubscriberIDs)
+}
+
+func (s *SubscriberOperationStartAudience) UnmarshalJSON(data []byte) error {
+	type unmarshaler SubscriberOperationStartAudience
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SubscriberOperationStartAudience(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SubscriberOperationStartAudience) MarshalJSON() ([]byte, error) {
+	type embed SubscriberOperationStartAudience
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SubscriberOperationStartAudience) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+type SubscriberOperationStartAudienceFilterJoinOperator string
+
+const (
+	SubscriberOperationStartAudienceFilterJoinOperatorAnd SubscriberOperationStartAudienceFilterJoinOperator = "and"
+	SubscriberOperationStartAudienceFilterJoinOperatorOr  SubscriberOperationStartAudienceFilterJoinOperator = "or"
+)
+
+func NewSubscriberOperationStartAudienceFilterJoinOperatorFromString(s string) (SubscriberOperationStartAudienceFilterJoinOperator, error) {
+	switch s {
+	case "and":
+		return SubscriberOperationStartAudienceFilterJoinOperatorAnd, nil
+	case "or":
+		return SubscriberOperationStartAudienceFilterJoinOperatorOr, nil
+	}
+	var t SubscriberOperationStartAudienceFilterJoinOperator
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SubscriberOperationStartAudienceFilterJoinOperator) Ptr() *SubscriberOperationStartAudienceFilterJoinOperator {
+	return &s
+}
+
+type SubscriberOperationStartKind string
+
+const (
+	SubscriberOperationStartKindAddTags SubscriberOperationStartKind = "add_tags"
+)
+
+func NewSubscriberOperationStartKindFromString(s string) (SubscriberOperationStartKind, error) {
+	switch s {
+	case "add_tags":
+		return SubscriberOperationStartKindAddTags, nil
+	}
+	var t SubscriberOperationStartKind
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SubscriberOperationStartKind) Ptr() *SubscriberOperationStartKind {
+	return &s
 }
 
 // How to apply customAttributes. replace replaces the existing public custom-attribute map. merge overwrites only provided keys and retains unspecified existing keys.

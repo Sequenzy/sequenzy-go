@@ -171,6 +171,32 @@ func TestSubscribersBulkRemoveTagsWithWireMock(
 	VerifyRequestCount(t, "TestSubscribersBulkRemoveTagsWithWireMock", "POST", "/subscribers/bulk/tags/remove", nil, 1)
 }
 
+func TestSubscribersCancelOperationWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.CancelOperationSubscribersRequest{
+		ID: "id",
+	}
+	_, invocationErr := client.Subscribers.CancelOperation(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestSubscribersCancelOperationWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestSubscribersCancelOperationWithWireMock", "POST", "/subscribers/operations/id/cancel", nil, 1)
+}
+
 func TestSubscribersCreateWithWireMock(
 	t *testing.T,
 ) {
@@ -507,6 +533,32 @@ func TestSubscribersGetImportWithWireMock(
 	VerifyRequestCount(t, "TestSubscribersGetImportWithWireMock", "GET", "/subscribers/imports/importId", nil, 1)
 }
 
+func TestSubscribersGetOperationWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.GetOperationSubscribersRequest{
+		ID: "id",
+	}
+	_, invocationErr := client.Subscribers.GetOperation(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestSubscribersGetOperationWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestSubscribersGetOperationWithWireMock", "GET", "/subscribers/operations/id", nil, 1)
+}
+
 func TestSubscribersImportEventsWithWireMock(
 	t *testing.T,
 ) {
@@ -612,6 +664,58 @@ func TestSubscribersListNotesByExternalIDWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestSubscribersListNotesByExternalIDWithWireMock", "GET", "/subscribers/external/notes", map[string]interface{}{"externalId": "externalId"}, 1)
+}
+
+func TestSubscribersListOperationsWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	_, invocationErr := client.Subscribers.ListOperations(
+		context.TODO(),
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestSubscribersListOperationsWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestSubscribersListOperationsWithWireMock", "GET", "/subscribers/operations", nil, 1)
+}
+
+func TestSubscribersStartOperationWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.SubscriberOperationStart{
+		Kind:       sequenzygo.SubscriberOperationStartKindAddTags,
+		RequestKey: "requestKey",
+		Tags: []string{
+			"tags",
+		},
+	}
+	_, invocationErr := client.Subscribers.StartOperation(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestSubscribersStartOperationWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestSubscribersStartOperationWithWireMock", "POST", "/subscribers/operations", nil, 1)
 }
 
 func TestSubscribersUpdateWithWireMock(

@@ -407,7 +407,7 @@ func (c *Client) Unpublish(
 	return response.Body, nil
 }
 
-// Updates a landing page name, slug, or builder content.
+// Updates a draft or published page. Published-page changes take effect immediately, including slug changes. Omitted top-level fields stay unchanged; content replaces the entire builder document. Read the existing content before editing it. No additional publish call is required for an already-published page.
 //
 // Example:
 //

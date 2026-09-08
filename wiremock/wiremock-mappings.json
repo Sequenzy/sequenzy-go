@@ -2396,6 +2396,100 @@
       }
     },
     {
+      "id": "85271d49-b1d1-421c-92d5-2a4930132f25",
+      "name": "Clear saved AI email style - default",
+      "request": {
+        "urlPathTemplate": "/email-ai-style",
+        "method": "DELETE",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"canManage\": true,\n  \"revisionId\": \"revisionId\",\n  \"style\": {\n    \"blocks\": [\n      {\n        \"key\": \"value\"\n      }\n    ],\n    \"emailPreset\": \"branded\",\n    \"fontFamily\": \"fontFamily\",\n    \"id\": \"id\",\n    \"layout\": {\n      \"outline\": [\n        \"outline\"\n      ],\n      \"rules\": [\n        {\n          \"block\": \"block\",\n          \"description\": \"Dotted divider above and below every button\",\n          \"id\": \"id\",\n          \"kind\": \"opener\"\n        }\n      ]\n    },\n    \"notes\": \"notes\",\n    \"savedAt\": \"2024-01-15T09:30:00Z\",\n    \"sourceEmailId\": \"sourceEmailId\",\n    \"sourceName\": \"sourceName\",\n    \"theme\": {\n      \"key\": \"value\"\n    },\n    \"version\": 1\n  },\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "85271d49-b1d1-421c-92d5-2a4930132f25",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "35a5fb6f-7a50-4d8c-a010-3eb788abf429",
+      "name": "Get saved AI email style - default",
+      "request": {
+        "urlPathTemplate": "/email-ai-style",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"canManage\": true,\n  \"revisionId\": \"revisionId\",\n  \"style\": {\n    \"blocks\": [\n      {\n        \"key\": \"value\"\n      }\n    ],\n    \"emailPreset\": \"branded\",\n    \"fontFamily\": \"fontFamily\",\n    \"id\": \"id\",\n    \"layout\": {\n      \"outline\": [\n        \"outline\"\n      ],\n      \"rules\": [\n        {\n          \"block\": \"block\",\n          \"description\": \"Dotted divider above and below every button\",\n          \"id\": \"id\",\n          \"kind\": \"opener\"\n        }\n      ]\n    },\n    \"notes\": \"notes\",\n    \"savedAt\": \"2024-01-15T09:30:00Z\",\n    \"sourceEmailId\": \"sourceEmailId\",\n    \"sourceName\": \"sourceName\",\n    \"theme\": {\n      \"key\": \"value\"\n    },\n    \"version\": 1\n  },\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "35a5fb6f-7a50-4d8c-a010-3eb788abf429",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
+      "id": "5d3d6883-0993-439b-b0e4-f0b06fdff952",
+      "name": "Save AI email style - default",
+      "request": {
+        "urlPathTemplate": "/email-ai-style",
+        "method": "PUT",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"canManage\": true,\n  \"revisionId\": \"revisionId\",\n  \"style\": {\n    \"blocks\": [\n      {\n        \"key\": \"value\"\n      }\n    ],\n    \"emailPreset\": \"branded\",\n    \"fontFamily\": \"fontFamily\",\n    \"id\": \"id\",\n    \"layout\": {\n      \"outline\": [\n        \"outline\"\n      ],\n      \"rules\": [\n        {\n          \"block\": \"block\",\n          \"description\": \"Dotted divider above and below every button\",\n          \"id\": \"id\",\n          \"kind\": \"opener\"\n        }\n      ]\n    },\n    \"notes\": \"notes\",\n    \"savedAt\": \"2024-01-15T09:30:00Z\",\n    \"sourceEmailId\": \"sourceEmailId\",\n    \"sourceName\": \"sourceName\",\n    \"theme\": {\n      \"key\": \"value\"\n    },\n    \"version\": 1\n  },\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "5d3d6883-0993-439b-b0e4-f0b06fdff952",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "d85602b1-9e70-4074-9c51-33eaab53892c",
       "name": "Get email block type - default",
       "request": {
@@ -2635,6 +2729,42 @@
       "postServeActions": []
     },
     {
+      "id": "5f022594-ce94-46af-815f-f08032322ea1",
+      "name": "Preview default footer application - default",
+      "request": {
+        "urlPathTemplate": "/email-components/defaults/{slot}/preview",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "slot": {
+            "equalTo": "footer"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"application\": {\n    \"affected\": [\n      {\n        \"id\": \"id\",\n        \"kind\": \"email\",\n        \"name\": \"name\",\n        \"scope\": \"sequences\"\n      }\n    ],\n    \"counts\": {\n      \"campaigns\": 1,\n      \"sequences\": 1,\n      \"templates\": 1,\n      \"transactional\": 1\n    },\n    \"skipped\": [\n      {\n        \"id\": \"id\",\n        \"kind\": \"email\",\n        \"name\": \"name\",\n        \"scope\": \"sequences\"\n      }\n    ],\n    \"token\": \"token\"\n  },\n  \"renderedPreview\": {\n    \"footerHtml\": \"footerHtml\",\n    \"note\": \"note\",\n    \"samples\": [\n      {\n        \"id\": \"id\",\n        \"kind\": \"email\",\n        \"name\": \"name\",\n        \"scope\": \"sequences\"\n      }\n    ]\n  },\n  \"success\": true,\n  \"warnings\": [\n    \"blocks[0].styles.color is not a supported field and was ignored. Button label color comes from the block-level `buttonTextColor` field. Supported styles fields: backgroundColor, backgroundOpacity, bleed, borderColor, borderRadius, borderWidth, paddingBottom, paddingLeft, paddingRight, paddingTop, textAlign, textColor.\"\n  ]\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "5f022594-ce94-46af-815f-f08032322ea1",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "2a7e77e0-b7d2-40b6-aa70-971ce4c199d6",
       "name": "Set default email component - default",
       "request": {
@@ -2653,7 +2783,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"component\": {\n    \"blocks\": [\n      {\n        \"conditions\": [\n          {\n            \"field\": \"variable\",\n            \"id\": \"c1\",\n            \"operator\": \"is\",\n            \"value\": \"plan:pro\"\n          }\n        ],\n        \"content\": \"<h1>Hello</h1>\",\n        \"id\": \"block_123\",\n        \"styles\": {\n          \"backgroundColor\": \"#f8fafc\",\n          \"backgroundOpacity\": 80,\n          \"borderColor\": \"#cbd5e1\",\n          \"borderRadius\": 12,\n          \"borderWidth\": 1,\n          \"textColor\": \"#111827\"\n        },\n        \"type\": \"text\"\n      }\n    ],\n    \"companyId\": \"company_123\",\n    \"componentType\": \"section\",\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"defaultSlot\": \"footer\",\n    \"description\": \"description\",\n    \"id\": \"cmp_123\",\n    \"name\": \"Default Footer\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"version\": 3\n  },\n  \"success\": true,\n  \"warnings\": [\n    \"blocks[0].styles.color is not a supported field and was ignored. Button label color comes from the block-level `buttonTextColor` field. Supported styles fields: backgroundColor, backgroundOpacity, bleed, borderColor, borderRadius, borderWidth, paddingBottom, paddingLeft, paddingRight, paddingTop, textAlign, textColor.\"\n  ]\n}",
+        "body": "{\n  \"application\": {\n    \"affected\": [\n      {\n        \"id\": \"id\",\n        \"kind\": \"email\",\n        \"name\": \"name\",\n        \"scope\": \"sequences\"\n      }\n    ],\n    \"counts\": {\n      \"campaigns\": 1,\n      \"sequences\": 1,\n      \"templates\": 1,\n      \"transactional\": 1\n    },\n    \"skipped\": [\n      {\n        \"id\": \"id\",\n        \"kind\": \"email\",\n        \"name\": \"name\",\n        \"scope\": \"sequences\"\n      }\n    ],\n    \"token\": \"token\"\n  },\n  \"component\": {\n    \"blocks\": [\n      {\n        \"conditions\": [\n          {\n            \"field\": \"variable\",\n            \"id\": \"c1\",\n            \"operator\": \"is\",\n            \"value\": \"plan:pro\"\n          }\n        ],\n        \"content\": \"<h1>Hello</h1>\",\n        \"id\": \"block_123\",\n        \"styles\": {\n          \"backgroundColor\": \"#f8fafc\",\n          \"backgroundOpacity\": 80,\n          \"borderColor\": \"#cbd5e1\",\n          \"borderRadius\": 12,\n          \"borderWidth\": 1,\n          \"textColor\": \"#111827\"\n        },\n        \"type\": \"text\"\n      }\n    ],\n    \"companyId\": \"company_123\",\n    \"componentType\": \"section\",\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"defaultSlot\": \"footer\",\n    \"description\": \"description\",\n    \"id\": \"cmp_123\",\n    \"name\": \"Default Footer\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"version\": 3\n  },\n  \"success\": true,\n  \"warnings\": [\n    \"blocks[0].styles.color is not a supported field and was ignored. Button label color comes from the block-level `buttonTextColor` field. Supported styles fields: backgroundColor, backgroundOpacity, bleed, borderColor, borderRadius, borderWidth, paddingBottom, paddingLeft, paddingRight, paddingTop, textAlign, textColor.\"\n  ]\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -3556,7 +3686,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"landingPage\": {\n    \"appPublicUrl\": \"https://sequenzy.com/lp/comp_abc123/product-waitlist\",\n    \"companyId\": \"comp_abc123\",\n    \"content\": {\n      \"blocks\": [\n        {\n          \"key\": \"value\"\n        }\n      ],\n      \"seo\": {\n        \"faviconUrl\": \"https://acme.com/favicon.png\"\n      },\n      \"template\": \"waitlist\",\n      \"version\": 2\n    },\n    \"conversionCount\": 186,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"customDomain\": \"offer.example.com\",\n    \"customDomainScope\": \"page\",\n    \"id\": \"lp_abc123\",\n    \"name\": \"Product Waitlist\",\n    \"previewUrl\": \"https://sequenzy.com/lp/preview/lp_abc123?token=...\",\n    \"publicUrl\": \"https://pages.example.com/product-waitlist\",\n    \"publishedAt\": \"2024-01-15T09:30:00Z\",\n    \"slug\": \"product-waitlist\",\n    \"status\": \"draft\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"url\": \"https://sequenzy.com/dashboard/company/comp_abc123/landing-pages/lp_abc123\",\n    \"viewCount\": 1240\n  },\n  \"message\": \"Landing page created as a draft. Use publish_landing_page when it is ready to go live.\",\n  \"success\": true\n}",
+        "body": "{\n  \"landingPage\": {\n    \"appPublicUrl\": \"https://sequenzy.com/lp/comp_abc123/product-waitlist\",\n    \"companyId\": \"comp_abc123\",\n    \"content\": {\n      \"blocks\": [\n        {\n          \"id\": \"id\",\n          \"kind\": \"group\",\n          \"slot\": \"top\"\n        }\n      ],\n      \"template\": \"from-scratch\",\n      \"version\": 1\n    },\n    \"conversionCount\": 186,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"customDomain\": \"offer.example.com\",\n    \"customDomainScope\": \"page\",\n    \"id\": \"lp_abc123\",\n    \"name\": \"Product Waitlist\",\n    \"previewUrl\": \"https://sequenzy.com/lp/preview/lp_abc123?token=...\",\n    \"publicUrl\": \"https://pages.example.com/product-waitlist\",\n    \"publishedAt\": \"2024-01-15T09:30:00Z\",\n    \"slug\": \"product-waitlist\",\n    \"status\": \"draft\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"url\": \"https://sequenzy.com/dashboard/company/comp_abc123/landing-pages/lp_abc123\",\n    \"viewCount\": 1240\n  },\n  \"message\": \"Landing page created as a draft. Use publish_landing_page when it is ready to go live.\",\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -3628,7 +3758,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"landingPage\": {\n    \"appPublicUrl\": \"https://sequenzy.com/lp/comp_abc123/product-waitlist\",\n    \"companyId\": \"comp_abc123\",\n    \"content\": {\n      \"blocks\": [\n        {\n          \"key\": \"value\"\n        }\n      ],\n      \"seo\": {\n        \"faviconUrl\": \"https://acme.com/favicon.png\"\n      },\n      \"template\": \"waitlist\",\n      \"version\": 2\n    },\n    \"conversionCount\": 186,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"customDomain\": \"offer.example.com\",\n    \"customDomainScope\": \"page\",\n    \"id\": \"lp_abc123\",\n    \"name\": \"Product Waitlist\",\n    \"previewUrl\": \"https://sequenzy.com/lp/preview/lp_abc123?token=...\",\n    \"publicUrl\": \"https://pages.example.com/product-waitlist\",\n    \"publishedAt\": \"2024-01-15T09:30:00Z\",\n    \"slug\": \"product-waitlist\",\n    \"status\": \"draft\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"url\": \"https://sequenzy.com/dashboard/company/comp_abc123/landing-pages/lp_abc123\",\n    \"viewCount\": 1240\n  },\n  \"message\": \"message\",\n  \"success\": true\n}",
+        "body": "{\n  \"landingPage\": {\n    \"appPublicUrl\": \"https://sequenzy.com/lp/comp_abc123/product-waitlist\",\n    \"companyId\": \"comp_abc123\",\n    \"content\": {\n      \"blocks\": [\n        {\n          \"id\": \"id\",\n          \"kind\": \"group\",\n          \"slot\": \"top\"\n        }\n      ],\n      \"template\": \"from-scratch\",\n      \"version\": 1\n    },\n    \"conversionCount\": 186,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"customDomain\": \"offer.example.com\",\n    \"customDomainScope\": \"page\",\n    \"id\": \"lp_abc123\",\n    \"name\": \"Product Waitlist\",\n    \"previewUrl\": \"https://sequenzy.com/lp/preview/lp_abc123?token=...\",\n    \"publicUrl\": \"https://pages.example.com/product-waitlist\",\n    \"publishedAt\": \"2024-01-15T09:30:00Z\",\n    \"slug\": \"product-waitlist\",\n    \"status\": \"draft\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"url\": \"https://sequenzy.com/dashboard/company/comp_abc123/landing-pages/lp_abc123\",\n    \"viewCount\": 1240\n  },\n  \"message\": \"message\",\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -3664,7 +3794,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"landingPage\": {\n    \"appPublicUrl\": \"https://sequenzy.com/lp/comp_abc123/product-waitlist\",\n    \"companyId\": \"comp_abc123\",\n    \"content\": {\n      \"blocks\": [\n        {\n          \"key\": \"value\"\n        }\n      ],\n      \"seo\": {\n        \"faviconUrl\": \"https://acme.com/favicon.png\"\n      },\n      \"template\": \"waitlist\",\n      \"version\": 2\n    },\n    \"conversionCount\": 186,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"customDomain\": \"offer.example.com\",\n    \"customDomainScope\": \"page\",\n    \"id\": \"lp_abc123\",\n    \"name\": \"Product Waitlist\",\n    \"previewUrl\": \"https://sequenzy.com/lp/preview/lp_abc123?token=...\",\n    \"publicUrl\": \"https://pages.example.com/product-waitlist\",\n    \"publishedAt\": \"2024-01-15T09:30:00Z\",\n    \"slug\": \"product-waitlist\",\n    \"status\": \"draft\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"url\": \"https://sequenzy.com/dashboard/company/comp_abc123/landing-pages/lp_abc123\",\n    \"viewCount\": 1240\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"landingPage\": {\n    \"appPublicUrl\": \"https://sequenzy.com/lp/comp_abc123/product-waitlist\",\n    \"companyId\": \"comp_abc123\",\n    \"content\": {\n      \"blocks\": [\n        {\n          \"id\": \"id\",\n          \"kind\": \"group\",\n          \"slot\": \"top\"\n        }\n      ],\n      \"template\": \"from-scratch\",\n      \"version\": 1\n    },\n    \"conversionCount\": 186,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"customDomain\": \"offer.example.com\",\n    \"customDomainScope\": \"page\",\n    \"id\": \"lp_abc123\",\n    \"name\": \"Product Waitlist\",\n    \"previewUrl\": \"https://sequenzy.com/lp/preview/lp_abc123?token=...\",\n    \"publicUrl\": \"https://pages.example.com/product-waitlist\",\n    \"publishedAt\": \"2024-01-15T09:30:00Z\",\n    \"slug\": \"product-waitlist\",\n    \"status\": \"draft\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"url\": \"https://sequenzy.com/dashboard/company/comp_abc123/landing-pages/lp_abc123\",\n    \"viewCount\": 1240\n  },\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -3799,7 +3929,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"companyId\": \"comp_abc123\",\n  \"landingPages\": [\n    {\n      \"appPublicUrl\": \"https://sequenzy.com/lp/comp_abc123/product-waitlist\",\n      \"companyId\": \"comp_abc123\",\n      \"content\": {\n        \"blocks\": [\n          {\n            \"key\": \"value\"\n          }\n        ],\n        \"seo\": {\n          \"faviconUrl\": \"https://acme.com/favicon.png\"\n        },\n        \"template\": \"waitlist\",\n        \"version\": 2\n      },\n      \"conversionCount\": 186,\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"customDomain\": \"offer.example.com\",\n      \"customDomainScope\": \"page\",\n      \"id\": \"lp_abc123\",\n      \"name\": \"Product Waitlist\",\n      \"previewUrl\": \"https://sequenzy.com/lp/preview/lp_abc123?token=...\",\n      \"publicUrl\": \"https://pages.example.com/product-waitlist\",\n      \"publishedAt\": \"2024-01-15T09:30:00Z\",\n      \"slug\": \"product-waitlist\",\n      \"status\": \"draft\",\n      \"updatedAt\": \"2024-01-15T09:30:00Z\",\n      \"url\": \"https://sequenzy.com/dashboard/company/comp_abc123/landing-pages/lp_abc123\",\n      \"viewCount\": 1240\n    }\n  ],\n  \"success\": true,\n  \"url\": \"https://sequenzy.com/dashboard/company/comp_abc123/landing-pages\"\n}",
+        "body": "{\n  \"companyId\": \"comp_abc123\",\n  \"landingPages\": [\n    {\n      \"appPublicUrl\": \"https://sequenzy.com/lp/comp_abc123/product-waitlist\",\n      \"companyId\": \"comp_abc123\",\n      \"content\": {\n        \"blocks\": [\n          {\n            \"id\": \"id\",\n            \"kind\": \"group\",\n            \"slot\": \"top\"\n          }\n        ],\n        \"version\": 1\n      },\n      \"conversionCount\": 186,\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"customDomain\": \"offer.example.com\",\n      \"customDomainScope\": \"page\",\n      \"id\": \"lp_abc123\",\n      \"name\": \"Product Waitlist\",\n      \"previewUrl\": \"https://sequenzy.com/lp/preview/lp_abc123?token=...\",\n      \"publicUrl\": \"https://pages.example.com/product-waitlist\",\n      \"publishedAt\": \"2024-01-15T09:30:00Z\",\n      \"slug\": \"product-waitlist\",\n      \"status\": \"draft\",\n      \"updatedAt\": \"2024-01-15T09:30:00Z\",\n      \"url\": \"https://sequenzy.com/dashboard/company/comp_abc123/landing-pages/lp_abc123\",\n      \"viewCount\": 1240\n    }\n  ],\n  \"success\": true,\n  \"url\": \"https://sequenzy.com/dashboard/company/comp_abc123/landing-pages\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -3836,7 +3966,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"landingPage\": {\n    \"appPublicUrl\": \"https://sequenzy.com/lp/comp_abc123/product-waitlist\",\n    \"companyId\": \"comp_abc123\",\n    \"content\": {\n      \"blocks\": [\n        {\n          \"key\": \"value\"\n        }\n      ],\n      \"seo\": {\n        \"faviconUrl\": \"https://acme.com/favicon.png\"\n      },\n      \"template\": \"waitlist\",\n      \"version\": 2\n    },\n    \"conversionCount\": 186,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"customDomain\": \"offer.example.com\",\n    \"customDomainScope\": \"page\",\n    \"id\": \"lp_abc123\",\n    \"name\": \"Product Waitlist\",\n    \"previewUrl\": \"https://sequenzy.com/lp/preview/lp_abc123?token=...\",\n    \"publicUrl\": \"https://pages.example.com/product-waitlist\",\n    \"publishedAt\": \"2024-01-15T09:30:00Z\",\n    \"slug\": \"product-waitlist\",\n    \"status\": \"draft\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"url\": \"https://sequenzy.com/dashboard/company/comp_abc123/landing-pages/lp_abc123\",\n    \"viewCount\": 1240\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"landingPage\": {\n    \"appPublicUrl\": \"https://sequenzy.com/lp/comp_abc123/product-waitlist\",\n    \"companyId\": \"comp_abc123\",\n    \"content\": {\n      \"blocks\": [\n        {\n          \"id\": \"id\",\n          \"kind\": \"group\",\n          \"slot\": \"top\"\n        }\n      ],\n      \"template\": \"from-scratch\",\n      \"version\": 1\n    },\n    \"conversionCount\": 186,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"customDomain\": \"offer.example.com\",\n    \"customDomainScope\": \"page\",\n    \"id\": \"lp_abc123\",\n    \"name\": \"Product Waitlist\",\n    \"previewUrl\": \"https://sequenzy.com/lp/preview/lp_abc123?token=...\",\n    \"publicUrl\": \"https://pages.example.com/product-waitlist\",\n    \"publishedAt\": \"2024-01-15T09:30:00Z\",\n    \"slug\": \"product-waitlist\",\n    \"status\": \"draft\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"url\": \"https://sequenzy.com/dashboard/company/comp_abc123/landing-pages/lp_abc123\",\n    \"viewCount\": 1240\n  },\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -3872,7 +4002,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"domain\": {\n    \"cnameTarget\": \"pages.sequenzydns.com\",\n    \"dnsRecordAddedAt\": \"2024-01-15T09:30:00Z\",\n    \"dnsRecordName\": \"pages.example.com\",\n    \"dnsRecordType\": \"A\",\n    \"dnsRecordValue\": \"pages.sequenzydns.com\",\n    \"domain\": \"pages.example.com\",\n    \"domainScope\": \"page\",\n    \"domainStatus\": \"pending\",\n    \"error\": \"error\",\n    \"fallbackDomain\": \"fallbackDomain\",\n    \"fallbackDomainStatus\": \"fallbackDomainStatus\",\n    \"landingPageId\": \"landingPageId\",\n    \"lastCheckedAt\": \"2024-01-15T09:30:00Z\",\n    \"sslStatus\": \"sslStatus\",\n    \"verificationRecords\": [\n      {\n        \"key\": \"value\"\n      }\n    ],\n    \"verifiedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"domain\": {\n    \"cnameTarget\": \"pages.sequenzydns.com\",\n    \"dnsRecordAddedAt\": \"2024-01-15T09:30:00Z\",\n    \"dnsRecordName\": \"pages.example.com\",\n    \"dnsRecordType\": \"A\",\n    \"dnsRecordValue\": \"pages.sequenzydns.com\",\n    \"domain\": \"pages.example.com\",\n    \"domainScope\": \"page\",\n    \"domainStatus\": \"pending\",\n    \"error\": \"error\",\n    \"fallbackDomain\": \"fallbackDomain\",\n    \"fallbackDomainStatus\": \"fallbackDomainStatus\",\n    \"landingPageId\": \"landingPageId\",\n    \"lastCheckedAt\": \"2024-01-15T09:30:00Z\",\n    \"sslStatus\": \"sslStatus\",\n    \"verificationRecords\": [\n      {\n        \"key\": \"value\"\n      }\n    ],\n    \"verifiedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"message\": \"Page domain removed.\",\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -3944,7 +4074,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"landingPage\": {\n    \"appPublicUrl\": \"https://sequenzy.com/lp/comp_abc123/product-waitlist\",\n    \"companyId\": \"comp_abc123\",\n    \"content\": {\n      \"blocks\": [\n        {\n          \"key\": \"value\"\n        }\n      ],\n      \"seo\": {\n        \"faviconUrl\": \"https://acme.com/favicon.png\"\n      },\n      \"template\": \"waitlist\",\n      \"version\": 2\n    },\n    \"conversionCount\": 186,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"customDomain\": \"offer.example.com\",\n    \"customDomainScope\": \"page\",\n    \"id\": \"lp_abc123\",\n    \"name\": \"Product Waitlist\",\n    \"previewUrl\": \"https://sequenzy.com/lp/preview/lp_abc123?token=...\",\n    \"publicUrl\": \"https://pages.example.com/product-waitlist\",\n    \"publishedAt\": \"2024-01-15T09:30:00Z\",\n    \"slug\": \"product-waitlist\",\n    \"status\": \"draft\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"url\": \"https://sequenzy.com/dashboard/company/comp_abc123/landing-pages/lp_abc123\",\n    \"viewCount\": 1240\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"landingPage\": {\n    \"appPublicUrl\": \"https://sequenzy.com/lp/comp_abc123/product-waitlist\",\n    \"companyId\": \"comp_abc123\",\n    \"content\": {\n      \"blocks\": [\n        {\n          \"id\": \"id\",\n          \"kind\": \"group\",\n          \"slot\": \"top\"\n        }\n      ],\n      \"template\": \"from-scratch\",\n      \"version\": 1\n    },\n    \"conversionCount\": 186,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"customDomain\": \"offer.example.com\",\n    \"customDomainScope\": \"page\",\n    \"id\": \"lp_abc123\",\n    \"name\": \"Product Waitlist\",\n    \"previewUrl\": \"https://sequenzy.com/lp/preview/lp_abc123?token=...\",\n    \"publicUrl\": \"https://pages.example.com/product-waitlist\",\n    \"publishedAt\": \"2024-01-15T09:30:00Z\",\n    \"slug\": \"product-waitlist\",\n    \"status\": \"draft\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"url\": \"https://sequenzy.com/dashboard/company/comp_abc123/landing-pages/lp_abc123\",\n    \"viewCount\": 1240\n  },\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -3980,7 +4110,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"landingPage\": {\n    \"appPublicUrl\": \"https://sequenzy.com/lp/comp_abc123/product-waitlist\",\n    \"companyId\": \"comp_abc123\",\n    \"content\": {\n      \"blocks\": [\n        {\n          \"key\": \"value\"\n        }\n      ],\n      \"seo\": {\n        \"faviconUrl\": \"https://acme.com/favicon.png\"\n      },\n      \"template\": \"waitlist\",\n      \"version\": 2\n    },\n    \"conversionCount\": 186,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"customDomain\": \"offer.example.com\",\n    \"customDomainScope\": \"page\",\n    \"id\": \"lp_abc123\",\n    \"name\": \"Product Waitlist\",\n    \"previewUrl\": \"https://sequenzy.com/lp/preview/lp_abc123?token=...\",\n    \"publicUrl\": \"https://pages.example.com/product-waitlist\",\n    \"publishedAt\": \"2024-01-15T09:30:00Z\",\n    \"slug\": \"product-waitlist\",\n    \"status\": \"draft\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"url\": \"https://sequenzy.com/dashboard/company/comp_abc123/landing-pages/lp_abc123\",\n    \"viewCount\": 1240\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"landingPage\": {\n    \"appPublicUrl\": \"https://sequenzy.com/lp/comp_abc123/product-waitlist\",\n    \"companyId\": \"comp_abc123\",\n    \"content\": {\n      \"blocks\": [\n        {\n          \"id\": \"id\",\n          \"kind\": \"group\",\n          \"slot\": \"top\"\n        }\n      ],\n      \"template\": \"from-scratch\",\n      \"version\": 1\n    },\n    \"conversionCount\": 186,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"customDomain\": \"offer.example.com\",\n    \"customDomainScope\": \"page\",\n    \"id\": \"lp_abc123\",\n    \"name\": \"Product Waitlist\",\n    \"previewUrl\": \"https://sequenzy.com/lp/preview/lp_abc123?token=...\",\n    \"publicUrl\": \"https://pages.example.com/product-waitlist\",\n    \"publishedAt\": \"2024-01-15T09:30:00Z\",\n    \"slug\": \"product-waitlist\",\n    \"status\": \"draft\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"url\": \"https://sequenzy.com/dashboard/company/comp_abc123/landing-pages/lp_abc123\",\n    \"viewCount\": 1240\n  },\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -6645,6 +6775,74 @@
       "postServeActions": []
     },
     {
+      "id": "8216231b-c6d3-4605-b182-50710d164e26",
+      "name": "Get SMS usage - default",
+      "request": {
+        "urlPathTemplate": "/sms/usage",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"success\": true,\n  \"usage\": [\n    {\n      \"creditsCharged\": 1.1,\n      \"delivered\": 1,\n      \"failed\": 1,\n      \"fromNumber\": \"fromNumber\",\n      \"lastSentAt\": \"2024-01-15T09:30:00Z\",\n      \"testSends\": 1,\n      \"totalSends\": 1\n    }\n  ]\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "8216231b-c6d3-4605-b182-50710d164e26",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
+      "id": "11a0919f-9139-41ce-8559-beaeda669cab",
+      "name": "Remove SMS number - default",
+      "request": {
+        "urlPathTemplate": "/sms/numbers/{numberId}",
+        "method": "DELETE",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "numberId": {
+            "equalTo": "numberId"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"message\": \"SMS number released.\",\n  \"number\": {\n    \"id\": \"id\",\n    \"status\": \"released\"\n  },\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "11a0919f-9139-41ce-8559-beaeda669cab",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "7c26df11-b187-46a3-9ee1-871c9b630ca6",
       "name": "Send a test SMS - default",
       "request": {
@@ -6805,6 +7003,42 @@
       }
     },
     {
+      "id": "62278a80-c538-4437-8289-d91b11f50d16",
+      "name": "Cancel a subscriber operation - default",
+      "request": {
+        "urlPathTemplate": "/subscribers/operations/{id}/cancel",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"operation\": {\n    \"companyId\": \"companyId\",\n    \"completedAt\": \"2024-01-15T09:30:00Z\",\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"error\": \"error\",\n    \"expiresAt\": \"2024-01-15T09:30:00Z\",\n    \"failed\": 1,\n    \"failures\": [\n      {\n        \"error\": \"error\",\n        \"subscriberId\": \"subscriberId\"\n      }\n    ],\n    \"id\": \"id\",\n    \"kind\": \"add_tags\",\n    \"processed\": 1,\n    \"status\": \"queued\",\n    \"succeeded\": 1,\n    \"total\": 1\n  },\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "62278a80-c538-4437-8289-d91b11f50d16",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "33498f2a-6c98-4c79-a81a-f503b9dea70a",
       "name": "Create or update subscriber - default",
       "request": {
@@ -6818,7 +7052,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"optIn\": {\n    \"emailQueued\": true,\n    \"required\": true\n  },\n  \"subscriber\": {\n    \"created\": true,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"customAttributes\": {\n      \"plan\": \"pro\",\n      \"signupSource\": \"website\"\n    },\n    \"email\": \"user@example.com\",\n    \"emailProvider\": \"gmail\",\n    \"externalId\": \"user_123\",\n    \"firstName\": \"John\",\n    \"id\": \"sub_abc123\",\n    \"lastName\": \"Doe\",\n    \"phone\": \"+15551234567\",\n    \"skipped\": false,\n    \"smsStatus\": \"not_subscribed\",\n    \"status\": \"active\",\n    \"tags\": [\n      \"premium\",\n      \"newsletter\"\n    ],\n    \"timezone\": \"America/New_York\",\n    \"unsubscribedAt\": \"2024-01-15T09:30:00Z\",\n    \"updated\": false,\n    \"updatedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"optIn\": {\n    \"emailQueued\": true,\n    \"required\": true\n  },\n  \"subscriber\": {\n    \"created\": true,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"customAttributes\": {\n      \"plan\": \"pro\",\n      \"signupSource\": \"website\"\n    },\n    \"email\": \"user@example.com\",\n    \"emailProvider\": \"gmail\",\n    \"externalId\": \"user_123\",\n    \"firstName\": \"John\",\n    \"id\": \"sub_abc123\",\n    \"lastName\": \"Doe\",\n    \"phone\": \"+15551234567\",\n    \"phoneCountry\": \"US\",\n    \"skipped\": false,\n    \"smsStatus\": \"not_subscribed\",\n    \"status\": \"active\",\n    \"tags\": [\n      \"premium\",\n      \"newsletter\"\n    ],\n    \"timezone\": \"America/New_York\",\n    \"unsubscribedAt\": \"2024-01-15T09:30:00Z\",\n    \"updated\": false,\n    \"updatedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -7101,7 +7335,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"subscriber\": {\n    \"activity\": [\n      {\n        \"eventName\": \"saas.purchase\",\n        \"eventType\": \"custom\"\n      }\n    ],\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"customAttributes\": {\n      \"plan\": \"pro\",\n      \"signupSource\": \"website\"\n    },\n    \"email\": \"user@example.com\",\n    \"emailProvider\": \"gmail\",\n    \"emailStats\": {\n      \"bounced\": 1,\n      \"clicked\": 1,\n      \"complained\": 1,\n      \"delivered\": 1,\n      \"opened\": 1,\n      \"sent\": 1,\n      \"unsubscribed\": 1\n    },\n    \"externalId\": \"user_123\",\n    \"firstName\": \"John\",\n    \"id\": \"sub_abc123\",\n    \"lastName\": \"Doe\",\n    \"lists\": [\n      {\n        \"id\": \"list_vip\",\n        \"name\": \"VIP Customers\"\n      }\n    ],\n    \"notes\": [\n      {\n        \"author\": {\n          \"email\": \"ana@example.com\",\n          \"id\": \"user_123\",\n          \"name\": \"Ana\"\n        },\n        \"authorId\": \"user_123\",\n        \"body\": \"Asked about enterprise pricing\",\n        \"companyId\": \"comp_abc123\",\n        \"id\": \"note_123\",\n        \"subscriberId\": \"sub_abc123\"\n      }\n    ],\n    \"phone\": \"+15551234567\",\n    \"sequenceEnrollments\": [\n      {\n        \"currentNodeId\": \"node_abc\",\n        \"currentNodeLabel\": \"Send welcome email\",\n        \"currentNodeType\": \"action_email\",\n        \"enrollmentStatus\": \"active\",\n        \"sequenceId\": \"seq_welcome\",\n        \"sequenceName\": \"Welcome Flow\",\n        \"sequenceStatus\": \"active\",\n        \"tokenId\": \"token_123\"\n      }\n    ],\n    \"smsStatus\": \"not_subscribed\",\n    \"status\": \"active\",\n    \"tags\": [\n      \"premium\",\n      \"newsletter\"\n    ],\n    \"timezone\": \"America/New_York\",\n    \"unsubscribedAt\": \"2024-01-15T09:30:00Z\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"subscriber\": {\n    \"activity\": [\n      {\n        \"eventName\": \"saas.purchase\",\n        \"eventType\": \"custom\"\n      }\n    ],\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"customAttributes\": {\n      \"plan\": \"pro\",\n      \"signupSource\": \"website\"\n    },\n    \"email\": \"user@example.com\",\n    \"emailProvider\": \"gmail\",\n    \"emailStats\": {\n      \"bounced\": 1,\n      \"clicked\": 1,\n      \"complained\": 1,\n      \"delivered\": 1,\n      \"opened\": 1,\n      \"sent\": 1,\n      \"unsubscribed\": 1\n    },\n    \"externalId\": \"user_123\",\n    \"firstName\": \"John\",\n    \"id\": \"sub_abc123\",\n    \"lastName\": \"Doe\",\n    \"lists\": [\n      {\n        \"id\": \"list_vip\",\n        \"name\": \"VIP Customers\"\n      }\n    ],\n    \"notes\": [\n      {\n        \"author\": {\n          \"email\": \"ana@example.com\",\n          \"id\": \"user_123\",\n          \"name\": \"Ana\"\n        },\n        \"authorId\": \"user_123\",\n        \"body\": \"Asked about enterprise pricing\",\n        \"companyId\": \"comp_abc123\",\n        \"id\": \"note_123\",\n        \"subscriberId\": \"sub_abc123\"\n      }\n    ],\n    \"phone\": \"+15551234567\",\n    \"phoneCountry\": \"US\",\n    \"sequenceEnrollments\": [\n      {\n        \"currentNodeId\": \"node_abc\",\n        \"currentNodeLabel\": \"Send welcome email\",\n        \"currentNodeType\": \"action_email\",\n        \"enrollmentStatus\": \"active\",\n        \"sequenceId\": \"seq_welcome\",\n        \"sequenceName\": \"Welcome Flow\",\n        \"sequenceStatus\": \"active\",\n        \"tokenId\": \"token_123\"\n      }\n    ],\n    \"smsStatus\": \"not_subscribed\",\n    \"status\": \"active\",\n    \"tags\": [\n      \"premium\",\n      \"newsletter\"\n    ],\n    \"timezone\": \"America/New_York\",\n    \"unsubscribedAt\": \"2024-01-15T09:30:00Z\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -7169,7 +7403,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"subscriber\": {\n    \"activity\": [\n      {\n        \"eventName\": \"saas.purchase\",\n        \"eventType\": \"custom\"\n      }\n    ],\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"customAttributes\": {\n      \"plan\": \"pro\",\n      \"signupSource\": \"website\"\n    },\n    \"email\": \"user@example.com\",\n    \"emailProvider\": \"gmail\",\n    \"emailStats\": {\n      \"bounced\": 1,\n      \"clicked\": 1,\n      \"complained\": 1,\n      \"delivered\": 1,\n      \"opened\": 1,\n      \"sent\": 1,\n      \"unsubscribed\": 1\n    },\n    \"externalId\": \"user_123\",\n    \"firstName\": \"John\",\n    \"id\": \"sub_abc123\",\n    \"lastName\": \"Doe\",\n    \"lists\": [\n      {\n        \"id\": \"list_vip\",\n        \"name\": \"VIP Customers\"\n      }\n    ],\n    \"notes\": [\n      {\n        \"author\": {\n          \"email\": \"ana@example.com\",\n          \"id\": \"user_123\",\n          \"name\": \"Ana\"\n        },\n        \"authorId\": \"user_123\",\n        \"body\": \"Asked about enterprise pricing\",\n        \"companyId\": \"comp_abc123\",\n        \"id\": \"note_123\",\n        \"subscriberId\": \"sub_abc123\"\n      }\n    ],\n    \"phone\": \"+15551234567\",\n    \"sequenceEnrollments\": [\n      {\n        \"currentNodeId\": \"node_abc\",\n        \"currentNodeLabel\": \"Send welcome email\",\n        \"currentNodeType\": \"action_email\",\n        \"enrollmentStatus\": \"active\",\n        \"sequenceId\": \"seq_welcome\",\n        \"sequenceName\": \"Welcome Flow\",\n        \"sequenceStatus\": \"active\",\n        \"tokenId\": \"token_123\"\n      }\n    ],\n    \"smsStatus\": \"not_subscribed\",\n    \"status\": \"active\",\n    \"tags\": [\n      \"premium\",\n      \"newsletter\"\n    ],\n    \"timezone\": \"America/New_York\",\n    \"unsubscribedAt\": \"2024-01-15T09:30:00Z\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"subscriber\": {\n    \"activity\": [\n      {\n        \"eventName\": \"saas.purchase\",\n        \"eventType\": \"custom\"\n      }\n    ],\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"customAttributes\": {\n      \"plan\": \"pro\",\n      \"signupSource\": \"website\"\n    },\n    \"email\": \"user@example.com\",\n    \"emailProvider\": \"gmail\",\n    \"emailStats\": {\n      \"bounced\": 1,\n      \"clicked\": 1,\n      \"complained\": 1,\n      \"delivered\": 1,\n      \"opened\": 1,\n      \"sent\": 1,\n      \"unsubscribed\": 1\n    },\n    \"externalId\": \"user_123\",\n    \"firstName\": \"John\",\n    \"id\": \"sub_abc123\",\n    \"lastName\": \"Doe\",\n    \"lists\": [\n      {\n        \"id\": \"list_vip\",\n        \"name\": \"VIP Customers\"\n      }\n    ],\n    \"notes\": [\n      {\n        \"author\": {\n          \"email\": \"ana@example.com\",\n          \"id\": \"user_123\",\n          \"name\": \"Ana\"\n        },\n        \"authorId\": \"user_123\",\n        \"body\": \"Asked about enterprise pricing\",\n        \"companyId\": \"comp_abc123\",\n        \"id\": \"note_123\",\n        \"subscriberId\": \"sub_abc123\"\n      }\n    ],\n    \"phone\": \"+15551234567\",\n    \"phoneCountry\": \"US\",\n    \"sequenceEnrollments\": [\n      {\n        \"currentNodeId\": \"node_abc\",\n        \"currentNodeLabel\": \"Send welcome email\",\n        \"currentNodeType\": \"action_email\",\n        \"enrollmentStatus\": \"active\",\n        \"sequenceId\": \"seq_welcome\",\n        \"sequenceName\": \"Welcome Flow\",\n        \"sequenceStatus\": \"active\",\n        \"tokenId\": \"token_123\"\n      }\n    ],\n    \"smsStatus\": \"not_subscribed\",\n    \"status\": \"active\",\n    \"tags\": [\n      \"premium\",\n      \"newsletter\"\n    ],\n    \"timezone\": \"America/New_York\",\n    \"unsubscribedAt\": \"2024-01-15T09:30:00Z\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -7206,7 +7440,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"subscriber\": {\n    \"activity\": [\n      {\n        \"eventName\": \"saas.purchase\",\n        \"eventType\": \"custom\"\n      }\n    ],\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"customAttributes\": {\n      \"plan\": \"pro\",\n      \"signupSource\": \"website\"\n    },\n    \"email\": \"user@example.com\",\n    \"emailProvider\": \"gmail\",\n    \"emailStats\": {\n      \"bounced\": 1,\n      \"clicked\": 1,\n      \"complained\": 1,\n      \"delivered\": 1,\n      \"opened\": 1,\n      \"sent\": 1,\n      \"unsubscribed\": 1\n    },\n    \"externalId\": \"user_123\",\n    \"firstName\": \"John\",\n    \"id\": \"sub_abc123\",\n    \"lastName\": \"Doe\",\n    \"lists\": [\n      {\n        \"id\": \"list_vip\",\n        \"name\": \"VIP Customers\"\n      }\n    ],\n    \"notes\": [\n      {\n        \"author\": {\n          \"email\": \"ana@example.com\",\n          \"id\": \"user_123\",\n          \"name\": \"Ana\"\n        },\n        \"authorId\": \"user_123\",\n        \"body\": \"Asked about enterprise pricing\",\n        \"companyId\": \"comp_abc123\",\n        \"id\": \"note_123\",\n        \"subscriberId\": \"sub_abc123\"\n      }\n    ],\n    \"phone\": \"+15551234567\",\n    \"sequenceEnrollments\": [\n      {\n        \"currentNodeId\": \"node_abc\",\n        \"currentNodeLabel\": \"Send welcome email\",\n        \"currentNodeType\": \"action_email\",\n        \"enrollmentStatus\": \"active\",\n        \"sequenceId\": \"seq_welcome\",\n        \"sequenceName\": \"Welcome Flow\",\n        \"sequenceStatus\": \"active\",\n        \"tokenId\": \"token_123\"\n      }\n    ],\n    \"smsStatus\": \"not_subscribed\",\n    \"status\": \"active\",\n    \"tags\": [\n      \"premium\",\n      \"newsletter\"\n    ],\n    \"timezone\": \"America/New_York\",\n    \"unsubscribedAt\": \"2024-01-15T09:30:00Z\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"subscriber\": {\n    \"activity\": [\n      {\n        \"eventName\": \"saas.purchase\",\n        \"eventType\": \"custom\"\n      }\n    ],\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"customAttributes\": {\n      \"plan\": \"pro\",\n      \"signupSource\": \"website\"\n    },\n    \"email\": \"user@example.com\",\n    \"emailProvider\": \"gmail\",\n    \"emailStats\": {\n      \"bounced\": 1,\n      \"clicked\": 1,\n      \"complained\": 1,\n      \"delivered\": 1,\n      \"opened\": 1,\n      \"sent\": 1,\n      \"unsubscribed\": 1\n    },\n    \"externalId\": \"user_123\",\n    \"firstName\": \"John\",\n    \"id\": \"sub_abc123\",\n    \"lastName\": \"Doe\",\n    \"lists\": [\n      {\n        \"id\": \"list_vip\",\n        \"name\": \"VIP Customers\"\n      }\n    ],\n    \"notes\": [\n      {\n        \"author\": {\n          \"email\": \"ana@example.com\",\n          \"id\": \"user_123\",\n          \"name\": \"Ana\"\n        },\n        \"authorId\": \"user_123\",\n        \"body\": \"Asked about enterprise pricing\",\n        \"companyId\": \"comp_abc123\",\n        \"id\": \"note_123\",\n        \"subscriberId\": \"sub_abc123\"\n      }\n    ],\n    \"phone\": \"+15551234567\",\n    \"phoneCountry\": \"US\",\n    \"sequenceEnrollments\": [\n      {\n        \"currentNodeId\": \"node_abc\",\n        \"currentNodeLabel\": \"Send welcome email\",\n        \"currentNodeType\": \"action_email\",\n        \"enrollmentStatus\": \"active\",\n        \"sequenceId\": \"seq_welcome\",\n        \"sequenceName\": \"Welcome Flow\",\n        \"sequenceStatus\": \"active\",\n        \"tokenId\": \"token_123\"\n      }\n    ],\n    \"smsStatus\": \"not_subscribed\",\n    \"status\": \"active\",\n    \"tags\": [\n      \"premium\",\n      \"newsletter\"\n    ],\n    \"timezone\": \"America/New_York\",\n    \"unsubscribedAt\": \"2024-01-15T09:30:00Z\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -7248,6 +7482,42 @@
         }
       },
       "uuid": "9a43837d-ca7d-4517-8686-82c4d6001934",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "88b64584-1f15-4a8e-92a0-a170d8d18072",
+      "name": "Get a subscriber operation - default",
+      "request": {
+        "urlPathTemplate": "/subscribers/operations/{id}",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"operation\": {\n    \"companyId\": \"companyId\",\n    \"completedAt\": \"2024-01-15T09:30:00Z\",\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"error\": \"error\",\n    \"expiresAt\": \"2024-01-15T09:30:00Z\",\n    \"failed\": 1,\n    \"failures\": [\n      {\n        \"error\": \"error\",\n        \"subscriberId\": \"subscriberId\"\n      }\n    ],\n    \"id\": \"id\",\n    \"kind\": \"add_tags\",\n    \"processed\": 1,\n    \"status\": \"queued\",\n    \"succeeded\": 1,\n    \"total\": 1\n  },\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "88b64584-1f15-4a8e-92a0-a170d8d18072",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -7304,7 +7574,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"pagination\": {\n    \"hasMore\": true,\n    \"limit\": 1000,\n    \"nextCursor\": \"eyJ2ZXJzaW9uIjoxLCJzb3J0IjoiY3JlYXRlZF9hdF9kZXNjX2lkX2Rlc2MifQ\",\n    \"orderBy\": \"created_at_desc_id_desc\",\n    \"page\": 1,\n    \"total\": 8718,\n    \"totalPages\": 9\n  },\n  \"subscribers\": [\n    {\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"customAttributes\": {\n        \"plan\": \"pro\",\n        \"signupSource\": \"website\"\n      },\n      \"email\": \"user@example.com\",\n      \"emailProvider\": \"gmail\",\n      \"externalId\": \"user_123\",\n      \"firstName\": \"John\",\n      \"id\": \"sub_abc123\",\n      \"lastName\": \"Doe\",\n      \"phone\": \"+15551234567\",\n      \"smsStatus\": \"not_subscribed\",\n      \"status\": \"active\",\n      \"tags\": [\n        \"premium\",\n        \"newsletter\"\n      ],\n      \"timezone\": \"America/New_York\",\n      \"unsubscribedAt\": \"2024-01-15T09:30:00Z\",\n      \"updatedAt\": \"2024-01-15T09:30:00Z\"\n    }\n  ],\n  \"success\": true\n}",
+        "body": "{\n  \"pagination\": {\n    \"hasMore\": true,\n    \"limit\": 1000,\n    \"nextCursor\": \"eyJ2ZXJzaW9uIjoxLCJzb3J0IjoiY3JlYXRlZF9hdF9kZXNjX2lkX2Rlc2MifQ\",\n    \"orderBy\": \"created_at_desc_id_desc\",\n    \"page\": 1,\n    \"total\": 8718,\n    \"totalPages\": 9\n  },\n  \"subscribers\": [\n    {\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"customAttributes\": {\n        \"plan\": \"pro\",\n        \"signupSource\": \"website\"\n      },\n      \"email\": \"user@example.com\",\n      \"emailProvider\": \"gmail\",\n      \"externalId\": \"user_123\",\n      \"firstName\": \"John\",\n      \"id\": \"sub_abc123\",\n      \"lastName\": \"Doe\",\n      \"phone\": \"+15551234567\",\n      \"phoneCountry\": \"US\",\n      \"smsStatus\": \"not_subscribed\",\n      \"status\": \"active\",\n      \"tags\": [\n        \"premium\",\n        \"newsletter\"\n      ],\n      \"timezone\": \"America/New_York\",\n      \"unsubscribedAt\": \"2024-01-15T09:30:00Z\",\n      \"updatedAt\": \"2024-01-15T09:30:00Z\"\n    }\n  ],\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -7396,6 +7666,69 @@
       "postServeActions": []
     },
     {
+      "id": "a608aafc-792f-4c57-be85-87b77d6d5620",
+      "name": "List subscriber operations - default",
+      "request": {
+        "urlPathTemplate": "/subscribers/operations",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"operations\": [\n    {\n      \"companyId\": \"companyId\",\n      \"completedAt\": \"2024-01-15T09:30:00Z\",\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"error\": \"error\",\n      \"expiresAt\": \"2024-01-15T09:30:00Z\",\n      \"failed\": 1,\n      \"failures\": [\n        {\n          \"error\": \"error\",\n          \"subscriberId\": \"subscriberId\"\n        }\n      ],\n      \"id\": \"id\",\n      \"kind\": \"add_tags\",\n      \"processed\": 1,\n      \"status\": \"queued\",\n      \"succeeded\": 1,\n      \"total\": 1\n    }\n  ],\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "a608aafc-792f-4c57-be85-87b77d6d5620",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
+      "id": "ea6e0952-c623-41c7-90c5-8401f2a713d4",
+      "name": "Start a subscriber operation - default",
+      "request": {
+        "urlPathTemplate": "/subscribers/operations",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 202,
+        "body": "{\n  \"operation\": {\n    \"companyId\": \"companyId\",\n    \"completedAt\": \"2024-01-15T09:30:00Z\",\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"error\": \"error\",\n    \"expiresAt\": \"2024-01-15T09:30:00Z\",\n    \"failed\": 1,\n    \"failures\": [\n      {\n        \"error\": \"error\",\n        \"subscriberId\": \"subscriberId\"\n      }\n    ],\n    \"id\": \"id\",\n    \"kind\": \"add_tags\",\n    \"processed\": 1,\n    \"status\": \"queued\",\n    \"succeeded\": 1,\n    \"total\": 1\n  },\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "ea6e0952-c623-41c7-90c5-8401f2a713d4",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "cbac05d5-8e10-4444-9fa4-06bde84f1446",
       "name": "Update subscriber - default",
       "request": {
@@ -7414,7 +7747,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"subscriber\": {\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"customAttributes\": {\n      \"plan\": \"pro\",\n      \"signupSource\": \"website\"\n    },\n    \"email\": \"user@example.com\",\n    \"emailProvider\": \"gmail\",\n    \"externalId\": \"user_123\",\n    \"firstName\": \"John\",\n    \"id\": \"sub_abc123\",\n    \"lastName\": \"Doe\",\n    \"phone\": \"+15551234567\",\n    \"smsStatus\": \"not_subscribed\",\n    \"status\": \"active\",\n    \"tags\": [\n      \"premium\",\n      \"newsletter\"\n    ],\n    \"timezone\": \"America/New_York\",\n    \"unsubscribedAt\": \"2024-01-15T09:30:00Z\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"subscriber\": {\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"customAttributes\": {\n      \"plan\": \"pro\",\n      \"signupSource\": \"website\"\n    },\n    \"email\": \"user@example.com\",\n    \"emailProvider\": \"gmail\",\n    \"externalId\": \"user_123\",\n    \"firstName\": \"John\",\n    \"id\": \"sub_abc123\",\n    \"lastName\": \"Doe\",\n    \"phone\": \"+15551234567\",\n    \"phoneCountry\": \"US\",\n    \"smsStatus\": \"not_subscribed\",\n    \"status\": \"active\",\n    \"tags\": [\n      \"premium\",\n      \"newsletter\"\n    ],\n    \"timezone\": \"America/New_York\",\n    \"unsubscribedAt\": \"2024-01-15T09:30:00Z\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -7450,7 +7783,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"subscriber\": {\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"customAttributes\": {\n      \"plan\": \"pro\",\n      \"signupSource\": \"website\"\n    },\n    \"email\": \"user@example.com\",\n    \"emailProvider\": \"gmail\",\n    \"externalId\": \"user_123\",\n    \"firstName\": \"John\",\n    \"id\": \"sub_abc123\",\n    \"lastName\": \"Doe\",\n    \"phone\": \"+15551234567\",\n    \"smsStatus\": \"not_subscribed\",\n    \"status\": \"active\",\n    \"tags\": [\n      \"premium\",\n      \"newsletter\"\n    ],\n    \"timezone\": \"America/New_York\",\n    \"unsubscribedAt\": \"2024-01-15T09:30:00Z\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"subscriber\": {\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"customAttributes\": {\n      \"plan\": \"pro\",\n      \"signupSource\": \"website\"\n    },\n    \"email\": \"user@example.com\",\n    \"emailProvider\": \"gmail\",\n    \"externalId\": \"user_123\",\n    \"firstName\": \"John\",\n    \"id\": \"sub_abc123\",\n    \"lastName\": \"Doe\",\n    \"phone\": \"+15551234567\",\n    \"phoneCountry\": \"US\",\n    \"smsStatus\": \"not_subscribed\",\n    \"status\": \"active\",\n    \"tags\": [\n      \"premium\",\n      \"newsletter\"\n    ],\n    \"timezone\": \"America/New_York\",\n    \"unsubscribedAt\": \"2024-01-15T09:30:00Z\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -7486,7 +7819,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"subscriber\": {\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"customAttributes\": {\n      \"plan\": \"pro\",\n      \"signupSource\": \"website\"\n    },\n    \"email\": \"user@example.com\",\n    \"emailProvider\": \"gmail\",\n    \"externalId\": \"user_123\",\n    \"firstName\": \"John\",\n    \"id\": \"sub_abc123\",\n    \"lastName\": \"Doe\",\n    \"phone\": \"+15551234567\",\n    \"smsStatus\": \"not_subscribed\",\n    \"status\": \"active\",\n    \"tags\": [\n      \"premium\",\n      \"newsletter\"\n    ],\n    \"timezone\": \"America/New_York\",\n    \"unsubscribedAt\": \"2024-01-15T09:30:00Z\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"subscriber\": {\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"customAttributes\": {\n      \"plan\": \"pro\",\n      \"signupSource\": \"website\"\n    },\n    \"email\": \"user@example.com\",\n    \"emailProvider\": \"gmail\",\n    \"externalId\": \"user_123\",\n    \"firstName\": \"John\",\n    \"id\": \"sub_abc123\",\n    \"lastName\": \"Doe\",\n    \"phone\": \"+15551234567\",\n    \"phoneCountry\": \"US\",\n    \"smsStatus\": \"not_subscribed\",\n    \"status\": \"active\",\n    \"tags\": [\n      \"premium\",\n      \"newsletter\"\n    ],\n    \"timezone\": \"America/New_York\",\n    \"unsubscribedAt\": \"2024-01-15T09:30:00Z\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -8406,7 +8739,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"autoUtm\": {\n    \"enabled\": true,\n    \"settings\": {\n      \"key\": \"value\"\n    }\n  },\n  \"consent\": {\n    \"doubleOptInEmailId\": \"doubleOptInEmailId\",\n    \"doubleOptInEnabled\": true,\n    \"doubleOptInRedirectUrl\": \"doubleOptInRedirectUrl\"\n  },\n  \"replyTracking\": {\n    \"forwardReplies\": true,\n    \"inboundEmailEnabled\": true,\n    \"inboundReplyDomainMode\": \"inboundReplyDomainMode\"\n  },\n  \"success\": true,\n  \"tracking\": {\n    \"clickTrackingEnabled\": true,\n    \"defaultAttributionWindowHours\": 1,\n    \"openTrackingEnabled\": true,\n    \"strictBotFilteringEnabled\": true,\n    \"unsubscribeTrackingEnabled\": true\n  },\n  \"trackingDomain\": {\n    \"domain\": \"domain\",\n    \"error\": \"error\",\n    \"lastCheckedAt\": \"2024-01-15T09:30:00Z\",\n    \"sslStatus\": \"sslStatus\",\n    \"status\": \"status\",\n    \"verifiedAt\": \"2024-01-15T09:30:00Z\"\n  }\n}",
+        "body": "{\n  \"autoUtm\": {\n    \"enabled\": true,\n    \"settings\": {\n      \"key\": \"value\"\n    }\n  },\n  \"consent\": {\n    \"doubleOptInEmailId\": \"doubleOptInEmailId\",\n    \"doubleOptInEnabled\": true,\n    \"doubleOptInRedirectUrl\": \"doubleOptInRedirectUrl\"\n  },\n  \"replyTracking\": {\n    \"forwardReplies\": true,\n    \"inboundEmailEnabled\": true,\n    \"inboundReplyDomainMode\": \"inboundReplyDomainMode\"\n  },\n  \"success\": true,\n  \"tracking\": {\n    \"clickTrackingEnabled\": true,\n    \"defaultAttributionWindowHours\": 1,\n    \"openTrackingEnabled\": true,\n    \"strictBotFilteringEnabled\": true,\n    \"transactionalClickTrackingEnabled\": true,\n    \"transactionalOpenTrackingEnabled\": true,\n    \"unsubscribeTrackingEnabled\": true\n  },\n  \"trackingDomain\": {\n    \"domain\": \"domain\",\n    \"error\": \"error\",\n    \"lastCheckedAt\": \"2024-01-15T09:30:00Z\",\n    \"sslStatus\": \"sslStatus\",\n    \"status\": \"status\",\n    \"verifiedAt\": \"2024-01-15T09:30:00Z\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -8438,7 +8771,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"autoUtm\": {\n    \"enabled\": true,\n    \"settings\": {\n      \"key\": \"value\"\n    }\n  },\n  \"consent\": {\n    \"doubleOptInEmailId\": \"doubleOptInEmailId\",\n    \"doubleOptInEnabled\": true,\n    \"doubleOptInRedirectUrl\": \"doubleOptInRedirectUrl\"\n  },\n  \"message\": \"message\",\n  \"replyTracking\": {\n    \"forwardReplies\": true,\n    \"inboundEmailEnabled\": true,\n    \"inboundReplyDomainMode\": \"inboundReplyDomainMode\"\n  },\n  \"success\": true,\n  \"tracking\": {\n    \"clickTrackingEnabled\": true,\n    \"defaultAttributionWindowHours\": 1,\n    \"openTrackingEnabled\": true,\n    \"strictBotFilteringEnabled\": true,\n    \"unsubscribeTrackingEnabled\": true\n  },\n  \"trackingDomain\": {\n    \"domain\": \"domain\",\n    \"error\": \"error\",\n    \"lastCheckedAt\": \"2024-01-15T09:30:00Z\",\n    \"sslStatus\": \"sslStatus\",\n    \"status\": \"status\",\n    \"verifiedAt\": \"2024-01-15T09:30:00Z\"\n  }\n}",
+        "body": "{\n  \"autoUtm\": {\n    \"enabled\": true,\n    \"settings\": {\n      \"key\": \"value\"\n    }\n  },\n  \"consent\": {\n    \"doubleOptInEmailId\": \"doubleOptInEmailId\",\n    \"doubleOptInEnabled\": true,\n    \"doubleOptInRedirectUrl\": \"doubleOptInRedirectUrl\"\n  },\n  \"message\": \"message\",\n  \"replyTracking\": {\n    \"forwardReplies\": true,\n    \"inboundEmailEnabled\": true,\n    \"inboundReplyDomainMode\": \"inboundReplyDomainMode\"\n  },\n  \"success\": true,\n  \"tracking\": {\n    \"clickTrackingEnabled\": true,\n    \"defaultAttributionWindowHours\": 1,\n    \"openTrackingEnabled\": true,\n    \"strictBotFilteringEnabled\": true,\n    \"transactionalClickTrackingEnabled\": true,\n    \"transactionalOpenTrackingEnabled\": true,\n    \"unsubscribeTrackingEnabled\": true\n  },\n  \"trackingDomain\": {\n    \"domain\": \"domain\",\n    \"error\": \"error\",\n    \"lastCheckedAt\": \"2024-01-15T09:30:00Z\",\n    \"sslStatus\": \"sslStatus\",\n    \"status\": \"status\",\n    \"verifiedAt\": \"2024-01-15T09:30:00Z\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -8604,7 +8937,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"diagnostics\": {\n    \"message\": \"Email was queued. A required variable is missing and will render as an empty string.\",\n    \"missingRequiredVariables\": [\n      {\n        \"lookupName\": \"reset_url\",\n        \"message\": \"Email was queued. Required variable \\\"RESET_URL\\\" is missing and will render as an empty string.\",\n        \"name\": \"RESET_URL\",\n        \"suggestions\": [\n          \"resetpasswordlink\"\n        ],\n        \"usedIn\": [\n          {\n            \"blockId\": \"reset-button\",\n            \"blockType\": \"button\",\n            \"field\": \"url\"\n          }\n        ]\n      }\n    ],\n    \"status\": \"warning\",\n    \"unusedVariables\": [\n      {\n        \"message\": \"Variable \\\"resetpasswordlink\\\" was provided but is not used by the email template.\",\n        \"name\": \"resetpasswordlink\",\n        \"suggestions\": [\n          \"reset_url\"\n        ]\n      }\n    ]\n  },\n  \"emailSendId\": \"send_abc123\",\n  \"emailType\": \"marketing\",\n  \"idempotentReplay\": true,\n  \"success\": true,\n  \"to\": \"to\",\n  \"transactional\": {\n    \"id\": \"id\",\n    \"name\": \"name\",\n    \"slug\": \"slug\"\n  }\n}",
+        "body": "{\n  \"bcc\": [\n    \"bcc\"\n  ],\n  \"cc\": [\n    \"cc\"\n  ],\n  \"diagnostics\": {\n    \"message\": \"Email was queued. A required variable is missing and will render as an empty string.\",\n    \"missingRequiredVariables\": [\n      {\n        \"lookupName\": \"reset_url\",\n        \"message\": \"Email was queued. Required variable \\\"RESET_URL\\\" is missing and will render as an empty string.\",\n        \"name\": \"RESET_URL\",\n        \"suggestions\": [\n          \"resetpasswordlink\"\n        ],\n        \"usedIn\": [\n          {\n            \"blockId\": \"reset-button\",\n            \"blockType\": \"button\",\n            \"field\": \"url\"\n          }\n        ]\n      }\n    ],\n    \"status\": \"warning\",\n    \"unusedVariables\": [\n      {\n        \"message\": \"Variable \\\"resetpasswordlink\\\" was provided but is not used by the email template.\",\n        \"name\": \"resetpasswordlink\",\n        \"suggestions\": [\n          \"reset_url\"\n        ]\n      }\n    ]\n  },\n  \"emailSendId\": \"send_abc123\",\n  \"emailType\": \"marketing\",\n  \"idempotentReplay\": true,\n  \"success\": true,\n  \"to\": \"to\",\n  \"transactional\": {\n    \"id\": \"id\",\n    \"name\": \"name\",\n    \"slug\": \"slug\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -9368,7 +9701,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"embed\": {\n    \"key\": \"value\"\n  },\n  \"form\": {\n    \"key\": \"value\"\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"embed\": {\n    \"actionUrl\": \"actionUrl\",\n    \"fetch\": \"fetch\",\n    \"javascript\": \"javascript\",\n    \"nativeForm\": \"nativeForm\",\n    \"scriptUrl\": \"scriptUrl\",\n    \"supportedPlatforms\": [\n      \"supportedPlatforms\"\n    ]\n  },\n  \"form\": {\n    \"actionUrl\": \"actionUrl\",\n    \"content\": {\n      \"blocks\": [\n        {\n          \"children\": [],\n          \"columns\": 1,\n          \"gap\": 1,\n          \"id\": \"id\",\n          \"kind\": \"group\",\n          \"label\": \"label\",\n          \"layout\": \"stack\",\n          \"overlayColor\": \"overlayColor\",\n          \"overlayPosition\": \"top\",\n          \"overlayShade\": 1,\n          \"padding\": 1\n        }\n      ],\n      \"settings\": {\n        \"afterSubmission\": \"message\",\n        \"duplicateStrategy\": \"skip\",\n        \"listIds\": [\n          \"listIds\"\n        ],\n        \"listMode\": \"all\",\n        \"redirectUrl\": \"redirectUrl\",\n        \"tagIds\": [\n          \"tagIds\"\n        ]\n      },\n      \"surface\": \"form\",\n      \"template\": \"template\",\n      \"theme\": {\n        \"accentColor\": \"accentColor\",\n        \"backgroundColor\": \"backgroundColor\",\n        \"bodyFontFamily\": \"bodyFontFamily\",\n        \"borderColor\": \"borderColor\",\n        \"borderRadius\": 1,\n        \"cardColor\": \"cardColor\",\n        \"density\": \"compact\",\n        \"headingFontFamily\": \"headingFontFamily\",\n        \"mutedTextColor\": \"mutedTextColor\",\n        \"textColor\": \"textColor\"\n      },\n      \"version\": 1.1\n    },\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"id\": \"id\",\n    \"name\": \"name\",\n    \"publishedAt\": \"2024-01-15T09:30:00Z\",\n    \"settings\": {\n      \"afterSubmission\": \"message\",\n      \"borderRadius\": \"borderRadius\",\n      \"buttonColor\": \"buttonColor\",\n      \"buttonText\": \"buttonText\",\n      \"customFields\": [\n        {\n          \"id\": \"id\",\n          \"label\": \"label\",\n          \"name\": \"name\"\n        }\n      ],\n      \"description\": \"description\",\n      \"duplicateStrategy\": \"skip\",\n      \"errorMessage\": \"errorMessage\",\n      \"eyebrowText\": \"eyebrowText\",\n      \"fieldOrder\": [\n        \"fieldOrder\"\n      ],\n      \"firstNameRequired\": true,\n      \"fontColor\": \"fontColor\",\n      \"fontFamily\": \"fontFamily\",\n      \"fontSize\": \"fontSize\",\n      \"formStyle\": \"button-below\",\n      \"headline\": \"headline\",\n      \"imageAlt\": \"imageAlt\",\n      \"imageUrl\": \"imageUrl\",\n      \"lastNameRequired\": true,\n      \"listIds\": [\n        \"listIds\"\n      ],\n      \"listMode\": \"all\",\n      \"overlayColor\": \"overlayColor\",\n      \"overlayOpacity\": 1.1,\n      \"placeholderEmail\": \"placeholderEmail\",\n      \"placeholderFirstName\": \"placeholderFirstName\",\n      \"placeholderLastName\": \"placeholderLastName\",\n      \"redirectUrl\": \"redirectUrl\",\n      \"showFirstName\": true,\n      \"showLastName\": true,\n      \"successFontColor\": \"successFontColor\",\n      \"successFontSize\": \"successFontSize\",\n      \"successMessage\": \"successMessage\",\n      \"tagIds\": [\n        \"tagIds\"\n      ],\n      \"templateId\": \"minimal\",\n      \"themeMode\": \"design-system\",\n      \"visualPlacement\": \"none\"\n    },\n    \"status\": \"draft\",\n    \"submissionCount\": 1,\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"url\": \"url\"\n  },\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -9568,7 +9901,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"embed\": {\n    \"actionUrl\": \"actionUrl\",\n    \"fetch\": \"fetch\",\n    \"javascript\": \"javascript\",\n    \"nativeForm\": \"nativeForm\",\n    \"scriptUrl\": \"scriptUrl\",\n    \"supportedPlatforms\": [\n      \"supportedPlatforms\"\n    ]\n  },\n  \"form\": {\n    \"key\": \"value\"\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"embed\": {\n    \"actionUrl\": \"actionUrl\",\n    \"fetch\": \"fetch\",\n    \"javascript\": \"javascript\",\n    \"nativeForm\": \"nativeForm\",\n    \"scriptUrl\": \"scriptUrl\",\n    \"supportedPlatforms\": [\n      \"supportedPlatforms\"\n    ]\n  },\n  \"form\": {\n    \"actionUrl\": \"actionUrl\",\n    \"content\": {\n      \"blocks\": [\n        {\n          \"children\": [],\n          \"columns\": 1,\n          \"gap\": 1,\n          \"id\": \"id\",\n          \"kind\": \"group\",\n          \"label\": \"label\",\n          \"layout\": \"stack\",\n          \"overlayColor\": \"overlayColor\",\n          \"overlayPosition\": \"top\",\n          \"overlayShade\": 1,\n          \"padding\": 1\n        }\n      ],\n      \"settings\": {\n        \"afterSubmission\": \"message\",\n        \"duplicateStrategy\": \"skip\",\n        \"listIds\": [\n          \"listIds\"\n        ],\n        \"listMode\": \"all\",\n        \"redirectUrl\": \"redirectUrl\",\n        \"tagIds\": [\n          \"tagIds\"\n        ]\n      },\n      \"surface\": \"form\",\n      \"template\": \"template\",\n      \"theme\": {\n        \"accentColor\": \"accentColor\",\n        \"backgroundColor\": \"backgroundColor\",\n        \"bodyFontFamily\": \"bodyFontFamily\",\n        \"borderColor\": \"borderColor\",\n        \"borderRadius\": 1,\n        \"cardColor\": \"cardColor\",\n        \"density\": \"compact\",\n        \"headingFontFamily\": \"headingFontFamily\",\n        \"mutedTextColor\": \"mutedTextColor\",\n        \"textColor\": \"textColor\"\n      },\n      \"version\": 1.1\n    },\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"id\": \"id\",\n    \"name\": \"name\",\n    \"publishedAt\": \"2024-01-15T09:30:00Z\",\n    \"settings\": {\n      \"afterSubmission\": \"message\",\n      \"borderRadius\": \"borderRadius\",\n      \"buttonColor\": \"buttonColor\",\n      \"buttonText\": \"buttonText\",\n      \"customFields\": [\n        {\n          \"id\": \"id\",\n          \"label\": \"label\",\n          \"name\": \"name\"\n        }\n      ],\n      \"description\": \"description\",\n      \"duplicateStrategy\": \"skip\",\n      \"errorMessage\": \"errorMessage\",\n      \"eyebrowText\": \"eyebrowText\",\n      \"fieldOrder\": [\n        \"fieldOrder\"\n      ],\n      \"firstNameRequired\": true,\n      \"fontColor\": \"fontColor\",\n      \"fontFamily\": \"fontFamily\",\n      \"fontSize\": \"fontSize\",\n      \"formStyle\": \"button-below\",\n      \"headline\": \"headline\",\n      \"imageAlt\": \"imageAlt\",\n      \"imageUrl\": \"imageUrl\",\n      \"lastNameRequired\": true,\n      \"listIds\": [\n        \"listIds\"\n      ],\n      \"listMode\": \"all\",\n      \"overlayColor\": \"overlayColor\",\n      \"overlayOpacity\": 1.1,\n      \"placeholderEmail\": \"placeholderEmail\",\n      \"placeholderFirstName\": \"placeholderFirstName\",\n      \"placeholderLastName\": \"placeholderLastName\",\n      \"redirectUrl\": \"redirectUrl\",\n      \"showFirstName\": true,\n      \"showLastName\": true,\n      \"successFontColor\": \"successFontColor\",\n      \"successFontSize\": \"successFontSize\",\n      \"successMessage\": \"successMessage\",\n      \"tagIds\": [\n        \"tagIds\"\n      ],\n      \"templateId\": \"minimal\",\n      \"themeMode\": \"design-system\",\n      \"visualPlacement\": \"none\"\n    },\n    \"status\": \"draft\",\n    \"submissionCount\": 1,\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"url\": \"url\"\n  },\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -9702,7 +10035,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"companyId\": \"companyId\",\n  \"forms\": [\n    {\n      \"actionUrl\": \"actionUrl\",\n      \"id\": \"id\",\n      \"name\": \"name\",\n      \"settings\": {\n        \"key\": \"value\"\n      },\n      \"status\": \"status\"\n    }\n  ],\n  \"success\": true\n}",
+        "body": "{\n  \"companyId\": \"companyId\",\n  \"forms\": [\n    {\n      \"actionUrl\": \"actionUrl\",\n      \"content\": {\n        \"blocks\": [\n          {\n            \"children\": [],\n            \"columns\": 1,\n            \"gap\": 1,\n            \"id\": \"id\",\n            \"kind\": \"group\",\n            \"label\": \"label\",\n            \"layout\": \"stack\",\n            \"overlayColor\": \"overlayColor\",\n            \"overlayPosition\": \"top\",\n            \"overlayShade\": 1,\n            \"padding\": 1\n          }\n        ],\n        \"settings\": {\n          \"afterSubmission\": \"message\",\n          \"duplicateStrategy\": \"skip\",\n          \"listIds\": [\n            \"listIds\"\n          ],\n          \"listMode\": \"all\",\n          \"redirectUrl\": \"redirectUrl\",\n          \"tagIds\": [\n            \"tagIds\"\n          ]\n        },\n        \"surface\": \"form\",\n        \"template\": \"template\",\n        \"theme\": {\n          \"accentColor\": \"accentColor\",\n          \"backgroundColor\": \"backgroundColor\",\n          \"bodyFontFamily\": \"bodyFontFamily\",\n          \"borderColor\": \"borderColor\",\n          \"borderRadius\": 1,\n          \"cardColor\": \"cardColor\",\n          \"density\": \"compact\",\n          \"headingFontFamily\": \"headingFontFamily\",\n          \"mutedTextColor\": \"mutedTextColor\",\n          \"textColor\": \"textColor\"\n        },\n        \"version\": 1.1\n      },\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"id\": \"id\",\n      \"name\": \"name\",\n      \"publishedAt\": \"2024-01-15T09:30:00Z\",\n      \"settings\": {\n        \"afterSubmission\": \"message\",\n        \"borderRadius\": null,\n        \"buttonColor\": null,\n        \"buttonText\": \"buttonText\",\n        \"customFields\": [\n          {\n            \"id\": \"id\",\n            \"label\": \"label\",\n            \"name\": \"name\"\n          }\n        ],\n        \"description\": \"description\",\n        \"duplicateStrategy\": \"skip\",\n        \"errorMessage\": \"errorMessage\",\n        \"eyebrowText\": \"eyebrowText\",\n        \"fieldOrder\": [\n          \"fieldOrder\"\n        ],\n        \"firstNameRequired\": true,\n        \"fontColor\": null,\n        \"fontFamily\": null,\n        \"fontSize\": null,\n        \"formStyle\": \"button-below\",\n        \"headline\": \"headline\",\n        \"imageAlt\": \"imageAlt\",\n        \"imageUrl\": null,\n        \"lastNameRequired\": true,\n        \"listIds\": [\n          \"listIds\"\n        ],\n        \"listMode\": \"all\",\n        \"overlayColor\": null,\n        \"overlayOpacity\": 1.1,\n        \"placeholderEmail\": \"placeholderEmail\",\n        \"placeholderFirstName\": \"placeholderFirstName\",\n        \"placeholderLastName\": \"placeholderLastName\",\n        \"redirectUrl\": \"redirectUrl\",\n        \"showFirstName\": true,\n        \"showLastName\": true,\n        \"successFontColor\": null,\n        \"successFontSize\": \"successFontSize\",\n        \"successMessage\": \"successMessage\",\n        \"tagIds\": [\n          \"tagIds\"\n        ],\n        \"templateId\": \"minimal\",\n        \"themeMode\": \"design-system\",\n        \"visualPlacement\": \"none\"\n      },\n      \"status\": \"draft\",\n      \"submissionCount\": 1,\n      \"updatedAt\": \"2024-01-15T09:30:00Z\",\n      \"url\": \"url\"\n    }\n  ],\n  \"success\": true,\n  \"url\": \"url\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -9875,7 +10208,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"embed\": {\n    \"key\": \"value\"\n  },\n  \"form\": {\n    \"key\": \"value\"\n  },\n  \"message\": \"message\",\n  \"success\": true\n}",
+        "body": "{\n  \"embed\": {\n    \"actionUrl\": \"actionUrl\",\n    \"fetch\": \"fetch\",\n    \"javascript\": \"javascript\",\n    \"nativeForm\": \"nativeForm\",\n    \"scriptUrl\": \"scriptUrl\",\n    \"supportedPlatforms\": [\n      \"supportedPlatforms\"\n    ]\n  },\n  \"form\": {\n    \"actionUrl\": \"actionUrl\",\n    \"content\": {\n      \"blocks\": [\n        {\n          \"children\": [],\n          \"columns\": 1,\n          \"gap\": 1,\n          \"id\": \"id\",\n          \"kind\": \"group\",\n          \"label\": \"label\",\n          \"layout\": \"stack\",\n          \"overlayColor\": \"overlayColor\",\n          \"overlayPosition\": \"top\",\n          \"overlayShade\": 1,\n          \"padding\": 1\n        }\n      ],\n      \"settings\": {\n        \"afterSubmission\": \"message\",\n        \"duplicateStrategy\": \"skip\",\n        \"listIds\": [\n          \"listIds\"\n        ],\n        \"listMode\": \"all\",\n        \"redirectUrl\": \"redirectUrl\",\n        \"tagIds\": [\n          \"tagIds\"\n        ]\n      },\n      \"surface\": \"form\",\n      \"template\": \"template\",\n      \"theme\": {\n        \"accentColor\": \"accentColor\",\n        \"backgroundColor\": \"backgroundColor\",\n        \"bodyFontFamily\": \"bodyFontFamily\",\n        \"borderColor\": \"borderColor\",\n        \"borderRadius\": 1,\n        \"cardColor\": \"cardColor\",\n        \"density\": \"compact\",\n        \"headingFontFamily\": \"headingFontFamily\",\n        \"mutedTextColor\": \"mutedTextColor\",\n        \"textColor\": \"textColor\"\n      },\n      \"version\": 1.1\n    },\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"id\": \"id\",\n    \"name\": \"name\",\n    \"publishedAt\": \"2024-01-15T09:30:00Z\",\n    \"settings\": {\n      \"afterSubmission\": \"message\",\n      \"borderRadius\": \"borderRadius\",\n      \"buttonColor\": \"buttonColor\",\n      \"buttonText\": \"buttonText\",\n      \"customFields\": [\n        {\n          \"id\": \"id\",\n          \"label\": \"label\",\n          \"name\": \"name\"\n        }\n      ],\n      \"description\": \"description\",\n      \"duplicateStrategy\": \"skip\",\n      \"errorMessage\": \"errorMessage\",\n      \"eyebrowText\": \"eyebrowText\",\n      \"fieldOrder\": [\n        \"fieldOrder\"\n      ],\n      \"firstNameRequired\": true,\n      \"fontColor\": \"fontColor\",\n      \"fontFamily\": \"fontFamily\",\n      \"fontSize\": \"fontSize\",\n      \"formStyle\": \"button-below\",\n      \"headline\": \"headline\",\n      \"imageAlt\": \"imageAlt\",\n      \"imageUrl\": \"imageUrl\",\n      \"lastNameRequired\": true,\n      \"listIds\": [\n        \"listIds\"\n      ],\n      \"listMode\": \"all\",\n      \"overlayColor\": \"overlayColor\",\n      \"overlayOpacity\": 1.1,\n      \"placeholderEmail\": \"placeholderEmail\",\n      \"placeholderFirstName\": \"placeholderFirstName\",\n      \"placeholderLastName\": \"placeholderLastName\",\n      \"redirectUrl\": \"redirectUrl\",\n      \"showFirstName\": true,\n      \"showLastName\": true,\n      \"successFontColor\": \"successFontColor\",\n      \"successFontSize\": \"successFontSize\",\n      \"successMessage\": \"successMessage\",\n      \"tagIds\": [\n        \"tagIds\"\n      ],\n      \"templateId\": \"minimal\",\n      \"themeMode\": \"design-system\",\n      \"visualPlacement\": \"none\"\n    },\n    \"status\": \"draft\",\n    \"submissionCount\": 1,\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"url\": \"url\"\n  },\n  \"message\": \"message\",\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -9961,6 +10294,6 @@
     }
   ],
   "meta": {
-    "total": 288
+    "total": 298
   }
 }

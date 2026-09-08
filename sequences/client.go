@@ -505,7 +505,7 @@ func (c *Client) GetStats(
 	return response.Body, nil
 }
 
-// Returns filtered, paginated automation sequences for the authenticated company.
+// Returns matching automation sequences, newest first. Omit limit and offset to return all matches; either parameter enables pagination (default page size 50, capped at 100).
 //
 // Example:
 //

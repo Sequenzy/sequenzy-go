@@ -562,6 +562,7 @@ func (r *RawClient) RemoveDedicatedDomain(
 			QueryParameters: options.QueryParameters,
 			Client:          options.HTTPClient,
 			Response:        &response,
+			ErrorDecoder:    internal.NewErrorDecoder(sequenzygo.ErrorCodes),
 		},
 	)
 	if err != nil {

@@ -137,6 +137,33 @@ func (c *Client) BulkRemoveTags(
 	return response.Body, nil
 }
 
+// Requires subscribers:read. Tagging and cancelling a tagging task also require subscribers:tag; creating tag definitions requires tags:write; triggering automations requires automations:trigger. Personal keys retain current company role restrictions. Company keys retain company-scoped authority. Workers recheck authority on every page. Cancellation stops future pages and keeps applied tags. An action already in flight may finish; its contact is reported as uncertain. Terminal cancellation is idempotent.
+//
+// Example:
+//
+//	request := &sequenzygo.CancelOperationSubscribersRequest{
+//	    ID: "id",
+//	}
+//	client.Subscribers.CancelOperation(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) CancelOperation(
+	ctx context.Context,
+	request *sequenzygo.CancelOperationSubscribersRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.SubscriberOperationResponse, error) {
+	response, err := c.WithRawResponse.CancelOperation(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Creates a new subscriber or handles existing ones based on the `duplicateStrategy` parameter.
 //
 // **Duplicate Strategies:**
@@ -489,6 +516,33 @@ func (c *Client) GetImport(
 	return response.Body, nil
 }
 
+// Requires subscribers:read. Tagging and cancelling a tagging task also require subscribers:tag; creating tag definitions requires tags:write; triggering automations requires automations:trigger. Personal keys retain current company role restrictions. Company keys retain company-scoped authority. Workers recheck authority on every page.
+//
+// Example:
+//
+//	request := &sequenzygo.GetOperationSubscribersRequest{
+//	    ID: "id",
+//	}
+//	client.Subscribers.GetOperation(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) GetOperation(
+	ctx context.Context,
+	request *sequenzygo.GetOperationSubscribersRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.SubscriberOperationResponse, error) {
+	response, err := c.WithRawResponse.GetOperation(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Records a bounded batch of up to 25 events for many subscribers. Email is required to create a contact; externalId-only rows must resolve to an existing contact. Events are grouped per contact - a contact whose rows are all more than an hour old is imported silently as history, including no double-opt-in email, while any recent row makes that contact's whole group live. Stable eventIds keep one receipt and let retries re-attempt downstream recovery idempotently.
 //
 // Example:
@@ -592,6 +646,58 @@ func (c *Client) ListNotesByExternalID(
 	opts ...option.RequestOption,
 ) (*sequenzygo.ListNotesByExternalIDSubscribersResponse, error) {
 	response, err := c.WithRawResponse.ListNotesByExternalID(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Returns up to twenty recent retained operations for the company. Requires subscribers:read. Tagging and cancelling a tagging task also require subscribers:tag; creating tag definitions requires tags:write; triggering automations requires automations:trigger. Personal keys retain current company role restrictions. Company keys retain company-scoped authority. Workers recheck authority on every page.
+//
+// Example:
+//
+//	client.Subscribers.ListOperations(
+//	    context.TODO(),
+//	)
+func (c *Client) ListOperations(
+	ctx context.Context,
+	opts ...option.RequestOption,
+) (*sequenzygo.ListOperationsSubscribersResponse, error) {
+	response, err := c.WithRawResponse.ListOperations(
+		ctx,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Requires subscribers:read. Tagging and cancelling a tagging task also require subscribers:tag; creating tag definitions requires tags:write; triggering automations requires automations:trigger. Personal keys retain current company role restrictions. Company keys retain company-scoped authority. Workers recheck authority on every page. Returns immediately with a durable ID. Retry the same requestKey after an uncertain response. Active tasks have a seven-day processing deadline. Completed/failed/cancelled records are retained seven days. Inspect failures before retrying interrupted tagging; an uncertain action is never automatically replayed.
+//
+// Example:
+//
+//	request := &sequenzygo.SubscriberOperationStart{
+//	    Kind: sequenzygo.SubscriberOperationStartKindAddTags,
+//	    RequestKey: "requestKey",
+//	    Tags: []string{
+//	        "tags",
+//	    },
+//	}
+//	client.Subscribers.StartOperation(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) StartOperation(
+	ctx context.Context,
+	request *sequenzygo.SubscriberOperationStart,
+	opts ...option.RequestOption,
+) (*sequenzygo.SubscriberOperationResponse, error) {
+	response, err := c.WithRawResponse.StartOperation(
 		ctx,
 		request,
 		opts...,

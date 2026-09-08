@@ -206,18 +206,123 @@ func (l *ListEmailComponentsRequest) SetType(type_ *ListEmailComponentsRequestTy
 }
 
 var (
-	setDefaultEmailComponentsRequestFieldSlot        = big.NewInt(1 << 0)
-	setDefaultEmailComponentsRequestFieldBlocks      = big.NewInt(1 << 1)
-	setDefaultEmailComponentsRequestFieldDescription = big.NewInt(1 << 2)
-	setDefaultEmailComponentsRequestFieldName        = big.NewInt(1 << 3)
+	previewDefaultEmailComponentsRequestFieldSlot          = big.NewInt(1 << 0)
+	previewDefaultEmailComponentsRequestFieldApplication   = big.NewInt(1 << 1)
+	previewDefaultEmailComponentsRequestFieldBlocks        = big.NewInt(1 << 2)
+	previewDefaultEmailComponentsRequestFieldDescription   = big.NewInt(1 << 3)
+	previewDefaultEmailComponentsRequestFieldName          = big.NewInt(1 << 4)
+	previewDefaultEmailComponentsRequestFieldRenderPreview = big.NewInt(1 << 5)
+	previewDefaultEmailComponentsRequestFieldSample        = big.NewInt(1 << 6)
+)
+
+type PreviewDefaultEmailComponentsRequest struct {
+	Slot          PreviewDefaultEmailComponentsRequestSlot    `json:"-" url:"-"`
+	Application   *FooterApplicationOptions                   `json:"application" url:"-"`
+	Blocks        []*EmailBlock                               `json:"blocks" url:"-"`
+	Description   *string                                     `json:"description,omitempty" url:"-"`
+	Name          *string                                     `json:"name,omitempty" url:"-"`
+	RenderPreview *bool                                       `json:"renderPreview,omitempty" url:"-"`
+	Sample        *PreviewDefaultEmailComponentsRequestSample `json:"sample,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (p *PreviewDefaultEmailComponentsRequest) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetSlot sets the Slot field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewDefaultEmailComponentsRequest) SetSlot(slot PreviewDefaultEmailComponentsRequestSlot) {
+	p.Slot = slot
+	p.require(previewDefaultEmailComponentsRequestFieldSlot)
+}
+
+// SetApplication sets the Application field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewDefaultEmailComponentsRequest) SetApplication(application *FooterApplicationOptions) {
+	p.Application = application
+	p.require(previewDefaultEmailComponentsRequestFieldApplication)
+}
+
+// SetBlocks sets the Blocks field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewDefaultEmailComponentsRequest) SetBlocks(blocks []*EmailBlock) {
+	p.Blocks = blocks
+	p.require(previewDefaultEmailComponentsRequestFieldBlocks)
+}
+
+// SetDescription sets the Description field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewDefaultEmailComponentsRequest) SetDescription(description *string) {
+	p.Description = description
+	p.require(previewDefaultEmailComponentsRequestFieldDescription)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewDefaultEmailComponentsRequest) SetName(name *string) {
+	p.Name = name
+	p.require(previewDefaultEmailComponentsRequestFieldName)
+}
+
+// SetRenderPreview sets the RenderPreview field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewDefaultEmailComponentsRequest) SetRenderPreview(renderPreview *bool) {
+	p.RenderPreview = renderPreview
+	p.require(previewDefaultEmailComponentsRequestFieldRenderPreview)
+}
+
+// SetSample sets the Sample field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewDefaultEmailComponentsRequest) SetSample(sample *PreviewDefaultEmailComponentsRequestSample) {
+	p.Sample = sample
+	p.require(previewDefaultEmailComponentsRequestFieldSample)
+}
+
+func (p *PreviewDefaultEmailComponentsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler PreviewDefaultEmailComponentsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*p = PreviewDefaultEmailComponentsRequest(body)
+	return nil
+}
+
+func (p *PreviewDefaultEmailComponentsRequest) MarshalJSON() ([]byte, error) {
+	type embed PreviewDefaultEmailComponentsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
+	setDefaultEmailComponentsRequestFieldSlot         = big.NewInt(1 << 0)
+	setDefaultEmailComponentsRequestFieldApplication  = big.NewInt(1 << 1)
+	setDefaultEmailComponentsRequestFieldBlocks       = big.NewInt(1 << 2)
+	setDefaultEmailComponentsRequestFieldDescription  = big.NewInt(1 << 3)
+	setDefaultEmailComponentsRequestFieldName         = big.NewInt(1 << 4)
+	setDefaultEmailComponentsRequestFieldPreviewToken = big.NewInt(1 << 5)
 )
 
 type SetDefaultEmailComponentsRequest struct {
 	Slot        SetDefaultEmailComponentsRequestSlot `json:"-" url:"-"`
+	Application *FooterApplicationOptions            `json:"application,omitempty" url:"-"`
 	Blocks      []*EmailBlock                        `json:"blocks" url:"-"`
 	Description *string                              `json:"description,omitempty" url:"-"`
 	// Defaults to "Default Footer" when creating the footer default.
 	Name *string `json:"name,omitempty" url:"-"`
+	// Required for applying a preview to existing content.
+	PreviewToken *string `json:"previewToken,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -235,6 +340,13 @@ func (s *SetDefaultEmailComponentsRequest) require(field *big.Int) {
 func (s *SetDefaultEmailComponentsRequest) SetSlot(slot SetDefaultEmailComponentsRequestSlot) {
 	s.Slot = slot
 	s.require(setDefaultEmailComponentsRequestFieldSlot)
+}
+
+// SetApplication sets the Application field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetDefaultEmailComponentsRequest) SetApplication(application *FooterApplicationOptions) {
+	s.Application = application
+	s.require(setDefaultEmailComponentsRequestFieldApplication)
 }
 
 // SetBlocks sets the Blocks field and marks it as non-optional;
@@ -256,6 +368,13 @@ func (s *SetDefaultEmailComponentsRequest) SetDescription(description *string) {
 func (s *SetDefaultEmailComponentsRequest) SetName(name *string) {
 	s.Name = name
 	s.require(setDefaultEmailComponentsRequestFieldName)
+}
+
+// SetPreviewToken sets the PreviewToken field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetDefaultEmailComponentsRequest) SetPreviewToken(previewToken *string) {
+	s.PreviewToken = previewToken
+	s.require(setDefaultEmailComponentsRequestFieldPreviewToken)
 }
 
 func (s *SetDefaultEmailComponentsRequest) UnmarshalJSON(data []byte) error {
@@ -561,6 +680,930 @@ func NewEmailComponentDefaultSlotFromString(s string) (EmailComponentDefaultSlot
 
 func (e EmailComponentDefaultSlot) Ptr() *EmailComponentDefaultSlot {
 	return &e
+}
+
+var (
+	footerApplicationItemFieldID     = big.NewInt(1 << 0)
+	footerApplicationItemFieldKind   = big.NewInt(1 << 1)
+	footerApplicationItemFieldName   = big.NewInt(1 << 2)
+	footerApplicationItemFieldReason = big.NewInt(1 << 3)
+	footerApplicationItemFieldScope  = big.NewInt(1 << 4)
+)
+
+type FooterApplicationItem struct {
+	ID     string                       `json:"id" url:"id"`
+	Kind   FooterApplicationItemKind    `json:"kind" url:"kind"`
+	Name   string                       `json:"name" url:"name"`
+	Reason *FooterApplicationItemReason `json:"reason,omitempty" url:"reason,omitempty"`
+	Scope  FooterApplicationItemScope   `json:"scope" url:"scope"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (f *FooterApplicationItem) GetID() string {
+	if f == nil {
+		return ""
+	}
+	return f.ID
+}
+
+func (f *FooterApplicationItem) GetKind() FooterApplicationItemKind {
+	if f == nil {
+		return ""
+	}
+	return f.Kind
+}
+
+func (f *FooterApplicationItem) GetName() string {
+	if f == nil {
+		return ""
+	}
+	return f.Name
+}
+
+func (f *FooterApplicationItem) GetReason() *FooterApplicationItemReason {
+	if f == nil {
+		return nil
+	}
+	return f.Reason
+}
+
+func (f *FooterApplicationItem) GetScope() FooterApplicationItemScope {
+	if f == nil {
+		return ""
+	}
+	return f.Scope
+}
+
+func (f *FooterApplicationItem) GetExtraProperties() map[string]interface{} {
+	if f == nil {
+		return nil
+	}
+	return f.extraProperties
+}
+
+func (f *FooterApplicationItem) require(field *big.Int) {
+	if f.explicitFields == nil {
+		f.explicitFields = big.NewInt(0)
+	}
+	f.explicitFields.Or(f.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FooterApplicationItem) SetID(id string) {
+	f.ID = id
+	f.require(footerApplicationItemFieldID)
+}
+
+// SetKind sets the Kind field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FooterApplicationItem) SetKind(kind FooterApplicationItemKind) {
+	f.Kind = kind
+	f.require(footerApplicationItemFieldKind)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FooterApplicationItem) SetName(name string) {
+	f.Name = name
+	f.require(footerApplicationItemFieldName)
+}
+
+// SetReason sets the Reason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FooterApplicationItem) SetReason(reason *FooterApplicationItemReason) {
+	f.Reason = reason
+	f.require(footerApplicationItemFieldReason)
+}
+
+// SetScope sets the Scope field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FooterApplicationItem) SetScope(scope FooterApplicationItemScope) {
+	f.Scope = scope
+	f.require(footerApplicationItemFieldScope)
+}
+
+func (f *FooterApplicationItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler FooterApplicationItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*f = FooterApplicationItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+	f.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (f *FooterApplicationItem) MarshalJSON() ([]byte, error) {
+	type embed FooterApplicationItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*f),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, f.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (f *FooterApplicationItem) String() string {
+	if f == nil {
+		return "<nil>"
+	}
+	if len(f.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(f.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(f); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", f)
+}
+
+type FooterApplicationItemKind string
+
+const (
+	FooterApplicationItemKindEmail        FooterApplicationItemKind = "email"
+	FooterApplicationItemKindAbVariant    FooterApplicationItemKind = "ab_variant"
+	FooterApplicationItemKindLocalization FooterApplicationItemKind = "localization"
+)
+
+func NewFooterApplicationItemKindFromString(s string) (FooterApplicationItemKind, error) {
+	switch s {
+	case "email":
+		return FooterApplicationItemKindEmail, nil
+	case "ab_variant":
+		return FooterApplicationItemKindAbVariant, nil
+	case "localization":
+		return FooterApplicationItemKindLocalization, nil
+	}
+	var t FooterApplicationItemKind
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (f FooterApplicationItemKind) Ptr() *FooterApplicationItemKind {
+	return &f
+}
+
+type FooterApplicationItemReason string
+
+const (
+	FooterApplicationItemReasonCustomized      FooterApplicationItemReason = "customized"
+	FooterApplicationItemReasonNoFooter        FooterApplicationItemReason = "no_footer"
+	FooterApplicationItemReasonAmbiguousFooter FooterApplicationItemReason = "ambiguous_footer"
+	FooterApplicationItemReasonRawHTML         FooterApplicationItemReason = "raw_html"
+	FooterApplicationItemReasonProtected       FooterApplicationItemReason = "protected"
+	FooterApplicationItemReasonShared          FooterApplicationItemReason = "shared"
+)
+
+func NewFooterApplicationItemReasonFromString(s string) (FooterApplicationItemReason, error) {
+	switch s {
+	case "customized":
+		return FooterApplicationItemReasonCustomized, nil
+	case "no_footer":
+		return FooterApplicationItemReasonNoFooter, nil
+	case "ambiguous_footer":
+		return FooterApplicationItemReasonAmbiguousFooter, nil
+	case "raw_html":
+		return FooterApplicationItemReasonRawHTML, nil
+	case "protected":
+		return FooterApplicationItemReasonProtected, nil
+	case "shared":
+		return FooterApplicationItemReasonShared, nil
+	}
+	var t FooterApplicationItemReason
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (f FooterApplicationItemReason) Ptr() *FooterApplicationItemReason {
+	return &f
+}
+
+type FooterApplicationItemScope string
+
+const (
+	FooterApplicationItemScopeSequences     FooterApplicationItemScope = "sequences"
+	FooterApplicationItemScopeCampaigns     FooterApplicationItemScope = "campaigns"
+	FooterApplicationItemScopeTransactional FooterApplicationItemScope = "transactional"
+	FooterApplicationItemScopeTemplates     FooterApplicationItemScope = "templates"
+)
+
+func NewFooterApplicationItemScopeFromString(s string) (FooterApplicationItemScope, error) {
+	switch s {
+	case "sequences":
+		return FooterApplicationItemScopeSequences, nil
+	case "campaigns":
+		return FooterApplicationItemScopeCampaigns, nil
+	case "transactional":
+		return FooterApplicationItemScopeTransactional, nil
+	case "templates":
+		return FooterApplicationItemScopeTemplates, nil
+	}
+	var t FooterApplicationItemScope
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (f FooterApplicationItemScope) Ptr() *FooterApplicationItemScope {
+	return &f
+}
+
+var (
+	footerApplicationOptionsFieldIncludeCustomized = big.NewInt(1 << 0)
+	footerApplicationOptionsFieldScopes            = big.NewInt(1 << 1)
+)
+
+type FooterApplicationOptions struct {
+	IncludeCustomized *bool                                `json:"includeCustomized,omitempty" url:"includeCustomized,omitempty"`
+	Scopes            []FooterApplicationOptionsScopesItem `json:"scopes" url:"scopes"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (f *FooterApplicationOptions) GetIncludeCustomized() *bool {
+	if f == nil {
+		return nil
+	}
+	return f.IncludeCustomized
+}
+
+func (f *FooterApplicationOptions) GetScopes() []FooterApplicationOptionsScopesItem {
+	if f == nil {
+		return nil
+	}
+	return f.Scopes
+}
+
+func (f *FooterApplicationOptions) GetExtraProperties() map[string]interface{} {
+	if f == nil {
+		return nil
+	}
+	return f.extraProperties
+}
+
+func (f *FooterApplicationOptions) require(field *big.Int) {
+	if f.explicitFields == nil {
+		f.explicitFields = big.NewInt(0)
+	}
+	f.explicitFields.Or(f.explicitFields, field)
+}
+
+// SetIncludeCustomized sets the IncludeCustomized field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FooterApplicationOptions) SetIncludeCustomized(includeCustomized *bool) {
+	f.IncludeCustomized = includeCustomized
+	f.require(footerApplicationOptionsFieldIncludeCustomized)
+}
+
+// SetScopes sets the Scopes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FooterApplicationOptions) SetScopes(scopes []FooterApplicationOptionsScopesItem) {
+	f.Scopes = scopes
+	f.require(footerApplicationOptionsFieldScopes)
+}
+
+func (f *FooterApplicationOptions) UnmarshalJSON(data []byte) error {
+	type unmarshaler FooterApplicationOptions
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*f = FooterApplicationOptions(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+	f.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (f *FooterApplicationOptions) MarshalJSON() ([]byte, error) {
+	type embed FooterApplicationOptions
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*f),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, f.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (f *FooterApplicationOptions) String() string {
+	if f == nil {
+		return "<nil>"
+	}
+	if len(f.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(f.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(f); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", f)
+}
+
+type FooterApplicationOptionsScopesItem string
+
+const (
+	FooterApplicationOptionsScopesItemSequences     FooterApplicationOptionsScopesItem = "sequences"
+	FooterApplicationOptionsScopesItemCampaigns     FooterApplicationOptionsScopesItem = "campaigns"
+	FooterApplicationOptionsScopesItemTransactional FooterApplicationOptionsScopesItem = "transactional"
+	FooterApplicationOptionsScopesItemTemplates     FooterApplicationOptionsScopesItem = "templates"
+)
+
+func NewFooterApplicationOptionsScopesItemFromString(s string) (FooterApplicationOptionsScopesItem, error) {
+	switch s {
+	case "sequences":
+		return FooterApplicationOptionsScopesItemSequences, nil
+	case "campaigns":
+		return FooterApplicationOptionsScopesItemCampaigns, nil
+	case "transactional":
+		return FooterApplicationOptionsScopesItemTransactional, nil
+	case "templates":
+		return FooterApplicationOptionsScopesItemTemplates, nil
+	}
+	var t FooterApplicationOptionsScopesItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (f FooterApplicationOptionsScopesItem) Ptr() *FooterApplicationOptionsScopesItem {
+	return &f
+}
+
+var (
+	footerApplicationPreviewFieldAffected = big.NewInt(1 << 0)
+	footerApplicationPreviewFieldCounts   = big.NewInt(1 << 1)
+	footerApplicationPreviewFieldSkipped  = big.NewInt(1 << 2)
+	footerApplicationPreviewFieldToken    = big.NewInt(1 << 3)
+)
+
+type FooterApplicationPreview struct {
+	Affected []*FooterApplicationItem        `json:"affected" url:"affected"`
+	Counts   *FooterApplicationPreviewCounts `json:"counts" url:"counts"`
+	Skipped  []*FooterApplicationItem        `json:"skipped" url:"skipped"`
+	// Pass as previewToken with identical input when applying. Relevant content changes invalidate it.
+	Token string `json:"token" url:"token"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (f *FooterApplicationPreview) GetAffected() []*FooterApplicationItem {
+	if f == nil {
+		return nil
+	}
+	return f.Affected
+}
+
+func (f *FooterApplicationPreview) GetCounts() *FooterApplicationPreviewCounts {
+	if f == nil {
+		return nil
+	}
+	return f.Counts
+}
+
+func (f *FooterApplicationPreview) GetSkipped() []*FooterApplicationItem {
+	if f == nil {
+		return nil
+	}
+	return f.Skipped
+}
+
+func (f *FooterApplicationPreview) GetToken() string {
+	if f == nil {
+		return ""
+	}
+	return f.Token
+}
+
+func (f *FooterApplicationPreview) GetExtraProperties() map[string]interface{} {
+	if f == nil {
+		return nil
+	}
+	return f.extraProperties
+}
+
+func (f *FooterApplicationPreview) require(field *big.Int) {
+	if f.explicitFields == nil {
+		f.explicitFields = big.NewInt(0)
+	}
+	f.explicitFields.Or(f.explicitFields, field)
+}
+
+// SetAffected sets the Affected field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FooterApplicationPreview) SetAffected(affected []*FooterApplicationItem) {
+	f.Affected = affected
+	f.require(footerApplicationPreviewFieldAffected)
+}
+
+// SetCounts sets the Counts field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FooterApplicationPreview) SetCounts(counts *FooterApplicationPreviewCounts) {
+	f.Counts = counts
+	f.require(footerApplicationPreviewFieldCounts)
+}
+
+// SetSkipped sets the Skipped field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FooterApplicationPreview) SetSkipped(skipped []*FooterApplicationItem) {
+	f.Skipped = skipped
+	f.require(footerApplicationPreviewFieldSkipped)
+}
+
+// SetToken sets the Token field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FooterApplicationPreview) SetToken(token string) {
+	f.Token = token
+	f.require(footerApplicationPreviewFieldToken)
+}
+
+func (f *FooterApplicationPreview) UnmarshalJSON(data []byte) error {
+	type unmarshaler FooterApplicationPreview
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*f = FooterApplicationPreview(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+	f.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (f *FooterApplicationPreview) MarshalJSON() ([]byte, error) {
+	type embed FooterApplicationPreview
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*f),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, f.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (f *FooterApplicationPreview) String() string {
+	if f == nil {
+		return "<nil>"
+	}
+	if len(f.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(f.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(f); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", f)
+}
+
+var (
+	footerApplicationPreviewCountsFieldCampaigns     = big.NewInt(1 << 0)
+	footerApplicationPreviewCountsFieldSequences     = big.NewInt(1 << 1)
+	footerApplicationPreviewCountsFieldTemplates     = big.NewInt(1 << 2)
+	footerApplicationPreviewCountsFieldTransactional = big.NewInt(1 << 3)
+)
+
+type FooterApplicationPreviewCounts struct {
+	Campaigns     *int `json:"campaigns,omitempty" url:"campaigns,omitempty"`
+	Sequences     *int `json:"sequences,omitempty" url:"sequences,omitempty"`
+	Templates     *int `json:"templates,omitempty" url:"templates,omitempty"`
+	Transactional *int `json:"transactional,omitempty" url:"transactional,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (f *FooterApplicationPreviewCounts) GetCampaigns() *int {
+	if f == nil {
+		return nil
+	}
+	return f.Campaigns
+}
+
+func (f *FooterApplicationPreviewCounts) GetSequences() *int {
+	if f == nil {
+		return nil
+	}
+	return f.Sequences
+}
+
+func (f *FooterApplicationPreviewCounts) GetTemplates() *int {
+	if f == nil {
+		return nil
+	}
+	return f.Templates
+}
+
+func (f *FooterApplicationPreviewCounts) GetTransactional() *int {
+	if f == nil {
+		return nil
+	}
+	return f.Transactional
+}
+
+func (f *FooterApplicationPreviewCounts) GetExtraProperties() map[string]interface{} {
+	if f == nil {
+		return nil
+	}
+	return f.extraProperties
+}
+
+func (f *FooterApplicationPreviewCounts) require(field *big.Int) {
+	if f.explicitFields == nil {
+		f.explicitFields = big.NewInt(0)
+	}
+	f.explicitFields.Or(f.explicitFields, field)
+}
+
+// SetCampaigns sets the Campaigns field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FooterApplicationPreviewCounts) SetCampaigns(campaigns *int) {
+	f.Campaigns = campaigns
+	f.require(footerApplicationPreviewCountsFieldCampaigns)
+}
+
+// SetSequences sets the Sequences field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FooterApplicationPreviewCounts) SetSequences(sequences *int) {
+	f.Sequences = sequences
+	f.require(footerApplicationPreviewCountsFieldSequences)
+}
+
+// SetTemplates sets the Templates field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FooterApplicationPreviewCounts) SetTemplates(templates *int) {
+	f.Templates = templates
+	f.require(footerApplicationPreviewCountsFieldTemplates)
+}
+
+// SetTransactional sets the Transactional field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FooterApplicationPreviewCounts) SetTransactional(transactional *int) {
+	f.Transactional = transactional
+	f.require(footerApplicationPreviewCountsFieldTransactional)
+}
+
+func (f *FooterApplicationPreviewCounts) UnmarshalJSON(data []byte) error {
+	type unmarshaler FooterApplicationPreviewCounts
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*f = FooterApplicationPreviewCounts(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+	f.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (f *FooterApplicationPreviewCounts) MarshalJSON() ([]byte, error) {
+	type embed FooterApplicationPreviewCounts
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*f),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, f.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (f *FooterApplicationPreviewCounts) String() string {
+	if f == nil {
+		return "<nil>"
+	}
+	if len(f.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(f.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(f); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", f)
+}
+
+var (
+	footerRenderedPreviewFieldFooterHTML = big.NewInt(1 << 0)
+	footerRenderedPreviewFieldNote       = big.NewInt(1 << 1)
+	footerRenderedPreviewFieldSamples    = big.NewInt(1 << 2)
+)
+
+type FooterRenderedPreview struct {
+	FooterHTML *string                             `json:"footerHtml,omitempty" url:"footerHtml,omitempty"`
+	Note       *string                             `json:"note,omitempty" url:"note,omitempty"`
+	Samples    []*FooterRenderedPreviewSamplesItem `json:"samples,omitempty" url:"samples,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (f *FooterRenderedPreview) GetFooterHTML() *string {
+	if f == nil {
+		return nil
+	}
+	return f.FooterHTML
+}
+
+func (f *FooterRenderedPreview) GetNote() *string {
+	if f == nil {
+		return nil
+	}
+	return f.Note
+}
+
+func (f *FooterRenderedPreview) GetSamples() []*FooterRenderedPreviewSamplesItem {
+	if f == nil {
+		return nil
+	}
+	return f.Samples
+}
+
+func (f *FooterRenderedPreview) GetExtraProperties() map[string]interface{} {
+	if f == nil {
+		return nil
+	}
+	return f.extraProperties
+}
+
+func (f *FooterRenderedPreview) require(field *big.Int) {
+	if f.explicitFields == nil {
+		f.explicitFields = big.NewInt(0)
+	}
+	f.explicitFields.Or(f.explicitFields, field)
+}
+
+// SetFooterHTML sets the FooterHTML field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FooterRenderedPreview) SetFooterHTML(footerHTML *string) {
+	f.FooterHTML = footerHTML
+	f.require(footerRenderedPreviewFieldFooterHTML)
+}
+
+// SetNote sets the Note field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FooterRenderedPreview) SetNote(note *string) {
+	f.Note = note
+	f.require(footerRenderedPreviewFieldNote)
+}
+
+// SetSamples sets the Samples field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FooterRenderedPreview) SetSamples(samples []*FooterRenderedPreviewSamplesItem) {
+	f.Samples = samples
+	f.require(footerRenderedPreviewFieldSamples)
+}
+
+func (f *FooterRenderedPreview) UnmarshalJSON(data []byte) error {
+	type unmarshaler FooterRenderedPreview
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*f = FooterRenderedPreview(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+	f.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (f *FooterRenderedPreview) MarshalJSON() ([]byte, error) {
+	type embed FooterRenderedPreview
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*f),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, f.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (f *FooterRenderedPreview) String() string {
+	if f == nil {
+		return "<nil>"
+	}
+	if len(f.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(f.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(f); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", f)
+}
+
+var (
+	footerRenderedPreviewSamplesItemFieldID         = big.NewInt(1 << 0)
+	footerRenderedPreviewSamplesItemFieldKind       = big.NewInt(1 << 1)
+	footerRenderedPreviewSamplesItemFieldName       = big.NewInt(1 << 2)
+	footerRenderedPreviewSamplesItemFieldReason     = big.NewInt(1 << 3)
+	footerRenderedPreviewSamplesItemFieldScope      = big.NewInt(1 << 4)
+	footerRenderedPreviewSamplesItemFieldAfterHTML  = big.NewInt(1 << 5)
+	footerRenderedPreviewSamplesItemFieldBeforeHTML = big.NewInt(1 << 6)
+)
+
+type FooterRenderedPreviewSamplesItem struct {
+	ID         string                       `json:"id" url:"id"`
+	Kind       FooterApplicationItemKind    `json:"kind" url:"kind"`
+	Name       string                       `json:"name" url:"name"`
+	Reason     *FooterApplicationItemReason `json:"reason,omitempty" url:"reason,omitempty"`
+	Scope      FooterApplicationItemScope   `json:"scope" url:"scope"`
+	AfterHTML  *string                      `json:"afterHtml,omitempty" url:"afterHtml,omitempty"`
+	BeforeHTML *string                      `json:"beforeHtml,omitempty" url:"beforeHtml,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (f *FooterRenderedPreviewSamplesItem) GetID() string {
+	if f == nil {
+		return ""
+	}
+	return f.ID
+}
+
+func (f *FooterRenderedPreviewSamplesItem) GetKind() FooterApplicationItemKind {
+	if f == nil {
+		return ""
+	}
+	return f.Kind
+}
+
+func (f *FooterRenderedPreviewSamplesItem) GetName() string {
+	if f == nil {
+		return ""
+	}
+	return f.Name
+}
+
+func (f *FooterRenderedPreviewSamplesItem) GetReason() *FooterApplicationItemReason {
+	if f == nil {
+		return nil
+	}
+	return f.Reason
+}
+
+func (f *FooterRenderedPreviewSamplesItem) GetScope() FooterApplicationItemScope {
+	if f == nil {
+		return ""
+	}
+	return f.Scope
+}
+
+func (f *FooterRenderedPreviewSamplesItem) GetAfterHTML() *string {
+	if f == nil {
+		return nil
+	}
+	return f.AfterHTML
+}
+
+func (f *FooterRenderedPreviewSamplesItem) GetBeforeHTML() *string {
+	if f == nil {
+		return nil
+	}
+	return f.BeforeHTML
+}
+
+func (f *FooterRenderedPreviewSamplesItem) GetExtraProperties() map[string]interface{} {
+	if f == nil {
+		return nil
+	}
+	return f.extraProperties
+}
+
+func (f *FooterRenderedPreviewSamplesItem) require(field *big.Int) {
+	if f.explicitFields == nil {
+		f.explicitFields = big.NewInt(0)
+	}
+	f.explicitFields.Or(f.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FooterRenderedPreviewSamplesItem) SetID(id string) {
+	f.ID = id
+	f.require(footerRenderedPreviewSamplesItemFieldID)
+}
+
+// SetKind sets the Kind field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FooterRenderedPreviewSamplesItem) SetKind(kind FooterApplicationItemKind) {
+	f.Kind = kind
+	f.require(footerRenderedPreviewSamplesItemFieldKind)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FooterRenderedPreviewSamplesItem) SetName(name string) {
+	f.Name = name
+	f.require(footerRenderedPreviewSamplesItemFieldName)
+}
+
+// SetReason sets the Reason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FooterRenderedPreviewSamplesItem) SetReason(reason *FooterApplicationItemReason) {
+	f.Reason = reason
+	f.require(footerRenderedPreviewSamplesItemFieldReason)
+}
+
+// SetScope sets the Scope field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FooterRenderedPreviewSamplesItem) SetScope(scope FooterApplicationItemScope) {
+	f.Scope = scope
+	f.require(footerRenderedPreviewSamplesItemFieldScope)
+}
+
+// SetAfterHTML sets the AfterHTML field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FooterRenderedPreviewSamplesItem) SetAfterHTML(afterHTML *string) {
+	f.AfterHTML = afterHTML
+	f.require(footerRenderedPreviewSamplesItemFieldAfterHTML)
+}
+
+// SetBeforeHTML sets the BeforeHTML field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FooterRenderedPreviewSamplesItem) SetBeforeHTML(beforeHTML *string) {
+	f.BeforeHTML = beforeHTML
+	f.require(footerRenderedPreviewSamplesItemFieldBeforeHTML)
+}
+
+func (f *FooterRenderedPreviewSamplesItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler FooterRenderedPreviewSamplesItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*f = FooterRenderedPreviewSamplesItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+	f.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (f *FooterRenderedPreviewSamplesItem) MarshalJSON() ([]byte, error) {
+	type embed FooterRenderedPreviewSamplesItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*f),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, f.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (f *FooterRenderedPreviewSamplesItem) String() string {
+	if f == nil {
+		return "<nil>"
+	}
+	if len(f.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(f.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(f); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", f)
 }
 
 // Defaults to section. Creating a footer component does not pin it as the company default.
@@ -1181,6 +2224,282 @@ func (l *ListEmailComponentsResponse) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
+var (
+	previewDefaultEmailComponentsRequestSampleFieldID   = big.NewInt(1 << 0)
+	previewDefaultEmailComponentsRequestSampleFieldKind = big.NewInt(1 << 1)
+)
+
+type PreviewDefaultEmailComponentsRequestSample struct {
+	ID   string                                         `json:"id" url:"id"`
+	Kind PreviewDefaultEmailComponentsRequestSampleKind `json:"kind" url:"kind"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PreviewDefaultEmailComponentsRequestSample) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PreviewDefaultEmailComponentsRequestSample) GetKind() PreviewDefaultEmailComponentsRequestSampleKind {
+	if p == nil {
+		return ""
+	}
+	return p.Kind
+}
+
+func (p *PreviewDefaultEmailComponentsRequestSample) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PreviewDefaultEmailComponentsRequestSample) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewDefaultEmailComponentsRequestSample) SetID(id string) {
+	p.ID = id
+	p.require(previewDefaultEmailComponentsRequestSampleFieldID)
+}
+
+// SetKind sets the Kind field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewDefaultEmailComponentsRequestSample) SetKind(kind PreviewDefaultEmailComponentsRequestSampleKind) {
+	p.Kind = kind
+	p.require(previewDefaultEmailComponentsRequestSampleFieldKind)
+}
+
+func (p *PreviewDefaultEmailComponentsRequestSample) UnmarshalJSON(data []byte) error {
+	type unmarshaler PreviewDefaultEmailComponentsRequestSample
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PreviewDefaultEmailComponentsRequestSample(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PreviewDefaultEmailComponentsRequestSample) MarshalJSON() ([]byte, error) {
+	type embed PreviewDefaultEmailComponentsRequestSample
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PreviewDefaultEmailComponentsRequestSample) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+type PreviewDefaultEmailComponentsRequestSampleKind string
+
+const (
+	PreviewDefaultEmailComponentsRequestSampleKindEmail        PreviewDefaultEmailComponentsRequestSampleKind = "email"
+	PreviewDefaultEmailComponentsRequestSampleKindAbVariant    PreviewDefaultEmailComponentsRequestSampleKind = "ab_variant"
+	PreviewDefaultEmailComponentsRequestSampleKindLocalization PreviewDefaultEmailComponentsRequestSampleKind = "localization"
+)
+
+func NewPreviewDefaultEmailComponentsRequestSampleKindFromString(s string) (PreviewDefaultEmailComponentsRequestSampleKind, error) {
+	switch s {
+	case "email":
+		return PreviewDefaultEmailComponentsRequestSampleKindEmail, nil
+	case "ab_variant":
+		return PreviewDefaultEmailComponentsRequestSampleKindAbVariant, nil
+	case "localization":
+		return PreviewDefaultEmailComponentsRequestSampleKindLocalization, nil
+	}
+	var t PreviewDefaultEmailComponentsRequestSampleKind
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PreviewDefaultEmailComponentsRequestSampleKind) Ptr() *PreviewDefaultEmailComponentsRequestSampleKind {
+	return &p
+}
+
+type PreviewDefaultEmailComponentsRequestSlot string
+
+const (
+	PreviewDefaultEmailComponentsRequestSlotFooter PreviewDefaultEmailComponentsRequestSlot = "footer"
+)
+
+func NewPreviewDefaultEmailComponentsRequestSlotFromString(s string) (PreviewDefaultEmailComponentsRequestSlot, error) {
+	switch s {
+	case "footer":
+		return PreviewDefaultEmailComponentsRequestSlotFooter, nil
+	}
+	var t PreviewDefaultEmailComponentsRequestSlot
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PreviewDefaultEmailComponentsRequestSlot) Ptr() *PreviewDefaultEmailComponentsRequestSlot {
+	return &p
+}
+
+var (
+	previewDefaultEmailComponentsResponseFieldApplication     = big.NewInt(1 << 0)
+	previewDefaultEmailComponentsResponseFieldRenderedPreview = big.NewInt(1 << 1)
+	previewDefaultEmailComponentsResponseFieldSuccess         = big.NewInt(1 << 2)
+	previewDefaultEmailComponentsResponseFieldWarnings        = big.NewInt(1 << 3)
+)
+
+type PreviewDefaultEmailComponentsResponse struct {
+	Application     *FooterApplicationPreview `json:"application,omitempty" url:"application,omitempty"`
+	RenderedPreview *FooterRenderedPreview    `json:"renderedPreview,omitempty" url:"renderedPreview,omitempty"`
+	Success         *bool                     `json:"success,omitempty" url:"success,omitempty"`
+	Warnings        *BlockFieldWarnings       `json:"warnings,omitempty" url:"warnings,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PreviewDefaultEmailComponentsResponse) GetApplication() *FooterApplicationPreview {
+	if p == nil {
+		return nil
+	}
+	return p.Application
+}
+
+func (p *PreviewDefaultEmailComponentsResponse) GetRenderedPreview() *FooterRenderedPreview {
+	if p == nil {
+		return nil
+	}
+	return p.RenderedPreview
+}
+
+func (p *PreviewDefaultEmailComponentsResponse) GetSuccess() *bool {
+	if p == nil {
+		return nil
+	}
+	return p.Success
+}
+
+func (p *PreviewDefaultEmailComponentsResponse) GetWarnings() *BlockFieldWarnings {
+	if p == nil {
+		return nil
+	}
+	return p.Warnings
+}
+
+func (p *PreviewDefaultEmailComponentsResponse) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PreviewDefaultEmailComponentsResponse) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetApplication sets the Application field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewDefaultEmailComponentsResponse) SetApplication(application *FooterApplicationPreview) {
+	p.Application = application
+	p.require(previewDefaultEmailComponentsResponseFieldApplication)
+}
+
+// SetRenderedPreview sets the RenderedPreview field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewDefaultEmailComponentsResponse) SetRenderedPreview(renderedPreview *FooterRenderedPreview) {
+	p.RenderedPreview = renderedPreview
+	p.require(previewDefaultEmailComponentsResponseFieldRenderedPreview)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewDefaultEmailComponentsResponse) SetSuccess(success *bool) {
+	p.Success = success
+	p.require(previewDefaultEmailComponentsResponseFieldSuccess)
+}
+
+// SetWarnings sets the Warnings field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewDefaultEmailComponentsResponse) SetWarnings(warnings *BlockFieldWarnings) {
+	p.Warnings = warnings
+	p.require(previewDefaultEmailComponentsResponseFieldWarnings)
+}
+
+func (p *PreviewDefaultEmailComponentsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler PreviewDefaultEmailComponentsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PreviewDefaultEmailComponentsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PreviewDefaultEmailComponentsResponse) MarshalJSON() ([]byte, error) {
+	type embed PreviewDefaultEmailComponentsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PreviewDefaultEmailComponentsResponse) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
 type SetDefaultEmailComponentsRequestSlot string
 
 const (
@@ -1201,21 +2520,30 @@ func (s SetDefaultEmailComponentsRequestSlot) Ptr() *SetDefaultEmailComponentsRe
 }
 
 var (
-	setDefaultEmailComponentsResponseFieldComponent = big.NewInt(1 << 0)
-	setDefaultEmailComponentsResponseFieldSuccess   = big.NewInt(1 << 1)
-	setDefaultEmailComponentsResponseFieldWarnings  = big.NewInt(1 << 2)
+	setDefaultEmailComponentsResponseFieldApplication = big.NewInt(1 << 0)
+	setDefaultEmailComponentsResponseFieldComponent   = big.NewInt(1 << 1)
+	setDefaultEmailComponentsResponseFieldSuccess     = big.NewInt(1 << 2)
+	setDefaultEmailComponentsResponseFieldWarnings    = big.NewInt(1 << 3)
 )
 
 type SetDefaultEmailComponentsResponse struct {
-	Component *EmailComponent     `json:"component,omitempty" url:"component,omitempty"`
-	Success   *bool               `json:"success,omitempty" url:"success,omitempty"`
-	Warnings  *BlockFieldWarnings `json:"warnings,omitempty" url:"warnings,omitempty"`
+	Application *FooterApplicationPreview `json:"application,omitempty" url:"application,omitempty"`
+	Component   *EmailComponent           `json:"component,omitempty" url:"component,omitempty"`
+	Success     *bool                     `json:"success,omitempty" url:"success,omitempty"`
+	Warnings    *BlockFieldWarnings       `json:"warnings,omitempty" url:"warnings,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (s *SetDefaultEmailComponentsResponse) GetApplication() *FooterApplicationPreview {
+	if s == nil {
+		return nil
+	}
+	return s.Application
 }
 
 func (s *SetDefaultEmailComponentsResponse) GetComponent() *EmailComponent {
@@ -1251,6 +2579,13 @@ func (s *SetDefaultEmailComponentsResponse) require(field *big.Int) {
 		s.explicitFields = big.NewInt(0)
 	}
 	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetApplication sets the Application field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetDefaultEmailComponentsResponse) SetApplication(application *FooterApplicationPreview) {
+	s.Application = application
+	s.require(setDefaultEmailComponentsResponseFieldApplication)
 }
 
 // SetComponent sets the Component field and marks it as non-optional;

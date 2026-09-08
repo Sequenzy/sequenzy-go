@@ -4264,7 +4264,7 @@ client.Campaigns.Render(
 <dl>
 <dd>
 
-Creates a draft that resends a sent campaign to everyone in the same audience who didn't open it. Reuses the original audience plus a "didn't open this campaign" rule. Only available 6 hours after the campaign finishes sending, and never for imported already-sent campaigns, which have no opens in Sequenzy. The draft must be scheduled or sent separately.
+Creates a draft that resends a sent campaign to everyone in the same audience who didn't open it. Reuses the original audience plus a "didn't open this campaign" rule. Only available 6 hours after the campaign finishes sending, and never for imported already-sent campaigns, which have no opens in Sequenzy. The draft must be scheduled or sent separately. Every audience format stores excludedCampaignOpenerIds that manual additions cannot override, preserving inherited exclusions on repeated resends. Audience membership is evaluated live. Recreate older drafts missing this metadata from the original campaign and review before scheduling.
 </dd>
 </dl>
 </dd>
@@ -5898,6 +5898,200 @@ client.Conversations.UpdateStatus(
 </dl>
 </details>
 
+## EmailAiStyle
+<details><summary><code>client.EmailAiStyle.ClearEmailAiStyle(request) -> *sequenzygo.EmailAiStyleState</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Requires emails:write. Clears only the reviewed revision. Future generations use normal brand defaults; existing emails stay unchanged. Replayed or stale clears return 409.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.ClearEmailAiStyleRequest{
+    ExpectedStyleID: "expectedStyleId",
+}
+client.EmailAiStyle.ClearEmailAiStyle(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**expectedStyleID:** `string` — Nonempty revisionId returned by GET, including unsupported-version revisions.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.EmailAiStyle.GetEmailAiStyle() -> *sequenzygo.EmailAiStyleState</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Requires emails:read. Returns the saved appearance and its revision. Read and review this state before replacing or clearing it.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+client.EmailAiStyle.GetEmailAiStyle(
+    context.TODO(),
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.EmailAiStyle.SaveEmailAiStyle(request) -> *sequenzygo.EmailAiStyleState</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Requires emails:write and access to the source email. Snapshots the stored email appearance, using email then company theme and font defaults, or the optional unsaved canvas, plus detected layout habits such as dotted dividers around every button. Existing emails and company theme remain unchanged. Marketers cannot capture transactional sources. Replaces only the expected revision; explicit generation style requests and plain-text choices still take precedence.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.SaveEmailAiStyleRequest{
+    EmailID: "emailId",
+}
+client.EmailAiStyle.SaveEmailAiStyle(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**canvas:** `*sequenzygo.EmailAiStyleCanvas` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**emailID:** `string` — Source email ID in this company, including campaign, sequence and transactional email rows. Use the underlying email ID, not a campaign ID or transactional slug.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**expectedStyleID:** `*string` — revisionId returned by GET. Use null only when no style is stored.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**layoutRuleIDs:** `[]string` — IDs of detected layout habits to keep. Omit to keep every habit detected in the source; pass an empty array to keep none. Unknown IDs are ignored. Review style.layout.rules in the response.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**notes:** `*string` — Optional design notes for future generations, for example "always open with a short video". Treated as design guidance, never as email content.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Email Blocks
 <details><summary><code>client.EmailBlocks.Get(Type) -> *sequenzygo.GetEmailBlocksResponse</code></summary>
 <dl>
@@ -6369,6 +6563,124 @@ client.EmailComponents.List(
 </dl>
 </details>
 
+<details><summary><code>client.EmailComponents.PreviewDefault(Slot, request) -> *sequenzygo.PreviewDefaultEmailComponentsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Read-only affected counts and optional layout HTML. Requires the same write scopes and admin role as applying. No subscriber-specific personalization or sending.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.PreviewDefaultEmailComponentsRequest{
+    Slot: sequenzygo.PreviewDefaultEmailComponentsRequestSlotFooter,
+    Application: &sequenzygo.FooterApplicationOptions{
+        Scopes: []sequenzygo.FooterApplicationOptionsScopesItem{
+            sequenzygo.FooterApplicationOptionsScopesItemSequences,
+        },
+    },
+    Blocks: []*sequenzygo.EmailBlock{
+        &sequenzygo.EmailBlock{
+            Type: sequenzygo.EmailBlockTypeText,
+        },
+    },
+}
+client.EmailComponents.PreviewDefault(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**slot:** `*sequenzygo.PreviewDefaultEmailComponentsRequestSlot` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**application:** `*sequenzygo.FooterApplicationOptions` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**blocks:** `[]*sequenzygo.EmailBlock` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**description:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**name:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**renderPreview:** `*bool` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sample:** `*sequenzygo.PreviewDefaultEmailComponentsRequestSample` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.EmailComponents.SetDefault(Slot, request) -> *sequenzygo.SetDefaultEmailComponentsResponse</code></summary>
 <dl>
 <dd>
@@ -6381,7 +6693,7 @@ client.EmailComponents.List(
 <dl>
 <dd>
 
-Creates or replaces the company default component for a slot. New sequence, campaign, and AI-generated emails clone this component when they are built. A default footer always keeps its unsubscribe link enabled; transactional sends hide it at render time. Emails that already exist keep the footer they were built with.
+Creates or replaces the company default component for a slot. New sequence, campaign, and AI-generated emails clone this component when they are built. A default footer always keeps its unsubscribe link enabled; transactional sends hide it at render time. Emails that already exist keep their footer unless application options and a valid previewToken are provided. Preview first to review selected scopes. Personal keys require admin access; keys need emails:write, each selected category write scope, and ab_tests:write for campaigns or sequences.
 </dd>
 </dl>
 </dd>
@@ -6430,6 +6742,14 @@ client.EmailComponents.SetDefault(
 <dl>
 <dd>
 
+**application:** `*sequenzygo.FooterApplicationOptions` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **blocks:** `[]*sequenzygo.EmailBlock` 
     
 </dd>
@@ -6447,6 +6767,14 @@ client.EmailComponents.SetDefault(
 <dd>
 
 **name:** `*string` — Defaults to "Default Footer" when creating the footer default.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**previewToken:** `*string` — Required for applying a preview to existing content.
     
 </dd>
 </dl>
@@ -9298,7 +9626,7 @@ client.LandingPages.Unpublish(
 <dl>
 <dd>
 
-Updates a landing page name, slug, or builder content.
+Updates a draft or published page. Published-page changes take effect immediately, including slug changes. Omitted top-level fields stay unchanged; content replaces the entire builder document. Read the existing content before editing it. No additional publish call is required for an already-published page.
 </dd>
 </dl>
 </dd>
@@ -10579,7 +10907,7 @@ client.Migrations.GetRun(
 <dl>
 <dd>
 
-Queues execution for an approved migration run.
+Queues execution for an approved migration run. Queued or running runs return their current state without another execution or plan change. Completed, failed, canceled and cancel_requested runs return 400. At least one selected resource is required, from resourceIds or the previously approved plan. resourceOptions applies only with a nonempty resourceIds selection.
 </dd>
 </dl>
 </dd>
@@ -13875,7 +14203,7 @@ client.Sequences.GetStats(
 <dl>
 <dd>
 
-Returns filtered, paginated automation sequences for the authenticated company.
+Returns matching automation sequences, newest first. Omit limit and offset to return all matches; either parameter enables pagination (default page size 50, capped at 100).
 </dd>
 </dl>
 </dd>
@@ -13905,6 +14233,14 @@ client.Sequences.List(
 
 <dl>
 <dd>
+
+<dl>
+<dd>
+
+**label:** `*string` — Alias for labels. Takes precedence if both are present.
+    
+</dd>
+</dl>
 
 <dl>
 <dd>
@@ -15508,6 +15844,107 @@ client.Sms.GetSettings(
 </dl>
 </details>
 
+<details><summary><code>client.Sms.GetUsage() -> *sequenzygo.GetUsageSmsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Per-number outbound SMS usage for the selected company. Requires account:read. Test sends count only toward testSends, not totalSends, delivered, failed or creditsCharged. lastSentAt may include a test send. Rows are ordered by totalSends descending.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+client.Sms.GetUsage(
+    context.TODO(),
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Sms.ReleaseNumber(NumberID) -> *sequenzygo.ReleaseNumberSmsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Release a toll-free number and free its workspace slot. Requires companies:manage. Steps explicitly pinned to this number do not switch to another number. This action cannot reclaim the number after release.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.ReleaseNumberSmsRequest{
+    NumberID: "numberId",
+}
+client.Sms.ReleaseNumber(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**numberID:** `string` — SMS number ID from GET /sms/settings.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Sms.SendTest(request) -> *sequenzygo.SendTestSmsResponse</code></summary>
 <dl>
 <dd>
@@ -15557,6 +15994,14 @@ client.Sms.SendTest(
 <dd>
 
 **blocks:** `[]map[string]any` — SMS content blocks (text + image subset). Provide text or blocks, not both.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**fromNumberID:** `*string` — Verified sending number ID from GET /sms/settings. Omit to use the oldest verified company number. An invalid explicit selection returns 400 instead of falling back.
     
 </dd>
 </dl>
@@ -15905,6 +16350,66 @@ client.Subscribers.BulkRemoveTags(
 </dl>
 </details>
 
+<details><summary><code>client.Subscribers.CancelOperation(ID) -> *sequenzygo.SubscriberOperationResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Requires subscribers:read. Tagging and cancelling a tagging task also require subscribers:tag; creating tag definitions requires tags:write; triggering automations requires automations:trigger. Personal keys retain current company role restrictions. Company keys retain company-scoped authority. Workers recheck authority on every page. Cancellation stops future pages and keeps applied tags. An action already in flight may finish; its contact is reported as uncertain. Terminal cancellation is idempotent.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.CancelOperationSubscribersRequest{
+    ID: "id",
+}
+client.Subscribers.CancelOperation(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Subscribers.Create(request) -> *sequenzygo.CreateSubscribersResponse</code></summary>
 <dl>
 <dd>
@@ -15956,7 +16461,7 @@ client.Subscribers.Create(
 <dl>
 <dd>
 
-**createdAt:** `*time.Time` — Original signup date, for importing history from another platform. Preserves the real date so date-relative segments are correct immediately. An existing contact's date only ever moves earlier, regardless of duplicateStrategy. Supplying this defaults enrollInSequences to false, and updatedAt is never backdated.
+**createdAt:** `*time.Time` — Original signup date, for importing history from another platform. Preserves the real date so date-relative segments are correct immediately. An existing contact's date only ever moves earlier, regardless of duplicateStrategy. Supplying this defaults enrollInSequences to false, and updatedAt is never backdated. New-subscriber account notifications remain eligible when the signup date is at most one hour old; older dates do not notify on creation. Double opt-in confirmation can notify even for imported contacts. Your notification preferences, double opt-in and the daily cap still apply.
     
 </dd>
 </dl>
@@ -16907,6 +17412,66 @@ client.Subscribers.GetImport(
 </dl>
 </details>
 
+<details><summary><code>client.Subscribers.GetOperation(ID) -> *sequenzygo.SubscriberOperationResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Requires subscribers:read. Tagging and cancelling a tagging task also require subscribers:tag; creating tag definitions requires tags:write; triggering automations requires automations:trigger. Personal keys retain current company role restrictions. Company keys retain company-scoped authority. Workers recheck authority on every page.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.GetOperationSubscribersRequest{
+    ID: "id",
+}
+client.Subscribers.GetOperation(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Subscribers.ImportEvents(request) -> *sequenzygo.ImportEventsSubscribersResponse</code></summary>
 <dl>
 <dd>
@@ -17261,6 +17826,143 @@ client.Subscribers.ListNotesByExternalID(
 <dd>
 
 **externalID:** `string` — External ID. Query form supports IDs containing slashes.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Subscribers.ListOperations() -> *sequenzygo.ListOperationsSubscribersResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns up to twenty recent retained operations for the company. Requires subscribers:read. Tagging and cancelling a tagging task also require subscribers:tag; creating tag definitions requires tags:write; triggering automations requires automations:trigger. Personal keys retain current company role restrictions. Company keys retain company-scoped authority. Workers recheck authority on every page.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+client.Subscribers.ListOperations(
+    context.TODO(),
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Subscribers.StartOperation(request) -> *sequenzygo.SubscriberOperationResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Requires subscribers:read. Tagging and cancelling a tagging task also require subscribers:tag; creating tag definitions requires tags:write; triggering automations requires automations:trigger. Personal keys retain current company role restrictions. Company keys retain company-scoped authority. Workers recheck authority on every page. Returns immediately with a durable ID. Retry the same requestKey after an uncertain response. Active tasks have a seven-day processing deadline. Completed/failed/cancelled records are retained seven days. Inspect failures before retrying interrupted tagging; an uncertain action is never automatically replayed.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.SubscriberOperationStart{
+    Kind: sequenzygo.SubscriberOperationStartKindAddTags,
+    RequestKey: "requestKey",
+    Tags: []string{
+        "tags",
+    },
+}
+client.Subscribers.StartOperation(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**audience:** `*sequenzygo.SubscriberOperationStartAudience` — Defaults to all contacts. Selection walks live pages before mutations, excludes contacts created after the request, and is not a point-in-time database snapshot. Provide root or filters, never both.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**kind:** `*sequenzygo.SubscriberOperationStartKind` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**requestKey:** `string` — Reuse after an uncertain response. Different normalized settings with the same company/key return 409.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**tags:** `[]string` — Tag names, normalized like single-contact tags.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**triggerAutomations:** `*bool` — Requires automations:trigger.
     
 </dd>
 </dl>
@@ -19786,7 +20488,7 @@ client.Templates.Update(
 <dl>
 <dd>
 
-Returns open, click, and unsubscribe tracking flags, the default attribution window, automatic UTM tagging, the dedicated click-tracking domain, inbound reply tracking settings, and whether double opt-in is required for new contacts.
+Returns account-wide and Transactional API open/click tracking flags, unsubscribe tracking, attribution, UTM tagging, tracking domain, inbound reply settings and signup consent settings.
 </dd>
 </dl>
 </dd>
@@ -19827,7 +20529,7 @@ client.TrackingSettings.Get(
 <dl>
 <dd>
 
-Updates the account-wide tracking defaults - open, click, and unsubscribe tracking, strict bot filtering, the default attribution window, and automatic UTM tagging - plus the double opt-in requirement for new contacts. Applies to emails sent afterwards; already-sent emails keep the links they were rendered with. Reply tracking is updated through the company endpoint.
+Updates the account-wide and Transactional API tracking defaults - open, click, and unsubscribe tracking, strict bot filtering, the default attribution window, and automatic UTM tagging - plus the double opt-in requirement for new contacts. Applies to emails sent afterwards; already-sent emails keep the links they were rendered with. Reply tracking is updated through the company endpoint.
 </dd>
 </dl>
 </dd>
@@ -19925,7 +20627,23 @@ client.TrackingSettings.Update(
 <dl>
 <dd>
 
-**unsubscribeTrackingEnabled:** `*bool` — Whether unsubscribe links are attributed to the email that produced them.
+**transactionalClickTrackingEnabled:** `*bool` — Click tracking default for sends through the Send Email API. Account-wide click tracking must also be enabled; per-send trackingSettings can only opt out.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**transactionalOpenTrackingEnabled:** `*bool` — Open tracking default for sends through the Send Email API. Account-wide open tracking must also be enabled; per-send trackingSettings can only opt out.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**unsubscribeTrackingEnabled:** `*bool` — Whether to track unsubscribe link clicks. When false, Sequenzy unsubscribe links go directly to https://sequenzy.com, even with a custom tracking domain. Actual unsubscribes and their email attribution are still recorded.
     
 </dd>
 </dl>
@@ -20286,6 +21004,8 @@ Queues an email for sending. The default `emailType` is `transactional`. Set it 
 
 For callers that may retry, send a stable `Idempotency-Key` header. The same key and request returns the original `emailSendId` for 14 days without another delivery. Reusing a key with different request content returns 409.
 
+Repeated identical transactional content reaching many distinct recipients can trigger a junk/list-testing review. Sending continues while review is pending or unavailable. A substantiated verdict can reject later matching deliveries before sending; these become terminal `failed` sends with an `errorMessage` beginning `Transactional content rejected:`. Read GET /email-sends/{emailSendId} for the final outcome. Failed deliveries are not held or replayed automatically, and replaying the same Idempotency-Key returns the original acceptance response. Dashboard retries of rejected deliveries also fail without sending, even after the decision expires. Correct the content or contact support before deliberately submitting a new logical send. This check does not pause the company or ban the account.
+
 You can either:
 - Provide a canonical `slug` (or compatibility alias `templateId`) to use a saved template
 - Provide `subject` and canonical `body` (or compatibility alias `html`) to send custom content directly
@@ -20306,8 +21026,10 @@ If both a canonical field and its alias are provided, `slug` must match `templat
 A successful response means the email was accepted for background processing. Transactional emails are not blocked by subscriber unsubscribe or double opt-in status. If a recipient is suppressed because of a hard bounce or spam complaint, the worker records the send as `suppressed` instead of delivering it.
 
 Optionally set `from` (domain must be verified) and `replyTo` addresses. When reply tracking is enabled, Sequenzy uses a unique trackable `Reply-To` header and treats the resolved reply destination as the forwarding destination for captured replies.
-When `replyTo` is omitted, direct-content sends inherit the company's default reply profile and saved-template sends prefer the template reply profile before the company default. Both fall back to the first company reply profile. The resolved destination is retained whether or not reply tracking is enabled; it is sent as the Reply-To header only when reply tracking is disabled.
+Without a reply identity override, saved-template sends prefer the template reply profile. Otherwise sends prefer the effective sending domain's default reply profile, then the company default, then the first company reply profile. The resolved destination is retained whether or not reply tracking is enabled; it is sent as the Reply-To header only when reply tracking is disabled.
 Variables can be passed to customize the email content. Nested objects and arrays are supported for repeat blocks, such as `items`. `{{viewInBrowserUrl}}` is generated automatically for a hosted copy link. For a single recipient, Sequenzy matches an existing subscriber by `subscriberExternalId` or email and backfills stored first and last names when the corresponding request variables are omitted; explicit variables take precedence. Returns immediately with a durable `emailSendId` and the accepted `emailType`. If Sequenzy detects likely missing or unused variables before queueing, the successful response includes a non-blocking `diagnostics` warning object. Missing values do not block queueing or sending; a required variable that is not provided and has no default renders as an empty string.
+
+Select existing identities with senderProfileId or fromEmail (and optional fromName), and replyProfileId or replyTo (with optional replyToName). These inputs look up profiles rather than create them. Use emailType, not isMarketing, to choose delivery policy.
 </dd>
 </dl>
 </dd>
@@ -20415,6 +21137,23 @@ When the address exactly matches an existing sender identity (the display name d
 several identities share the address), that identity - including its sending route - is used for
 the send; otherwise the template or company-default identity is kept and this field only changes
 the visible From.
+ Mutually exclusive with senderProfileId, fromEmail and fromName.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**fromEmail:** `*string` — Address of an existing verified sender profile in this company. Mutually exclusive with senderProfileId and from. If several identities share the address, select one with fromName.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**fromName:** `*string` — Display name selecting an existing identity on fromEmail. Requires fromEmail; mutually exclusive with senderProfileId and from. Does not create a profile.
     
 </dd>
 </dl>
@@ -20438,11 +21177,31 @@ the visible From.
 <dl>
 <dd>
 
-**replyTo:** `*string` 
+**replyProfileID:** `*string` — Existing reply profile ID. Mutually exclusive with replyTo and replyToName. Overrides the saved template and default reply identity.
+    
+</dd>
+</dl>
 
-Reply-to address. Format: "Name <email>" or just "email".
-Can be any valid email address. When reply tracking is disabled, this value is sent as the email's `Reply-To` header. When reply tracking is enabled, Sequenzy sends a unique trackable `Reply-To` header and stores this value as the forwarding destination for replies.
-When omitted, direct-content sends inherit the company default and saved-template sends prefer the template reply profile before the company default. Both fall back to the first company reply profile. The resolved destination is retained whether or not reply tracking is enabled; it is sent directly only when reply tracking is disabled.
+<dl>
+<dd>
+
+**replyTo:** `*string` — Reply-to address as "Name <email>" or a bare email, optionally paired with replyToName. Mutually exclusive with replyProfileId. With reply tracking enabled, Sequenzy sends a trackable Reply-To and stores this address as its forwarding destination. Without a reply override, saved-template sends prefer the template reply profile; otherwise sends prefer the effective sending-domain default, then company default, then the first company reply profile.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**replyToName:** `*string` — Display name for a bare replyTo address. Requires replyTo and is mutually exclusive with replyProfileId. Does not create a profile.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**senderProfileID:** `*string` — Existing verified sender profile ID. Mutually exclusive with fromEmail, fromName and from. Selects that identity and its sending route; does not create a profile.
     
 </dd>
 </dl>
@@ -20490,7 +21249,7 @@ When omitted, direct-content sends inherit the company default and saved-templat
 <dl>
 <dd>
 
-**trackingSettings:** `*sequenzygo.SendTransactionalRequestTrackingSettings` — Per-send tracking opt-outs. Each field defaults to `true`, meaning your account's tracking settings apply; set a field to `false` to disable that tracking for this send only. These fields can only opt out; they cannot enable tracking that is disabled for your account.
+**trackingSettings:** `*sequenzygo.SendTransactionalRequestTrackingSettings` — Per-send tracking opt-outs. Omitted fields follow the company Transactional API open/click defaults. Set false to disable tracking for this send. Neither true nor omission can enable tracking disabled by account-wide or Transactional API settings.
     
 </dd>
 </dl>

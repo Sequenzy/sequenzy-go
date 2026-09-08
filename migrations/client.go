@@ -201,7 +201,7 @@ func (c *Client) GetRun(
 	return response.Body, nil
 }
 
-// Queues execution for an approved migration run.
+// Queues execution for an approved migration run. Queued or running runs return their current state without another execution or plan change. Completed, failed, canceled and cancel_requested runs return 400. At least one selected resource is required, from resourceIds or the previously approved plan. resourceOptions applies only with a nonempty resourceIds selection.
 //
 // Example:
 //

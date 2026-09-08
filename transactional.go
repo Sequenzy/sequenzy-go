@@ -255,16 +255,21 @@ var (
 	sendTransactionalRequestFieldCc                   = big.NewInt(1 << 4)
 	sendTransactionalRequestFieldEmailType            = big.NewInt(1 << 5)
 	sendTransactionalRequestFieldFrom                 = big.NewInt(1 << 6)
-	sendTransactionalRequestFieldHTML                 = big.NewInt(1 << 7)
-	sendTransactionalRequestFieldPreview              = big.NewInt(1 << 8)
-	sendTransactionalRequestFieldReplyTo              = big.NewInt(1 << 9)
-	sendTransactionalRequestFieldSlug                 = big.NewInt(1 << 10)
-	sendTransactionalRequestFieldSubject              = big.NewInt(1 << 11)
-	sendTransactionalRequestFieldSubscriberExternalID = big.NewInt(1 << 12)
-	sendTransactionalRequestFieldTemplateID           = big.NewInt(1 << 13)
-	sendTransactionalRequestFieldTo                   = big.NewInt(1 << 14)
-	sendTransactionalRequestFieldTrackingSettings     = big.NewInt(1 << 15)
-	sendTransactionalRequestFieldVariables            = big.NewInt(1 << 16)
+	sendTransactionalRequestFieldFromEmail            = big.NewInt(1 << 7)
+	sendTransactionalRequestFieldFromName             = big.NewInt(1 << 8)
+	sendTransactionalRequestFieldHTML                 = big.NewInt(1 << 9)
+	sendTransactionalRequestFieldPreview              = big.NewInt(1 << 10)
+	sendTransactionalRequestFieldReplyProfileID       = big.NewInt(1 << 11)
+	sendTransactionalRequestFieldReplyTo              = big.NewInt(1 << 12)
+	sendTransactionalRequestFieldReplyToName          = big.NewInt(1 << 13)
+	sendTransactionalRequestFieldSenderProfileID      = big.NewInt(1 << 14)
+	sendTransactionalRequestFieldSlug                 = big.NewInt(1 << 15)
+	sendTransactionalRequestFieldSubject              = big.NewInt(1 << 16)
+	sendTransactionalRequestFieldSubscriberExternalID = big.NewInt(1 << 17)
+	sendTransactionalRequestFieldTemplateID           = big.NewInt(1 << 18)
+	sendTransactionalRequestFieldTo                   = big.NewInt(1 << 19)
+	sendTransactionalRequestFieldTrackingSettings     = big.NewInt(1 << 20)
+	sendTransactionalRequestFieldVariables            = big.NewInt(1 << 21)
 )
 
 type SendTransactionalRequest struct {
@@ -292,15 +297,25 @@ type SendTransactionalRequest struct {
 	// several identities share the address), that identity - including its sending route - is used for
 	// the send; otherwise the template or company-default identity is kept and this field only changes
 	// the visible From.
+	//
+	//	Mutually exclusive with senderProfileId, fromEmail and fromName.
 	From *string `json:"from,omitempty" url:"-"`
+	// Address of an existing verified sender profile in this company. Mutually exclusive with senderProfileId and from. If several identities share the address, select one with fromName.
+	FromEmail *string `json:"fromEmail,omitempty" url:"-"`
+	// Display name selecting an existing identity on fromEmail. Requires fromEmail; mutually exclusive with senderProfileId and from. Does not create a profile.
+	FromName *string `json:"fromName,omitempty" url:"-"`
 	// Compatibility alias for `body`. Accepted with `subject` for direct sends and must match `body` when both are provided.
 	HTML *string `json:"html,omitempty" url:"-"`
 	// Preview text for the email (only used with direct content)
 	Preview *string `json:"preview,omitempty" url:"-"`
-	// Reply-to address. Format: "Name <email>" or just "email".
-	// Can be any valid email address. When reply tracking is disabled, this value is sent as the email's `Reply-To` header. When reply tracking is enabled, Sequenzy sends a unique trackable `Reply-To` header and stores this value as the forwarding destination for replies.
-	// When omitted, direct-content sends inherit the company default and saved-template sends prefer the template reply profile before the company default. Both fall back to the first company reply profile. The resolved destination is retained whether or not reply tracking is enabled; it is sent directly only when reply tracking is disabled.
+	// Existing reply profile ID. Mutually exclusive with replyTo and replyToName. Overrides the saved template and default reply identity.
+	ReplyProfileID *string `json:"replyProfileId,omitempty" url:"-"`
+	// Reply-to address as "Name <email>" or a bare email, optionally paired with replyToName. Mutually exclusive with replyProfileId. With reply tracking enabled, Sequenzy sends a trackable Reply-To and stores this address as its forwarding destination. Without a reply override, saved-template sends prefer the template reply profile; otherwise sends prefer the effective sending-domain default, then company default, then the first company reply profile.
 	ReplyTo *string `json:"replyTo,omitempty" url:"-"`
+	// Display name for a bare replyTo address. Requires replyTo and is mutually exclusive with replyProfileId. Does not create a profile.
+	ReplyToName *string `json:"replyToName,omitempty" url:"-"`
+	// Existing verified sender profile ID. Mutually exclusive with fromEmail, fromName and from. Selects that identity and its sending route; does not create a profile.
+	SenderProfileID *string `json:"senderProfileId,omitempty" url:"-"`
 	// Canonical slug of the transactional email template to use (mutually exclusive with direct content).
 	Slug *string `json:"slug,omitempty" url:"-"`
 	// Email subject (required if not using slug)
@@ -311,7 +326,7 @@ type SendTransactionalRequest struct {
 	TemplateID *string `json:"templateId,omitempty" url:"-"`
 	// Recipient email address(es). Can be a single email string or an array of up to 50 emails.
 	To *SendTransactionalRequestTo `json:"to" url:"-"`
-	// Per-send tracking opt-outs. Each field defaults to `true`, meaning your account's tracking settings apply; set a field to `false` to disable that tracking for this send only. These fields can only opt out; they cannot enable tracking that is disabled for your account.
+	// Per-send tracking opt-outs. Omitted fields follow the company Transactional API open/click defaults. Set false to disable tracking for this send. Neither true nor omission can enable tracking disabled by account-wide or Transactional API settings.
 	TrackingSettings *SendTransactionalRequestTrackingSettings `json:"trackingSettings,omitempty" url:"-"`
 	// Variables for template replacement (works with both modes). Values can be scalars, nested objects, or arrays used by repeat blocks. For a single recipient, stored subscriber first and last names fill missing name variables; explicit request variables take precedence. Raw HTML templates can use simple subscriber/custom-attribute conditionals such as `{{#if subscriber.plan}}...{{else}}...{{/if}}` and `{{#unless subscriber.plan}}...{{/unless}}`. Variables are always HTML-escaped; a template can prefix a tag with `html.` (`{{html.prerenderedHtml}}`) to insert a trusted HTML value unescaped. Injected HTML is sanitized (scripts, event handlers, and dangerous URLs are stripped), only applies in HTML text position, and must not contain end-user input. Likely variable issues are returned as non-blocking diagnostics when possible; missing required variables without defaults render as empty strings and do not block sending.
 	Variables map[string]any `json:"variables,omitempty" url:"-"`
@@ -376,6 +391,20 @@ func (s *SendTransactionalRequest) SetFrom(from *string) {
 	s.require(sendTransactionalRequestFieldFrom)
 }
 
+// SetFromEmail sets the FromEmail field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendTransactionalRequest) SetFromEmail(fromEmail *string) {
+	s.FromEmail = fromEmail
+	s.require(sendTransactionalRequestFieldFromEmail)
+}
+
+// SetFromName sets the FromName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendTransactionalRequest) SetFromName(fromName *string) {
+	s.FromName = fromName
+	s.require(sendTransactionalRequestFieldFromName)
+}
+
 // SetHTML sets the HTML field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *SendTransactionalRequest) SetHTML(html *string) {
@@ -390,11 +419,32 @@ func (s *SendTransactionalRequest) SetPreview(preview *string) {
 	s.require(sendTransactionalRequestFieldPreview)
 }
 
+// SetReplyProfileID sets the ReplyProfileID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendTransactionalRequest) SetReplyProfileID(replyProfileID *string) {
+	s.ReplyProfileID = replyProfileID
+	s.require(sendTransactionalRequestFieldReplyProfileID)
+}
+
 // SetReplyTo sets the ReplyTo field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *SendTransactionalRequest) SetReplyTo(replyTo *string) {
 	s.ReplyTo = replyTo
 	s.require(sendTransactionalRequestFieldReplyTo)
+}
+
+// SetReplyToName sets the ReplyToName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendTransactionalRequest) SetReplyToName(replyToName *string) {
+	s.ReplyToName = replyToName
+	s.require(sendTransactionalRequestFieldReplyToName)
+}
+
+// SetSenderProfileID sets the SenderProfileID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendTransactionalRequest) SetSenderProfileID(senderProfileID *string) {
+	s.SenderProfileID = senderProfileID
+	s.require(sendTransactionalRequestFieldSenderProfileID)
 }
 
 // SetSlug sets the Slug field and marks it as non-optional;
@@ -2954,7 +3004,7 @@ func (s *SendTransactionalRequestTo) Accept(visitor SendTransactionalRequestToVi
 	return fmt.Errorf("type %T does not include a non-empty union type", s)
 }
 
-// Per-send tracking opt-outs. Each field defaults to `true`, meaning your account's tracking settings apply; set a field to `false` to disable that tracking for this send only. These fields can only opt out; they cannot enable tracking that is disabled for your account.
+// Per-send tracking opt-outs. Omitted fields follow the company Transactional API open/click defaults. Set false to disable tracking for this send. Neither true nor omission can enable tracking disabled by account-wide or Transactional API settings.
 var (
 	sendTransactionalRequestTrackingSettingsFieldClickTracking = big.NewInt(1 << 0)
 	sendTransactionalRequestTrackingSettingsFieldOpenTracking  = big.NewInt(1 << 1)
@@ -3120,16 +3170,22 @@ func (s *SendTransactionalResponse) Accept(visitor SendTransactionalResponseVisi
 }
 
 var (
-	sendTransactionalResponseOneFieldDiagnostics      = big.NewInt(1 << 0)
-	sendTransactionalResponseOneFieldEmailSendID      = big.NewInt(1 << 1)
-	sendTransactionalResponseOneFieldEmailType        = big.NewInt(1 << 2)
-	sendTransactionalResponseOneFieldIdempotentReplay = big.NewInt(1 << 3)
-	sendTransactionalResponseOneFieldJobID            = big.NewInt(1 << 4)
-	sendTransactionalResponseOneFieldSuccess          = big.NewInt(1 << 5)
-	sendTransactionalResponseOneFieldTo               = big.NewInt(1 << 6)
+	sendTransactionalResponseOneFieldBcc              = big.NewInt(1 << 0)
+	sendTransactionalResponseOneFieldCc               = big.NewInt(1 << 1)
+	sendTransactionalResponseOneFieldDiagnostics      = big.NewInt(1 << 2)
+	sendTransactionalResponseOneFieldEmailSendID      = big.NewInt(1 << 3)
+	sendTransactionalResponseOneFieldEmailType        = big.NewInt(1 << 4)
+	sendTransactionalResponseOneFieldIdempotentReplay = big.NewInt(1 << 5)
+	sendTransactionalResponseOneFieldJobID            = big.NewInt(1 << 6)
+	sendTransactionalResponseOneFieldSuccess          = big.NewInt(1 << 7)
+	sendTransactionalResponseOneFieldTo               = big.NewInt(1 << 8)
 )
 
 type SendTransactionalResponseOne struct {
+	// Deduplicated BCC recipients; omitted when empty.
+	Bcc []string `json:"bcc,omitempty" url:"bcc,omitempty"`
+	// Deduplicated CC recipients; omitted when empty.
+	Cc          []string                      `json:"cc,omitempty" url:"cc,omitempty"`
 	Diagnostics *TransactionalSendDiagnostics `json:"diagnostics,omitempty" url:"diagnostics,omitempty"`
 	// Durable email delivery ID. Use this with GET /email-sends/{emailSendId}.
 	EmailSendID *string `json:"emailSendId,omitempty" url:"emailSendId,omitempty"`
@@ -3147,6 +3203,20 @@ type SendTransactionalResponseOne struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (s *SendTransactionalResponseOne) GetBcc() []string {
+	if s == nil {
+		return nil
+	}
+	return s.Bcc
+}
+
+func (s *SendTransactionalResponseOne) GetCc() []string {
+	if s == nil {
+		return nil
+	}
+	return s.Cc
 }
 
 func (s *SendTransactionalResponseOne) GetDiagnostics() *TransactionalSendDiagnostics {
@@ -3210,6 +3280,20 @@ func (s *SendTransactionalResponseOne) require(field *big.Int) {
 		s.explicitFields = big.NewInt(0)
 	}
 	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetBcc sets the Bcc field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendTransactionalResponseOne) SetBcc(bcc []string) {
+	s.Bcc = bcc
+	s.require(sendTransactionalResponseOneFieldBcc)
+}
+
+// SetCc sets the Cc field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendTransactionalResponseOne) SetCc(cc []string) {
+	s.Cc = cc
+	s.require(sendTransactionalResponseOneFieldCc)
 }
 
 // SetDiagnostics sets the Diagnostics field and marks it as non-optional;
@@ -3389,17 +3473,23 @@ func (s *SendTransactionalResponseOneTo) Accept(visitor SendTransactionalRespons
 }
 
 var (
-	sendTransactionalResponseTransactionalFieldDiagnostics      = big.NewInt(1 << 0)
-	sendTransactionalResponseTransactionalFieldEmailSendID      = big.NewInt(1 << 1)
-	sendTransactionalResponseTransactionalFieldEmailType        = big.NewInt(1 << 2)
-	sendTransactionalResponseTransactionalFieldIdempotentReplay = big.NewInt(1 << 3)
-	sendTransactionalResponseTransactionalFieldJobID            = big.NewInt(1 << 4)
-	sendTransactionalResponseTransactionalFieldSuccess          = big.NewInt(1 << 5)
-	sendTransactionalResponseTransactionalFieldTo               = big.NewInt(1 << 6)
-	sendTransactionalResponseTransactionalFieldTransactional    = big.NewInt(1 << 7)
+	sendTransactionalResponseTransactionalFieldBcc              = big.NewInt(1 << 0)
+	sendTransactionalResponseTransactionalFieldCc               = big.NewInt(1 << 1)
+	sendTransactionalResponseTransactionalFieldDiagnostics      = big.NewInt(1 << 2)
+	sendTransactionalResponseTransactionalFieldEmailSendID      = big.NewInt(1 << 3)
+	sendTransactionalResponseTransactionalFieldEmailType        = big.NewInt(1 << 4)
+	sendTransactionalResponseTransactionalFieldIdempotentReplay = big.NewInt(1 << 5)
+	sendTransactionalResponseTransactionalFieldJobID            = big.NewInt(1 << 6)
+	sendTransactionalResponseTransactionalFieldSuccess          = big.NewInt(1 << 7)
+	sendTransactionalResponseTransactionalFieldTo               = big.NewInt(1 << 8)
+	sendTransactionalResponseTransactionalFieldTransactional    = big.NewInt(1 << 9)
 )
 
 type SendTransactionalResponseTransactional struct {
+	// Deduplicated BCC recipients; omitted when empty.
+	Bcc []string `json:"bcc,omitempty" url:"bcc,omitempty"`
+	// Deduplicated CC recipients; omitted when empty.
+	Cc          []string                      `json:"cc,omitempty" url:"cc,omitempty"`
 	Diagnostics *TransactionalSendDiagnostics `json:"diagnostics,omitempty" url:"diagnostics,omitempty"`
 	// Durable email delivery ID. Use this with GET /email-sends/{emailSendId}.
 	EmailSendID *string `json:"emailSendId,omitempty" url:"emailSendId,omitempty"`
@@ -3418,6 +3508,20 @@ type SendTransactionalResponseTransactional struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (s *SendTransactionalResponseTransactional) GetBcc() []string {
+	if s == nil {
+		return nil
+	}
+	return s.Bcc
+}
+
+func (s *SendTransactionalResponseTransactional) GetCc() []string {
+	if s == nil {
+		return nil
+	}
+	return s.Cc
 }
 
 func (s *SendTransactionalResponseTransactional) GetDiagnostics() *TransactionalSendDiagnostics {
@@ -3488,6 +3592,20 @@ func (s *SendTransactionalResponseTransactional) require(field *big.Int) {
 		s.explicitFields = big.NewInt(0)
 	}
 	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetBcc sets the Bcc field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendTransactionalResponseTransactional) SetBcc(bcc []string) {
+	s.Bcc = bcc
+	s.require(sendTransactionalResponseTransactionalFieldBcc)
+}
+
+// SetCc sets the Cc field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendTransactionalResponseTransactional) SetCc(cc []string) {
+	s.Cc = cc
+	s.require(sendTransactionalResponseTransactionalFieldCc)
 }
 
 // SetDiagnostics sets the Diagnostics field and marks it as non-optional;

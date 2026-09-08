@@ -172,7 +172,44 @@ func (c *Client) List(
 	return response.Body, nil
 }
 
-// Creates or replaces the company default component for a slot. New sequence, campaign, and AI-generated emails clone this component when they are built. A default footer always keeps its unsubscribe link enabled; transactional sends hide it at render time. Emails that already exist keep the footer they were built with.
+// Read-only affected counts and optional layout HTML. Requires the same write scopes and admin role as applying. No subscriber-specific personalization or sending.
+//
+// Example:
+//
+//	request := &sequenzygo.PreviewDefaultEmailComponentsRequest{
+//	    Slot: sequenzygo.PreviewDefaultEmailComponentsRequestSlotFooter,
+//	    Application: &sequenzygo.FooterApplicationOptions{
+//	        Scopes: []sequenzygo.FooterApplicationOptionsScopesItem{
+//	            sequenzygo.FooterApplicationOptionsScopesItemSequences,
+//	        },
+//	    },
+//	    Blocks: []*sequenzygo.EmailBlock{
+//	        &sequenzygo.EmailBlock{
+//	            Type: sequenzygo.EmailBlockTypeText,
+//	        },
+//	    },
+//	}
+//	client.EmailComponents.PreviewDefault(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) PreviewDefault(
+	ctx context.Context,
+	request *sequenzygo.PreviewDefaultEmailComponentsRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.PreviewDefaultEmailComponentsResponse, error) {
+	response, err := c.WithRawResponse.PreviewDefault(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Creates or replaces the company default component for a slot. New sequence, campaign, and AI-generated emails clone this component when they are built. A default footer always keeps its unsubscribe link enabled; transactional sends hide it at render time. Emails that already exist keep their footer unless application options and a valid previewToken are provided. Preview first to review selected scopes. Personal keys require admin access; keys need emails:write, each selected category write scope, and ab_tests:write for campaigns or sequences.
 //
 // Example:
 //

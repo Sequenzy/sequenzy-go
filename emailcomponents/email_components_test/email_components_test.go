@@ -210,6 +210,42 @@ func TestEmailComponentsListWithWireMock(
 	VerifyRequestCount(t, "TestEmailComponentsListWithWireMock", "GET", "/email-components", nil, 1)
 }
 
+func TestEmailComponentsPreviewDefaultWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.PreviewDefaultEmailComponentsRequest{
+		Slot: sequenzygo.PreviewDefaultEmailComponentsRequestSlotFooter,
+		Application: &sequenzygo.FooterApplicationOptions{
+			Scopes: []sequenzygo.FooterApplicationOptionsScopesItem{
+				sequenzygo.FooterApplicationOptionsScopesItemSequences,
+			},
+		},
+		Blocks: []*sequenzygo.EmailBlock{
+			&sequenzygo.EmailBlock{
+				Type: sequenzygo.EmailBlockTypeText,
+			},
+		},
+	}
+	_, invocationErr := client.EmailComponents.PreviewDefault(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestEmailComponentsPreviewDefaultWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestEmailComponentsPreviewDefaultWithWireMock", "POST", "/email-components/defaults/footer/preview", nil, 1)
+}
+
 func TestEmailComponentsSetDefaultWithWireMock(
 	t *testing.T,
 ) {

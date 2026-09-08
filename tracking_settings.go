@@ -513,11 +513,13 @@ func (t *TrackingSettingsReplyTracking) String() string {
 }
 
 var (
-	trackingSettingsTrackingFieldClickTrackingEnabled          = big.NewInt(1 << 0)
-	trackingSettingsTrackingFieldDefaultAttributionWindowHours = big.NewInt(1 << 1)
-	trackingSettingsTrackingFieldOpenTrackingEnabled           = big.NewInt(1 << 2)
-	trackingSettingsTrackingFieldStrictBotFilteringEnabled     = big.NewInt(1 << 3)
-	trackingSettingsTrackingFieldUnsubscribeTrackingEnabled    = big.NewInt(1 << 4)
+	trackingSettingsTrackingFieldClickTrackingEnabled              = big.NewInt(1 << 0)
+	trackingSettingsTrackingFieldDefaultAttributionWindowHours     = big.NewInt(1 << 1)
+	trackingSettingsTrackingFieldOpenTrackingEnabled               = big.NewInt(1 << 2)
+	trackingSettingsTrackingFieldStrictBotFilteringEnabled         = big.NewInt(1 << 3)
+	trackingSettingsTrackingFieldTransactionalClickTrackingEnabled = big.NewInt(1 << 4)
+	trackingSettingsTrackingFieldTransactionalOpenTrackingEnabled  = big.NewInt(1 << 5)
+	trackingSettingsTrackingFieldUnsubscribeTrackingEnabled        = big.NewInt(1 << 6)
 )
 
 type TrackingSettingsTracking struct {
@@ -525,7 +527,12 @@ type TrackingSettingsTracking struct {
 	DefaultAttributionWindowHours *int  `json:"defaultAttributionWindowHours,omitempty" url:"defaultAttributionWindowHours,omitempty"`
 	OpenTrackingEnabled           *bool `json:"openTrackingEnabled,omitempty" url:"openTrackingEnabled,omitempty"`
 	// Opt-in aggressive bot detection (strict user-agent patterns, datacenter IPs, cross-send IP sweeps). Off by default; enabling it can lower reported open and click rates.
-	StrictBotFilteringEnabled  *bool `json:"strictBotFilteringEnabled,omitempty" url:"strictBotFilteringEnabled,omitempty"`
+	StrictBotFilteringEnabled *bool `json:"strictBotFilteringEnabled,omitempty" url:"strictBotFilteringEnabled,omitempty"`
+	// Click tracking default for sends through the Send Email API. Account-wide click tracking must also be enabled; per-send trackingSettings can only opt out.
+	TransactionalClickTrackingEnabled *bool `json:"transactionalClickTrackingEnabled,omitempty" url:"transactionalClickTrackingEnabled,omitempty"`
+	// Open tracking default for sends through the Send Email API. Account-wide open tracking must also be enabled; per-send trackingSettings can only opt out.
+	TransactionalOpenTrackingEnabled *bool `json:"transactionalOpenTrackingEnabled,omitempty" url:"transactionalOpenTrackingEnabled,omitempty"`
+	// Whether to track unsubscribe link clicks. When false, Sequenzy unsubscribe links go directly to https://sequenzy.com, even with a custom tracking domain. Actual unsubscribes and their email attribution are still recorded.
 	UnsubscribeTrackingEnabled *bool `json:"unsubscribeTrackingEnabled,omitempty" url:"unsubscribeTrackingEnabled,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -561,6 +568,20 @@ func (t *TrackingSettingsTracking) GetStrictBotFilteringEnabled() *bool {
 		return nil
 	}
 	return t.StrictBotFilteringEnabled
+}
+
+func (t *TrackingSettingsTracking) GetTransactionalClickTrackingEnabled() *bool {
+	if t == nil {
+		return nil
+	}
+	return t.TransactionalClickTrackingEnabled
+}
+
+func (t *TrackingSettingsTracking) GetTransactionalOpenTrackingEnabled() *bool {
+	if t == nil {
+		return nil
+	}
+	return t.TransactionalOpenTrackingEnabled
 }
 
 func (t *TrackingSettingsTracking) GetUnsubscribeTrackingEnabled() *bool {
@@ -610,6 +631,20 @@ func (t *TrackingSettingsTracking) SetOpenTrackingEnabled(openTrackingEnabled *b
 func (t *TrackingSettingsTracking) SetStrictBotFilteringEnabled(strictBotFilteringEnabled *bool) {
 	t.StrictBotFilteringEnabled = strictBotFilteringEnabled
 	t.require(trackingSettingsTrackingFieldStrictBotFilteringEnabled)
+}
+
+// SetTransactionalClickTrackingEnabled sets the TransactionalClickTrackingEnabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TrackingSettingsTracking) SetTransactionalClickTrackingEnabled(transactionalClickTrackingEnabled *bool) {
+	t.TransactionalClickTrackingEnabled = transactionalClickTrackingEnabled
+	t.require(trackingSettingsTrackingFieldTransactionalClickTrackingEnabled)
+}
+
+// SetTransactionalOpenTrackingEnabled sets the TransactionalOpenTrackingEnabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TrackingSettingsTracking) SetTransactionalOpenTrackingEnabled(transactionalOpenTrackingEnabled *bool) {
+	t.TransactionalOpenTrackingEnabled = transactionalOpenTrackingEnabled
+	t.require(trackingSettingsTrackingFieldTransactionalOpenTrackingEnabled)
 }
 
 // SetUnsubscribeTrackingEnabled sets the UnsubscribeTrackingEnabled field and marks it as non-optional;
@@ -1170,15 +1205,17 @@ func (u *UpdateTrackingSettingsResponse) String() string {
 }
 
 var (
-	updateTrackingSettingsRequestFieldAutoUtmEnabled                = big.NewInt(1 << 0)
-	updateTrackingSettingsRequestFieldAutoUtmSettings               = big.NewInt(1 << 1)
-	updateTrackingSettingsRequestFieldClickTrackingEnabled          = big.NewInt(1 << 2)
-	updateTrackingSettingsRequestFieldDefaultAttributionWindowHours = big.NewInt(1 << 3)
-	updateTrackingSettingsRequestFieldDoubleOptInEnabled            = big.NewInt(1 << 4)
-	updateTrackingSettingsRequestFieldDoubleOptInRedirectURL        = big.NewInt(1 << 5)
-	updateTrackingSettingsRequestFieldOpenTrackingEnabled           = big.NewInt(1 << 6)
-	updateTrackingSettingsRequestFieldStrictBotFilteringEnabled     = big.NewInt(1 << 7)
-	updateTrackingSettingsRequestFieldUnsubscribeTrackingEnabled    = big.NewInt(1 << 8)
+	updateTrackingSettingsRequestFieldAutoUtmEnabled                    = big.NewInt(1 << 0)
+	updateTrackingSettingsRequestFieldAutoUtmSettings                   = big.NewInt(1 << 1)
+	updateTrackingSettingsRequestFieldClickTrackingEnabled              = big.NewInt(1 << 2)
+	updateTrackingSettingsRequestFieldDefaultAttributionWindowHours     = big.NewInt(1 << 3)
+	updateTrackingSettingsRequestFieldDoubleOptInEnabled                = big.NewInt(1 << 4)
+	updateTrackingSettingsRequestFieldDoubleOptInRedirectURL            = big.NewInt(1 << 5)
+	updateTrackingSettingsRequestFieldOpenTrackingEnabled               = big.NewInt(1 << 6)
+	updateTrackingSettingsRequestFieldStrictBotFilteringEnabled         = big.NewInt(1 << 7)
+	updateTrackingSettingsRequestFieldTransactionalClickTrackingEnabled = big.NewInt(1 << 8)
+	updateTrackingSettingsRequestFieldTransactionalOpenTrackingEnabled  = big.NewInt(1 << 9)
+	updateTrackingSettingsRequestFieldUnsubscribeTrackingEnabled        = big.NewInt(1 << 10)
 )
 
 type UpdateTrackingSettingsRequest struct {
@@ -1198,7 +1235,11 @@ type UpdateTrackingSettingsRequest struct {
 	OpenTrackingEnabled *bool `json:"openTrackingEnabled,omitempty" url:"-"`
 	// Opt-in aggressive bot detection (strict user-agent patterns, datacenter IPs, cross-send IP sweeps). Off by default; enabling it can lower reported open and click rates.
 	StrictBotFilteringEnabled *bool `json:"strictBotFilteringEnabled,omitempty" url:"-"`
-	// Whether unsubscribe links are attributed to the email that produced them.
+	// Click tracking default for sends through the Send Email API. Account-wide click tracking must also be enabled; per-send trackingSettings can only opt out.
+	TransactionalClickTrackingEnabled *bool `json:"transactionalClickTrackingEnabled,omitempty" url:"-"`
+	// Open tracking default for sends through the Send Email API. Account-wide open tracking must also be enabled; per-send trackingSettings can only opt out.
+	TransactionalOpenTrackingEnabled *bool `json:"transactionalOpenTrackingEnabled,omitempty" url:"-"`
+	// Whether to track unsubscribe link clicks. When false, Sequenzy unsubscribe links go directly to https://sequenzy.com, even with a custom tracking domain. Actual unsubscribes and their email attribution are still recorded.
 	UnsubscribeTrackingEnabled *bool `json:"unsubscribeTrackingEnabled,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -1266,6 +1307,20 @@ func (u *UpdateTrackingSettingsRequest) SetOpenTrackingEnabled(openTrackingEnabl
 func (u *UpdateTrackingSettingsRequest) SetStrictBotFilteringEnabled(strictBotFilteringEnabled *bool) {
 	u.StrictBotFilteringEnabled = strictBotFilteringEnabled
 	u.require(updateTrackingSettingsRequestFieldStrictBotFilteringEnabled)
+}
+
+// SetTransactionalClickTrackingEnabled sets the TransactionalClickTrackingEnabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateTrackingSettingsRequest) SetTransactionalClickTrackingEnabled(transactionalClickTrackingEnabled *bool) {
+	u.TransactionalClickTrackingEnabled = transactionalClickTrackingEnabled
+	u.require(updateTrackingSettingsRequestFieldTransactionalClickTrackingEnabled)
+}
+
+// SetTransactionalOpenTrackingEnabled sets the TransactionalOpenTrackingEnabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateTrackingSettingsRequest) SetTransactionalOpenTrackingEnabled(transactionalOpenTrackingEnabled *bool) {
+	u.TransactionalOpenTrackingEnabled = transactionalOpenTrackingEnabled
+	u.require(updateTrackingSettingsRequestFieldTransactionalOpenTrackingEnabled)
 }
 
 // SetUnsubscribeTrackingEnabled sets the UnsubscribeTrackingEnabled field and marks it as non-optional;

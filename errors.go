@@ -7,7 +7,7 @@ import (
 	core "github.com/sequenzy/sequenzy-go/core"
 )
 
-// Validation error
+// Invalid tagging input
 type BadRequestError struct {
 	*core.APIError
 	Body any
@@ -31,7 +31,7 @@ func (b *BadRequestError) Unwrap() error {
 	return b.APIError
 }
 
-// Component name already exists
+// Request key conflict or cancellation race
 type ConflictError struct {
 	*core.APIError
 	Body any
@@ -55,7 +55,7 @@ func (c *ConflictError) Unwrap() error {
 	return c.APIError
 }
 
-// No company selected
+// Required scope or company role is missing
 type ForbiddenError struct {
 	*core.APIError
 	Body *Error
@@ -79,7 +79,7 @@ func (f *ForbiddenError) Unwrap() error {
 	return f.APIError
 }
 
-// Internal server error
+// Preview failed
 type InternalServerError struct {
 	*core.APIError
 	Body any
@@ -103,7 +103,7 @@ func (i *InternalServerError) Unwrap() error {
 	return i.APIError
 }
 
-// Unknown block type
+// Operation does not exist in this company
 type NotFoundError struct {
 	*core.APIError
 	Body any
@@ -127,7 +127,7 @@ func (n *NotFoundError) Unwrap() error {
 	return n.APIError
 }
 
-// The database was temporarily unavailable. The request may be retried after the delay in Retry-After.
+// Operation could not be created; retry with the same request key
 type ServiceUnavailableError struct {
 	*core.APIError
 	Body any
@@ -175,7 +175,7 @@ func (t *TooManyRequestsError) Unwrap() error {
 	return t.APIError
 }
 
-// Unauthorized
+// Authentication required
 type UnauthorizedError struct {
 	*core.APIError
 	Body any
@@ -199,7 +199,7 @@ func (u *UnauthorizedError) Unwrap() error {
 	return u.APIError
 }
 
-// Request body failed schema validation
+// Request shape validation failed (missing fields or invalid option types)
 type UnprocessableEntityError struct {
 	*core.APIError
 	Body any

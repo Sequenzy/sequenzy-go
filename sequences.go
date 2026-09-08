@@ -1198,14 +1198,17 @@ func (g *GetStatsSequencesRequest) SetStart(start *time.Time) {
 }
 
 var (
-	listSequencesRequestFieldLabels = big.NewInt(1 << 0)
-	listSequencesRequestFieldLimit  = big.NewInt(1 << 1)
-	listSequencesRequestFieldOffset = big.NewInt(1 << 2)
-	listSequencesRequestFieldSearch = big.NewInt(1 << 3)
-	listSequencesRequestFieldStatus = big.NewInt(1 << 4)
+	listSequencesRequestFieldLabel  = big.NewInt(1 << 0)
+	listSequencesRequestFieldLabels = big.NewInt(1 << 1)
+	listSequencesRequestFieldLimit  = big.NewInt(1 << 2)
+	listSequencesRequestFieldOffset = big.NewInt(1 << 3)
+	listSequencesRequestFieldSearch = big.NewInt(1 << 4)
+	listSequencesRequestFieldStatus = big.NewInt(1 << 5)
 )
 
 type ListSequencesRequest struct {
+	// Alias for labels. Takes precedence if both are present.
+	Label *string `json:"-" url:"label,omitempty"`
 	// Comma-separated dashboard label names. The label alias is also accepted.
 	Labels *string `json:"-" url:"labels,omitempty"`
 	// Page size, up to 100. When limit and offset are both omitted, every sequence is returned.
@@ -1224,6 +1227,13 @@ func (l *ListSequencesRequest) require(field *big.Int) {
 		l.explicitFields = big.NewInt(0)
 	}
 	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSequencesRequest) SetLabel(label *string) {
+	l.Label = label
+	l.require(listSequencesRequestFieldLabel)
 }
 
 // SetLabels sets the Labels field and marks it as non-optional;
@@ -17880,7 +17890,6 @@ func (s *SequenceStopCondition) String() string {
 	return fmt.Sprintf("%#v", s)
 }
 
-// Optional typed match rule. event_received uses event_property_filter propertyFilters (stop only when an event received after enrollment matches every filter, e.g. quota_used greater_than 1) or event_property rules (stop only when the stop event's field equals the same field captured on the enrolling event); field_changed uses a field_value comparison. Tag/list defaults use entry_audience to resolve the required tag or list per enrollment. Tag entry matching requires a tag_added trigger; list entry matching requires a contact_added trigger scoped to at least one specific list.
 type SequenceStopConditionMatchConfig struct {
 	Mode                string
 	EntryAudience       *SequenceStopConditionMatchConfigEntryAudience
@@ -20704,7 +20713,6 @@ func (s *SubscriberUpdateConfigCustomAttributeUpdatesItem) String() string {
 	return fmt.Sprintf("%#v", s)
 }
 
-// Literal scalar, null to delete, or one standalone merge tag.
 type SubscriberUpdateConfigCustomAttributeUpdatesItemValue struct {
 	String  string
 	Double  float64
