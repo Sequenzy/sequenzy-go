@@ -7307,6 +7307,14 @@ func TestSettersUpdateCompaniesRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetPreviousCompanyName", func(t *testing.T) {
+		obj := &UpdateCompaniesRequest{}
+		var fernTestValuePreviousCompanyName *string
+		obj.SetPreviousCompanyName(fernTestValuePreviousCompanyName)
+		assert.Equal(t, fernTestValuePreviousCompanyName, obj.PreviousCompanyName)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetPricing", func(t *testing.T) {
 		obj := &UpdateCompaniesRequest{}
 		var fernTestValuePricing map[string]any
@@ -7328,6 +7336,14 @@ func TestSettersUpdateCompaniesRequest(t *testing.T) {
 		var fernTestValuePrivacyPolicyURL *string
 		obj.SetPrivacyPolicyURL(fernTestValuePrivacyPolicyURL)
 		assert.Equal(t, fernTestValuePrivacyPolicyURL, obj.PrivacyPolicyURL)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetRenameMatchingFooters", func(t *testing.T) {
+		obj := &UpdateCompaniesRequest{}
+		var fernTestValueRenameMatchingFooters *bool
+		obj.SetRenameMatchingFooters(fernTestValueRenameMatchingFooters)
+		assert.Equal(t, fernTestValueRenameMatchingFooters, obj.RenameMatchingFooters)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -7980,6 +7996,37 @@ func TestSettersMarkExplicitUpdateCompaniesRequest(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetPreviousCompanyName_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateCompaniesRequest{}
+		var fernTestValuePreviousCompanyName *string
+
+		// Act
+		obj.SetPreviousCompanyName(fernTestValuePreviousCompanyName)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetPricing_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -8050,6 +8097,37 @@ func TestSettersMarkExplicitUpdateCompaniesRequest(t *testing.T) {
 
 		// Act
 		obj.SetPrivacyPolicyURL(fernTestValuePrivacyPolicyURL)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetRenameMatchingFooters_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateCompaniesRequest{}
+		var fernTestValueRenameMatchingFooters *bool
+
+		// Act
+		obj.SetRenameMatchingFooters(fernTestValueRenameMatchingFooters)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)

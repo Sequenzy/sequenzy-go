@@ -2785,20 +2785,22 @@ var (
 	updateCompaniesRequestFieldLanguage                 = big.NewInt(1 << 15)
 	updateCompaniesRequestFieldLogoURL                  = big.NewInt(1 << 16)
 	updateCompaniesRequestFieldName                     = big.NewInt(1 << 17)
-	updateCompaniesRequestFieldPricing                  = big.NewInt(1 << 18)
-	updateCompaniesRequestFieldPrimaryColor             = big.NewInt(1 << 19)
-	updateCompaniesRequestFieldPrivacyPolicyURL         = big.NewInt(1 << 20)
-	updateCompaniesRequestFieldReplyProfileID           = big.NewInt(1 << 21)
-	updateCompaniesRequestFieldReplyTo                  = big.NewInt(1 << 22)
-	updateCompaniesRequestFieldReplyToName              = big.NewInt(1 << 23)
-	updateCompaniesRequestFieldReplyTrackingDomainMode  = big.NewInt(1 << 24)
-	updateCompaniesRequestFieldReplyTrackingEnabled     = big.NewInt(1 << 25)
-	updateCompaniesRequestFieldSenderProfileID          = big.NewInt(1 << 26)
-	updateCompaniesRequestFieldSocialLinks              = big.NewInt(1 << 27)
-	updateCompaniesRequestFieldTermsURL                 = big.NewInt(1 << 28)
-	updateCompaniesRequestFieldTestimonials             = big.NewInt(1 << 29)
-	updateCompaniesRequestFieldToneVoice                = big.NewInt(1 << 30)
-	updateCompaniesRequestFieldValueProps               = big.NewInt(1 << 31)
+	updateCompaniesRequestFieldPreviousCompanyName      = big.NewInt(1 << 18)
+	updateCompaniesRequestFieldPricing                  = big.NewInt(1 << 19)
+	updateCompaniesRequestFieldPrimaryColor             = big.NewInt(1 << 20)
+	updateCompaniesRequestFieldPrivacyPolicyURL         = big.NewInt(1 << 21)
+	updateCompaniesRequestFieldRenameMatchingFooters    = big.NewInt(1 << 22)
+	updateCompaniesRequestFieldReplyProfileID           = big.NewInt(1 << 23)
+	updateCompaniesRequestFieldReplyTo                  = big.NewInt(1 << 24)
+	updateCompaniesRequestFieldReplyToName              = big.NewInt(1 << 25)
+	updateCompaniesRequestFieldReplyTrackingDomainMode  = big.NewInt(1 << 26)
+	updateCompaniesRequestFieldReplyTrackingEnabled     = big.NewInt(1 << 27)
+	updateCompaniesRequestFieldSenderProfileID          = big.NewInt(1 << 28)
+	updateCompaniesRequestFieldSocialLinks              = big.NewInt(1 << 29)
+	updateCompaniesRequestFieldTermsURL                 = big.NewInt(1 << 30)
+	updateCompaniesRequestFieldTestimonials             = big.NewInt(1 << 31)
+	updateCompaniesRequestFieldToneVoice                = big.NewInt(1 << 32)
+	updateCompaniesRequestFieldValueProps               = big.NewInt(1 << 33)
 )
 
 type UpdateCompaniesRequest struct {
@@ -2824,14 +2826,18 @@ type UpdateCompaniesRequest struct {
 	// Account-wide default From address. The domain must be configured and verified.
 	FromEmail *string `json:"fromEmail,omitempty" url:"-"`
 	// Display name of the default From profile. Sent on its own it renames the current default profile; with senderProfileId it renames that profile; with fromEmail it names the profile for that address. If the address already carries several display names, the request is rejected - pass senderProfileId to say which one to rename.
-	FromName *string        `json:"fromName,omitempty" url:"-"`
-	Language *string        `json:"language,omitempty" url:"-"`
-	LogoURL  *string        `json:"logoUrl,omitempty" url:"-"`
-	Name     *string        `json:"name,omitempty" url:"-"`
-	Pricing  map[string]any `json:"pricing,omitempty" url:"-"`
+	FromName *string `json:"fromName,omitempty" url:"-"`
+	Language *string `json:"language,omitempty" url:"-"`
+	LogoURL  *string `json:"logoUrl,omitempty" url:"-"`
+	Name     *string `json:"name,omitempty" url:"-"`
+	// Required when renameMatchingFooters is true. Current company name from GET company. A stale name returns 409; retrying a completed rename does not repeat footer changes.
+	PreviousCompanyName *string        `json:"previousCompanyName,omitempty" url:"-"`
+	Pricing             map[string]any `json:"pricing,omitempty" url:"-"`
 	// 6-digit hex color, for example
 	PrimaryColor     *string `json:"primaryColor,omitempty" url:"-"`
 	PrivacyPolicyURL *string `json:"privacyPolicyUrl,omitempty" url:"-"`
+	// With name and previousCompanyName, atomically rename exact matching footer company names in editable emails and saved components. Preserves custom names, body copy, sent or sending campaigns and active A/B tests. Null is not accepted. This option additionally requires emails:write, templates:write, campaigns:write, sequences:write, transactional:write and ab_tests:write; personal keys require owner/admin access.
+	RenameMatchingFooters *bool `json:"renameMatchingFooters,omitempty" url:"-"`
 	// Existing reply profile to make the account-wide default, and the profile replyToName renames. Mutually exclusive with replyTo.
 	ReplyProfileID *string `json:"replyProfileId,omitempty" url:"-"`
 	// Account-wide default Reply-To address. A reply profile is created when needed.
@@ -2987,6 +2993,13 @@ func (u *UpdateCompaniesRequest) SetName(name *string) {
 	u.require(updateCompaniesRequestFieldName)
 }
 
+// SetPreviousCompanyName sets the PreviousCompanyName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateCompaniesRequest) SetPreviousCompanyName(previousCompanyName *string) {
+	u.PreviousCompanyName = previousCompanyName
+	u.require(updateCompaniesRequestFieldPreviousCompanyName)
+}
+
 // SetPricing sets the Pricing field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateCompaniesRequest) SetPricing(pricing map[string]any) {
@@ -3006,6 +3019,13 @@ func (u *UpdateCompaniesRequest) SetPrimaryColor(primaryColor *string) {
 func (u *UpdateCompaniesRequest) SetPrivacyPolicyURL(privacyPolicyURL *string) {
 	u.PrivacyPolicyURL = privacyPolicyURL
 	u.require(updateCompaniesRequestFieldPrivacyPolicyURL)
+}
+
+// SetRenameMatchingFooters sets the RenameMatchingFooters field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateCompaniesRequest) SetRenameMatchingFooters(renameMatchingFooters *bool) {
+	u.RenameMatchingFooters = renameMatchingFooters
+	u.require(updateCompaniesRequestFieldRenameMatchingFooters)
 }
 
 // SetReplyProfileID sets the ReplyProfileID field and marks it as non-optional;

@@ -5410,6 +5410,14 @@ client.Companies.Update(
 <dl>
 <dd>
 
+**previousCompanyName:** `*string` — Required when renameMatchingFooters is true. Current company name from GET company. A stale name returns 409; retrying a completed rename does not repeat footer changes.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **pricing:** `map[string]any` 
     
 </dd>
@@ -5427,6 +5435,14 @@ client.Companies.Update(
 <dd>
 
 **privacyPolicyURL:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**renameMatchingFooters:** `*bool` — With name and previousCompanyName, atomically rename exact matching footer company names in editable emails and saved components. Preserves custom names, body copy, sent or sending campaigns and active A/B tests. Null is not accepted. This option additionally requires emails:write, templates:write, campaigns:write, sequences:write, transactional:write and ab_tests:write; personal keys require owner/admin access.
     
 </dd>
 </dl>
@@ -18278,7 +18294,7 @@ client.Subscribers.Update(
 <dl>
 <dd>
 
-**firstName:** `*string` 
+**firstName:** `*string` — Maximum 255 Unicode characters. Excess trailing ASCII spaces are accepted as by PostgreSQL. Longer names return 400 before any changes; correct the name before retrying. Omit to keep unchanged, or send an empty string to clear; null is not accepted.
     
 </dd>
 </dl>
@@ -18286,7 +18302,7 @@ client.Subscribers.Update(
 <dl>
 <dd>
 
-**lastName:** `*string` 
+**lastName:** `*string` — Maximum 255 Unicode characters. Excess trailing ASCII spaces are accepted as by PostgreSQL. Longer names return 400 before any changes; correct the name before retrying. Omit to keep unchanged, or send an empty string to clear; null is not accepted.
     
 </dd>
 </dl>
@@ -18426,7 +18442,7 @@ client.Subscribers.UpdateByExternalID(
 <dl>
 <dd>
 
-**firstName:** `*string` 
+**firstName:** `*string` — Maximum 255 Unicode characters. Excess trailing ASCII spaces are accepted as by PostgreSQL. Longer names return 400 before any changes; correct the name before retrying. Omit to keep unchanged, or send an empty string to clear; null is not accepted.
     
 </dd>
 </dl>
@@ -18434,7 +18450,7 @@ client.Subscribers.UpdateByExternalID(
 <dl>
 <dd>
 
-**lastName:** `*string` 
+**lastName:** `*string` — Maximum 255 Unicode characters. Excess trailing ASCII spaces are accepted as by PostgreSQL. Longer names return 400 before any changes; correct the name before retrying. Omit to keep unchanged, or send an empty string to clear; null is not accepted.
     
 </dd>
 </dl>
@@ -18582,7 +18598,7 @@ client.Subscribers.UpdateByExternalIDPath(
 <dl>
 <dd>
 
-**firstName:** `*string` 
+**firstName:** `*string` — Maximum 255 Unicode characters. Excess trailing ASCII spaces are accepted as by PostgreSQL. Longer names return 400 before any changes; correct the name before retrying. Omit to keep unchanged, or send an empty string to clear; null is not accepted.
     
 </dd>
 </dl>
@@ -18590,7 +18606,7 @@ client.Subscribers.UpdateByExternalIDPath(
 <dl>
 <dd>
 
-**lastName:** `*string` 
+**lastName:** `*string` — Maximum 255 Unicode characters. Excess trailing ASCII spaces are accepted as by PostgreSQL. Longer names return 400 before any changes; correct the name before retrying. Omit to keep unchanged, or send an empty string to clear; null is not accepted.
     
 </dd>
 </dl>

@@ -10037,8 +10037,10 @@ type UpdateSubscribersRequest struct {
 	Email *string `json:"email,omitempty" url:"-"`
 	// New customer-owned external ID. Fails with 409 if another subscriber owns it.
 	ExternalID *string `json:"externalId,omitempty" url:"-"`
-	FirstName  *string `json:"firstName,omitempty" url:"-"`
-	LastName   *string `json:"lastName,omitempty" url:"-"`
+	// Maximum 255 Unicode characters. Excess trailing ASCII spaces are accepted as by PostgreSQL. Longer names return 400 before any changes; correct the name before retrying. Omit to keep unchanged, or send an empty string to clear; null is not accepted.
+	FirstName *string `json:"firstName,omitempty" url:"-"`
+	// Maximum 255 Unicode characters. Excess trailing ASCII spaces are accepted as by PostgreSQL. Longer names return 400 before any changes; correct the name before retrying. Omit to keep unchanged, or send an empty string to clear; null is not accepted.
+	LastName *string `json:"lastName,omitempty" url:"-"`
 	// Phone number in E.164 format or national format. Stored normalized to E.164. Invalid values fail with a 400 validation error. Does not affect SMS consent. Changing it resets SMS consent unless smsConsent is sent in the same request. null or "" clears the phone, except on a phone-only (SMS) contact, where clearing its only identity fails with a 400 validation error.
 	Phone *string `json:"phone,omitempty" url:"-"`
 	// ISO 3166-1 alpha-2 country used to read a national-format phone, defaulting to US. A parsing hint only - the stored phoneCountry always comes from the parsed number. Sending it without phone fails with a 400 validation error.
@@ -10192,8 +10194,10 @@ type UpdateByExternalIDSubscribersRequest struct {
 	Email *string `json:"email,omitempty" url:"-"`
 	// New external ID. Fails with 409 if another subscriber owns it.
 	NewExternalID *string `json:"externalId,omitempty" url:"-"`
-	FirstName     *string `json:"firstName,omitempty" url:"-"`
-	LastName      *string `json:"lastName,omitempty" url:"-"`
+	// Maximum 255 Unicode characters. Excess trailing ASCII spaces are accepted as by PostgreSQL. Longer names return 400 before any changes; correct the name before retrying. Omit to keep unchanged, or send an empty string to clear; null is not accepted.
+	FirstName *string `json:"firstName,omitempty" url:"-"`
+	// Maximum 255 Unicode characters. Excess trailing ASCII spaces are accepted as by PostgreSQL. Longer names return 400 before any changes; correct the name before retrying. Omit to keep unchanged, or send an empty string to clear; null is not accepted.
+	LastName *string `json:"lastName,omitempty" url:"-"`
 	// Phone number in E.164 format or national format. Stored normalized to E.164. Invalid values fail with a 400 validation error. Does not affect SMS consent. Changing it resets SMS consent unless smsConsent is sent in the same request. null or "" clears the phone, except on a phone-only (SMS) contact, where clearing its only identity fails with a 400 validation error.
 	Phone *string `json:"phone,omitempty" url:"-"`
 	// ISO 3166-1 alpha-2 country used to read a national-format phone, defaulting to US. A parsing hint only - the stored phoneCountry always comes from the parsed number. Sending it without phone fails with a 400 validation error.
@@ -10356,8 +10360,10 @@ type UpdateByExternalIDPathSubscribersRequest struct {
 	Email *string `json:"email,omitempty" url:"-"`
 	// New external ID. Fails with 409 if another subscriber owns it.
 	ExternalID *string `json:"externalId,omitempty" url:"-"`
-	FirstName  *string `json:"firstName,omitempty" url:"-"`
-	LastName   *string `json:"lastName,omitempty" url:"-"`
+	// Maximum 255 Unicode characters. Excess trailing ASCII spaces are accepted as by PostgreSQL. Longer names return 400 before any changes; correct the name before retrying. Omit to keep unchanged, or send an empty string to clear; null is not accepted.
+	FirstName *string `json:"firstName,omitempty" url:"-"`
+	// Maximum 255 Unicode characters. Excess trailing ASCII spaces are accepted as by PostgreSQL. Longer names return 400 before any changes; correct the name before retrying. Omit to keep unchanged, or send an empty string to clear; null is not accepted.
+	LastName *string `json:"lastName,omitempty" url:"-"`
 	// Phone number in E.164 format or national format. Stored normalized to E.164. Invalid values fail with a 400 validation error. Does not affect SMS consent. Changing it resets SMS consent unless smsConsent is sent in the same request. null or "" clears the phone, except on a phone-only (SMS) contact, where clearing its only identity fails with a 400 validation error.
 	Phone *string `json:"phone,omitempty" url:"-"`
 	// ISO 3166-1 alpha-2 country used to read a national-format phone, defaulting to US. A parsing hint only - the stored phoneCountry always comes from the parsed number. Sending it without phone fails with a 400 validation error.
