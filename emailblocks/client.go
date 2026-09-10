@@ -34,7 +34,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Returns the full field reference for one block type, with a minimal valid example and authoring notes.
+// Returns the full field reference for one block type, with a minimal valid example and authoring notes. For line-items, includes optional itemFields mappings from display fields to relative dotted paths within each item. Omitted or blank mappings use standard field names. Mapping values must be strings of at most 200 characters.
 //
 // Example:
 //
