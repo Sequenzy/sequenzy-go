@@ -55,6 +55,30 @@ func (c *ConflictError) Unwrap() error {
 	return c.APIError
 }
 
+// Selection exceeds 100,000 contacts or 8 MiB; narrow it or use a saved segment
+type ContentTooLargeError struct {
+	*core.APIError
+	Body *Error
+}
+
+func (c *ContentTooLargeError) UnmarshalJSON(data []byte) error {
+	var body *Error
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	c.StatusCode = 413
+	c.Body = body
+	return nil
+}
+
+func (c *ContentTooLargeError) MarshalJSON() ([]byte, error) {
+	return json.Marshal(c.Body)
+}
+
+func (c *ContentTooLargeError) Unwrap() error {
+	return c.APIError
+}
+
 // Required scope or company role is missing
 type ForbiddenError struct {
 	*core.APIError

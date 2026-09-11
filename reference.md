@@ -3450,6 +3450,76 @@ client.Campaigns.Create(
 </dl>
 </details>
 
+<details><summary><code>client.Campaigns.CreateForAudience(request) -> *sequenzygo.CreateForAudienceCampaignsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Creates a blank draft and freezes distinct contacts from a complete contact selection or email-activity drilldown. Requires campaigns:write and subscribers:read, plus analytics:read for activity. Maximum 100,000 contacts and 8 MiB stored audience JSON. No sending domain or send permission is required for drafting. Membership is saved now; active status and email eligibility are checked again at send time. Deleted historical analytics contacts are omitted. Read, replace or clear targetLists using the existing campaign endpoints.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.CreateForAudienceCampaignsRequest{
+    Selection: &sequenzygo.CreateForAudienceCampaignsRequestSelection{
+        Source: sequenzygo.CreateForAudienceCampaignsRequestSelectionSourceContacts,
+    },
+}
+client.Campaigns.CreateForAudience(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**name:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**selection:** `*sequenzygo.CreateForAudienceCampaignsRequestSelection` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Campaigns.CreateGoal(CampaignID, request) -> *sequenzygo.CreateGoalCampaignsResponse</code></summary>
 <dl>
 <dd>
@@ -6224,6 +6294,88 @@ client.EmailBlocks.List(
 <dd>
 
 **creatableOnly:** `*sequenzygo.ListEmailBlocksRequestCreatableOnly` — Hide structural block types the editor manages for you.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.EmailBlocks.PreviewCartItems(request) -> *sequenzygo.PreviewCartItemsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Requires authentication, accepts existing restricted keys, and operates only on supplied data. Does not save or send. Safe to retry.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.PreviewCartItemsRequest{}
+client.EmailBlocks.PreviewCartItems(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**itemFields:** `*sequenzygo.PreviewCartItemsRequestItemFields` — Existing relative dotted paths. Blank values use defaults; unsafe prototype paths are rejected. Suggestions do not replace existing mappings.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**items:** `[]map[string]any` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**priceUnit:** `*sequenzygo.PreviewCartItemsRequestPriceUnit` — Numeric item prices use cents or explicit major units. The separate total remains in cents.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**scenario:** `*sequenzygo.PreviewCartItemsRequestScenario` — Many returns 12 cloned rows; nonempty sample scenarios use a sample product if items are empty. Real preserves supplied items.
     
 </dd>
 </dl>
@@ -22433,7 +22585,7 @@ client.Websites.List(
 <dl>
 <dd>
 
-Runs a fresh DNS and provider verification and returns normalized aggregate, SPF, DKIM, and MAIL FROM status and diagnostics.
+Runs a fresh DNS and provider verification and returns normalized aggregate, SPF, DKIM, and MAIL FROM status and diagnostics. For legacy custom reply domains, once the inbound MX is verified this also prepares any required public verification TXT record in website.dnsRecords.inboundVerificationRecord. Publish that record and retry this endpoint; existing reply hostnames are preserved. Inspect dnsRecords.inboundRoutingStatus independently of readyToSend.
 </dd>
 </dl>
 </dd>

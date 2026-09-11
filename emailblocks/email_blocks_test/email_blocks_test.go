@@ -126,3 +126,27 @@ func TestEmailBlocksListWithWireMock(
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestEmailBlocksListWithWireMock", "GET", "/email-blocks", nil, 1)
 }
+
+func TestEmailBlocksPreviewCartItemsWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.PreviewCartItemsRequest{}
+	_, invocationErr := client.EmailBlocks.PreviewCartItems(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestEmailBlocksPreviewCartItemsWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestEmailBlocksPreviewCartItemsWithWireMock", "POST", "/email-blocks/line-items/assist", nil, 1)
+}

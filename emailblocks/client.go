@@ -85,3 +85,28 @@ func (c *Client) List(
 	}
 	return response.Body, nil
 }
+
+// Requires authentication, accepts existing restricted keys, and operates only on supplied data. Does not save or send. Safe to retry.
+//
+// Example:
+//
+//	request := &sequenzygo.PreviewCartItemsRequest{}
+//	client.EmailBlocks.PreviewCartItems(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) PreviewCartItems(
+	ctx context.Context,
+	request *sequenzygo.PreviewCartItemsRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.PreviewCartItemsResponse, error) {
+	response, err := c.WithRawResponse.PreviewCartItems(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}

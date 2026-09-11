@@ -343,6 +343,61 @@ func (c *CreateCampaignsRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
+	createForAudienceCampaignsRequestFieldName      = big.NewInt(1 << 0)
+	createForAudienceCampaignsRequestFieldSelection = big.NewInt(1 << 1)
+)
+
+type CreateForAudienceCampaignsRequest struct {
+	Name      *string                                     `json:"name,omitempty" url:"-"`
+	Selection *CreateForAudienceCampaignsRequestSelection `json:"selection" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (c *CreateForAudienceCampaignsRequest) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsRequest) SetName(name *string) {
+	c.Name = name
+	c.require(createForAudienceCampaignsRequestFieldName)
+}
+
+// SetSelection sets the Selection field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsRequest) SetSelection(selection *CreateForAudienceCampaignsRequestSelection) {
+	c.Selection = selection
+	c.require(createForAudienceCampaignsRequestFieldSelection)
+}
+
+func (c *CreateForAudienceCampaignsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateForAudienceCampaignsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*c = CreateForAudienceCampaignsRequest(body)
+	return nil
+}
+
+func (c *CreateForAudienceCampaignsRequest) MarshalJSON() ([]byte, error) {
+	type embed CreateForAudienceCampaignsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
 	createGoalCampaignsRequestFieldCampaignID = big.NewInt(1 << 0)
 )
 
@@ -1152,36 +1207,37 @@ var (
 	campaignDetailFieldCreatedAt               = big.NewInt(1 << 0)
 	campaignDetailFieldEmailID                 = big.NewInt(1 << 1)
 	campaignDetailFieldEmailPreset             = big.NewInt(1 << 2)
-	campaignDetailFieldID                      = big.NewInt(1 << 3)
-	campaignDetailFieldLabels                  = big.NewInt(1 << 4)
-	campaignDetailFieldName                    = big.NewInt(1 << 5)
-	campaignDetailFieldRejectionComment        = big.NewInt(1 << 6)
-	campaignDetailFieldScheduledAt             = big.NewInt(1 << 7)
-	campaignDetailFieldScheduledTimezone       = big.NewInt(1 << 8)
-	campaignDetailFieldSendInRecipientTimezone = big.NewInt(1 << 9)
-	campaignDetailFieldSendTimeOptimization    = big.NewInt(1 << 10)
-	campaignDetailFieldSendTimeWindowHours     = big.NewInt(1 << 11)
-	campaignDetailFieldSentAt                  = big.NewInt(1 << 12)
-	campaignDetailFieldSpreadOverHours         = big.NewInt(1 << 13)
-	campaignDetailFieldStatus                  = big.NewInt(1 << 14)
-	campaignDetailFieldSubject                 = big.NewInt(1 << 15)
-	campaignDetailFieldTrackingCode            = big.NewInt(1 << 16)
-	campaignDetailFieldType                    = big.NewInt(1 << 17)
-	campaignDetailFieldBccEmails               = big.NewInt(1 << 18)
-	campaignDetailFieldBlocks                  = big.NewInt(1 << 19)
-	campaignDetailFieldCampaignData            = big.NewInt(1 << 20)
-	campaignDetailFieldCcEmails                = big.NewInt(1 << 21)
-	campaignDetailFieldComputedLists           = big.NewInt(1 << 22)
-	campaignDetailFieldFromEmail               = big.NewInt(1 << 23)
-	campaignDetailFieldFromName                = big.NewInt(1 << 24)
-	campaignDetailFieldPreheader               = big.NewInt(1 << 25)
-	campaignDetailFieldPreheaderText           = big.NewInt(1 << 26)
-	campaignDetailFieldReplyProfileID          = big.NewInt(1 << 27)
-	campaignDetailFieldReplyToEmail            = big.NewInt(1 << 28)
-	campaignDetailFieldReplyToName             = big.NewInt(1 << 29)
-	campaignDetailFieldSenderProfileID         = big.NewInt(1 << 30)
-	campaignDetailFieldShareURL                = big.NewInt(1 << 31)
-	campaignDetailFieldTargetLists             = big.NewInt(1 << 32)
+	campaignDetailFieldHasAudience             = big.NewInt(1 << 3)
+	campaignDetailFieldID                      = big.NewInt(1 << 4)
+	campaignDetailFieldLabels                  = big.NewInt(1 << 5)
+	campaignDetailFieldName                    = big.NewInt(1 << 6)
+	campaignDetailFieldRejectionComment        = big.NewInt(1 << 7)
+	campaignDetailFieldScheduledAt             = big.NewInt(1 << 8)
+	campaignDetailFieldScheduledTimezone       = big.NewInt(1 << 9)
+	campaignDetailFieldSendInRecipientTimezone = big.NewInt(1 << 10)
+	campaignDetailFieldSendTimeOptimization    = big.NewInt(1 << 11)
+	campaignDetailFieldSendTimeWindowHours     = big.NewInt(1 << 12)
+	campaignDetailFieldSentAt                  = big.NewInt(1 << 13)
+	campaignDetailFieldSpreadOverHours         = big.NewInt(1 << 14)
+	campaignDetailFieldStatus                  = big.NewInt(1 << 15)
+	campaignDetailFieldSubject                 = big.NewInt(1 << 16)
+	campaignDetailFieldTrackingCode            = big.NewInt(1 << 17)
+	campaignDetailFieldType                    = big.NewInt(1 << 18)
+	campaignDetailFieldBccEmails               = big.NewInt(1 << 19)
+	campaignDetailFieldBlocks                  = big.NewInt(1 << 20)
+	campaignDetailFieldCampaignData            = big.NewInt(1 << 21)
+	campaignDetailFieldCcEmails                = big.NewInt(1 << 22)
+	campaignDetailFieldComputedLists           = big.NewInt(1 << 23)
+	campaignDetailFieldFromEmail               = big.NewInt(1 << 24)
+	campaignDetailFieldFromName                = big.NewInt(1 << 25)
+	campaignDetailFieldPreheader               = big.NewInt(1 << 26)
+	campaignDetailFieldPreheaderText           = big.NewInt(1 << 27)
+	campaignDetailFieldReplyProfileID          = big.NewInt(1 << 28)
+	campaignDetailFieldReplyToEmail            = big.NewInt(1 << 29)
+	campaignDetailFieldReplyToName             = big.NewInt(1 << 30)
+	campaignDetailFieldSenderProfileID         = big.NewInt(1 << 31)
+	campaignDetailFieldShareURL                = big.NewInt(1 << 32)
+	campaignDetailFieldTargetLists             = big.NewInt(1 << 33)
 )
 
 type CampaignDetail struct {
@@ -1190,7 +1246,9 @@ type CampaignDetail struct {
 	EmailID *string `json:"emailId,omitempty" url:"emailId,omitempty"`
 	// Style > Format of the linked email. Null for SMS campaigns and for an email stored as a single raw HTML block.
 	EmailPreset *EmailPreset `json:"emailPreset,omitempty" url:"emailPreset,omitempty"`
-	ID          *string      `json:"id,omitempty" url:"id,omitempty"`
+	// Whether an explicit audience is configured. False for unset or empty selections. This does not validate resource existence or count eligible recipients. Draft rows can use this for an Audience set indicator.
+	HasAudience *bool   `json:"hasAudience,omitempty" url:"hasAudience,omitempty"`
+	ID          *string `json:"id,omitempty" url:"id,omitempty"`
 	// Label names assigned to this campaign.
 	Labels []string `json:"labels,omitempty" url:"labels,omitempty"`
 	Name   *string  `json:"name,omitempty" url:"name,omitempty"`
@@ -1261,6 +1319,13 @@ func (c *CampaignDetail) GetEmailPreset() *EmailPreset {
 		return nil
 	}
 	return c.EmailPreset
+}
+
+func (c *CampaignDetail) GetHasAudience() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.HasAudience
 }
 
 func (c *CampaignDetail) GetID() *string {
@@ -1506,6 +1571,13 @@ func (c *CampaignDetail) SetEmailID(emailID *string) {
 func (c *CampaignDetail) SetEmailPreset(emailPreset *EmailPreset) {
 	c.EmailPreset = emailPreset
 	c.require(campaignDetailFieldEmailPreset)
+}
+
+// SetHasAudience sets the HasAudience field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CampaignDetail) SetHasAudience(hasAudience *bool) {
+	c.HasAudience = hasAudience
+	c.require(campaignDetailFieldHasAudience)
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -2540,21 +2612,22 @@ var (
 	campaignSummaryFieldCreatedAt               = big.NewInt(1 << 0)
 	campaignSummaryFieldEmailID                 = big.NewInt(1 << 1)
 	campaignSummaryFieldEmailPreset             = big.NewInt(1 << 2)
-	campaignSummaryFieldID                      = big.NewInt(1 << 3)
-	campaignSummaryFieldLabels                  = big.NewInt(1 << 4)
-	campaignSummaryFieldName                    = big.NewInt(1 << 5)
-	campaignSummaryFieldRejectionComment        = big.NewInt(1 << 6)
-	campaignSummaryFieldScheduledAt             = big.NewInt(1 << 7)
-	campaignSummaryFieldScheduledTimezone       = big.NewInt(1 << 8)
-	campaignSummaryFieldSendInRecipientTimezone = big.NewInt(1 << 9)
-	campaignSummaryFieldSendTimeOptimization    = big.NewInt(1 << 10)
-	campaignSummaryFieldSendTimeWindowHours     = big.NewInt(1 << 11)
-	campaignSummaryFieldSentAt                  = big.NewInt(1 << 12)
-	campaignSummaryFieldSpreadOverHours         = big.NewInt(1 << 13)
-	campaignSummaryFieldStatus                  = big.NewInt(1 << 14)
-	campaignSummaryFieldSubject                 = big.NewInt(1 << 15)
-	campaignSummaryFieldTrackingCode            = big.NewInt(1 << 16)
-	campaignSummaryFieldType                    = big.NewInt(1 << 17)
+	campaignSummaryFieldHasAudience             = big.NewInt(1 << 3)
+	campaignSummaryFieldID                      = big.NewInt(1 << 4)
+	campaignSummaryFieldLabels                  = big.NewInt(1 << 5)
+	campaignSummaryFieldName                    = big.NewInt(1 << 6)
+	campaignSummaryFieldRejectionComment        = big.NewInt(1 << 7)
+	campaignSummaryFieldScheduledAt             = big.NewInt(1 << 8)
+	campaignSummaryFieldScheduledTimezone       = big.NewInt(1 << 9)
+	campaignSummaryFieldSendInRecipientTimezone = big.NewInt(1 << 10)
+	campaignSummaryFieldSendTimeOptimization    = big.NewInt(1 << 11)
+	campaignSummaryFieldSendTimeWindowHours     = big.NewInt(1 << 12)
+	campaignSummaryFieldSentAt                  = big.NewInt(1 << 13)
+	campaignSummaryFieldSpreadOverHours         = big.NewInt(1 << 14)
+	campaignSummaryFieldStatus                  = big.NewInt(1 << 15)
+	campaignSummaryFieldSubject                 = big.NewInt(1 << 16)
+	campaignSummaryFieldTrackingCode            = big.NewInt(1 << 17)
+	campaignSummaryFieldType                    = big.NewInt(1 << 18)
 )
 
 type CampaignSummary struct {
@@ -2563,7 +2636,9 @@ type CampaignSummary struct {
 	EmailID *string `json:"emailId,omitempty" url:"emailId,omitempty"`
 	// Style > Format of the linked email. Null for SMS campaigns and for an email stored as a single raw HTML block.
 	EmailPreset *EmailPreset `json:"emailPreset,omitempty" url:"emailPreset,omitempty"`
-	ID          *string      `json:"id,omitempty" url:"id,omitempty"`
+	// Whether an explicit audience is configured. False for unset or empty selections. This does not validate resource existence or count eligible recipients. Draft rows can use this for an Audience set indicator.
+	HasAudience *bool   `json:"hasAudience,omitempty" url:"hasAudience,omitempty"`
+	ID          *string `json:"id,omitempty" url:"id,omitempty"`
 	// Label names assigned to this campaign.
 	Labels []string `json:"labels,omitempty" url:"labels,omitempty"`
 	Name   *string  `json:"name,omitempty" url:"name,omitempty"`
@@ -2614,6 +2689,13 @@ func (c *CampaignSummary) GetEmailPreset() *EmailPreset {
 		return nil
 	}
 	return c.EmailPreset
+}
+
+func (c *CampaignSummary) GetHasAudience() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.HasAudience
 }
 
 func (c *CampaignSummary) GetID() *string {
@@ -2754,6 +2836,13 @@ func (c *CampaignSummary) SetEmailID(emailID *string) {
 func (c *CampaignSummary) SetEmailPreset(emailPreset *EmailPreset) {
 	c.EmailPreset = emailPreset
 	c.require(campaignSummaryFieldEmailPreset)
+}
+
+// SetHasAudience sets the HasAudience field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CampaignSummary) SetHasAudience(hasAudience *bool) {
+	c.HasAudience = hasAudience
+	c.require(campaignSummaryFieldHasAudience)
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -4146,6 +4235,1764 @@ func (c *CreateCampaignsResponseCampaign) String() string {
 }
 
 var (
+	createForAudienceCampaignsRequestSelectionFieldActivity = big.NewInt(1 << 0)
+	createForAudienceCampaignsRequestSelectionFieldContacts = big.NewInt(1 << 1)
+	createForAudienceCampaignsRequestSelectionFieldSource   = big.NewInt(1 << 2)
+)
+
+type CreateForAudienceCampaignsRequestSelection struct {
+	// Choose at most one campaign/automation/node/transactional source. With no source, audience is required. An audience can also narrow a source. Includes every matching contact across pages. Marketers can use only marketing email sources.
+	Activity *CreateForAudienceCampaignsRequestSelectionActivity `json:"activity,omitempty" url:"activity,omitempty"`
+	Contacts *CreateForAudienceCampaignsRequestSelectionContacts `json:"contacts,omitempty" url:"contacts,omitempty"`
+	// Provide only the matching contacts or activity object.
+	Source CreateForAudienceCampaignsRequestSelectionSource `json:"source" url:"source"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateForAudienceCampaignsRequestSelection) GetActivity() *CreateForAudienceCampaignsRequestSelectionActivity {
+	if c == nil {
+		return nil
+	}
+	return c.Activity
+}
+
+func (c *CreateForAudienceCampaignsRequestSelection) GetContacts() *CreateForAudienceCampaignsRequestSelectionContacts {
+	if c == nil {
+		return nil
+	}
+	return c.Contacts
+}
+
+func (c *CreateForAudienceCampaignsRequestSelection) GetSource() CreateForAudienceCampaignsRequestSelectionSource {
+	if c == nil {
+		return ""
+	}
+	return c.Source
+}
+
+func (c *CreateForAudienceCampaignsRequestSelection) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateForAudienceCampaignsRequestSelection) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetActivity sets the Activity field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsRequestSelection) SetActivity(activity *CreateForAudienceCampaignsRequestSelectionActivity) {
+	c.Activity = activity
+	c.require(createForAudienceCampaignsRequestSelectionFieldActivity)
+}
+
+// SetContacts sets the Contacts field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsRequestSelection) SetContacts(contacts *CreateForAudienceCampaignsRequestSelectionContacts) {
+	c.Contacts = contacts
+	c.require(createForAudienceCampaignsRequestSelectionFieldContacts)
+}
+
+// SetSource sets the Source field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsRequestSelection) SetSource(source CreateForAudienceCampaignsRequestSelectionSource) {
+	c.Source = source
+	c.require(createForAudienceCampaignsRequestSelectionFieldSource)
+}
+
+func (c *CreateForAudienceCampaignsRequestSelection) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateForAudienceCampaignsRequestSelection
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateForAudienceCampaignsRequestSelection(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateForAudienceCampaignsRequestSelection) MarshalJSON() ([]byte, error) {
+	type embed CreateForAudienceCampaignsRequestSelection
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateForAudienceCampaignsRequestSelection) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+// Choose at most one campaign/automation/node/transactional source. With no source, audience is required. An audience can also narrow a source. Includes every matching contact across pages. Marketers can use only marketing email sources.
+var (
+	createForAudienceCampaignsRequestSelectionActivityFieldAudience                 = big.NewInt(1 << 0)
+	createForAudienceCampaignsRequestSelectionActivityFieldAutomationID             = big.NewInt(1 << 1)
+	createForAudienceCampaignsRequestSelectionActivityFieldAutomationNodeID         = big.NewInt(1 << 2)
+	createForAudienceCampaignsRequestSelectionActivityFieldBounceSubType            = big.NewInt(1 << 3)
+	createForAudienceCampaignsRequestSelectionActivityFieldBounceType               = big.NewInt(1 << 4)
+	createForAudienceCampaignsRequestSelectionActivityFieldCampaignID               = big.NewInt(1 << 5)
+	createForAudienceCampaignsRequestSelectionActivityFieldEventType                = big.NewInt(1 << 6)
+	createForAudienceCampaignsRequestSelectionActivityFieldIncludeMachineEngagement = big.NewInt(1 << 7)
+	createForAudienceCampaignsRequestSelectionActivityFieldMailboxProvider          = big.NewInt(1 << 8)
+	createForAudienceCampaignsRequestSelectionActivityFieldPeriod                   = big.NewInt(1 << 9)
+	createForAudienceCampaignsRequestSelectionActivityFieldSearch                   = big.NewInt(1 << 10)
+	createForAudienceCampaignsRequestSelectionActivityFieldTransactionalID          = big.NewInt(1 << 11)
+)
+
+type CreateForAudienceCampaignsRequestSelectionActivity struct {
+	Audience         *CreateForAudienceCampaignsRequestSelectionActivityAudience `json:"audience,omitempty" url:"audience,omitempty"`
+	AutomationID     *string                                                     `json:"automationId,omitempty" url:"automationId,omitempty"`
+	AutomationNodeID *string                                                     `json:"automationNodeId,omitempty" url:"automationNodeId,omitempty"`
+	// Only for bounce activity.
+	BounceSubType *string `json:"bounceSubType,omitempty" url:"bounceSubType,omitempty"`
+	// Only for bounce activity.
+	BounceType               *CreateForAudienceCampaignsRequestSelectionActivityBounceType `json:"bounceType,omitempty" url:"bounceType,omitempty"`
+	CampaignID               *string                                                       `json:"campaignId,omitempty" url:"campaignId,omitempty"`
+	EventType                CreateForAudienceCampaignsRequestSelectionActivityEventType   `json:"eventType" url:"eventType"`
+	IncludeMachineEngagement *bool                                                         `json:"includeMachineEngagement,omitempty" url:"includeMachineEngagement,omitempty"`
+	MailboxProvider          *string                                                       `json:"mailboxProvider,omitempty" url:"mailboxProvider,omitempty"`
+	Period                   *CreateForAudienceCampaignsRequestSelectionActivityPeriod     `json:"period,omitempty" url:"period,omitempty"`
+	Search                   *string                                                       `json:"search,omitempty" url:"search,omitempty"`
+	TransactionalID          *string                                                       `json:"transactionalId,omitempty" url:"transactionalId,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionActivity) GetAudience() *CreateForAudienceCampaignsRequestSelectionActivityAudience {
+	if c == nil {
+		return nil
+	}
+	return c.Audience
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionActivity) GetAutomationID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.AutomationID
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionActivity) GetAutomationNodeID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.AutomationNodeID
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionActivity) GetBounceSubType() *string {
+	if c == nil {
+		return nil
+	}
+	return c.BounceSubType
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionActivity) GetBounceType() *CreateForAudienceCampaignsRequestSelectionActivityBounceType {
+	if c == nil {
+		return nil
+	}
+	return c.BounceType
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionActivity) GetCampaignID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.CampaignID
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionActivity) GetEventType() CreateForAudienceCampaignsRequestSelectionActivityEventType {
+	if c == nil {
+		return ""
+	}
+	return c.EventType
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionActivity) GetIncludeMachineEngagement() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.IncludeMachineEngagement
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionActivity) GetMailboxProvider() *string {
+	if c == nil {
+		return nil
+	}
+	return c.MailboxProvider
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionActivity) GetPeriod() *CreateForAudienceCampaignsRequestSelectionActivityPeriod {
+	if c == nil {
+		return nil
+	}
+	return c.Period
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionActivity) GetSearch() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Search
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionActivity) GetTransactionalID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.TransactionalID
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionActivity) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionActivity) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetAudience sets the Audience field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsRequestSelectionActivity) SetAudience(audience *CreateForAudienceCampaignsRequestSelectionActivityAudience) {
+	c.Audience = audience
+	c.require(createForAudienceCampaignsRequestSelectionActivityFieldAudience)
+}
+
+// SetAutomationID sets the AutomationID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsRequestSelectionActivity) SetAutomationID(automationID *string) {
+	c.AutomationID = automationID
+	c.require(createForAudienceCampaignsRequestSelectionActivityFieldAutomationID)
+}
+
+// SetAutomationNodeID sets the AutomationNodeID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsRequestSelectionActivity) SetAutomationNodeID(automationNodeID *string) {
+	c.AutomationNodeID = automationNodeID
+	c.require(createForAudienceCampaignsRequestSelectionActivityFieldAutomationNodeID)
+}
+
+// SetBounceSubType sets the BounceSubType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsRequestSelectionActivity) SetBounceSubType(bounceSubType *string) {
+	c.BounceSubType = bounceSubType
+	c.require(createForAudienceCampaignsRequestSelectionActivityFieldBounceSubType)
+}
+
+// SetBounceType sets the BounceType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsRequestSelectionActivity) SetBounceType(bounceType *CreateForAudienceCampaignsRequestSelectionActivityBounceType) {
+	c.BounceType = bounceType
+	c.require(createForAudienceCampaignsRequestSelectionActivityFieldBounceType)
+}
+
+// SetCampaignID sets the CampaignID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsRequestSelectionActivity) SetCampaignID(campaignID *string) {
+	c.CampaignID = campaignID
+	c.require(createForAudienceCampaignsRequestSelectionActivityFieldCampaignID)
+}
+
+// SetEventType sets the EventType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsRequestSelectionActivity) SetEventType(eventType CreateForAudienceCampaignsRequestSelectionActivityEventType) {
+	c.EventType = eventType
+	c.require(createForAudienceCampaignsRequestSelectionActivityFieldEventType)
+}
+
+// SetIncludeMachineEngagement sets the IncludeMachineEngagement field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsRequestSelectionActivity) SetIncludeMachineEngagement(includeMachineEngagement *bool) {
+	c.IncludeMachineEngagement = includeMachineEngagement
+	c.require(createForAudienceCampaignsRequestSelectionActivityFieldIncludeMachineEngagement)
+}
+
+// SetMailboxProvider sets the MailboxProvider field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsRequestSelectionActivity) SetMailboxProvider(mailboxProvider *string) {
+	c.MailboxProvider = mailboxProvider
+	c.require(createForAudienceCampaignsRequestSelectionActivityFieldMailboxProvider)
+}
+
+// SetPeriod sets the Period field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsRequestSelectionActivity) SetPeriod(period *CreateForAudienceCampaignsRequestSelectionActivityPeriod) {
+	c.Period = period
+	c.require(createForAudienceCampaignsRequestSelectionActivityFieldPeriod)
+}
+
+// SetSearch sets the Search field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsRequestSelectionActivity) SetSearch(search *string) {
+	c.Search = search
+	c.require(createForAudienceCampaignsRequestSelectionActivityFieldSearch)
+}
+
+// SetTransactionalID sets the TransactionalID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsRequestSelectionActivity) SetTransactionalID(transactionalID *string) {
+	c.TransactionalID = transactionalID
+	c.require(createForAudienceCampaignsRequestSelectionActivityFieldTransactionalID)
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionActivity) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateForAudienceCampaignsRequestSelectionActivity
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateForAudienceCampaignsRequestSelectionActivity(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionActivity) MarshalJSON() ([]byte, error) {
+	type embed CreateForAudienceCampaignsRequestSelectionActivity
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionActivity) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	createForAudienceCampaignsRequestSelectionActivityAudienceFieldID   = big.NewInt(1 << 0)
+	createForAudienceCampaignsRequestSelectionActivityAudienceFieldType = big.NewInt(1 << 1)
+)
+
+type CreateForAudienceCampaignsRequestSelectionActivityAudience struct {
+	ID   string                                                         `json:"id" url:"id"`
+	Type CreateForAudienceCampaignsRequestSelectionActivityAudienceType `json:"type" url:"type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionActivityAudience) GetID() string {
+	if c == nil {
+		return ""
+	}
+	return c.ID
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionActivityAudience) GetType() CreateForAudienceCampaignsRequestSelectionActivityAudienceType {
+	if c == nil {
+		return ""
+	}
+	return c.Type
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionActivityAudience) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionActivityAudience) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsRequestSelectionActivityAudience) SetID(id string) {
+	c.ID = id
+	c.require(createForAudienceCampaignsRequestSelectionActivityAudienceFieldID)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsRequestSelectionActivityAudience) SetType(type_ CreateForAudienceCampaignsRequestSelectionActivityAudienceType) {
+	c.Type = type_
+	c.require(createForAudienceCampaignsRequestSelectionActivityAudienceFieldType)
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionActivityAudience) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateForAudienceCampaignsRequestSelectionActivityAudience
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateForAudienceCampaignsRequestSelectionActivityAudience(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionActivityAudience) MarshalJSON() ([]byte, error) {
+	type embed CreateForAudienceCampaignsRequestSelectionActivityAudience
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionActivityAudience) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+type CreateForAudienceCampaignsRequestSelectionActivityAudienceType string
+
+const (
+	CreateForAudienceCampaignsRequestSelectionActivityAudienceTypeList    CreateForAudienceCampaignsRequestSelectionActivityAudienceType = "list"
+	CreateForAudienceCampaignsRequestSelectionActivityAudienceTypeSegment CreateForAudienceCampaignsRequestSelectionActivityAudienceType = "segment"
+)
+
+func NewCreateForAudienceCampaignsRequestSelectionActivityAudienceTypeFromString(s string) (CreateForAudienceCampaignsRequestSelectionActivityAudienceType, error) {
+	switch s {
+	case "list":
+		return CreateForAudienceCampaignsRequestSelectionActivityAudienceTypeList, nil
+	case "segment":
+		return CreateForAudienceCampaignsRequestSelectionActivityAudienceTypeSegment, nil
+	}
+	var t CreateForAudienceCampaignsRequestSelectionActivityAudienceType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateForAudienceCampaignsRequestSelectionActivityAudienceType) Ptr() *CreateForAudienceCampaignsRequestSelectionActivityAudienceType {
+	return &c
+}
+
+// Only for bounce activity.
+type CreateForAudienceCampaignsRequestSelectionActivityBounceType string
+
+const (
+	CreateForAudienceCampaignsRequestSelectionActivityBounceTypePermanent CreateForAudienceCampaignsRequestSelectionActivityBounceType = "Permanent"
+	CreateForAudienceCampaignsRequestSelectionActivityBounceTypeTransient CreateForAudienceCampaignsRequestSelectionActivityBounceType = "Transient"
+)
+
+func NewCreateForAudienceCampaignsRequestSelectionActivityBounceTypeFromString(s string) (CreateForAudienceCampaignsRequestSelectionActivityBounceType, error) {
+	switch s {
+	case "Permanent":
+		return CreateForAudienceCampaignsRequestSelectionActivityBounceTypePermanent, nil
+	case "Transient":
+		return CreateForAudienceCampaignsRequestSelectionActivityBounceTypeTransient, nil
+	}
+	var t CreateForAudienceCampaignsRequestSelectionActivityBounceType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateForAudienceCampaignsRequestSelectionActivityBounceType) Ptr() *CreateForAudienceCampaignsRequestSelectionActivityBounceType {
+	return &c
+}
+
+type CreateForAudienceCampaignsRequestSelectionActivityEventType string
+
+const (
+	CreateForAudienceCampaignsRequestSelectionActivityEventTypeSend        CreateForAudienceCampaignsRequestSelectionActivityEventType = "send"
+	CreateForAudienceCampaignsRequestSelectionActivityEventTypeDelivery    CreateForAudienceCampaignsRequestSelectionActivityEventType = "delivery"
+	CreateForAudienceCampaignsRequestSelectionActivityEventTypeOpen        CreateForAudienceCampaignsRequestSelectionActivityEventType = "open"
+	CreateForAudienceCampaignsRequestSelectionActivityEventTypeClick       CreateForAudienceCampaignsRequestSelectionActivityEventType = "click"
+	CreateForAudienceCampaignsRequestSelectionActivityEventTypeBounce      CreateForAudienceCampaignsRequestSelectionActivityEventType = "bounce"
+	CreateForAudienceCampaignsRequestSelectionActivityEventTypeUnsubscribe CreateForAudienceCampaignsRequestSelectionActivityEventType = "unsubscribe"
+)
+
+func NewCreateForAudienceCampaignsRequestSelectionActivityEventTypeFromString(s string) (CreateForAudienceCampaignsRequestSelectionActivityEventType, error) {
+	switch s {
+	case "send":
+		return CreateForAudienceCampaignsRequestSelectionActivityEventTypeSend, nil
+	case "delivery":
+		return CreateForAudienceCampaignsRequestSelectionActivityEventTypeDelivery, nil
+	case "open":
+		return CreateForAudienceCampaignsRequestSelectionActivityEventTypeOpen, nil
+	case "click":
+		return CreateForAudienceCampaignsRequestSelectionActivityEventTypeClick, nil
+	case "bounce":
+		return CreateForAudienceCampaignsRequestSelectionActivityEventTypeBounce, nil
+	case "unsubscribe":
+		return CreateForAudienceCampaignsRequestSelectionActivityEventTypeUnsubscribe, nil
+	}
+	var t CreateForAudienceCampaignsRequestSelectionActivityEventType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateForAudienceCampaignsRequestSelectionActivityEventType) Ptr() *CreateForAudienceCampaignsRequestSelectionActivityEventType {
+	return &c
+}
+
+type CreateForAudienceCampaignsRequestSelectionActivityPeriod string
+
+const (
+	CreateForAudienceCampaignsRequestSelectionActivityPeriodAll         CreateForAudienceCampaignsRequestSelectionActivityPeriod = "all"
+	CreateForAudienceCampaignsRequestSelectionActivityPeriodOneH        CreateForAudienceCampaignsRequestSelectionActivityPeriod = "1h"
+	CreateForAudienceCampaignsRequestSelectionActivityPeriodTwentyFourH CreateForAudienceCampaignsRequestSelectionActivityPeriod = "24h"
+	CreateForAudienceCampaignsRequestSelectionActivityPeriodSevenD      CreateForAudienceCampaignsRequestSelectionActivityPeriod = "7d"
+	CreateForAudienceCampaignsRequestSelectionActivityPeriodThirtyD     CreateForAudienceCampaignsRequestSelectionActivityPeriod = "30d"
+	CreateForAudienceCampaignsRequestSelectionActivityPeriodNinetyD     CreateForAudienceCampaignsRequestSelectionActivityPeriod = "90d"
+)
+
+func NewCreateForAudienceCampaignsRequestSelectionActivityPeriodFromString(s string) (CreateForAudienceCampaignsRequestSelectionActivityPeriod, error) {
+	switch s {
+	case "all":
+		return CreateForAudienceCampaignsRequestSelectionActivityPeriodAll, nil
+	case "1h":
+		return CreateForAudienceCampaignsRequestSelectionActivityPeriodOneH, nil
+	case "24h":
+		return CreateForAudienceCampaignsRequestSelectionActivityPeriodTwentyFourH, nil
+	case "7d":
+		return CreateForAudienceCampaignsRequestSelectionActivityPeriodSevenD, nil
+	case "30d":
+		return CreateForAudienceCampaignsRequestSelectionActivityPeriodThirtyD, nil
+	case "90d":
+		return CreateForAudienceCampaignsRequestSelectionActivityPeriodNinetyD, nil
+	}
+	var t CreateForAudienceCampaignsRequestSelectionActivityPeriod
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateForAudienceCampaignsRequestSelectionActivityPeriod) Ptr() *CreateForAudienceCampaignsRequestSelectionActivityPeriod {
+	return &c
+}
+
+var (
+	createForAudienceCampaignsRequestSelectionContactsFieldActiveOnly            = big.NewInt(1 << 0)
+	createForAudienceCampaignsRequestSelectionContactsFieldExcludedSubscriberIDs = big.NewInt(1 << 1)
+	createForAudienceCampaignsRequestSelectionContactsFieldFilterJoinOperator    = big.NewInt(1 << 2)
+	createForAudienceCampaignsRequestSelectionContactsFieldFilters               = big.NewInt(1 << 3)
+	createForAudienceCampaignsRequestSelectionContactsFieldListID                = big.NewInt(1 << 4)
+	createForAudienceCampaignsRequestSelectionContactsFieldRoot                  = big.NewInt(1 << 5)
+	createForAudienceCampaignsRequestSelectionContactsFieldSearch                = big.NewInt(1 << 6)
+	createForAudienceCampaignsRequestSelectionContactsFieldSegmentID             = big.NewInt(1 << 7)
+	createForAudienceCampaignsRequestSelectionContactsFieldSubscriberIDs         = big.NewInt(1 << 8)
+)
+
+type CreateForAudienceCampaignsRequestSelectionContacts struct {
+	ActiveOnly            *bool                                                                 `json:"activeOnly,omitempty" url:"activeOnly,omitempty"`
+	ExcludedSubscriberIDs []string                                                              `json:"excludedSubscriberIds,omitempty" url:"excludedSubscriberIds,omitempty"`
+	FilterJoinOperator    *CreateForAudienceCampaignsRequestSelectionContactsFilterJoinOperator `json:"filterJoinOperator,omitempty" url:"filterJoinOperator,omitempty"`
+	// Subscriber filters. Mutually exclusive with root and segmentId.
+	Filters []*CreateForAudienceCampaignsRequestSelectionContactsFiltersItem `json:"filters,omitempty" url:"filters,omitempty"`
+	ListID  *string                                                          `json:"listId,omitempty" url:"listId,omitempty"`
+	// Nested subscriber filter tree, maximum depth 8. Mutually exclusive with filters and segmentId.
+	Root   *CreateForAudienceCampaignsRequestSelectionContactsRoot `json:"root,omitempty" url:"root,omitempty"`
+	Search *string                                                 `json:"search,omitempty" url:"search,omitempty"`
+	// Saved segment. Do not also provide filters or root.
+	SegmentID *string `json:"segmentId,omitempty" url:"segmentId,omitempty"`
+	// Explicit selected IDs, all owned by this company. Omit to select all matching contacts.
+	SubscriberIDs []string `json:"subscriberIds,omitempty" url:"subscriberIds,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionContacts) GetActiveOnly() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.ActiveOnly
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionContacts) GetExcludedSubscriberIDs() []string {
+	if c == nil {
+		return nil
+	}
+	return c.ExcludedSubscriberIDs
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionContacts) GetFilterJoinOperator() *CreateForAudienceCampaignsRequestSelectionContactsFilterJoinOperator {
+	if c == nil {
+		return nil
+	}
+	return c.FilterJoinOperator
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionContacts) GetFilters() []*CreateForAudienceCampaignsRequestSelectionContactsFiltersItem {
+	if c == nil {
+		return nil
+	}
+	return c.Filters
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionContacts) GetListID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.ListID
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionContacts) GetRoot() *CreateForAudienceCampaignsRequestSelectionContactsRoot {
+	if c == nil {
+		return nil
+	}
+	return c.Root
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionContacts) GetSearch() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Search
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionContacts) GetSegmentID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.SegmentID
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionContacts) GetSubscriberIDs() []string {
+	if c == nil {
+		return nil
+	}
+	return c.SubscriberIDs
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionContacts) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionContacts) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetActiveOnly sets the ActiveOnly field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsRequestSelectionContacts) SetActiveOnly(activeOnly *bool) {
+	c.ActiveOnly = activeOnly
+	c.require(createForAudienceCampaignsRequestSelectionContactsFieldActiveOnly)
+}
+
+// SetExcludedSubscriberIDs sets the ExcludedSubscriberIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsRequestSelectionContacts) SetExcludedSubscriberIDs(excludedSubscriberIDs []string) {
+	c.ExcludedSubscriberIDs = excludedSubscriberIDs
+	c.require(createForAudienceCampaignsRequestSelectionContactsFieldExcludedSubscriberIDs)
+}
+
+// SetFilterJoinOperator sets the FilterJoinOperator field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsRequestSelectionContacts) SetFilterJoinOperator(filterJoinOperator *CreateForAudienceCampaignsRequestSelectionContactsFilterJoinOperator) {
+	c.FilterJoinOperator = filterJoinOperator
+	c.require(createForAudienceCampaignsRequestSelectionContactsFieldFilterJoinOperator)
+}
+
+// SetFilters sets the Filters field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsRequestSelectionContacts) SetFilters(filters []*CreateForAudienceCampaignsRequestSelectionContactsFiltersItem) {
+	c.Filters = filters
+	c.require(createForAudienceCampaignsRequestSelectionContactsFieldFilters)
+}
+
+// SetListID sets the ListID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsRequestSelectionContacts) SetListID(listID *string) {
+	c.ListID = listID
+	c.require(createForAudienceCampaignsRequestSelectionContactsFieldListID)
+}
+
+// SetRoot sets the Root field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsRequestSelectionContacts) SetRoot(root *CreateForAudienceCampaignsRequestSelectionContactsRoot) {
+	c.Root = root
+	c.require(createForAudienceCampaignsRequestSelectionContactsFieldRoot)
+}
+
+// SetSearch sets the Search field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsRequestSelectionContacts) SetSearch(search *string) {
+	c.Search = search
+	c.require(createForAudienceCampaignsRequestSelectionContactsFieldSearch)
+}
+
+// SetSegmentID sets the SegmentID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsRequestSelectionContacts) SetSegmentID(segmentID *string) {
+	c.SegmentID = segmentID
+	c.require(createForAudienceCampaignsRequestSelectionContactsFieldSegmentID)
+}
+
+// SetSubscriberIDs sets the SubscriberIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsRequestSelectionContacts) SetSubscriberIDs(subscriberIDs []string) {
+	c.SubscriberIDs = subscriberIDs
+	c.require(createForAudienceCampaignsRequestSelectionContactsFieldSubscriberIDs)
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionContacts) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateForAudienceCampaignsRequestSelectionContacts
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateForAudienceCampaignsRequestSelectionContacts(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionContacts) MarshalJSON() ([]byte, error) {
+	type embed CreateForAudienceCampaignsRequestSelectionContacts
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionContacts) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+type CreateForAudienceCampaignsRequestSelectionContactsFilterJoinOperator string
+
+const (
+	CreateForAudienceCampaignsRequestSelectionContactsFilterJoinOperatorAnd CreateForAudienceCampaignsRequestSelectionContactsFilterJoinOperator = "and"
+	CreateForAudienceCampaignsRequestSelectionContactsFilterJoinOperatorOr  CreateForAudienceCampaignsRequestSelectionContactsFilterJoinOperator = "or"
+)
+
+func NewCreateForAudienceCampaignsRequestSelectionContactsFilterJoinOperatorFromString(s string) (CreateForAudienceCampaignsRequestSelectionContactsFilterJoinOperator, error) {
+	switch s {
+	case "and":
+		return CreateForAudienceCampaignsRequestSelectionContactsFilterJoinOperatorAnd, nil
+	case "or":
+		return CreateForAudienceCampaignsRequestSelectionContactsFilterJoinOperatorOr, nil
+	}
+	var t CreateForAudienceCampaignsRequestSelectionContactsFilterJoinOperator
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateForAudienceCampaignsRequestSelectionContactsFilterJoinOperator) Ptr() *CreateForAudienceCampaignsRequestSelectionContactsFilterJoinOperator {
+	return &c
+}
+
+var (
+	createForAudienceCampaignsRequestSelectionContactsFiltersItemFieldField    = big.NewInt(1 << 0)
+	createForAudienceCampaignsRequestSelectionContactsFiltersItemFieldID       = big.NewInt(1 << 1)
+	createForAudienceCampaignsRequestSelectionContactsFiltersItemFieldOperator = big.NewInt(1 << 2)
+	createForAudienceCampaignsRequestSelectionContactsFiltersItemFieldValue    = big.NewInt(1 << 3)
+)
+
+type CreateForAudienceCampaignsRequestSelectionContactsFiltersItem struct {
+	Field    string `json:"field" url:"field"`
+	ID       string `json:"id" url:"id"`
+	Operator string `json:"operator" url:"operator"`
+	Value    string `json:"value" url:"value"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionContactsFiltersItem) GetField() string {
+	if c == nil {
+		return ""
+	}
+	return c.Field
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionContactsFiltersItem) GetID() string {
+	if c == nil {
+		return ""
+	}
+	return c.ID
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionContactsFiltersItem) GetOperator() string {
+	if c == nil {
+		return ""
+	}
+	return c.Operator
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionContactsFiltersItem) GetValue() string {
+	if c == nil {
+		return ""
+	}
+	return c.Value
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionContactsFiltersItem) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionContactsFiltersItem) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetField sets the Field field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsRequestSelectionContactsFiltersItem) SetField(field string) {
+	c.Field = field
+	c.require(createForAudienceCampaignsRequestSelectionContactsFiltersItemFieldField)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsRequestSelectionContactsFiltersItem) SetID(id string) {
+	c.ID = id
+	c.require(createForAudienceCampaignsRequestSelectionContactsFiltersItemFieldID)
+}
+
+// SetOperator sets the Operator field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsRequestSelectionContactsFiltersItem) SetOperator(operator string) {
+	c.Operator = operator
+	c.require(createForAudienceCampaignsRequestSelectionContactsFiltersItemFieldOperator)
+}
+
+// SetValue sets the Value field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsRequestSelectionContactsFiltersItem) SetValue(value string) {
+	c.Value = value
+	c.require(createForAudienceCampaignsRequestSelectionContactsFiltersItemFieldValue)
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionContactsFiltersItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateForAudienceCampaignsRequestSelectionContactsFiltersItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateForAudienceCampaignsRequestSelectionContactsFiltersItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionContactsFiltersItem) MarshalJSON() ([]byte, error) {
+	type embed CreateForAudienceCampaignsRequestSelectionContactsFiltersItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionContactsFiltersItem) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+// Nested subscriber filter tree, maximum depth 8. Mutually exclusive with filters and segmentId.
+var (
+	createForAudienceCampaignsRequestSelectionContactsRootFieldChildren     = big.NewInt(1 << 0)
+	createForAudienceCampaignsRequestSelectionContactsRootFieldID           = big.NewInt(1 << 1)
+	createForAudienceCampaignsRequestSelectionContactsRootFieldJoinOperator = big.NewInt(1 << 2)
+	createForAudienceCampaignsRequestSelectionContactsRootFieldKind         = big.NewInt(1 << 3)
+)
+
+type CreateForAudienceCampaignsRequestSelectionContactsRoot struct {
+	Children     []map[string]any                                                   `json:"children" url:"children"`
+	ID           string                                                             `json:"id" url:"id"`
+	JoinOperator CreateForAudienceCampaignsRequestSelectionContactsRootJoinOperator `json:"joinOperator" url:"joinOperator"`
+	Kind         CreateForAudienceCampaignsRequestSelectionContactsRootKind         `json:"kind" url:"kind"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionContactsRoot) GetChildren() []map[string]any {
+	if c == nil {
+		return nil
+	}
+	return c.Children
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionContactsRoot) GetID() string {
+	if c == nil {
+		return ""
+	}
+	return c.ID
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionContactsRoot) GetJoinOperator() CreateForAudienceCampaignsRequestSelectionContactsRootJoinOperator {
+	if c == nil {
+		return ""
+	}
+	return c.JoinOperator
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionContactsRoot) GetKind() CreateForAudienceCampaignsRequestSelectionContactsRootKind {
+	if c == nil {
+		return ""
+	}
+	return c.Kind
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionContactsRoot) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionContactsRoot) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetChildren sets the Children field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsRequestSelectionContactsRoot) SetChildren(children []map[string]any) {
+	c.Children = children
+	c.require(createForAudienceCampaignsRequestSelectionContactsRootFieldChildren)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsRequestSelectionContactsRoot) SetID(id string) {
+	c.ID = id
+	c.require(createForAudienceCampaignsRequestSelectionContactsRootFieldID)
+}
+
+// SetJoinOperator sets the JoinOperator field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsRequestSelectionContactsRoot) SetJoinOperator(joinOperator CreateForAudienceCampaignsRequestSelectionContactsRootJoinOperator) {
+	c.JoinOperator = joinOperator
+	c.require(createForAudienceCampaignsRequestSelectionContactsRootFieldJoinOperator)
+}
+
+// SetKind sets the Kind field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsRequestSelectionContactsRoot) SetKind(kind CreateForAudienceCampaignsRequestSelectionContactsRootKind) {
+	c.Kind = kind
+	c.require(createForAudienceCampaignsRequestSelectionContactsRootFieldKind)
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionContactsRoot) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateForAudienceCampaignsRequestSelectionContactsRoot
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateForAudienceCampaignsRequestSelectionContactsRoot(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionContactsRoot) MarshalJSON() ([]byte, error) {
+	type embed CreateForAudienceCampaignsRequestSelectionContactsRoot
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateForAudienceCampaignsRequestSelectionContactsRoot) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+type CreateForAudienceCampaignsRequestSelectionContactsRootJoinOperator string
+
+const (
+	CreateForAudienceCampaignsRequestSelectionContactsRootJoinOperatorAnd CreateForAudienceCampaignsRequestSelectionContactsRootJoinOperator = "and"
+	CreateForAudienceCampaignsRequestSelectionContactsRootJoinOperatorOr  CreateForAudienceCampaignsRequestSelectionContactsRootJoinOperator = "or"
+)
+
+func NewCreateForAudienceCampaignsRequestSelectionContactsRootJoinOperatorFromString(s string) (CreateForAudienceCampaignsRequestSelectionContactsRootJoinOperator, error) {
+	switch s {
+	case "and":
+		return CreateForAudienceCampaignsRequestSelectionContactsRootJoinOperatorAnd, nil
+	case "or":
+		return CreateForAudienceCampaignsRequestSelectionContactsRootJoinOperatorOr, nil
+	}
+	var t CreateForAudienceCampaignsRequestSelectionContactsRootJoinOperator
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateForAudienceCampaignsRequestSelectionContactsRootJoinOperator) Ptr() *CreateForAudienceCampaignsRequestSelectionContactsRootJoinOperator {
+	return &c
+}
+
+type CreateForAudienceCampaignsRequestSelectionContactsRootKind string
+
+const (
+	CreateForAudienceCampaignsRequestSelectionContactsRootKindGroup CreateForAudienceCampaignsRequestSelectionContactsRootKind = "group"
+)
+
+func NewCreateForAudienceCampaignsRequestSelectionContactsRootKindFromString(s string) (CreateForAudienceCampaignsRequestSelectionContactsRootKind, error) {
+	switch s {
+	case "group":
+		return CreateForAudienceCampaignsRequestSelectionContactsRootKindGroup, nil
+	}
+	var t CreateForAudienceCampaignsRequestSelectionContactsRootKind
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateForAudienceCampaignsRequestSelectionContactsRootKind) Ptr() *CreateForAudienceCampaignsRequestSelectionContactsRootKind {
+	return &c
+}
+
+// Provide only the matching contacts or activity object.
+type CreateForAudienceCampaignsRequestSelectionSource string
+
+const (
+	CreateForAudienceCampaignsRequestSelectionSourceContacts      CreateForAudienceCampaignsRequestSelectionSource = "contacts"
+	CreateForAudienceCampaignsRequestSelectionSourceEmailActivity CreateForAudienceCampaignsRequestSelectionSource = "email_activity"
+)
+
+func NewCreateForAudienceCampaignsRequestSelectionSourceFromString(s string) (CreateForAudienceCampaignsRequestSelectionSource, error) {
+	switch s {
+	case "contacts":
+		return CreateForAudienceCampaignsRequestSelectionSourceContacts, nil
+	case "email_activity":
+		return CreateForAudienceCampaignsRequestSelectionSourceEmailActivity, nil
+	}
+	var t CreateForAudienceCampaignsRequestSelectionSource
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateForAudienceCampaignsRequestSelectionSource) Ptr() *CreateForAudienceCampaignsRequestSelectionSource {
+	return &c
+}
+
+var (
+	createForAudienceCampaignsResponseFieldAudience = big.NewInt(1 << 0)
+	createForAudienceCampaignsResponseFieldCampaign = big.NewInt(1 << 1)
+)
+
+type CreateForAudienceCampaignsResponse struct {
+	Audience *CreateForAudienceCampaignsResponseAudience `json:"audience" url:"audience"`
+	Campaign *CreateForAudienceCampaignsResponseCampaign `json:"campaign" url:"campaign"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateForAudienceCampaignsResponse) GetAudience() *CreateForAudienceCampaignsResponseAudience {
+	if c == nil {
+		return nil
+	}
+	return c.Audience
+}
+
+func (c *CreateForAudienceCampaignsResponse) GetCampaign() *CreateForAudienceCampaignsResponseCampaign {
+	if c == nil {
+		return nil
+	}
+	return c.Campaign
+}
+
+func (c *CreateForAudienceCampaignsResponse) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateForAudienceCampaignsResponse) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetAudience sets the Audience field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsResponse) SetAudience(audience *CreateForAudienceCampaignsResponseAudience) {
+	c.Audience = audience
+	c.require(createForAudienceCampaignsResponseFieldAudience)
+}
+
+// SetCampaign sets the Campaign field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsResponse) SetCampaign(campaign *CreateForAudienceCampaignsResponseCampaign) {
+	c.Campaign = campaign
+	c.require(createForAudienceCampaignsResponseFieldCampaign)
+}
+
+func (c *CreateForAudienceCampaignsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateForAudienceCampaignsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateForAudienceCampaignsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateForAudienceCampaignsResponse) MarshalJSON() ([]byte, error) {
+	type embed CreateForAudienceCampaignsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateForAudienceCampaignsResponse) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	createForAudienceCampaignsResponseAudienceFieldEligibleCount = big.NewInt(1 << 0)
+	createForAudienceCampaignsResponseAudienceFieldSelectedAt    = big.NewInt(1 << 1)
+	createForAudienceCampaignsResponseAudienceFieldSelectedCount = big.NewInt(1 << 2)
+	createForAudienceCampaignsResponseAudienceFieldSource        = big.NewInt(1 << 3)
+)
+
+type CreateForAudienceCampaignsResponseAudience struct {
+	EligibleCount int                                              `json:"eligibleCount" url:"eligibleCount"`
+	SelectedAt    time.Time                                        `json:"selectedAt" url:"selectedAt"`
+	SelectedCount int                                              `json:"selectedCount" url:"selectedCount"`
+	Source        CreateForAudienceCampaignsResponseAudienceSource `json:"source" url:"source"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateForAudienceCampaignsResponseAudience) GetEligibleCount() int {
+	if c == nil {
+		return 0
+	}
+	return c.EligibleCount
+}
+
+func (c *CreateForAudienceCampaignsResponseAudience) GetSelectedAt() time.Time {
+	if c == nil {
+		return time.Time{}
+	}
+	return c.SelectedAt
+}
+
+func (c *CreateForAudienceCampaignsResponseAudience) GetSelectedCount() int {
+	if c == nil {
+		return 0
+	}
+	return c.SelectedCount
+}
+
+func (c *CreateForAudienceCampaignsResponseAudience) GetSource() CreateForAudienceCampaignsResponseAudienceSource {
+	if c == nil {
+		return ""
+	}
+	return c.Source
+}
+
+func (c *CreateForAudienceCampaignsResponseAudience) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateForAudienceCampaignsResponseAudience) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetEligibleCount sets the EligibleCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsResponseAudience) SetEligibleCount(eligibleCount int) {
+	c.EligibleCount = eligibleCount
+	c.require(createForAudienceCampaignsResponseAudienceFieldEligibleCount)
+}
+
+// SetSelectedAt sets the SelectedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsResponseAudience) SetSelectedAt(selectedAt time.Time) {
+	c.SelectedAt = selectedAt
+	c.require(createForAudienceCampaignsResponseAudienceFieldSelectedAt)
+}
+
+// SetSelectedCount sets the SelectedCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsResponseAudience) SetSelectedCount(selectedCount int) {
+	c.SelectedCount = selectedCount
+	c.require(createForAudienceCampaignsResponseAudienceFieldSelectedCount)
+}
+
+// SetSource sets the Source field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsResponseAudience) SetSource(source CreateForAudienceCampaignsResponseAudienceSource) {
+	c.Source = source
+	c.require(createForAudienceCampaignsResponseAudienceFieldSource)
+}
+
+func (c *CreateForAudienceCampaignsResponseAudience) UnmarshalJSON(data []byte) error {
+	type embed CreateForAudienceCampaignsResponseAudience
+	var unmarshaler = struct {
+		embed
+		SelectedAt *internal.DateTime `json:"selectedAt"`
+	}{
+		embed: embed(*c),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*c = CreateForAudienceCampaignsResponseAudience(unmarshaler.embed)
+	c.SelectedAt = unmarshaler.SelectedAt.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateForAudienceCampaignsResponseAudience) MarshalJSON() ([]byte, error) {
+	type embed CreateForAudienceCampaignsResponseAudience
+	var marshaler = struct {
+		embed
+		SelectedAt *internal.DateTime `json:"selectedAt"`
+	}{
+		embed:      embed(*c),
+		SelectedAt: internal.NewDateTime(c.SelectedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateForAudienceCampaignsResponseAudience) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+type CreateForAudienceCampaignsResponseAudienceSource string
+
+const (
+	CreateForAudienceCampaignsResponseAudienceSourceContacts      CreateForAudienceCampaignsResponseAudienceSource = "contacts"
+	CreateForAudienceCampaignsResponseAudienceSourceEmailActivity CreateForAudienceCampaignsResponseAudienceSource = "email_activity"
+)
+
+func NewCreateForAudienceCampaignsResponseAudienceSourceFromString(s string) (CreateForAudienceCampaignsResponseAudienceSource, error) {
+	switch s {
+	case "contacts":
+		return CreateForAudienceCampaignsResponseAudienceSourceContacts, nil
+	case "email_activity":
+		return CreateForAudienceCampaignsResponseAudienceSourceEmailActivity, nil
+	}
+	var t CreateForAudienceCampaignsResponseAudienceSource
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateForAudienceCampaignsResponseAudienceSource) Ptr() *CreateForAudienceCampaignsResponseAudienceSource {
+	return &c
+}
+
+var (
+	createForAudienceCampaignsResponseCampaignFieldCompanyID   = big.NewInt(1 << 0)
+	createForAudienceCampaignsResponseCampaignFieldEmail       = big.NewInt(1 << 1)
+	createForAudienceCampaignsResponseCampaignFieldEmailID     = big.NewInt(1 << 2)
+	createForAudienceCampaignsResponseCampaignFieldID          = big.NewInt(1 << 3)
+	createForAudienceCampaignsResponseCampaignFieldName        = big.NewInt(1 << 4)
+	createForAudienceCampaignsResponseCampaignFieldStatus      = big.NewInt(1 << 5)
+	createForAudienceCampaignsResponseCampaignFieldTargetLists = big.NewInt(1 << 6)
+)
+
+type CreateForAudienceCampaignsResponseCampaign struct {
+	CompanyID string `json:"companyId" url:"companyId"`
+	// Linked blank email draft.
+	Email       map[string]any                                         `json:"email,omitempty" url:"email,omitempty"`
+	EmailID     string                                                 `json:"emailId" url:"emailId"`
+	ID          string                                                 `json:"id" url:"id"`
+	Name        string                                                 `json:"name" url:"name"`
+	Status      CreateForAudienceCampaignsResponseCampaignStatus       `json:"status" url:"status"`
+	TargetLists *CreateForAudienceCampaignsResponseCampaignTargetLists `json:"targetLists" url:"targetLists"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateForAudienceCampaignsResponseCampaign) GetCompanyID() string {
+	if c == nil {
+		return ""
+	}
+	return c.CompanyID
+}
+
+func (c *CreateForAudienceCampaignsResponseCampaign) GetEmail() map[string]any {
+	if c == nil {
+		return nil
+	}
+	return c.Email
+}
+
+func (c *CreateForAudienceCampaignsResponseCampaign) GetEmailID() string {
+	if c == nil {
+		return ""
+	}
+	return c.EmailID
+}
+
+func (c *CreateForAudienceCampaignsResponseCampaign) GetID() string {
+	if c == nil {
+		return ""
+	}
+	return c.ID
+}
+
+func (c *CreateForAudienceCampaignsResponseCampaign) GetName() string {
+	if c == nil {
+		return ""
+	}
+	return c.Name
+}
+
+func (c *CreateForAudienceCampaignsResponseCampaign) GetStatus() CreateForAudienceCampaignsResponseCampaignStatus {
+	if c == nil {
+		return ""
+	}
+	return c.Status
+}
+
+func (c *CreateForAudienceCampaignsResponseCampaign) GetTargetLists() *CreateForAudienceCampaignsResponseCampaignTargetLists {
+	if c == nil {
+		return nil
+	}
+	return c.TargetLists
+}
+
+func (c *CreateForAudienceCampaignsResponseCampaign) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateForAudienceCampaignsResponseCampaign) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetCompanyID sets the CompanyID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsResponseCampaign) SetCompanyID(companyID string) {
+	c.CompanyID = companyID
+	c.require(createForAudienceCampaignsResponseCampaignFieldCompanyID)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsResponseCampaign) SetEmail(email map[string]any) {
+	c.Email = email
+	c.require(createForAudienceCampaignsResponseCampaignFieldEmail)
+}
+
+// SetEmailID sets the EmailID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsResponseCampaign) SetEmailID(emailID string) {
+	c.EmailID = emailID
+	c.require(createForAudienceCampaignsResponseCampaignFieldEmailID)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsResponseCampaign) SetID(id string) {
+	c.ID = id
+	c.require(createForAudienceCampaignsResponseCampaignFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsResponseCampaign) SetName(name string) {
+	c.Name = name
+	c.require(createForAudienceCampaignsResponseCampaignFieldName)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsResponseCampaign) SetStatus(status CreateForAudienceCampaignsResponseCampaignStatus) {
+	c.Status = status
+	c.require(createForAudienceCampaignsResponseCampaignFieldStatus)
+}
+
+// SetTargetLists sets the TargetLists field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsResponseCampaign) SetTargetLists(targetLists *CreateForAudienceCampaignsResponseCampaignTargetLists) {
+	c.TargetLists = targetLists
+	c.require(createForAudienceCampaignsResponseCampaignFieldTargetLists)
+}
+
+func (c *CreateForAudienceCampaignsResponseCampaign) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateForAudienceCampaignsResponseCampaign
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateForAudienceCampaignsResponseCampaign(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateForAudienceCampaignsResponseCampaign) MarshalJSON() ([]byte, error) {
+	type embed CreateForAudienceCampaignsResponseCampaign
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateForAudienceCampaignsResponseCampaign) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+type CreateForAudienceCampaignsResponseCampaignStatus string
+
+const (
+	CreateForAudienceCampaignsResponseCampaignStatusDraft CreateForAudienceCampaignsResponseCampaignStatus = "draft"
+)
+
+func NewCreateForAudienceCampaignsResponseCampaignStatusFromString(s string) (CreateForAudienceCampaignsResponseCampaignStatus, error) {
+	switch s {
+	case "draft":
+		return CreateForAudienceCampaignsResponseCampaignStatusDraft, nil
+	}
+	var t CreateForAudienceCampaignsResponseCampaignStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateForAudienceCampaignsResponseCampaignStatus) Ptr() *CreateForAudienceCampaignsResponseCampaignStatus {
+	return &c
+}
+
+var (
+	createForAudienceCampaignsResponseCampaignTargetListsFieldInclude               = big.NewInt(1 << 0)
+	createForAudienceCampaignsResponseCampaignTargetListsFieldIncludedSubscriberIDs = big.NewInt(1 << 1)
+	createForAudienceCampaignsResponseCampaignTargetListsFieldType                  = big.NewInt(1 << 2)
+)
+
+type CreateForAudienceCampaignsResponseCampaignTargetLists struct {
+	Include               []any                                                     `json:"include" url:"include"`
+	IncludedSubscriberIDs []string                                                  `json:"includedSubscriberIds" url:"includedSubscriberIds"`
+	Type                  CreateForAudienceCampaignsResponseCampaignTargetListsType `json:"type" url:"type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateForAudienceCampaignsResponseCampaignTargetLists) GetInclude() []any {
+	if c == nil {
+		return nil
+	}
+	return c.Include
+}
+
+func (c *CreateForAudienceCampaignsResponseCampaignTargetLists) GetIncludedSubscriberIDs() []string {
+	if c == nil {
+		return nil
+	}
+	return c.IncludedSubscriberIDs
+}
+
+func (c *CreateForAudienceCampaignsResponseCampaignTargetLists) GetType() CreateForAudienceCampaignsResponseCampaignTargetListsType {
+	if c == nil {
+		return ""
+	}
+	return c.Type
+}
+
+func (c *CreateForAudienceCampaignsResponseCampaignTargetLists) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateForAudienceCampaignsResponseCampaignTargetLists) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetInclude sets the Include field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsResponseCampaignTargetLists) SetInclude(include []any) {
+	c.Include = include
+	c.require(createForAudienceCampaignsResponseCampaignTargetListsFieldInclude)
+}
+
+// SetIncludedSubscriberIDs sets the IncludedSubscriberIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsResponseCampaignTargetLists) SetIncludedSubscriberIDs(includedSubscriberIDs []string) {
+	c.IncludedSubscriberIDs = includedSubscriberIDs
+	c.require(createForAudienceCampaignsResponseCampaignTargetListsFieldIncludedSubscriberIDs)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateForAudienceCampaignsResponseCampaignTargetLists) SetType(type_ CreateForAudienceCampaignsResponseCampaignTargetListsType) {
+	c.Type = type_
+	c.require(createForAudienceCampaignsResponseCampaignTargetListsFieldType)
+}
+
+func (c *CreateForAudienceCampaignsResponseCampaignTargetLists) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateForAudienceCampaignsResponseCampaignTargetLists
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateForAudienceCampaignsResponseCampaignTargetLists(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateForAudienceCampaignsResponseCampaignTargetLists) MarshalJSON() ([]byte, error) {
+	type embed CreateForAudienceCampaignsResponseCampaignTargetLists
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateForAudienceCampaignsResponseCampaignTargetLists) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+type CreateForAudienceCampaignsResponseCampaignTargetListsType string
+
+const (
+	CreateForAudienceCampaignsResponseCampaignTargetListsTypeRules CreateForAudienceCampaignsResponseCampaignTargetListsType = "rules"
+)
+
+func NewCreateForAudienceCampaignsResponseCampaignTargetListsTypeFromString(s string) (CreateForAudienceCampaignsResponseCampaignTargetListsType, error) {
+	switch s {
+	case "rules":
+		return CreateForAudienceCampaignsResponseCampaignTargetListsTypeRules, nil
+	}
+	var t CreateForAudienceCampaignsResponseCampaignTargetListsType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateForAudienceCampaignsResponseCampaignTargetListsType) Ptr() *CreateForAudienceCampaignsResponseCampaignTargetListsType {
+	return &c
+}
+
+var (
 	createGoalCampaignsResponseFieldGoal    = big.NewInt(1 << 0)
 	createGoalCampaignsResponseFieldSuccess = big.NewInt(1 << 1)
 )
@@ -4701,29 +6548,30 @@ var (
 	duplicateCampaignsResponseCampaignFieldEmailPreset             = big.NewInt(1 << 7)
 	duplicateCampaignsResponseCampaignFieldFromEmail               = big.NewInt(1 << 8)
 	duplicateCampaignsResponseCampaignFieldFromName                = big.NewInt(1 << 9)
-	duplicateCampaignsResponseCampaignFieldID                      = big.NewInt(1 << 10)
-	duplicateCampaignsResponseCampaignFieldLabels                  = big.NewInt(1 << 11)
-	duplicateCampaignsResponseCampaignFieldName                    = big.NewInt(1 << 12)
-	duplicateCampaignsResponseCampaignFieldPreheader               = big.NewInt(1 << 13)
-	duplicateCampaignsResponseCampaignFieldPreheaderText           = big.NewInt(1 << 14)
-	duplicateCampaignsResponseCampaignFieldRejectionComment        = big.NewInt(1 << 15)
-	duplicateCampaignsResponseCampaignFieldReplyProfileID          = big.NewInt(1 << 16)
-	duplicateCampaignsResponseCampaignFieldReplyToEmail            = big.NewInt(1 << 17)
-	duplicateCampaignsResponseCampaignFieldReplyToName             = big.NewInt(1 << 18)
-	duplicateCampaignsResponseCampaignFieldScheduledAt             = big.NewInt(1 << 19)
-	duplicateCampaignsResponseCampaignFieldScheduledTimezone       = big.NewInt(1 << 20)
-	duplicateCampaignsResponseCampaignFieldSenderProfileID         = big.NewInt(1 << 21)
-	duplicateCampaignsResponseCampaignFieldSendInRecipientTimezone = big.NewInt(1 << 22)
-	duplicateCampaignsResponseCampaignFieldSendTimeOptimization    = big.NewInt(1 << 23)
-	duplicateCampaignsResponseCampaignFieldSendTimeWindowHours     = big.NewInt(1 << 24)
-	duplicateCampaignsResponseCampaignFieldSentAt                  = big.NewInt(1 << 25)
-	duplicateCampaignsResponseCampaignFieldShareURL                = big.NewInt(1 << 26)
-	duplicateCampaignsResponseCampaignFieldSpreadOverHours         = big.NewInt(1 << 27)
-	duplicateCampaignsResponseCampaignFieldStatus                  = big.NewInt(1 << 28)
-	duplicateCampaignsResponseCampaignFieldSubject                 = big.NewInt(1 << 29)
-	duplicateCampaignsResponseCampaignFieldTargetLists             = big.NewInt(1 << 30)
-	duplicateCampaignsResponseCampaignFieldTrackingCode            = big.NewInt(1 << 31)
-	duplicateCampaignsResponseCampaignFieldType                    = big.NewInt(1 << 32)
+	duplicateCampaignsResponseCampaignFieldHasAudience             = big.NewInt(1 << 10)
+	duplicateCampaignsResponseCampaignFieldID                      = big.NewInt(1 << 11)
+	duplicateCampaignsResponseCampaignFieldLabels                  = big.NewInt(1 << 12)
+	duplicateCampaignsResponseCampaignFieldName                    = big.NewInt(1 << 13)
+	duplicateCampaignsResponseCampaignFieldPreheader               = big.NewInt(1 << 14)
+	duplicateCampaignsResponseCampaignFieldPreheaderText           = big.NewInt(1 << 15)
+	duplicateCampaignsResponseCampaignFieldRejectionComment        = big.NewInt(1 << 16)
+	duplicateCampaignsResponseCampaignFieldReplyProfileID          = big.NewInt(1 << 17)
+	duplicateCampaignsResponseCampaignFieldReplyToEmail            = big.NewInt(1 << 18)
+	duplicateCampaignsResponseCampaignFieldReplyToName             = big.NewInt(1 << 19)
+	duplicateCampaignsResponseCampaignFieldScheduledAt             = big.NewInt(1 << 20)
+	duplicateCampaignsResponseCampaignFieldScheduledTimezone       = big.NewInt(1 << 21)
+	duplicateCampaignsResponseCampaignFieldSenderProfileID         = big.NewInt(1 << 22)
+	duplicateCampaignsResponseCampaignFieldSendInRecipientTimezone = big.NewInt(1 << 23)
+	duplicateCampaignsResponseCampaignFieldSendTimeOptimization    = big.NewInt(1 << 24)
+	duplicateCampaignsResponseCampaignFieldSendTimeWindowHours     = big.NewInt(1 << 25)
+	duplicateCampaignsResponseCampaignFieldSentAt                  = big.NewInt(1 << 26)
+	duplicateCampaignsResponseCampaignFieldShareURL                = big.NewInt(1 << 27)
+	duplicateCampaignsResponseCampaignFieldSpreadOverHours         = big.NewInt(1 << 28)
+	duplicateCampaignsResponseCampaignFieldStatus                  = big.NewInt(1 << 29)
+	duplicateCampaignsResponseCampaignFieldSubject                 = big.NewInt(1 << 30)
+	duplicateCampaignsResponseCampaignFieldTargetLists             = big.NewInt(1 << 31)
+	duplicateCampaignsResponseCampaignFieldTrackingCode            = big.NewInt(1 << 32)
+	duplicateCampaignsResponseCampaignFieldType                    = big.NewInt(1 << 33)
 )
 
 type DuplicateCampaignsResponseCampaign struct {
@@ -4741,7 +6589,9 @@ type DuplicateCampaignsResponseCampaign struct {
 	EmailPreset *EmailPreset `json:"emailPreset,omitempty" url:"emailPreset,omitempty"`
 	FromEmail   *string      `json:"fromEmail,omitempty" url:"fromEmail,omitempty"`
 	FromName    *string      `json:"fromName,omitempty" url:"fromName,omitempty"`
-	ID          *string      `json:"id,omitempty" url:"id,omitempty"`
+	// Whether an explicit audience is configured. False for unset or empty selections. This does not validate resource existence or count eligible recipients. Draft rows can use this for an Audience set indicator.
+	HasAudience *bool   `json:"hasAudience,omitempty" url:"hasAudience,omitempty"`
+	ID          *string `json:"id,omitempty" url:"id,omitempty"`
 	// Label names assigned to this campaign.
 	Labels    []string `json:"labels,omitempty" url:"labels,omitempty"`
 	Name      *string  `json:"name,omitempty" url:"name,omitempty"`
@@ -4852,6 +6702,13 @@ func (d *DuplicateCampaignsResponseCampaign) GetFromName() *string {
 		return nil
 	}
 	return d.FromName
+}
+
+func (d *DuplicateCampaignsResponseCampaign) GetHasAudience() *bool {
+	if d == nil {
+		return nil
+	}
+	return d.HasAudience
 }
 
 func (d *DuplicateCampaignsResponseCampaign) GetID() *string {
@@ -5097,6 +6954,13 @@ func (d *DuplicateCampaignsResponseCampaign) SetFromEmail(fromEmail *string) {
 func (d *DuplicateCampaignsResponseCampaign) SetFromName(fromName *string) {
 	d.FromName = fromName
 	d.require(duplicateCampaignsResponseCampaignFieldFromName)
+}
+
+// SetHasAudience sets the HasAudience field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DuplicateCampaignsResponseCampaign) SetHasAudience(hasAudience *bool) {
+	d.HasAudience = hasAudience
+	d.require(duplicateCampaignsResponseCampaignFieldHasAudience)
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -6621,29 +8485,30 @@ var (
 	resendToNonOpenersCampaignsResponseCampaignFieldEmailPreset             = big.NewInt(1 << 7)
 	resendToNonOpenersCampaignsResponseCampaignFieldFromEmail               = big.NewInt(1 << 8)
 	resendToNonOpenersCampaignsResponseCampaignFieldFromName                = big.NewInt(1 << 9)
-	resendToNonOpenersCampaignsResponseCampaignFieldID                      = big.NewInt(1 << 10)
-	resendToNonOpenersCampaignsResponseCampaignFieldLabels                  = big.NewInt(1 << 11)
-	resendToNonOpenersCampaignsResponseCampaignFieldName                    = big.NewInt(1 << 12)
-	resendToNonOpenersCampaignsResponseCampaignFieldPreheader               = big.NewInt(1 << 13)
-	resendToNonOpenersCampaignsResponseCampaignFieldPreheaderText           = big.NewInt(1 << 14)
-	resendToNonOpenersCampaignsResponseCampaignFieldRejectionComment        = big.NewInt(1 << 15)
-	resendToNonOpenersCampaignsResponseCampaignFieldReplyProfileID          = big.NewInt(1 << 16)
-	resendToNonOpenersCampaignsResponseCampaignFieldReplyToEmail            = big.NewInt(1 << 17)
-	resendToNonOpenersCampaignsResponseCampaignFieldReplyToName             = big.NewInt(1 << 18)
-	resendToNonOpenersCampaignsResponseCampaignFieldScheduledAt             = big.NewInt(1 << 19)
-	resendToNonOpenersCampaignsResponseCampaignFieldScheduledTimezone       = big.NewInt(1 << 20)
-	resendToNonOpenersCampaignsResponseCampaignFieldSenderProfileID         = big.NewInt(1 << 21)
-	resendToNonOpenersCampaignsResponseCampaignFieldSendInRecipientTimezone = big.NewInt(1 << 22)
-	resendToNonOpenersCampaignsResponseCampaignFieldSendTimeOptimization    = big.NewInt(1 << 23)
-	resendToNonOpenersCampaignsResponseCampaignFieldSendTimeWindowHours     = big.NewInt(1 << 24)
-	resendToNonOpenersCampaignsResponseCampaignFieldSentAt                  = big.NewInt(1 << 25)
-	resendToNonOpenersCampaignsResponseCampaignFieldShareURL                = big.NewInt(1 << 26)
-	resendToNonOpenersCampaignsResponseCampaignFieldSpreadOverHours         = big.NewInt(1 << 27)
-	resendToNonOpenersCampaignsResponseCampaignFieldStatus                  = big.NewInt(1 << 28)
-	resendToNonOpenersCampaignsResponseCampaignFieldSubject                 = big.NewInt(1 << 29)
-	resendToNonOpenersCampaignsResponseCampaignFieldTargetLists             = big.NewInt(1 << 30)
-	resendToNonOpenersCampaignsResponseCampaignFieldTrackingCode            = big.NewInt(1 << 31)
-	resendToNonOpenersCampaignsResponseCampaignFieldType                    = big.NewInt(1 << 32)
+	resendToNonOpenersCampaignsResponseCampaignFieldHasAudience             = big.NewInt(1 << 10)
+	resendToNonOpenersCampaignsResponseCampaignFieldID                      = big.NewInt(1 << 11)
+	resendToNonOpenersCampaignsResponseCampaignFieldLabels                  = big.NewInt(1 << 12)
+	resendToNonOpenersCampaignsResponseCampaignFieldName                    = big.NewInt(1 << 13)
+	resendToNonOpenersCampaignsResponseCampaignFieldPreheader               = big.NewInt(1 << 14)
+	resendToNonOpenersCampaignsResponseCampaignFieldPreheaderText           = big.NewInt(1 << 15)
+	resendToNonOpenersCampaignsResponseCampaignFieldRejectionComment        = big.NewInt(1 << 16)
+	resendToNonOpenersCampaignsResponseCampaignFieldReplyProfileID          = big.NewInt(1 << 17)
+	resendToNonOpenersCampaignsResponseCampaignFieldReplyToEmail            = big.NewInt(1 << 18)
+	resendToNonOpenersCampaignsResponseCampaignFieldReplyToName             = big.NewInt(1 << 19)
+	resendToNonOpenersCampaignsResponseCampaignFieldScheduledAt             = big.NewInt(1 << 20)
+	resendToNonOpenersCampaignsResponseCampaignFieldScheduledTimezone       = big.NewInt(1 << 21)
+	resendToNonOpenersCampaignsResponseCampaignFieldSenderProfileID         = big.NewInt(1 << 22)
+	resendToNonOpenersCampaignsResponseCampaignFieldSendInRecipientTimezone = big.NewInt(1 << 23)
+	resendToNonOpenersCampaignsResponseCampaignFieldSendTimeOptimization    = big.NewInt(1 << 24)
+	resendToNonOpenersCampaignsResponseCampaignFieldSendTimeWindowHours     = big.NewInt(1 << 25)
+	resendToNonOpenersCampaignsResponseCampaignFieldSentAt                  = big.NewInt(1 << 26)
+	resendToNonOpenersCampaignsResponseCampaignFieldShareURL                = big.NewInt(1 << 27)
+	resendToNonOpenersCampaignsResponseCampaignFieldSpreadOverHours         = big.NewInt(1 << 28)
+	resendToNonOpenersCampaignsResponseCampaignFieldStatus                  = big.NewInt(1 << 29)
+	resendToNonOpenersCampaignsResponseCampaignFieldSubject                 = big.NewInt(1 << 30)
+	resendToNonOpenersCampaignsResponseCampaignFieldTargetLists             = big.NewInt(1 << 31)
+	resendToNonOpenersCampaignsResponseCampaignFieldTrackingCode            = big.NewInt(1 << 32)
+	resendToNonOpenersCampaignsResponseCampaignFieldType                    = big.NewInt(1 << 33)
 )
 
 type ResendToNonOpenersCampaignsResponseCampaign struct {
@@ -6661,7 +8526,9 @@ type ResendToNonOpenersCampaignsResponseCampaign struct {
 	EmailPreset *EmailPreset `json:"emailPreset,omitempty" url:"emailPreset,omitempty"`
 	FromEmail   *string      `json:"fromEmail,omitempty" url:"fromEmail,omitempty"`
 	FromName    *string      `json:"fromName,omitempty" url:"fromName,omitempty"`
-	ID          *string      `json:"id,omitempty" url:"id,omitempty"`
+	// Whether an explicit audience is configured. False for unset or empty selections. This does not validate resource existence or count eligible recipients. Draft rows can use this for an Audience set indicator.
+	HasAudience *bool   `json:"hasAudience,omitempty" url:"hasAudience,omitempty"`
+	ID          *string `json:"id,omitempty" url:"id,omitempty"`
 	// Label names assigned to this campaign.
 	Labels    []string `json:"labels,omitempty" url:"labels,omitempty"`
 	Name      *string  `json:"name,omitempty" url:"name,omitempty"`
@@ -6772,6 +8639,13 @@ func (r *ResendToNonOpenersCampaignsResponseCampaign) GetFromName() *string {
 		return nil
 	}
 	return r.FromName
+}
+
+func (r *ResendToNonOpenersCampaignsResponseCampaign) GetHasAudience() *bool {
+	if r == nil {
+		return nil
+	}
+	return r.HasAudience
 }
 
 func (r *ResendToNonOpenersCampaignsResponseCampaign) GetID() *string {
@@ -7017,6 +8891,13 @@ func (r *ResendToNonOpenersCampaignsResponseCampaign) SetFromEmail(fromEmail *st
 func (r *ResendToNonOpenersCampaignsResponseCampaign) SetFromName(fromName *string) {
 	r.FromName = fromName
 	r.require(resendToNonOpenersCampaignsResponseCampaignFieldFromName)
+}
+
+// SetHasAudience sets the HasAudience field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendToNonOpenersCampaignsResponseCampaign) SetHasAudience(hasAudience *bool) {
+	r.HasAudience = hasAudience
+	r.require(resendToNonOpenersCampaignsResponseCampaignFieldHasAudience)
 }
 
 // SetID sets the ID field and marks it as non-optional;

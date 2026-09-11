@@ -101,6 +101,35 @@ func (c *Client) Create(
 	return response.Body, nil
 }
 
+// Creates a blank draft and freezes distinct contacts from a complete contact selection or email-activity drilldown. Requires campaigns:write and subscribers:read, plus analytics:read for activity. Maximum 100,000 contacts and 8 MiB stored audience JSON. No sending domain or send permission is required for drafting. Membership is saved now; active status and email eligibility are checked again at send time. Deleted historical analytics contacts are omitted. Read, replace or clear targetLists using the existing campaign endpoints.
+//
+// Example:
+//
+//	request := &sequenzygo.CreateForAudienceCampaignsRequest{
+//	    Selection: &sequenzygo.CreateForAudienceCampaignsRequestSelection{
+//	        Source: sequenzygo.CreateForAudienceCampaignsRequestSelectionSourceContacts,
+//	    },
+//	}
+//	client.Campaigns.CreateForAudience(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) CreateForAudience(
+	ctx context.Context,
+	request *sequenzygo.CreateForAudienceCampaignsRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.CreateForAudienceCampaignsResponse, error) {
+	response, err := c.WithRawResponse.CreateForAudience(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Creates an event, subscriber-attribute, or tag-applied conversion goal on one email campaign. SMS campaigns are not supported. The attribution window defaults to 168 hours when omitted.
 //
 // Example:

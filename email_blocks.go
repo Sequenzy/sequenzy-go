@@ -71,6 +71,82 @@ func (l *ListEmailBlocksRequest) SetCreatableOnly(creatableOnly *ListEmailBlocks
 	l.require(listEmailBlocksRequestFieldCreatableOnly)
 }
 
+var (
+	previewCartItemsRequestFieldItemFields = big.NewInt(1 << 0)
+	previewCartItemsRequestFieldItems      = big.NewInt(1 << 1)
+	previewCartItemsRequestFieldPriceUnit  = big.NewInt(1 << 2)
+	previewCartItemsRequestFieldScenario   = big.NewInt(1 << 3)
+)
+
+type PreviewCartItemsRequest struct {
+	// Existing relative dotted paths. Blank values use defaults; unsafe prototype paths are rejected. Suggestions do not replace existing mappings.
+	ItemFields *PreviewCartItemsRequestItemFields `json:"itemFields,omitempty" url:"-"`
+	Items      []map[string]any                   `json:"items,omitempty" url:"-"`
+	// Numeric item prices use cents or explicit major units. The separate total remains in cents.
+	PriceUnit *PreviewCartItemsRequestPriceUnit `json:"priceUnit,omitempty" url:"-"`
+	// Many returns 12 cloned rows; nonempty sample scenarios use a sample product if items are empty. Real preserves supplied items.
+	Scenario *PreviewCartItemsRequestScenario `json:"scenario,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (p *PreviewCartItemsRequest) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetItemFields sets the ItemFields field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewCartItemsRequest) SetItemFields(itemFields *PreviewCartItemsRequestItemFields) {
+	p.ItemFields = itemFields
+	p.require(previewCartItemsRequestFieldItemFields)
+}
+
+// SetItems sets the Items field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewCartItemsRequest) SetItems(items []map[string]any) {
+	p.Items = items
+	p.require(previewCartItemsRequestFieldItems)
+}
+
+// SetPriceUnit sets the PriceUnit field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewCartItemsRequest) SetPriceUnit(priceUnit *PreviewCartItemsRequestPriceUnit) {
+	p.PriceUnit = priceUnit
+	p.require(previewCartItemsRequestFieldPriceUnit)
+}
+
+// SetScenario sets the Scenario field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewCartItemsRequest) SetScenario(scenario *PreviewCartItemsRequestScenario) {
+	p.Scenario = scenario
+	p.require(previewCartItemsRequestFieldScenario)
+}
+
+func (p *PreviewCartItemsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler PreviewCartItemsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*p = PreviewCartItemsRequest(body)
+	return nil
+}
+
+func (p *PreviewCartItemsRequest) MarshalJSON() ([]byte, error) {
+	type embed PreviewCartItemsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
 // One field a block condition may filter on. A block's own `field` and `operator` entries are two flat enums that pool every field's operators together, and the schema narrows them against each other when it validates - so `{"field": "tag", "operator": "is"}` parses and is then rejected. This is that narrowing, spelled out.
 var (
 	emailBlockConditionFieldReferenceFieldExample         = big.NewInt(1 << 0)
@@ -955,4 +1031,1012 @@ func (l *ListEmailBlocksResponse) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", l)
+}
+
+// Existing relative dotted paths. Blank values use defaults; unsafe prototype paths are rejected. Suggestions do not replace existing mappings.
+var (
+	previewCartItemsRequestItemFieldsFieldCurrency     = big.NewInt(1 << 0)
+	previewCartItemsRequestItemFieldsFieldImageURL     = big.NewInt(1 << 1)
+	previewCartItemsRequestItemFieldsFieldPrice        = big.NewInt(1 << 2)
+	previewCartItemsRequestItemFieldsFieldPriceCents   = big.NewInt(1 << 3)
+	previewCartItemsRequestItemFieldsFieldQuantity     = big.NewInt(1 << 4)
+	previewCartItemsRequestItemFieldsFieldTitle        = big.NewInt(1 << 5)
+	previewCartItemsRequestItemFieldsFieldURL          = big.NewInt(1 << 6)
+	previewCartItemsRequestItemFieldsFieldVariantTitle = big.NewInt(1 << 7)
+)
+
+type PreviewCartItemsRequestItemFields struct {
+	Currency     *string `json:"currency,omitempty" url:"currency,omitempty"`
+	ImageURL     *string `json:"imageUrl,omitempty" url:"imageUrl,omitempty"`
+	Price        *string `json:"price,omitempty" url:"price,omitempty"`
+	PriceCents   *string `json:"priceCents,omitempty" url:"priceCents,omitempty"`
+	Quantity     *string `json:"quantity,omitempty" url:"quantity,omitempty"`
+	Title        *string `json:"title,omitempty" url:"title,omitempty"`
+	URL          *string `json:"url,omitempty" url:"url,omitempty"`
+	VariantTitle *string `json:"variantTitle,omitempty" url:"variantTitle,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PreviewCartItemsRequestItemFields) GetCurrency() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Currency
+}
+
+func (p *PreviewCartItemsRequestItemFields) GetImageURL() *string {
+	if p == nil {
+		return nil
+	}
+	return p.ImageURL
+}
+
+func (p *PreviewCartItemsRequestItemFields) GetPrice() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Price
+}
+
+func (p *PreviewCartItemsRequestItemFields) GetPriceCents() *string {
+	if p == nil {
+		return nil
+	}
+	return p.PriceCents
+}
+
+func (p *PreviewCartItemsRequestItemFields) GetQuantity() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Quantity
+}
+
+func (p *PreviewCartItemsRequestItemFields) GetTitle() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Title
+}
+
+func (p *PreviewCartItemsRequestItemFields) GetURL() *string {
+	if p == nil {
+		return nil
+	}
+	return p.URL
+}
+
+func (p *PreviewCartItemsRequestItemFields) GetVariantTitle() *string {
+	if p == nil {
+		return nil
+	}
+	return p.VariantTitle
+}
+
+func (p *PreviewCartItemsRequestItemFields) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PreviewCartItemsRequestItemFields) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetCurrency sets the Currency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewCartItemsRequestItemFields) SetCurrency(currency *string) {
+	p.Currency = currency
+	p.require(previewCartItemsRequestItemFieldsFieldCurrency)
+}
+
+// SetImageURL sets the ImageURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewCartItemsRequestItemFields) SetImageURL(imageURL *string) {
+	p.ImageURL = imageURL
+	p.require(previewCartItemsRequestItemFieldsFieldImageURL)
+}
+
+// SetPrice sets the Price field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewCartItemsRequestItemFields) SetPrice(price *string) {
+	p.Price = price
+	p.require(previewCartItemsRequestItemFieldsFieldPrice)
+}
+
+// SetPriceCents sets the PriceCents field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewCartItemsRequestItemFields) SetPriceCents(priceCents *string) {
+	p.PriceCents = priceCents
+	p.require(previewCartItemsRequestItemFieldsFieldPriceCents)
+}
+
+// SetQuantity sets the Quantity field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewCartItemsRequestItemFields) SetQuantity(quantity *string) {
+	p.Quantity = quantity
+	p.require(previewCartItemsRequestItemFieldsFieldQuantity)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewCartItemsRequestItemFields) SetTitle(title *string) {
+	p.Title = title
+	p.require(previewCartItemsRequestItemFieldsFieldTitle)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewCartItemsRequestItemFields) SetURL(url *string) {
+	p.URL = url
+	p.require(previewCartItemsRequestItemFieldsFieldURL)
+}
+
+// SetVariantTitle sets the VariantTitle field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewCartItemsRequestItemFields) SetVariantTitle(variantTitle *string) {
+	p.VariantTitle = variantTitle
+	p.require(previewCartItemsRequestItemFieldsFieldVariantTitle)
+}
+
+func (p *PreviewCartItemsRequestItemFields) UnmarshalJSON(data []byte) error {
+	type unmarshaler PreviewCartItemsRequestItemFields
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PreviewCartItemsRequestItemFields(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PreviewCartItemsRequestItemFields) MarshalJSON() ([]byte, error) {
+	type embed PreviewCartItemsRequestItemFields
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PreviewCartItemsRequestItemFields) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// Numeric item prices use cents or explicit major units. The separate total remains in cents.
+type PreviewCartItemsRequestPriceUnit string
+
+const (
+	PreviewCartItemsRequestPriceUnitMinor PreviewCartItemsRequestPriceUnit = "minor"
+	PreviewCartItemsRequestPriceUnitMajor PreviewCartItemsRequestPriceUnit = "major"
+)
+
+func NewPreviewCartItemsRequestPriceUnitFromString(s string) (PreviewCartItemsRequestPriceUnit, error) {
+	switch s {
+	case "minor":
+		return PreviewCartItemsRequestPriceUnitMinor, nil
+	case "major":
+		return PreviewCartItemsRequestPriceUnitMajor, nil
+	}
+	var t PreviewCartItemsRequestPriceUnit
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PreviewCartItemsRequestPriceUnit) Ptr() *PreviewCartItemsRequestPriceUnit {
+	return &p
+}
+
+// Many returns 12 cloned rows; nonempty sample scenarios use a sample product if items are empty. Real preserves supplied items.
+type PreviewCartItemsRequestScenario string
+
+const (
+	PreviewCartItemsRequestScenarioReal          PreviewCartItemsRequestScenario = "real"
+	PreviewCartItemsRequestScenarioOne           PreviewCartItemsRequestScenario = "one"
+	PreviewCartItemsRequestScenarioMany          PreviewCartItemsRequestScenario = "many"
+	PreviewCartItemsRequestScenarioEmpty         PreviewCartItemsRequestScenario = "empty"
+	PreviewCartItemsRequestScenarioMissingImages PreviewCartItemsRequestScenario = "missing-images"
+	PreviewCartItemsRequestScenarioLongNames     PreviewCartItemsRequestScenario = "long-names"
+)
+
+func NewPreviewCartItemsRequestScenarioFromString(s string) (PreviewCartItemsRequestScenario, error) {
+	switch s {
+	case "real":
+		return PreviewCartItemsRequestScenarioReal, nil
+	case "one":
+		return PreviewCartItemsRequestScenarioOne, nil
+	case "many":
+		return PreviewCartItemsRequestScenarioMany, nil
+	case "empty":
+		return PreviewCartItemsRequestScenarioEmpty, nil
+	case "missing-images":
+		return PreviewCartItemsRequestScenarioMissingImages, nil
+	case "long-names":
+		return PreviewCartItemsRequestScenarioLongNames, nil
+	}
+	var t PreviewCartItemsRequestScenario
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PreviewCartItemsRequestScenario) Ptr() *PreviewCartItemsRequestScenario {
+	return &p
+}
+
+var (
+	previewCartItemsResponseFieldIsSample        = big.NewInt(1 << 0)
+	previewCartItemsResponseFieldPresets         = big.NewInt(1 << 1)
+	previewCartItemsResponseFieldPreviewItems    = big.NewInt(1 << 2)
+	previewCartItemsResponseFieldPriceCandidates = big.NewInt(1 << 3)
+	previewCartItemsResponseFieldScenario        = big.NewInt(1 << 4)
+	previewCartItemsResponseFieldSuccess         = big.NewInt(1 << 5)
+	previewCartItemsResponseFieldSuggestions     = big.NewInt(1 << 6)
+)
+
+type PreviewCartItemsResponse struct {
+	// True for every scenario except real.
+	IsSample     bool                                   `json:"isSample" url:"isSample"`
+	Presets      []*PreviewCartItemsResponsePresetsItem `json:"presets" url:"presets"`
+	PreviewItems []map[string]any                       `json:"previewItems" url:"previewItems"`
+	// Numeric prices requiring explicit unit selection.
+	PriceCandidates []*PreviewCartItemsResponsePriceCandidatesItem `json:"priceCandidates" url:"priceCandidates"`
+	Scenario        PreviewCartItemsResponseScenario               `json:"scenario" url:"scenario"`
+	Success         bool                                           `json:"success" url:"success"`
+	Suggestions     []*PreviewCartItemsResponseSuggestionsItem     `json:"suggestions" url:"suggestions"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PreviewCartItemsResponse) GetIsSample() bool {
+	if p == nil {
+		return false
+	}
+	return p.IsSample
+}
+
+func (p *PreviewCartItemsResponse) GetPresets() []*PreviewCartItemsResponsePresetsItem {
+	if p == nil {
+		return nil
+	}
+	return p.Presets
+}
+
+func (p *PreviewCartItemsResponse) GetPreviewItems() []map[string]any {
+	if p == nil {
+		return nil
+	}
+	return p.PreviewItems
+}
+
+func (p *PreviewCartItemsResponse) GetPriceCandidates() []*PreviewCartItemsResponsePriceCandidatesItem {
+	if p == nil {
+		return nil
+	}
+	return p.PriceCandidates
+}
+
+func (p *PreviewCartItemsResponse) GetScenario() PreviewCartItemsResponseScenario {
+	if p == nil {
+		return ""
+	}
+	return p.Scenario
+}
+
+func (p *PreviewCartItemsResponse) GetSuccess() bool {
+	if p == nil {
+		return false
+	}
+	return p.Success
+}
+
+func (p *PreviewCartItemsResponse) GetSuggestions() []*PreviewCartItemsResponseSuggestionsItem {
+	if p == nil {
+		return nil
+	}
+	return p.Suggestions
+}
+
+func (p *PreviewCartItemsResponse) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PreviewCartItemsResponse) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetIsSample sets the IsSample field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewCartItemsResponse) SetIsSample(isSample bool) {
+	p.IsSample = isSample
+	p.require(previewCartItemsResponseFieldIsSample)
+}
+
+// SetPresets sets the Presets field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewCartItemsResponse) SetPresets(presets []*PreviewCartItemsResponsePresetsItem) {
+	p.Presets = presets
+	p.require(previewCartItemsResponseFieldPresets)
+}
+
+// SetPreviewItems sets the PreviewItems field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewCartItemsResponse) SetPreviewItems(previewItems []map[string]any) {
+	p.PreviewItems = previewItems
+	p.require(previewCartItemsResponseFieldPreviewItems)
+}
+
+// SetPriceCandidates sets the PriceCandidates field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewCartItemsResponse) SetPriceCandidates(priceCandidates []*PreviewCartItemsResponsePriceCandidatesItem) {
+	p.PriceCandidates = priceCandidates
+	p.require(previewCartItemsResponseFieldPriceCandidates)
+}
+
+// SetScenario sets the Scenario field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewCartItemsResponse) SetScenario(scenario PreviewCartItemsResponseScenario) {
+	p.Scenario = scenario
+	p.require(previewCartItemsResponseFieldScenario)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewCartItemsResponse) SetSuccess(success bool) {
+	p.Success = success
+	p.require(previewCartItemsResponseFieldSuccess)
+}
+
+// SetSuggestions sets the Suggestions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewCartItemsResponse) SetSuggestions(suggestions []*PreviewCartItemsResponseSuggestionsItem) {
+	p.Suggestions = suggestions
+	p.require(previewCartItemsResponseFieldSuggestions)
+}
+
+func (p *PreviewCartItemsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler PreviewCartItemsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PreviewCartItemsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PreviewCartItemsResponse) MarshalJSON() ([]byte, error) {
+	type embed PreviewCartItemsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PreviewCartItemsResponse) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	previewCartItemsResponsePresetsItemFieldDescription = big.NewInt(1 << 0)
+	previewCartItemsResponsePresetsItemFieldID          = big.NewInt(1 << 1)
+	previewCartItemsResponsePresetsItemFieldLabel       = big.NewInt(1 << 2)
+	previewCartItemsResponsePresetsItemFieldSettings    = big.NewInt(1 << 3)
+)
+
+type PreviewCartItemsResponsePresetsItem struct {
+	Description string                                       `json:"description" url:"description"`
+	ID          string                                       `json:"id" url:"id"`
+	Label       string                                       `json:"label" url:"label"`
+	Settings    *PreviewCartItemsResponsePresetsItemSettings `json:"settings" url:"settings"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PreviewCartItemsResponsePresetsItem) GetDescription() string {
+	if p == nil {
+		return ""
+	}
+	return p.Description
+}
+
+func (p *PreviewCartItemsResponsePresetsItem) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PreviewCartItemsResponsePresetsItem) GetLabel() string {
+	if p == nil {
+		return ""
+	}
+	return p.Label
+}
+
+func (p *PreviewCartItemsResponsePresetsItem) GetSettings() *PreviewCartItemsResponsePresetsItemSettings {
+	if p == nil {
+		return nil
+	}
+	return p.Settings
+}
+
+func (p *PreviewCartItemsResponsePresetsItem) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PreviewCartItemsResponsePresetsItem) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetDescription sets the Description field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewCartItemsResponsePresetsItem) SetDescription(description string) {
+	p.Description = description
+	p.require(previewCartItemsResponsePresetsItemFieldDescription)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewCartItemsResponsePresetsItem) SetID(id string) {
+	p.ID = id
+	p.require(previewCartItemsResponsePresetsItemFieldID)
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewCartItemsResponsePresetsItem) SetLabel(label string) {
+	p.Label = label
+	p.require(previewCartItemsResponsePresetsItemFieldLabel)
+}
+
+// SetSettings sets the Settings field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewCartItemsResponsePresetsItem) SetSettings(settings *PreviewCartItemsResponsePresetsItemSettings) {
+	p.Settings = settings
+	p.require(previewCartItemsResponsePresetsItemFieldSettings)
+}
+
+func (p *PreviewCartItemsResponsePresetsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler PreviewCartItemsResponsePresetsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PreviewCartItemsResponsePresetsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PreviewCartItemsResponsePresetsItem) MarshalJSON() ([]byte, error) {
+	type embed PreviewCartItemsResponsePresetsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PreviewCartItemsResponsePresetsItem) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	previewCartItemsResponsePresetsItemSettingsFieldFontSize   = big.NewInt(1 << 0)
+	previewCartItemsResponsePresetsItemSettingsFieldImageFit   = big.NewInt(1 << 1)
+	previewCartItemsResponsePresetsItemSettingsFieldImageSize  = big.NewInt(1 << 2)
+	previewCartItemsResponsePresetsItemSettingsFieldRowSpacing = big.NewInt(1 << 3)
+)
+
+type PreviewCartItemsResponsePresetsItemSettings struct {
+	FontSize   *int                                                 `json:"fontSize,omitempty" url:"fontSize,omitempty"`
+	ImageFit   *PreviewCartItemsResponsePresetsItemSettingsImageFit `json:"imageFit,omitempty" url:"imageFit,omitempty"`
+	ImageSize  *int                                                 `json:"imageSize,omitempty" url:"imageSize,omitempty"`
+	RowSpacing *int                                                 `json:"rowSpacing,omitempty" url:"rowSpacing,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PreviewCartItemsResponsePresetsItemSettings) GetFontSize() *int {
+	if p == nil {
+		return nil
+	}
+	return p.FontSize
+}
+
+func (p *PreviewCartItemsResponsePresetsItemSettings) GetImageFit() *PreviewCartItemsResponsePresetsItemSettingsImageFit {
+	if p == nil {
+		return nil
+	}
+	return p.ImageFit
+}
+
+func (p *PreviewCartItemsResponsePresetsItemSettings) GetImageSize() *int {
+	if p == nil {
+		return nil
+	}
+	return p.ImageSize
+}
+
+func (p *PreviewCartItemsResponsePresetsItemSettings) GetRowSpacing() *int {
+	if p == nil {
+		return nil
+	}
+	return p.RowSpacing
+}
+
+func (p *PreviewCartItemsResponsePresetsItemSettings) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PreviewCartItemsResponsePresetsItemSettings) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetFontSize sets the FontSize field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewCartItemsResponsePresetsItemSettings) SetFontSize(fontSize *int) {
+	p.FontSize = fontSize
+	p.require(previewCartItemsResponsePresetsItemSettingsFieldFontSize)
+}
+
+// SetImageFit sets the ImageFit field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewCartItemsResponsePresetsItemSettings) SetImageFit(imageFit *PreviewCartItemsResponsePresetsItemSettingsImageFit) {
+	p.ImageFit = imageFit
+	p.require(previewCartItemsResponsePresetsItemSettingsFieldImageFit)
+}
+
+// SetImageSize sets the ImageSize field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewCartItemsResponsePresetsItemSettings) SetImageSize(imageSize *int) {
+	p.ImageSize = imageSize
+	p.require(previewCartItemsResponsePresetsItemSettingsFieldImageSize)
+}
+
+// SetRowSpacing sets the RowSpacing field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewCartItemsResponsePresetsItemSettings) SetRowSpacing(rowSpacing *int) {
+	p.RowSpacing = rowSpacing
+	p.require(previewCartItemsResponsePresetsItemSettingsFieldRowSpacing)
+}
+
+func (p *PreviewCartItemsResponsePresetsItemSettings) UnmarshalJSON(data []byte) error {
+	type unmarshaler PreviewCartItemsResponsePresetsItemSettings
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PreviewCartItemsResponsePresetsItemSettings(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PreviewCartItemsResponsePresetsItemSettings) MarshalJSON() ([]byte, error) {
+	type embed PreviewCartItemsResponsePresetsItemSettings
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PreviewCartItemsResponsePresetsItemSettings) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+type PreviewCartItemsResponsePresetsItemSettingsImageFit string
+
+const (
+	PreviewCartItemsResponsePresetsItemSettingsImageFitCover   PreviewCartItemsResponsePresetsItemSettingsImageFit = "cover"
+	PreviewCartItemsResponsePresetsItemSettingsImageFitContain PreviewCartItemsResponsePresetsItemSettingsImageFit = "contain"
+)
+
+func NewPreviewCartItemsResponsePresetsItemSettingsImageFitFromString(s string) (PreviewCartItemsResponsePresetsItemSettingsImageFit, error) {
+	switch s {
+	case "cover":
+		return PreviewCartItemsResponsePresetsItemSettingsImageFitCover, nil
+	case "contain":
+		return PreviewCartItemsResponsePresetsItemSettingsImageFitContain, nil
+	}
+	var t PreviewCartItemsResponsePresetsItemSettingsImageFit
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PreviewCartItemsResponsePresetsItemSettingsImageFit) Ptr() *PreviewCartItemsResponsePresetsItemSettingsImageFit {
+	return &p
+}
+
+var (
+	previewCartItemsResponsePriceCandidatesItemFieldExample = big.NewInt(1 << 0)
+	previewCartItemsResponsePriceCandidatesItemFieldPath    = big.NewInt(1 << 1)
+	previewCartItemsResponsePriceCandidatesItemFieldUnits   = big.NewInt(1 << 2)
+)
+
+type PreviewCartItemsResponsePriceCandidatesItem struct {
+	Example string                                           `json:"example" url:"example"`
+	Path    string                                           `json:"path" url:"path"`
+	Units   PreviewCartItemsResponsePriceCandidatesItemUnits `json:"units" url:"units"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PreviewCartItemsResponsePriceCandidatesItem) GetExample() string {
+	if p == nil {
+		return ""
+	}
+	return p.Example
+}
+
+func (p *PreviewCartItemsResponsePriceCandidatesItem) GetPath() string {
+	if p == nil {
+		return ""
+	}
+	return p.Path
+}
+
+func (p *PreviewCartItemsResponsePriceCandidatesItem) GetUnits() PreviewCartItemsResponsePriceCandidatesItemUnits {
+	if p == nil {
+		return ""
+	}
+	return p.Units
+}
+
+func (p *PreviewCartItemsResponsePriceCandidatesItem) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PreviewCartItemsResponsePriceCandidatesItem) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetExample sets the Example field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewCartItemsResponsePriceCandidatesItem) SetExample(example string) {
+	p.Example = example
+	p.require(previewCartItemsResponsePriceCandidatesItemFieldExample)
+}
+
+// SetPath sets the Path field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewCartItemsResponsePriceCandidatesItem) SetPath(path string) {
+	p.Path = path
+	p.require(previewCartItemsResponsePriceCandidatesItemFieldPath)
+}
+
+// SetUnits sets the Units field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewCartItemsResponsePriceCandidatesItem) SetUnits(units PreviewCartItemsResponsePriceCandidatesItemUnits) {
+	p.Units = units
+	p.require(previewCartItemsResponsePriceCandidatesItemFieldUnits)
+}
+
+func (p *PreviewCartItemsResponsePriceCandidatesItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler PreviewCartItemsResponsePriceCandidatesItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PreviewCartItemsResponsePriceCandidatesItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PreviewCartItemsResponsePriceCandidatesItem) MarshalJSON() ([]byte, error) {
+	type embed PreviewCartItemsResponsePriceCandidatesItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PreviewCartItemsResponsePriceCandidatesItem) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+type PreviewCartItemsResponsePriceCandidatesItemUnits string
+
+const (
+	PreviewCartItemsResponsePriceCandidatesItemUnitsUnknown PreviewCartItemsResponsePriceCandidatesItemUnits = "unknown"
+)
+
+func NewPreviewCartItemsResponsePriceCandidatesItemUnitsFromString(s string) (PreviewCartItemsResponsePriceCandidatesItemUnits, error) {
+	switch s {
+	case "unknown":
+		return PreviewCartItemsResponsePriceCandidatesItemUnitsUnknown, nil
+	}
+	var t PreviewCartItemsResponsePriceCandidatesItemUnits
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PreviewCartItemsResponsePriceCandidatesItemUnits) Ptr() *PreviewCartItemsResponsePriceCandidatesItemUnits {
+	return &p
+}
+
+type PreviewCartItemsResponseScenario string
+
+const (
+	PreviewCartItemsResponseScenarioReal          PreviewCartItemsResponseScenario = "real"
+	PreviewCartItemsResponseScenarioOne           PreviewCartItemsResponseScenario = "one"
+	PreviewCartItemsResponseScenarioMany          PreviewCartItemsResponseScenario = "many"
+	PreviewCartItemsResponseScenarioEmpty         PreviewCartItemsResponseScenario = "empty"
+	PreviewCartItemsResponseScenarioMissingImages PreviewCartItemsResponseScenario = "missing-images"
+	PreviewCartItemsResponseScenarioLongNames     PreviewCartItemsResponseScenario = "long-names"
+)
+
+func NewPreviewCartItemsResponseScenarioFromString(s string) (PreviewCartItemsResponseScenario, error) {
+	switch s {
+	case "real":
+		return PreviewCartItemsResponseScenarioReal, nil
+	case "one":
+		return PreviewCartItemsResponseScenarioOne, nil
+	case "many":
+		return PreviewCartItemsResponseScenarioMany, nil
+	case "empty":
+		return PreviewCartItemsResponseScenarioEmpty, nil
+	case "missing-images":
+		return PreviewCartItemsResponseScenarioMissingImages, nil
+	case "long-names":
+		return PreviewCartItemsResponseScenarioLongNames, nil
+	}
+	var t PreviewCartItemsResponseScenario
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PreviewCartItemsResponseScenario) Ptr() *PreviewCartItemsResponseScenario {
+	return &p
+}
+
+var (
+	previewCartItemsResponseSuggestionsItemFieldExample = big.NewInt(1 << 0)
+	previewCartItemsResponseSuggestionsItemFieldField   = big.NewInt(1 << 1)
+	previewCartItemsResponseSuggestionsItemFieldPath    = big.NewInt(1 << 2)
+)
+
+type PreviewCartItemsResponseSuggestionsItem struct {
+	Example string `json:"example" url:"example"`
+	Field   string `json:"field" url:"field"`
+	Path    string `json:"path" url:"path"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PreviewCartItemsResponseSuggestionsItem) GetExample() string {
+	if p == nil {
+		return ""
+	}
+	return p.Example
+}
+
+func (p *PreviewCartItemsResponseSuggestionsItem) GetField() string {
+	if p == nil {
+		return ""
+	}
+	return p.Field
+}
+
+func (p *PreviewCartItemsResponseSuggestionsItem) GetPath() string {
+	if p == nil {
+		return ""
+	}
+	return p.Path
+}
+
+func (p *PreviewCartItemsResponseSuggestionsItem) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PreviewCartItemsResponseSuggestionsItem) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetExample sets the Example field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewCartItemsResponseSuggestionsItem) SetExample(example string) {
+	p.Example = example
+	p.require(previewCartItemsResponseSuggestionsItemFieldExample)
+}
+
+// SetField sets the Field field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewCartItemsResponseSuggestionsItem) SetField(field string) {
+	p.Field = field
+	p.require(previewCartItemsResponseSuggestionsItemFieldField)
+}
+
+// SetPath sets the Path field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewCartItemsResponseSuggestionsItem) SetPath(path string) {
+	p.Path = path
+	p.require(previewCartItemsResponseSuggestionsItemFieldPath)
+}
+
+func (p *PreviewCartItemsResponseSuggestionsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler PreviewCartItemsResponseSuggestionsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PreviewCartItemsResponseSuggestionsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PreviewCartItemsResponseSuggestionsItem) MarshalJSON() ([]byte, error) {
+	type embed PreviewCartItemsResponseSuggestionsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PreviewCartItemsResponseSuggestionsItem) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
 }

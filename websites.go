@@ -104,8 +104,8 @@ type Website struct {
 	CreatedAt *time.Time `json:"createdAt,omitempty" url:"createdAt,omitempty"`
 	// Normalized DKIM type, status, and diagnostics.
 	Dkim map[string]any `json:"dkim,omitempty" url:"dkim,omitempty"`
-	// The DNS records to publish and their per-record verification status (DKIM, SPF, DMARC, MAIL FROM).
-	DNSRecords map[string]any `json:"dnsRecords,omitempty" url:"dnsRecords,omitempty"`
+	// The DNS records to publish and their per-record verification status. Custom reply routing is independent of sending readiness. GET returns stored results; POST verify performs a fresh check.
+	DNSRecords *WebsiteDNSRecords `json:"dnsRecords,omitempty" url:"dnsRecords,omitempty"`
 	// Whether the customer DNS records are verified.
 	DNSVerified    *bool      `json:"dnsVerified,omitempty" url:"dnsVerified,omitempty"`
 	Domain         *string    `json:"domain,omitempty" url:"domain,omitempty"`
@@ -146,7 +146,7 @@ func (w *Website) GetDkim() map[string]any {
 	return w.Dkim
 }
 
-func (w *Website) GetDNSRecords() map[string]any {
+func (w *Website) GetDNSRecords() *WebsiteDNSRecords {
 	if w == nil {
 		return nil
 	}
@@ -260,7 +260,7 @@ func (w *Website) SetDkim(dkim map[string]any) {
 
 // SetDNSRecords sets the DNSRecords field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (w *Website) SetDNSRecords(dnsRecords map[string]any) {
+func (w *Website) SetDNSRecords(dnsRecords *WebsiteDNSRecords) {
 	w.DNSRecords = dnsRecords
 	w.require(websiteFieldDNSRecords)
 }
@@ -398,6 +398,302 @@ func (w *Website) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", w)
+}
+
+// The DNS records to publish and their per-record verification status. Custom reply routing is independent of sending readiness. GET returns stored results; POST verify performs a fresh check.
+var (
+	websiteDNSRecordsFieldInboundRoutingError       = big.NewInt(1 << 0)
+	websiteDNSRecordsFieldInboundRoutingStatus      = big.NewInt(1 << 1)
+	websiteDNSRecordsFieldInboundVerificationRecord = big.NewInt(1 << 2)
+	websiteDNSRecordsFieldInboundVerificationStatus = big.NewInt(1 << 3)
+)
+
+type WebsiteDNSRecords struct {
+	// Last reply-routing error and recovery instruction. Null when there is no stored error; omitted when no inbound MX record exists. Retry verification after correcting DNS or a temporary provider failure.
+	InboundRoutingError *string `json:"inboundRoutingError,omitempty" url:"inboundRoutingError,omitempty"`
+	// Customer-facing reply readiness from stored checks, returned when an inbound MX record exists. SES routes require verified MX, receiving ownership, and an active receiving rule. Unchecked legacy SES routes display pending; retained MTA reply routes keep their existing status. Inconclusive ownership checks preserve the underlying route and previously confirmed ownership, with an error for retry.
+	InboundRoutingStatus *WebsiteDNSRecordsInboundRoutingStatus `json:"inboundRoutingStatus,omitempty" url:"inboundRoutingStatus,omitempty"`
+	// Optional public TXT record for an existing reply hostname outside its verified sending domain. Verification prepares this after the inbound MX verifies. Publish the exact value at the fully qualified name, then verify again. Absence can mean verification is already covered, preparation has not run, or preparation failed; inspect inboundRoutingStatus/error. This generated field cannot be set or cleared through the website API.
+	InboundVerificationRecord *WebsiteDNSRecordsInboundVerificationRecord `json:"inboundVerificationRecord,omitempty" url:"inboundVerificationRecord,omitempty"`
+	// Stored receiving-domain ownership status, absent before it has been checked. Pending is not active routing. Existing sending-domain verification can satisfy ownership without an additional TXT record.
+	InboundVerificationStatus *WebsiteDNSRecordsInboundVerificationStatus `json:"inboundVerificationStatus,omitempty" url:"inboundVerificationStatus,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	ExtraProperties map[string]interface{} `json:"-" url:"-"`
+
+	rawJSON json.RawMessage
+}
+
+func (w *WebsiteDNSRecords) GetInboundRoutingError() *string {
+	if w == nil {
+		return nil
+	}
+	return w.InboundRoutingError
+}
+
+func (w *WebsiteDNSRecords) GetInboundRoutingStatus() *WebsiteDNSRecordsInboundRoutingStatus {
+	if w == nil {
+		return nil
+	}
+	return w.InboundRoutingStatus
+}
+
+func (w *WebsiteDNSRecords) GetInboundVerificationRecord() *WebsiteDNSRecordsInboundVerificationRecord {
+	if w == nil {
+		return nil
+	}
+	return w.InboundVerificationRecord
+}
+
+func (w *WebsiteDNSRecords) GetInboundVerificationStatus() *WebsiteDNSRecordsInboundVerificationStatus {
+	if w == nil {
+		return nil
+	}
+	return w.InboundVerificationStatus
+}
+
+func (w *WebsiteDNSRecords) GetExtraProperties() map[string]interface{} {
+	if w == nil {
+		return nil
+	}
+	return w.ExtraProperties
+}
+
+func (w *WebsiteDNSRecords) require(field *big.Int) {
+	if w.explicitFields == nil {
+		w.explicitFields = big.NewInt(0)
+	}
+	w.explicitFields.Or(w.explicitFields, field)
+}
+
+// SetInboundRoutingError sets the InboundRoutingError field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSRecords) SetInboundRoutingError(inboundRoutingError *string) {
+	w.InboundRoutingError = inboundRoutingError
+	w.require(websiteDNSRecordsFieldInboundRoutingError)
+}
+
+// SetInboundRoutingStatus sets the InboundRoutingStatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSRecords) SetInboundRoutingStatus(inboundRoutingStatus *WebsiteDNSRecordsInboundRoutingStatus) {
+	w.InboundRoutingStatus = inboundRoutingStatus
+	w.require(websiteDNSRecordsFieldInboundRoutingStatus)
+}
+
+// SetInboundVerificationRecord sets the InboundVerificationRecord field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSRecords) SetInboundVerificationRecord(inboundVerificationRecord *WebsiteDNSRecordsInboundVerificationRecord) {
+	w.InboundVerificationRecord = inboundVerificationRecord
+	w.require(websiteDNSRecordsFieldInboundVerificationRecord)
+}
+
+// SetInboundVerificationStatus sets the InboundVerificationStatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSRecords) SetInboundVerificationStatus(inboundVerificationStatus *WebsiteDNSRecordsInboundVerificationStatus) {
+	w.InboundVerificationStatus = inboundVerificationStatus
+	w.require(websiteDNSRecordsFieldInboundVerificationStatus)
+}
+
+func (w *WebsiteDNSRecords) UnmarshalJSON(data []byte) error {
+	type embed WebsiteDNSRecords
+	var unmarshaler = struct {
+		embed
+	}{
+		embed: embed(*w),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*w = WebsiteDNSRecords(unmarshaler.embed)
+	extraProperties, err := internal.ExtractExtraProperties(data, *w)
+	if err != nil {
+		return err
+	}
+	w.ExtraProperties = extraProperties
+	w.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (w *WebsiteDNSRecords) MarshalJSON() ([]byte, error) {
+	type embed WebsiteDNSRecords
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*w),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, w.explicitFields)
+	return internal.MarshalJSONWithExtraProperties(explicitMarshaler, w.ExtraProperties)
+}
+
+func (w *WebsiteDNSRecords) String() string {
+	if w == nil {
+		return "<nil>"
+	}
+	if len(w.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(w.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(w); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", w)
+}
+
+// Customer-facing reply readiness from stored checks, returned when an inbound MX record exists. SES routes require verified MX, receiving ownership, and an active receiving rule. Unchecked legacy SES routes display pending; retained MTA reply routes keep their existing status. Inconclusive ownership checks preserve the underlying route and previously confirmed ownership, with an error for retry.
+type WebsiteDNSRecordsInboundRoutingStatus string
+
+const (
+	WebsiteDNSRecordsInboundRoutingStatusPending WebsiteDNSRecordsInboundRoutingStatus = "pending"
+	WebsiteDNSRecordsInboundRoutingStatusActive  WebsiteDNSRecordsInboundRoutingStatus = "active"
+	WebsiteDNSRecordsInboundRoutingStatusFailed  WebsiteDNSRecordsInboundRoutingStatus = "failed"
+)
+
+func NewWebsiteDNSRecordsInboundRoutingStatusFromString(s string) (WebsiteDNSRecordsInboundRoutingStatus, error) {
+	switch s {
+	case "pending":
+		return WebsiteDNSRecordsInboundRoutingStatusPending, nil
+	case "active":
+		return WebsiteDNSRecordsInboundRoutingStatusActive, nil
+	case "failed":
+		return WebsiteDNSRecordsInboundRoutingStatusFailed, nil
+	}
+	var t WebsiteDNSRecordsInboundRoutingStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (w WebsiteDNSRecordsInboundRoutingStatus) Ptr() *WebsiteDNSRecordsInboundRoutingStatus {
+	return &w
+}
+
+// Optional public TXT record for an existing reply hostname outside its verified sending domain. Verification prepares this after the inbound MX verifies. Publish the exact value at the fully qualified name, then verify again. Absence can mean verification is already covered, preparation has not run, or preparation failed; inspect inboundRoutingStatus/error. This generated field cannot be set or cleared through the website API.
+var (
+	websiteDNSRecordsInboundVerificationRecordFieldName  = big.NewInt(1 << 0)
+	websiteDNSRecordsInboundVerificationRecordFieldValue = big.NewInt(1 << 1)
+)
+
+type WebsiteDNSRecordsInboundVerificationRecord struct {
+	Name string `json:"name" url:"name"`
+	// Public domain-ownership token, not an API credential.
+	Value string `json:"value" url:"value"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (w *WebsiteDNSRecordsInboundVerificationRecord) GetName() string {
+	if w == nil {
+		return ""
+	}
+	return w.Name
+}
+
+func (w *WebsiteDNSRecordsInboundVerificationRecord) GetValue() string {
+	if w == nil {
+		return ""
+	}
+	return w.Value
+}
+
+func (w *WebsiteDNSRecordsInboundVerificationRecord) GetExtraProperties() map[string]interface{} {
+	if w == nil {
+		return nil
+	}
+	return w.extraProperties
+}
+
+func (w *WebsiteDNSRecordsInboundVerificationRecord) require(field *big.Int) {
+	if w.explicitFields == nil {
+		w.explicitFields = big.NewInt(0)
+	}
+	w.explicitFields.Or(w.explicitFields, field)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSRecordsInboundVerificationRecord) SetName(name string) {
+	w.Name = name
+	w.require(websiteDNSRecordsInboundVerificationRecordFieldName)
+}
+
+// SetValue sets the Value field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSRecordsInboundVerificationRecord) SetValue(value string) {
+	w.Value = value
+	w.require(websiteDNSRecordsInboundVerificationRecordFieldValue)
+}
+
+func (w *WebsiteDNSRecordsInboundVerificationRecord) UnmarshalJSON(data []byte) error {
+	type unmarshaler WebsiteDNSRecordsInboundVerificationRecord
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*w = WebsiteDNSRecordsInboundVerificationRecord(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *w)
+	if err != nil {
+		return err
+	}
+	w.extraProperties = extraProperties
+	w.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (w *WebsiteDNSRecordsInboundVerificationRecord) MarshalJSON() ([]byte, error) {
+	type embed WebsiteDNSRecordsInboundVerificationRecord
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*w),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, w.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (w *WebsiteDNSRecordsInboundVerificationRecord) String() string {
+	if w == nil {
+		return "<nil>"
+	}
+	if len(w.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(w.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(w); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", w)
+}
+
+// Stored receiving-domain ownership status, absent before it has been checked. Pending is not active routing. Existing sending-domain verification can satisfy ownership without an additional TXT record.
+type WebsiteDNSRecordsInboundVerificationStatus string
+
+const (
+	WebsiteDNSRecordsInboundVerificationStatusPending       WebsiteDNSRecordsInboundVerificationStatus = "pending"
+	WebsiteDNSRecordsInboundVerificationStatusVerified      WebsiteDNSRecordsInboundVerificationStatus = "verified"
+	WebsiteDNSRecordsInboundVerificationStatusMisconfigured WebsiteDNSRecordsInboundVerificationStatus = "misconfigured"
+)
+
+func NewWebsiteDNSRecordsInboundVerificationStatusFromString(s string) (WebsiteDNSRecordsInboundVerificationStatus, error) {
+	switch s {
+	case "pending":
+		return WebsiteDNSRecordsInboundVerificationStatusPending, nil
+	case "verified":
+		return WebsiteDNSRecordsInboundVerificationStatusVerified, nil
+	case "misconfigured":
+		return WebsiteDNSRecordsInboundVerificationStatusMisconfigured, nil
+	}
+	var t WebsiteDNSRecordsInboundVerificationStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (w WebsiteDNSRecordsInboundVerificationStatus) Ptr() *WebsiteDNSRecordsInboundVerificationStatus {
+	return &w
 }
 
 // Customer-facing sending readiness. When readyToSend is false, reason says why; dns_* reasons describe your DNS records, while activation reasons resolve on Sequenzy's side.

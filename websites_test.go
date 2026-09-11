@@ -119,7 +119,7 @@ func TestSettersWebsite(t *testing.T) {
 
 	t.Run("SetDNSRecords", func(t *testing.T) {
 		obj := &Website{}
-		var fernTestValueDNSRecords map[string]any
+		var fernTestValueDNSRecords *WebsiteDNSRecords
 		obj.SetDNSRecords(fernTestValueDNSRecords)
 		assert.Equal(t, fernTestValueDNSRecords, obj.DNSRecords)
 		assert.NotNil(t, obj.explicitFields)
@@ -286,7 +286,7 @@ func TestGettersWebsite(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &Website{}
-		var expected map[string]any
+		var expected *WebsiteDNSRecords
 		obj.DNSRecords = expected
 
 		// Act & Assert
@@ -747,7 +747,7 @@ func TestSettersMarkExplicitWebsite(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &Website{}
-		var fernTestValueDNSRecords map[string]any
+		var fernTestValueDNSRecords *WebsiteDNSRecords
 
 		// Act
 		obj.SetDNSRecords(fernTestValueDNSRecords)
@@ -1092,6 +1092,436 @@ func TestSettersMarkExplicitWebsite(t *testing.T) {
 
 		// Act
 		obj.SetStatus(fernTestValueStatus)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersWebsiteDNSRecords(t *testing.T) {
+	t.Run("SetInboundRoutingError", func(t *testing.T) {
+		obj := &WebsiteDNSRecords{}
+		var fernTestValueInboundRoutingError *string
+		obj.SetInboundRoutingError(fernTestValueInboundRoutingError)
+		assert.Equal(t, fernTestValueInboundRoutingError, obj.InboundRoutingError)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetInboundRoutingStatus", func(t *testing.T) {
+		obj := &WebsiteDNSRecords{}
+		var fernTestValueInboundRoutingStatus *WebsiteDNSRecordsInboundRoutingStatus
+		obj.SetInboundRoutingStatus(fernTestValueInboundRoutingStatus)
+		assert.Equal(t, fernTestValueInboundRoutingStatus, obj.InboundRoutingStatus)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetInboundVerificationRecord", func(t *testing.T) {
+		obj := &WebsiteDNSRecords{}
+		var fernTestValueInboundVerificationRecord *WebsiteDNSRecordsInboundVerificationRecord
+		obj.SetInboundVerificationRecord(fernTestValueInboundVerificationRecord)
+		assert.Equal(t, fernTestValueInboundVerificationRecord, obj.InboundVerificationRecord)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetInboundVerificationStatus", func(t *testing.T) {
+		obj := &WebsiteDNSRecords{}
+		var fernTestValueInboundVerificationStatus *WebsiteDNSRecordsInboundVerificationStatus
+		obj.SetInboundVerificationStatus(fernTestValueInboundVerificationStatus)
+		assert.Equal(t, fernTestValueInboundVerificationStatus, obj.InboundVerificationStatus)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersWebsiteDNSRecords(t *testing.T) {
+	t.Run("GetInboundRoutingError", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &WebsiteDNSRecords{}
+		var expected *string
+		obj.InboundRoutingError = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetInboundRoutingError(), "getter should return the property value")
+	})
+
+	t.Run("GetInboundRoutingError_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &WebsiteDNSRecords{}
+		obj.InboundRoutingError = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetInboundRoutingError(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetInboundRoutingError_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *WebsiteDNSRecords
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetInboundRoutingError() // Should return zero value
+	})
+
+	t.Run("GetInboundRoutingStatus", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &WebsiteDNSRecords{}
+		var expected *WebsiteDNSRecordsInboundRoutingStatus
+		obj.InboundRoutingStatus = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetInboundRoutingStatus(), "getter should return the property value")
+	})
+
+	t.Run("GetInboundRoutingStatus_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &WebsiteDNSRecords{}
+		obj.InboundRoutingStatus = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetInboundRoutingStatus(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetInboundRoutingStatus_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *WebsiteDNSRecords
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetInboundRoutingStatus() // Should return zero value
+	})
+
+	t.Run("GetInboundVerificationRecord", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &WebsiteDNSRecords{}
+		var expected *WebsiteDNSRecordsInboundVerificationRecord
+		obj.InboundVerificationRecord = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetInboundVerificationRecord(), "getter should return the property value")
+	})
+
+	t.Run("GetInboundVerificationRecord_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &WebsiteDNSRecords{}
+		obj.InboundVerificationRecord = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetInboundVerificationRecord(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetInboundVerificationRecord_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *WebsiteDNSRecords
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetInboundVerificationRecord() // Should return zero value
+	})
+
+	t.Run("GetInboundVerificationStatus", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &WebsiteDNSRecords{}
+		var expected *WebsiteDNSRecordsInboundVerificationStatus
+		obj.InboundVerificationStatus = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetInboundVerificationStatus(), "getter should return the property value")
+	})
+
+	t.Run("GetInboundVerificationStatus_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &WebsiteDNSRecords{}
+		obj.InboundVerificationStatus = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetInboundVerificationStatus(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetInboundVerificationStatus_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *WebsiteDNSRecords
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetInboundVerificationStatus() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitWebsiteDNSRecords(t *testing.T) {
+	t.Run("SetInboundRoutingError_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &WebsiteDNSRecords{}
+		var fernTestValueInboundRoutingError *string
+
+		// Act
+		obj.SetInboundRoutingError(fernTestValueInboundRoutingError)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetInboundRoutingStatus_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &WebsiteDNSRecords{}
+		var fernTestValueInboundRoutingStatus *WebsiteDNSRecordsInboundRoutingStatus
+
+		// Act
+		obj.SetInboundRoutingStatus(fernTestValueInboundRoutingStatus)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetInboundVerificationRecord_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &WebsiteDNSRecords{}
+		var fernTestValueInboundVerificationRecord *WebsiteDNSRecordsInboundVerificationRecord
+
+		// Act
+		obj.SetInboundVerificationRecord(fernTestValueInboundVerificationRecord)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetInboundVerificationStatus_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &WebsiteDNSRecords{}
+		var fernTestValueInboundVerificationStatus *WebsiteDNSRecordsInboundVerificationStatus
+
+		// Act
+		obj.SetInboundVerificationStatus(fernTestValueInboundVerificationStatus)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersWebsiteDNSRecordsInboundVerificationRecord(t *testing.T) {
+	t.Run("SetName", func(t *testing.T) {
+		obj := &WebsiteDNSRecordsInboundVerificationRecord{}
+		var fernTestValueName string
+		obj.SetName(fernTestValueName)
+		assert.Equal(t, fernTestValueName, obj.Name)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetValue", func(t *testing.T) {
+		obj := &WebsiteDNSRecordsInboundVerificationRecord{}
+		var fernTestValueValue string
+		obj.SetValue(fernTestValueValue)
+		assert.Equal(t, fernTestValueValue, obj.Value)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersWebsiteDNSRecordsInboundVerificationRecord(t *testing.T) {
+	t.Run("GetName", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &WebsiteDNSRecordsInboundVerificationRecord{}
+		var expected string
+		obj.Name = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetName(), "getter should return the property value")
+	})
+
+	t.Run("GetName_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *WebsiteDNSRecordsInboundVerificationRecord
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetName() // Should return zero value
+	})
+
+	t.Run("GetValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &WebsiteDNSRecordsInboundVerificationRecord{}
+		var expected string
+		obj.Value = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetValue(), "getter should return the property value")
+	})
+
+	t.Run("GetValue_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *WebsiteDNSRecordsInboundVerificationRecord
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetValue() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitWebsiteDNSRecordsInboundVerificationRecord(t *testing.T) {
+	t.Run("SetName_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &WebsiteDNSRecordsInboundVerificationRecord{}
+		var fernTestValueName string
+
+		// Act
+		obj.SetName(fernTestValueName)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetValue_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &WebsiteDNSRecordsInboundVerificationRecord{}
+		var fernTestValueValue string
+
+		// Act
+		obj.SetValue(fernTestValueValue)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -2380,6 +2810,72 @@ func TestJSONMarshalingWebsite(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingWebsiteDNSRecords(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &WebsiteDNSRecords{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled WebsiteDNSRecords
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj WebsiteDNSRecords
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj WebsiteDNSRecords
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestJSONMarshalingWebsiteDNSRecordsInboundVerificationRecord(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &WebsiteDNSRecordsInboundVerificationRecord{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled WebsiteDNSRecordsInboundVerificationRecord
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj WebsiteDNSRecordsInboundVerificationRecord
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj WebsiteDNSRecordsInboundVerificationRecord
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingWebsiteReadiness(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -2493,6 +2989,38 @@ func TestStringWebsite(t *testing.T) {
 	})
 }
 
+func TestStringWebsiteDNSRecords(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &WebsiteDNSRecords{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *WebsiteDNSRecords
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringWebsiteDNSRecordsInboundVerificationRecord(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &WebsiteDNSRecordsInboundVerificationRecord{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *WebsiteDNSRecordsInboundVerificationRecord
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
 func TestStringWebsiteReadiness(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
@@ -2506,6 +3034,78 @@ func TestStringWebsiteReadiness(t *testing.T) {
 		var obj *WebsiteReadiness
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestEnumWebsiteDNSRecordsInboundRoutingStatus(t *testing.T) {
+	t.Run("NewFromString_pending", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewWebsiteDNSRecordsInboundRoutingStatusFromString("pending")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, WebsiteDNSRecordsInboundRoutingStatus("pending"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_active", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewWebsiteDNSRecordsInboundRoutingStatusFromString("active")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, WebsiteDNSRecordsInboundRoutingStatus("active"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_failed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewWebsiteDNSRecordsInboundRoutingStatusFromString("failed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, WebsiteDNSRecordsInboundRoutingStatus("failed"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewWebsiteDNSRecordsInboundRoutingStatusFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewWebsiteDNSRecordsInboundRoutingStatusFromString("pending")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumWebsiteDNSRecordsInboundVerificationStatus(t *testing.T) {
+	t.Run("NewFromString_pending", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewWebsiteDNSRecordsInboundVerificationStatusFromString("pending")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, WebsiteDNSRecordsInboundVerificationStatus("pending"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_verified", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewWebsiteDNSRecordsInboundVerificationStatusFromString("verified")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, WebsiteDNSRecordsInboundVerificationStatus("verified"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_misconfigured", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewWebsiteDNSRecordsInboundVerificationStatusFromString("misconfigured")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, WebsiteDNSRecordsInboundVerificationStatus("misconfigured"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewWebsiteDNSRecordsInboundVerificationStatusFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewWebsiteDNSRecordsInboundVerificationStatusFromString("pending")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
 	})
 }
 
@@ -2776,6 +3376,52 @@ func TestExtraPropertiesWebsite(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *Website
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesWebsiteDNSRecords(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &WebsiteDNSRecords{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *WebsiteDNSRecords
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesWebsiteDNSRecordsInboundVerificationRecord(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &WebsiteDNSRecordsInboundVerificationRecord{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *WebsiteDNSRecordsInboundVerificationRecord
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})
