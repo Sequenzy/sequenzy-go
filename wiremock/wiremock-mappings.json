@@ -3375,12 +3375,48 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"backfillQueued\": true,\n  \"history\": {\n    \"error\": \"error\",\n    \"queued\": true,\n    \"requested\": true\n  },\n  \"integration\": {\n    \"category\": \"payments\",\n    \"connectedAt\": \"2024-01-15T09:30:00Z\",\n    \"details\": {\n      \"key\": \"value\"\n    },\n    \"disconnectedAt\": \"2024-01-15T09:30:00Z\",\n    \"id\": \"id\",\n    \"isActive\": true,\n    \"lastSyncAt\": \"2024-01-15T09:30:00Z\",\n    \"lastSyncError\": \"lastSyncError\",\n    \"lastSyncSkipped\": {\n      \"records\": [\n        {\n          \"reason\": \"Invalid domain for \\\"buyer@example.com\\\": Domain cannot receive email (no MX records)\",\n          \"reasonCode\": \"invalid_email_domain\"\n        }\n      ],\n      \"skipped\": 1,\n      \"suppressed\": 1,\n      \"total\": 1,\n      \"truncated\": true\n    },\n    \"name\": \"Shopify\",\n    \"provider\": \"shopify\",\n    \"providerAccountId\": \"providerAccountId\",\n    \"syncEnabled\": true,\n    \"syncStatus\": \"syncStatus\",\n    \"totalCustomersSynced\": 1,\n    \"totalEventsSynced\": 1\n  },\n  \"revenueSyncQueued\": true,\n  \"success\": true,\n  \"webhookUrl\": \"webhookUrl\"\n}",
+        "body": "{\n  \"backfillQueued\": true,\n  \"history\": {\n    \"error\": \"error\",\n    \"queued\": true,\n    \"requested\": true\n  },\n  \"integration\": {\n    \"category\": \"payments\",\n    \"connectedAt\": \"2024-01-15T09:30:00Z\",\n    \"details\": {\n      \"key\": \"value\"\n    },\n    \"disconnectedAt\": \"2024-01-15T09:30:00Z\",\n    \"id\": \"id\",\n    \"isActive\": true,\n    \"lastSyncAt\": \"2024-01-15T09:30:00Z\",\n    \"lastSyncError\": \"lastSyncError\",\n    \"lastSyncSkipped\": {\n      \"records\": [\n        {\n          \"reason\": \"Invalid domain for \\\"buyer@example.com\\\": Domain cannot receive email (no MX records)\",\n          \"reasonCode\": \"invalid_email_domain\"\n        }\n      ],\n      \"skipped\": 1,\n      \"suppressed\": 1,\n      \"total\": 1,\n      \"truncated\": true\n    },\n    \"name\": \"Shopify\",\n    \"provider\": \"shopify\",\n    \"providerAccountId\": \"providerAccountId\",\n    \"syncEnabled\": true,\n    \"syncStatus\": \"syncStatus\",\n    \"totalCustomersSynced\": 1,\n    \"totalEventsSynced\": 1\n  },\n  \"revenueSyncQueued\": true,\n  \"success\": true,\n  \"testMode\": true,\n  \"webhookProvisioning\": \"managed\",\n  \"webhookUrl\": \"webhookUrl\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
       },
       "uuid": "2a68a181-ede8-4818-9a27-ab52ed168342",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "9424cb39-cdee-4e94-b6d1-596d06177246",
+      "name": "Disconnect integration - default",
+      "request": {
+        "urlPathTemplate": "/integrations/{id}/disconnect",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"cleanupWarning\": \"cleanupWarning\",\n  \"integrationId\": \"integrationId\",\n  \"message\": \"message\",\n  \"provider\": \"lemon_squeezy\",\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "9424cb39-cdee-4e94-b6d1-596d06177246",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -10468,6 +10504,6 @@
     }
   ],
   "meta": {
-    "total": 303
+    "total": 304
   }
 }

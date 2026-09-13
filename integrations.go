@@ -46,17 +46,17 @@ var (
 )
 
 type ConnectIntegrationsRequest struct {
-	// Provider API key. Required for polar, paddle, dodo, whop, creem, chargebee, affonso, and attio. Attio uses the workspace access token.
+	// Provider API key. Required for polar, paddle, dodo, lemon_squeezy, whop, creem, chargebee, affonso, and attio. Attio uses the workspace access token.
 	APIKey *string `json:"apiKey,omitempty" url:"-"`
 	// PostHog and Segment only. Imports event history after connecting: PostHog reads the project archive (projectId + personalApiKey); Segment walks your existing contacts' Unify profiles (spaceId + profileApiToken) and covers at most the last 14 days the Profile API serves, because Segment has no bulk event export.
 	HistoryImport *ConnectIntegrationsRequestHistoryImport `json:"historyImport,omitempty" url:"-"`
 	// Provider to connect.
 	Provider ConnectIntegrationsRequestProvider `json:"provider" url:"-"`
-	// Provider account id: Paddle seller ID, Dodo business ID, Whop company ID, Creem store ID, or Chargebee site name. Polar resolves it from the API key.
+	// Provider account id: Paddle seller ID, Dodo business ID, Lemon Squeezy numeric store ID, Whop company ID, Creem store ID, or Chargebee site name. Polar resolves it from the API key.
 	ProviderAccountID *string `json:"providerAccountId,omitempty" url:"-"`
 	// PostHog and Segment: event delivery scope. Attio: listMap (Sequenzy list id to Attio list id or slug) and syncCompanyFromDomain.
 	Settings *ConnectIntegrationsRequestSettings `json:"settings,omitempty" url:"-"`
-	// Signing secret of the webhook created at the provider. Required except for attio, which is outbound-only. For Chargebee, the webhook's basic-auth credentials as username:password. For Segment, the secret is your own choice and must be between 16 and 153 UTF-8 bytes.
+	// Signing secret of the provider webhook. Optional for lemon_squeezy managed provisioning and outbound-only attio; required for other providers. Lemon Squeezy manual secrets use 16-40 characters. For Chargebee, pass username:password. For Segment, use 16-153 UTF-8 bytes.
 	WebhookSecret *string `json:"webhookSecret,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -131,6 +131,32 @@ func (c *ConnectIntegrationsRequest) MarshalJSON() ([]byte, error) {
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
 	return json.Marshal(explicitMarshaler)
+}
+
+var (
+	disconnectIntegrationsRequestFieldID = big.NewInt(1 << 0)
+)
+
+type DisconnectIntegrationsRequest struct {
+	// Lemon Squeezy integration ID.
+	ID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (d *DisconnectIntegrationsRequest) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisconnectIntegrationsRequest) SetID(id string) {
+	d.ID = id
+	d.require(disconnectIntegrationsRequestFieldID)
 }
 
 var (
@@ -4085,6 +4111,7 @@ type IntegrationProviderCapabilityActionsItem string
 
 const (
 	IntegrationProviderCapabilityActionsItemConnect             IntegrationProviderCapabilityActionsItem = "connect"
+	IntegrationProviderCapabilityActionsItemDisconnect          IntegrationProviderCapabilityActionsItem = "disconnect"
 	IntegrationProviderCapabilityActionsItemEnableSync          IntegrationProviderCapabilityActionsItem = "enable_sync"
 	IntegrationProviderCapabilityActionsItemDisableSync         IntegrationProviderCapabilityActionsItem = "disable_sync"
 	IntegrationProviderCapabilityActionsItemSyncNow             IntegrationProviderCapabilityActionsItem = "sync_now"
@@ -4098,6 +4125,8 @@ func NewIntegrationProviderCapabilityActionsItemFromString(s string) (Integratio
 	switch s {
 	case "connect":
 		return IntegrationProviderCapabilityActionsItemConnect, nil
+	case "disconnect":
+		return IntegrationProviderCapabilityActionsItemDisconnect, nil
 	case "enable_sync":
 		return IntegrationProviderCapabilityActionsItemEnableSync, nil
 	case "disable_sync":
@@ -5695,17 +5724,18 @@ func (c ConnectIntegrationsRequestHistoryImportRegion) Ptr() *ConnectIntegration
 type ConnectIntegrationsRequestProvider string
 
 const (
-	ConnectIntegrationsRequestProviderPolar     ConnectIntegrationsRequestProvider = "polar"
-	ConnectIntegrationsRequestProviderPaddle    ConnectIntegrationsRequestProvider = "paddle"
-	ConnectIntegrationsRequestProviderDodo      ConnectIntegrationsRequestProvider = "dodo"
-	ConnectIntegrationsRequestProviderWhop      ConnectIntegrationsRequestProvider = "whop"
-	ConnectIntegrationsRequestProviderCreem     ConnectIntegrationsRequestProvider = "creem"
-	ConnectIntegrationsRequestProviderChargebee ConnectIntegrationsRequestProvider = "chargebee"
-	ConnectIntegrationsRequestProviderClerk     ConnectIntegrationsRequestProvider = "clerk"
-	ConnectIntegrationsRequestProviderPosthog   ConnectIntegrationsRequestProvider = "posthog"
-	ConnectIntegrationsRequestProviderSegment   ConnectIntegrationsRequestProvider = "segment"
-	ConnectIntegrationsRequestProviderAffonso   ConnectIntegrationsRequestProvider = "affonso"
-	ConnectIntegrationsRequestProviderAttio     ConnectIntegrationsRequestProvider = "attio"
+	ConnectIntegrationsRequestProviderPolar        ConnectIntegrationsRequestProvider = "polar"
+	ConnectIntegrationsRequestProviderPaddle       ConnectIntegrationsRequestProvider = "paddle"
+	ConnectIntegrationsRequestProviderDodo         ConnectIntegrationsRequestProvider = "dodo"
+	ConnectIntegrationsRequestProviderLemonSqueezy ConnectIntegrationsRequestProvider = "lemon_squeezy"
+	ConnectIntegrationsRequestProviderWhop         ConnectIntegrationsRequestProvider = "whop"
+	ConnectIntegrationsRequestProviderCreem        ConnectIntegrationsRequestProvider = "creem"
+	ConnectIntegrationsRequestProviderChargebee    ConnectIntegrationsRequestProvider = "chargebee"
+	ConnectIntegrationsRequestProviderClerk        ConnectIntegrationsRequestProvider = "clerk"
+	ConnectIntegrationsRequestProviderPosthog      ConnectIntegrationsRequestProvider = "posthog"
+	ConnectIntegrationsRequestProviderSegment      ConnectIntegrationsRequestProvider = "segment"
+	ConnectIntegrationsRequestProviderAffonso      ConnectIntegrationsRequestProvider = "affonso"
+	ConnectIntegrationsRequestProviderAttio        ConnectIntegrationsRequestProvider = "attio"
 )
 
 func NewConnectIntegrationsRequestProviderFromString(s string) (ConnectIntegrationsRequestProvider, error) {
@@ -5716,6 +5746,8 @@ func NewConnectIntegrationsRequestProviderFromString(s string) (ConnectIntegrati
 		return ConnectIntegrationsRequestProviderPaddle, nil
 	case "dodo":
 		return ConnectIntegrationsRequestProviderDodo, nil
+	case "lemon_squeezy":
+		return ConnectIntegrationsRequestProviderLemonSqueezy, nil
 	case "whop":
 		return ConnectIntegrationsRequestProviderWhop, nil
 	case "creem":
@@ -5877,12 +5909,14 @@ func (c *ConnectIntegrationsRequestSettings) String() string {
 }
 
 var (
-	connectIntegrationsResponseFieldBackfillQueued    = big.NewInt(1 << 0)
-	connectIntegrationsResponseFieldHistory           = big.NewInt(1 << 1)
-	connectIntegrationsResponseFieldIntegration       = big.NewInt(1 << 2)
-	connectIntegrationsResponseFieldRevenueSyncQueued = big.NewInt(1 << 3)
-	connectIntegrationsResponseFieldSuccess           = big.NewInt(1 << 4)
-	connectIntegrationsResponseFieldWebhookURL        = big.NewInt(1 << 5)
+	connectIntegrationsResponseFieldBackfillQueued      = big.NewInt(1 << 0)
+	connectIntegrationsResponseFieldHistory             = big.NewInt(1 << 1)
+	connectIntegrationsResponseFieldIntegration         = big.NewInt(1 << 2)
+	connectIntegrationsResponseFieldRevenueSyncQueued   = big.NewInt(1 << 3)
+	connectIntegrationsResponseFieldSuccess             = big.NewInt(1 << 4)
+	connectIntegrationsResponseFieldTestMode            = big.NewInt(1 << 5)
+	connectIntegrationsResponseFieldWebhookProvisioning = big.NewInt(1 << 6)
+	connectIntegrationsResponseFieldWebhookURL          = big.NewInt(1 << 7)
 )
 
 type ConnectIntegrationsResponse struct {
@@ -5894,7 +5928,11 @@ type ConnectIntegrationsResponse struct {
 	// Payment providers only. Whether the initial revenue backfill was queued.
 	RevenueSyncQueued *bool `json:"revenueSyncQueued,omitempty" url:"revenueSyncQueued,omitempty"`
 	Success           *bool `json:"success,omitempty" url:"success,omitempty"`
-	// URL to configure in the provider's webhook settings with the same secret. Empty for Attio, which is outbound-only.
+	// Lemon Squeezy only. Whether the connected store uses test mode.
+	TestMode *bool `json:"testMode,omitempty" url:"testMode,omitempty"`
+	// Lemon Squeezy only. Whether Sequenzy manages the provider webhook.
+	WebhookProvisioning *ConnectIntegrationsResponseWebhookProvisioning `json:"webhookProvisioning,omitempty" url:"webhookProvisioning,omitempty"`
+	// Provider webhook URL. Lemon Squeezy managed mode installs it automatically; manual mode uses the supplied secret. Empty for Attio.
 	WebhookURL *string `json:"webhookUrl,omitempty" url:"webhookUrl,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -5937,6 +5975,20 @@ func (c *ConnectIntegrationsResponse) GetSuccess() *bool {
 		return nil
 	}
 	return c.Success
+}
+
+func (c *ConnectIntegrationsResponse) GetTestMode() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.TestMode
+}
+
+func (c *ConnectIntegrationsResponse) GetWebhookProvisioning() *ConnectIntegrationsResponseWebhookProvisioning {
+	if c == nil {
+		return nil
+	}
+	return c.WebhookProvisioning
 }
 
 func (c *ConnectIntegrationsResponse) GetWebhookURL() *string {
@@ -5993,6 +6045,20 @@ func (c *ConnectIntegrationsResponse) SetRevenueSyncQueued(revenueSyncQueued *bo
 func (c *ConnectIntegrationsResponse) SetSuccess(success *bool) {
 	c.Success = success
 	c.require(connectIntegrationsResponseFieldSuccess)
+}
+
+// SetTestMode sets the TestMode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ConnectIntegrationsResponse) SetTestMode(testMode *bool) {
+	c.TestMode = testMode
+	c.require(connectIntegrationsResponseFieldTestMode)
+}
+
+// SetWebhookProvisioning sets the WebhookProvisioning field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ConnectIntegrationsResponse) SetWebhookProvisioning(webhookProvisioning *ConnectIntegrationsResponseWebhookProvisioning) {
+	c.WebhookProvisioning = webhookProvisioning
+	c.require(connectIntegrationsResponseFieldWebhookProvisioning)
 }
 
 // SetWebhookURL sets the WebhookURL field and marks it as non-optional;
@@ -6159,6 +6225,197 @@ func (c *ConnectIntegrationsResponseHistory) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", c)
+}
+
+// Lemon Squeezy only. Whether Sequenzy manages the provider webhook.
+type ConnectIntegrationsResponseWebhookProvisioning string
+
+const (
+	ConnectIntegrationsResponseWebhookProvisioningManaged ConnectIntegrationsResponseWebhookProvisioning = "managed"
+	ConnectIntegrationsResponseWebhookProvisioningManual  ConnectIntegrationsResponseWebhookProvisioning = "manual"
+)
+
+func NewConnectIntegrationsResponseWebhookProvisioningFromString(s string) (ConnectIntegrationsResponseWebhookProvisioning, error) {
+	switch s {
+	case "managed":
+		return ConnectIntegrationsResponseWebhookProvisioningManaged, nil
+	case "manual":
+		return ConnectIntegrationsResponseWebhookProvisioningManual, nil
+	}
+	var t ConnectIntegrationsResponseWebhookProvisioning
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c ConnectIntegrationsResponseWebhookProvisioning) Ptr() *ConnectIntegrationsResponseWebhookProvisioning {
+	return &c
+}
+
+var (
+	disconnectIntegrationsResponseFieldCleanupWarning = big.NewInt(1 << 0)
+	disconnectIntegrationsResponseFieldIntegrationID  = big.NewInt(1 << 1)
+	disconnectIntegrationsResponseFieldMessage        = big.NewInt(1 << 2)
+	disconnectIntegrationsResponseFieldProvider       = big.NewInt(1 << 3)
+	disconnectIntegrationsResponseFieldSuccess        = big.NewInt(1 << 4)
+)
+
+type DisconnectIntegrationsResponse struct {
+	// Null when cleanup succeeded or no managed webhook exists. Otherwise repeat disconnect to retry provider cleanup.
+	CleanupWarning *string                                `json:"cleanupWarning,omitempty" url:"cleanupWarning,omitempty"`
+	IntegrationID  string                                 `json:"integrationId" url:"integrationId"`
+	Message        string                                 `json:"message" url:"message"`
+	Provider       DisconnectIntegrationsResponseProvider `json:"provider" url:"provider"`
+	Success        bool                                   `json:"success" url:"success"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DisconnectIntegrationsResponse) GetCleanupWarning() *string {
+	if d == nil {
+		return nil
+	}
+	return d.CleanupWarning
+}
+
+func (d *DisconnectIntegrationsResponse) GetIntegrationID() string {
+	if d == nil {
+		return ""
+	}
+	return d.IntegrationID
+}
+
+func (d *DisconnectIntegrationsResponse) GetMessage() string {
+	if d == nil {
+		return ""
+	}
+	return d.Message
+}
+
+func (d *DisconnectIntegrationsResponse) GetProvider() DisconnectIntegrationsResponseProvider {
+	if d == nil {
+		return ""
+	}
+	return d.Provider
+}
+
+func (d *DisconnectIntegrationsResponse) GetSuccess() bool {
+	if d == nil {
+		return false
+	}
+	return d.Success
+}
+
+func (d *DisconnectIntegrationsResponse) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DisconnectIntegrationsResponse) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetCleanupWarning sets the CleanupWarning field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisconnectIntegrationsResponse) SetCleanupWarning(cleanupWarning *string) {
+	d.CleanupWarning = cleanupWarning
+	d.require(disconnectIntegrationsResponseFieldCleanupWarning)
+}
+
+// SetIntegrationID sets the IntegrationID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisconnectIntegrationsResponse) SetIntegrationID(integrationID string) {
+	d.IntegrationID = integrationID
+	d.require(disconnectIntegrationsResponseFieldIntegrationID)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisconnectIntegrationsResponse) SetMessage(message string) {
+	d.Message = message
+	d.require(disconnectIntegrationsResponseFieldMessage)
+}
+
+// SetProvider sets the Provider field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisconnectIntegrationsResponse) SetProvider(provider DisconnectIntegrationsResponseProvider) {
+	d.Provider = provider
+	d.require(disconnectIntegrationsResponseFieldProvider)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisconnectIntegrationsResponse) SetSuccess(success bool) {
+	d.Success = success
+	d.require(disconnectIntegrationsResponseFieldSuccess)
+}
+
+func (d *DisconnectIntegrationsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler DisconnectIntegrationsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DisconnectIntegrationsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DisconnectIntegrationsResponse) MarshalJSON() ([]byte, error) {
+	type embed DisconnectIntegrationsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DisconnectIntegrationsResponse) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
+type DisconnectIntegrationsResponseProvider string
+
+const (
+	DisconnectIntegrationsResponseProviderLemonSqueezy DisconnectIntegrationsResponseProvider = "lemon_squeezy"
+)
+
+func NewDisconnectIntegrationsResponseProviderFromString(s string) (DisconnectIntegrationsResponseProvider, error) {
+	switch s {
+	case "lemon_squeezy":
+		return DisconnectIntegrationsResponseProviderLemonSqueezy, nil
+	}
+	var t DisconnectIntegrationsResponseProvider
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (d DisconnectIntegrationsResponseProvider) Ptr() *DisconnectIntegrationsResponseProvider {
+	return &d
 }
 
 type ListActivityIntegrationsRequestStatus string

@@ -129,6 +129,32 @@ func TestIntegrationsConnectWithWireMock(
 	VerifyRequestCount(t, "TestIntegrationsConnectWithWireMock", "POST", "/integrations/connect", nil, 1)
 }
 
+func TestIntegrationsDisconnectWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.DisconnectIntegrationsRequest{
+		ID: "id",
+	}
+	_, invocationErr := client.Integrations.Disconnect(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestIntegrationsDisconnectWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestIntegrationsDisconnectWithWireMock", "POST", "/integrations/id/disconnect", nil, 1)
+}
+
 func TestIntegrationsGetWithWireMock(
 	t *testing.T,
 ) {
