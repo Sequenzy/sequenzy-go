@@ -320,7 +320,7 @@ func (c *Client) GetAudience(
 	return response.Body, nil
 }
 
-// Lists campaigns for the authenticated company, optionally filtered by status or label. Each item includes delivery pacing (sendTimeOptimization, sendTimeWindowHours, spreadOverHours, sendInRecipientTimezone, scheduledTimezone) so a company-wide STO audit does not need one getCampaign call each. STO is campaign-only; sequences use sendingWindow.
+// Lists campaigns for the authenticated company, optionally filtered by status or label. Each item includes delivery pacing (sendTimeOptimization, sendTimeWindowHours, spreadOverHours, sendInRecipientTimezone, scheduledTimezone) and the recipient cap (maxRecipients) so a company-wide STO audit does not need one getCampaign call each. STO is campaign-only; sequences use sendingWindow.
 //
 // Example:
 //
@@ -345,7 +345,7 @@ func (c *Client) List(
 	return response.Body, nil
 }
 
-// Lists the conversion goals attached to an email campaign. SMS campaigns are not supported.
+// Lists campaign-specific goals in goals and automatically applied Settings goals in companyGoals. Both include inactive goals. Company-wide goals keep their open/click attribution window and are managed in Settings. SMS campaigns are not supported.
 //
 // Example:
 //

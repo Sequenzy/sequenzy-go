@@ -575,19 +575,21 @@ var (
 	abTestFieldID                  = big.NewInt(1 << 4)
 	abTestFieldKind                = big.NewInt(1 << 5)
 	abTestFieldName                = big.NewInt(1 << 6)
-	abTestFieldSettings            = big.NewInt(1 << 7)
-	abTestFieldStatus              = big.NewInt(1 << 8)
-	abTestFieldTestDurationMinutes = big.NewInt(1 << 9)
-	abTestFieldTestEndsAt          = big.NewInt(1 << 10)
-	abTestFieldTestPercentage      = big.NewInt(1 << 11)
-	abTestFieldTestStartedAt       = big.NewInt(1 << 12)
-	abTestFieldTestType            = big.NewInt(1 << 13)
-	abTestFieldUpdatedAt           = big.NewInt(1 << 14)
-	abTestFieldVariants            = big.NewInt(1 << 15)
-	abTestFieldWinnerCriteria      = big.NewInt(1 << 16)
-	abTestFieldWinnerSelectedAt    = big.NewInt(1 << 17)
-	abTestFieldWinnerThreshold     = big.NewInt(1 << 18)
-	abTestFieldWinningVariantID    = big.NewInt(1 << 19)
+	abTestFieldPendingSampleUpdate = big.NewInt(1 << 7)
+	abTestFieldProgress            = big.NewInt(1 << 8)
+	abTestFieldSettings            = big.NewInt(1 << 9)
+	abTestFieldStatus              = big.NewInt(1 << 10)
+	abTestFieldTestDurationMinutes = big.NewInt(1 << 11)
+	abTestFieldTestEndsAt          = big.NewInt(1 << 12)
+	abTestFieldTestPercentage      = big.NewInt(1 << 13)
+	abTestFieldTestStartedAt       = big.NewInt(1 << 14)
+	abTestFieldTestType            = big.NewInt(1 << 15)
+	abTestFieldUpdatedAt           = big.NewInt(1 << 16)
+	abTestFieldVariants            = big.NewInt(1 << 17)
+	abTestFieldWinnerCriteria      = big.NewInt(1 << 18)
+	abTestFieldWinnerSelectedAt    = big.NewInt(1 << 19)
+	abTestFieldWinnerThreshold     = big.NewInt(1 << 20)
+	abTestFieldWinningVariantID    = big.NewInt(1 << 21)
 )
 
 type AbTest struct {
@@ -599,6 +601,10 @@ type AbTest struct {
 	// Identifies which settings model applies to this test.
 	Kind *AbTestKind `json:"kind,omitempty" url:"kind,omitempty"`
 	Name *string     `json:"name,omitempty" url:"name,omitempty"`
+	// Durable campaign sample request, null when absent or applied. Retry the same testPercentage after an interrupted request; error enables explicit discard.
+	PendingSampleUpdate *AbTestPendingSampleUpdate `json:"pendingSampleUpdate,omitempty" url:"pendingSampleUpdate,omitempty"`
+	// Present on campaign detail and settings responses. Null if the campaign is missing. Counts unique recipient deliveries across retry attempts, excluding separate test emails.
+	Progress *AbTestProgress `json:"progress,omitempty" url:"progress,omitempty"`
 	// Effective settings for this test kind. Campaign tests return testPercentage, testDurationMinutes, and winnerCriteria; sequence tests return testType, winnerThreshold, and winnerCriteria.
 	Settings map[string]any `json:"settings,omitempty" url:"settings,omitempty"`
 	Status   *string        `json:"status,omitempty" url:"status,omitempty"`
@@ -672,6 +678,20 @@ func (a *AbTest) GetName() *string {
 		return nil
 	}
 	return a.Name
+}
+
+func (a *AbTest) GetPendingSampleUpdate() *AbTestPendingSampleUpdate {
+	if a == nil {
+		return nil
+	}
+	return a.PendingSampleUpdate
+}
+
+func (a *AbTest) GetProgress() *AbTestProgress {
+	if a == nil {
+		return nil
+	}
+	return a.Progress
 }
 
 func (a *AbTest) GetSettings() map[string]any {
@@ -826,6 +846,20 @@ func (a *AbTest) SetKind(kind *AbTestKind) {
 func (a *AbTest) SetName(name *string) {
 	a.Name = name
 	a.require(abTestFieldName)
+}
+
+// SetPendingSampleUpdate sets the PendingSampleUpdate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AbTest) SetPendingSampleUpdate(pendingSampleUpdate *AbTestPendingSampleUpdate) {
+	a.PendingSampleUpdate = pendingSampleUpdate
+	a.require(abTestFieldPendingSampleUpdate)
+}
+
+// SetProgress sets the Progress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AbTest) SetProgress(progress *AbTestProgress) {
+	a.Progress = progress
+	a.require(abTestFieldProgress)
 }
 
 // SetSettings sets the Settings field and marks it as non-optional;
@@ -1006,6 +1040,519 @@ func NewAbTestKindFromString(s string) (AbTestKind, error) {
 
 func (a AbTestKind) Ptr() *AbTestKind {
 	return &a
+}
+
+// Durable campaign sample request, null when absent or applied. Retry the same testPercentage after an interrupted request; error enables explicit discard.
+var (
+	abTestPendingSampleUpdateFieldError          = big.NewInt(1 << 0)
+	abTestPendingSampleUpdateFieldID             = big.NewInt(1 << 1)
+	abTestPendingSampleUpdateFieldRequestedAt    = big.NewInt(1 << 2)
+	abTestPendingSampleUpdateFieldStartedAt      = big.NewInt(1 << 3)
+	abTestPendingSampleUpdateFieldTestPercentage = big.NewInt(1 << 4)
+)
+
+type AbTestPendingSampleUpdate struct {
+	Error       *string    `json:"error,omitempty" url:"error,omitempty"`
+	ID          *string    `json:"id,omitempty" url:"id,omitempty"`
+	RequestedAt *time.Time `json:"requestedAt,omitempty" url:"requestedAt,omitempty"`
+	// Optional publication claim timestamp.
+	StartedAt      *time.Time `json:"startedAt,omitempty" url:"startedAt,omitempty"`
+	TestPercentage *int       `json:"testPercentage,omitempty" url:"testPercentage,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AbTestPendingSampleUpdate) GetError() *string {
+	if a == nil {
+		return nil
+	}
+	return a.Error
+}
+
+func (a *AbTestPendingSampleUpdate) GetID() *string {
+	if a == nil {
+		return nil
+	}
+	return a.ID
+}
+
+func (a *AbTestPendingSampleUpdate) GetRequestedAt() *time.Time {
+	if a == nil {
+		return nil
+	}
+	return a.RequestedAt
+}
+
+func (a *AbTestPendingSampleUpdate) GetStartedAt() *time.Time {
+	if a == nil {
+		return nil
+	}
+	return a.StartedAt
+}
+
+func (a *AbTestPendingSampleUpdate) GetTestPercentage() *int {
+	if a == nil {
+		return nil
+	}
+	return a.TestPercentage
+}
+
+func (a *AbTestPendingSampleUpdate) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AbTestPendingSampleUpdate) require(field *big.Int) {
+	if a.explicitFields == nil {
+		a.explicitFields = big.NewInt(0)
+	}
+	a.explicitFields.Or(a.explicitFields, field)
+}
+
+// SetError sets the Error field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AbTestPendingSampleUpdate) SetError(error_ *string) {
+	a.Error = error_
+	a.require(abTestPendingSampleUpdateFieldError)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AbTestPendingSampleUpdate) SetID(id *string) {
+	a.ID = id
+	a.require(abTestPendingSampleUpdateFieldID)
+}
+
+// SetRequestedAt sets the RequestedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AbTestPendingSampleUpdate) SetRequestedAt(requestedAt *time.Time) {
+	a.RequestedAt = requestedAt
+	a.require(abTestPendingSampleUpdateFieldRequestedAt)
+}
+
+// SetStartedAt sets the StartedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AbTestPendingSampleUpdate) SetStartedAt(startedAt *time.Time) {
+	a.StartedAt = startedAt
+	a.require(abTestPendingSampleUpdateFieldStartedAt)
+}
+
+// SetTestPercentage sets the TestPercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AbTestPendingSampleUpdate) SetTestPercentage(testPercentage *int) {
+	a.TestPercentage = testPercentage
+	a.require(abTestPendingSampleUpdateFieldTestPercentage)
+}
+
+func (a *AbTestPendingSampleUpdate) UnmarshalJSON(data []byte) error {
+	type embed AbTestPendingSampleUpdate
+	var unmarshaler = struct {
+		embed
+		RequestedAt *internal.DateTime `json:"requestedAt,omitempty"`
+		StartedAt   *internal.DateTime `json:"startedAt,omitempty"`
+	}{
+		embed: embed(*a),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*a = AbTestPendingSampleUpdate(unmarshaler.embed)
+	a.RequestedAt = unmarshaler.RequestedAt.TimePtr()
+	a.StartedAt = unmarshaler.StartedAt.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AbTestPendingSampleUpdate) MarshalJSON() ([]byte, error) {
+	type embed AbTestPendingSampleUpdate
+	var marshaler = struct {
+		embed
+		RequestedAt *internal.DateTime `json:"requestedAt,omitempty"`
+		StartedAt   *internal.DateTime `json:"startedAt,omitempty"`
+	}{
+		embed:       embed(*a),
+		RequestedAt: internal.NewOptionalDateTime(a.RequestedAt),
+		StartedAt:   internal.NewOptionalDateTime(a.StartedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AbTestPendingSampleUpdate) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+// Present on campaign detail and settings responses. Null if the campaign is missing. Counts unique recipient deliveries across retry attempts, excluding separate test emails.
+var (
+	abTestProgressFieldAudienceSize          = big.NewInt(1 << 0)
+	abTestProgressFieldCampaignStatus        = big.NewInt(1 << 1)
+	abTestProgressFieldCommitted             = big.NewInt(1 << 2)
+	abTestProgressFieldMinimumTestPercentage = big.NewInt(1 << 3)
+	abTestProgressFieldPauseReason           = big.NewInt(1 << 4)
+	abTestProgressFieldRemaining             = big.NewInt(1 << 5)
+	abTestProgressFieldSent                  = big.NewInt(1 << 6)
+	abTestProgressFieldVariants              = big.NewInt(1 << 7)
+)
+
+type AbTestProgress struct {
+	// Original send-time audience size; null for legacy campaigns without an estimate.
+	AudienceSize   *int    `json:"audienceSize,omitempty" url:"audienceSize,omitempty"`
+	CampaignStatus *string `json:"campaignStatus,omitempty" url:"campaignStatus,omitempty"`
+	// Recipients with a durable send attempt, including pending or failed sends.
+	Committed *int `json:"committed,omitempty" url:"committed,omitempty"`
+	// Minimum whole percentage that contains committed recipients, at least 5; null without audience size. Workers revalidate against later sends.
+	MinimumTestPercentage *int    `json:"minimumTestPercentage,omitempty" url:"minimumTestPercentage,omitempty"`
+	PauseReason           *string `json:"pauseReason,omitempty" url:"pauseReason,omitempty"`
+	// Audience size minus committed recipients, floored at zero; null when size is unavailable.
+	Remaining *int `json:"remaining,omitempty" url:"remaining,omitempty"`
+	// Recipients with a sentAt timestamp on an attempt.
+	Sent     *int                          `json:"sent,omitempty" url:"sent,omitempty"`
+	Variants []*AbTestProgressVariantsItem `json:"variants,omitempty" url:"variants,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AbTestProgress) GetAudienceSize() *int {
+	if a == nil {
+		return nil
+	}
+	return a.AudienceSize
+}
+
+func (a *AbTestProgress) GetCampaignStatus() *string {
+	if a == nil {
+		return nil
+	}
+	return a.CampaignStatus
+}
+
+func (a *AbTestProgress) GetCommitted() *int {
+	if a == nil {
+		return nil
+	}
+	return a.Committed
+}
+
+func (a *AbTestProgress) GetMinimumTestPercentage() *int {
+	if a == nil {
+		return nil
+	}
+	return a.MinimumTestPercentage
+}
+
+func (a *AbTestProgress) GetPauseReason() *string {
+	if a == nil {
+		return nil
+	}
+	return a.PauseReason
+}
+
+func (a *AbTestProgress) GetRemaining() *int {
+	if a == nil {
+		return nil
+	}
+	return a.Remaining
+}
+
+func (a *AbTestProgress) GetSent() *int {
+	if a == nil {
+		return nil
+	}
+	return a.Sent
+}
+
+func (a *AbTestProgress) GetVariants() []*AbTestProgressVariantsItem {
+	if a == nil {
+		return nil
+	}
+	return a.Variants
+}
+
+func (a *AbTestProgress) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AbTestProgress) require(field *big.Int) {
+	if a.explicitFields == nil {
+		a.explicitFields = big.NewInt(0)
+	}
+	a.explicitFields.Or(a.explicitFields, field)
+}
+
+// SetAudienceSize sets the AudienceSize field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AbTestProgress) SetAudienceSize(audienceSize *int) {
+	a.AudienceSize = audienceSize
+	a.require(abTestProgressFieldAudienceSize)
+}
+
+// SetCampaignStatus sets the CampaignStatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AbTestProgress) SetCampaignStatus(campaignStatus *string) {
+	a.CampaignStatus = campaignStatus
+	a.require(abTestProgressFieldCampaignStatus)
+}
+
+// SetCommitted sets the Committed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AbTestProgress) SetCommitted(committed *int) {
+	a.Committed = committed
+	a.require(abTestProgressFieldCommitted)
+}
+
+// SetMinimumTestPercentage sets the MinimumTestPercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AbTestProgress) SetMinimumTestPercentage(minimumTestPercentage *int) {
+	a.MinimumTestPercentage = minimumTestPercentage
+	a.require(abTestProgressFieldMinimumTestPercentage)
+}
+
+// SetPauseReason sets the PauseReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AbTestProgress) SetPauseReason(pauseReason *string) {
+	a.PauseReason = pauseReason
+	a.require(abTestProgressFieldPauseReason)
+}
+
+// SetRemaining sets the Remaining field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AbTestProgress) SetRemaining(remaining *int) {
+	a.Remaining = remaining
+	a.require(abTestProgressFieldRemaining)
+}
+
+// SetSent sets the Sent field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AbTestProgress) SetSent(sent *int) {
+	a.Sent = sent
+	a.require(abTestProgressFieldSent)
+}
+
+// SetVariants sets the Variants field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AbTestProgress) SetVariants(variants []*AbTestProgressVariantsItem) {
+	a.Variants = variants
+	a.require(abTestProgressFieldVariants)
+}
+
+func (a *AbTestProgress) UnmarshalJSON(data []byte) error {
+	type unmarshaler AbTestProgress
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AbTestProgress(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AbTestProgress) MarshalJSON() ([]byte, error) {
+	type embed AbTestProgress
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AbTestProgress) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+var (
+	abTestProgressVariantsItemFieldCommitted = big.NewInt(1 << 0)
+	abTestProgressVariantsItemFieldFailed    = big.NewInt(1 << 1)
+	abTestProgressVariantsItemFieldPending   = big.NewInt(1 << 2)
+	abTestProgressVariantsItemFieldSent      = big.NewInt(1 << 3)
+	abTestProgressVariantsItemFieldVariantID = big.NewInt(1 << 4)
+)
+
+type AbTestProgressVariantsItem struct {
+	Committed *int `json:"committed,omitempty" url:"committed,omitempty"`
+	// Recipients with failed attempts and no successful or pending attempt.
+	Failed    *int    `json:"failed,omitempty" url:"failed,omitempty"`
+	Pending   *int    `json:"pending,omitempty" url:"pending,omitempty"`
+	Sent      *int    `json:"sent,omitempty" url:"sent,omitempty"`
+	VariantID *string `json:"variantId,omitempty" url:"variantId,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AbTestProgressVariantsItem) GetCommitted() *int {
+	if a == nil {
+		return nil
+	}
+	return a.Committed
+}
+
+func (a *AbTestProgressVariantsItem) GetFailed() *int {
+	if a == nil {
+		return nil
+	}
+	return a.Failed
+}
+
+func (a *AbTestProgressVariantsItem) GetPending() *int {
+	if a == nil {
+		return nil
+	}
+	return a.Pending
+}
+
+func (a *AbTestProgressVariantsItem) GetSent() *int {
+	if a == nil {
+		return nil
+	}
+	return a.Sent
+}
+
+func (a *AbTestProgressVariantsItem) GetVariantID() *string {
+	if a == nil {
+		return nil
+	}
+	return a.VariantID
+}
+
+func (a *AbTestProgressVariantsItem) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AbTestProgressVariantsItem) require(field *big.Int) {
+	if a.explicitFields == nil {
+		a.explicitFields = big.NewInt(0)
+	}
+	a.explicitFields.Or(a.explicitFields, field)
+}
+
+// SetCommitted sets the Committed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AbTestProgressVariantsItem) SetCommitted(committed *int) {
+	a.Committed = committed
+	a.require(abTestProgressVariantsItemFieldCommitted)
+}
+
+// SetFailed sets the Failed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AbTestProgressVariantsItem) SetFailed(failed *int) {
+	a.Failed = failed
+	a.require(abTestProgressVariantsItemFieldFailed)
+}
+
+// SetPending sets the Pending field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AbTestProgressVariantsItem) SetPending(pending *int) {
+	a.Pending = pending
+	a.require(abTestProgressVariantsItemFieldPending)
+}
+
+// SetSent sets the Sent field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AbTestProgressVariantsItem) SetSent(sent *int) {
+	a.Sent = sent
+	a.require(abTestProgressVariantsItemFieldSent)
+}
+
+// SetVariantID sets the VariantID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AbTestProgressVariantsItem) SetVariantID(variantID *string) {
+	a.VariantID = variantID
+	a.require(abTestProgressVariantsItemFieldVariantID)
+}
+
+func (a *AbTestProgressVariantsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler AbTestProgressVariantsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AbTestProgressVariantsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AbTestProgressVariantsItem) MarshalJSON() ([]byte, error) {
+	type embed AbTestProgressVariantsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AbTestProgressVariantsItem) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
 }
 
 // Effective sequence variant strategy. Present for sequence tests.
@@ -2823,7 +3370,7 @@ func (u UpdateAbTestsRequestTestType) Ptr() *UpdateAbTestsRequestTestType {
 	return &u
 }
 
-// Winner metric for campaign or sequence tests.
+// Winner metric for campaign or sequence tests; immutable once campaign testing starts.
 type UpdateAbTestsRequestWinnerCriteria string
 
 const (
@@ -3064,28 +3611,34 @@ func (u *UpdateVariantAbTestsResponse) String() string {
 
 var (
 	updateAbTestsRequestFieldAbTestID            = big.NewInt(1 << 0)
-	updateAbTestsRequestFieldConfirmLiveChange   = big.NewInt(1 << 1)
-	updateAbTestsRequestFieldName                = big.NewInt(1 << 2)
-	updateAbTestsRequestFieldTestDurationMinutes = big.NewInt(1 << 3)
-	updateAbTestsRequestFieldTestPercentage      = big.NewInt(1 << 4)
-	updateAbTestsRequestFieldTestType            = big.NewInt(1 << 5)
-	updateAbTestsRequestFieldWinnerCriteria      = big.NewInt(1 << 6)
-	updateAbTestsRequestFieldWinnerThreshold     = big.NewInt(1 << 7)
+	updateAbTestsRequestFieldCancelSampleUpdate  = big.NewInt(1 << 1)
+	updateAbTestsRequestFieldConfirmLiveChange   = big.NewInt(1 << 2)
+	updateAbTestsRequestFieldExpectedUpdatedAt   = big.NewInt(1 << 3)
+	updateAbTestsRequestFieldName                = big.NewInt(1 << 4)
+	updateAbTestsRequestFieldTestDurationMinutes = big.NewInt(1 << 5)
+	updateAbTestsRequestFieldTestPercentage      = big.NewInt(1 << 6)
+	updateAbTestsRequestFieldTestType            = big.NewInt(1 << 7)
+	updateAbTestsRequestFieldWinnerCriteria      = big.NewInt(1 << 8)
+	updateAbTestsRequestFieldWinnerThreshold     = big.NewInt(1 << 9)
 )
 
 type UpdateAbTestsRequest struct {
 	// A/B test ID.
 	AbTestID string `json:"-" url:"-"`
+	// Discard a failed campaign sample request. Cannot be combined with testPercentage; does not undo committed sends.
+	CancelSampleUpdate *bool `json:"cancelSampleUpdate,omitempty" url:"-"`
 	// Required when sequence settings affect an active test or a test with recorded activity.
-	ConfirmLiveChange *bool   `json:"confirmLiveChange,omitempty" url:"-"`
-	Name              *string `json:"name,omitempty" url:"-"`
-	// Campaign-only test duration.
+	ConfirmLiveChange *bool `json:"confirmLiveChange,omitempty" url:"-"`
+	// Optional campaign revision from GET; stale values return 409. Omit to preserve existing unconditional update behavior.
+	ExpectedUpdatedAt *time.Time `json:"expectedUpdatedAt,omitempty" url:"-"`
+	Name              *string    `json:"name,omitempty" url:"-"`
+	// Campaign-only total minutes from the original test start. An elapsed deadline queues selection immediately; paused campaigns stay paused.
 	TestDurationMinutes *int `json:"testDurationMinutes,omitempty" url:"-"`
-	// Campaign-only test audience percentage.
+	// Campaign-only integer share of the original full audience. Live changes queue a durable request; repeat the same percentage to retry.
 	TestPercentage *int `json:"testPercentage,omitempty" url:"-"`
 	// Sequence-only variant strategy.
 	TestType *UpdateAbTestsRequestTestType `json:"testType,omitempty" url:"-"`
-	// Winner metric for campaign or sequence tests.
+	// Winner metric for campaign or sequence tests; immutable once campaign testing starts.
 	WinnerCriteria *UpdateAbTestsRequestWinnerCriteria `json:"winnerCriteria,omitempty" url:"-"`
 	// Sequence-only recipient threshold.
 	WinnerThreshold *int `json:"winnerThreshold,omitempty" url:"-"`
@@ -3108,11 +3661,25 @@ func (u *UpdateAbTestsRequest) SetAbTestID(abTestID string) {
 	u.require(updateAbTestsRequestFieldAbTestID)
 }
 
+// SetCancelSampleUpdate sets the CancelSampleUpdate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAbTestsRequest) SetCancelSampleUpdate(cancelSampleUpdate *bool) {
+	u.CancelSampleUpdate = cancelSampleUpdate
+	u.require(updateAbTestsRequestFieldCancelSampleUpdate)
+}
+
 // SetConfirmLiveChange sets the ConfirmLiveChange field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateAbTestsRequest) SetConfirmLiveChange(confirmLiveChange *bool) {
 	u.ConfirmLiveChange = confirmLiveChange
 	u.require(updateAbTestsRequestFieldConfirmLiveChange)
+}
+
+// SetExpectedUpdatedAt sets the ExpectedUpdatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAbTestsRequest) SetExpectedUpdatedAt(expectedUpdatedAt *time.Time) {
+	u.ExpectedUpdatedAt = expectedUpdatedAt
+	u.require(updateAbTestsRequestFieldExpectedUpdatedAt)
 }
 
 // SetName sets the Name field and marks it as non-optional;
@@ -3171,8 +3738,10 @@ func (u *UpdateAbTestsRequest) MarshalJSON() ([]byte, error) {
 	type embed UpdateAbTestsRequest
 	var marshaler = struct {
 		embed
+		ExpectedUpdatedAt *internal.DateTime `json:"expectedUpdatedAt,omitempty"`
 	}{
-		embed: embed(*u),
+		embed:             embed(*u),
+		ExpectedUpdatedAt: internal.NewOptionalDateTime(u.ExpectedUpdatedAt),
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
 	return json.Marshal(explicitMarshaler)

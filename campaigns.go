@@ -987,14 +987,15 @@ func (r *RevokeShareLinkCampaignsRequest) SetCampaignID(campaignID string) {
 var (
 	scheduleCampaignsRequestFieldCampaignID              = big.NewInt(1 << 0)
 	scheduleCampaignsRequestFieldListIDs                 = big.NewInt(1 << 1)
-	scheduleCampaignsRequestFieldRecurringInterval       = big.NewInt(1 << 2)
-	scheduleCampaignsRequestFieldScheduledAt             = big.NewInt(1 << 3)
-	scheduleCampaignsRequestFieldScheduledTimezone       = big.NewInt(1 << 4)
-	scheduleCampaignsRequestFieldSendInRecipientTimezone = big.NewInt(1 << 5)
-	scheduleCampaignsRequestFieldSendTimeOptimization    = big.NewInt(1 << 6)
-	scheduleCampaignsRequestFieldSendTimeWindowHours     = big.NewInt(1 << 7)
-	scheduleCampaignsRequestFieldSpreadOverHours         = big.NewInt(1 << 8)
-	scheduleCampaignsRequestFieldTargetLists             = big.NewInt(1 << 9)
+	scheduleCampaignsRequestFieldMaxRecipients           = big.NewInt(1 << 2)
+	scheduleCampaignsRequestFieldRecurringInterval       = big.NewInt(1 << 3)
+	scheduleCampaignsRequestFieldScheduledAt             = big.NewInt(1 << 4)
+	scheduleCampaignsRequestFieldScheduledTimezone       = big.NewInt(1 << 5)
+	scheduleCampaignsRequestFieldSendInRecipientTimezone = big.NewInt(1 << 6)
+	scheduleCampaignsRequestFieldSendTimeOptimization    = big.NewInt(1 << 7)
+	scheduleCampaignsRequestFieldSendTimeWindowHours     = big.NewInt(1 << 8)
+	scheduleCampaignsRequestFieldSpreadOverHours         = big.NewInt(1 << 9)
+	scheduleCampaignsRequestFieldTargetLists             = big.NewInt(1 << 10)
 )
 
 type ScheduleCampaignsRequest struct {
@@ -1002,6 +1003,8 @@ type ScheduleCampaignsRequest struct {
 	CampaignID string `json:"-" url:"-"`
 	// Shorthand for sending to one or more lists. Equivalent to `targetLists` `{"type":"lists","listIds":["list_123"]}`. Mutually exclusive with targetLists.
 	ListIDs []string `json:"listIds,omitempty" url:"-"`
+	// Send to at most this many audience members. The first N matching subscribers (by subscriber id) receive the campaign after every audience and suppression rule is applied; recipients already reached count against the cap when a paused send resumes. Omit to keep the draft's saved cap, send null to clear it. The response's estimatedRecipientCount reflects the cap. For A/B tests, the cap must be at least the number of variants plus one; a smaller saved or requested cap returns 400 without changing the campaign or schedule.
+	MaxRecipients *int `json:"maxRecipients,omitempty" url:"-"`
 	// Repeat the campaign on a cadence starting at scheduledAt. The campaign becomes a recurring template - each run is duplicated and sent automatically, re-evaluating audience membership every time. Omit or send null for a one-shot send; scheduling again without it stops the recurrence.
 	RecurringInterval *ScheduleCampaignsRequestRecurringInterval `json:"recurringInterval,omitempty" url:"-"`
 	// Future send time.
@@ -1042,6 +1045,13 @@ func (s *ScheduleCampaignsRequest) SetCampaignID(campaignID string) {
 func (s *ScheduleCampaignsRequest) SetListIDs(listIDs []string) {
 	s.ListIDs = listIDs
 	s.require(scheduleCampaignsRequestFieldListIDs)
+}
+
+// SetMaxRecipients sets the MaxRecipients field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *ScheduleCampaignsRequest) SetMaxRecipients(maxRecipients *int) {
+	s.MaxRecipients = maxRecipients
+	s.require(scheduleCampaignsRequestFieldMaxRecipients)
 }
 
 // SetRecurringInterval sets the RecurringInterval field and marks it as non-optional;
@@ -1210,34 +1220,35 @@ var (
 	campaignDetailFieldHasAudience             = big.NewInt(1 << 3)
 	campaignDetailFieldID                      = big.NewInt(1 << 4)
 	campaignDetailFieldLabels                  = big.NewInt(1 << 5)
-	campaignDetailFieldName                    = big.NewInt(1 << 6)
-	campaignDetailFieldRejectionComment        = big.NewInt(1 << 7)
-	campaignDetailFieldScheduledAt             = big.NewInt(1 << 8)
-	campaignDetailFieldScheduledTimezone       = big.NewInt(1 << 9)
-	campaignDetailFieldSendInRecipientTimezone = big.NewInt(1 << 10)
-	campaignDetailFieldSendTimeOptimization    = big.NewInt(1 << 11)
-	campaignDetailFieldSendTimeWindowHours     = big.NewInt(1 << 12)
-	campaignDetailFieldSentAt                  = big.NewInt(1 << 13)
-	campaignDetailFieldSpreadOverHours         = big.NewInt(1 << 14)
-	campaignDetailFieldStatus                  = big.NewInt(1 << 15)
-	campaignDetailFieldSubject                 = big.NewInt(1 << 16)
-	campaignDetailFieldTrackingCode            = big.NewInt(1 << 17)
-	campaignDetailFieldType                    = big.NewInt(1 << 18)
-	campaignDetailFieldBccEmails               = big.NewInt(1 << 19)
-	campaignDetailFieldBlocks                  = big.NewInt(1 << 20)
-	campaignDetailFieldCampaignData            = big.NewInt(1 << 21)
-	campaignDetailFieldCcEmails                = big.NewInt(1 << 22)
-	campaignDetailFieldComputedLists           = big.NewInt(1 << 23)
-	campaignDetailFieldFromEmail               = big.NewInt(1 << 24)
-	campaignDetailFieldFromName                = big.NewInt(1 << 25)
-	campaignDetailFieldPreheader               = big.NewInt(1 << 26)
-	campaignDetailFieldPreheaderText           = big.NewInt(1 << 27)
-	campaignDetailFieldReplyProfileID          = big.NewInt(1 << 28)
-	campaignDetailFieldReplyToEmail            = big.NewInt(1 << 29)
-	campaignDetailFieldReplyToName             = big.NewInt(1 << 30)
-	campaignDetailFieldSenderProfileID         = big.NewInt(1 << 31)
-	campaignDetailFieldShareURL                = big.NewInt(1 << 32)
-	campaignDetailFieldTargetLists             = big.NewInt(1 << 33)
+	campaignDetailFieldMaxRecipients           = big.NewInt(1 << 6)
+	campaignDetailFieldName                    = big.NewInt(1 << 7)
+	campaignDetailFieldRejectionComment        = big.NewInt(1 << 8)
+	campaignDetailFieldScheduledAt             = big.NewInt(1 << 9)
+	campaignDetailFieldScheduledTimezone       = big.NewInt(1 << 10)
+	campaignDetailFieldSendInRecipientTimezone = big.NewInt(1 << 11)
+	campaignDetailFieldSendTimeOptimization    = big.NewInt(1 << 12)
+	campaignDetailFieldSendTimeWindowHours     = big.NewInt(1 << 13)
+	campaignDetailFieldSentAt                  = big.NewInt(1 << 14)
+	campaignDetailFieldSpreadOverHours         = big.NewInt(1 << 15)
+	campaignDetailFieldStatus                  = big.NewInt(1 << 16)
+	campaignDetailFieldSubject                 = big.NewInt(1 << 17)
+	campaignDetailFieldTrackingCode            = big.NewInt(1 << 18)
+	campaignDetailFieldType                    = big.NewInt(1 << 19)
+	campaignDetailFieldBccEmails               = big.NewInt(1 << 20)
+	campaignDetailFieldBlocks                  = big.NewInt(1 << 21)
+	campaignDetailFieldCampaignData            = big.NewInt(1 << 22)
+	campaignDetailFieldCcEmails                = big.NewInt(1 << 23)
+	campaignDetailFieldComputedLists           = big.NewInt(1 << 24)
+	campaignDetailFieldFromEmail               = big.NewInt(1 << 25)
+	campaignDetailFieldFromName                = big.NewInt(1 << 26)
+	campaignDetailFieldPreheader               = big.NewInt(1 << 27)
+	campaignDetailFieldPreheaderText           = big.NewInt(1 << 28)
+	campaignDetailFieldReplyProfileID          = big.NewInt(1 << 29)
+	campaignDetailFieldReplyToEmail            = big.NewInt(1 << 30)
+	campaignDetailFieldReplyToName             = big.NewInt(1 << 31)
+	campaignDetailFieldSenderProfileID         = big.NewInt(1 << 32)
+	campaignDetailFieldShareURL                = big.NewInt(1 << 33)
+	campaignDetailFieldTargetLists             = big.NewInt(1 << 34)
 )
 
 type CampaignDetail struct {
@@ -1251,7 +1262,9 @@ type CampaignDetail struct {
 	ID          *string `json:"id,omitempty" url:"id,omitempty"`
 	// Label names assigned to this campaign.
 	Labels []string `json:"labels,omitempty" url:"labels,omitempty"`
-	Name   *string  `json:"name,omitempty" url:"name,omitempty"`
+	// Recipient cap applied when the audience is resolved at send time. The first N matching subscribers (by subscriber id) receive the campaign after every audience and suppression rule; recipients already reached count against the cap when a paused send resumes. Null means the whole audience is targeted.
+	MaxRecipients *int    `json:"maxRecipients,omitempty" url:"maxRecipients,omitempty"`
+	Name          *string `json:"name,omitempty" url:"name,omitempty"`
 	// Reviewer feedback when the campaign status is rejected. Stays null while a campaign is still in waiting_approval.
 	RejectionComment *string    `json:"rejectionComment,omitempty" url:"rejectionComment,omitempty"`
 	ScheduledAt      *time.Time `json:"scheduledAt,omitempty" url:"scheduledAt,omitempty"`
@@ -1340,6 +1353,13 @@ func (c *CampaignDetail) GetLabels() []string {
 		return nil
 	}
 	return c.Labels
+}
+
+func (c *CampaignDetail) GetMaxRecipients() *int {
+	if c == nil {
+		return nil
+	}
+	return c.MaxRecipients
 }
 
 func (c *CampaignDetail) GetName() *string {
@@ -1592,6 +1612,13 @@ func (c *CampaignDetail) SetID(id *string) {
 func (c *CampaignDetail) SetLabels(labels []string) {
 	c.Labels = labels
 	c.require(campaignDetailFieldLabels)
+}
+
+// SetMaxRecipients sets the MaxRecipients field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CampaignDetail) SetMaxRecipients(maxRecipients *int) {
+	c.MaxRecipients = maxRecipients
+	c.require(campaignDetailFieldMaxRecipients)
 }
 
 // SetName sets the Name field and marks it as non-optional;
@@ -2615,19 +2642,20 @@ var (
 	campaignSummaryFieldHasAudience             = big.NewInt(1 << 3)
 	campaignSummaryFieldID                      = big.NewInt(1 << 4)
 	campaignSummaryFieldLabels                  = big.NewInt(1 << 5)
-	campaignSummaryFieldName                    = big.NewInt(1 << 6)
-	campaignSummaryFieldRejectionComment        = big.NewInt(1 << 7)
-	campaignSummaryFieldScheduledAt             = big.NewInt(1 << 8)
-	campaignSummaryFieldScheduledTimezone       = big.NewInt(1 << 9)
-	campaignSummaryFieldSendInRecipientTimezone = big.NewInt(1 << 10)
-	campaignSummaryFieldSendTimeOptimization    = big.NewInt(1 << 11)
-	campaignSummaryFieldSendTimeWindowHours     = big.NewInt(1 << 12)
-	campaignSummaryFieldSentAt                  = big.NewInt(1 << 13)
-	campaignSummaryFieldSpreadOverHours         = big.NewInt(1 << 14)
-	campaignSummaryFieldStatus                  = big.NewInt(1 << 15)
-	campaignSummaryFieldSubject                 = big.NewInt(1 << 16)
-	campaignSummaryFieldTrackingCode            = big.NewInt(1 << 17)
-	campaignSummaryFieldType                    = big.NewInt(1 << 18)
+	campaignSummaryFieldMaxRecipients           = big.NewInt(1 << 6)
+	campaignSummaryFieldName                    = big.NewInt(1 << 7)
+	campaignSummaryFieldRejectionComment        = big.NewInt(1 << 8)
+	campaignSummaryFieldScheduledAt             = big.NewInt(1 << 9)
+	campaignSummaryFieldScheduledTimezone       = big.NewInt(1 << 10)
+	campaignSummaryFieldSendInRecipientTimezone = big.NewInt(1 << 11)
+	campaignSummaryFieldSendTimeOptimization    = big.NewInt(1 << 12)
+	campaignSummaryFieldSendTimeWindowHours     = big.NewInt(1 << 13)
+	campaignSummaryFieldSentAt                  = big.NewInt(1 << 14)
+	campaignSummaryFieldSpreadOverHours         = big.NewInt(1 << 15)
+	campaignSummaryFieldStatus                  = big.NewInt(1 << 16)
+	campaignSummaryFieldSubject                 = big.NewInt(1 << 17)
+	campaignSummaryFieldTrackingCode            = big.NewInt(1 << 18)
+	campaignSummaryFieldType                    = big.NewInt(1 << 19)
 )
 
 type CampaignSummary struct {
@@ -2641,7 +2669,9 @@ type CampaignSummary struct {
 	ID          *string `json:"id,omitempty" url:"id,omitempty"`
 	// Label names assigned to this campaign.
 	Labels []string `json:"labels,omitempty" url:"labels,omitempty"`
-	Name   *string  `json:"name,omitempty" url:"name,omitempty"`
+	// Recipient cap applied when the audience is resolved at send time. The first N matching subscribers (by subscriber id) receive the campaign after every audience and suppression rule; recipients already reached count against the cap when a paused send resumes. Null means the whole audience is targeted.
+	MaxRecipients *int    `json:"maxRecipients,omitempty" url:"maxRecipients,omitempty"`
+	Name          *string `json:"name,omitempty" url:"name,omitempty"`
 	// Reviewer feedback when the campaign status is rejected. Stays null while a campaign is still in waiting_approval.
 	RejectionComment *string    `json:"rejectionComment,omitempty" url:"rejectionComment,omitempty"`
 	ScheduledAt      *time.Time `json:"scheduledAt,omitempty" url:"scheduledAt,omitempty"`
@@ -2710,6 +2740,13 @@ func (c *CampaignSummary) GetLabels() []string {
 		return nil
 	}
 	return c.Labels
+}
+
+func (c *CampaignSummary) GetMaxRecipients() *int {
+	if c == nil {
+		return nil
+	}
+	return c.MaxRecipients
 }
 
 func (c *CampaignSummary) GetName() *string {
@@ -2859,6 +2896,13 @@ func (c *CampaignSummary) SetLabels(labels []string) {
 	c.require(campaignSummaryFieldLabels)
 }
 
+// SetMaxRecipients sets the MaxRecipients field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CampaignSummary) SetMaxRecipients(maxRecipients *int) {
+	c.MaxRecipients = maxRecipients
+	c.require(campaignSummaryFieldMaxRecipients)
+}
+
 // SetName sets the Name field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CampaignSummary) SetName(name *string) {
@@ -3006,6 +3050,399 @@ func (c *CampaignSummary) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	companyGoalFieldAttributeCondition     = big.NewInt(1 << 0)
+	companyGoalFieldAttributePath          = big.NewInt(1 << 1)
+	companyGoalFieldAttributePreviousValue = big.NewInt(1 << 2)
+	companyGoalFieldAttributeValue         = big.NewInt(1 << 3)
+	companyGoalFieldAttributionWindowHours = big.NewInt(1 << 4)
+	companyGoalFieldCampaignID             = big.NewInt(1 << 5)
+	companyGoalFieldDescription            = big.NewInt(1 << 6)
+	companyGoalFieldEventPropertyLabel     = big.NewInt(1 << 7)
+	companyGoalFieldEventPropertyName      = big.NewInt(1 << 8)
+	companyGoalFieldID                     = big.NewInt(1 << 9)
+	companyGoalFieldIsActive               = big.NewInt(1 << 10)
+	companyGoalFieldName                   = big.NewInt(1 << 11)
+	companyGoalFieldScope                  = big.NewInt(1 << 12)
+	companyGoalFieldTriggerEventName       = big.NewInt(1 << 13)
+	companyGoalFieldTriggerTagName         = big.NewInt(1 << 14)
+	companyGoalFieldTriggerType            = big.NewInt(1 << 15)
+)
+
+type CompanyGoal struct {
+	AttributeCondition     *CompanyGoalAttributeCondition `json:"attributeCondition,omitempty" url:"attributeCondition,omitempty"`
+	AttributePath          *string                        `json:"attributePath,omitempty" url:"attributePath,omitempty"`
+	AttributePreviousValue *string                        `json:"attributePreviousValue,omitempty" url:"attributePreviousValue,omitempty"`
+	AttributeValue         *string                        `json:"attributeValue,omitempty" url:"attributeValue,omitempty"`
+	AttributionWindowHours *int                           `json:"attributionWindowHours,omitempty" url:"attributionWindowHours,omitempty"`
+	CampaignID             any                            `json:"campaignId,omitempty" url:"campaignId,omitempty"`
+	Description            *string                        `json:"description,omitempty" url:"description,omitempty"`
+	EventPropertyLabel     *string                        `json:"eventPropertyLabel,omitempty" url:"eventPropertyLabel,omitempty"`
+	EventPropertyName      *string                        `json:"eventPropertyName,omitempty" url:"eventPropertyName,omitempty"`
+	ID                     *string                        `json:"id,omitempty" url:"id,omitempty"`
+	IsActive               *bool                          `json:"isActive,omitempty" url:"isActive,omitempty"`
+	Name                   *string                        `json:"name,omitempty" url:"name,omitempty"`
+	Scope                  *CompanyGoalScope              `json:"scope,omitempty" url:"scope,omitempty"`
+	TriggerEventName       *string                        `json:"triggerEventName,omitempty" url:"triggerEventName,omitempty"`
+	TriggerTagName         *string                        `json:"triggerTagName,omitempty" url:"triggerTagName,omitempty"`
+	TriggerType            *CompanyGoalTriggerType        `json:"triggerType,omitempty" url:"triggerType,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CompanyGoal) GetAttributeCondition() *CompanyGoalAttributeCondition {
+	if c == nil {
+		return nil
+	}
+	return c.AttributeCondition
+}
+
+func (c *CompanyGoal) GetAttributePath() *string {
+	if c == nil {
+		return nil
+	}
+	return c.AttributePath
+}
+
+func (c *CompanyGoal) GetAttributePreviousValue() *string {
+	if c == nil {
+		return nil
+	}
+	return c.AttributePreviousValue
+}
+
+func (c *CompanyGoal) GetAttributeValue() *string {
+	if c == nil {
+		return nil
+	}
+	return c.AttributeValue
+}
+
+func (c *CompanyGoal) GetAttributionWindowHours() *int {
+	if c == nil {
+		return nil
+	}
+	return c.AttributionWindowHours
+}
+
+func (c *CompanyGoal) GetCampaignID() any {
+	if c == nil {
+		return nil
+	}
+	return c.CampaignID
+}
+
+func (c *CompanyGoal) GetDescription() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Description
+}
+
+func (c *CompanyGoal) GetEventPropertyLabel() *string {
+	if c == nil {
+		return nil
+	}
+	return c.EventPropertyLabel
+}
+
+func (c *CompanyGoal) GetEventPropertyName() *string {
+	if c == nil {
+		return nil
+	}
+	return c.EventPropertyName
+}
+
+func (c *CompanyGoal) GetID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.ID
+}
+
+func (c *CompanyGoal) GetIsActive() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.IsActive
+}
+
+func (c *CompanyGoal) GetName() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Name
+}
+
+func (c *CompanyGoal) GetScope() *CompanyGoalScope {
+	if c == nil {
+		return nil
+	}
+	return c.Scope
+}
+
+func (c *CompanyGoal) GetTriggerEventName() *string {
+	if c == nil {
+		return nil
+	}
+	return c.TriggerEventName
+}
+
+func (c *CompanyGoal) GetTriggerTagName() *string {
+	if c == nil {
+		return nil
+	}
+	return c.TriggerTagName
+}
+
+func (c *CompanyGoal) GetTriggerType() *CompanyGoalTriggerType {
+	if c == nil {
+		return nil
+	}
+	return c.TriggerType
+}
+
+func (c *CompanyGoal) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CompanyGoal) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetAttributeCondition sets the AttributeCondition field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CompanyGoal) SetAttributeCondition(attributeCondition *CompanyGoalAttributeCondition) {
+	c.AttributeCondition = attributeCondition
+	c.require(companyGoalFieldAttributeCondition)
+}
+
+// SetAttributePath sets the AttributePath field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CompanyGoal) SetAttributePath(attributePath *string) {
+	c.AttributePath = attributePath
+	c.require(companyGoalFieldAttributePath)
+}
+
+// SetAttributePreviousValue sets the AttributePreviousValue field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CompanyGoal) SetAttributePreviousValue(attributePreviousValue *string) {
+	c.AttributePreviousValue = attributePreviousValue
+	c.require(companyGoalFieldAttributePreviousValue)
+}
+
+// SetAttributeValue sets the AttributeValue field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CompanyGoal) SetAttributeValue(attributeValue *string) {
+	c.AttributeValue = attributeValue
+	c.require(companyGoalFieldAttributeValue)
+}
+
+// SetAttributionWindowHours sets the AttributionWindowHours field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CompanyGoal) SetAttributionWindowHours(attributionWindowHours *int) {
+	c.AttributionWindowHours = attributionWindowHours
+	c.require(companyGoalFieldAttributionWindowHours)
+}
+
+// SetCampaignID sets the CampaignID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CompanyGoal) SetCampaignID(campaignID any) {
+	c.CampaignID = campaignID
+	c.require(companyGoalFieldCampaignID)
+}
+
+// SetDescription sets the Description field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CompanyGoal) SetDescription(description *string) {
+	c.Description = description
+	c.require(companyGoalFieldDescription)
+}
+
+// SetEventPropertyLabel sets the EventPropertyLabel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CompanyGoal) SetEventPropertyLabel(eventPropertyLabel *string) {
+	c.EventPropertyLabel = eventPropertyLabel
+	c.require(companyGoalFieldEventPropertyLabel)
+}
+
+// SetEventPropertyName sets the EventPropertyName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CompanyGoal) SetEventPropertyName(eventPropertyName *string) {
+	c.EventPropertyName = eventPropertyName
+	c.require(companyGoalFieldEventPropertyName)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CompanyGoal) SetID(id *string) {
+	c.ID = id
+	c.require(companyGoalFieldID)
+}
+
+// SetIsActive sets the IsActive field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CompanyGoal) SetIsActive(isActive *bool) {
+	c.IsActive = isActive
+	c.require(companyGoalFieldIsActive)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CompanyGoal) SetName(name *string) {
+	c.Name = name
+	c.require(companyGoalFieldName)
+}
+
+// SetScope sets the Scope field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CompanyGoal) SetScope(scope *CompanyGoalScope) {
+	c.Scope = scope
+	c.require(companyGoalFieldScope)
+}
+
+// SetTriggerEventName sets the TriggerEventName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CompanyGoal) SetTriggerEventName(triggerEventName *string) {
+	c.TriggerEventName = triggerEventName
+	c.require(companyGoalFieldTriggerEventName)
+}
+
+// SetTriggerTagName sets the TriggerTagName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CompanyGoal) SetTriggerTagName(triggerTagName *string) {
+	c.TriggerTagName = triggerTagName
+	c.require(companyGoalFieldTriggerTagName)
+}
+
+// SetTriggerType sets the TriggerType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CompanyGoal) SetTriggerType(triggerType *CompanyGoalTriggerType) {
+	c.TriggerType = triggerType
+	c.require(companyGoalFieldTriggerType)
+}
+
+func (c *CompanyGoal) UnmarshalJSON(data []byte) error {
+	type unmarshaler CompanyGoal
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CompanyGoal(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CompanyGoal) MarshalJSON() ([]byte, error) {
+	type embed CompanyGoal
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CompanyGoal) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+type CompanyGoalAttributeCondition string
+
+const (
+	CompanyGoalAttributeConditionChanged       CompanyGoalAttributeCondition = "changed"
+	CompanyGoalAttributeConditionChangedTo     CompanyGoalAttributeCondition = "changed_to"
+	CompanyGoalAttributeConditionChangedFromTo CompanyGoalAttributeCondition = "changed_from_to"
+)
+
+func NewCompanyGoalAttributeConditionFromString(s string) (CompanyGoalAttributeCondition, error) {
+	switch s {
+	case "changed":
+		return CompanyGoalAttributeConditionChanged, nil
+	case "changed_to":
+		return CompanyGoalAttributeConditionChangedTo, nil
+	case "changed_from_to":
+		return CompanyGoalAttributeConditionChangedFromTo, nil
+	}
+	var t CompanyGoalAttributeCondition
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CompanyGoalAttributeCondition) Ptr() *CompanyGoalAttributeCondition {
+	return &c
+}
+
+type CompanyGoalScope string
+
+const (
+	CompanyGoalScopeCompany CompanyGoalScope = "company"
+)
+
+func NewCompanyGoalScopeFromString(s string) (CompanyGoalScope, error) {
+	switch s {
+	case "company":
+		return CompanyGoalScopeCompany, nil
+	}
+	var t CompanyGoalScope
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CompanyGoalScope) Ptr() *CompanyGoalScope {
+	return &c
+}
+
+type CompanyGoalTriggerType string
+
+const (
+	CompanyGoalTriggerTypeEvent           CompanyGoalTriggerType = "event"
+	CompanyGoalTriggerTypeAttributeChange CompanyGoalTriggerType = "attribute_change"
+	CompanyGoalTriggerTypeTagAdded        CompanyGoalTriggerType = "tag_added"
+)
+
+func NewCompanyGoalTriggerTypeFromString(s string) (CompanyGoalTriggerType, error) {
+	switch s {
+	case "event":
+		return CompanyGoalTriggerTypeEvent, nil
+	case "attribute_change":
+		return CompanyGoalTriggerTypeAttributeChange, nil
+	case "tag_added":
+		return CompanyGoalTriggerTypeTagAdded, nil
+	}
+	var t CompanyGoalTriggerType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CompanyGoalTriggerType) Ptr() *CompanyGoalTriggerType {
+	return &c
 }
 
 var (
@@ -6551,27 +6988,28 @@ var (
 	duplicateCampaignsResponseCampaignFieldHasAudience             = big.NewInt(1 << 10)
 	duplicateCampaignsResponseCampaignFieldID                      = big.NewInt(1 << 11)
 	duplicateCampaignsResponseCampaignFieldLabels                  = big.NewInt(1 << 12)
-	duplicateCampaignsResponseCampaignFieldName                    = big.NewInt(1 << 13)
-	duplicateCampaignsResponseCampaignFieldPreheader               = big.NewInt(1 << 14)
-	duplicateCampaignsResponseCampaignFieldPreheaderText           = big.NewInt(1 << 15)
-	duplicateCampaignsResponseCampaignFieldRejectionComment        = big.NewInt(1 << 16)
-	duplicateCampaignsResponseCampaignFieldReplyProfileID          = big.NewInt(1 << 17)
-	duplicateCampaignsResponseCampaignFieldReplyToEmail            = big.NewInt(1 << 18)
-	duplicateCampaignsResponseCampaignFieldReplyToName             = big.NewInt(1 << 19)
-	duplicateCampaignsResponseCampaignFieldScheduledAt             = big.NewInt(1 << 20)
-	duplicateCampaignsResponseCampaignFieldScheduledTimezone       = big.NewInt(1 << 21)
-	duplicateCampaignsResponseCampaignFieldSenderProfileID         = big.NewInt(1 << 22)
-	duplicateCampaignsResponseCampaignFieldSendInRecipientTimezone = big.NewInt(1 << 23)
-	duplicateCampaignsResponseCampaignFieldSendTimeOptimization    = big.NewInt(1 << 24)
-	duplicateCampaignsResponseCampaignFieldSendTimeWindowHours     = big.NewInt(1 << 25)
-	duplicateCampaignsResponseCampaignFieldSentAt                  = big.NewInt(1 << 26)
-	duplicateCampaignsResponseCampaignFieldShareURL                = big.NewInt(1 << 27)
-	duplicateCampaignsResponseCampaignFieldSpreadOverHours         = big.NewInt(1 << 28)
-	duplicateCampaignsResponseCampaignFieldStatus                  = big.NewInt(1 << 29)
-	duplicateCampaignsResponseCampaignFieldSubject                 = big.NewInt(1 << 30)
-	duplicateCampaignsResponseCampaignFieldTargetLists             = big.NewInt(1 << 31)
-	duplicateCampaignsResponseCampaignFieldTrackingCode            = big.NewInt(1 << 32)
-	duplicateCampaignsResponseCampaignFieldType                    = big.NewInt(1 << 33)
+	duplicateCampaignsResponseCampaignFieldMaxRecipients           = big.NewInt(1 << 13)
+	duplicateCampaignsResponseCampaignFieldName                    = big.NewInt(1 << 14)
+	duplicateCampaignsResponseCampaignFieldPreheader               = big.NewInt(1 << 15)
+	duplicateCampaignsResponseCampaignFieldPreheaderText           = big.NewInt(1 << 16)
+	duplicateCampaignsResponseCampaignFieldRejectionComment        = big.NewInt(1 << 17)
+	duplicateCampaignsResponseCampaignFieldReplyProfileID          = big.NewInt(1 << 18)
+	duplicateCampaignsResponseCampaignFieldReplyToEmail            = big.NewInt(1 << 19)
+	duplicateCampaignsResponseCampaignFieldReplyToName             = big.NewInt(1 << 20)
+	duplicateCampaignsResponseCampaignFieldScheduledAt             = big.NewInt(1 << 21)
+	duplicateCampaignsResponseCampaignFieldScheduledTimezone       = big.NewInt(1 << 22)
+	duplicateCampaignsResponseCampaignFieldSenderProfileID         = big.NewInt(1 << 23)
+	duplicateCampaignsResponseCampaignFieldSendInRecipientTimezone = big.NewInt(1 << 24)
+	duplicateCampaignsResponseCampaignFieldSendTimeOptimization    = big.NewInt(1 << 25)
+	duplicateCampaignsResponseCampaignFieldSendTimeWindowHours     = big.NewInt(1 << 26)
+	duplicateCampaignsResponseCampaignFieldSentAt                  = big.NewInt(1 << 27)
+	duplicateCampaignsResponseCampaignFieldShareURL                = big.NewInt(1 << 28)
+	duplicateCampaignsResponseCampaignFieldSpreadOverHours         = big.NewInt(1 << 29)
+	duplicateCampaignsResponseCampaignFieldStatus                  = big.NewInt(1 << 30)
+	duplicateCampaignsResponseCampaignFieldSubject                 = big.NewInt(1 << 31)
+	duplicateCampaignsResponseCampaignFieldTargetLists             = big.NewInt(1 << 32)
+	duplicateCampaignsResponseCampaignFieldTrackingCode            = big.NewInt(1 << 33)
+	duplicateCampaignsResponseCampaignFieldType                    = big.NewInt(1 << 34)
 )
 
 type DuplicateCampaignsResponseCampaign struct {
@@ -6593,9 +7031,11 @@ type DuplicateCampaignsResponseCampaign struct {
 	HasAudience *bool   `json:"hasAudience,omitempty" url:"hasAudience,omitempty"`
 	ID          *string `json:"id,omitempty" url:"id,omitempty"`
 	// Label names assigned to this campaign.
-	Labels    []string `json:"labels,omitempty" url:"labels,omitempty"`
-	Name      *string  `json:"name,omitempty" url:"name,omitempty"`
-	Preheader *string  `json:"preheader,omitempty" url:"preheader,omitempty"`
+	Labels []string `json:"labels,omitempty" url:"labels,omitempty"`
+	// Recipient cap applied when the audience is resolved at send time. The first N matching subscribers (by subscriber id) receive the campaign after every audience and suppression rule; recipients already reached count against the cap when a paused send resumes. Null means the whole audience is targeted.
+	MaxRecipients *int    `json:"maxRecipients,omitempty" url:"maxRecipients,omitempty"`
+	Name          *string `json:"name,omitempty" url:"name,omitempty"`
+	Preheader     *string `json:"preheader,omitempty" url:"preheader,omitempty"`
 	// Compatibility alias for preheader.
 	PreheaderText *string `json:"preheaderText,omitempty" url:"preheaderText,omitempty"`
 	// Reviewer feedback when the campaign status is rejected. Stays null while a campaign is still in waiting_approval.
@@ -6723,6 +7163,13 @@ func (d *DuplicateCampaignsResponseCampaign) GetLabels() []string {
 		return nil
 	}
 	return d.Labels
+}
+
+func (d *DuplicateCampaignsResponseCampaign) GetMaxRecipients() *int {
+	if d == nil {
+		return nil
+	}
+	return d.MaxRecipients
 }
 
 func (d *DuplicateCampaignsResponseCampaign) GetName() *string {
@@ -6975,6 +7422,13 @@ func (d *DuplicateCampaignsResponseCampaign) SetID(id *string) {
 func (d *DuplicateCampaignsResponseCampaign) SetLabels(labels []string) {
 	d.Labels = labels
 	d.require(duplicateCampaignsResponseCampaignFieldLabels)
+}
+
+// SetMaxRecipients sets the MaxRecipients field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DuplicateCampaignsResponseCampaign) SetMaxRecipients(maxRecipients *int) {
+	d.MaxRecipients = maxRecipients
+	d.require(duplicateCampaignsResponseCampaignFieldMaxRecipients)
 }
 
 // SetName sets the Name field and marks it as non-optional;
@@ -7793,19 +8247,29 @@ func (l *ListCampaignsResponsePagination) String() string {
 }
 
 var (
-	listGoalsCampaignsResponseFieldGoals   = big.NewInt(1 << 0)
-	listGoalsCampaignsResponseFieldSuccess = big.NewInt(1 << 1)
+	listGoalsCampaignsResponseFieldCompanyGoals = big.NewInt(1 << 0)
+	listGoalsCampaignsResponseFieldGoals        = big.NewInt(1 << 1)
+	listGoalsCampaignsResponseFieldSuccess      = big.NewInt(1 << 2)
 )
 
 type ListGoalsCampaignsResponse struct {
-	Goals   []*CampaignGoal `json:"goals,omitempty" url:"goals,omitempty"`
-	Success *bool           `json:"success,omitempty" url:"success,omitempty"`
+	// Company-wide goals from Settings, including inactive goals. Empty when none exist. These are not attached to or editable through this campaign.
+	CompanyGoals []*CompanyGoal  `json:"companyGoals,omitempty" url:"companyGoals,omitempty"`
+	Goals        []*CampaignGoal `json:"goals,omitempty" url:"goals,omitempty"`
+	Success      *bool           `json:"success,omitempty" url:"success,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (l *ListGoalsCampaignsResponse) GetCompanyGoals() []*CompanyGoal {
+	if l == nil {
+		return nil
+	}
+	return l.CompanyGoals
 }
 
 func (l *ListGoalsCampaignsResponse) GetGoals() []*CampaignGoal {
@@ -7834,6 +8298,13 @@ func (l *ListGoalsCampaignsResponse) require(field *big.Int) {
 		l.explicitFields = big.NewInt(0)
 	}
 	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetCompanyGoals sets the CompanyGoals field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListGoalsCampaignsResponse) SetCompanyGoals(companyGoals []*CompanyGoal) {
+	l.CompanyGoals = companyGoals
+	l.require(listGoalsCampaignsResponseFieldCompanyGoals)
 }
 
 // SetGoals sets the Goals field and marks it as non-optional;
@@ -8488,27 +8959,28 @@ var (
 	resendToNonOpenersCampaignsResponseCampaignFieldHasAudience             = big.NewInt(1 << 10)
 	resendToNonOpenersCampaignsResponseCampaignFieldID                      = big.NewInt(1 << 11)
 	resendToNonOpenersCampaignsResponseCampaignFieldLabels                  = big.NewInt(1 << 12)
-	resendToNonOpenersCampaignsResponseCampaignFieldName                    = big.NewInt(1 << 13)
-	resendToNonOpenersCampaignsResponseCampaignFieldPreheader               = big.NewInt(1 << 14)
-	resendToNonOpenersCampaignsResponseCampaignFieldPreheaderText           = big.NewInt(1 << 15)
-	resendToNonOpenersCampaignsResponseCampaignFieldRejectionComment        = big.NewInt(1 << 16)
-	resendToNonOpenersCampaignsResponseCampaignFieldReplyProfileID          = big.NewInt(1 << 17)
-	resendToNonOpenersCampaignsResponseCampaignFieldReplyToEmail            = big.NewInt(1 << 18)
-	resendToNonOpenersCampaignsResponseCampaignFieldReplyToName             = big.NewInt(1 << 19)
-	resendToNonOpenersCampaignsResponseCampaignFieldScheduledAt             = big.NewInt(1 << 20)
-	resendToNonOpenersCampaignsResponseCampaignFieldScheduledTimezone       = big.NewInt(1 << 21)
-	resendToNonOpenersCampaignsResponseCampaignFieldSenderProfileID         = big.NewInt(1 << 22)
-	resendToNonOpenersCampaignsResponseCampaignFieldSendInRecipientTimezone = big.NewInt(1 << 23)
-	resendToNonOpenersCampaignsResponseCampaignFieldSendTimeOptimization    = big.NewInt(1 << 24)
-	resendToNonOpenersCampaignsResponseCampaignFieldSendTimeWindowHours     = big.NewInt(1 << 25)
-	resendToNonOpenersCampaignsResponseCampaignFieldSentAt                  = big.NewInt(1 << 26)
-	resendToNonOpenersCampaignsResponseCampaignFieldShareURL                = big.NewInt(1 << 27)
-	resendToNonOpenersCampaignsResponseCampaignFieldSpreadOverHours         = big.NewInt(1 << 28)
-	resendToNonOpenersCampaignsResponseCampaignFieldStatus                  = big.NewInt(1 << 29)
-	resendToNonOpenersCampaignsResponseCampaignFieldSubject                 = big.NewInt(1 << 30)
-	resendToNonOpenersCampaignsResponseCampaignFieldTargetLists             = big.NewInt(1 << 31)
-	resendToNonOpenersCampaignsResponseCampaignFieldTrackingCode            = big.NewInt(1 << 32)
-	resendToNonOpenersCampaignsResponseCampaignFieldType                    = big.NewInt(1 << 33)
+	resendToNonOpenersCampaignsResponseCampaignFieldMaxRecipients           = big.NewInt(1 << 13)
+	resendToNonOpenersCampaignsResponseCampaignFieldName                    = big.NewInt(1 << 14)
+	resendToNonOpenersCampaignsResponseCampaignFieldPreheader               = big.NewInt(1 << 15)
+	resendToNonOpenersCampaignsResponseCampaignFieldPreheaderText           = big.NewInt(1 << 16)
+	resendToNonOpenersCampaignsResponseCampaignFieldRejectionComment        = big.NewInt(1 << 17)
+	resendToNonOpenersCampaignsResponseCampaignFieldReplyProfileID          = big.NewInt(1 << 18)
+	resendToNonOpenersCampaignsResponseCampaignFieldReplyToEmail            = big.NewInt(1 << 19)
+	resendToNonOpenersCampaignsResponseCampaignFieldReplyToName             = big.NewInt(1 << 20)
+	resendToNonOpenersCampaignsResponseCampaignFieldScheduledAt             = big.NewInt(1 << 21)
+	resendToNonOpenersCampaignsResponseCampaignFieldScheduledTimezone       = big.NewInt(1 << 22)
+	resendToNonOpenersCampaignsResponseCampaignFieldSenderProfileID         = big.NewInt(1 << 23)
+	resendToNonOpenersCampaignsResponseCampaignFieldSendInRecipientTimezone = big.NewInt(1 << 24)
+	resendToNonOpenersCampaignsResponseCampaignFieldSendTimeOptimization    = big.NewInt(1 << 25)
+	resendToNonOpenersCampaignsResponseCampaignFieldSendTimeWindowHours     = big.NewInt(1 << 26)
+	resendToNonOpenersCampaignsResponseCampaignFieldSentAt                  = big.NewInt(1 << 27)
+	resendToNonOpenersCampaignsResponseCampaignFieldShareURL                = big.NewInt(1 << 28)
+	resendToNonOpenersCampaignsResponseCampaignFieldSpreadOverHours         = big.NewInt(1 << 29)
+	resendToNonOpenersCampaignsResponseCampaignFieldStatus                  = big.NewInt(1 << 30)
+	resendToNonOpenersCampaignsResponseCampaignFieldSubject                 = big.NewInt(1 << 31)
+	resendToNonOpenersCampaignsResponseCampaignFieldTargetLists             = big.NewInt(1 << 32)
+	resendToNonOpenersCampaignsResponseCampaignFieldTrackingCode            = big.NewInt(1 << 33)
+	resendToNonOpenersCampaignsResponseCampaignFieldType                    = big.NewInt(1 << 34)
 )
 
 type ResendToNonOpenersCampaignsResponseCampaign struct {
@@ -8530,9 +9002,11 @@ type ResendToNonOpenersCampaignsResponseCampaign struct {
 	HasAudience *bool   `json:"hasAudience,omitempty" url:"hasAudience,omitempty"`
 	ID          *string `json:"id,omitempty" url:"id,omitempty"`
 	// Label names assigned to this campaign.
-	Labels    []string `json:"labels,omitempty" url:"labels,omitempty"`
-	Name      *string  `json:"name,omitempty" url:"name,omitempty"`
-	Preheader *string  `json:"preheader,omitempty" url:"preheader,omitempty"`
+	Labels []string `json:"labels,omitempty" url:"labels,omitempty"`
+	// Recipient cap applied when the audience is resolved at send time. The first N matching subscribers (by subscriber id) receive the campaign after every audience and suppression rule; recipients already reached count against the cap when a paused send resumes. Null means the whole audience is targeted.
+	MaxRecipients *int    `json:"maxRecipients,omitempty" url:"maxRecipients,omitempty"`
+	Name          *string `json:"name,omitempty" url:"name,omitempty"`
+	Preheader     *string `json:"preheader,omitempty" url:"preheader,omitempty"`
 	// Compatibility alias for preheader.
 	PreheaderText *string `json:"preheaderText,omitempty" url:"preheaderText,omitempty"`
 	// Reviewer feedback when the campaign status is rejected. Stays null while a campaign is still in waiting_approval.
@@ -8660,6 +9134,13 @@ func (r *ResendToNonOpenersCampaignsResponseCampaign) GetLabels() []string {
 		return nil
 	}
 	return r.Labels
+}
+
+func (r *ResendToNonOpenersCampaignsResponseCampaign) GetMaxRecipients() *int {
+	if r == nil {
+		return nil
+	}
+	return r.MaxRecipients
 }
 
 func (r *ResendToNonOpenersCampaignsResponseCampaign) GetName() *string {
@@ -8912,6 +9393,13 @@ func (r *ResendToNonOpenersCampaignsResponseCampaign) SetID(id *string) {
 func (r *ResendToNonOpenersCampaignsResponseCampaign) SetLabels(labels []string) {
 	r.Labels = labels
 	r.require(resendToNonOpenersCampaignsResponseCampaignFieldLabels)
+}
+
+// SetMaxRecipients sets the MaxRecipients field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendToNonOpenersCampaignsResponseCampaign) SetMaxRecipients(maxRecipients *int) {
+	r.MaxRecipients = maxRecipients
+	r.require(resendToNonOpenersCampaignsResponseCampaignFieldMaxRecipients)
 }
 
 // SetName sets the Name field and marks it as non-optional;
@@ -9517,24 +10005,30 @@ func (s *ScheduleCampaignsResponse) String() string {
 }
 
 var (
-	scheduleCampaignsResponseCampaignFieldID                      = big.NewInt(1 << 0)
-	scheduleCampaignsResponseCampaignFieldLabels                  = big.NewInt(1 << 1)
-	scheduleCampaignsResponseCampaignFieldName                    = big.NewInt(1 << 2)
-	scheduleCampaignsResponseCampaignFieldPreviewURL              = big.NewInt(1 << 3)
-	scheduleCampaignsResponseCampaignFieldScheduledAt             = big.NewInt(1 << 4)
-	scheduleCampaignsResponseCampaignFieldScheduledTimezone       = big.NewInt(1 << 5)
-	scheduleCampaignsResponseCampaignFieldSendInRecipientTimezone = big.NewInt(1 << 6)
-	scheduleCampaignsResponseCampaignFieldStatus                  = big.NewInt(1 << 7)
-	scheduleCampaignsResponseCampaignFieldSubject                 = big.NewInt(1 << 8)
-	scheduleCampaignsResponseCampaignFieldURL                     = big.NewInt(1 << 9)
+	scheduleCampaignsResponseCampaignFieldEstimatedRecipientCount = big.NewInt(1 << 0)
+	scheduleCampaignsResponseCampaignFieldID                      = big.NewInt(1 << 1)
+	scheduleCampaignsResponseCampaignFieldLabels                  = big.NewInt(1 << 2)
+	scheduleCampaignsResponseCampaignFieldMaxRecipients           = big.NewInt(1 << 3)
+	scheduleCampaignsResponseCampaignFieldName                    = big.NewInt(1 << 4)
+	scheduleCampaignsResponseCampaignFieldPreviewURL              = big.NewInt(1 << 5)
+	scheduleCampaignsResponseCampaignFieldScheduledAt             = big.NewInt(1 << 6)
+	scheduleCampaignsResponseCampaignFieldScheduledTimezone       = big.NewInt(1 << 7)
+	scheduleCampaignsResponseCampaignFieldSendInRecipientTimezone = big.NewInt(1 << 8)
+	scheduleCampaignsResponseCampaignFieldStatus                  = big.NewInt(1 << 9)
+	scheduleCampaignsResponseCampaignFieldSubject                 = big.NewInt(1 << 10)
+	scheduleCampaignsResponseCampaignFieldURL                     = big.NewInt(1 << 11)
 )
 
 type ScheduleCampaignsResponseCampaign struct {
-	ID          *string    `json:"id,omitempty" url:"id,omitempty"`
-	Labels      []string   `json:"labels,omitempty" url:"labels,omitempty"`
-	Name        *string    `json:"name,omitempty" url:"name,omitempty"`
-	PreviewURL  *string    `json:"previewUrl,omitempty" url:"previewUrl,omitempty"`
-	ScheduledAt *time.Time `json:"scheduledAt,omitempty" url:"scheduledAt,omitempty"`
+	// Estimated matching audience size after applying the saved recipient limit, or null when unavailable.
+	EstimatedRecipientCount *int     `json:"estimatedRecipientCount,omitempty" url:"estimatedRecipientCount,omitempty"`
+	ID                      *string  `json:"id,omitempty" url:"id,omitempty"`
+	Labels                  []string `json:"labels,omitempty" url:"labels,omitempty"`
+	// Saved recipient limit, or null to send to the whole matching audience.
+	MaxRecipients *int       `json:"maxRecipients,omitempty" url:"maxRecipients,omitempty"`
+	Name          *string    `json:"name,omitempty" url:"name,omitempty"`
+	PreviewURL    *string    `json:"previewUrl,omitempty" url:"previewUrl,omitempty"`
+	ScheduledAt   *time.Time `json:"scheduledAt,omitempty" url:"scheduledAt,omitempty"`
 	// IANA timezone that anchors scheduledAt's wall-clock time.
 	ScheduledTimezone *string `json:"scheduledTimezone,omitempty" url:"scheduledTimezone,omitempty"`
 	// Whether delivery follows each recipient's local wall clock.
@@ -9551,6 +10045,13 @@ type ScheduleCampaignsResponseCampaign struct {
 	rawJSON         json.RawMessage
 }
 
+func (s *ScheduleCampaignsResponseCampaign) GetEstimatedRecipientCount() *int {
+	if s == nil {
+		return nil
+	}
+	return s.EstimatedRecipientCount
+}
+
 func (s *ScheduleCampaignsResponseCampaign) GetID() *string {
 	if s == nil {
 		return nil
@@ -9563,6 +10064,13 @@ func (s *ScheduleCampaignsResponseCampaign) GetLabels() []string {
 		return nil
 	}
 	return s.Labels
+}
+
+func (s *ScheduleCampaignsResponseCampaign) GetMaxRecipients() *int {
+	if s == nil {
+		return nil
+	}
+	return s.MaxRecipients
 }
 
 func (s *ScheduleCampaignsResponseCampaign) GetName() *string {
@@ -9635,6 +10143,13 @@ func (s *ScheduleCampaignsResponseCampaign) require(field *big.Int) {
 	s.explicitFields.Or(s.explicitFields, field)
 }
 
+// SetEstimatedRecipientCount sets the EstimatedRecipientCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *ScheduleCampaignsResponseCampaign) SetEstimatedRecipientCount(estimatedRecipientCount *int) {
+	s.EstimatedRecipientCount = estimatedRecipientCount
+	s.require(scheduleCampaignsResponseCampaignFieldEstimatedRecipientCount)
+}
+
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *ScheduleCampaignsResponseCampaign) SetID(id *string) {
@@ -9647,6 +10162,13 @@ func (s *ScheduleCampaignsResponseCampaign) SetID(id *string) {
 func (s *ScheduleCampaignsResponseCampaign) SetLabels(labels []string) {
 	s.Labels = labels
 	s.require(scheduleCampaignsResponseCampaignFieldLabels)
+}
+
+// SetMaxRecipients sets the MaxRecipients field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *ScheduleCampaignsResponseCampaign) SetMaxRecipients(maxRecipients *int) {
+	s.MaxRecipients = maxRecipients
+	s.require(scheduleCampaignsResponseCampaignFieldMaxRecipients)
 }
 
 // SetName sets the Name field and marks it as non-optional;
@@ -10190,32 +10712,35 @@ var (
 	updateCampaignsResponseCampaignFieldEmailPreset    = big.NewInt(1 << 3)
 	updateCampaignsResponseCampaignFieldID             = big.NewInt(1 << 4)
 	updateCampaignsResponseCampaignFieldLabels         = big.NewInt(1 << 5)
-	updateCampaignsResponseCampaignFieldName           = big.NewInt(1 << 6)
-	updateCampaignsResponseCampaignFieldPreviewURL     = big.NewInt(1 << 7)
-	updateCampaignsResponseCampaignFieldReplyProfileID = big.NewInt(1 << 8)
-	updateCampaignsResponseCampaignFieldReplyToEmail   = big.NewInt(1 << 9)
-	updateCampaignsResponseCampaignFieldReplyToName    = big.NewInt(1 << 10)
-	updateCampaignsResponseCampaignFieldStatus         = big.NewInt(1 << 11)
-	updateCampaignsResponseCampaignFieldSubject        = big.NewInt(1 << 12)
-	updateCampaignsResponseCampaignFieldTargetLists    = big.NewInt(1 << 13)
-	updateCampaignsResponseCampaignFieldURL            = big.NewInt(1 << 14)
+	updateCampaignsResponseCampaignFieldMaxRecipients  = big.NewInt(1 << 6)
+	updateCampaignsResponseCampaignFieldName           = big.NewInt(1 << 7)
+	updateCampaignsResponseCampaignFieldPreviewURL     = big.NewInt(1 << 8)
+	updateCampaignsResponseCampaignFieldReplyProfileID = big.NewInt(1 << 9)
+	updateCampaignsResponseCampaignFieldReplyToEmail   = big.NewInt(1 << 10)
+	updateCampaignsResponseCampaignFieldReplyToName    = big.NewInt(1 << 11)
+	updateCampaignsResponseCampaignFieldStatus         = big.NewInt(1 << 12)
+	updateCampaignsResponseCampaignFieldSubject        = big.NewInt(1 << 13)
+	updateCampaignsResponseCampaignFieldTargetLists    = big.NewInt(1 << 14)
+	updateCampaignsResponseCampaignFieldURL            = big.NewInt(1 << 15)
 )
 
 type UpdateCampaignsResponseCampaign struct {
 	BccEmails []string `json:"bccEmails,omitempty" url:"bccEmails,omitempty"`
 	CcEmails  []string `json:"ccEmails,omitempty" url:"ccEmails,omitempty"`
 	// The linked email body, reusable as `templateId` when creating later campaigns.
-	EmailID        *string      `json:"emailId,omitempty" url:"emailId,omitempty"`
-	EmailPreset    *EmailPreset `json:"emailPreset,omitempty" url:"emailPreset,omitempty"`
-	ID             *string      `json:"id,omitempty" url:"id,omitempty"`
-	Labels         []string     `json:"labels,omitempty" url:"labels,omitempty"`
-	Name           *string      `json:"name,omitempty" url:"name,omitempty"`
-	PreviewURL     *string      `json:"previewUrl,omitempty" url:"previewUrl,omitempty"`
-	ReplyProfileID *string      `json:"replyProfileId,omitempty" url:"replyProfileId,omitempty"`
-	ReplyToEmail   *string      `json:"replyToEmail,omitempty" url:"replyToEmail,omitempty"`
-	ReplyToName    *string      `json:"replyToName,omitempty" url:"replyToName,omitempty"`
-	Status         *string      `json:"status,omitempty" url:"status,omitempty"`
-	Subject        *string      `json:"subject,omitempty" url:"subject,omitempty"`
+	EmailID     *string      `json:"emailId,omitempty" url:"emailId,omitempty"`
+	EmailPreset *EmailPreset `json:"emailPreset,omitempty" url:"emailPreset,omitempty"`
+	ID          *string      `json:"id,omitempty" url:"id,omitempty"`
+	Labels      []string     `json:"labels,omitempty" url:"labels,omitempty"`
+	// Saved recipient limit, or null to send to the whole matching audience.
+	MaxRecipients  *int    `json:"maxRecipients,omitempty" url:"maxRecipients,omitempty"`
+	Name           *string `json:"name,omitempty" url:"name,omitempty"`
+	PreviewURL     *string `json:"previewUrl,omitempty" url:"previewUrl,omitempty"`
+	ReplyProfileID *string `json:"replyProfileId,omitempty" url:"replyProfileId,omitempty"`
+	ReplyToEmail   *string `json:"replyToEmail,omitempty" url:"replyToEmail,omitempty"`
+	ReplyToName    *string `json:"replyToName,omitempty" url:"replyToName,omitempty"`
+	Status         *string `json:"status,omitempty" url:"status,omitempty"`
+	Subject        *string `json:"subject,omitempty" url:"subject,omitempty"`
 	// Saved campaign audience, or null when targeting is still unset.
 	TargetLists map[string]any `json:"targetLists,omitempty" url:"targetLists,omitempty"`
 	URL         *string        `json:"url,omitempty" url:"url,omitempty"`
@@ -10267,6 +10792,13 @@ func (u *UpdateCampaignsResponseCampaign) GetLabels() []string {
 		return nil
 	}
 	return u.Labels
+}
+
+func (u *UpdateCampaignsResponseCampaign) GetMaxRecipients() *int {
+	if u == nil {
+		return nil
+	}
+	return u.MaxRecipients
 }
 
 func (u *UpdateCampaignsResponseCampaign) GetName() *string {
@@ -10386,6 +10918,13 @@ func (u *UpdateCampaignsResponseCampaign) SetID(id *string) {
 func (u *UpdateCampaignsResponseCampaign) SetLabels(labels []string) {
 	u.Labels = labels
 	u.require(updateCampaignsResponseCampaignFieldLabels)
+}
+
+// SetMaxRecipients sets the MaxRecipients field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateCampaignsResponseCampaign) SetMaxRecipients(maxRecipients *int) {
+	u.MaxRecipients = maxRecipients
+	u.require(updateCampaignsResponseCampaignFieldMaxRecipients)
 }
 
 // SetName sets the Name field and marks it as non-optional;
@@ -10633,19 +11172,20 @@ var (
 	updateCampaignsRequestFieldLabel                = big.NewInt(1 << 10)
 	updateCampaignsRequestFieldLabels               = big.NewInt(1 << 11)
 	updateCampaignsRequestFieldListIDs              = big.NewInt(1 << 12)
-	updateCampaignsRequestFieldName                 = big.NewInt(1 << 13)
-	updateCampaignsRequestFieldPreheaderText        = big.NewInt(1 << 14)
-	updateCampaignsRequestFieldPreviewText          = big.NewInt(1 << 15)
-	updateCampaignsRequestFieldReplyProfileID       = big.NewInt(1 << 16)
-	updateCampaignsRequestFieldReplyTo              = big.NewInt(1 << 17)
-	updateCampaignsRequestFieldReplyToName          = big.NewInt(1 << 18)
-	updateCampaignsRequestFieldSegmentID            = big.NewInt(1 << 19)
-	updateCampaignsRequestFieldSenderProfileID      = big.NewInt(1 << 20)
-	updateCampaignsRequestFieldSendTimeOptimization = big.NewInt(1 << 21)
-	updateCampaignsRequestFieldSendTimeWindowHours  = big.NewInt(1 << 22)
-	updateCampaignsRequestFieldSubject              = big.NewInt(1 << 23)
-	updateCampaignsRequestFieldTargetLists          = big.NewInt(1 << 24)
-	updateCampaignsRequestFieldTrackingCode         = big.NewInt(1 << 25)
+	updateCampaignsRequestFieldMaxRecipients        = big.NewInt(1 << 13)
+	updateCampaignsRequestFieldName                 = big.NewInt(1 << 14)
+	updateCampaignsRequestFieldPreheaderText        = big.NewInt(1 << 15)
+	updateCampaignsRequestFieldPreviewText          = big.NewInt(1 << 16)
+	updateCampaignsRequestFieldReplyProfileID       = big.NewInt(1 << 17)
+	updateCampaignsRequestFieldReplyTo              = big.NewInt(1 << 18)
+	updateCampaignsRequestFieldReplyToName          = big.NewInt(1 << 19)
+	updateCampaignsRequestFieldSegmentID            = big.NewInt(1 << 20)
+	updateCampaignsRequestFieldSenderProfileID      = big.NewInt(1 << 21)
+	updateCampaignsRequestFieldSendTimeOptimization = big.NewInt(1 << 22)
+	updateCampaignsRequestFieldSendTimeWindowHours  = big.NewInt(1 << 23)
+	updateCampaignsRequestFieldSubject              = big.NewInt(1 << 24)
+	updateCampaignsRequestFieldTargetLists          = big.NewInt(1 << 25)
+	updateCampaignsRequestFieldTrackingCode         = big.NewInt(1 << 26)
 )
 
 type UpdateCampaignsRequest struct {
@@ -10675,6 +11215,8 @@ type UpdateCampaignsRequest struct {
 	Labels []string `json:"labels,omitempty" url:"-"`
 	// Shorthand for retargeting the draft at one or more lists. Equivalent to `targetLists` `{"type":"lists","listIds":["list_123"]}`. Mutually exclusive with targetLists and segmentId.
 	ListIDs []string `json:"listIds,omitempty" url:"-"`
+	// Send to at most this many audience members. The first N matching subscribers (by subscriber id) receive the campaign after every audience and suppression rule is applied. Persists on the draft until schedule overrides it. Send null to remove the limit. Values outside 1-10,000,000 are rejected with 400.
+	MaxRecipients *int `json:"maxRecipients,omitempty" url:"-"`
 	// Updated campaign name
 	Name *string `json:"name,omitempty" url:"-"`
 	// Compatibility alias for previewText.
@@ -10802,6 +11344,13 @@ func (u *UpdateCampaignsRequest) SetLabels(labels []string) {
 func (u *UpdateCampaignsRequest) SetListIDs(listIDs []string) {
 	u.ListIDs = listIDs
 	u.require(updateCampaignsRequestFieldListIDs)
+}
+
+// SetMaxRecipients sets the MaxRecipients field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateCampaignsRequest) SetMaxRecipients(maxRecipients *int) {
+	u.MaxRecipients = maxRecipients
+	u.require(updateCampaignsRequestFieldMaxRecipients)
 }
 
 // SetName sets the Name field and marks it as non-optional;

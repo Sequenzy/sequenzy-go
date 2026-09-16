@@ -12,13 +12,14 @@ import (
 
 var (
 	createTransactionalRequestFieldEnabled     = big.NewInt(1 << 0)
-	createTransactionalRequestFieldName        = big.NewInt(1 << 1)
-	createTransactionalRequestFieldPreviewText = big.NewInt(1 << 2)
-	createTransactionalRequestFieldPrompt      = big.NewInt(1 << 3)
-	createTransactionalRequestFieldSlug        = big.NewInt(1 << 4)
-	createTransactionalRequestFieldStyle       = big.NewInt(1 << 5)
-	createTransactionalRequestFieldSubject     = big.NewInt(1 << 6)
-	createTransactionalRequestFieldTone        = big.NewInt(1 << 7)
+	createTransactionalRequestFieldLabels      = big.NewInt(1 << 1)
+	createTransactionalRequestFieldName        = big.NewInt(1 << 2)
+	createTransactionalRequestFieldPreviewText = big.NewInt(1 << 3)
+	createTransactionalRequestFieldPrompt      = big.NewInt(1 << 4)
+	createTransactionalRequestFieldSlug        = big.NewInt(1 << 5)
+	createTransactionalRequestFieldStyle       = big.NewInt(1 << 6)
+	createTransactionalRequestFieldSubject     = big.NewInt(1 << 7)
+	createTransactionalRequestFieldTone        = big.NewInt(1 << 8)
 )
 
 type CreateTransactionalRequest struct {
@@ -27,9 +28,11 @@ type CreateTransactionalRequest struct {
 	// Raw HTML body. Provide either html or blocks, not both.
 	HTML *string `json:"html,omitempty" url:"-"`
 	// Defaults to false with prompt and true with explicit HTML or blocks.
-	Enabled     *bool   `json:"enabled,omitempty" url:"-"`
-	Name        string  `json:"name" url:"-"`
-	PreviewText *string `json:"previewText,omitempty" url:"-"`
+	Enabled *bool `json:"enabled,omitempty" url:"-"`
+	// Company label names. Trimmed and deduplicated; missing names are created. Replaces all assignments; [] clears them. Omit to preserve assignments on update or start without labels on create. Null and blank names are rejected.
+	Labels      []string `json:"labels,omitempty" url:"-"`
+	Name        string   `json:"name" url:"-"`
+	PreviewText *string  `json:"previewText,omitempty" url:"-"`
 	// Natural-language request for branded transactional blocks.
 	Prompt *string `json:"prompt,omitempty" url:"-"`
 	// Optional API slug used when sending by slug. If omitted, one is generated from the name.
@@ -57,6 +60,13 @@ func (c *CreateTransactionalRequest) require(field *big.Int) {
 func (c *CreateTransactionalRequest) SetEnabled(enabled *bool) {
 	c.Enabled = enabled
 	c.require(createTransactionalRequestFieldEnabled)
+}
+
+// SetLabels sets the Labels field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTransactionalRequest) SetLabels(labels []string) {
+	c.Labels = labels
+	c.require(createTransactionalRequestFieldLabels)
 }
 
 // SetName sets the Name field and marks it as non-optional;
@@ -183,15 +193,18 @@ func (g *GetTransactionalRequest) SetIDOrSlug(idOrSlug string) {
 
 var (
 	listTransactionalRequestFieldIncludeMachineEngagement = big.NewInt(1 << 0)
-	listTransactionalRequestFieldOrder                    = big.NewInt(1 << 1)
-	listTransactionalRequestFieldSearch                   = big.NewInt(1 << 2)
-	listTransactionalRequestFieldSort                     = big.NewInt(1 << 3)
-	listTransactionalRequestFieldStatus                   = big.NewInt(1 << 4)
+	listTransactionalRequestFieldLabel                    = big.NewInt(1 << 1)
+	listTransactionalRequestFieldOrder                    = big.NewInt(1 << 2)
+	listTransactionalRequestFieldSearch                   = big.NewInt(1 << 3)
+	listTransactionalRequestFieldSort                     = big.NewInt(1 << 4)
+	listTransactionalRequestFieldStatus                   = big.NewInt(1 << 5)
 )
 
 type ListTransactionalRequest struct {
 	// Include detected bot, scanner, preview, and privacy-proxy engagement in open and click metrics.
 	IncludeMachineEngagement *bool `json:"-" url:"includeMachineEngagement,omitempty"`
+	// Filter by company label names, matching any. Repeat the parameter for multiple names; commas are literal characters. Combined with search and status. Unknown names match no templates.
+	Label []*string `json:"-" url:"label,omitempty"`
 	// Sort direction.
 	Order *ListTransactionalRequestOrder `json:"-" url:"order,omitempty"`
 	// Case-insensitive search across template name, API slug, and linked email subject/title.
@@ -217,6 +230,13 @@ func (l *ListTransactionalRequest) require(field *big.Int) {
 func (l *ListTransactionalRequest) SetIncludeMachineEngagement(includeMachineEngagement *bool) {
 	l.IncludeMachineEngagement = includeMachineEngagement
 	l.require(listTransactionalRequestFieldIncludeMachineEngagement)
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTransactionalRequest) SetLabel(label []*string) {
+	l.Label = label
+	l.require(listTransactionalRequestFieldLabel)
 }
 
 // SetOrder sets the Order field and marks it as non-optional;
@@ -675,9 +695,10 @@ var (
 	transactionalEmailFieldEmailID   = big.NewInt(1 << 1)
 	transactionalEmailFieldEnabled   = big.NewInt(1 << 2)
 	transactionalEmailFieldID        = big.NewInt(1 << 3)
-	transactionalEmailFieldName      = big.NewInt(1 << 4)
-	transactionalEmailFieldSlug      = big.NewInt(1 << 5)
-	transactionalEmailFieldUpdatedAt = big.NewInt(1 << 6)
+	transactionalEmailFieldLabels    = big.NewInt(1 << 4)
+	transactionalEmailFieldName      = big.NewInt(1 << 5)
+	transactionalEmailFieldSlug      = big.NewInt(1 << 6)
+	transactionalEmailFieldUpdatedAt = big.NewInt(1 << 7)
 )
 
 type TransactionalEmail struct {
@@ -685,6 +706,8 @@ type TransactionalEmail struct {
 	EmailID   *string    `json:"emailId,omitempty" url:"emailId,omitempty"`
 	Enabled   *bool      `json:"enabled,omitempty" url:"enabled,omitempty"`
 	ID        *string    `json:"id,omitempty" url:"id,omitempty"`
+	// Assigned company label names. Empty when unlabelled.
+	Labels    []string   `json:"labels,omitempty" url:"labels,omitempty"`
 	Name      *string    `json:"name,omitempty" url:"name,omitempty"`
 	Slug      *string    `json:"slug,omitempty" url:"slug,omitempty"`
 	UpdatedAt *time.Time `json:"updatedAt,omitempty" url:"updatedAt,omitempty"`
@@ -722,6 +745,13 @@ func (t *TransactionalEmail) GetID() *string {
 		return nil
 	}
 	return t.ID
+}
+
+func (t *TransactionalEmail) GetLabels() []string {
+	if t == nil {
+		return nil
+	}
+	return t.Labels
 }
 
 func (t *TransactionalEmail) GetName() *string {
@@ -785,6 +815,13 @@ func (t *TransactionalEmail) SetEnabled(enabled *bool) {
 func (t *TransactionalEmail) SetID(id *string) {
 	t.ID = id
 	t.require(transactionalEmailFieldID)
+}
+
+// SetLabels sets the Labels field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TransactionalEmail) SetLabels(labels []string) {
+	t.Labels = labels
+	t.require(transactionalEmailFieldLabels)
 }
 
 // SetName sets the Name field and marks it as non-optional;
@@ -867,22 +904,25 @@ var (
 	transactionalEmailDetailsFieldEmailID     = big.NewInt(1 << 1)
 	transactionalEmailDetailsFieldEnabled     = big.NewInt(1 << 2)
 	transactionalEmailDetailsFieldID          = big.NewInt(1 << 3)
-	transactionalEmailDetailsFieldName        = big.NewInt(1 << 4)
-	transactionalEmailDetailsFieldSlug        = big.NewInt(1 << 5)
-	transactionalEmailDetailsFieldUpdatedAt   = big.NewInt(1 << 6)
-	transactionalEmailDetailsFieldBlocks      = big.NewInt(1 << 7)
-	transactionalEmailDetailsFieldEmail       = big.NewInt(1 << 8)
-	transactionalEmailDetailsFieldEmailPreset = big.NewInt(1 << 9)
-	transactionalEmailDetailsFieldPreviewText = big.NewInt(1 << 10)
-	transactionalEmailDetailsFieldSubject     = big.NewInt(1 << 11)
-	transactionalEmailDetailsFieldVariables   = big.NewInt(1 << 12)
+	transactionalEmailDetailsFieldLabels      = big.NewInt(1 << 4)
+	transactionalEmailDetailsFieldName        = big.NewInt(1 << 5)
+	transactionalEmailDetailsFieldSlug        = big.NewInt(1 << 6)
+	transactionalEmailDetailsFieldUpdatedAt   = big.NewInt(1 << 7)
+	transactionalEmailDetailsFieldBlocks      = big.NewInt(1 << 8)
+	transactionalEmailDetailsFieldEmail       = big.NewInt(1 << 9)
+	transactionalEmailDetailsFieldEmailPreset = big.NewInt(1 << 10)
+	transactionalEmailDetailsFieldPreviewText = big.NewInt(1 << 11)
+	transactionalEmailDetailsFieldSubject     = big.NewInt(1 << 12)
+	transactionalEmailDetailsFieldVariables   = big.NewInt(1 << 13)
 )
 
 type TransactionalEmailDetails struct {
-	CreatedAt   *time.Time    `json:"createdAt,omitempty" url:"createdAt,omitempty"`
-	EmailID     *string       `json:"emailId,omitempty" url:"emailId,omitempty"`
-	Enabled     *bool         `json:"enabled,omitempty" url:"enabled,omitempty"`
-	ID          *string       `json:"id,omitempty" url:"id,omitempty"`
+	CreatedAt *time.Time `json:"createdAt,omitempty" url:"createdAt,omitempty"`
+	EmailID   *string    `json:"emailId,omitempty" url:"emailId,omitempty"`
+	Enabled   *bool      `json:"enabled,omitempty" url:"enabled,omitempty"`
+	ID        *string    `json:"id,omitempty" url:"id,omitempty"`
+	// Assigned company label names. Empty when unlabelled.
+	Labels      []string      `json:"labels,omitempty" url:"labels,omitempty"`
 	Name        *string       `json:"name,omitempty" url:"name,omitempty"`
 	Slug        *string       `json:"slug,omitempty" url:"slug,omitempty"`
 	UpdatedAt   *time.Time    `json:"updatedAt,omitempty" url:"updatedAt,omitempty"`
@@ -926,6 +966,13 @@ func (t *TransactionalEmailDetails) GetID() *string {
 		return nil
 	}
 	return t.ID
+}
+
+func (t *TransactionalEmailDetails) GetLabels() []string {
+	if t == nil {
+		return nil
+	}
+	return t.Labels
 }
 
 func (t *TransactionalEmailDetails) GetName() *string {
@@ -1031,6 +1078,13 @@ func (t *TransactionalEmailDetails) SetEnabled(enabled *bool) {
 func (t *TransactionalEmailDetails) SetID(id *string) {
 	t.ID = id
 	t.require(transactionalEmailDetailsFieldID)
+}
+
+// SetLabels sets the Labels field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TransactionalEmailDetails) SetLabels(labels []string) {
+	t.Labels = labels
+	t.require(transactionalEmailDetailsFieldLabels)
 }
 
 // SetName sets the Name field and marks it as non-optional;
@@ -1155,19 +1209,22 @@ var (
 	transactionalEmailListItemFieldEmailID     = big.NewInt(1 << 1)
 	transactionalEmailListItemFieldEnabled     = big.NewInt(1 << 2)
 	transactionalEmailListItemFieldID          = big.NewInt(1 << 3)
-	transactionalEmailListItemFieldName        = big.NewInt(1 << 4)
-	transactionalEmailListItemFieldSlug        = big.NewInt(1 << 5)
-	transactionalEmailListItemFieldUpdatedAt   = big.NewInt(1 << 6)
-	transactionalEmailListItemFieldEmailPreset = big.NewInt(1 << 7)
-	transactionalEmailListItemFieldStats       = big.NewInt(1 << 8)
-	transactionalEmailListItemFieldSubject     = big.NewInt(1 << 9)
+	transactionalEmailListItemFieldLabels      = big.NewInt(1 << 4)
+	transactionalEmailListItemFieldName        = big.NewInt(1 << 5)
+	transactionalEmailListItemFieldSlug        = big.NewInt(1 << 6)
+	transactionalEmailListItemFieldUpdatedAt   = big.NewInt(1 << 7)
+	transactionalEmailListItemFieldEmailPreset = big.NewInt(1 << 8)
+	transactionalEmailListItemFieldStats       = big.NewInt(1 << 9)
+	transactionalEmailListItemFieldSubject     = big.NewInt(1 << 10)
 )
 
 type TransactionalEmailListItem struct {
-	CreatedAt   *time.Time                       `json:"createdAt,omitempty" url:"createdAt,omitempty"`
-	EmailID     *string                          `json:"emailId,omitempty" url:"emailId,omitempty"`
-	Enabled     *bool                            `json:"enabled,omitempty" url:"enabled,omitempty"`
-	ID          *string                          `json:"id,omitempty" url:"id,omitempty"`
+	CreatedAt *time.Time `json:"createdAt,omitempty" url:"createdAt,omitempty"`
+	EmailID   *string    `json:"emailId,omitempty" url:"emailId,omitempty"`
+	Enabled   *bool      `json:"enabled,omitempty" url:"enabled,omitempty"`
+	ID        *string    `json:"id,omitempty" url:"id,omitempty"`
+	// Assigned company label names. Empty when unlabelled.
+	Labels      []string                         `json:"labels,omitempty" url:"labels,omitempty"`
 	Name        *string                          `json:"name,omitempty" url:"name,omitempty"`
 	Slug        *string                          `json:"slug,omitempty" url:"slug,omitempty"`
 	UpdatedAt   *time.Time                       `json:"updatedAt,omitempty" url:"updatedAt,omitempty"`
@@ -1208,6 +1265,13 @@ func (t *TransactionalEmailListItem) GetID() *string {
 		return nil
 	}
 	return t.ID
+}
+
+func (t *TransactionalEmailListItem) GetLabels() []string {
+	if t == nil {
+		return nil
+	}
+	return t.Labels
 }
 
 func (t *TransactionalEmailListItem) GetName() *string {
@@ -1292,6 +1356,13 @@ func (t *TransactionalEmailListItem) SetEnabled(enabled *bool) {
 func (t *TransactionalEmailListItem) SetID(id *string) {
 	t.ID = id
 	t.require(transactionalEmailListItemFieldID)
+}
+
+// SetLabels sets the Labels field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TransactionalEmailListItem) SetLabels(labels []string) {
+	t.Labels = labels
+	t.require(transactionalEmailListItemFieldLabels)
 }
 
 // SetName sets the Name field and marks it as non-optional;
@@ -4026,9 +4097,10 @@ func (u *UpdateTransactionalResponse) String() string {
 var (
 	updateTransactionalRequestFieldIDOrSlug    = big.NewInt(1 << 0)
 	updateTransactionalRequestFieldEnabled     = big.NewInt(1 << 1)
-	updateTransactionalRequestFieldName        = big.NewInt(1 << 2)
-	updateTransactionalRequestFieldPreviewText = big.NewInt(1 << 3)
-	updateTransactionalRequestFieldSubject     = big.NewInt(1 << 4)
+	updateTransactionalRequestFieldLabels      = big.NewInt(1 << 2)
+	updateTransactionalRequestFieldName        = big.NewInt(1 << 3)
+	updateTransactionalRequestFieldPreviewText = big.NewInt(1 << 4)
+	updateTransactionalRequestFieldSubject     = big.NewInt(1 << 5)
 )
 
 type UpdateTransactionalRequest struct {
@@ -4037,11 +4109,13 @@ type UpdateTransactionalRequest struct {
 	// Structured email blocks. Provide either blocks or html, not both. Put visual styling under styles; top-level style keys such as backgroundColor, backgroundOpacity, borderColor, borderWidth, and borderRadius are normalized into styles.
 	Blocks []*EmailBlock `json:"blocks,omitempty" url:"-"`
 	// Raw HTML body. Provide either html or blocks, not both.
-	HTML        *string `json:"html,omitempty" url:"-"`
-	Enabled     *bool   `json:"enabled,omitempty" url:"-"`
-	Name        *string `json:"name,omitempty" url:"-"`
-	PreviewText *string `json:"previewText,omitempty" url:"-"`
-	Subject     *string `json:"subject,omitempty" url:"-"`
+	HTML    *string `json:"html,omitempty" url:"-"`
+	Enabled *bool   `json:"enabled,omitempty" url:"-"`
+	// Company label names. Trimmed and deduplicated; missing names are created. Replaces all assignments; [] clears them. Omit to preserve assignments on update or start without labels on create. Null and blank names are rejected.
+	Labels      []string `json:"labels,omitempty" url:"-"`
+	Name        *string  `json:"name,omitempty" url:"-"`
+	PreviewText *string  `json:"previewText,omitempty" url:"-"`
+	Subject     *string  `json:"subject,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -4066,6 +4140,13 @@ func (u *UpdateTransactionalRequest) SetIDOrSlug(idOrSlug string) {
 func (u *UpdateTransactionalRequest) SetEnabled(enabled *bool) {
 	u.Enabled = enabled
 	u.require(updateTransactionalRequestFieldEnabled)
+}
+
+// SetLabels sets the Labels field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateTransactionalRequest) SetLabels(labels []string) {
+	u.Labels = labels
+	u.require(updateTransactionalRequestFieldLabels)
 }
 
 // SetName sets the Name field and marks it as non-optional;

@@ -210,7 +210,7 @@ func (c *Client) Send(
 	return response.Body, nil
 }
 
-// Updates transactional email metadata or replaces the linked email body using raw HTML or Sequenzy blocks.
+// Updates transactional email metadata and labels or replaces the linked email body using raw HTML or Sequenzy blocks.
 //
 // Example:
 //
