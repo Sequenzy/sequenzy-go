@@ -95,15 +95,18 @@ func (a *AddSubscribersListsRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
-	createListsRequestFieldDescription = big.NewInt(1 << 0)
-	createListsRequestFieldIsPrivate   = big.NewInt(1 << 1)
-	createListsRequestFieldName        = big.NewInt(1 << 2)
+	createListsRequestFieldAllowMemberUnsubscribe = big.NewInt(1 << 0)
+	createListsRequestFieldDescription            = big.NewInt(1 << 1)
+	createListsRequestFieldIsPrivate              = big.NewInt(1 << 2)
+	createListsRequestFieldName                   = big.NewInt(1 << 3)
 )
 
 type CreateListsRequest struct {
+	// Allow current private-list members to see its name and opt out in preferences. Defaults false on create; omission preserves on update and false disables. Null is rejected. Stored but has no effect on public lists. Does not permit private joining or rejoining.
+	AllowMemberUnsubscribe *bool `json:"allowMemberUnsubscribe,omitempty" url:"-"`
 	// Optional internal workspace metadata. Never shown in hosted or embedded subscriber preferences.
 	Description *string `json:"description,omitempty" url:"-"`
-	// Set to true to keep the list internal and omit it from individual controls on the hosted subscriber email preferences/unsubscribe page. Public lists expose only their name on that page; descriptions remain internal. List privacy does not override a subscriber's global unsubscribe. Defaults to false when omitted.
+	// Set to true to hide the list from subscriber preferences unless allowMemberUnsubscribe is enabled for current members. Public lists expose only their name on that page; descriptions remain internal. List privacy does not override a subscriber's global unsubscribe. Defaults to false when omitted.
 	IsPrivate *bool  `json:"isPrivate,omitempty" url:"-"`
 	Name      string `json:"name" url:"-"`
 
@@ -116,6 +119,13 @@ func (c *CreateListsRequest) require(field *big.Int) {
 		c.explicitFields = big.NewInt(0)
 	}
 	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetAllowMemberUnsubscribe sets the AllowMemberUnsubscribe field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateListsRequest) SetAllowMemberUnsubscribe(allowMemberUnsubscribe *bool) {
+	c.AllowMemberUnsubscribe = allowMemberUnsubscribe
+	c.require(createListsRequestFieldAllowMemberUnsubscribe)
 }
 
 // SetDescription sets the Description field and marks it as non-optional;
@@ -254,23 +264,26 @@ func (r *RemoveSubscribersListsRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
-	subscriberListFieldActiveSubscriberCount = big.NewInt(1 << 0)
-	subscriberListFieldCreatedAt             = big.NewInt(1 << 1)
-	subscriberListFieldDescription           = big.NewInt(1 << 2)
-	subscriberListFieldID                    = big.NewInt(1 << 3)
-	subscriberListFieldIsPrivate             = big.NewInt(1 << 4)
-	subscriberListFieldName                  = big.NewInt(1 << 5)
-	subscriberListFieldSubscriberCount       = big.NewInt(1 << 6)
+	subscriberListFieldActiveSubscriberCount  = big.NewInt(1 << 0)
+	subscriberListFieldAllowMemberUnsubscribe = big.NewInt(1 << 1)
+	subscriberListFieldCreatedAt              = big.NewInt(1 << 2)
+	subscriberListFieldDescription            = big.NewInt(1 << 3)
+	subscriberListFieldID                     = big.NewInt(1 << 4)
+	subscriberListFieldIsPrivate              = big.NewInt(1 << 5)
+	subscriberListFieldName                   = big.NewInt(1 << 6)
+	subscriberListFieldSubscriberCount        = big.NewInt(1 << 7)
 )
 
 type SubscriberList struct {
 	// Current list members with status=active. May include phone-only contacts without an email address.
-	ActiveSubscriberCount *int       `json:"activeSubscriberCount,omitempty" url:"activeSubscriberCount,omitempty"`
-	CreatedAt             *time.Time `json:"createdAt,omitempty" url:"createdAt,omitempty"`
+	ActiveSubscriberCount *int `json:"activeSubscriberCount,omitempty" url:"activeSubscriberCount,omitempty"`
+	// Whether current members of a private list can see its name and unsubscribe in preferences. Does not allow joining or rejoining. No effect on public lists.
+	AllowMemberUnsubscribe *bool      `json:"allowMemberUnsubscribe,omitempty" url:"allowMemberUnsubscribe,omitempty"`
+	CreatedAt              *time.Time `json:"createdAt,omitempty" url:"createdAt,omitempty"`
 	// Internal workspace metadata returned only through authenticated list-management surfaces. Never shown in hosted or embedded subscriber preferences.
 	Description *string `json:"description,omitempty" url:"description,omitempty"`
 	ID          *string `json:"id,omitempty" url:"id,omitempty"`
-	// Whether the list is private. Private lists are omitted from the hosted subscriber email preferences/unsubscribe page and cannot be subscribed to or unsubscribed from individually there. Public lists expose only their name on that page; descriptions remain internal. List privacy does not override a subscriber's global unsubscribe.
+	// Whether the list is private. Private lists are hidden unless allowMemberUnsubscribe is enabled, in which case current members can see the name and opt out. Private lists cannot be joined through preferences. Descriptions remain internal; global unsubscribe still applies.
 	IsPrivate *bool   `json:"isPrivate,omitempty" url:"isPrivate,omitempty"`
 	Name      *string `json:"name,omitempty" url:"name,omitempty"`
 	// Current list members of any status. Memberships with unsubscribedAt set are excluded.
@@ -288,6 +301,13 @@ func (s *SubscriberList) GetActiveSubscriberCount() *int {
 		return nil
 	}
 	return s.ActiveSubscriberCount
+}
+
+func (s *SubscriberList) GetAllowMemberUnsubscribe() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.AllowMemberUnsubscribe
 }
 
 func (s *SubscriberList) GetCreatedAt() *time.Time {
@@ -351,6 +371,13 @@ func (s *SubscriberList) require(field *big.Int) {
 func (s *SubscriberList) SetActiveSubscriberCount(activeSubscriberCount *int) {
 	s.ActiveSubscriberCount = activeSubscriberCount
 	s.require(subscriberListFieldActiveSubscriberCount)
+}
+
+// SetAllowMemberUnsubscribe sets the AllowMemberUnsubscribe field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubscriberList) SetAllowMemberUnsubscribe(allowMemberUnsubscribe *bool) {
+	s.AllowMemberUnsubscribe = allowMemberUnsubscribe
+	s.require(subscriberListFieldAllowMemberUnsubscribe)
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -1455,18 +1482,21 @@ func (u *UpdateListsResponse) String() string {
 }
 
 var (
-	updateListsRequestFieldListID      = big.NewInt(1 << 0)
-	updateListsRequestFieldDescription = big.NewInt(1 << 1)
-	updateListsRequestFieldIsPrivate   = big.NewInt(1 << 2)
-	updateListsRequestFieldName        = big.NewInt(1 << 3)
+	updateListsRequestFieldListID                 = big.NewInt(1 << 0)
+	updateListsRequestFieldAllowMemberUnsubscribe = big.NewInt(1 << 1)
+	updateListsRequestFieldDescription            = big.NewInt(1 << 2)
+	updateListsRequestFieldIsPrivate              = big.NewInt(1 << 3)
+	updateListsRequestFieldName                   = big.NewInt(1 << 4)
 )
 
 type UpdateListsRequest struct {
 	// Subscriber list ID.
 	ListID string `json:"-" url:"-"`
+	// Allow current private-list members to see its name and opt out in preferences. Defaults false on create; omission preserves on update and false disables. Null is rejected. Stored but has no effect on public lists. Does not permit private joining or rejoining.
+	AllowMemberUnsubscribe *bool `json:"allowMemberUnsubscribe,omitempty" url:"-"`
 	// New internal list description. Never shown in hosted or embedded subscriber preferences. Pass null to clear it.
 	Description *string `json:"description,omitempty" url:"-"`
-	// Set to true to keep the list internal and omit it from individual controls on the hosted subscriber email preferences/unsubscribe page. Set to false to expose only its name on that page; descriptions remain internal. List privacy does not override a subscriber's global unsubscribe. Omit this field to leave the current visibility unchanged.
+	// Set to true to hide the list from subscriber preferences unless allowMemberUnsubscribe is enabled for current members. Set to false to expose only its name on that page; descriptions remain internal. List privacy does not override a subscriber's global unsubscribe. Omit this field to leave the current visibility unchanged.
 	IsPrivate *bool `json:"isPrivate,omitempty" url:"-"`
 	// New list name.
 	Name *string `json:"name,omitempty" url:"-"`
@@ -1487,6 +1517,13 @@ func (u *UpdateListsRequest) require(field *big.Int) {
 func (u *UpdateListsRequest) SetListID(listID string) {
 	u.ListID = listID
 	u.require(updateListsRequestFieldListID)
+}
+
+// SetAllowMemberUnsubscribe sets the AllowMemberUnsubscribe field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateListsRequest) SetAllowMemberUnsubscribe(allowMemberUnsubscribe *bool) {
+	u.AllowMemberUnsubscribe = allowMemberUnsubscribe
+	u.require(updateListsRequestFieldAllowMemberUnsubscribe)
 }
 
 // SetDescription sets the Description field and marks it as non-optional;

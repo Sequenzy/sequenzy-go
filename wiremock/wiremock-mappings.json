@@ -4410,7 +4410,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"list\": {\n    \"activeSubscriberCount\": 1,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"description\": \"description\",\n    \"id\": \"list_abc123\",\n    \"isPrivate\": false,\n    \"name\": \"Newsletter Subscribers\",\n    \"subscriberCount\": 1\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"list\": {\n    \"activeSubscriberCount\": 1,\n    \"allowMemberUnsubscribe\": true,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"description\": \"description\",\n    \"id\": \"list_abc123\",\n    \"isPrivate\": false,\n    \"name\": \"Newsletter Subscribers\",\n    \"subscriberCount\": 1\n  },\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -4477,7 +4477,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"lists\": [\n    {\n      \"activeSubscriberCount\": 1,\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"description\": \"description\",\n      \"id\": \"list_abc123\",\n      \"isPrivate\": false,\n      \"name\": \"Newsletter Subscribers\",\n      \"subscriberCount\": 1\n    }\n  ],\n  \"success\": true\n}",
+        "body": "{\n  \"lists\": [\n    {\n      \"activeSubscriberCount\": 1,\n      \"allowMemberUnsubscribe\": true,\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"description\": \"description\",\n      \"id\": \"list_abc123\",\n      \"isPrivate\": false,\n      \"name\": \"Newsletter Subscribers\",\n      \"subscriberCount\": 1\n    }\n  ],\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -4550,7 +4550,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"list\": {\n    \"activeSubscriberCount\": 1,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"description\": \"description\",\n    \"id\": \"list_abc123\",\n    \"isPrivate\": false,\n    \"name\": \"Newsletter Subscribers\",\n    \"subscriberCount\": 1\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"list\": {\n    \"activeSubscriberCount\": 1,\n    \"allowMemberUnsubscribe\": true,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"description\": \"description\",\n    \"id\": \"list_abc123\",\n    \"isPrivate\": false,\n    \"name\": \"Newsletter Subscribers\",\n    \"subscriberCount\": 1\n  },\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
