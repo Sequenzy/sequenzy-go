@@ -373,7 +373,7 @@ func TestWidgetsListFormSubmissionsWithWireMock(
 		option.WithAPIKey("test-token"),
 	)
 	request := &sequenzygo.ListFormSubmissionsRequest{
-		FormID: "formId",
+		CompanyIDOrFormID: "companyIdOrFormId",
 	}
 	_, invocationErr := client.Widgets.ListFormSubmissions(
 		context.TODO(),
@@ -384,7 +384,7 @@ func TestWidgetsListFormSubmissionsWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestWidgetsListFormSubmissionsWithWireMock", "GET", "/forms/formId/submissions", nil, 1)
+	VerifyRequestCount(t, "TestWidgetsListFormSubmissionsWithWireMock", "GET", "/forms/companyIdOrFormId/submissions", nil, 1)
 }
 
 func TestWidgetsListSavedFormsWithWireMock(

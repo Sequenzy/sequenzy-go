@@ -679,16 +679,16 @@ func (l *ListCaptureSubmissionsRequest) SetValue(value *string) {
 }
 
 var (
-	listFormSubmissionsRequestFieldFormID = big.NewInt(1 << 0)
-	listFormSubmissionsRequestFieldCursor = big.NewInt(1 << 1)
-	listFormSubmissionsRequestFieldField  = big.NewInt(1 << 2)
-	listFormSubmissionsRequestFieldFormat = big.NewInt(1 << 3)
-	listFormSubmissionsRequestFieldLimit  = big.NewInt(1 << 4)
-	listFormSubmissionsRequestFieldValue  = big.NewInt(1 << 5)
+	listFormSubmissionsRequestFieldCompanyIDOrFormID = big.NewInt(1 << 0)
+	listFormSubmissionsRequestFieldCursor            = big.NewInt(1 << 1)
+	listFormSubmissionsRequestFieldField             = big.NewInt(1 << 2)
+	listFormSubmissionsRequestFieldFormat            = big.NewInt(1 << 3)
+	listFormSubmissionsRequestFieldLimit             = big.NewInt(1 << 4)
+	listFormSubmissionsRequestFieldValue             = big.NewInt(1 << 5)
 )
 
 type ListFormSubmissionsRequest struct {
-	FormID string `json:"-" url:"-"`
+	CompanyIDOrFormID string `json:"-" url:"-"`
 	// nextCursor from the previous page, keeping the same filters.
 	Cursor *string `json:"-" url:"cursor,omitempty"`
 	// Exact custom attribute key; requires value. Omit both to clear filtering.
@@ -710,11 +710,11 @@ func (l *ListFormSubmissionsRequest) require(field *big.Int) {
 	l.explicitFields.Or(l.explicitFields, field)
 }
 
-// SetFormID sets the FormID field and marks it as non-optional;
+// SetCompanyIDOrFormID sets the CompanyIDOrFormID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListFormSubmissionsRequest) SetFormID(formID string) {
-	l.FormID = formID
-	l.require(listFormSubmissionsRequestFieldFormID)
+func (l *ListFormSubmissionsRequest) SetCompanyIDOrFormID(companyIDOrFormID string) {
+	l.CompanyIDOrFormID = companyIDOrFormID
+	l.require(listFormSubmissionsRequestFieldCompanyIDOrFormID)
 }
 
 // SetCursor sets the Cursor field and marks it as non-optional;

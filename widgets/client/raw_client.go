@@ -539,7 +539,7 @@ func (r *RawClient) ListFormSubmissions(
 	)
 	endpointURL := internal.EncodeURL(
 		baseURL+"/forms/%v/submissions",
-		request.FormID,
+		request.CompanyIDOrFormID,
 	)
 	queryParams, err := internal.QueryValues(request)
 	if err != nil {

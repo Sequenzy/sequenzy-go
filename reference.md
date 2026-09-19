@@ -24120,7 +24120,7 @@ client.Widgets.ListCaptureSubmissions(
 </dl>
 </details>
 
-<details><summary><code>client.Widgets.ListFormSubmissions(FormID) -> *sequenzygo.ListFormSubmissionsResponse</code></summary>
+<details><summary><code>client.Widgets.ListFormSubmissions(CompanyIDOrFormID) -> *sequenzygo.ListFormSubmissionsResponse</code></summary>
 <dl>
 <dd>
 
@@ -24148,7 +24148,7 @@ Form-only alias for GET /submissions/form/{formId}. Requires widgets:read and su
 
 ```go
 request := &sequenzygo.ListFormSubmissionsRequest{
-    FormID: "formId",
+    CompanyIDOrFormID: "companyIdOrFormId",
 }
 client.Widgets.ListFormSubmissions(
     context.TODO(),
@@ -24168,7 +24168,7 @@ client.Widgets.ListFormSubmissions(
 <dl>
 <dd>
 
-**formID:** `string` 
+**companyIDOrFormID:** `string` 
     
 </dd>
 </dl>

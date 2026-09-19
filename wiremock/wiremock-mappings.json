@@ -10271,10 +10271,10 @@
       }
     },
     {
-      "id": "e02729a8-0e52-4136-a368-800ab9fef261",
+      "id": "2e65c4d7-2308-4a13-a0fa-e8e83be3da48",
       "name": "List form submissions (alias) - default",
       "request": {
-        "urlPathTemplate": "/forms/{formId}/submissions",
+        "urlPathTemplate": "/forms/{companyIdOrFormId}/submissions",
         "method": "GET",
         "headers": {
           "Authorization": {
@@ -10282,8 +10282,8 @@
           }
         },
         "pathParameters": {
-          "formId": {
-            "equalTo": "formId"
+          "companyIdOrFormId": {
+            "equalTo": "companyIdOrFormId"
           }
         }
       },
@@ -10294,7 +10294,7 @@
           "Content-Type": "application/json"
         }
       },
-      "uuid": "e02729a8-0e52-4136-a368-800ab9fef261",
+      "uuid": "2e65c4d7-2308-4a13-a0fa-e8e83be3da48",
       "persistent": true,
       "priority": 3,
       "metadata": {

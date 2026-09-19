@@ -1943,11 +1943,11 @@ func TestSettersMarkExplicitListCaptureSubmissionsRequest(t *testing.T) {
 }
 
 func TestSettersListFormSubmissionsRequest(t *testing.T) {
-	t.Run("SetFormID", func(t *testing.T) {
+	t.Run("SetCompanyIDOrFormID", func(t *testing.T) {
 		obj := &ListFormSubmissionsRequest{}
-		var fernTestValueFormID string
-		obj.SetFormID(fernTestValueFormID)
-		assert.Equal(t, fernTestValueFormID, obj.FormID)
+		var fernTestValueCompanyIDOrFormID string
+		obj.SetCompanyIDOrFormID(fernTestValueCompanyIDOrFormID)
+		assert.Equal(t, fernTestValueCompanyIDOrFormID, obj.CompanyIDOrFormID)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -1994,14 +1994,14 @@ func TestSettersListFormSubmissionsRequest(t *testing.T) {
 }
 
 func TestSettersMarkExplicitListFormSubmissionsRequest(t *testing.T) {
-	t.Run("SetFormID_MarksExplicit", func(t *testing.T) {
+	t.Run("SetCompanyIDOrFormID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListFormSubmissionsRequest{}
-		var fernTestValueFormID string
+		var fernTestValueCompanyIDOrFormID string
 
 		// Act
-		obj.SetFormID(fernTestValueFormID)
+		obj.SetCompanyIDOrFormID(fernTestValueCompanyIDOrFormID)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)

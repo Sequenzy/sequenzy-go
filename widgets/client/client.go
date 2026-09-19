@@ -344,7 +344,7 @@ func (c *Client) ListCaptureSubmissions(
 // Example:
 //
 //	request := &sequenzygo.ListFormSubmissionsRequest{
-//	    FormID: "formId",
+//	    CompanyIDOrFormID: "companyIdOrFormId",
 //	}
 //	client.Widgets.ListFormSubmissions(
 //	    context.TODO(),
