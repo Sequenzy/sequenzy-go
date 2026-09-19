@@ -24011,6 +24011,215 @@ client.Widgets.GetSavedSignupFormEmbedScript(
 </dl>
 </details>
 
+<details><summary><code>client.Widgets.ListCaptureSubmissions(SourceType, SourceID) -> *sequenzygo.ListCaptureSubmissionsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Read immutable accepted answers for a form, popup or landing page. Requires subscribers:read plus widgets:read for forms/popups or landing_pages:read for landing pages. History is forward-only; deleting a subscriber, source or company removes associated records. Reads can be retried safely.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.ListCaptureSubmissionsRequest{
+    SourceType: sequenzygo.ListCaptureSubmissionsRequestSourceTypeForm,
+    SourceID: "sourceId",
+}
+client.Widgets.ListCaptureSubmissions(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**sourceType:** `*sequenzygo.ListCaptureSubmissionsRequestSourceType` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sourceID:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**cursor:** `*string` — nextCursor from the previous page, keeping the same filters.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**field:** `*string` — Exact custom attribute key; requires value. Omit both to clear filtering.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**format:** `*sequenzygo.ListCaptureSubmissionsRequestFormat` — csv adds a CSV string for this page; the response remains JSON.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `*int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**value:** `*string` — Exact scalar answer or string array member; requires field. Empty string is allowed.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Widgets.ListFormSubmissions(FormID) -> *sequenzygo.ListFormSubmissionsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Form-only alias for GET /submissions/form/{formId}. Requires widgets:read and subscribers:read. Returns immutable accepted answers recorded since tracking began. Reads can be retried safely.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.ListFormSubmissionsRequest{
+    FormID: "formId",
+}
+client.Widgets.ListFormSubmissions(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**formID:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**cursor:** `*string` — nextCursor from the previous page, keeping the same filters.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**field:** `*string` — Exact custom attribute key; requires value. Omit both to clear filtering.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**format:** `*sequenzygo.ListFormSubmissionsRequestFormat` — csv adds a CSV string for this page; the response remains JSON.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `*int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**value:** `*string` — Exact scalar answer or string array member; requires field. Empty string is allowed.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Widgets.ListSavedForms() -> *sequenzygo.ListSavedFormsResponse</code></summary>
 <dl>
 <dd>

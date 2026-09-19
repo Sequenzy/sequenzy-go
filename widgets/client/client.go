@@ -311,6 +311,61 @@ func (c *Client) GetSavedSignupFormEmbedScript(
 	return nil
 }
 
+// Read immutable accepted answers for a form, popup or landing page. Requires subscribers:read plus widgets:read for forms/popups or landing_pages:read for landing pages. History is forward-only; deleting a subscriber, source or company removes associated records. Reads can be retried safely.
+//
+// Example:
+//
+//	request := &sequenzygo.ListCaptureSubmissionsRequest{
+//	    SourceType: sequenzygo.ListCaptureSubmissionsRequestSourceTypeForm,
+//	    SourceID: "sourceId",
+//	}
+//	client.Widgets.ListCaptureSubmissions(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) ListCaptureSubmissions(
+	ctx context.Context,
+	request *sequenzygo.ListCaptureSubmissionsRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.ListCaptureSubmissionsResponse, error) {
+	response, err := c.WithRawResponse.ListCaptureSubmissions(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Form-only alias for GET /submissions/form/{formId}. Requires widgets:read and subscribers:read. Returns immutable accepted answers recorded since tracking began. Reads can be retried safely.
+//
+// Example:
+//
+//	request := &sequenzygo.ListFormSubmissionsRequest{
+//	    FormID: "formId",
+//	}
+//	client.Widgets.ListFormSubmissions(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) ListFormSubmissions(
+	ctx context.Context,
+	request *sequenzygo.ListFormSubmissionsRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.ListFormSubmissionsResponse, error) {
+	response, err := c.WithRawResponse.ListFormSubmissions(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Lists saved signup forms for the authenticated workspace, including their server-managed audience settings and public action URLs.
 //
 // Example:

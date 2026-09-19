@@ -10232,6 +10232,81 @@
       }
     },
     {
+      "id": "71dd2895-4fc6-47a6-8339-eac277e433ea",
+      "name": "List capture submissions - default",
+      "request": {
+        "urlPathTemplate": "/submissions/{sourceType}/{sourceId}",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "sourceId": {
+            "equalTo": "sourceId"
+          },
+          "sourceType": {
+            "equalTo": "form"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"csv\": \"csv\",\n  \"nextCursor\": \"nextCursor\",\n  \"source\": {\n    \"id\": \"id\",\n    \"name\": \"name\",\n    \"type\": \"form\"\n  },\n  \"submissions\": [\n    {\n      \"companyId\": \"companyId\",\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"fieldLabels\": {\n        \"key\": \"value\"\n      },\n      \"formId\": \"formId\",\n      \"id\": \"id\",\n      \"landingPageId\": \"landingPageId\",\n      \"payload\": {\n        \"customAttributes\": {\n          \"key\": \"value\"\n        },\n        \"email\": \"email\"\n      },\n      \"popupId\": \"popupId\",\n      \"sourceId\": \"sourceId\",\n      \"sourceType\": \"form\",\n      \"subscriberId\": \"subscriberId\"\n    }\n  ],\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "71dd2895-4fc6-47a6-8339-eac277e433ea",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "e02729a8-0e52-4136-a368-800ab9fef261",
+      "name": "List form submissions (alias) - default",
+      "request": {
+        "urlPathTemplate": "/forms/{formId}/submissions",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "formId": {
+            "equalTo": "formId"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"csv\": \"csv\",\n  \"nextCursor\": \"nextCursor\",\n  \"source\": {\n    \"id\": \"id\",\n    \"name\": \"name\",\n    \"type\": \"form\"\n  },\n  \"submissions\": [\n    {\n      \"companyId\": \"companyId\",\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"fieldLabels\": {\n        \"key\": \"value\"\n      },\n      \"formId\": \"formId\",\n      \"id\": \"id\",\n      \"landingPageId\": \"landingPageId\",\n      \"payload\": {\n        \"customAttributes\": {\n          \"key\": \"value\"\n        },\n        \"email\": \"email\"\n      },\n      \"popupId\": \"popupId\",\n      \"sourceId\": \"sourceId\",\n      \"sourceType\": \"form\",\n      \"subscriberId\": \"subscriberId\"\n    }\n  ],\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "e02729a8-0e52-4136-a368-800ab9fef261",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "fa123764-94cd-4dfc-bcc5-8a03392728fd",
       "name": "List saved forms - default",
       "request": {
@@ -10504,6 +10579,6 @@
     }
   ],
   "meta": {
-    "total": 304
+    "total": 306
   }
 }

@@ -596,6 +596,163 @@ func (g *GetSavedSignupFormEmbedScriptRequest) SetCompanyIDOrFormID(companyIDOrF
 }
 
 var (
+	listCaptureSubmissionsRequestFieldSourceType = big.NewInt(1 << 0)
+	listCaptureSubmissionsRequestFieldSourceID   = big.NewInt(1 << 1)
+	listCaptureSubmissionsRequestFieldCursor     = big.NewInt(1 << 2)
+	listCaptureSubmissionsRequestFieldField      = big.NewInt(1 << 3)
+	listCaptureSubmissionsRequestFieldFormat     = big.NewInt(1 << 4)
+	listCaptureSubmissionsRequestFieldLimit      = big.NewInt(1 << 5)
+	listCaptureSubmissionsRequestFieldValue      = big.NewInt(1 << 6)
+)
+
+type ListCaptureSubmissionsRequest struct {
+	SourceType ListCaptureSubmissionsRequestSourceType `json:"-" url:"-"`
+	SourceID   string                                  `json:"-" url:"-"`
+	// nextCursor from the previous page, keeping the same filters.
+	Cursor *string `json:"-" url:"cursor,omitempty"`
+	// Exact custom attribute key; requires value. Omit both to clear filtering.
+	Field *string `json:"-" url:"field,omitempty"`
+	// csv adds a CSV string for this page; the response remains JSON.
+	Format *ListCaptureSubmissionsRequestFormat `json:"-" url:"format,omitempty"`
+	Limit  *int                                 `json:"-" url:"limit,omitempty"`
+	// Exact scalar answer or string array member; requires field. Empty string is allowed.
+	Value *string `json:"-" url:"value,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (l *ListCaptureSubmissionsRequest) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetSourceType sets the SourceType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCaptureSubmissionsRequest) SetSourceType(sourceType ListCaptureSubmissionsRequestSourceType) {
+	l.SourceType = sourceType
+	l.require(listCaptureSubmissionsRequestFieldSourceType)
+}
+
+// SetSourceID sets the SourceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCaptureSubmissionsRequest) SetSourceID(sourceID string) {
+	l.SourceID = sourceID
+	l.require(listCaptureSubmissionsRequestFieldSourceID)
+}
+
+// SetCursor sets the Cursor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCaptureSubmissionsRequest) SetCursor(cursor *string) {
+	l.Cursor = cursor
+	l.require(listCaptureSubmissionsRequestFieldCursor)
+}
+
+// SetField sets the Field field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCaptureSubmissionsRequest) SetField(field *string) {
+	l.Field = field
+	l.require(listCaptureSubmissionsRequestFieldField)
+}
+
+// SetFormat sets the Format field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCaptureSubmissionsRequest) SetFormat(format *ListCaptureSubmissionsRequestFormat) {
+	l.Format = format
+	l.require(listCaptureSubmissionsRequestFieldFormat)
+}
+
+// SetLimit sets the Limit field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCaptureSubmissionsRequest) SetLimit(limit *int) {
+	l.Limit = limit
+	l.require(listCaptureSubmissionsRequestFieldLimit)
+}
+
+// SetValue sets the Value field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCaptureSubmissionsRequest) SetValue(value *string) {
+	l.Value = value
+	l.require(listCaptureSubmissionsRequestFieldValue)
+}
+
+var (
+	listFormSubmissionsRequestFieldFormID = big.NewInt(1 << 0)
+	listFormSubmissionsRequestFieldCursor = big.NewInt(1 << 1)
+	listFormSubmissionsRequestFieldField  = big.NewInt(1 << 2)
+	listFormSubmissionsRequestFieldFormat = big.NewInt(1 << 3)
+	listFormSubmissionsRequestFieldLimit  = big.NewInt(1 << 4)
+	listFormSubmissionsRequestFieldValue  = big.NewInt(1 << 5)
+)
+
+type ListFormSubmissionsRequest struct {
+	FormID string `json:"-" url:"-"`
+	// nextCursor from the previous page, keeping the same filters.
+	Cursor *string `json:"-" url:"cursor,omitempty"`
+	// Exact custom attribute key; requires value. Omit both to clear filtering.
+	Field *string `json:"-" url:"field,omitempty"`
+	// csv adds a CSV string for this page; the response remains JSON.
+	Format *ListFormSubmissionsRequestFormat `json:"-" url:"format,omitempty"`
+	Limit  *int                              `json:"-" url:"limit,omitempty"`
+	// Exact scalar answer or string array member; requires field. Empty string is allowed.
+	Value *string `json:"-" url:"value,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (l *ListFormSubmissionsRequest) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetFormID sets the FormID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFormSubmissionsRequest) SetFormID(formID string) {
+	l.FormID = formID
+	l.require(listFormSubmissionsRequestFieldFormID)
+}
+
+// SetCursor sets the Cursor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFormSubmissionsRequest) SetCursor(cursor *string) {
+	l.Cursor = cursor
+	l.require(listFormSubmissionsRequestFieldCursor)
+}
+
+// SetField sets the Field field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFormSubmissionsRequest) SetField(field *string) {
+	l.Field = field
+	l.require(listFormSubmissionsRequestFieldField)
+}
+
+// SetFormat sets the Format field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFormSubmissionsRequest) SetFormat(format *ListFormSubmissionsRequestFormat) {
+	l.Format = format
+	l.require(listFormSubmissionsRequestFieldFormat)
+}
+
+// SetLimit sets the Limit field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFormSubmissionsRequest) SetLimit(limit *int) {
+	l.Limit = limit
+	l.require(listFormSubmissionsRequestFieldLimit)
+}
+
+// SetValue sets the Value field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFormSubmissionsRequest) SetValue(value *string) {
+	l.Value = value
+	l.require(listFormSubmissionsRequestFieldValue)
+}
+
+var (
 	listSavedPopupsRequestFieldIncludeContent = big.NewInt(1 << 0)
 )
 
@@ -9133,6 +9290,1973 @@ func (g *GetSavedPopupResponse) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", g)
+}
+
+type ListCaptureSubmissionsRequestFormat string
+
+const (
+	ListCaptureSubmissionsRequestFormatJSON ListCaptureSubmissionsRequestFormat = "json"
+	ListCaptureSubmissionsRequestFormatCsv  ListCaptureSubmissionsRequestFormat = "csv"
+)
+
+func NewListCaptureSubmissionsRequestFormatFromString(s string) (ListCaptureSubmissionsRequestFormat, error) {
+	switch s {
+	case "json":
+		return ListCaptureSubmissionsRequestFormatJSON, nil
+	case "csv":
+		return ListCaptureSubmissionsRequestFormatCsv, nil
+	}
+	var t ListCaptureSubmissionsRequestFormat
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListCaptureSubmissionsRequestFormat) Ptr() *ListCaptureSubmissionsRequestFormat {
+	return &l
+}
+
+type ListCaptureSubmissionsRequestSourceType string
+
+const (
+	ListCaptureSubmissionsRequestSourceTypeForm        ListCaptureSubmissionsRequestSourceType = "form"
+	ListCaptureSubmissionsRequestSourceTypePopup       ListCaptureSubmissionsRequestSourceType = "popup"
+	ListCaptureSubmissionsRequestSourceTypeLandingPage ListCaptureSubmissionsRequestSourceType = "landing_page"
+)
+
+func NewListCaptureSubmissionsRequestSourceTypeFromString(s string) (ListCaptureSubmissionsRequestSourceType, error) {
+	switch s {
+	case "form":
+		return ListCaptureSubmissionsRequestSourceTypeForm, nil
+	case "popup":
+		return ListCaptureSubmissionsRequestSourceTypePopup, nil
+	case "landing_page":
+		return ListCaptureSubmissionsRequestSourceTypeLandingPage, nil
+	}
+	var t ListCaptureSubmissionsRequestSourceType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListCaptureSubmissionsRequestSourceType) Ptr() *ListCaptureSubmissionsRequestSourceType {
+	return &l
+}
+
+var (
+	listCaptureSubmissionsResponseFieldCsv         = big.NewInt(1 << 0)
+	listCaptureSubmissionsResponseFieldNextCursor  = big.NewInt(1 << 1)
+	listCaptureSubmissionsResponseFieldSource      = big.NewInt(1 << 2)
+	listCaptureSubmissionsResponseFieldSubmissions = big.NewInt(1 << 3)
+	listCaptureSubmissionsResponseFieldSuccess     = big.NewInt(1 << 4)
+)
+
+type ListCaptureSubmissionsResponse struct {
+	// Present only for format=csv.
+	Csv         *string                                          `json:"csv,omitempty" url:"csv,omitempty"`
+	NextCursor  *string                                          `json:"nextCursor,omitempty" url:"nextCursor,omitempty"`
+	Source      *ListCaptureSubmissionsResponseSource            `json:"source" url:"source"`
+	Submissions []*ListCaptureSubmissionsResponseSubmissionsItem `json:"submissions" url:"submissions"`
+	Success     bool                                             `json:"success" url:"success"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListCaptureSubmissionsResponse) GetCsv() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Csv
+}
+
+func (l *ListCaptureSubmissionsResponse) GetNextCursor() *string {
+	if l == nil {
+		return nil
+	}
+	return l.NextCursor
+}
+
+func (l *ListCaptureSubmissionsResponse) GetSource() *ListCaptureSubmissionsResponseSource {
+	if l == nil {
+		return nil
+	}
+	return l.Source
+}
+
+func (l *ListCaptureSubmissionsResponse) GetSubmissions() []*ListCaptureSubmissionsResponseSubmissionsItem {
+	if l == nil {
+		return nil
+	}
+	return l.Submissions
+}
+
+func (l *ListCaptureSubmissionsResponse) GetSuccess() bool {
+	if l == nil {
+		return false
+	}
+	return l.Success
+}
+
+func (l *ListCaptureSubmissionsResponse) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListCaptureSubmissionsResponse) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetCsv sets the Csv field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCaptureSubmissionsResponse) SetCsv(csv *string) {
+	l.Csv = csv
+	l.require(listCaptureSubmissionsResponseFieldCsv)
+}
+
+// SetNextCursor sets the NextCursor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCaptureSubmissionsResponse) SetNextCursor(nextCursor *string) {
+	l.NextCursor = nextCursor
+	l.require(listCaptureSubmissionsResponseFieldNextCursor)
+}
+
+// SetSource sets the Source field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCaptureSubmissionsResponse) SetSource(source *ListCaptureSubmissionsResponseSource) {
+	l.Source = source
+	l.require(listCaptureSubmissionsResponseFieldSource)
+}
+
+// SetSubmissions sets the Submissions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCaptureSubmissionsResponse) SetSubmissions(submissions []*ListCaptureSubmissionsResponseSubmissionsItem) {
+	l.Submissions = submissions
+	l.require(listCaptureSubmissionsResponseFieldSubmissions)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCaptureSubmissionsResponse) SetSuccess(success bool) {
+	l.Success = success
+	l.require(listCaptureSubmissionsResponseFieldSuccess)
+}
+
+func (l *ListCaptureSubmissionsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListCaptureSubmissionsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListCaptureSubmissionsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListCaptureSubmissionsResponse) MarshalJSON() ([]byte, error) {
+	type embed ListCaptureSubmissionsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListCaptureSubmissionsResponse) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	listCaptureSubmissionsResponseSourceFieldID   = big.NewInt(1 << 0)
+	listCaptureSubmissionsResponseSourceFieldName = big.NewInt(1 << 1)
+	listCaptureSubmissionsResponseSourceFieldType = big.NewInt(1 << 2)
+)
+
+type ListCaptureSubmissionsResponseSource struct {
+	ID   string                                   `json:"id" url:"id"`
+	Name string                                   `json:"name" url:"name"`
+	Type ListCaptureSubmissionsResponseSourceType `json:"type" url:"type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListCaptureSubmissionsResponseSource) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *ListCaptureSubmissionsResponseSource) GetName() string {
+	if l == nil {
+		return ""
+	}
+	return l.Name
+}
+
+func (l *ListCaptureSubmissionsResponseSource) GetType() ListCaptureSubmissionsResponseSourceType {
+	if l == nil {
+		return ""
+	}
+	return l.Type
+}
+
+func (l *ListCaptureSubmissionsResponseSource) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListCaptureSubmissionsResponseSource) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCaptureSubmissionsResponseSource) SetID(id string) {
+	l.ID = id
+	l.require(listCaptureSubmissionsResponseSourceFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCaptureSubmissionsResponseSource) SetName(name string) {
+	l.Name = name
+	l.require(listCaptureSubmissionsResponseSourceFieldName)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCaptureSubmissionsResponseSource) SetType(type_ ListCaptureSubmissionsResponseSourceType) {
+	l.Type = type_
+	l.require(listCaptureSubmissionsResponseSourceFieldType)
+}
+
+func (l *ListCaptureSubmissionsResponseSource) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListCaptureSubmissionsResponseSource
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListCaptureSubmissionsResponseSource(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListCaptureSubmissionsResponseSource) MarshalJSON() ([]byte, error) {
+	type embed ListCaptureSubmissionsResponseSource
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListCaptureSubmissionsResponseSource) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type ListCaptureSubmissionsResponseSourceType string
+
+const (
+	ListCaptureSubmissionsResponseSourceTypeForm        ListCaptureSubmissionsResponseSourceType = "form"
+	ListCaptureSubmissionsResponseSourceTypePopup       ListCaptureSubmissionsResponseSourceType = "popup"
+	ListCaptureSubmissionsResponseSourceTypeLandingPage ListCaptureSubmissionsResponseSourceType = "landing_page"
+)
+
+func NewListCaptureSubmissionsResponseSourceTypeFromString(s string) (ListCaptureSubmissionsResponseSourceType, error) {
+	switch s {
+	case "form":
+		return ListCaptureSubmissionsResponseSourceTypeForm, nil
+	case "popup":
+		return ListCaptureSubmissionsResponseSourceTypePopup, nil
+	case "landing_page":
+		return ListCaptureSubmissionsResponseSourceTypeLandingPage, nil
+	}
+	var t ListCaptureSubmissionsResponseSourceType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListCaptureSubmissionsResponseSourceType) Ptr() *ListCaptureSubmissionsResponseSourceType {
+	return &l
+}
+
+var (
+	listCaptureSubmissionsResponseSubmissionsItemFieldCompanyID     = big.NewInt(1 << 0)
+	listCaptureSubmissionsResponseSubmissionsItemFieldCreatedAt     = big.NewInt(1 << 1)
+	listCaptureSubmissionsResponseSubmissionsItemFieldFieldLabels   = big.NewInt(1 << 2)
+	listCaptureSubmissionsResponseSubmissionsItemFieldFormID        = big.NewInt(1 << 3)
+	listCaptureSubmissionsResponseSubmissionsItemFieldID            = big.NewInt(1 << 4)
+	listCaptureSubmissionsResponseSubmissionsItemFieldLandingPageID = big.NewInt(1 << 5)
+	listCaptureSubmissionsResponseSubmissionsItemFieldPayload       = big.NewInt(1 << 6)
+	listCaptureSubmissionsResponseSubmissionsItemFieldPopupID       = big.NewInt(1 << 7)
+	listCaptureSubmissionsResponseSubmissionsItemFieldSourceID      = big.NewInt(1 << 8)
+	listCaptureSubmissionsResponseSubmissionsItemFieldSourceType    = big.NewInt(1 << 9)
+	listCaptureSubmissionsResponseSubmissionsItemFieldSubscriberID  = big.NewInt(1 << 10)
+)
+
+type ListCaptureSubmissionsResponseSubmissionsItem struct {
+	CompanyID     string                                                   `json:"companyId" url:"companyId"`
+	CreatedAt     time.Time                                                `json:"createdAt" url:"createdAt"`
+	FieldLabels   map[string]string                                        `json:"fieldLabels" url:"fieldLabels"`
+	FormID        *string                                                  `json:"formId,omitempty" url:"formId,omitempty"`
+	ID            string                                                   `json:"id" url:"id"`
+	LandingPageID *string                                                  `json:"landingPageId,omitempty" url:"landingPageId,omitempty"`
+	Payload       *ListCaptureSubmissionsResponseSubmissionsItemPayload    `json:"payload" url:"payload"`
+	PopupID       *string                                                  `json:"popupId,omitempty" url:"popupId,omitempty"`
+	SourceID      *string                                                  `json:"sourceId,omitempty" url:"sourceId,omitempty"`
+	SourceType    *ListCaptureSubmissionsResponseSubmissionsItemSourceType `json:"sourceType,omitempty" url:"sourceType,omitempty"`
+	SubscriberID  string                                                   `json:"subscriberId" url:"subscriberId"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListCaptureSubmissionsResponseSubmissionsItem) GetCompanyID() string {
+	if l == nil {
+		return ""
+	}
+	return l.CompanyID
+}
+
+func (l *ListCaptureSubmissionsResponseSubmissionsItem) GetCreatedAt() time.Time {
+	if l == nil {
+		return time.Time{}
+	}
+	return l.CreatedAt
+}
+
+func (l *ListCaptureSubmissionsResponseSubmissionsItem) GetFieldLabels() map[string]string {
+	if l == nil {
+		return nil
+	}
+	return l.FieldLabels
+}
+
+func (l *ListCaptureSubmissionsResponseSubmissionsItem) GetFormID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.FormID
+}
+
+func (l *ListCaptureSubmissionsResponseSubmissionsItem) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *ListCaptureSubmissionsResponseSubmissionsItem) GetLandingPageID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.LandingPageID
+}
+
+func (l *ListCaptureSubmissionsResponseSubmissionsItem) GetPayload() *ListCaptureSubmissionsResponseSubmissionsItemPayload {
+	if l == nil {
+		return nil
+	}
+	return l.Payload
+}
+
+func (l *ListCaptureSubmissionsResponseSubmissionsItem) GetPopupID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.PopupID
+}
+
+func (l *ListCaptureSubmissionsResponseSubmissionsItem) GetSourceID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SourceID
+}
+
+func (l *ListCaptureSubmissionsResponseSubmissionsItem) GetSourceType() *ListCaptureSubmissionsResponseSubmissionsItemSourceType {
+	if l == nil {
+		return nil
+	}
+	return l.SourceType
+}
+
+func (l *ListCaptureSubmissionsResponseSubmissionsItem) GetSubscriberID() string {
+	if l == nil {
+		return ""
+	}
+	return l.SubscriberID
+}
+
+func (l *ListCaptureSubmissionsResponseSubmissionsItem) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListCaptureSubmissionsResponseSubmissionsItem) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetCompanyID sets the CompanyID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCaptureSubmissionsResponseSubmissionsItem) SetCompanyID(companyID string) {
+	l.CompanyID = companyID
+	l.require(listCaptureSubmissionsResponseSubmissionsItemFieldCompanyID)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCaptureSubmissionsResponseSubmissionsItem) SetCreatedAt(createdAt time.Time) {
+	l.CreatedAt = createdAt
+	l.require(listCaptureSubmissionsResponseSubmissionsItemFieldCreatedAt)
+}
+
+// SetFieldLabels sets the FieldLabels field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCaptureSubmissionsResponseSubmissionsItem) SetFieldLabels(fieldLabels map[string]string) {
+	l.FieldLabels = fieldLabels
+	l.require(listCaptureSubmissionsResponseSubmissionsItemFieldFieldLabels)
+}
+
+// SetFormID sets the FormID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCaptureSubmissionsResponseSubmissionsItem) SetFormID(formID *string) {
+	l.FormID = formID
+	l.require(listCaptureSubmissionsResponseSubmissionsItemFieldFormID)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCaptureSubmissionsResponseSubmissionsItem) SetID(id string) {
+	l.ID = id
+	l.require(listCaptureSubmissionsResponseSubmissionsItemFieldID)
+}
+
+// SetLandingPageID sets the LandingPageID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCaptureSubmissionsResponseSubmissionsItem) SetLandingPageID(landingPageID *string) {
+	l.LandingPageID = landingPageID
+	l.require(listCaptureSubmissionsResponseSubmissionsItemFieldLandingPageID)
+}
+
+// SetPayload sets the Payload field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCaptureSubmissionsResponseSubmissionsItem) SetPayload(payload *ListCaptureSubmissionsResponseSubmissionsItemPayload) {
+	l.Payload = payload
+	l.require(listCaptureSubmissionsResponseSubmissionsItemFieldPayload)
+}
+
+// SetPopupID sets the PopupID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCaptureSubmissionsResponseSubmissionsItem) SetPopupID(popupID *string) {
+	l.PopupID = popupID
+	l.require(listCaptureSubmissionsResponseSubmissionsItemFieldPopupID)
+}
+
+// SetSourceID sets the SourceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCaptureSubmissionsResponseSubmissionsItem) SetSourceID(sourceID *string) {
+	l.SourceID = sourceID
+	l.require(listCaptureSubmissionsResponseSubmissionsItemFieldSourceID)
+}
+
+// SetSourceType sets the SourceType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCaptureSubmissionsResponseSubmissionsItem) SetSourceType(sourceType *ListCaptureSubmissionsResponseSubmissionsItemSourceType) {
+	l.SourceType = sourceType
+	l.require(listCaptureSubmissionsResponseSubmissionsItemFieldSourceType)
+}
+
+// SetSubscriberID sets the SubscriberID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCaptureSubmissionsResponseSubmissionsItem) SetSubscriberID(subscriberID string) {
+	l.SubscriberID = subscriberID
+	l.require(listCaptureSubmissionsResponseSubmissionsItemFieldSubscriberID)
+}
+
+func (l *ListCaptureSubmissionsResponseSubmissionsItem) UnmarshalJSON(data []byte) error {
+	type embed ListCaptureSubmissionsResponseSubmissionsItem
+	var unmarshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"createdAt"`
+	}{
+		embed: embed(*l),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*l = ListCaptureSubmissionsResponseSubmissionsItem(unmarshaler.embed)
+	l.CreatedAt = unmarshaler.CreatedAt.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListCaptureSubmissionsResponseSubmissionsItem) MarshalJSON() ([]byte, error) {
+	type embed ListCaptureSubmissionsResponseSubmissionsItem
+	var marshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"createdAt"`
+	}{
+		embed:     embed(*l),
+		CreatedAt: internal.NewDateTime(l.CreatedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListCaptureSubmissionsResponseSubmissionsItem) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	listCaptureSubmissionsResponseSubmissionsItemPayloadFieldCustomAttributes = big.NewInt(1 << 0)
+	listCaptureSubmissionsResponseSubmissionsItemPayloadFieldEmail            = big.NewInt(1 << 1)
+	listCaptureSubmissionsResponseSubmissionsItemPayloadFieldFirstName        = big.NewInt(1 << 2)
+	listCaptureSubmissionsResponseSubmissionsItemPayloadFieldLastName         = big.NewInt(1 << 3)
+	listCaptureSubmissionsResponseSubmissionsItemPayloadFieldPhone            = big.NewInt(1 << 4)
+	listCaptureSubmissionsResponseSubmissionsItemPayloadFieldRecovery         = big.NewInt(1 << 5)
+)
+
+type ListCaptureSubmissionsResponseSubmissionsItemPayload struct {
+	CustomAttributes map[string]any `json:"customAttributes" url:"customAttributes"`
+	Email            string         `json:"email" url:"email"`
+	FirstName        *string        `json:"firstName,omitempty" url:"firstName,omitempty"`
+	LastName         *string        `json:"lastName,omitempty" url:"lastName,omitempty"`
+	Phone            *string        `json:"phone,omitempty" url:"phone,omitempty"`
+	// Present only for reconstructed historical records. The source is inferred and createdAt is an evidence event time, not a verified submission timestamp.
+	Recovery *ListCaptureSubmissionsResponseSubmissionsItemPayloadRecovery `json:"recovery,omitempty" url:"recovery,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListCaptureSubmissionsResponseSubmissionsItemPayload) GetCustomAttributes() map[string]any {
+	if l == nil {
+		return nil
+	}
+	return l.CustomAttributes
+}
+
+func (l *ListCaptureSubmissionsResponseSubmissionsItemPayload) GetEmail() string {
+	if l == nil {
+		return ""
+	}
+	return l.Email
+}
+
+func (l *ListCaptureSubmissionsResponseSubmissionsItemPayload) GetFirstName() *string {
+	if l == nil {
+		return nil
+	}
+	return l.FirstName
+}
+
+func (l *ListCaptureSubmissionsResponseSubmissionsItemPayload) GetLastName() *string {
+	if l == nil {
+		return nil
+	}
+	return l.LastName
+}
+
+func (l *ListCaptureSubmissionsResponseSubmissionsItemPayload) GetPhone() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Phone
+}
+
+func (l *ListCaptureSubmissionsResponseSubmissionsItemPayload) GetRecovery() *ListCaptureSubmissionsResponseSubmissionsItemPayloadRecovery {
+	if l == nil {
+		return nil
+	}
+	return l.Recovery
+}
+
+func (l *ListCaptureSubmissionsResponseSubmissionsItemPayload) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListCaptureSubmissionsResponseSubmissionsItemPayload) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetCustomAttributes sets the CustomAttributes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCaptureSubmissionsResponseSubmissionsItemPayload) SetCustomAttributes(customAttributes map[string]any) {
+	l.CustomAttributes = customAttributes
+	l.require(listCaptureSubmissionsResponseSubmissionsItemPayloadFieldCustomAttributes)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCaptureSubmissionsResponseSubmissionsItemPayload) SetEmail(email string) {
+	l.Email = email
+	l.require(listCaptureSubmissionsResponseSubmissionsItemPayloadFieldEmail)
+}
+
+// SetFirstName sets the FirstName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCaptureSubmissionsResponseSubmissionsItemPayload) SetFirstName(firstName *string) {
+	l.FirstName = firstName
+	l.require(listCaptureSubmissionsResponseSubmissionsItemPayloadFieldFirstName)
+}
+
+// SetLastName sets the LastName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCaptureSubmissionsResponseSubmissionsItemPayload) SetLastName(lastName *string) {
+	l.LastName = lastName
+	l.require(listCaptureSubmissionsResponseSubmissionsItemPayloadFieldLastName)
+}
+
+// SetPhone sets the Phone field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCaptureSubmissionsResponseSubmissionsItemPayload) SetPhone(phone *string) {
+	l.Phone = phone
+	l.require(listCaptureSubmissionsResponseSubmissionsItemPayloadFieldPhone)
+}
+
+// SetRecovery sets the Recovery field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCaptureSubmissionsResponseSubmissionsItemPayload) SetRecovery(recovery *ListCaptureSubmissionsResponseSubmissionsItemPayloadRecovery) {
+	l.Recovery = recovery
+	l.require(listCaptureSubmissionsResponseSubmissionsItemPayloadFieldRecovery)
+}
+
+func (l *ListCaptureSubmissionsResponseSubmissionsItemPayload) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListCaptureSubmissionsResponseSubmissionsItemPayload
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListCaptureSubmissionsResponseSubmissionsItemPayload(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListCaptureSubmissionsResponseSubmissionsItemPayload) MarshalJSON() ([]byte, error) {
+	type embed ListCaptureSubmissionsResponseSubmissionsItemPayload
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListCaptureSubmissionsResponseSubmissionsItemPayload) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+// Present only for reconstructed historical records. The source is inferred and createdAt is an evidence event time, not a verified submission timestamp.
+var (
+	listCaptureSubmissionsResponseSubmissionsItemPayloadRecoveryFieldEvidenceID        = big.NewInt(1 << 0)
+	listCaptureSubmissionsResponseSubmissionsItemPayloadRecoveryFieldEvidenceType      = big.NewInt(1 << 1)
+	listCaptureSubmissionsResponseSubmissionsItemPayloadRecoveryFieldRecoveredAt       = big.NewInt(1 << 2)
+	listCaptureSubmissionsResponseSubmissionsItemPayloadRecoveryFieldSourceAttribution = big.NewInt(1 << 3)
+	listCaptureSubmissionsResponseSubmissionsItemPayloadRecoveryFieldTimestampMeaning  = big.NewInt(1 << 4)
+)
+
+type ListCaptureSubmissionsResponseSubmissionsItemPayloadRecovery struct {
+	EvidenceID        string                                                                        `json:"evidenceId" url:"evidenceId"`
+	EvidenceType      ListCaptureSubmissionsResponseSubmissionsItemPayloadRecoveryEvidenceType      `json:"evidenceType" url:"evidenceType"`
+	RecoveredAt       time.Time                                                                     `json:"recoveredAt" url:"recoveredAt"`
+	SourceAttribution ListCaptureSubmissionsResponseSubmissionsItemPayloadRecoverySourceAttribution `json:"sourceAttribution" url:"sourceAttribution"`
+	TimestampMeaning  ListCaptureSubmissionsResponseSubmissionsItemPayloadRecoveryTimestampMeaning  `json:"timestampMeaning" url:"timestampMeaning"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListCaptureSubmissionsResponseSubmissionsItemPayloadRecovery) GetEvidenceID() string {
+	if l == nil {
+		return ""
+	}
+	return l.EvidenceID
+}
+
+func (l *ListCaptureSubmissionsResponseSubmissionsItemPayloadRecovery) GetEvidenceType() ListCaptureSubmissionsResponseSubmissionsItemPayloadRecoveryEvidenceType {
+	if l == nil {
+		return ""
+	}
+	return l.EvidenceType
+}
+
+func (l *ListCaptureSubmissionsResponseSubmissionsItemPayloadRecovery) GetRecoveredAt() time.Time {
+	if l == nil {
+		return time.Time{}
+	}
+	return l.RecoveredAt
+}
+
+func (l *ListCaptureSubmissionsResponseSubmissionsItemPayloadRecovery) GetSourceAttribution() ListCaptureSubmissionsResponseSubmissionsItemPayloadRecoverySourceAttribution {
+	if l == nil {
+		return ""
+	}
+	return l.SourceAttribution
+}
+
+func (l *ListCaptureSubmissionsResponseSubmissionsItemPayloadRecovery) GetTimestampMeaning() ListCaptureSubmissionsResponseSubmissionsItemPayloadRecoveryTimestampMeaning {
+	if l == nil {
+		return ""
+	}
+	return l.TimestampMeaning
+}
+
+func (l *ListCaptureSubmissionsResponseSubmissionsItemPayloadRecovery) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListCaptureSubmissionsResponseSubmissionsItemPayloadRecovery) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetEvidenceID sets the EvidenceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCaptureSubmissionsResponseSubmissionsItemPayloadRecovery) SetEvidenceID(evidenceID string) {
+	l.EvidenceID = evidenceID
+	l.require(listCaptureSubmissionsResponseSubmissionsItemPayloadRecoveryFieldEvidenceID)
+}
+
+// SetEvidenceType sets the EvidenceType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCaptureSubmissionsResponseSubmissionsItemPayloadRecovery) SetEvidenceType(evidenceType ListCaptureSubmissionsResponseSubmissionsItemPayloadRecoveryEvidenceType) {
+	l.EvidenceType = evidenceType
+	l.require(listCaptureSubmissionsResponseSubmissionsItemPayloadRecoveryFieldEvidenceType)
+}
+
+// SetRecoveredAt sets the RecoveredAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCaptureSubmissionsResponseSubmissionsItemPayloadRecovery) SetRecoveredAt(recoveredAt time.Time) {
+	l.RecoveredAt = recoveredAt
+	l.require(listCaptureSubmissionsResponseSubmissionsItemPayloadRecoveryFieldRecoveredAt)
+}
+
+// SetSourceAttribution sets the SourceAttribution field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCaptureSubmissionsResponseSubmissionsItemPayloadRecovery) SetSourceAttribution(sourceAttribution ListCaptureSubmissionsResponseSubmissionsItemPayloadRecoverySourceAttribution) {
+	l.SourceAttribution = sourceAttribution
+	l.require(listCaptureSubmissionsResponseSubmissionsItemPayloadRecoveryFieldSourceAttribution)
+}
+
+// SetTimestampMeaning sets the TimestampMeaning field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCaptureSubmissionsResponseSubmissionsItemPayloadRecovery) SetTimestampMeaning(timestampMeaning ListCaptureSubmissionsResponseSubmissionsItemPayloadRecoveryTimestampMeaning) {
+	l.TimestampMeaning = timestampMeaning
+	l.require(listCaptureSubmissionsResponseSubmissionsItemPayloadRecoveryFieldTimestampMeaning)
+}
+
+func (l *ListCaptureSubmissionsResponseSubmissionsItemPayloadRecovery) UnmarshalJSON(data []byte) error {
+	type embed ListCaptureSubmissionsResponseSubmissionsItemPayloadRecovery
+	var unmarshaler = struct {
+		embed
+		RecoveredAt *internal.DateTime `json:"recoveredAt"`
+	}{
+		embed: embed(*l),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*l = ListCaptureSubmissionsResponseSubmissionsItemPayloadRecovery(unmarshaler.embed)
+	l.RecoveredAt = unmarshaler.RecoveredAt.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListCaptureSubmissionsResponseSubmissionsItemPayloadRecovery) MarshalJSON() ([]byte, error) {
+	type embed ListCaptureSubmissionsResponseSubmissionsItemPayloadRecovery
+	var marshaler = struct {
+		embed
+		RecoveredAt *internal.DateTime `json:"recoveredAt"`
+	}{
+		embed:       embed(*l),
+		RecoveredAt: internal.NewDateTime(l.RecoveredAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListCaptureSubmissionsResponseSubmissionsItemPayloadRecovery) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type ListCaptureSubmissionsResponseSubmissionsItemPayloadRecoveryEvidenceType string
+
+const (
+	ListCaptureSubmissionsResponseSubmissionsItemPayloadRecoveryEvidenceTypeContactAdded      ListCaptureSubmissionsResponseSubmissionsItemPayloadRecoveryEvidenceType = "contact.added"
+	ListCaptureSubmissionsResponseSubmissionsItemPayloadRecoveryEvidenceTypeSubscriberUpdated ListCaptureSubmissionsResponseSubmissionsItemPayloadRecoveryEvidenceType = "subscriber.updated"
+)
+
+func NewListCaptureSubmissionsResponseSubmissionsItemPayloadRecoveryEvidenceTypeFromString(s string) (ListCaptureSubmissionsResponseSubmissionsItemPayloadRecoveryEvidenceType, error) {
+	switch s {
+	case "contact.added":
+		return ListCaptureSubmissionsResponseSubmissionsItemPayloadRecoveryEvidenceTypeContactAdded, nil
+	case "subscriber.updated":
+		return ListCaptureSubmissionsResponseSubmissionsItemPayloadRecoveryEvidenceTypeSubscriberUpdated, nil
+	}
+	var t ListCaptureSubmissionsResponseSubmissionsItemPayloadRecoveryEvidenceType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListCaptureSubmissionsResponseSubmissionsItemPayloadRecoveryEvidenceType) Ptr() *ListCaptureSubmissionsResponseSubmissionsItemPayloadRecoveryEvidenceType {
+	return &l
+}
+
+type ListCaptureSubmissionsResponseSubmissionsItemPayloadRecoverySourceAttribution string
+
+const (
+	ListCaptureSubmissionsResponseSubmissionsItemPayloadRecoverySourceAttributionInferred ListCaptureSubmissionsResponseSubmissionsItemPayloadRecoverySourceAttribution = "inferred"
+)
+
+func NewListCaptureSubmissionsResponseSubmissionsItemPayloadRecoverySourceAttributionFromString(s string) (ListCaptureSubmissionsResponseSubmissionsItemPayloadRecoverySourceAttribution, error) {
+	switch s {
+	case "inferred":
+		return ListCaptureSubmissionsResponseSubmissionsItemPayloadRecoverySourceAttributionInferred, nil
+	}
+	var t ListCaptureSubmissionsResponseSubmissionsItemPayloadRecoverySourceAttribution
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListCaptureSubmissionsResponseSubmissionsItemPayloadRecoverySourceAttribution) Ptr() *ListCaptureSubmissionsResponseSubmissionsItemPayloadRecoverySourceAttribution {
+	return &l
+}
+
+type ListCaptureSubmissionsResponseSubmissionsItemPayloadRecoveryTimestampMeaning string
+
+const (
+	ListCaptureSubmissionsResponseSubmissionsItemPayloadRecoveryTimestampMeaningEventTime ListCaptureSubmissionsResponseSubmissionsItemPayloadRecoveryTimestampMeaning = "event_time"
+)
+
+func NewListCaptureSubmissionsResponseSubmissionsItemPayloadRecoveryTimestampMeaningFromString(s string) (ListCaptureSubmissionsResponseSubmissionsItemPayloadRecoveryTimestampMeaning, error) {
+	switch s {
+	case "event_time":
+		return ListCaptureSubmissionsResponseSubmissionsItemPayloadRecoveryTimestampMeaningEventTime, nil
+	}
+	var t ListCaptureSubmissionsResponseSubmissionsItemPayloadRecoveryTimestampMeaning
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListCaptureSubmissionsResponseSubmissionsItemPayloadRecoveryTimestampMeaning) Ptr() *ListCaptureSubmissionsResponseSubmissionsItemPayloadRecoveryTimestampMeaning {
+	return &l
+}
+
+type ListCaptureSubmissionsResponseSubmissionsItemSourceType string
+
+const (
+	ListCaptureSubmissionsResponseSubmissionsItemSourceTypeForm        ListCaptureSubmissionsResponseSubmissionsItemSourceType = "form"
+	ListCaptureSubmissionsResponseSubmissionsItemSourceTypePopup       ListCaptureSubmissionsResponseSubmissionsItemSourceType = "popup"
+	ListCaptureSubmissionsResponseSubmissionsItemSourceTypeLandingPage ListCaptureSubmissionsResponseSubmissionsItemSourceType = "landing_page"
+)
+
+func NewListCaptureSubmissionsResponseSubmissionsItemSourceTypeFromString(s string) (ListCaptureSubmissionsResponseSubmissionsItemSourceType, error) {
+	switch s {
+	case "form":
+		return ListCaptureSubmissionsResponseSubmissionsItemSourceTypeForm, nil
+	case "popup":
+		return ListCaptureSubmissionsResponseSubmissionsItemSourceTypePopup, nil
+	case "landing_page":
+		return ListCaptureSubmissionsResponseSubmissionsItemSourceTypeLandingPage, nil
+	}
+	var t ListCaptureSubmissionsResponseSubmissionsItemSourceType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListCaptureSubmissionsResponseSubmissionsItemSourceType) Ptr() *ListCaptureSubmissionsResponseSubmissionsItemSourceType {
+	return &l
+}
+
+type ListFormSubmissionsRequestFormat string
+
+const (
+	ListFormSubmissionsRequestFormatJSON ListFormSubmissionsRequestFormat = "json"
+	ListFormSubmissionsRequestFormatCsv  ListFormSubmissionsRequestFormat = "csv"
+)
+
+func NewListFormSubmissionsRequestFormatFromString(s string) (ListFormSubmissionsRequestFormat, error) {
+	switch s {
+	case "json":
+		return ListFormSubmissionsRequestFormatJSON, nil
+	case "csv":
+		return ListFormSubmissionsRequestFormatCsv, nil
+	}
+	var t ListFormSubmissionsRequestFormat
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListFormSubmissionsRequestFormat) Ptr() *ListFormSubmissionsRequestFormat {
+	return &l
+}
+
+var (
+	listFormSubmissionsResponseFieldCsv         = big.NewInt(1 << 0)
+	listFormSubmissionsResponseFieldNextCursor  = big.NewInt(1 << 1)
+	listFormSubmissionsResponseFieldSource      = big.NewInt(1 << 2)
+	listFormSubmissionsResponseFieldSubmissions = big.NewInt(1 << 3)
+	listFormSubmissionsResponseFieldSuccess     = big.NewInt(1 << 4)
+)
+
+type ListFormSubmissionsResponse struct {
+	// Present only for format=csv.
+	Csv         *string                                       `json:"csv,omitempty" url:"csv,omitempty"`
+	NextCursor  *string                                       `json:"nextCursor,omitempty" url:"nextCursor,omitempty"`
+	Source      *ListFormSubmissionsResponseSource            `json:"source" url:"source"`
+	Submissions []*ListFormSubmissionsResponseSubmissionsItem `json:"submissions" url:"submissions"`
+	Success     bool                                          `json:"success" url:"success"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListFormSubmissionsResponse) GetCsv() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Csv
+}
+
+func (l *ListFormSubmissionsResponse) GetNextCursor() *string {
+	if l == nil {
+		return nil
+	}
+	return l.NextCursor
+}
+
+func (l *ListFormSubmissionsResponse) GetSource() *ListFormSubmissionsResponseSource {
+	if l == nil {
+		return nil
+	}
+	return l.Source
+}
+
+func (l *ListFormSubmissionsResponse) GetSubmissions() []*ListFormSubmissionsResponseSubmissionsItem {
+	if l == nil {
+		return nil
+	}
+	return l.Submissions
+}
+
+func (l *ListFormSubmissionsResponse) GetSuccess() bool {
+	if l == nil {
+		return false
+	}
+	return l.Success
+}
+
+func (l *ListFormSubmissionsResponse) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListFormSubmissionsResponse) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetCsv sets the Csv field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFormSubmissionsResponse) SetCsv(csv *string) {
+	l.Csv = csv
+	l.require(listFormSubmissionsResponseFieldCsv)
+}
+
+// SetNextCursor sets the NextCursor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFormSubmissionsResponse) SetNextCursor(nextCursor *string) {
+	l.NextCursor = nextCursor
+	l.require(listFormSubmissionsResponseFieldNextCursor)
+}
+
+// SetSource sets the Source field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFormSubmissionsResponse) SetSource(source *ListFormSubmissionsResponseSource) {
+	l.Source = source
+	l.require(listFormSubmissionsResponseFieldSource)
+}
+
+// SetSubmissions sets the Submissions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFormSubmissionsResponse) SetSubmissions(submissions []*ListFormSubmissionsResponseSubmissionsItem) {
+	l.Submissions = submissions
+	l.require(listFormSubmissionsResponseFieldSubmissions)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFormSubmissionsResponse) SetSuccess(success bool) {
+	l.Success = success
+	l.require(listFormSubmissionsResponseFieldSuccess)
+}
+
+func (l *ListFormSubmissionsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListFormSubmissionsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListFormSubmissionsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListFormSubmissionsResponse) MarshalJSON() ([]byte, error) {
+	type embed ListFormSubmissionsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListFormSubmissionsResponse) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	listFormSubmissionsResponseSourceFieldID   = big.NewInt(1 << 0)
+	listFormSubmissionsResponseSourceFieldName = big.NewInt(1 << 1)
+	listFormSubmissionsResponseSourceFieldType = big.NewInt(1 << 2)
+)
+
+type ListFormSubmissionsResponseSource struct {
+	ID   string                                `json:"id" url:"id"`
+	Name string                                `json:"name" url:"name"`
+	Type ListFormSubmissionsResponseSourceType `json:"type" url:"type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListFormSubmissionsResponseSource) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *ListFormSubmissionsResponseSource) GetName() string {
+	if l == nil {
+		return ""
+	}
+	return l.Name
+}
+
+func (l *ListFormSubmissionsResponseSource) GetType() ListFormSubmissionsResponseSourceType {
+	if l == nil {
+		return ""
+	}
+	return l.Type
+}
+
+func (l *ListFormSubmissionsResponseSource) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListFormSubmissionsResponseSource) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFormSubmissionsResponseSource) SetID(id string) {
+	l.ID = id
+	l.require(listFormSubmissionsResponseSourceFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFormSubmissionsResponseSource) SetName(name string) {
+	l.Name = name
+	l.require(listFormSubmissionsResponseSourceFieldName)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFormSubmissionsResponseSource) SetType(type_ ListFormSubmissionsResponseSourceType) {
+	l.Type = type_
+	l.require(listFormSubmissionsResponseSourceFieldType)
+}
+
+func (l *ListFormSubmissionsResponseSource) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListFormSubmissionsResponseSource
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListFormSubmissionsResponseSource(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListFormSubmissionsResponseSource) MarshalJSON() ([]byte, error) {
+	type embed ListFormSubmissionsResponseSource
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListFormSubmissionsResponseSource) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type ListFormSubmissionsResponseSourceType string
+
+const (
+	ListFormSubmissionsResponseSourceTypeForm        ListFormSubmissionsResponseSourceType = "form"
+	ListFormSubmissionsResponseSourceTypePopup       ListFormSubmissionsResponseSourceType = "popup"
+	ListFormSubmissionsResponseSourceTypeLandingPage ListFormSubmissionsResponseSourceType = "landing_page"
+)
+
+func NewListFormSubmissionsResponseSourceTypeFromString(s string) (ListFormSubmissionsResponseSourceType, error) {
+	switch s {
+	case "form":
+		return ListFormSubmissionsResponseSourceTypeForm, nil
+	case "popup":
+		return ListFormSubmissionsResponseSourceTypePopup, nil
+	case "landing_page":
+		return ListFormSubmissionsResponseSourceTypeLandingPage, nil
+	}
+	var t ListFormSubmissionsResponseSourceType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListFormSubmissionsResponseSourceType) Ptr() *ListFormSubmissionsResponseSourceType {
+	return &l
+}
+
+var (
+	listFormSubmissionsResponseSubmissionsItemFieldCompanyID     = big.NewInt(1 << 0)
+	listFormSubmissionsResponseSubmissionsItemFieldCreatedAt     = big.NewInt(1 << 1)
+	listFormSubmissionsResponseSubmissionsItemFieldFieldLabels   = big.NewInt(1 << 2)
+	listFormSubmissionsResponseSubmissionsItemFieldFormID        = big.NewInt(1 << 3)
+	listFormSubmissionsResponseSubmissionsItemFieldID            = big.NewInt(1 << 4)
+	listFormSubmissionsResponseSubmissionsItemFieldLandingPageID = big.NewInt(1 << 5)
+	listFormSubmissionsResponseSubmissionsItemFieldPayload       = big.NewInt(1 << 6)
+	listFormSubmissionsResponseSubmissionsItemFieldPopupID       = big.NewInt(1 << 7)
+	listFormSubmissionsResponseSubmissionsItemFieldSourceID      = big.NewInt(1 << 8)
+	listFormSubmissionsResponseSubmissionsItemFieldSourceType    = big.NewInt(1 << 9)
+	listFormSubmissionsResponseSubmissionsItemFieldSubscriberID  = big.NewInt(1 << 10)
+)
+
+type ListFormSubmissionsResponseSubmissionsItem struct {
+	CompanyID     string                                                `json:"companyId" url:"companyId"`
+	CreatedAt     time.Time                                             `json:"createdAt" url:"createdAt"`
+	FieldLabels   map[string]string                                     `json:"fieldLabels" url:"fieldLabels"`
+	FormID        *string                                               `json:"formId,omitempty" url:"formId,omitempty"`
+	ID            string                                                `json:"id" url:"id"`
+	LandingPageID *string                                               `json:"landingPageId,omitempty" url:"landingPageId,omitempty"`
+	Payload       *ListFormSubmissionsResponseSubmissionsItemPayload    `json:"payload" url:"payload"`
+	PopupID       *string                                               `json:"popupId,omitempty" url:"popupId,omitempty"`
+	SourceID      *string                                               `json:"sourceId,omitempty" url:"sourceId,omitempty"`
+	SourceType    *ListFormSubmissionsResponseSubmissionsItemSourceType `json:"sourceType,omitempty" url:"sourceType,omitempty"`
+	SubscriberID  string                                                `json:"subscriberId" url:"subscriberId"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListFormSubmissionsResponseSubmissionsItem) GetCompanyID() string {
+	if l == nil {
+		return ""
+	}
+	return l.CompanyID
+}
+
+func (l *ListFormSubmissionsResponseSubmissionsItem) GetCreatedAt() time.Time {
+	if l == nil {
+		return time.Time{}
+	}
+	return l.CreatedAt
+}
+
+func (l *ListFormSubmissionsResponseSubmissionsItem) GetFieldLabels() map[string]string {
+	if l == nil {
+		return nil
+	}
+	return l.FieldLabels
+}
+
+func (l *ListFormSubmissionsResponseSubmissionsItem) GetFormID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.FormID
+}
+
+func (l *ListFormSubmissionsResponseSubmissionsItem) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *ListFormSubmissionsResponseSubmissionsItem) GetLandingPageID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.LandingPageID
+}
+
+func (l *ListFormSubmissionsResponseSubmissionsItem) GetPayload() *ListFormSubmissionsResponseSubmissionsItemPayload {
+	if l == nil {
+		return nil
+	}
+	return l.Payload
+}
+
+func (l *ListFormSubmissionsResponseSubmissionsItem) GetPopupID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.PopupID
+}
+
+func (l *ListFormSubmissionsResponseSubmissionsItem) GetSourceID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SourceID
+}
+
+func (l *ListFormSubmissionsResponseSubmissionsItem) GetSourceType() *ListFormSubmissionsResponseSubmissionsItemSourceType {
+	if l == nil {
+		return nil
+	}
+	return l.SourceType
+}
+
+func (l *ListFormSubmissionsResponseSubmissionsItem) GetSubscriberID() string {
+	if l == nil {
+		return ""
+	}
+	return l.SubscriberID
+}
+
+func (l *ListFormSubmissionsResponseSubmissionsItem) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListFormSubmissionsResponseSubmissionsItem) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetCompanyID sets the CompanyID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFormSubmissionsResponseSubmissionsItem) SetCompanyID(companyID string) {
+	l.CompanyID = companyID
+	l.require(listFormSubmissionsResponseSubmissionsItemFieldCompanyID)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFormSubmissionsResponseSubmissionsItem) SetCreatedAt(createdAt time.Time) {
+	l.CreatedAt = createdAt
+	l.require(listFormSubmissionsResponseSubmissionsItemFieldCreatedAt)
+}
+
+// SetFieldLabels sets the FieldLabels field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFormSubmissionsResponseSubmissionsItem) SetFieldLabels(fieldLabels map[string]string) {
+	l.FieldLabels = fieldLabels
+	l.require(listFormSubmissionsResponseSubmissionsItemFieldFieldLabels)
+}
+
+// SetFormID sets the FormID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFormSubmissionsResponseSubmissionsItem) SetFormID(formID *string) {
+	l.FormID = formID
+	l.require(listFormSubmissionsResponseSubmissionsItemFieldFormID)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFormSubmissionsResponseSubmissionsItem) SetID(id string) {
+	l.ID = id
+	l.require(listFormSubmissionsResponseSubmissionsItemFieldID)
+}
+
+// SetLandingPageID sets the LandingPageID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFormSubmissionsResponseSubmissionsItem) SetLandingPageID(landingPageID *string) {
+	l.LandingPageID = landingPageID
+	l.require(listFormSubmissionsResponseSubmissionsItemFieldLandingPageID)
+}
+
+// SetPayload sets the Payload field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFormSubmissionsResponseSubmissionsItem) SetPayload(payload *ListFormSubmissionsResponseSubmissionsItemPayload) {
+	l.Payload = payload
+	l.require(listFormSubmissionsResponseSubmissionsItemFieldPayload)
+}
+
+// SetPopupID sets the PopupID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFormSubmissionsResponseSubmissionsItem) SetPopupID(popupID *string) {
+	l.PopupID = popupID
+	l.require(listFormSubmissionsResponseSubmissionsItemFieldPopupID)
+}
+
+// SetSourceID sets the SourceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFormSubmissionsResponseSubmissionsItem) SetSourceID(sourceID *string) {
+	l.SourceID = sourceID
+	l.require(listFormSubmissionsResponseSubmissionsItemFieldSourceID)
+}
+
+// SetSourceType sets the SourceType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFormSubmissionsResponseSubmissionsItem) SetSourceType(sourceType *ListFormSubmissionsResponseSubmissionsItemSourceType) {
+	l.SourceType = sourceType
+	l.require(listFormSubmissionsResponseSubmissionsItemFieldSourceType)
+}
+
+// SetSubscriberID sets the SubscriberID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFormSubmissionsResponseSubmissionsItem) SetSubscriberID(subscriberID string) {
+	l.SubscriberID = subscriberID
+	l.require(listFormSubmissionsResponseSubmissionsItemFieldSubscriberID)
+}
+
+func (l *ListFormSubmissionsResponseSubmissionsItem) UnmarshalJSON(data []byte) error {
+	type embed ListFormSubmissionsResponseSubmissionsItem
+	var unmarshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"createdAt"`
+	}{
+		embed: embed(*l),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*l = ListFormSubmissionsResponseSubmissionsItem(unmarshaler.embed)
+	l.CreatedAt = unmarshaler.CreatedAt.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListFormSubmissionsResponseSubmissionsItem) MarshalJSON() ([]byte, error) {
+	type embed ListFormSubmissionsResponseSubmissionsItem
+	var marshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"createdAt"`
+	}{
+		embed:     embed(*l),
+		CreatedAt: internal.NewDateTime(l.CreatedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListFormSubmissionsResponseSubmissionsItem) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	listFormSubmissionsResponseSubmissionsItemPayloadFieldCustomAttributes = big.NewInt(1 << 0)
+	listFormSubmissionsResponseSubmissionsItemPayloadFieldEmail            = big.NewInt(1 << 1)
+	listFormSubmissionsResponseSubmissionsItemPayloadFieldFirstName        = big.NewInt(1 << 2)
+	listFormSubmissionsResponseSubmissionsItemPayloadFieldLastName         = big.NewInt(1 << 3)
+	listFormSubmissionsResponseSubmissionsItemPayloadFieldPhone            = big.NewInt(1 << 4)
+	listFormSubmissionsResponseSubmissionsItemPayloadFieldRecovery         = big.NewInt(1 << 5)
+)
+
+type ListFormSubmissionsResponseSubmissionsItemPayload struct {
+	CustomAttributes map[string]any `json:"customAttributes" url:"customAttributes"`
+	Email            string         `json:"email" url:"email"`
+	FirstName        *string        `json:"firstName,omitempty" url:"firstName,omitempty"`
+	LastName         *string        `json:"lastName,omitempty" url:"lastName,omitempty"`
+	Phone            *string        `json:"phone,omitempty" url:"phone,omitempty"`
+	// Present only for reconstructed historical records. The source is inferred and createdAt is an evidence event time, not a verified submission timestamp.
+	Recovery *ListFormSubmissionsResponseSubmissionsItemPayloadRecovery `json:"recovery,omitempty" url:"recovery,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListFormSubmissionsResponseSubmissionsItemPayload) GetCustomAttributes() map[string]any {
+	if l == nil {
+		return nil
+	}
+	return l.CustomAttributes
+}
+
+func (l *ListFormSubmissionsResponseSubmissionsItemPayload) GetEmail() string {
+	if l == nil {
+		return ""
+	}
+	return l.Email
+}
+
+func (l *ListFormSubmissionsResponseSubmissionsItemPayload) GetFirstName() *string {
+	if l == nil {
+		return nil
+	}
+	return l.FirstName
+}
+
+func (l *ListFormSubmissionsResponseSubmissionsItemPayload) GetLastName() *string {
+	if l == nil {
+		return nil
+	}
+	return l.LastName
+}
+
+func (l *ListFormSubmissionsResponseSubmissionsItemPayload) GetPhone() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Phone
+}
+
+func (l *ListFormSubmissionsResponseSubmissionsItemPayload) GetRecovery() *ListFormSubmissionsResponseSubmissionsItemPayloadRecovery {
+	if l == nil {
+		return nil
+	}
+	return l.Recovery
+}
+
+func (l *ListFormSubmissionsResponseSubmissionsItemPayload) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListFormSubmissionsResponseSubmissionsItemPayload) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetCustomAttributes sets the CustomAttributes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFormSubmissionsResponseSubmissionsItemPayload) SetCustomAttributes(customAttributes map[string]any) {
+	l.CustomAttributes = customAttributes
+	l.require(listFormSubmissionsResponseSubmissionsItemPayloadFieldCustomAttributes)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFormSubmissionsResponseSubmissionsItemPayload) SetEmail(email string) {
+	l.Email = email
+	l.require(listFormSubmissionsResponseSubmissionsItemPayloadFieldEmail)
+}
+
+// SetFirstName sets the FirstName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFormSubmissionsResponseSubmissionsItemPayload) SetFirstName(firstName *string) {
+	l.FirstName = firstName
+	l.require(listFormSubmissionsResponseSubmissionsItemPayloadFieldFirstName)
+}
+
+// SetLastName sets the LastName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFormSubmissionsResponseSubmissionsItemPayload) SetLastName(lastName *string) {
+	l.LastName = lastName
+	l.require(listFormSubmissionsResponseSubmissionsItemPayloadFieldLastName)
+}
+
+// SetPhone sets the Phone field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFormSubmissionsResponseSubmissionsItemPayload) SetPhone(phone *string) {
+	l.Phone = phone
+	l.require(listFormSubmissionsResponseSubmissionsItemPayloadFieldPhone)
+}
+
+// SetRecovery sets the Recovery field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFormSubmissionsResponseSubmissionsItemPayload) SetRecovery(recovery *ListFormSubmissionsResponseSubmissionsItemPayloadRecovery) {
+	l.Recovery = recovery
+	l.require(listFormSubmissionsResponseSubmissionsItemPayloadFieldRecovery)
+}
+
+func (l *ListFormSubmissionsResponseSubmissionsItemPayload) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListFormSubmissionsResponseSubmissionsItemPayload
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListFormSubmissionsResponseSubmissionsItemPayload(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListFormSubmissionsResponseSubmissionsItemPayload) MarshalJSON() ([]byte, error) {
+	type embed ListFormSubmissionsResponseSubmissionsItemPayload
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListFormSubmissionsResponseSubmissionsItemPayload) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+// Present only for reconstructed historical records. The source is inferred and createdAt is an evidence event time, not a verified submission timestamp.
+var (
+	listFormSubmissionsResponseSubmissionsItemPayloadRecoveryFieldEvidenceID        = big.NewInt(1 << 0)
+	listFormSubmissionsResponseSubmissionsItemPayloadRecoveryFieldEvidenceType      = big.NewInt(1 << 1)
+	listFormSubmissionsResponseSubmissionsItemPayloadRecoveryFieldRecoveredAt       = big.NewInt(1 << 2)
+	listFormSubmissionsResponseSubmissionsItemPayloadRecoveryFieldSourceAttribution = big.NewInt(1 << 3)
+	listFormSubmissionsResponseSubmissionsItemPayloadRecoveryFieldTimestampMeaning  = big.NewInt(1 << 4)
+)
+
+type ListFormSubmissionsResponseSubmissionsItemPayloadRecovery struct {
+	EvidenceID        string                                                                     `json:"evidenceId" url:"evidenceId"`
+	EvidenceType      ListFormSubmissionsResponseSubmissionsItemPayloadRecoveryEvidenceType      `json:"evidenceType" url:"evidenceType"`
+	RecoveredAt       time.Time                                                                  `json:"recoveredAt" url:"recoveredAt"`
+	SourceAttribution ListFormSubmissionsResponseSubmissionsItemPayloadRecoverySourceAttribution `json:"sourceAttribution" url:"sourceAttribution"`
+	TimestampMeaning  ListFormSubmissionsResponseSubmissionsItemPayloadRecoveryTimestampMeaning  `json:"timestampMeaning" url:"timestampMeaning"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListFormSubmissionsResponseSubmissionsItemPayloadRecovery) GetEvidenceID() string {
+	if l == nil {
+		return ""
+	}
+	return l.EvidenceID
+}
+
+func (l *ListFormSubmissionsResponseSubmissionsItemPayloadRecovery) GetEvidenceType() ListFormSubmissionsResponseSubmissionsItemPayloadRecoveryEvidenceType {
+	if l == nil {
+		return ""
+	}
+	return l.EvidenceType
+}
+
+func (l *ListFormSubmissionsResponseSubmissionsItemPayloadRecovery) GetRecoveredAt() time.Time {
+	if l == nil {
+		return time.Time{}
+	}
+	return l.RecoveredAt
+}
+
+func (l *ListFormSubmissionsResponseSubmissionsItemPayloadRecovery) GetSourceAttribution() ListFormSubmissionsResponseSubmissionsItemPayloadRecoverySourceAttribution {
+	if l == nil {
+		return ""
+	}
+	return l.SourceAttribution
+}
+
+func (l *ListFormSubmissionsResponseSubmissionsItemPayloadRecovery) GetTimestampMeaning() ListFormSubmissionsResponseSubmissionsItemPayloadRecoveryTimestampMeaning {
+	if l == nil {
+		return ""
+	}
+	return l.TimestampMeaning
+}
+
+func (l *ListFormSubmissionsResponseSubmissionsItemPayloadRecovery) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListFormSubmissionsResponseSubmissionsItemPayloadRecovery) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetEvidenceID sets the EvidenceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFormSubmissionsResponseSubmissionsItemPayloadRecovery) SetEvidenceID(evidenceID string) {
+	l.EvidenceID = evidenceID
+	l.require(listFormSubmissionsResponseSubmissionsItemPayloadRecoveryFieldEvidenceID)
+}
+
+// SetEvidenceType sets the EvidenceType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFormSubmissionsResponseSubmissionsItemPayloadRecovery) SetEvidenceType(evidenceType ListFormSubmissionsResponseSubmissionsItemPayloadRecoveryEvidenceType) {
+	l.EvidenceType = evidenceType
+	l.require(listFormSubmissionsResponseSubmissionsItemPayloadRecoveryFieldEvidenceType)
+}
+
+// SetRecoveredAt sets the RecoveredAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFormSubmissionsResponseSubmissionsItemPayloadRecovery) SetRecoveredAt(recoveredAt time.Time) {
+	l.RecoveredAt = recoveredAt
+	l.require(listFormSubmissionsResponseSubmissionsItemPayloadRecoveryFieldRecoveredAt)
+}
+
+// SetSourceAttribution sets the SourceAttribution field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFormSubmissionsResponseSubmissionsItemPayloadRecovery) SetSourceAttribution(sourceAttribution ListFormSubmissionsResponseSubmissionsItemPayloadRecoverySourceAttribution) {
+	l.SourceAttribution = sourceAttribution
+	l.require(listFormSubmissionsResponseSubmissionsItemPayloadRecoveryFieldSourceAttribution)
+}
+
+// SetTimestampMeaning sets the TimestampMeaning field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFormSubmissionsResponseSubmissionsItemPayloadRecovery) SetTimestampMeaning(timestampMeaning ListFormSubmissionsResponseSubmissionsItemPayloadRecoveryTimestampMeaning) {
+	l.TimestampMeaning = timestampMeaning
+	l.require(listFormSubmissionsResponseSubmissionsItemPayloadRecoveryFieldTimestampMeaning)
+}
+
+func (l *ListFormSubmissionsResponseSubmissionsItemPayloadRecovery) UnmarshalJSON(data []byte) error {
+	type embed ListFormSubmissionsResponseSubmissionsItemPayloadRecovery
+	var unmarshaler = struct {
+		embed
+		RecoveredAt *internal.DateTime `json:"recoveredAt"`
+	}{
+		embed: embed(*l),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*l = ListFormSubmissionsResponseSubmissionsItemPayloadRecovery(unmarshaler.embed)
+	l.RecoveredAt = unmarshaler.RecoveredAt.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListFormSubmissionsResponseSubmissionsItemPayloadRecovery) MarshalJSON() ([]byte, error) {
+	type embed ListFormSubmissionsResponseSubmissionsItemPayloadRecovery
+	var marshaler = struct {
+		embed
+		RecoveredAt *internal.DateTime `json:"recoveredAt"`
+	}{
+		embed:       embed(*l),
+		RecoveredAt: internal.NewDateTime(l.RecoveredAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListFormSubmissionsResponseSubmissionsItemPayloadRecovery) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type ListFormSubmissionsResponseSubmissionsItemPayloadRecoveryEvidenceType string
+
+const (
+	ListFormSubmissionsResponseSubmissionsItemPayloadRecoveryEvidenceTypeContactAdded      ListFormSubmissionsResponseSubmissionsItemPayloadRecoveryEvidenceType = "contact.added"
+	ListFormSubmissionsResponseSubmissionsItemPayloadRecoveryEvidenceTypeSubscriberUpdated ListFormSubmissionsResponseSubmissionsItemPayloadRecoveryEvidenceType = "subscriber.updated"
+)
+
+func NewListFormSubmissionsResponseSubmissionsItemPayloadRecoveryEvidenceTypeFromString(s string) (ListFormSubmissionsResponseSubmissionsItemPayloadRecoveryEvidenceType, error) {
+	switch s {
+	case "contact.added":
+		return ListFormSubmissionsResponseSubmissionsItemPayloadRecoveryEvidenceTypeContactAdded, nil
+	case "subscriber.updated":
+		return ListFormSubmissionsResponseSubmissionsItemPayloadRecoveryEvidenceTypeSubscriberUpdated, nil
+	}
+	var t ListFormSubmissionsResponseSubmissionsItemPayloadRecoveryEvidenceType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListFormSubmissionsResponseSubmissionsItemPayloadRecoveryEvidenceType) Ptr() *ListFormSubmissionsResponseSubmissionsItemPayloadRecoveryEvidenceType {
+	return &l
+}
+
+type ListFormSubmissionsResponseSubmissionsItemPayloadRecoverySourceAttribution string
+
+const (
+	ListFormSubmissionsResponseSubmissionsItemPayloadRecoverySourceAttributionInferred ListFormSubmissionsResponseSubmissionsItemPayloadRecoverySourceAttribution = "inferred"
+)
+
+func NewListFormSubmissionsResponseSubmissionsItemPayloadRecoverySourceAttributionFromString(s string) (ListFormSubmissionsResponseSubmissionsItemPayloadRecoverySourceAttribution, error) {
+	switch s {
+	case "inferred":
+		return ListFormSubmissionsResponseSubmissionsItemPayloadRecoverySourceAttributionInferred, nil
+	}
+	var t ListFormSubmissionsResponseSubmissionsItemPayloadRecoverySourceAttribution
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListFormSubmissionsResponseSubmissionsItemPayloadRecoverySourceAttribution) Ptr() *ListFormSubmissionsResponseSubmissionsItemPayloadRecoverySourceAttribution {
+	return &l
+}
+
+type ListFormSubmissionsResponseSubmissionsItemPayloadRecoveryTimestampMeaning string
+
+const (
+	ListFormSubmissionsResponseSubmissionsItemPayloadRecoveryTimestampMeaningEventTime ListFormSubmissionsResponseSubmissionsItemPayloadRecoveryTimestampMeaning = "event_time"
+)
+
+func NewListFormSubmissionsResponseSubmissionsItemPayloadRecoveryTimestampMeaningFromString(s string) (ListFormSubmissionsResponseSubmissionsItemPayloadRecoveryTimestampMeaning, error) {
+	switch s {
+	case "event_time":
+		return ListFormSubmissionsResponseSubmissionsItemPayloadRecoveryTimestampMeaningEventTime, nil
+	}
+	var t ListFormSubmissionsResponseSubmissionsItemPayloadRecoveryTimestampMeaning
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListFormSubmissionsResponseSubmissionsItemPayloadRecoveryTimestampMeaning) Ptr() *ListFormSubmissionsResponseSubmissionsItemPayloadRecoveryTimestampMeaning {
+	return &l
+}
+
+type ListFormSubmissionsResponseSubmissionsItemSourceType string
+
+const (
+	ListFormSubmissionsResponseSubmissionsItemSourceTypeForm        ListFormSubmissionsResponseSubmissionsItemSourceType = "form"
+	ListFormSubmissionsResponseSubmissionsItemSourceTypePopup       ListFormSubmissionsResponseSubmissionsItemSourceType = "popup"
+	ListFormSubmissionsResponseSubmissionsItemSourceTypeLandingPage ListFormSubmissionsResponseSubmissionsItemSourceType = "landing_page"
+)
+
+func NewListFormSubmissionsResponseSubmissionsItemSourceTypeFromString(s string) (ListFormSubmissionsResponseSubmissionsItemSourceType, error) {
+	switch s {
+	case "form":
+		return ListFormSubmissionsResponseSubmissionsItemSourceTypeForm, nil
+	case "popup":
+		return ListFormSubmissionsResponseSubmissionsItemSourceTypePopup, nil
+	case "landing_page":
+		return ListFormSubmissionsResponseSubmissionsItemSourceTypeLandingPage, nil
+	}
+	var t ListFormSubmissionsResponseSubmissionsItemSourceType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListFormSubmissionsResponseSubmissionsItemSourceType) Ptr() *ListFormSubmissionsResponseSubmissionsItemSourceType {
+	return &l
 }
 
 var (

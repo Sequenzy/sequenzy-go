@@ -334,6 +334,59 @@ func TestWidgetsGetSavedSignupFormEmbedScriptWithWireMock(
 	VerifyRequestCount(t, "TestWidgetsGetSavedSignupFormEmbedScriptWithWireMock", "GET", "/forms/companyIdOrFormId/embed.js", nil, 1)
 }
 
+func TestWidgetsListCaptureSubmissionsWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.ListCaptureSubmissionsRequest{
+		SourceType: sequenzygo.ListCaptureSubmissionsRequestSourceTypeForm,
+		SourceID:   "sourceId",
+	}
+	_, invocationErr := client.Widgets.ListCaptureSubmissions(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestWidgetsListCaptureSubmissionsWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestWidgetsListCaptureSubmissionsWithWireMock", "GET", "/submissions/form/sourceId", nil, 1)
+}
+
+func TestWidgetsListFormSubmissionsWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.ListFormSubmissionsRequest{
+		FormID: "formId",
+	}
+	_, invocationErr := client.Widgets.ListFormSubmissions(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestWidgetsListFormSubmissionsWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestWidgetsListFormSubmissionsWithWireMock", "GET", "/forms/formId/submissions", nil, 1)
+}
+
 func TestWidgetsListSavedFormsWithWireMock(
 	t *testing.T,
 ) {
