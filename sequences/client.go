@@ -61,6 +61,34 @@ func (c *Client) Archive(
 	return response.Body, nil
 }
 
+// Cancels a queued run immediately or asks a running run to stop after the batch it is currently enrolling. Contacts already enrolled stay in the sequence.
+//
+// Example:
+//
+//	request := &sequenzygo.CancelAudienceEnrollmentSequencesRequest{
+//	    SequenceID: "sequenceId",
+//	    RunID: "runId",
+//	}
+//	client.Sequences.CancelAudienceEnrollment(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) CancelAudienceEnrollment(
+	ctx context.Context,
+	request *sequenzygo.CancelAudienceEnrollmentSequencesRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.CancelAudienceEnrollmentSequencesResponse, error) {
+	response, err := c.WithRawResponse.CancelAudienceEnrollment(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Cancels active or waiting enrollments in one sequence. Target every enrollment with cancelAll, a batch with subscriberIds, one contact with subscriberId, or matching stored entry event property values with fieldValues. Bulk cancellation is capped at 1000 enrollments per request; repeat the request while remainingCount is above zero.
 //
 // Example:
@@ -314,6 +342,36 @@ func (c *Client) Enable(
 	return response.Body, nil
 }
 
+// Starts a background run that enrolls every active contact matching the audience (everyone, lists, a segment, a filter, or rules) into the sequence, in batches, with no per-request cap. Contacts already active or waiting in the sequence are skipped; one_time sequences also skip contacts who completed or were cancelled before; unsubscribed and bounced contacts are never enrolled. Only one run per sequence can be queued or running at a time. The sequence must be enabled and accepting entrants. This is how a manual-trigger countdown sequence gets its audience; late enrollees skip the steps whose key date already passed.
+//
+// Example:
+//
+//	request := &sequenzygo.EnrollAudienceSequencesRequest{
+//	    SequenceID: "sequenceId",
+//	    Audience: &sequenzygo.SequenceAudience{
+//	        Type: sequenzygo.SequenceAudienceTypeAll,
+//	    },
+//	}
+//	client.Sequences.EnrollAudience(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) EnrollAudience(
+	ctx context.Context,
+	request *sequenzygo.EnrollAudienceSequencesRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.EnrollAudienceSequencesResponse, error) {
+	response, err := c.WithRawResponse.EnrollAudience(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Manually enrolls active subscribers into a sequence by email or subscriber ID, starting at the first step or a specific node.
 //
 // Example:
@@ -331,6 +389,36 @@ func (c *Client) EnrollSubscribersIn(
 	opts ...option.RequestOption,
 ) (*sequenzygo.EnrollSubscribersInSequencesResponse, error) {
 	response, err := c.WithRawResponse.EnrollSubscribersIn(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Counts the contacts matching an audience and how many of them would be enrolled. Contacts already in the sequence are skipped; one_time sequences also skip contacts who completed or were cancelled before. Nothing is changed.
+//
+// Example:
+//
+//	request := &sequenzygo.EstimateAudienceEnrollmentSequencesRequest{
+//	    SequenceID: "sequenceId",
+//	    Audience: &sequenzygo.SequenceAudience{
+//	        Type: sequenzygo.SequenceAudienceTypeAll,
+//	    },
+//	}
+//	client.Sequences.EstimateAudienceEnrollment(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) EstimateAudienceEnrollment(
+	ctx context.Context,
+	request *sequenzygo.EstimateAudienceEnrollmentSequencesRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.EstimateAudienceEnrollmentSequencesResponse, error) {
+	response, err := c.WithRawResponse.EstimateAudienceEnrollment(
 		ctx,
 		request,
 		opts...,
@@ -385,6 +473,34 @@ func (c *Client) Get(
 	opts ...option.RequestOption,
 ) (*sequenzygo.GetSequencesResponse, error) {
 	response, err := c.WithRawResponse.Get(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Status and counters of one audience enrollment run. Poll this while status is queued or running.
+//
+// Example:
+//
+//	request := &sequenzygo.GetAudienceEnrollmentSequencesRequest{
+//	    SequenceID: "sequenceId",
+//	    RunID: "runId",
+//	}
+//	client.Sequences.GetAudienceEnrollment(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) GetAudienceEnrollment(
+	ctx context.Context,
+	request *sequenzygo.GetAudienceEnrollmentSequencesRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.GetAudienceEnrollmentSequencesResponse, error) {
+	response, err := c.WithRawResponse.GetAudienceEnrollment(
 		ctx,
 		request,
 		opts...,
@@ -548,6 +664,33 @@ func (c *Client) List(
 	opts ...option.RequestOption,
 ) (*sequenzygo.ListSequencesResponse, error) {
 	response, err := c.WithRawResponse.List(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Recent audience enrollment runs for a sequence, newest first, with their status and counters.
+//
+// Example:
+//
+//	request := &sequenzygo.ListAudienceEnrollmentsSequencesRequest{
+//	    SequenceID: "sequenceId",
+//	}
+//	client.Sequences.ListAudienceEnrollments(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) ListAudienceEnrollments(
+	ctx context.Context,
+	request *sequenzygo.ListAudienceEnrollmentsSequencesRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.ListAudienceEnrollmentsSequencesResponse, error) {
+	response, err := c.WithRawResponse.ListAudienceEnrollments(
 		ctx,
 		request,
 		opts...,

@@ -103,6 +103,33 @@ func TestSequencesArchiveWithWireMock(
 	VerifyRequestCount(t, "TestSequencesArchiveWithWireMock", "POST", "/sequences/sequenceId/archive", nil, 1)
 }
 
+func TestSequencesCancelAudienceEnrollmentWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.CancelAudienceEnrollmentSequencesRequest{
+		SequenceID: "sequenceId",
+		RunID:      "runId",
+	}
+	_, invocationErr := client.Sequences.CancelAudienceEnrollment(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestSequencesCancelAudienceEnrollmentWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestSequencesCancelAudienceEnrollmentWithWireMock", "POST", "/sequences/sequenceId/audience-enrollments/runId/cancel", nil, 1)
+}
+
 func TestSequencesCancelEnrollmentsWithWireMock(
 	t *testing.T,
 ) {
@@ -347,6 +374,35 @@ func TestSequencesEnableWithWireMock(
 	VerifyRequestCount(t, "TestSequencesEnableWithWireMock", "POST", "/sequences/sequenceId/enable", nil, 1)
 }
 
+func TestSequencesEnrollAudienceWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.EnrollAudienceSequencesRequest{
+		SequenceID: "sequenceId",
+		Audience: &sequenzygo.SequenceAudience{
+			Type: sequenzygo.SequenceAudienceTypeAll,
+		},
+	}
+	_, invocationErr := client.Sequences.EnrollAudience(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestSequencesEnrollAudienceWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestSequencesEnrollAudienceWithWireMock", "POST", "/sequences/sequenceId/enroll-audience", nil, 1)
+}
+
 func TestSequencesEnrollSubscribersInWithWireMock(
 	t *testing.T,
 ) {
@@ -371,6 +427,35 @@ func TestSequencesEnrollSubscribersInWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestSequencesEnrollSubscribersInWithWireMock", "POST", "/sequences/sequenceId/enroll", nil, 1)
+}
+
+func TestSequencesEstimateAudienceEnrollmentWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.EstimateAudienceEnrollmentSequencesRequest{
+		SequenceID: "sequenceId",
+		Audience: &sequenzygo.SequenceAudience{
+			Type: sequenzygo.SequenceAudienceTypeAll,
+		},
+	}
+	_, invocationErr := client.Sequences.EstimateAudienceEnrollment(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestSequencesEstimateAudienceEnrollmentWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestSequencesEstimateAudienceEnrollmentWithWireMock", "POST", "/sequences/sequenceId/enroll-audience/estimate", nil, 1)
 }
 
 func TestSequencesGenerateWithWireMock(
@@ -423,6 +508,33 @@ func TestSequencesGetWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestSequencesGetWithWireMock", "GET", "/sequences/sequenceId", nil, 1)
+}
+
+func TestSequencesGetAudienceEnrollmentWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.GetAudienceEnrollmentSequencesRequest{
+		SequenceID: "sequenceId",
+		RunID:      "runId",
+	}
+	_, invocationErr := client.Sequences.GetAudienceEnrollment(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestSequencesGetAudienceEnrollmentWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestSequencesGetAudienceEnrollmentWithWireMock", "GET", "/sequences/sequenceId/audience-enrollments/runId", nil, 1)
 }
 
 func TestSequencesGetEnrollmentWithWireMock(
@@ -580,6 +692,32 @@ func TestSequencesListWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestSequencesListWithWireMock", "GET", "/sequences", nil, 1)
+}
+
+func TestSequencesListAudienceEnrollmentsWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.ListAudienceEnrollmentsSequencesRequest{
+		SequenceID: "sequenceId",
+	}
+	_, invocationErr := client.Sequences.ListAudienceEnrollments(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestSequencesListAudienceEnrollmentsWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestSequencesListAudienceEnrollmentsWithWireMock", "GET", "/sequences/sequenceId/audience-enrollments", nil, 1)
 }
 
 func TestSequencesListEnrollmentsWithWireMock(

@@ -36,6 +36,42 @@ func (a *ArchiveSequencesRequest) SetSequenceID(sequenceID string) {
 }
 
 var (
+	cancelAudienceEnrollmentSequencesRequestFieldSequenceID = big.NewInt(1 << 0)
+	cancelAudienceEnrollmentSequencesRequestFieldRunID      = big.NewInt(1 << 1)
+)
+
+type CancelAudienceEnrollmentSequencesRequest struct {
+	// Sequence ID.
+	SequenceID string `json:"-" url:"-"`
+	// Audience enrollment run ID.
+	RunID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (c *CancelAudienceEnrollmentSequencesRequest) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetSequenceID sets the SequenceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelAudienceEnrollmentSequencesRequest) SetSequenceID(sequenceID string) {
+	c.SequenceID = sequenceID
+	c.require(cancelAudienceEnrollmentSequencesRequestFieldSequenceID)
+}
+
+// SetRunID sets the RunID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelAudienceEnrollmentSequencesRequest) SetRunID(runID string) {
+	c.RunID = runID
+	c.require(cancelAudienceEnrollmentSequencesRequestFieldRunID)
+}
+
+var (
 	sequenceEnrollmentCancelRequestFieldSequenceID    = big.NewInt(1 << 0)
 	sequenceEnrollmentCancelRequestFieldCancelAll     = big.NewInt(1 << 1)
 	sequenceEnrollmentCancelRequestFieldDryRun        = big.NewInt(1 << 2)
@@ -233,27 +269,28 @@ var (
 	sequenceCreateRequestFieldInactivityBaseline  = big.NewInt(1 << 13)
 	sequenceCreateRequestFieldIntegrationEventKey = big.NewInt(1 << 14)
 	sequenceCreateRequestFieldIntegrationSlug     = big.NewInt(1 << 15)
-	sequenceCreateRequestFieldLabels              = big.NewInt(1 << 16)
-	sequenceCreateRequestFieldListID              = big.NewInt(1 << 17)
-	sequenceCreateRequestFieldListIDs             = big.NewInt(1 << 18)
-	sequenceCreateRequestFieldListScope           = big.NewInt(1 << 19)
-	sequenceCreateRequestFieldMinCount            = big.NewInt(1 << 20)
-	sequenceCreateRequestFieldName                = big.NewInt(1 << 21)
-	sequenceCreateRequestFieldPropertyFilters     = big.NewInt(1 << 22)
-	sequenceCreateRequestFieldReplyProfileID      = big.NewInt(1 << 23)
-	sequenceCreateRequestFieldReplyTo             = big.NewInt(1 << 24)
-	sequenceCreateRequestFieldReplyToName         = big.NewInt(1 << 25)
-	sequenceCreateRequestFieldSegmentID           = big.NewInt(1 << 26)
-	sequenceCreateRequestFieldSenderProfileID     = big.NewInt(1 << 27)
-	sequenceCreateRequestFieldSendingWindow       = big.NewInt(1 << 28)
-	sequenceCreateRequestFieldSteps               = big.NewInt(1 << 29)
-	sequenceCreateRequestFieldStopCondition       = big.NewInt(1 << 30)
-	sequenceCreateRequestFieldStopOnSegmentExit   = big.NewInt(1 << 31)
-	sequenceCreateRequestFieldTagName             = big.NewInt(1 << 32)
-	sequenceCreateRequestFieldTagNames            = big.NewInt(1 << 33)
-	sequenceCreateRequestFieldTimeWindowDays      = big.NewInt(1 << 34)
-	sequenceCreateRequestFieldTrigger             = big.NewInt(1 << 35)
-	sequenceCreateRequestFieldUserCancellable     = big.NewInt(1 << 36)
+	sequenceCreateRequestFieldKeyDates            = big.NewInt(1 << 16)
+	sequenceCreateRequestFieldLabels              = big.NewInt(1 << 17)
+	sequenceCreateRequestFieldListID              = big.NewInt(1 << 18)
+	sequenceCreateRequestFieldListIDs             = big.NewInt(1 << 19)
+	sequenceCreateRequestFieldListScope           = big.NewInt(1 << 20)
+	sequenceCreateRequestFieldMinCount            = big.NewInt(1 << 21)
+	sequenceCreateRequestFieldName                = big.NewInt(1 << 22)
+	sequenceCreateRequestFieldPropertyFilters     = big.NewInt(1 << 23)
+	sequenceCreateRequestFieldReplyProfileID      = big.NewInt(1 << 24)
+	sequenceCreateRequestFieldReplyTo             = big.NewInt(1 << 25)
+	sequenceCreateRequestFieldReplyToName         = big.NewInt(1 << 26)
+	sequenceCreateRequestFieldSegmentID           = big.NewInt(1 << 27)
+	sequenceCreateRequestFieldSenderProfileID     = big.NewInt(1 << 28)
+	sequenceCreateRequestFieldSendingWindow       = big.NewInt(1 << 29)
+	sequenceCreateRequestFieldSteps               = big.NewInt(1 << 30)
+	sequenceCreateRequestFieldStopCondition       = big.NewInt(1 << 31)
+	sequenceCreateRequestFieldStopOnSegmentExit   = big.NewInt(1 << 32)
+	sequenceCreateRequestFieldTagName             = big.NewInt(1 << 33)
+	sequenceCreateRequestFieldTagNames            = big.NewInt(1 << 34)
+	sequenceCreateRequestFieldTimeWindowDays      = big.NewInt(1 << 35)
+	sequenceCreateRequestFieldTrigger             = big.NewInt(1 << 36)
+	sequenceCreateRequestFieldUserCancellable     = big.NewInt(1 << 37)
 )
 
 type SequenceCreateRequest struct {
@@ -288,6 +325,8 @@ type SequenceCreateRequest struct {
 	IntegrationEventKey *string `json:"integrationEventKey,omitempty" url:"-"`
 	// Integration slug for inbound_webhook triggers.
 	IntegrationSlug *string `json:"integrationSlug,omitempty" url:"-"`
+	// Named absolute moments for waitUntilKeyDate steps. Null clears them.
+	KeyDates *SequenceKeyDates `json:"keyDates,omitempty" url:"-"`
 	// Dashboard label names. Missing labels are created.
 	Labels []string `json:"labels,omitempty" url:"-"`
 	// List ID for contact_added triggers. Omit it to use listScope instead. Use listIds to trigger on several lists.
@@ -449,6 +488,13 @@ func (s *SequenceCreateRequest) SetIntegrationEventKey(integrationEventKey *stri
 func (s *SequenceCreateRequest) SetIntegrationSlug(integrationSlug *string) {
 	s.IntegrationSlug = integrationSlug
 	s.require(sequenceCreateRequestFieldIntegrationSlug)
+}
+
+// SetKeyDates sets the KeyDates field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceCreateRequest) SetKeyDates(keyDates *SequenceKeyDates) {
+	s.KeyDates = keyDates
+	s.require(sequenceCreateRequestFieldKeyDates)
 }
 
 // SetLabels sets the Labels field and marks it as non-optional;
@@ -847,6 +893,84 @@ func (e *EnableSequencesRequest) SetSequenceID(sequenceID string) {
 }
 
 var (
+	enrollAudienceSequencesRequestFieldSequenceID   = big.NewInt(1 << 0)
+	enrollAudienceSequencesRequestFieldAudience     = big.NewInt(1 << 1)
+	enrollAudienceSequencesRequestFieldScheduledFor = big.NewInt(1 << 2)
+	enrollAudienceSequencesRequestFieldTargetNodeID = big.NewInt(1 << 3)
+)
+
+type EnrollAudienceSequencesRequest struct {
+	// Sequence ID.
+	SequenceID string            `json:"-" url:"-"`
+	Audience   *SequenceAudience `json:"audience" url:"-"`
+	// Start the run at this moment instead of now (up to one year ahead). The run is created queued with a delayed job and can be cancelled before it starts. A past value starts now.
+	ScheduledFor *time.Time `json:"scheduledFor,omitempty" url:"-"`
+	// Step to start contacts at. Defaults to the first step after the trigger. Cannot be a trigger node.
+	TargetNodeID *string `json:"targetNodeId,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (e *EnrollAudienceSequencesRequest) require(field *big.Int) {
+	if e.explicitFields == nil {
+		e.explicitFields = big.NewInt(0)
+	}
+	e.explicitFields.Or(e.explicitFields, field)
+}
+
+// SetSequenceID sets the SequenceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EnrollAudienceSequencesRequest) SetSequenceID(sequenceID string) {
+	e.SequenceID = sequenceID
+	e.require(enrollAudienceSequencesRequestFieldSequenceID)
+}
+
+// SetAudience sets the Audience field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EnrollAudienceSequencesRequest) SetAudience(audience *SequenceAudience) {
+	e.Audience = audience
+	e.require(enrollAudienceSequencesRequestFieldAudience)
+}
+
+// SetScheduledFor sets the ScheduledFor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EnrollAudienceSequencesRequest) SetScheduledFor(scheduledFor *time.Time) {
+	e.ScheduledFor = scheduledFor
+	e.require(enrollAudienceSequencesRequestFieldScheduledFor)
+}
+
+// SetTargetNodeID sets the TargetNodeID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EnrollAudienceSequencesRequest) SetTargetNodeID(targetNodeID *string) {
+	e.TargetNodeID = targetNodeID
+	e.require(enrollAudienceSequencesRequestFieldTargetNodeID)
+}
+
+func (e *EnrollAudienceSequencesRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler EnrollAudienceSequencesRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*e = EnrollAudienceSequencesRequest(body)
+	return nil
+}
+
+func (e *EnrollAudienceSequencesRequest) MarshalJSON() ([]byte, error) {
+	type embed EnrollAudienceSequencesRequest
+	var marshaler = struct {
+		embed
+		ScheduledFor *internal.DateTime `json:"scheduledFor,omitempty"`
+	}{
+		embed:        embed(*e),
+		ScheduledFor: internal.NewOptionalDateTime(e.ScheduledFor),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
 	enrollSubscribersInSequencesRequestFieldSequenceID    = big.NewInt(1 << 0)
 	enrollSubscribersInSequencesRequestFieldEmails        = big.NewInt(1 << 1)
 	enrollSubscribersInSequencesRequestFieldSubscriberIDs = big.NewInt(1 << 2)
@@ -914,6 +1038,62 @@ func (e *EnrollSubscribersInSequencesRequest) UnmarshalJSON(data []byte) error {
 
 func (e *EnrollSubscribersInSequencesRequest) MarshalJSON() ([]byte, error) {
 	type embed EnrollSubscribersInSequencesRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*e),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
+	estimateAudienceEnrollmentSequencesRequestFieldSequenceID = big.NewInt(1 << 0)
+	estimateAudienceEnrollmentSequencesRequestFieldAudience   = big.NewInt(1 << 1)
+)
+
+type EstimateAudienceEnrollmentSequencesRequest struct {
+	// Sequence ID.
+	SequenceID string            `json:"-" url:"-"`
+	Audience   *SequenceAudience `json:"audience" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (e *EstimateAudienceEnrollmentSequencesRequest) require(field *big.Int) {
+	if e.explicitFields == nil {
+		e.explicitFields = big.NewInt(0)
+	}
+	e.explicitFields.Or(e.explicitFields, field)
+}
+
+// SetSequenceID sets the SequenceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EstimateAudienceEnrollmentSequencesRequest) SetSequenceID(sequenceID string) {
+	e.SequenceID = sequenceID
+	e.require(estimateAudienceEnrollmentSequencesRequestFieldSequenceID)
+}
+
+// SetAudience sets the Audience field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EstimateAudienceEnrollmentSequencesRequest) SetAudience(audience *SequenceAudience) {
+	e.Audience = audience
+	e.require(estimateAudienceEnrollmentSequencesRequestFieldAudience)
+}
+
+func (e *EstimateAudienceEnrollmentSequencesRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler EstimateAudienceEnrollmentSequencesRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*e = EstimateAudienceEnrollmentSequencesRequest(body)
+	return nil
+}
+
+func (e *EstimateAudienceEnrollmentSequencesRequest) MarshalJSON() ([]byte, error) {
+	type embed EstimateAudienceEnrollmentSequencesRequest
 	var marshaler = struct {
 		embed
 	}{
@@ -1034,6 +1214,42 @@ func (g *GetSequencesRequest) require(field *big.Int) {
 func (g *GetSequencesRequest) SetSequenceID(sequenceID string) {
 	g.SequenceID = sequenceID
 	g.require(getSequencesRequestFieldSequenceID)
+}
+
+var (
+	getAudienceEnrollmentSequencesRequestFieldSequenceID = big.NewInt(1 << 0)
+	getAudienceEnrollmentSequencesRequestFieldRunID      = big.NewInt(1 << 1)
+)
+
+type GetAudienceEnrollmentSequencesRequest struct {
+	// Sequence ID.
+	SequenceID string `json:"-" url:"-"`
+	// Audience enrollment run ID.
+	RunID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (g *GetAudienceEnrollmentSequencesRequest) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetSequenceID sets the SequenceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetAudienceEnrollmentSequencesRequest) SetSequenceID(sequenceID string) {
+	g.SequenceID = sequenceID
+	g.require(getAudienceEnrollmentSequencesRequestFieldSequenceID)
+}
+
+// SetRunID sets the RunID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetAudienceEnrollmentSequencesRequest) SetRunID(runID string) {
+	g.RunID = runID
+	g.require(getAudienceEnrollmentSequencesRequestFieldRunID)
 }
 
 var (
@@ -1303,6 +1519,42 @@ func (l *ListSequencesRequest) SetSearch(search *string) {
 func (l *ListSequencesRequest) SetStatus(status *SequenceStatus) {
 	l.Status = status
 	l.require(listSequencesRequestFieldStatus)
+}
+
+var (
+	listAudienceEnrollmentsSequencesRequestFieldSequenceID = big.NewInt(1 << 0)
+	listAudienceEnrollmentsSequencesRequestFieldLimit      = big.NewInt(1 << 1)
+)
+
+type ListAudienceEnrollmentsSequencesRequest struct {
+	// Sequence ID.
+	SequenceID string `json:"-" url:"-"`
+	// Runs to return.
+	Limit *int `json:"-" url:"limit,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (l *ListAudienceEnrollmentsSequencesRequest) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetSequenceID sets the SequenceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListAudienceEnrollmentsSequencesRequest) SetSequenceID(sequenceID string) {
+	l.SequenceID = sequenceID
+	l.require(listAudienceEnrollmentsSequencesRequestFieldSequenceID)
+}
+
+// SetLimit sets the Limit field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListAudienceEnrollmentsSequencesRequest) SetLimit(limit *int) {
+	l.Limit = limit
+	l.require(listAudienceEnrollmentsSequencesRequestFieldLimit)
 }
 
 var (
@@ -3554,6 +3806,872 @@ func (s *SequenceActionResponse) String() string {
 	return fmt.Sprintf("%#v", s)
 }
 
+// Who to enroll. Same shape as campaign targetLists.
+var (
+	sequenceAudienceFieldExclude               = big.NewInt(1 << 0)
+	sequenceAudienceFieldExcludedSubscriberIDs = big.NewInt(1 << 1)
+	sequenceAudienceFieldFilterJoinOperator    = big.NewInt(1 << 2)
+	sequenceAudienceFieldFilters               = big.NewInt(1 << 3)
+	sequenceAudienceFieldInclude               = big.NewInt(1 << 4)
+	sequenceAudienceFieldListIDs               = big.NewInt(1 << 5)
+	sequenceAudienceFieldSegmentID             = big.NewInt(1 << 6)
+	sequenceAudienceFieldType                  = big.NewInt(1 << 7)
+)
+
+type SequenceAudience struct {
+	// For type rules; exclude rules.
+	Exclude               []map[string]any                    `json:"exclude,omitempty" url:"exclude,omitempty"`
+	ExcludedSubscriberIDs []string                            `json:"excludedSubscriberIds,omitempty" url:"excludedSubscriberIds,omitempty"`
+	FilterJoinOperator    *SequenceAudienceFilterJoinOperator `json:"filterJoinOperator,omitempty" url:"filterJoinOperator,omitempty"`
+	// For type filtered; subscriber filters.
+	Filters []map[string]any `json:"filters,omitempty" url:"filters,omitempty"`
+	// For type rules; include rules of type all, lists, segments, or filtered.
+	Include []map[string]any `json:"include,omitempty" url:"include,omitempty"`
+	// For type lists.
+	ListIDs []string `json:"listIds,omitempty" url:"listIds,omitempty"`
+	// For type segment.
+	SegmentID *string              `json:"segmentId,omitempty" url:"segmentId,omitempty"`
+	Type      SequenceAudienceType `json:"type" url:"type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequenceAudience) GetExclude() []map[string]any {
+	if s == nil {
+		return nil
+	}
+	return s.Exclude
+}
+
+func (s *SequenceAudience) GetExcludedSubscriberIDs() []string {
+	if s == nil {
+		return nil
+	}
+	return s.ExcludedSubscriberIDs
+}
+
+func (s *SequenceAudience) GetFilterJoinOperator() *SequenceAudienceFilterJoinOperator {
+	if s == nil {
+		return nil
+	}
+	return s.FilterJoinOperator
+}
+
+func (s *SequenceAudience) GetFilters() []map[string]any {
+	if s == nil {
+		return nil
+	}
+	return s.Filters
+}
+
+func (s *SequenceAudience) GetInclude() []map[string]any {
+	if s == nil {
+		return nil
+	}
+	return s.Include
+}
+
+func (s *SequenceAudience) GetListIDs() []string {
+	if s == nil {
+		return nil
+	}
+	return s.ListIDs
+}
+
+func (s *SequenceAudience) GetSegmentID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.SegmentID
+}
+
+func (s *SequenceAudience) GetType() SequenceAudienceType {
+	if s == nil {
+		return ""
+	}
+	return s.Type
+}
+
+func (s *SequenceAudience) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequenceAudience) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetExclude sets the Exclude field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceAudience) SetExclude(exclude []map[string]any) {
+	s.Exclude = exclude
+	s.require(sequenceAudienceFieldExclude)
+}
+
+// SetExcludedSubscriberIDs sets the ExcludedSubscriberIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceAudience) SetExcludedSubscriberIDs(excludedSubscriberIDs []string) {
+	s.ExcludedSubscriberIDs = excludedSubscriberIDs
+	s.require(sequenceAudienceFieldExcludedSubscriberIDs)
+}
+
+// SetFilterJoinOperator sets the FilterJoinOperator field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceAudience) SetFilterJoinOperator(filterJoinOperator *SequenceAudienceFilterJoinOperator) {
+	s.FilterJoinOperator = filterJoinOperator
+	s.require(sequenceAudienceFieldFilterJoinOperator)
+}
+
+// SetFilters sets the Filters field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceAudience) SetFilters(filters []map[string]any) {
+	s.Filters = filters
+	s.require(sequenceAudienceFieldFilters)
+}
+
+// SetInclude sets the Include field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceAudience) SetInclude(include []map[string]any) {
+	s.Include = include
+	s.require(sequenceAudienceFieldInclude)
+}
+
+// SetListIDs sets the ListIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceAudience) SetListIDs(listIDs []string) {
+	s.ListIDs = listIDs
+	s.require(sequenceAudienceFieldListIDs)
+}
+
+// SetSegmentID sets the SegmentID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceAudience) SetSegmentID(segmentID *string) {
+	s.SegmentID = segmentID
+	s.require(sequenceAudienceFieldSegmentID)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceAudience) SetType(type_ SequenceAudienceType) {
+	s.Type = type_
+	s.require(sequenceAudienceFieldType)
+}
+
+func (s *SequenceAudience) UnmarshalJSON(data []byte) error {
+	type unmarshaler SequenceAudience
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SequenceAudience(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceAudience) MarshalJSON() ([]byte, error) {
+	type embed SequenceAudience
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequenceAudience) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+// Manual countdowns only. Keeps enrolling people who join the audience later (new list members, new segment matches) until the last key date passes; they land on the step the countdown is at. Switching on enrolls the current audience right away and re-checks every few minutes. Ends itself after the last key date. Send null to clear.
+var (
+	sequenceAudienceAutoEnrollFieldAudience     = big.NewInt(1 << 0)
+	sequenceAudienceAutoEnrollFieldEnabled      = big.NewInt(1 << 1)
+	sequenceAudienceAutoEnrollFieldEnabledAt    = big.NewInt(1 << 2)
+	sequenceAudienceAutoEnrollFieldEndedAt      = big.NewInt(1 << 3)
+	sequenceAudienceAutoEnrollFieldEndedReason  = big.NewInt(1 << 4)
+	sequenceAudienceAutoEnrollFieldLastSyncedAt = big.NewInt(1 << 5)
+	sequenceAudienceAutoEnrollFieldStartsAt     = big.NewInt(1 << 6)
+)
+
+type SequenceAudienceAutoEnroll struct {
+	Audience *SequenceAudience `json:"audience" url:"audience"`
+	// Defaults to true. False keeps the audience but stops syncing.
+	Enabled     *bool                                  `json:"enabled,omitempty" url:"enabled,omitempty"`
+	EnabledAt   *time.Time                             `json:"enabledAt,omitempty" url:"enabledAt,omitempty"`
+	EndedAt     *time.Time                             `json:"endedAt,omitempty" url:"endedAt,omitempty"`
+	EndedReason *SequenceAudienceAutoEnrollEndedReason `json:"endedReason,omitempty" url:"endedReason,omitempty"`
+	// Start time of the last successfully completed sync. Failed or cancelled runs do not advance it. Incremental scans include new or updated contacts and new list memberships.
+	LastSyncedAt *time.Time `json:"lastSyncedAt,omitempty" url:"lastSyncedAt,omitempty"`
+	// No sync runs before this moment. Pass the scheduledFor of a scheduled initial enrollment so late joiners are not enrolled ahead of everyone else.
+	StartsAt *time.Time `json:"startsAt,omitempty" url:"startsAt,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequenceAudienceAutoEnroll) GetAudience() *SequenceAudience {
+	if s == nil {
+		return nil
+	}
+	return s.Audience
+}
+
+func (s *SequenceAudienceAutoEnroll) GetEnabled() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.Enabled
+}
+
+func (s *SequenceAudienceAutoEnroll) GetEnabledAt() *time.Time {
+	if s == nil {
+		return nil
+	}
+	return s.EnabledAt
+}
+
+func (s *SequenceAudienceAutoEnroll) GetEndedAt() *time.Time {
+	if s == nil {
+		return nil
+	}
+	return s.EndedAt
+}
+
+func (s *SequenceAudienceAutoEnroll) GetEndedReason() *SequenceAudienceAutoEnrollEndedReason {
+	if s == nil {
+		return nil
+	}
+	return s.EndedReason
+}
+
+func (s *SequenceAudienceAutoEnroll) GetLastSyncedAt() *time.Time {
+	if s == nil {
+		return nil
+	}
+	return s.LastSyncedAt
+}
+
+func (s *SequenceAudienceAutoEnroll) GetStartsAt() *time.Time {
+	if s == nil {
+		return nil
+	}
+	return s.StartsAt
+}
+
+func (s *SequenceAudienceAutoEnroll) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequenceAudienceAutoEnroll) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetAudience sets the Audience field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceAudienceAutoEnroll) SetAudience(audience *SequenceAudience) {
+	s.Audience = audience
+	s.require(sequenceAudienceAutoEnrollFieldAudience)
+}
+
+// SetEnabled sets the Enabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceAudienceAutoEnroll) SetEnabled(enabled *bool) {
+	s.Enabled = enabled
+	s.require(sequenceAudienceAutoEnrollFieldEnabled)
+}
+
+// SetEnabledAt sets the EnabledAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceAudienceAutoEnroll) SetEnabledAt(enabledAt *time.Time) {
+	s.EnabledAt = enabledAt
+	s.require(sequenceAudienceAutoEnrollFieldEnabledAt)
+}
+
+// SetEndedAt sets the EndedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceAudienceAutoEnroll) SetEndedAt(endedAt *time.Time) {
+	s.EndedAt = endedAt
+	s.require(sequenceAudienceAutoEnrollFieldEndedAt)
+}
+
+// SetEndedReason sets the EndedReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceAudienceAutoEnroll) SetEndedReason(endedReason *SequenceAudienceAutoEnrollEndedReason) {
+	s.EndedReason = endedReason
+	s.require(sequenceAudienceAutoEnrollFieldEndedReason)
+}
+
+// SetLastSyncedAt sets the LastSyncedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceAudienceAutoEnroll) SetLastSyncedAt(lastSyncedAt *time.Time) {
+	s.LastSyncedAt = lastSyncedAt
+	s.require(sequenceAudienceAutoEnrollFieldLastSyncedAt)
+}
+
+// SetStartsAt sets the StartsAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceAudienceAutoEnroll) SetStartsAt(startsAt *time.Time) {
+	s.StartsAt = startsAt
+	s.require(sequenceAudienceAutoEnrollFieldStartsAt)
+}
+
+func (s *SequenceAudienceAutoEnroll) UnmarshalJSON(data []byte) error {
+	type embed SequenceAudienceAutoEnroll
+	var unmarshaler = struct {
+		embed
+		EnabledAt    *internal.DateTime `json:"enabledAt,omitempty"`
+		EndedAt      *internal.DateTime `json:"endedAt,omitempty"`
+		LastSyncedAt *internal.DateTime `json:"lastSyncedAt,omitempty"`
+		StartsAt     *internal.DateTime `json:"startsAt,omitempty"`
+	}{
+		embed: embed(*s),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*s = SequenceAudienceAutoEnroll(unmarshaler.embed)
+	s.EnabledAt = unmarshaler.EnabledAt.TimePtr()
+	s.EndedAt = unmarshaler.EndedAt.TimePtr()
+	s.LastSyncedAt = unmarshaler.LastSyncedAt.TimePtr()
+	s.StartsAt = unmarshaler.StartsAt.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceAudienceAutoEnroll) MarshalJSON() ([]byte, error) {
+	type embed SequenceAudienceAutoEnroll
+	var marshaler = struct {
+		embed
+		EnabledAt    *internal.DateTime `json:"enabledAt,omitempty"`
+		EndedAt      *internal.DateTime `json:"endedAt,omitempty"`
+		LastSyncedAt *internal.DateTime `json:"lastSyncedAt,omitempty"`
+		StartsAt     *internal.DateTime `json:"startsAt,omitempty"`
+	}{
+		embed:        embed(*s),
+		EnabledAt:    internal.NewOptionalDateTime(s.EnabledAt),
+		EndedAt:      internal.NewOptionalDateTime(s.EndedAt),
+		LastSyncedAt: internal.NewOptionalDateTime(s.LastSyncedAt),
+		StartsAt:     internal.NewOptionalDateTime(s.StartsAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequenceAudienceAutoEnroll) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+type SequenceAudienceAutoEnrollEndedReason string
+
+const (
+	SequenceAudienceAutoEnrollEndedReasonCountdownEnded SequenceAudienceAutoEnrollEndedReason = "countdown_ended"
+	SequenceAudienceAutoEnrollEndedReasonDisabled       SequenceAudienceAutoEnrollEndedReason = "disabled"
+)
+
+func NewSequenceAudienceAutoEnrollEndedReasonFromString(s string) (SequenceAudienceAutoEnrollEndedReason, error) {
+	switch s {
+	case "countdown_ended":
+		return SequenceAudienceAutoEnrollEndedReasonCountdownEnded, nil
+	case "disabled":
+		return SequenceAudienceAutoEnrollEndedReasonDisabled, nil
+	}
+	var t SequenceAudienceAutoEnrollEndedReason
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SequenceAudienceAutoEnrollEndedReason) Ptr() *SequenceAudienceAutoEnrollEndedReason {
+	return &s
+}
+
+// One background audience enrollment run.
+var (
+	sequenceAudienceEnrollmentFieldAudience          = big.NewInt(1 << 0)
+	sequenceAudienceEnrollmentFieldCancelRequestedAt = big.NewInt(1 << 1)
+	sequenceAudienceEnrollmentFieldCompletedAt       = big.NewInt(1 << 2)
+	sequenceAudienceEnrollmentFieldCreatedAt         = big.NewInt(1 << 3)
+	sequenceAudienceEnrollmentFieldEnrolledCount     = big.NewInt(1 << 4)
+	sequenceAudienceEnrollmentFieldError             = big.NewInt(1 << 5)
+	sequenceAudienceEnrollmentFieldEstimatedCount    = big.NewInt(1 << 6)
+	sequenceAudienceEnrollmentFieldID                = big.NewInt(1 << 7)
+	sequenceAudienceEnrollmentFieldProcessedCount    = big.NewInt(1 << 8)
+	sequenceAudienceEnrollmentFieldScheduledFor      = big.NewInt(1 << 9)
+	sequenceAudienceEnrollmentFieldSequenceID        = big.NewInt(1 << 10)
+	sequenceAudienceEnrollmentFieldSkippedCount      = big.NewInt(1 << 11)
+	sequenceAudienceEnrollmentFieldSource            = big.NewInt(1 << 12)
+	sequenceAudienceEnrollmentFieldStartedAt         = big.NewInt(1 << 13)
+	sequenceAudienceEnrollmentFieldStatus            = big.NewInt(1 << 14)
+	sequenceAudienceEnrollmentFieldTargetNodeID      = big.NewInt(1 << 15)
+)
+
+type SequenceAudienceEnrollment struct {
+	Audience          *SequenceAudience `json:"audience,omitempty" url:"audience,omitempty"`
+	CancelRequestedAt *time.Time        `json:"cancelRequestedAt,omitempty" url:"cancelRequestedAt,omitempty"`
+	CompletedAt       *time.Time        `json:"completedAt,omitempty" url:"completedAt,omitempty"`
+	CreatedAt         *time.Time        `json:"createdAt,omitempty" url:"createdAt,omitempty"`
+	EnrolledCount     *int              `json:"enrolledCount,omitempty" url:"enrolledCount,omitempty"`
+	Error             *string           `json:"error,omitempty" url:"error,omitempty"`
+	// Audience size estimated when the run started.
+	EstimatedCount *int    `json:"estimatedCount,omitempty" url:"estimatedCount,omitempty"`
+	ID             *string `json:"id,omitempty" url:"id,omitempty"`
+	// Subscribers scanned so far.
+	ProcessedCount *int `json:"processedCount,omitempty" url:"processedCount,omitempty"`
+	// Delayed start. While set and in the future the run stays queued; cancel it before then to prevent the enrollment.
+	ScheduledFor *time.Time `json:"scheduledFor,omitempty" url:"scheduledFor,omitempty"`
+	SequenceID   *string    `json:"sequenceId,omitempty" url:"sequenceId,omitempty"`
+	// Matching contacts skipped because they were already in the sequence (or, for one_time sequences, finished it before).
+	SkippedCount *int                              `json:"skippedCount,omitempty" url:"skippedCount,omitempty"`
+	Source       *string                           `json:"source,omitempty" url:"source,omitempty"`
+	StartedAt    *time.Time                        `json:"startedAt,omitempty" url:"startedAt,omitempty"`
+	Status       *SequenceAudienceEnrollmentStatus `json:"status,omitempty" url:"status,omitempty"`
+	// Step contacts start at.
+	TargetNodeID *string `json:"targetNodeId,omitempty" url:"targetNodeId,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequenceAudienceEnrollment) GetAudience() *SequenceAudience {
+	if s == nil {
+		return nil
+	}
+	return s.Audience
+}
+
+func (s *SequenceAudienceEnrollment) GetCancelRequestedAt() *time.Time {
+	if s == nil {
+		return nil
+	}
+	return s.CancelRequestedAt
+}
+
+func (s *SequenceAudienceEnrollment) GetCompletedAt() *time.Time {
+	if s == nil {
+		return nil
+	}
+	return s.CompletedAt
+}
+
+func (s *SequenceAudienceEnrollment) GetCreatedAt() *time.Time {
+	if s == nil {
+		return nil
+	}
+	return s.CreatedAt
+}
+
+func (s *SequenceAudienceEnrollment) GetEnrolledCount() *int {
+	if s == nil {
+		return nil
+	}
+	return s.EnrolledCount
+}
+
+func (s *SequenceAudienceEnrollment) GetError() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Error
+}
+
+func (s *SequenceAudienceEnrollment) GetEstimatedCount() *int {
+	if s == nil {
+		return nil
+	}
+	return s.EstimatedCount
+}
+
+func (s *SequenceAudienceEnrollment) GetID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.ID
+}
+
+func (s *SequenceAudienceEnrollment) GetProcessedCount() *int {
+	if s == nil {
+		return nil
+	}
+	return s.ProcessedCount
+}
+
+func (s *SequenceAudienceEnrollment) GetScheduledFor() *time.Time {
+	if s == nil {
+		return nil
+	}
+	return s.ScheduledFor
+}
+
+func (s *SequenceAudienceEnrollment) GetSequenceID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.SequenceID
+}
+
+func (s *SequenceAudienceEnrollment) GetSkippedCount() *int {
+	if s == nil {
+		return nil
+	}
+	return s.SkippedCount
+}
+
+func (s *SequenceAudienceEnrollment) GetSource() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Source
+}
+
+func (s *SequenceAudienceEnrollment) GetStartedAt() *time.Time {
+	if s == nil {
+		return nil
+	}
+	return s.StartedAt
+}
+
+func (s *SequenceAudienceEnrollment) GetStatus() *SequenceAudienceEnrollmentStatus {
+	if s == nil {
+		return nil
+	}
+	return s.Status
+}
+
+func (s *SequenceAudienceEnrollment) GetTargetNodeID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.TargetNodeID
+}
+
+func (s *SequenceAudienceEnrollment) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequenceAudienceEnrollment) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetAudience sets the Audience field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceAudienceEnrollment) SetAudience(audience *SequenceAudience) {
+	s.Audience = audience
+	s.require(sequenceAudienceEnrollmentFieldAudience)
+}
+
+// SetCancelRequestedAt sets the CancelRequestedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceAudienceEnrollment) SetCancelRequestedAt(cancelRequestedAt *time.Time) {
+	s.CancelRequestedAt = cancelRequestedAt
+	s.require(sequenceAudienceEnrollmentFieldCancelRequestedAt)
+}
+
+// SetCompletedAt sets the CompletedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceAudienceEnrollment) SetCompletedAt(completedAt *time.Time) {
+	s.CompletedAt = completedAt
+	s.require(sequenceAudienceEnrollmentFieldCompletedAt)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceAudienceEnrollment) SetCreatedAt(createdAt *time.Time) {
+	s.CreatedAt = createdAt
+	s.require(sequenceAudienceEnrollmentFieldCreatedAt)
+}
+
+// SetEnrolledCount sets the EnrolledCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceAudienceEnrollment) SetEnrolledCount(enrolledCount *int) {
+	s.EnrolledCount = enrolledCount
+	s.require(sequenceAudienceEnrollmentFieldEnrolledCount)
+}
+
+// SetError sets the Error field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceAudienceEnrollment) SetError(error_ *string) {
+	s.Error = error_
+	s.require(sequenceAudienceEnrollmentFieldError)
+}
+
+// SetEstimatedCount sets the EstimatedCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceAudienceEnrollment) SetEstimatedCount(estimatedCount *int) {
+	s.EstimatedCount = estimatedCount
+	s.require(sequenceAudienceEnrollmentFieldEstimatedCount)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceAudienceEnrollment) SetID(id *string) {
+	s.ID = id
+	s.require(sequenceAudienceEnrollmentFieldID)
+}
+
+// SetProcessedCount sets the ProcessedCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceAudienceEnrollment) SetProcessedCount(processedCount *int) {
+	s.ProcessedCount = processedCount
+	s.require(sequenceAudienceEnrollmentFieldProcessedCount)
+}
+
+// SetScheduledFor sets the ScheduledFor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceAudienceEnrollment) SetScheduledFor(scheduledFor *time.Time) {
+	s.ScheduledFor = scheduledFor
+	s.require(sequenceAudienceEnrollmentFieldScheduledFor)
+}
+
+// SetSequenceID sets the SequenceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceAudienceEnrollment) SetSequenceID(sequenceID *string) {
+	s.SequenceID = sequenceID
+	s.require(sequenceAudienceEnrollmentFieldSequenceID)
+}
+
+// SetSkippedCount sets the SkippedCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceAudienceEnrollment) SetSkippedCount(skippedCount *int) {
+	s.SkippedCount = skippedCount
+	s.require(sequenceAudienceEnrollmentFieldSkippedCount)
+}
+
+// SetSource sets the Source field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceAudienceEnrollment) SetSource(source *string) {
+	s.Source = source
+	s.require(sequenceAudienceEnrollmentFieldSource)
+}
+
+// SetStartedAt sets the StartedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceAudienceEnrollment) SetStartedAt(startedAt *time.Time) {
+	s.StartedAt = startedAt
+	s.require(sequenceAudienceEnrollmentFieldStartedAt)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceAudienceEnrollment) SetStatus(status *SequenceAudienceEnrollmentStatus) {
+	s.Status = status
+	s.require(sequenceAudienceEnrollmentFieldStatus)
+}
+
+// SetTargetNodeID sets the TargetNodeID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceAudienceEnrollment) SetTargetNodeID(targetNodeID *string) {
+	s.TargetNodeID = targetNodeID
+	s.require(sequenceAudienceEnrollmentFieldTargetNodeID)
+}
+
+func (s *SequenceAudienceEnrollment) UnmarshalJSON(data []byte) error {
+	type embed SequenceAudienceEnrollment
+	var unmarshaler = struct {
+		embed
+		CancelRequestedAt *internal.DateTime `json:"cancelRequestedAt,omitempty"`
+		CompletedAt       *internal.DateTime `json:"completedAt,omitempty"`
+		CreatedAt         *internal.DateTime `json:"createdAt,omitempty"`
+		ScheduledFor      *internal.DateTime `json:"scheduledFor,omitempty"`
+		StartedAt         *internal.DateTime `json:"startedAt,omitempty"`
+	}{
+		embed: embed(*s),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*s = SequenceAudienceEnrollment(unmarshaler.embed)
+	s.CancelRequestedAt = unmarshaler.CancelRequestedAt.TimePtr()
+	s.CompletedAt = unmarshaler.CompletedAt.TimePtr()
+	s.CreatedAt = unmarshaler.CreatedAt.TimePtr()
+	s.ScheduledFor = unmarshaler.ScheduledFor.TimePtr()
+	s.StartedAt = unmarshaler.StartedAt.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceAudienceEnrollment) MarshalJSON() ([]byte, error) {
+	type embed SequenceAudienceEnrollment
+	var marshaler = struct {
+		embed
+		CancelRequestedAt *internal.DateTime `json:"cancelRequestedAt,omitempty"`
+		CompletedAt       *internal.DateTime `json:"completedAt,omitempty"`
+		CreatedAt         *internal.DateTime `json:"createdAt,omitempty"`
+		ScheduledFor      *internal.DateTime `json:"scheduledFor,omitempty"`
+		StartedAt         *internal.DateTime `json:"startedAt,omitempty"`
+	}{
+		embed:             embed(*s),
+		CancelRequestedAt: internal.NewOptionalDateTime(s.CancelRequestedAt),
+		CompletedAt:       internal.NewOptionalDateTime(s.CompletedAt),
+		CreatedAt:         internal.NewOptionalDateTime(s.CreatedAt),
+		ScheduledFor:      internal.NewOptionalDateTime(s.ScheduledFor),
+		StartedAt:         internal.NewOptionalDateTime(s.StartedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequenceAudienceEnrollment) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+type SequenceAudienceEnrollmentStatus string
+
+const (
+	SequenceAudienceEnrollmentStatusQueued    SequenceAudienceEnrollmentStatus = "queued"
+	SequenceAudienceEnrollmentStatusRunning   SequenceAudienceEnrollmentStatus = "running"
+	SequenceAudienceEnrollmentStatusCompleted SequenceAudienceEnrollmentStatus = "completed"
+	SequenceAudienceEnrollmentStatusCancelled SequenceAudienceEnrollmentStatus = "cancelled"
+	SequenceAudienceEnrollmentStatusFailed    SequenceAudienceEnrollmentStatus = "failed"
+)
+
+func NewSequenceAudienceEnrollmentStatusFromString(s string) (SequenceAudienceEnrollmentStatus, error) {
+	switch s {
+	case "queued":
+		return SequenceAudienceEnrollmentStatusQueued, nil
+	case "running":
+		return SequenceAudienceEnrollmentStatusRunning, nil
+	case "completed":
+		return SequenceAudienceEnrollmentStatusCompleted, nil
+	case "cancelled":
+		return SequenceAudienceEnrollmentStatusCancelled, nil
+	case "failed":
+		return SequenceAudienceEnrollmentStatusFailed, nil
+	}
+	var t SequenceAudienceEnrollmentStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SequenceAudienceEnrollmentStatus) Ptr() *SequenceAudienceEnrollmentStatus {
+	return &s
+}
+
+type SequenceAudienceFilterJoinOperator string
+
+const (
+	SequenceAudienceFilterJoinOperatorAnd SequenceAudienceFilterJoinOperator = "and"
+	SequenceAudienceFilterJoinOperatorOr  SequenceAudienceFilterJoinOperator = "or"
+)
+
+func NewSequenceAudienceFilterJoinOperatorFromString(s string) (SequenceAudienceFilterJoinOperator, error) {
+	switch s {
+	case "and":
+		return SequenceAudienceFilterJoinOperatorAnd, nil
+	case "or":
+		return SequenceAudienceFilterJoinOperatorOr, nil
+	}
+	var t SequenceAudienceFilterJoinOperator
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SequenceAudienceFilterJoinOperator) Ptr() *SequenceAudienceFilterJoinOperator {
+	return &s
+}
+
+type SequenceAudienceType string
+
+const (
+	SequenceAudienceTypeAll      SequenceAudienceType = "all"
+	SequenceAudienceTypeLists    SequenceAudienceType = "lists"
+	SequenceAudienceTypeSegment  SequenceAudienceType = "segment"
+	SequenceAudienceTypeFiltered SequenceAudienceType = "filtered"
+	SequenceAudienceTypeRules    SequenceAudienceType = "rules"
+)
+
+func NewSequenceAudienceTypeFromString(s string) (SequenceAudienceType, error) {
+	switch s {
+	case "all":
+		return SequenceAudienceTypeAll, nil
+	case "lists":
+		return SequenceAudienceTypeLists, nil
+	case "segment":
+		return SequenceAudienceTypeSegment, nil
+	case "filtered":
+		return SequenceAudienceTypeFiltered, nil
+	case "rules":
+		return SequenceAudienceTypeRules, nil
+	}
+	var t SequenceAudienceType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SequenceAudienceType) Ptr() *SequenceAudienceType {
+	return &s
+}
+
 var (
 	sequenceBranchConditionInputFieldActivityScope = big.NewInt(1 << 0)
 	sequenceBranchConditionInputFieldConditionType = big.NewInt(1 << 1)
@@ -4205,7 +5323,8 @@ var (
 	sequenceBranchPathStepInputFieldText             = big.NewInt(1 << 19)
 	sequenceBranchPathStepInputFieldType             = big.NewInt(1 << 20)
 	sequenceBranchPathStepInputFieldWaitUntil        = big.NewInt(1 << 21)
-	sequenceBranchPathStepInputFieldWaitUntilWeekday = big.NewInt(1 << 22)
+	sequenceBranchPathStepInputFieldWaitUntilKeyDate = big.NewInt(1 << 22)
+	sequenceBranchPathStepInputFieldWaitUntilWeekday = big.NewInt(1 << 23)
 )
 
 type SequenceBranchPathStepInput struct {
@@ -4250,6 +5369,7 @@ type SequenceBranchPathStepInput struct {
 	// Step type. Omit for email steps, use sms for a native SMS step, or use delay for a standalone wait.
 	Type             *SequenceBranchPathStepInputType `json:"type,omitempty" url:"type,omitempty"`
 	WaitUntil        *SequenceWaitUntilInput          `json:"waitUntil,omitempty" url:"waitUntil,omitempty"`
+	WaitUntilKeyDate *SequenceWaitUntilKeyDateInput   `json:"waitUntilKeyDate,omitempty" url:"waitUntilKeyDate,omitempty"`
 	WaitUntilWeekday *SequenceWaitUntilWeekdayInput   `json:"waitUntilWeekday,omitempty" url:"waitUntilWeekday,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -4411,6 +5531,13 @@ func (s *SequenceBranchPathStepInput) GetWaitUntil() *SequenceWaitUntilInput {
 		return nil
 	}
 	return s.WaitUntil
+}
+
+func (s *SequenceBranchPathStepInput) GetWaitUntilKeyDate() *SequenceWaitUntilKeyDateInput {
+	if s == nil {
+		return nil
+	}
+	return s.WaitUntilKeyDate
 }
 
 func (s *SequenceBranchPathStepInput) GetWaitUntilWeekday() *SequenceWaitUntilWeekdayInput {
@@ -4586,6 +5713,13 @@ func (s *SequenceBranchPathStepInput) SetType(type_ *SequenceBranchPathStepInput
 func (s *SequenceBranchPathStepInput) SetWaitUntil(waitUntil *SequenceWaitUntilInput) {
 	s.WaitUntil = waitUntil
 	s.require(sequenceBranchPathStepInputFieldWaitUntil)
+}
+
+// SetWaitUntilKeyDate sets the WaitUntilKeyDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceBranchPathStepInput) SetWaitUntilKeyDate(waitUntilKeyDate *SequenceWaitUntilKeyDateInput) {
+	s.WaitUntilKeyDate = waitUntilKeyDate
+	s.require(sequenceBranchPathStepInputFieldWaitUntilKeyDate)
 }
 
 // SetWaitUntilWeekday sets the WaitUntilWeekday field and marks it as non-optional;
@@ -5415,14 +6549,15 @@ var (
 	sequenceCreateResponseSequenceFieldEnrichmentStatus             = big.NewInt(1 << 5)
 	sequenceCreateResponseSequenceFieldEnrollmentPaused             = big.NewInt(1 << 6)
 	sequenceCreateResponseSequenceFieldID                           = big.NewInt(1 << 7)
-	sequenceCreateResponseSequenceFieldName                         = big.NewInt(1 << 8)
-	sequenceCreateResponseSequenceFieldNodeCount                    = big.NewInt(1 << 9)
-	sequenceCreateResponseSequenceFieldProcessesExistingEnrollments = big.NewInt(1 << 10)
-	sequenceCreateResponseSequenceFieldSendingWindow                = big.NewInt(1 << 11)
-	sequenceCreateResponseSequenceFieldStatus                       = big.NewInt(1 << 12)
-	sequenceCreateResponseSequenceFieldStopCondition                = big.NewInt(1 << 13)
-	sequenceCreateResponseSequenceFieldSubscriberUpdateCount        = big.NewInt(1 << 14)
-	sequenceCreateResponseSequenceFieldTrigger                      = big.NewInt(1 << 15)
+	sequenceCreateResponseSequenceFieldKeyDates                     = big.NewInt(1 << 8)
+	sequenceCreateResponseSequenceFieldName                         = big.NewInt(1 << 9)
+	sequenceCreateResponseSequenceFieldNodeCount                    = big.NewInt(1 << 10)
+	sequenceCreateResponseSequenceFieldProcessesExistingEnrollments = big.NewInt(1 << 11)
+	sequenceCreateResponseSequenceFieldSendingWindow                = big.NewInt(1 << 12)
+	sequenceCreateResponseSequenceFieldStatus                       = big.NewInt(1 << 13)
+	sequenceCreateResponseSequenceFieldStopCondition                = big.NewInt(1 << 14)
+	sequenceCreateResponseSequenceFieldSubscriberUpdateCount        = big.NewInt(1 << 15)
+	sequenceCreateResponseSequenceFieldTrigger                      = big.NewInt(1 << 16)
 )
 
 type SequenceCreateResponseSequence struct {
@@ -5435,10 +6570,11 @@ type SequenceCreateResponseSequence struct {
 	EmailCount             *float64 `json:"emailCount,omitempty" url:"emailCount,omitempty"`
 	EnrichmentStatus       *string  `json:"enrichmentStatus,omitempty" url:"enrichmentStatus,omitempty"`
 	// Whether new enrollments are paused while current recipients continue.
-	EnrollmentPaused *bool    `json:"enrollmentPaused,omitempty" url:"enrollmentPaused,omitempty"`
-	ID               *string  `json:"id,omitempty" url:"id,omitempty"`
-	Name             *string  `json:"name,omitempty" url:"name,omitempty"`
-	NodeCount        *float64 `json:"nodeCount,omitempty" url:"nodeCount,omitempty"`
+	EnrollmentPaused *bool             `json:"enrollmentPaused,omitempty" url:"enrollmentPaused,omitempty"`
+	ID               *string           `json:"id,omitempty" url:"id,omitempty"`
+	KeyDates         *SequenceKeyDates `json:"keyDates,omitempty" url:"keyDates,omitempty"`
+	Name             *string           `json:"name,omitempty" url:"name,omitempty"`
+	NodeCount        *float64          `json:"nodeCount,omitempty" url:"nodeCount,omitempty"`
 	// Whether subscribers already inside the sequence keep advancing and receiving steps.
 	ProcessesExistingEnrollments *bool                  `json:"processesExistingEnrollments,omitempty" url:"processesExistingEnrollments,omitempty"`
 	SendingWindow                *SequenceSendingWindow `json:"sendingWindow,omitempty" url:"sendingWindow,omitempty"`
@@ -5508,6 +6644,13 @@ func (s *SequenceCreateResponseSequence) GetID() *string {
 		return nil
 	}
 	return s.ID
+}
+
+func (s *SequenceCreateResponseSequence) GetKeyDates() *SequenceKeyDates {
+	if s == nil {
+		return nil
+	}
+	return s.KeyDates
 }
 
 func (s *SequenceCreateResponseSequence) GetName() *string {
@@ -5636,6 +6779,13 @@ func (s *SequenceCreateResponseSequence) SetID(id *string) {
 	s.require(sequenceCreateResponseSequenceFieldID)
 }
 
+// SetKeyDates sets the KeyDates field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceCreateResponseSequence) SetKeyDates(keyDates *SequenceKeyDates) {
+	s.KeyDates = keyDates
+	s.require(sequenceCreateResponseSequenceFieldKeyDates)
+}
+
 // SetName sets the Name field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *SequenceCreateResponseSequence) SetName(name *string) {
@@ -5734,22 +6884,26 @@ func (s *SequenceCreateResponseSequence) String() string {
 	return fmt.Sprintf("%#v", s)
 }
 
-// Delay before this step runs. Use duration fields for fixed waits, mode until_date with untilDateField for event/date-field waits, or mode until_weekday with the weekday window fields.
+// Delay before this step runs. Use duration fields for fixed waits, mode until_date with untilDateField for event/date-field waits, mode until_weekday with the weekday window fields, or mode until_key_date with untilKeyDate (prefer the waitUntilKeyDate shorthand).
 var (
 	sequenceDelayInputFieldDays                 = big.NewInt(1 << 0)
 	sequenceDelayInputFieldDirection            = big.NewInt(1 << 1)
 	sequenceDelayInputFieldField                = big.NewInt(1 << 2)
 	sequenceDelayInputFieldHours                = big.NewInt(1 << 3)
-	sequenceDelayInputFieldMinutes              = big.NewInt(1 << 4)
-	sequenceDelayInputFieldMissingAction        = big.NewInt(1 << 5)
-	sequenceDelayInputFieldMode                 = big.NewInt(1 << 6)
-	sequenceDelayInputFieldUntilDateField       = big.NewInt(1 << 7)
-	sequenceDelayInputFieldUntilDays            = big.NewInt(1 << 8)
-	sequenceDelayInputFieldUntilEndTime         = big.NewInt(1 << 9)
-	sequenceDelayInputFieldUntilMissingAction   = big.NewInt(1 << 10)
-	sequenceDelayInputFieldUntilOffsetDirection = big.NewInt(1 << 11)
-	sequenceDelayInputFieldUntilStartTime       = big.NewInt(1 << 12)
-	sequenceDelayInputFieldUntilTimezone        = big.NewInt(1 << 13)
+	sequenceDelayInputFieldKeyDate              = big.NewInt(1 << 4)
+	sequenceDelayInputFieldMinutes              = big.NewInt(1 << 5)
+	sequenceDelayInputFieldMissingAction        = big.NewInt(1 << 6)
+	sequenceDelayInputFieldMode                 = big.NewInt(1 << 7)
+	sequenceDelayInputFieldPastAction           = big.NewInt(1 << 8)
+	sequenceDelayInputFieldUntilDateField       = big.NewInt(1 << 9)
+	sequenceDelayInputFieldUntilDays            = big.NewInt(1 << 10)
+	sequenceDelayInputFieldUntilEndTime         = big.NewInt(1 << 11)
+	sequenceDelayInputFieldUntilKeyDate         = big.NewInt(1 << 12)
+	sequenceDelayInputFieldUntilMissingAction   = big.NewInt(1 << 13)
+	sequenceDelayInputFieldUntilOffsetDirection = big.NewInt(1 << 14)
+	sequenceDelayInputFieldUntilPastAction      = big.NewInt(1 << 15)
+	sequenceDelayInputFieldUntilStartTime       = big.NewInt(1 << 16)
+	sequenceDelayInputFieldUntilTimezone        = big.NewInt(1 << 17)
 )
 
 type SequenceDelayInput struct {
@@ -5757,23 +6911,31 @@ type SequenceDelayInput struct {
 	// Alias for untilOffsetDirection.
 	Direction *SequenceDelayInputDirection `json:"direction,omitempty" url:"direction,omitempty"`
 	// Alias for untilDateField.
-	Field   *string  `json:"field,omitempty" url:"field,omitempty"`
-	Hours   *float64 `json:"hours,omitempty" url:"hours,omitempty"`
+	Field *string  `json:"field,omitempty" url:"field,omitempty"`
+	Hours *float64 `json:"hours,omitempty" url:"hours,omitempty"`
+	// Alias for untilKeyDate.
+	KeyDate *string  `json:"keyDate,omitempty" url:"keyDate,omitempty"`
 	Minutes *float64 `json:"minutes,omitempty" url:"minutes,omitempty"`
 	// Alias for untilMissingAction.
 	MissingAction *SequenceDelayInputMissingAction `json:"missingAction,omitempty" url:"missingAction,omitempty"`
 	// Delay mode. Defaults to duration.
 	Mode *SequenceDelayInputMode `json:"mode,omitempty" url:"mode,omitempty"`
+	// Alias for untilPastAction.
+	PastAction *SequenceDelayInputPastAction `json:"pastAction,omitempty" url:"pastAction,omitempty"`
 	// Event/subscriber date field path to wait until when mode is until_date.
 	UntilDateField *string `json:"untilDateField,omitempty" url:"untilDateField,omitempty"`
 	// Weekdays the wait may release on when mode is until_weekday.
 	UntilDays []string `json:"untilDays,omitempty" url:"untilDays,omitempty"`
 	// Window end in 24-hour HH:mm local time when mode is until_weekday. Defaults to the end-of-day boundary 24:00.
 	UntilEndTime *string `json:"untilEndTime,omitempty" url:"untilEndTime,omitempty"`
+	// Key of a sequence key date to wait relative to when mode is until_key_date.
+	UntilKeyDate *string `json:"untilKeyDate,omitempty" url:"untilKeyDate,omitempty"`
 	// What to do when the date field is missing or invalid. Defaults to continue.
 	UntilMissingAction *SequenceDelayInputUntilMissingAction `json:"untilMissingAction,omitempty" url:"untilMissingAction,omitempty"`
 	// Whether the offset runs before or after the date field. Defaults to after.
 	UntilOffsetDirection *SequenceDelayInputUntilOffsetDirection `json:"untilOffsetDirection,omitempty" url:"untilOffsetDirection,omitempty"`
+	// For until_key_date, what a late enrollee does when the moment already passed. Defaults to skip.
+	UntilPastAction *SequenceDelayInputUntilPastAction `json:"untilPastAction,omitempty" url:"untilPastAction,omitempty"`
 	// Window start in 24-hour HH:mm local time when mode is until_weekday.
 	UntilStartTime *string `json:"untilStartTime,omitempty" url:"untilStartTime,omitempty"`
 	// IANA timezone used to evaluate the window when mode is until_weekday.
@@ -5814,6 +6976,13 @@ func (s *SequenceDelayInput) GetHours() *float64 {
 	return s.Hours
 }
 
+func (s *SequenceDelayInput) GetKeyDate() *string {
+	if s == nil {
+		return nil
+	}
+	return s.KeyDate
+}
+
 func (s *SequenceDelayInput) GetMinutes() *float64 {
 	if s == nil {
 		return nil
@@ -5833,6 +7002,13 @@ func (s *SequenceDelayInput) GetMode() *SequenceDelayInputMode {
 		return nil
 	}
 	return s.Mode
+}
+
+func (s *SequenceDelayInput) GetPastAction() *SequenceDelayInputPastAction {
+	if s == nil {
+		return nil
+	}
+	return s.PastAction
 }
 
 func (s *SequenceDelayInput) GetUntilDateField() *string {
@@ -5856,6 +7032,13 @@ func (s *SequenceDelayInput) GetUntilEndTime() *string {
 	return s.UntilEndTime
 }
 
+func (s *SequenceDelayInput) GetUntilKeyDate() *string {
+	if s == nil {
+		return nil
+	}
+	return s.UntilKeyDate
+}
+
 func (s *SequenceDelayInput) GetUntilMissingAction() *SequenceDelayInputUntilMissingAction {
 	if s == nil {
 		return nil
@@ -5868,6 +7051,13 @@ func (s *SequenceDelayInput) GetUntilOffsetDirection() *SequenceDelayInputUntilO
 		return nil
 	}
 	return s.UntilOffsetDirection
+}
+
+func (s *SequenceDelayInput) GetUntilPastAction() *SequenceDelayInputUntilPastAction {
+	if s == nil {
+		return nil
+	}
+	return s.UntilPastAction
 }
 
 func (s *SequenceDelayInput) GetUntilStartTime() *string {
@@ -5926,6 +7116,13 @@ func (s *SequenceDelayInput) SetHours(hours *float64) {
 	s.require(sequenceDelayInputFieldHours)
 }
 
+// SetKeyDate sets the KeyDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDelayInput) SetKeyDate(keyDate *string) {
+	s.KeyDate = keyDate
+	s.require(sequenceDelayInputFieldKeyDate)
+}
+
 // SetMinutes sets the Minutes field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *SequenceDelayInput) SetMinutes(minutes *float64) {
@@ -5945,6 +7142,13 @@ func (s *SequenceDelayInput) SetMissingAction(missingAction *SequenceDelayInputM
 func (s *SequenceDelayInput) SetMode(mode *SequenceDelayInputMode) {
 	s.Mode = mode
 	s.require(sequenceDelayInputFieldMode)
+}
+
+// SetPastAction sets the PastAction field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDelayInput) SetPastAction(pastAction *SequenceDelayInputPastAction) {
+	s.PastAction = pastAction
+	s.require(sequenceDelayInputFieldPastAction)
 }
 
 // SetUntilDateField sets the UntilDateField field and marks it as non-optional;
@@ -5968,6 +7172,13 @@ func (s *SequenceDelayInput) SetUntilEndTime(untilEndTime *string) {
 	s.require(sequenceDelayInputFieldUntilEndTime)
 }
 
+// SetUntilKeyDate sets the UntilKeyDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDelayInput) SetUntilKeyDate(untilKeyDate *string) {
+	s.UntilKeyDate = untilKeyDate
+	s.require(sequenceDelayInputFieldUntilKeyDate)
+}
+
 // SetUntilMissingAction sets the UntilMissingAction field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *SequenceDelayInput) SetUntilMissingAction(untilMissingAction *SequenceDelayInputUntilMissingAction) {
@@ -5980,6 +7191,13 @@ func (s *SequenceDelayInput) SetUntilMissingAction(untilMissingAction *SequenceD
 func (s *SequenceDelayInput) SetUntilOffsetDirection(untilOffsetDirection *SequenceDelayInputUntilOffsetDirection) {
 	s.UntilOffsetDirection = untilOffsetDirection
 	s.require(sequenceDelayInputFieldUntilOffsetDirection)
+}
+
+// SetUntilPastAction sets the UntilPastAction field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDelayInput) SetUntilPastAction(untilPastAction *SequenceDelayInputUntilPastAction) {
+	s.UntilPastAction = untilPastAction
+	s.require(sequenceDelayInputFieldUntilPastAction)
 }
 
 // SetUntilStartTime sets the UntilStartTime field and marks it as non-optional;
@@ -6091,6 +7309,7 @@ const (
 	SequenceDelayInputModeDuration     SequenceDelayInputMode = "duration"
 	SequenceDelayInputModeUntilDate    SequenceDelayInputMode = "until_date"
 	SequenceDelayInputModeUntilWeekday SequenceDelayInputMode = "until_weekday"
+	SequenceDelayInputModeUntilKeyDate SequenceDelayInputMode = "until_key_date"
 )
 
 func NewSequenceDelayInputModeFromString(s string) (SequenceDelayInputMode, error) {
@@ -6101,12 +7320,40 @@ func NewSequenceDelayInputModeFromString(s string) (SequenceDelayInputMode, erro
 		return SequenceDelayInputModeUntilDate, nil
 	case "until_weekday":
 		return SequenceDelayInputModeUntilWeekday, nil
+	case "until_key_date":
+		return SequenceDelayInputModeUntilKeyDate, nil
 	}
 	var t SequenceDelayInputMode
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
 func (s SequenceDelayInputMode) Ptr() *SequenceDelayInputMode {
+	return &s
+}
+
+// Alias for untilPastAction.
+type SequenceDelayInputPastAction string
+
+const (
+	SequenceDelayInputPastActionContinue SequenceDelayInputPastAction = "continue"
+	SequenceDelayInputPastActionSkip     SequenceDelayInputPastAction = "skip"
+	SequenceDelayInputPastActionExit     SequenceDelayInputPastAction = "exit"
+)
+
+func NewSequenceDelayInputPastActionFromString(s string) (SequenceDelayInputPastAction, error) {
+	switch s {
+	case "continue":
+		return SequenceDelayInputPastActionContinue, nil
+	case "skip":
+		return SequenceDelayInputPastActionSkip, nil
+	case "exit":
+		return SequenceDelayInputPastActionExit, nil
+	}
+	var t SequenceDelayInputPastAction
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SequenceDelayInputPastAction) Ptr() *SequenceDelayInputPastAction {
 	return &s
 }
 
@@ -6153,6 +7400,32 @@ func NewSequenceDelayInputUntilOffsetDirectionFromString(s string) (SequenceDela
 }
 
 func (s SequenceDelayInputUntilOffsetDirection) Ptr() *SequenceDelayInputUntilOffsetDirection {
+	return &s
+}
+
+// For until_key_date, what a late enrollee does when the moment already passed. Defaults to skip.
+type SequenceDelayInputUntilPastAction string
+
+const (
+	SequenceDelayInputUntilPastActionContinue SequenceDelayInputUntilPastAction = "continue"
+	SequenceDelayInputUntilPastActionSkip     SequenceDelayInputUntilPastAction = "skip"
+	SequenceDelayInputUntilPastActionExit     SequenceDelayInputUntilPastAction = "exit"
+)
+
+func NewSequenceDelayInputUntilPastActionFromString(s string) (SequenceDelayInputUntilPastAction, error) {
+	switch s {
+	case "continue":
+		return SequenceDelayInputUntilPastActionContinue, nil
+	case "skip":
+		return SequenceDelayInputUntilPastActionSkip, nil
+	case "exit":
+		return SequenceDelayInputUntilPastActionExit, nil
+	}
+	var t SequenceDelayInputUntilPastAction
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SequenceDelayInputUntilPastAction) Ptr() *SequenceDelayInputUntilPastAction {
 	return &s
 }
 
@@ -6275,50 +7548,53 @@ func (s *SequenceDelayOffsetInput) String() string {
 
 var (
 	sequenceDetailsFieldAcceptsNewEnrollments        = big.NewInt(1 << 0)
-	sequenceDetailsFieldBccEmails                    = big.NewInt(1 << 1)
-	sequenceDetailsFieldCreatedAt                    = big.NewInt(1 << 2)
-	sequenceDetailsFieldDescription                  = big.NewInt(1 << 3)
-	sequenceDetailsFieldEffectiveStatus              = big.NewInt(1 << 4)
-	sequenceDetailsFieldEffectiveStatusSummary       = big.NewInt(1 << 5)
-	sequenceDetailsFieldEnrollmentPaused             = big.NewInt(1 << 6)
-	sequenceDetailsFieldFromEmail                    = big.NewInt(1 << 7)
-	sequenceDetailsFieldFromName                     = big.NewInt(1 << 8)
-	sequenceDetailsFieldID                           = big.NewInt(1 << 9)
-	sequenceDetailsFieldLabelIDs                     = big.NewInt(1 << 10)
-	sequenceDetailsFieldLabels                       = big.NewInt(1 << 11)
-	sequenceDetailsFieldName                         = big.NewInt(1 << 12)
-	sequenceDetailsFieldPausedAt                     = big.NewInt(1 << 13)
-	sequenceDetailsFieldPausedByUser                 = big.NewInt(1 << 14)
-	sequenceDetailsFieldPausedByUserID               = big.NewInt(1 << 15)
-	sequenceDetailsFieldPauseReason                  = big.NewInt(1 << 16)
-	sequenceDetailsFieldPauseSource                  = big.NewInt(1 << 17)
-	sequenceDetailsFieldProcessesExistingEnrollments = big.NewInt(1 << 18)
-	sequenceDetailsFieldReplyProfileID               = big.NewInt(1 << 19)
-	sequenceDetailsFieldReplyToEmail                 = big.NewInt(1 << 20)
-	sequenceDetailsFieldReplyToName                  = big.NewInt(1 << 21)
-	sequenceDetailsFieldSenderProfileID              = big.NewInt(1 << 22)
-	sequenceDetailsFieldSendingWindow                = big.NewInt(1 << 23)
-	sequenceDetailsFieldStatus                       = big.NewInt(1 << 24)
-	sequenceDetailsFieldTrigger                      = big.NewInt(1 << 25)
-	sequenceDetailsFieldTriggerConfig                = big.NewInt(1 << 26)
-	sequenceDetailsFieldUpdatedAt                    = big.NewInt(1 << 27)
-	sequenceDetailsFieldUserCancellable              = big.NewInt(1 << 28)
-	sequenceDetailsFieldAbTestCount                  = big.NewInt(1 << 29)
-	sequenceDetailsFieldDiscountCount                = big.NewInt(1 << 30)
-	sequenceDetailsFieldEdges                        = big.NewInt(1 << 31)
-	sequenceDetailsFieldEmailCount                   = big.NewInt(1 << 32)
-	sequenceDetailsFieldEmails                       = big.NewInt(1 << 33)
-	sequenceDetailsFieldEnrichedCount                = big.NewInt(1 << 34)
-	sequenceDetailsFieldEnrichmentStatus             = big.NewInt(1 << 35)
-	sequenceDetailsFieldGraphRevision                = big.NewInt(1 << 36)
-	sequenceDetailsFieldNodes                        = big.NewInt(1 << 37)
-	sequenceDetailsFieldStopCondition                = big.NewInt(1 << 38)
-	sequenceDetailsFieldSubscriberUpdateCount        = big.NewInt(1 << 39)
+	sequenceDetailsFieldAudienceAutoEnroll           = big.NewInt(1 << 1)
+	sequenceDetailsFieldBccEmails                    = big.NewInt(1 << 2)
+	sequenceDetailsFieldCreatedAt                    = big.NewInt(1 << 3)
+	sequenceDetailsFieldDescription                  = big.NewInt(1 << 4)
+	sequenceDetailsFieldEffectiveStatus              = big.NewInt(1 << 5)
+	sequenceDetailsFieldEffectiveStatusSummary       = big.NewInt(1 << 6)
+	sequenceDetailsFieldEnrollmentPaused             = big.NewInt(1 << 7)
+	sequenceDetailsFieldFromEmail                    = big.NewInt(1 << 8)
+	sequenceDetailsFieldFromName                     = big.NewInt(1 << 9)
+	sequenceDetailsFieldID                           = big.NewInt(1 << 10)
+	sequenceDetailsFieldKeyDates                     = big.NewInt(1 << 11)
+	sequenceDetailsFieldLabelIDs                     = big.NewInt(1 << 12)
+	sequenceDetailsFieldLabels                       = big.NewInt(1 << 13)
+	sequenceDetailsFieldName                         = big.NewInt(1 << 14)
+	sequenceDetailsFieldPausedAt                     = big.NewInt(1 << 15)
+	sequenceDetailsFieldPausedByUser                 = big.NewInt(1 << 16)
+	sequenceDetailsFieldPausedByUserID               = big.NewInt(1 << 17)
+	sequenceDetailsFieldPauseReason                  = big.NewInt(1 << 18)
+	sequenceDetailsFieldPauseSource                  = big.NewInt(1 << 19)
+	sequenceDetailsFieldProcessesExistingEnrollments = big.NewInt(1 << 20)
+	sequenceDetailsFieldReplyProfileID               = big.NewInt(1 << 21)
+	sequenceDetailsFieldReplyToEmail                 = big.NewInt(1 << 22)
+	sequenceDetailsFieldReplyToName                  = big.NewInt(1 << 23)
+	sequenceDetailsFieldSenderProfileID              = big.NewInt(1 << 24)
+	sequenceDetailsFieldSendingWindow                = big.NewInt(1 << 25)
+	sequenceDetailsFieldStatus                       = big.NewInt(1 << 26)
+	sequenceDetailsFieldTrigger                      = big.NewInt(1 << 27)
+	sequenceDetailsFieldTriggerConfig                = big.NewInt(1 << 28)
+	sequenceDetailsFieldUpdatedAt                    = big.NewInt(1 << 29)
+	sequenceDetailsFieldUserCancellable              = big.NewInt(1 << 30)
+	sequenceDetailsFieldAbTestCount                  = big.NewInt(1 << 31)
+	sequenceDetailsFieldDiscountCount                = big.NewInt(1 << 32)
+	sequenceDetailsFieldEdges                        = big.NewInt(1 << 33)
+	sequenceDetailsFieldEmailCount                   = big.NewInt(1 << 34)
+	sequenceDetailsFieldEmails                       = big.NewInt(1 << 35)
+	sequenceDetailsFieldEnrichedCount                = big.NewInt(1 << 36)
+	sequenceDetailsFieldEnrichmentStatus             = big.NewInt(1 << 37)
+	sequenceDetailsFieldGraphRevision                = big.NewInt(1 << 38)
+	sequenceDetailsFieldNodes                        = big.NewInt(1 << 39)
+	sequenceDetailsFieldStopCondition                = big.NewInt(1 << 40)
+	sequenceDetailsFieldSubscriberUpdateCount        = big.NewInt(1 << 41)
 )
 
 type SequenceDetails struct {
 	// Whether new subscribers can enter the sequence right now.
-	AcceptsNewEnrollments *bool `json:"acceptsNewEnrollments,omitempty" url:"acceptsNewEnrollments,omitempty"`
+	AcceptsNewEnrollments *bool                       `json:"acceptsNewEnrollments,omitempty" url:"acceptsNewEnrollments,omitempty"`
+	AudienceAutoEnroll    *SequenceAudienceAutoEnroll `json:"audienceAutoEnroll,omitempty" url:"audienceAutoEnroll,omitempty"`
 	// Email addresses blind-copied on every email this sequence sends.
 	BccEmails       []string                 `json:"bccEmails,omitempty" url:"bccEmails,omitempty"`
 	CreatedAt       *time.Time               `json:"createdAt,omitempty" url:"createdAt,omitempty"`
@@ -6331,6 +7607,7 @@ type SequenceDetails struct {
 	FromEmail        *string                      `json:"fromEmail,omitempty" url:"fromEmail,omitempty"`
 	FromName         *string                      `json:"fromName,omitempty" url:"fromName,omitempty"`
 	ID               *string                      `json:"id,omitempty" url:"id,omitempty"`
+	KeyDates         *SequenceKeyDates            `json:"keyDates,omitempty" url:"keyDates,omitempty"`
 	LabelIDs         []string                     `json:"labelIds,omitempty" url:"labelIds,omitempty"`
 	Labels           []string                     `json:"labels,omitempty" url:"labels,omitempty"`
 	Name             *string                      `json:"name,omitempty" url:"name,omitempty"`
@@ -6379,6 +7656,13 @@ func (s *SequenceDetails) GetAcceptsNewEnrollments() *bool {
 		return nil
 	}
 	return s.AcceptsNewEnrollments
+}
+
+func (s *SequenceDetails) GetAudienceAutoEnroll() *SequenceAudienceAutoEnroll {
+	if s == nil {
+		return nil
+	}
+	return s.AudienceAutoEnroll
 }
 
 func (s *SequenceDetails) GetBccEmails() []string {
@@ -6442,6 +7726,13 @@ func (s *SequenceDetails) GetID() *string {
 		return nil
 	}
 	return s.ID
+}
+
+func (s *SequenceDetails) GetKeyDates() *SequenceKeyDates {
+	if s == nil {
+		return nil
+	}
+	return s.KeyDates
 }
 
 func (s *SequenceDetails) GetLabelIDs() []string {
@@ -6675,6 +7966,13 @@ func (s *SequenceDetails) SetAcceptsNewEnrollments(acceptsNewEnrollments *bool) 
 	s.require(sequenceDetailsFieldAcceptsNewEnrollments)
 }
 
+// SetAudienceAutoEnroll sets the AudienceAutoEnroll field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDetails) SetAudienceAutoEnroll(audienceAutoEnroll *SequenceAudienceAutoEnroll) {
+	s.AudienceAutoEnroll = audienceAutoEnroll
+	s.require(sequenceDetailsFieldAudienceAutoEnroll)
+}
+
 // SetBccEmails sets the BccEmails field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *SequenceDetails) SetBccEmails(bccEmails []string) {
@@ -6736,6 +8034,13 @@ func (s *SequenceDetails) SetFromName(fromName *string) {
 func (s *SequenceDetails) SetID(id *string) {
 	s.ID = id
 	s.require(sequenceDetailsFieldID)
+}
+
+// SetKeyDates sets the KeyDates field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDetails) SetKeyDates(keyDates *SequenceKeyDates) {
+	s.KeyDates = keyDates
+	s.require(sequenceDetailsFieldKeyDates)
 }
 
 // SetLabelIDs sets the LabelIDs field and marks it as non-optional;
@@ -7503,7 +8808,8 @@ var (
 	sequenceEmailFieldStructuralStepNumber = big.NewInt(1 << 23)
 	sequenceEmailFieldSubject              = big.NewInt(1 << 24)
 	sequenceEmailFieldWaitUntil            = big.NewInt(1 << 25)
-	sequenceEmailFieldWaitUntilWeekday     = big.NewInt(1 << 26)
+	sequenceEmailFieldWaitUntilKeyDate     = big.NewInt(1 << 26)
+	sequenceEmailFieldWaitUntilWeekday     = big.NewInt(1 << 27)
 )
 
 type SequenceEmail struct {
@@ -7545,6 +8851,8 @@ type SequenceEmail struct {
 	Subject              *string  `json:"subject,omitempty" url:"subject,omitempty"`
 	// Date-field wait metadata for dynamic wait-until-date delays.
 	WaitUntil *SequenceWaitUntilInput `json:"waitUntil,omitempty" url:"waitUntil,omitempty"`
+	// Key-date wait metadata (key, direction, missingAction, pastAction, offset) for until_key_date delays.
+	WaitUntilKeyDate *SequenceWaitUntilKeyDateInput `json:"waitUntilKeyDate,omitempty" url:"waitUntilKeyDate,omitempty"`
 	// Weekday-window metadata for dynamic wait-until-weekday delays.
 	WaitUntilWeekday *SequenceWaitUntilWeekdayInput `json:"waitUntilWeekday,omitempty" url:"waitUntilWeekday,omitempty"`
 
@@ -7735,6 +9043,13 @@ func (s *SequenceEmail) GetWaitUntil() *SequenceWaitUntilInput {
 		return nil
 	}
 	return s.WaitUntil
+}
+
+func (s *SequenceEmail) GetWaitUntilKeyDate() *SequenceWaitUntilKeyDateInput {
+	if s == nil {
+		return nil
+	}
+	return s.WaitUntilKeyDate
 }
 
 func (s *SequenceEmail) GetWaitUntilWeekday() *SequenceWaitUntilWeekdayInput {
@@ -7940,6 +9255,13 @@ func (s *SequenceEmail) SetWaitUntil(waitUntil *SequenceWaitUntilInput) {
 	s.require(sequenceEmailFieldWaitUntil)
 }
 
+// SetWaitUntilKeyDate sets the WaitUntilKeyDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEmail) SetWaitUntilKeyDate(waitUntilKeyDate *SequenceWaitUntilKeyDateInput) {
+	s.WaitUntilKeyDate = waitUntilKeyDate
+	s.require(sequenceEmailFieldWaitUntilKeyDate)
+}
+
 // SetWaitUntilWeekday sets the WaitUntilWeekday field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *SequenceEmail) SetWaitUntilWeekday(waitUntilWeekday *SequenceWaitUntilWeekdayInput) {
@@ -7996,6 +9318,7 @@ const (
 	SequenceEmailDelayModeDuration     SequenceEmailDelayMode = "duration"
 	SequenceEmailDelayModeUntilDate    SequenceEmailDelayMode = "until_date"
 	SequenceEmailDelayModeUntilWeekday SequenceEmailDelayMode = "until_weekday"
+	SequenceEmailDelayModeUntilKeyDate SequenceEmailDelayMode = "until_key_date"
 )
 
 func NewSequenceEmailDelayModeFromString(s string) (SequenceEmailDelayMode, error) {
@@ -8006,6 +9329,8 @@ func NewSequenceEmailDelayModeFromString(s string) (SequenceEmailDelayMode, erro
 		return SequenceEmailDelayModeUntilDate, nil
 	case "until_weekday":
 		return SequenceEmailDelayModeUntilWeekday, nil
+	case "until_key_date":
+		return SequenceEmailDelayModeUntilKeyDate, nil
 	}
 	var t SequenceEmailDelayMode
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -14768,6 +16093,236 @@ func (s SequenceInboundWebhookStatus) Ptr() *SequenceInboundWebhookStatus {
 }
 
 var (
+	sequenceKeyDateFieldAt    = big.NewInt(1 << 0)
+	sequenceKeyDateFieldKey   = big.NewInt(1 << 1)
+	sequenceKeyDateFieldLabel = big.NewInt(1 << 2)
+)
+
+type SequenceKeyDate struct {
+	// ISO 8601 date-time. A value without a zone designator ("2026-11-27T00:00") is read as wall-clock time in the key dates timezone. Stored and returned normalized to UTC.
+	At time.Time `json:"at" url:"at"`
+	// Stable identifier referenced by waitUntilKeyDate.key (lowercase letters, digits, underscores). Defaults to a slug of the label.
+	Key *string `json:"key,omitempty" url:"key,omitempty"`
+	// Human label shown in the builder.
+	Label string `json:"label" url:"label"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequenceKeyDate) GetAt() time.Time {
+	if s == nil {
+		return time.Time{}
+	}
+	return s.At
+}
+
+func (s *SequenceKeyDate) GetKey() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Key
+}
+
+func (s *SequenceKeyDate) GetLabel() string {
+	if s == nil {
+		return ""
+	}
+	return s.Label
+}
+
+func (s *SequenceKeyDate) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequenceKeyDate) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetAt sets the At field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceKeyDate) SetAt(at time.Time) {
+	s.At = at
+	s.require(sequenceKeyDateFieldAt)
+}
+
+// SetKey sets the Key field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceKeyDate) SetKey(key *string) {
+	s.Key = key
+	s.require(sequenceKeyDateFieldKey)
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceKeyDate) SetLabel(label string) {
+	s.Label = label
+	s.require(sequenceKeyDateFieldLabel)
+}
+
+func (s *SequenceKeyDate) UnmarshalJSON(data []byte) error {
+	type embed SequenceKeyDate
+	var unmarshaler = struct {
+		embed
+		At *internal.DateTime `json:"at"`
+	}{
+		embed: embed(*s),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*s = SequenceKeyDate(unmarshaler.embed)
+	s.At = unmarshaler.At.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceKeyDate) MarshalJSON() ([]byte, error) {
+	type embed SequenceKeyDate
+	var marshaler = struct {
+		embed
+		At *internal.DateTime `json:"at"`
+	}{
+		embed: embed(*s),
+		At:    internal.NewDateTime(s.At),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequenceKeyDate) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+// Named absolute moments the sequence counts down to. Delay steps with waitUntilKeyDate wait relative to one of them, so the whole countdown is re-timed by editing these dates. Changing a key date on a live sequence re-schedules contacts already waiting on it. Send null to clear.
+var (
+	sequenceKeyDatesFieldDates    = big.NewInt(1 << 0)
+	sequenceKeyDatesFieldTimezone = big.NewInt(1 << 1)
+)
+
+type SequenceKeyDates struct {
+	// Sorted by time when returned.
+	Dates []*SequenceKeyDate `json:"dates" url:"dates"`
+	// IANA timezone the dates are shown and edited in. Required when dates is non-empty.
+	Timezone *string `json:"timezone,omitempty" url:"timezone,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequenceKeyDates) GetDates() []*SequenceKeyDate {
+	if s == nil {
+		return nil
+	}
+	return s.Dates
+}
+
+func (s *SequenceKeyDates) GetTimezone() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Timezone
+}
+
+func (s *SequenceKeyDates) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequenceKeyDates) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetDates sets the Dates field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceKeyDates) SetDates(dates []*SequenceKeyDate) {
+	s.Dates = dates
+	s.require(sequenceKeyDatesFieldDates)
+}
+
+// SetTimezone sets the Timezone field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceKeyDates) SetTimezone(timezone *string) {
+	s.Timezone = timezone
+	s.require(sequenceKeyDatesFieldTimezone)
+}
+
+func (s *SequenceKeyDates) UnmarshalJSON(data []byte) error {
+	type unmarshaler SequenceKeyDates
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SequenceKeyDates(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceKeyDates) MarshalJSON() ([]byte, error) {
+	type embed SequenceKeyDates
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequenceKeyDates) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
 	sequenceLinearStepInsertionInputFieldAfterNodeID = big.NewInt(1 << 0)
 	sequenceLinearStepInsertionInputFieldSteps       = big.NewInt(1 << 1)
 )
@@ -17005,7 +18560,8 @@ var (
 	sequenceStepInputFieldText              = big.NewInt(1 << 37)
 	sequenceStepInputFieldType              = big.NewInt(1 << 38)
 	sequenceStepInputFieldWaitUntil         = big.NewInt(1 << 39)
-	sequenceStepInputFieldWaitUntilWeekday  = big.NewInt(1 << 40)
+	sequenceStepInputFieldWaitUntilKeyDate  = big.NewInt(1 << 40)
+	sequenceStepInputFieldWaitUntilWeekday  = big.NewInt(1 << 41)
 )
 
 type SequenceStepInput struct {
@@ -17086,6 +18642,7 @@ type SequenceStepInput struct {
 	// Step type. Omit or use email for email content; use sms for a native SMS step; use create_discount for a dynamic discount; use update_subscriber for an Update Subscriber action.
 	Type             *SequenceStepInputType         `json:"type,omitempty" url:"type,omitempty"`
 	WaitUntil        *SequenceWaitUntilInput        `json:"waitUntil,omitempty" url:"waitUntil,omitempty"`
+	WaitUntilKeyDate *SequenceWaitUntilKeyDateInput `json:"waitUntilKeyDate,omitempty" url:"waitUntilKeyDate,omitempty"`
 	WaitUntilWeekday *SequenceWaitUntilWeekdayInput `json:"waitUntilWeekday,omitempty" url:"waitUntilWeekday,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -17373,6 +18930,13 @@ func (s *SequenceStepInput) GetWaitUntil() *SequenceWaitUntilInput {
 		return nil
 	}
 	return s.WaitUntil
+}
+
+func (s *SequenceStepInput) GetWaitUntilKeyDate() *SequenceWaitUntilKeyDateInput {
+	if s == nil {
+		return nil
+	}
+	return s.WaitUntilKeyDate
 }
 
 func (s *SequenceStepInput) GetWaitUntilWeekday() *SequenceWaitUntilWeekdayInput {
@@ -17674,6 +19238,13 @@ func (s *SequenceStepInput) SetType(type_ *SequenceStepInputType) {
 func (s *SequenceStepInput) SetWaitUntil(waitUntil *SequenceWaitUntilInput) {
 	s.WaitUntil = waitUntil
 	s.require(sequenceStepInputFieldWaitUntil)
+}
+
+// SetWaitUntilKeyDate sets the WaitUntilKeyDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceStepInput) SetWaitUntilKeyDate(waitUntilKeyDate *SequenceWaitUntilKeyDateInput) {
+	s.WaitUntilKeyDate = waitUntilKeyDate
+	s.require(sequenceStepInputFieldWaitUntilKeyDate)
 }
 
 // SetWaitUntilWeekday sets the WaitUntilWeekday field and marks it as non-optional;
@@ -18986,39 +20557,42 @@ func (s *SequenceSubscriberUpdateStepUpdateInput) String() string {
 
 var (
 	sequenceSummaryFieldAcceptsNewEnrollments        = big.NewInt(1 << 0)
-	sequenceSummaryFieldBccEmails                    = big.NewInt(1 << 1)
-	sequenceSummaryFieldCreatedAt                    = big.NewInt(1 << 2)
-	sequenceSummaryFieldDescription                  = big.NewInt(1 << 3)
-	sequenceSummaryFieldEffectiveStatus              = big.NewInt(1 << 4)
-	sequenceSummaryFieldEffectiveStatusSummary       = big.NewInt(1 << 5)
-	sequenceSummaryFieldEnrollmentPaused             = big.NewInt(1 << 6)
-	sequenceSummaryFieldFromEmail                    = big.NewInt(1 << 7)
-	sequenceSummaryFieldFromName                     = big.NewInt(1 << 8)
-	sequenceSummaryFieldID                           = big.NewInt(1 << 9)
-	sequenceSummaryFieldLabelIDs                     = big.NewInt(1 << 10)
-	sequenceSummaryFieldLabels                       = big.NewInt(1 << 11)
-	sequenceSummaryFieldName                         = big.NewInt(1 << 12)
-	sequenceSummaryFieldPausedAt                     = big.NewInt(1 << 13)
-	sequenceSummaryFieldPausedByUser                 = big.NewInt(1 << 14)
-	sequenceSummaryFieldPausedByUserID               = big.NewInt(1 << 15)
-	sequenceSummaryFieldPauseReason                  = big.NewInt(1 << 16)
-	sequenceSummaryFieldPauseSource                  = big.NewInt(1 << 17)
-	sequenceSummaryFieldProcessesExistingEnrollments = big.NewInt(1 << 18)
-	sequenceSummaryFieldReplyProfileID               = big.NewInt(1 << 19)
-	sequenceSummaryFieldReplyToEmail                 = big.NewInt(1 << 20)
-	sequenceSummaryFieldReplyToName                  = big.NewInt(1 << 21)
-	sequenceSummaryFieldSenderProfileID              = big.NewInt(1 << 22)
-	sequenceSummaryFieldSendingWindow                = big.NewInt(1 << 23)
-	sequenceSummaryFieldStatus                       = big.NewInt(1 << 24)
-	sequenceSummaryFieldTrigger                      = big.NewInt(1 << 25)
-	sequenceSummaryFieldTriggerConfig                = big.NewInt(1 << 26)
-	sequenceSummaryFieldUpdatedAt                    = big.NewInt(1 << 27)
-	sequenceSummaryFieldUserCancellable              = big.NewInt(1 << 28)
+	sequenceSummaryFieldAudienceAutoEnroll           = big.NewInt(1 << 1)
+	sequenceSummaryFieldBccEmails                    = big.NewInt(1 << 2)
+	sequenceSummaryFieldCreatedAt                    = big.NewInt(1 << 3)
+	sequenceSummaryFieldDescription                  = big.NewInt(1 << 4)
+	sequenceSummaryFieldEffectiveStatus              = big.NewInt(1 << 5)
+	sequenceSummaryFieldEffectiveStatusSummary       = big.NewInt(1 << 6)
+	sequenceSummaryFieldEnrollmentPaused             = big.NewInt(1 << 7)
+	sequenceSummaryFieldFromEmail                    = big.NewInt(1 << 8)
+	sequenceSummaryFieldFromName                     = big.NewInt(1 << 9)
+	sequenceSummaryFieldID                           = big.NewInt(1 << 10)
+	sequenceSummaryFieldKeyDates                     = big.NewInt(1 << 11)
+	sequenceSummaryFieldLabelIDs                     = big.NewInt(1 << 12)
+	sequenceSummaryFieldLabels                       = big.NewInt(1 << 13)
+	sequenceSummaryFieldName                         = big.NewInt(1 << 14)
+	sequenceSummaryFieldPausedAt                     = big.NewInt(1 << 15)
+	sequenceSummaryFieldPausedByUser                 = big.NewInt(1 << 16)
+	sequenceSummaryFieldPausedByUserID               = big.NewInt(1 << 17)
+	sequenceSummaryFieldPauseReason                  = big.NewInt(1 << 18)
+	sequenceSummaryFieldPauseSource                  = big.NewInt(1 << 19)
+	sequenceSummaryFieldProcessesExistingEnrollments = big.NewInt(1 << 20)
+	sequenceSummaryFieldReplyProfileID               = big.NewInt(1 << 21)
+	sequenceSummaryFieldReplyToEmail                 = big.NewInt(1 << 22)
+	sequenceSummaryFieldReplyToName                  = big.NewInt(1 << 23)
+	sequenceSummaryFieldSenderProfileID              = big.NewInt(1 << 24)
+	sequenceSummaryFieldSendingWindow                = big.NewInt(1 << 25)
+	sequenceSummaryFieldStatus                       = big.NewInt(1 << 26)
+	sequenceSummaryFieldTrigger                      = big.NewInt(1 << 27)
+	sequenceSummaryFieldTriggerConfig                = big.NewInt(1 << 28)
+	sequenceSummaryFieldUpdatedAt                    = big.NewInt(1 << 29)
+	sequenceSummaryFieldUserCancellable              = big.NewInt(1 << 30)
 )
 
 type SequenceSummary struct {
 	// Whether new subscribers can enter the sequence right now.
-	AcceptsNewEnrollments *bool `json:"acceptsNewEnrollments,omitempty" url:"acceptsNewEnrollments,omitempty"`
+	AcceptsNewEnrollments *bool                       `json:"acceptsNewEnrollments,omitempty" url:"acceptsNewEnrollments,omitempty"`
+	AudienceAutoEnroll    *SequenceAudienceAutoEnroll `json:"audienceAutoEnroll,omitempty" url:"audienceAutoEnroll,omitempty"`
 	// Email addresses blind-copied on every email this sequence sends.
 	BccEmails       []string                 `json:"bccEmails,omitempty" url:"bccEmails,omitempty"`
 	CreatedAt       *time.Time               `json:"createdAt,omitempty" url:"createdAt,omitempty"`
@@ -19031,6 +20605,7 @@ type SequenceSummary struct {
 	FromEmail        *string                      `json:"fromEmail,omitempty" url:"fromEmail,omitempty"`
 	FromName         *string                      `json:"fromName,omitempty" url:"fromName,omitempty"`
 	ID               *string                      `json:"id,omitempty" url:"id,omitempty"`
+	KeyDates         *SequenceKeyDates            `json:"keyDates,omitempty" url:"keyDates,omitempty"`
 	LabelIDs         []string                     `json:"labelIds,omitempty" url:"labelIds,omitempty"`
 	Labels           []string                     `json:"labels,omitempty" url:"labels,omitempty"`
 	Name             *string                      `json:"name,omitempty" url:"name,omitempty"`
@@ -19064,6 +20639,13 @@ func (s *SequenceSummary) GetAcceptsNewEnrollments() *bool {
 		return nil
 	}
 	return s.AcceptsNewEnrollments
+}
+
+func (s *SequenceSummary) GetAudienceAutoEnroll() *SequenceAudienceAutoEnroll {
+	if s == nil {
+		return nil
+	}
+	return s.AudienceAutoEnroll
 }
 
 func (s *SequenceSummary) GetBccEmails() []string {
@@ -19127,6 +20709,13 @@ func (s *SequenceSummary) GetID() *string {
 		return nil
 	}
 	return s.ID
+}
+
+func (s *SequenceSummary) GetKeyDates() *SequenceKeyDates {
+	if s == nil {
+		return nil
+	}
+	return s.KeyDates
 }
 
 func (s *SequenceSummary) GetLabelIDs() []string {
@@ -19283,6 +20872,13 @@ func (s *SequenceSummary) SetAcceptsNewEnrollments(acceptsNewEnrollments *bool) 
 	s.require(sequenceSummaryFieldAcceptsNewEnrollments)
 }
 
+// SetAudienceAutoEnroll sets the AudienceAutoEnroll field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceSummary) SetAudienceAutoEnroll(audienceAutoEnroll *SequenceAudienceAutoEnroll) {
+	s.AudienceAutoEnroll = audienceAutoEnroll
+	s.require(sequenceSummaryFieldAudienceAutoEnroll)
+}
+
 // SetBccEmails sets the BccEmails field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *SequenceSummary) SetBccEmails(bccEmails []string) {
@@ -19344,6 +20940,13 @@ func (s *SequenceSummary) SetFromName(fromName *string) {
 func (s *SequenceSummary) SetID(id *string) {
 	s.ID = id
 	s.require(sequenceSummaryFieldID)
+}
+
+// SetKeyDates sets the KeyDates field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceSummary) SetKeyDates(keyDates *SequenceKeyDates) {
+	s.KeyDates = keyDates
+	s.require(sequenceSummaryFieldKeyDates)
 }
 
 // SetLabelIDs sets the LabelIDs field and marks it as non-optional;
@@ -20425,6 +22028,7 @@ func (s *SequenceTriggerPropertyFilterValueThreeItem) Accept(visitor SequenceTri
 	return fmt.Errorf("type %T does not include a non-empty union type", s)
 }
 
+// How contacts enter the sequence. `manual` never enrolls anyone automatically; use it with key dates for one-time countdown campaigns and enroll the audience with the enroll-audience endpoint.
 type SequenceTriggerType string
 
 const (
@@ -20435,6 +22039,7 @@ const (
 	SequenceTriggerTypeInboundWebhook SequenceTriggerType = "inbound_webhook"
 	SequenceTriggerTypeInactivity     SequenceTriggerType = "inactivity"
 	SequenceTriggerTypeFrequency      SequenceTriggerType = "frequency"
+	SequenceTriggerTypeManual         SequenceTriggerType = "manual"
 )
 
 func NewSequenceTriggerTypeFromString(s string) (SequenceTriggerType, error) {
@@ -20453,6 +22058,8 @@ func NewSequenceTriggerTypeFromString(s string) (SequenceTriggerType, error) {
 		return SequenceTriggerTypeInactivity, nil
 	case "frequency":
 		return SequenceTriggerTypeFrequency, nil
+	case "manual":
+		return SequenceTriggerTypeManual, nil
 	}
 	var t SequenceTriggerType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -20789,6 +22396,422 @@ func NewSequenceWaitUntilInputUntilOffsetDirectionFromString(s string) (Sequence
 }
 
 func (s SequenceWaitUntilInputUntilOffsetDirection) Ptr() *SequenceWaitUntilInputUntilOffsetDirection {
+	return &s
+}
+
+// Wait relative to one of the sequence's key dates before this step, e.g. 7 days before black_friday_starts or 1 hour before black_friday_ends. The key must exist in the sequence's keyDates.
+var (
+	sequenceWaitUntilKeyDateInputFieldDays                 = big.NewInt(1 << 0)
+	sequenceWaitUntilKeyDateInputFieldDirection            = big.NewInt(1 << 1)
+	sequenceWaitUntilKeyDateInputFieldHours                = big.NewInt(1 << 2)
+	sequenceWaitUntilKeyDateInputFieldKey                  = big.NewInt(1 << 3)
+	sequenceWaitUntilKeyDateInputFieldMinutes              = big.NewInt(1 << 4)
+	sequenceWaitUntilKeyDateInputFieldMissingAction        = big.NewInt(1 << 5)
+	sequenceWaitUntilKeyDateInputFieldOffset               = big.NewInt(1 << 6)
+	sequenceWaitUntilKeyDateInputFieldPastAction           = big.NewInt(1 << 7)
+	sequenceWaitUntilKeyDateInputFieldUntilKeyDate         = big.NewInt(1 << 8)
+	sequenceWaitUntilKeyDateInputFieldUntilMissingAction   = big.NewInt(1 << 9)
+	sequenceWaitUntilKeyDateInputFieldUntilOffsetDirection = big.NewInt(1 << 10)
+	sequenceWaitUntilKeyDateInputFieldUntilPastAction      = big.NewInt(1 << 11)
+)
+
+type SequenceWaitUntilKeyDateInput struct {
+	// Offset days shorthand. Ignored when offset is provided.
+	Days *float64 `json:"days,omitempty" url:"days,omitempty"`
+	// Whether the offset applies before or after the key date. Defaults to before.
+	Direction *SequenceWaitUntilKeyDateInputDirection `json:"direction,omitempty" url:"direction,omitempty"`
+	// Offset hours shorthand.
+	Hours *float64 `json:"hours,omitempty" url:"hours,omitempty"`
+	// Key date identifier from keyDates.
+	Key *string `json:"key,omitempty" url:"key,omitempty"`
+	// Offset minutes shorthand.
+	Minutes *float64 `json:"minutes,omitempty" url:"minutes,omitempty"`
+	// What to do when the key date no longer exists. Defaults to exit.
+	MissingAction *SequenceWaitUntilKeyDateInputMissingAction `json:"missingAction,omitempty" url:"missingAction,omitempty"`
+	Offset        *SequenceDelayOffsetInput                   `json:"offset,omitempty" url:"offset,omitempty"`
+	// What a late enrollee does when the moment already passed. skip (default) skips the following steps until the next wait, continue sends immediately, exit ends the enrollment.
+	PastAction *SequenceWaitUntilKeyDateInputPastAction `json:"pastAction,omitempty" url:"pastAction,omitempty"`
+	// Alias for key.
+	UntilKeyDate *string `json:"untilKeyDate,omitempty" url:"untilKeyDate,omitempty"`
+	// Alias for missingAction.
+	UntilMissingAction *SequenceWaitUntilKeyDateInputUntilMissingAction `json:"untilMissingAction,omitempty" url:"untilMissingAction,omitempty"`
+	// Alias for direction.
+	UntilOffsetDirection *SequenceWaitUntilKeyDateInputUntilOffsetDirection `json:"untilOffsetDirection,omitempty" url:"untilOffsetDirection,omitempty"`
+	// Alias for pastAction.
+	UntilPastAction *SequenceWaitUntilKeyDateInputUntilPastAction `json:"untilPastAction,omitempty" url:"untilPastAction,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequenceWaitUntilKeyDateInput) GetDays() *float64 {
+	if s == nil {
+		return nil
+	}
+	return s.Days
+}
+
+func (s *SequenceWaitUntilKeyDateInput) GetDirection() *SequenceWaitUntilKeyDateInputDirection {
+	if s == nil {
+		return nil
+	}
+	return s.Direction
+}
+
+func (s *SequenceWaitUntilKeyDateInput) GetHours() *float64 {
+	if s == nil {
+		return nil
+	}
+	return s.Hours
+}
+
+func (s *SequenceWaitUntilKeyDateInput) GetKey() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Key
+}
+
+func (s *SequenceWaitUntilKeyDateInput) GetMinutes() *float64 {
+	if s == nil {
+		return nil
+	}
+	return s.Minutes
+}
+
+func (s *SequenceWaitUntilKeyDateInput) GetMissingAction() *SequenceWaitUntilKeyDateInputMissingAction {
+	if s == nil {
+		return nil
+	}
+	return s.MissingAction
+}
+
+func (s *SequenceWaitUntilKeyDateInput) GetOffset() *SequenceDelayOffsetInput {
+	if s == nil {
+		return nil
+	}
+	return s.Offset
+}
+
+func (s *SequenceWaitUntilKeyDateInput) GetPastAction() *SequenceWaitUntilKeyDateInputPastAction {
+	if s == nil {
+		return nil
+	}
+	return s.PastAction
+}
+
+func (s *SequenceWaitUntilKeyDateInput) GetUntilKeyDate() *string {
+	if s == nil {
+		return nil
+	}
+	return s.UntilKeyDate
+}
+
+func (s *SequenceWaitUntilKeyDateInput) GetUntilMissingAction() *SequenceWaitUntilKeyDateInputUntilMissingAction {
+	if s == nil {
+		return nil
+	}
+	return s.UntilMissingAction
+}
+
+func (s *SequenceWaitUntilKeyDateInput) GetUntilOffsetDirection() *SequenceWaitUntilKeyDateInputUntilOffsetDirection {
+	if s == nil {
+		return nil
+	}
+	return s.UntilOffsetDirection
+}
+
+func (s *SequenceWaitUntilKeyDateInput) GetUntilPastAction() *SequenceWaitUntilKeyDateInputUntilPastAction {
+	if s == nil {
+		return nil
+	}
+	return s.UntilPastAction
+}
+
+func (s *SequenceWaitUntilKeyDateInput) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequenceWaitUntilKeyDateInput) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetDays sets the Days field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceWaitUntilKeyDateInput) SetDays(days *float64) {
+	s.Days = days
+	s.require(sequenceWaitUntilKeyDateInputFieldDays)
+}
+
+// SetDirection sets the Direction field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceWaitUntilKeyDateInput) SetDirection(direction *SequenceWaitUntilKeyDateInputDirection) {
+	s.Direction = direction
+	s.require(sequenceWaitUntilKeyDateInputFieldDirection)
+}
+
+// SetHours sets the Hours field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceWaitUntilKeyDateInput) SetHours(hours *float64) {
+	s.Hours = hours
+	s.require(sequenceWaitUntilKeyDateInputFieldHours)
+}
+
+// SetKey sets the Key field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceWaitUntilKeyDateInput) SetKey(key *string) {
+	s.Key = key
+	s.require(sequenceWaitUntilKeyDateInputFieldKey)
+}
+
+// SetMinutes sets the Minutes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceWaitUntilKeyDateInput) SetMinutes(minutes *float64) {
+	s.Minutes = minutes
+	s.require(sequenceWaitUntilKeyDateInputFieldMinutes)
+}
+
+// SetMissingAction sets the MissingAction field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceWaitUntilKeyDateInput) SetMissingAction(missingAction *SequenceWaitUntilKeyDateInputMissingAction) {
+	s.MissingAction = missingAction
+	s.require(sequenceWaitUntilKeyDateInputFieldMissingAction)
+}
+
+// SetOffset sets the Offset field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceWaitUntilKeyDateInput) SetOffset(offset *SequenceDelayOffsetInput) {
+	s.Offset = offset
+	s.require(sequenceWaitUntilKeyDateInputFieldOffset)
+}
+
+// SetPastAction sets the PastAction field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceWaitUntilKeyDateInput) SetPastAction(pastAction *SequenceWaitUntilKeyDateInputPastAction) {
+	s.PastAction = pastAction
+	s.require(sequenceWaitUntilKeyDateInputFieldPastAction)
+}
+
+// SetUntilKeyDate sets the UntilKeyDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceWaitUntilKeyDateInput) SetUntilKeyDate(untilKeyDate *string) {
+	s.UntilKeyDate = untilKeyDate
+	s.require(sequenceWaitUntilKeyDateInputFieldUntilKeyDate)
+}
+
+// SetUntilMissingAction sets the UntilMissingAction field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceWaitUntilKeyDateInput) SetUntilMissingAction(untilMissingAction *SequenceWaitUntilKeyDateInputUntilMissingAction) {
+	s.UntilMissingAction = untilMissingAction
+	s.require(sequenceWaitUntilKeyDateInputFieldUntilMissingAction)
+}
+
+// SetUntilOffsetDirection sets the UntilOffsetDirection field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceWaitUntilKeyDateInput) SetUntilOffsetDirection(untilOffsetDirection *SequenceWaitUntilKeyDateInputUntilOffsetDirection) {
+	s.UntilOffsetDirection = untilOffsetDirection
+	s.require(sequenceWaitUntilKeyDateInputFieldUntilOffsetDirection)
+}
+
+// SetUntilPastAction sets the UntilPastAction field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceWaitUntilKeyDateInput) SetUntilPastAction(untilPastAction *SequenceWaitUntilKeyDateInputUntilPastAction) {
+	s.UntilPastAction = untilPastAction
+	s.require(sequenceWaitUntilKeyDateInputFieldUntilPastAction)
+}
+
+func (s *SequenceWaitUntilKeyDateInput) UnmarshalJSON(data []byte) error {
+	type unmarshaler SequenceWaitUntilKeyDateInput
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SequenceWaitUntilKeyDateInput(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceWaitUntilKeyDateInput) MarshalJSON() ([]byte, error) {
+	type embed SequenceWaitUntilKeyDateInput
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequenceWaitUntilKeyDateInput) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+// Whether the offset applies before or after the key date. Defaults to before.
+type SequenceWaitUntilKeyDateInputDirection string
+
+const (
+	SequenceWaitUntilKeyDateInputDirectionBefore SequenceWaitUntilKeyDateInputDirection = "before"
+	SequenceWaitUntilKeyDateInputDirectionAfter  SequenceWaitUntilKeyDateInputDirection = "after"
+)
+
+func NewSequenceWaitUntilKeyDateInputDirectionFromString(s string) (SequenceWaitUntilKeyDateInputDirection, error) {
+	switch s {
+	case "before":
+		return SequenceWaitUntilKeyDateInputDirectionBefore, nil
+	case "after":
+		return SequenceWaitUntilKeyDateInputDirectionAfter, nil
+	}
+	var t SequenceWaitUntilKeyDateInputDirection
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SequenceWaitUntilKeyDateInputDirection) Ptr() *SequenceWaitUntilKeyDateInputDirection {
+	return &s
+}
+
+// What to do when the key date no longer exists. Defaults to exit.
+type SequenceWaitUntilKeyDateInputMissingAction string
+
+const (
+	SequenceWaitUntilKeyDateInputMissingActionContinue SequenceWaitUntilKeyDateInputMissingAction = "continue"
+	SequenceWaitUntilKeyDateInputMissingActionExit     SequenceWaitUntilKeyDateInputMissingAction = "exit"
+)
+
+func NewSequenceWaitUntilKeyDateInputMissingActionFromString(s string) (SequenceWaitUntilKeyDateInputMissingAction, error) {
+	switch s {
+	case "continue":
+		return SequenceWaitUntilKeyDateInputMissingActionContinue, nil
+	case "exit":
+		return SequenceWaitUntilKeyDateInputMissingActionExit, nil
+	}
+	var t SequenceWaitUntilKeyDateInputMissingAction
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SequenceWaitUntilKeyDateInputMissingAction) Ptr() *SequenceWaitUntilKeyDateInputMissingAction {
+	return &s
+}
+
+// What a late enrollee does when the moment already passed. skip (default) skips the following steps until the next wait, continue sends immediately, exit ends the enrollment.
+type SequenceWaitUntilKeyDateInputPastAction string
+
+const (
+	SequenceWaitUntilKeyDateInputPastActionContinue SequenceWaitUntilKeyDateInputPastAction = "continue"
+	SequenceWaitUntilKeyDateInputPastActionSkip     SequenceWaitUntilKeyDateInputPastAction = "skip"
+	SequenceWaitUntilKeyDateInputPastActionExit     SequenceWaitUntilKeyDateInputPastAction = "exit"
+)
+
+func NewSequenceWaitUntilKeyDateInputPastActionFromString(s string) (SequenceWaitUntilKeyDateInputPastAction, error) {
+	switch s {
+	case "continue":
+		return SequenceWaitUntilKeyDateInputPastActionContinue, nil
+	case "skip":
+		return SequenceWaitUntilKeyDateInputPastActionSkip, nil
+	case "exit":
+		return SequenceWaitUntilKeyDateInputPastActionExit, nil
+	}
+	var t SequenceWaitUntilKeyDateInputPastAction
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SequenceWaitUntilKeyDateInputPastAction) Ptr() *SequenceWaitUntilKeyDateInputPastAction {
+	return &s
+}
+
+// Alias for missingAction.
+type SequenceWaitUntilKeyDateInputUntilMissingAction string
+
+const (
+	SequenceWaitUntilKeyDateInputUntilMissingActionContinue SequenceWaitUntilKeyDateInputUntilMissingAction = "continue"
+	SequenceWaitUntilKeyDateInputUntilMissingActionExit     SequenceWaitUntilKeyDateInputUntilMissingAction = "exit"
+)
+
+func NewSequenceWaitUntilKeyDateInputUntilMissingActionFromString(s string) (SequenceWaitUntilKeyDateInputUntilMissingAction, error) {
+	switch s {
+	case "continue":
+		return SequenceWaitUntilKeyDateInputUntilMissingActionContinue, nil
+	case "exit":
+		return SequenceWaitUntilKeyDateInputUntilMissingActionExit, nil
+	}
+	var t SequenceWaitUntilKeyDateInputUntilMissingAction
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SequenceWaitUntilKeyDateInputUntilMissingAction) Ptr() *SequenceWaitUntilKeyDateInputUntilMissingAction {
+	return &s
+}
+
+// Alias for direction.
+type SequenceWaitUntilKeyDateInputUntilOffsetDirection string
+
+const (
+	SequenceWaitUntilKeyDateInputUntilOffsetDirectionBefore SequenceWaitUntilKeyDateInputUntilOffsetDirection = "before"
+	SequenceWaitUntilKeyDateInputUntilOffsetDirectionAfter  SequenceWaitUntilKeyDateInputUntilOffsetDirection = "after"
+)
+
+func NewSequenceWaitUntilKeyDateInputUntilOffsetDirectionFromString(s string) (SequenceWaitUntilKeyDateInputUntilOffsetDirection, error) {
+	switch s {
+	case "before":
+		return SequenceWaitUntilKeyDateInputUntilOffsetDirectionBefore, nil
+	case "after":
+		return SequenceWaitUntilKeyDateInputUntilOffsetDirectionAfter, nil
+	}
+	var t SequenceWaitUntilKeyDateInputUntilOffsetDirection
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SequenceWaitUntilKeyDateInputUntilOffsetDirection) Ptr() *SequenceWaitUntilKeyDateInputUntilOffsetDirection {
+	return &s
+}
+
+// Alias for pastAction.
+type SequenceWaitUntilKeyDateInputUntilPastAction string
+
+const (
+	SequenceWaitUntilKeyDateInputUntilPastActionContinue SequenceWaitUntilKeyDateInputUntilPastAction = "continue"
+	SequenceWaitUntilKeyDateInputUntilPastActionSkip     SequenceWaitUntilKeyDateInputUntilPastAction = "skip"
+	SequenceWaitUntilKeyDateInputUntilPastActionExit     SequenceWaitUntilKeyDateInputUntilPastAction = "exit"
+)
+
+func NewSequenceWaitUntilKeyDateInputUntilPastActionFromString(s string) (SequenceWaitUntilKeyDateInputUntilPastAction, error) {
+	switch s {
+	case "continue":
+		return SequenceWaitUntilKeyDateInputUntilPastActionContinue, nil
+	case "skip":
+		return SequenceWaitUntilKeyDateInputUntilPastActionSkip, nil
+	case "exit":
+		return SequenceWaitUntilKeyDateInputUntilPastActionExit, nil
+	}
+	var t SequenceWaitUntilKeyDateInputUntilPastAction
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SequenceWaitUntilKeyDateInputUntilPastAction) Ptr() *SequenceWaitUntilKeyDateInputUntilPastAction {
 	return &s
 }
 
@@ -21605,6 +23628,122 @@ func (a *ArchiveSequencesResponse) String() string {
 }
 
 var (
+	cancelAudienceEnrollmentSequencesResponseFieldAudienceEnrollment = big.NewInt(1 << 0)
+	cancelAudienceEnrollmentSequencesResponseFieldMessage            = big.NewInt(1 << 1)
+	cancelAudienceEnrollmentSequencesResponseFieldSuccess            = big.NewInt(1 << 2)
+)
+
+type CancelAudienceEnrollmentSequencesResponse struct {
+	AudienceEnrollment *SequenceAudienceEnrollment `json:"audienceEnrollment,omitempty" url:"audienceEnrollment,omitempty"`
+	Message            *string                     `json:"message,omitempty" url:"message,omitempty"`
+	Success            *bool                       `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CancelAudienceEnrollmentSequencesResponse) GetAudienceEnrollment() *SequenceAudienceEnrollment {
+	if c == nil {
+		return nil
+	}
+	return c.AudienceEnrollment
+}
+
+func (c *CancelAudienceEnrollmentSequencesResponse) GetMessage() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Message
+}
+
+func (c *CancelAudienceEnrollmentSequencesResponse) GetSuccess() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.Success
+}
+
+func (c *CancelAudienceEnrollmentSequencesResponse) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CancelAudienceEnrollmentSequencesResponse) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetAudienceEnrollment sets the AudienceEnrollment field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelAudienceEnrollmentSequencesResponse) SetAudienceEnrollment(audienceEnrollment *SequenceAudienceEnrollment) {
+	c.AudienceEnrollment = audienceEnrollment
+	c.require(cancelAudienceEnrollmentSequencesResponseFieldAudienceEnrollment)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelAudienceEnrollmentSequencesResponse) SetMessage(message *string) {
+	c.Message = message
+	c.require(cancelAudienceEnrollmentSequencesResponseFieldMessage)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelAudienceEnrollmentSequencesResponse) SetSuccess(success *bool) {
+	c.Success = success
+	c.require(cancelAudienceEnrollmentSequencesResponseFieldSuccess)
+}
+
+func (c *CancelAudienceEnrollmentSequencesResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler CancelAudienceEnrollmentSequencesResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CancelAudienceEnrollmentSequencesResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CancelAudienceEnrollmentSequencesResponse) MarshalJSON() ([]byte, error) {
+	type embed CancelAudienceEnrollmentSequencesResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CancelAudienceEnrollmentSequencesResponse) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
 	configureInboundWebhookSequencesResponseFieldSuccess = big.NewInt(1 << 0)
 	configureInboundWebhookSequencesResponseFieldWebhook = big.NewInt(1 << 1)
 )
@@ -22037,6 +24176,122 @@ func (d *DuplicateSequencesResponse) String() string {
 }
 
 var (
+	enrollAudienceSequencesResponseFieldAudienceEnrollment = big.NewInt(1 << 0)
+	enrollAudienceSequencesResponseFieldMessage            = big.NewInt(1 << 1)
+	enrollAudienceSequencesResponseFieldSuccess            = big.NewInt(1 << 2)
+)
+
+type EnrollAudienceSequencesResponse struct {
+	AudienceEnrollment *SequenceAudienceEnrollment `json:"audienceEnrollment,omitempty" url:"audienceEnrollment,omitempty"`
+	Message            *string                     `json:"message,omitempty" url:"message,omitempty"`
+	Success            *bool                       `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (e *EnrollAudienceSequencesResponse) GetAudienceEnrollment() *SequenceAudienceEnrollment {
+	if e == nil {
+		return nil
+	}
+	return e.AudienceEnrollment
+}
+
+func (e *EnrollAudienceSequencesResponse) GetMessage() *string {
+	if e == nil {
+		return nil
+	}
+	return e.Message
+}
+
+func (e *EnrollAudienceSequencesResponse) GetSuccess() *bool {
+	if e == nil {
+		return nil
+	}
+	return e.Success
+}
+
+func (e *EnrollAudienceSequencesResponse) GetExtraProperties() map[string]interface{} {
+	if e == nil {
+		return nil
+	}
+	return e.extraProperties
+}
+
+func (e *EnrollAudienceSequencesResponse) require(field *big.Int) {
+	if e.explicitFields == nil {
+		e.explicitFields = big.NewInt(0)
+	}
+	e.explicitFields.Or(e.explicitFields, field)
+}
+
+// SetAudienceEnrollment sets the AudienceEnrollment field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EnrollAudienceSequencesResponse) SetAudienceEnrollment(audienceEnrollment *SequenceAudienceEnrollment) {
+	e.AudienceEnrollment = audienceEnrollment
+	e.require(enrollAudienceSequencesResponseFieldAudienceEnrollment)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EnrollAudienceSequencesResponse) SetMessage(message *string) {
+	e.Message = message
+	e.require(enrollAudienceSequencesResponseFieldMessage)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EnrollAudienceSequencesResponse) SetSuccess(success *bool) {
+	e.Success = success
+	e.require(enrollAudienceSequencesResponseFieldSuccess)
+}
+
+func (e *EnrollAudienceSequencesResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler EnrollAudienceSequencesResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EnrollAudienceSequencesResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+	e.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EnrollAudienceSequencesResponse) MarshalJSON() ([]byte, error) {
+	type embed EnrollAudienceSequencesResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*e),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (e *EnrollAudienceSequencesResponse) String() string {
+	if e == nil {
+		return "<nil>"
+	}
+	if len(e.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(e.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+var (
 	enrollSubscribersInSequencesResponseFieldEnrolled     = big.NewInt(1 << 0)
 	enrollSubscribersInSequencesResponseFieldNotFound     = big.NewInt(1 << 1)
 	enrollSubscribersInSequencesResponseFieldScheduledFor = big.NewInt(1 << 2)
@@ -22199,6 +24454,140 @@ func (e *EnrollSubscribersInSequencesResponse) MarshalJSON() ([]byte, error) {
 }
 
 func (e *EnrollSubscribersInSequencesResponse) String() string {
+	if e == nil {
+		return "<nil>"
+	}
+	if len(e.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(e.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+var (
+	estimateAudienceEnrollmentSequencesResponseFieldAlreadyEnrolledCount = big.NewInt(1 << 0)
+	estimateAudienceEnrollmentSequencesResponseFieldEnrollableCount      = big.NewInt(1 << 1)
+	estimateAudienceEnrollmentSequencesResponseFieldMatchingCount        = big.NewInt(1 << 2)
+	estimateAudienceEnrollmentSequencesResponseFieldSuccess              = big.NewInt(1 << 3)
+)
+
+type EstimateAudienceEnrollmentSequencesResponse struct {
+	// Matching contacts that would be skipped because they are already in the sequence.
+	AlreadyEnrolledCount *int `json:"alreadyEnrolledCount,omitempty" url:"alreadyEnrolledCount,omitempty"`
+	EnrollableCount      *int `json:"enrollableCount,omitempty" url:"enrollableCount,omitempty"`
+	// Active contacts with an email matching the audience.
+	MatchingCount *int  `json:"matchingCount,omitempty" url:"matchingCount,omitempty"`
+	Success       *bool `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (e *EstimateAudienceEnrollmentSequencesResponse) GetAlreadyEnrolledCount() *int {
+	if e == nil {
+		return nil
+	}
+	return e.AlreadyEnrolledCount
+}
+
+func (e *EstimateAudienceEnrollmentSequencesResponse) GetEnrollableCount() *int {
+	if e == nil {
+		return nil
+	}
+	return e.EnrollableCount
+}
+
+func (e *EstimateAudienceEnrollmentSequencesResponse) GetMatchingCount() *int {
+	if e == nil {
+		return nil
+	}
+	return e.MatchingCount
+}
+
+func (e *EstimateAudienceEnrollmentSequencesResponse) GetSuccess() *bool {
+	if e == nil {
+		return nil
+	}
+	return e.Success
+}
+
+func (e *EstimateAudienceEnrollmentSequencesResponse) GetExtraProperties() map[string]interface{} {
+	if e == nil {
+		return nil
+	}
+	return e.extraProperties
+}
+
+func (e *EstimateAudienceEnrollmentSequencesResponse) require(field *big.Int) {
+	if e.explicitFields == nil {
+		e.explicitFields = big.NewInt(0)
+	}
+	e.explicitFields.Or(e.explicitFields, field)
+}
+
+// SetAlreadyEnrolledCount sets the AlreadyEnrolledCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EstimateAudienceEnrollmentSequencesResponse) SetAlreadyEnrolledCount(alreadyEnrolledCount *int) {
+	e.AlreadyEnrolledCount = alreadyEnrolledCount
+	e.require(estimateAudienceEnrollmentSequencesResponseFieldAlreadyEnrolledCount)
+}
+
+// SetEnrollableCount sets the EnrollableCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EstimateAudienceEnrollmentSequencesResponse) SetEnrollableCount(enrollableCount *int) {
+	e.EnrollableCount = enrollableCount
+	e.require(estimateAudienceEnrollmentSequencesResponseFieldEnrollableCount)
+}
+
+// SetMatchingCount sets the MatchingCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EstimateAudienceEnrollmentSequencesResponse) SetMatchingCount(matchingCount *int) {
+	e.MatchingCount = matchingCount
+	e.require(estimateAudienceEnrollmentSequencesResponseFieldMatchingCount)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EstimateAudienceEnrollmentSequencesResponse) SetSuccess(success *bool) {
+	e.Success = success
+	e.require(estimateAudienceEnrollmentSequencesResponseFieldSuccess)
+}
+
+func (e *EstimateAudienceEnrollmentSequencesResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler EstimateAudienceEnrollmentSequencesResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EstimateAudienceEnrollmentSequencesResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+	e.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EstimateAudienceEnrollmentSequencesResponse) MarshalJSON() ([]byte, error) {
+	type embed EstimateAudienceEnrollmentSequencesResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*e),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (e *EstimateAudienceEnrollmentSequencesResponse) String() string {
 	if e == nil {
 		return "<nil>"
 	}
@@ -22413,6 +24802,106 @@ func (g *GenerateSequencesResponse) MarshalJSON() ([]byte, error) {
 }
 
 func (g *GenerateSequencesResponse) String() string {
+	if g == nil {
+		return "<nil>"
+	}
+	if len(g.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(g.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(g); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", g)
+}
+
+var (
+	getAudienceEnrollmentSequencesResponseFieldAudienceEnrollment = big.NewInt(1 << 0)
+	getAudienceEnrollmentSequencesResponseFieldSuccess            = big.NewInt(1 << 1)
+)
+
+type GetAudienceEnrollmentSequencesResponse struct {
+	AudienceEnrollment *SequenceAudienceEnrollment `json:"audienceEnrollment,omitempty" url:"audienceEnrollment,omitempty"`
+	Success            *bool                       `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (g *GetAudienceEnrollmentSequencesResponse) GetAudienceEnrollment() *SequenceAudienceEnrollment {
+	if g == nil {
+		return nil
+	}
+	return g.AudienceEnrollment
+}
+
+func (g *GetAudienceEnrollmentSequencesResponse) GetSuccess() *bool {
+	if g == nil {
+		return nil
+	}
+	return g.Success
+}
+
+func (g *GetAudienceEnrollmentSequencesResponse) GetExtraProperties() map[string]interface{} {
+	if g == nil {
+		return nil
+	}
+	return g.extraProperties
+}
+
+func (g *GetAudienceEnrollmentSequencesResponse) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetAudienceEnrollment sets the AudienceEnrollment field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetAudienceEnrollmentSequencesResponse) SetAudienceEnrollment(audienceEnrollment *SequenceAudienceEnrollment) {
+	g.AudienceEnrollment = audienceEnrollment
+	g.require(getAudienceEnrollmentSequencesResponseFieldAudienceEnrollment)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetAudienceEnrollmentSequencesResponse) SetSuccess(success *bool) {
+	g.Success = success
+	g.require(getAudienceEnrollmentSequencesResponseFieldSuccess)
+}
+
+func (g *GetAudienceEnrollmentSequencesResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler GetAudienceEnrollmentSequencesResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*g = GetAudienceEnrollmentSequencesResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *g)
+	if err != nil {
+		return err
+	}
+	g.extraProperties = extraProperties
+	g.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (g *GetAudienceEnrollmentSequencesResponse) MarshalJSON() ([]byte, error) {
+	type embed GetAudienceEnrollmentSequencesResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*g),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (g *GetAudienceEnrollmentSequencesResponse) String() string {
 	if g == nil {
 		return "<nil>"
 	}
@@ -23267,6 +25756,106 @@ func (g *GetStatsSequencesResponseStepsItemFailedSubscribersItem) String() strin
 		return value
 	}
 	return fmt.Sprintf("%#v", g)
+}
+
+var (
+	listAudienceEnrollmentsSequencesResponseFieldAudienceEnrollments = big.NewInt(1 << 0)
+	listAudienceEnrollmentsSequencesResponseFieldSuccess             = big.NewInt(1 << 1)
+)
+
+type ListAudienceEnrollmentsSequencesResponse struct {
+	AudienceEnrollments []*SequenceAudienceEnrollment `json:"audienceEnrollments,omitempty" url:"audienceEnrollments,omitempty"`
+	Success             *bool                         `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListAudienceEnrollmentsSequencesResponse) GetAudienceEnrollments() []*SequenceAudienceEnrollment {
+	if l == nil {
+		return nil
+	}
+	return l.AudienceEnrollments
+}
+
+func (l *ListAudienceEnrollmentsSequencesResponse) GetSuccess() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.Success
+}
+
+func (l *ListAudienceEnrollmentsSequencesResponse) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListAudienceEnrollmentsSequencesResponse) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetAudienceEnrollments sets the AudienceEnrollments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListAudienceEnrollmentsSequencesResponse) SetAudienceEnrollments(audienceEnrollments []*SequenceAudienceEnrollment) {
+	l.AudienceEnrollments = audienceEnrollments
+	l.require(listAudienceEnrollmentsSequencesResponseFieldAudienceEnrollments)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListAudienceEnrollmentsSequencesResponse) SetSuccess(success *bool) {
+	l.Success = success
+	l.require(listAudienceEnrollmentsSequencesResponseFieldSuccess)
+}
+
+func (l *ListAudienceEnrollmentsSequencesResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListAudienceEnrollmentsSequencesResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListAudienceEnrollmentsSequencesResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListAudienceEnrollmentsSequencesResponse) MarshalJSON() ([]byte, error) {
+	type embed ListAudienceEnrollmentsSequencesResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListAudienceEnrollmentsSequencesResponse) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
 }
 
 type ListEnrollmentsSequencesRequestSort string
@@ -24811,34 +27400,38 @@ func (u *UpdateSequencesResponse) String() string {
 var (
 	updateSequencesResponseSequenceFieldAddedBranchNodeID          = big.NewInt(1 << 0)
 	updateSequencesResponseSequenceFieldAddedBranchPathNodeIDs     = big.NewInt(1 << 1)
-	updateSequencesResponseSequenceFieldBccEmails                  = big.NewInt(1 << 2)
-	updateSequencesResponseSequenceFieldCompletedRecipientCount    = big.NewInt(1 << 3)
-	updateSequencesResponseSequenceFieldDeletedNodeID              = big.NewInt(1 << 4)
-	updateSequencesResponseSequenceFieldDuplicatedNodeID           = big.NewInt(1 << 5)
-	updateSequencesResponseSequenceFieldEnrollmentPaused           = big.NewInt(1 << 6)
-	updateSequencesResponseSequenceFieldGraphEditAction            = big.NewInt(1 << 7)
-	updateSequencesResponseSequenceFieldGraphRevision              = big.NewInt(1 << 8)
-	updateSequencesResponseSequenceFieldID                         = big.NewInt(1 << 9)
-	updateSequencesResponseSequenceFieldInsertedEmailCount         = big.NewInt(1 << 10)
-	updateSequencesResponseSequenceFieldInsertedEmailIDs           = big.NewInt(1 << 11)
-	updateSequencesResponseSequenceFieldInsertedNodeIDs            = big.NewInt(1 << 12)
-	updateSequencesResponseSequenceFieldMigratedRecipientCount     = big.NewInt(1 << 13)
-	updateSequencesResponseSequenceFieldMovedNodeID                = big.NewInt(1 << 14)
-	updateSequencesResponseSequenceFieldName                       = big.NewInt(1 << 15)
-	updateSequencesResponseSequenceFieldReplacedEdgeCount          = big.NewInt(1 << 16)
-	updateSequencesResponseSequenceFieldSendingWindow              = big.NewInt(1 << 17)
-	updateSequencesResponseSequenceFieldStatus                     = big.NewInt(1 << 18)
-	updateSequencesResponseSequenceFieldStopCondition              = big.NewInt(1 << 19)
-	updateSequencesResponseSequenceFieldUpdatedEmailCount          = big.NewInt(1 << 20)
-	updateSequencesResponseSequenceFieldUpdatedSmsStepCount        = big.NewInt(1 << 21)
-	updateSequencesResponseSequenceFieldUpdatedSubscriberStepCount = big.NewInt(1 << 22)
+	updateSequencesResponseSequenceFieldAudienceAutoEnroll         = big.NewInt(1 << 2)
+	updateSequencesResponseSequenceFieldBccEmails                  = big.NewInt(1 << 3)
+	updateSequencesResponseSequenceFieldCompletedRecipientCount    = big.NewInt(1 << 4)
+	updateSequencesResponseSequenceFieldDeletedNodeID              = big.NewInt(1 << 5)
+	updateSequencesResponseSequenceFieldDuplicatedNodeID           = big.NewInt(1 << 6)
+	updateSequencesResponseSequenceFieldEnrollmentPaused           = big.NewInt(1 << 7)
+	updateSequencesResponseSequenceFieldGraphEditAction            = big.NewInt(1 << 8)
+	updateSequencesResponseSequenceFieldGraphRevision              = big.NewInt(1 << 9)
+	updateSequencesResponseSequenceFieldID                         = big.NewInt(1 << 10)
+	updateSequencesResponseSequenceFieldInsertedEmailCount         = big.NewInt(1 << 11)
+	updateSequencesResponseSequenceFieldInsertedEmailIDs           = big.NewInt(1 << 12)
+	updateSequencesResponseSequenceFieldInsertedNodeIDs            = big.NewInt(1 << 13)
+	updateSequencesResponseSequenceFieldKeyDates                   = big.NewInt(1 << 14)
+	updateSequencesResponseSequenceFieldMigratedRecipientCount     = big.NewInt(1 << 15)
+	updateSequencesResponseSequenceFieldMovedNodeID                = big.NewInt(1 << 16)
+	updateSequencesResponseSequenceFieldName                       = big.NewInt(1 << 17)
+	updateSequencesResponseSequenceFieldReplacedEdgeCount          = big.NewInt(1 << 18)
+	updateSequencesResponseSequenceFieldSendingWindow              = big.NewInt(1 << 19)
+	updateSequencesResponseSequenceFieldStatus                     = big.NewInt(1 << 20)
+	updateSequencesResponseSequenceFieldStopCondition              = big.NewInt(1 << 21)
+	updateSequencesResponseSequenceFieldUpdatedEmailCount          = big.NewInt(1 << 22)
+	updateSequencesResponseSequenceFieldUpdatedSmsStepCount        = big.NewInt(1 << 23)
+	updateSequencesResponseSequenceFieldUpdatedSubscriberStepCount = big.NewInt(1 << 24)
 )
 
 type UpdateSequencesResponseSequence struct {
 	AddedBranchNodeID *string `json:"addedBranchNodeId,omitempty" url:"addedBranchNodeId,omitempty"`
 	// Created node IDs per branch path, in path order. Directly wired paths are empty arrays. A path's steps are one linear chain, so to nest another branch on a path, send a second update whose branch.afterNodeId is that path's last node ID; the nested paths reconnect to whatever already followed it.
 	AddedBranchPathNodeIDs map[string][]string `json:"addedBranchPathNodeIds,omitempty" url:"addedBranchPathNodeIds,omitempty"`
-	BccEmails              []string            `json:"bccEmails,omitempty" url:"bccEmails,omitempty"`
+	// Present when the request changed the keep-enrolling setting.
+	AudienceAutoEnroll *SequenceAudienceAutoEnroll `json:"audienceAutoEnroll,omitempty" url:"audienceAutoEnroll,omitempty"`
+	BccEmails          []string                    `json:"bccEmails,omitempty" url:"bccEmails,omitempty"`
 	// Recipients completed because their deleted step had no next step.
 	CompletedRecipientCount *float64 `json:"completedRecipientCount,omitempty" url:"completedRecipientCount,omitempty"`
 	// Node deleted by a delete_node edit.
@@ -24853,6 +27446,8 @@ type UpdateSequencesResponseSequence struct {
 	InsertedEmailCount *float64 `json:"insertedEmailCount,omitempty" url:"insertedEmailCount,omitempty"`
 	InsertedEmailIDs   []string `json:"insertedEmailIds,omitempty" url:"insertedEmailIds,omitempty"`
 	InsertedNodeIDs    []string `json:"insertedNodeIds,omitempty" url:"insertedNodeIds,omitempty"`
+	// Present when the request changed key dates.
+	KeyDates *SequenceKeyDates `json:"keyDates,omitempty" url:"keyDates,omitempty"`
 	// Recipients moved off deleted steps to the next step and processed immediately.
 	MigratedRecipientCount *float64 `json:"migratedRecipientCount,omitempty" url:"migratedRecipientCount,omitempty"`
 	// Node moved by a move_node edit.
@@ -24886,6 +27481,13 @@ func (u *UpdateSequencesResponseSequence) GetAddedBranchPathNodeIDs() map[string
 		return nil
 	}
 	return u.AddedBranchPathNodeIDs
+}
+
+func (u *UpdateSequencesResponseSequence) GetAudienceAutoEnroll() *SequenceAudienceAutoEnroll {
+	if u == nil {
+		return nil
+	}
+	return u.AudienceAutoEnroll
 }
 
 func (u *UpdateSequencesResponseSequence) GetBccEmails() []string {
@@ -24963,6 +27565,13 @@ func (u *UpdateSequencesResponseSequence) GetInsertedNodeIDs() []string {
 		return nil
 	}
 	return u.InsertedNodeIDs
+}
+
+func (u *UpdateSequencesResponseSequence) GetKeyDates() *SequenceKeyDates {
+	if u == nil {
+		return nil
+	}
+	return u.KeyDates
 }
 
 func (u *UpdateSequencesResponseSequence) GetMigratedRecipientCount() *float64 {
@@ -25063,6 +27672,13 @@ func (u *UpdateSequencesResponseSequence) SetAddedBranchPathNodeIDs(addedBranchP
 	u.require(updateSequencesResponseSequenceFieldAddedBranchPathNodeIDs)
 }
 
+// SetAudienceAutoEnroll sets the AudienceAutoEnroll field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateSequencesResponseSequence) SetAudienceAutoEnroll(audienceAutoEnroll *SequenceAudienceAutoEnroll) {
+	u.AudienceAutoEnroll = audienceAutoEnroll
+	u.require(updateSequencesResponseSequenceFieldAudienceAutoEnroll)
+}
+
 // SetBccEmails sets the BccEmails field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateSequencesResponseSequence) SetBccEmails(bccEmails []string) {
@@ -25138,6 +27754,13 @@ func (u *UpdateSequencesResponseSequence) SetInsertedEmailIDs(insertedEmailIDs [
 func (u *UpdateSequencesResponseSequence) SetInsertedNodeIDs(insertedNodeIDs []string) {
 	u.InsertedNodeIDs = insertedNodeIDs
 	u.require(updateSequencesResponseSequenceFieldInsertedNodeIDs)
+}
+
+// SetKeyDates sets the KeyDates field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateSequencesResponseSequence) SetKeyDates(keyDates *SequenceKeyDates) {
+	u.KeyDates = keyDates
+	u.require(updateSequencesResponseSequenceFieldKeyDates)
 }
 
 // SetMigratedRecipientCount sets the MigratedRecipientCount field and marks it as non-optional;
@@ -25307,54 +27930,58 @@ func (u *UnarchiveSequencesRequest) SetSequenceID(sequenceID string) {
 
 var (
 	sequenceUpdateRequestFieldSequenceID              = big.NewInt(1 << 0)
-	sequenceUpdateRequestFieldBccEmails               = big.NewInt(1 << 1)
-	sequenceUpdateRequestFieldBranch                  = big.NewInt(1 << 2)
-	sequenceUpdateRequestFieldConfirmLiveChange       = big.NewInt(1 << 3)
-	sequenceUpdateRequestFieldConfirmStructuralChange = big.NewInt(1 << 4)
-	sequenceUpdateRequestFieldCustomIntegration       = big.NewInt(1 << 5)
-	sequenceUpdateRequestFieldDescription             = big.NewInt(1 << 6)
-	sequenceUpdateRequestFieldEmails                  = big.NewInt(1 << 7)
-	sequenceUpdateRequestFieldEnrollmentFieldPath     = big.NewInt(1 << 8)
-	sequenceUpdateRequestFieldEnrollmentMode          = big.NewInt(1 << 9)
-	sequenceUpdateRequestFieldEnrollmentPaused        = big.NewInt(1 << 10)
-	sequenceUpdateRequestFieldEventName               = big.NewInt(1 << 11)
-	sequenceUpdateRequestFieldFromEmail               = big.NewInt(1 << 12)
-	sequenceUpdateRequestFieldFromName                = big.NewInt(1 << 13)
-	sequenceUpdateRequestFieldGraphEdit               = big.NewInt(1 << 14)
-	sequenceUpdateRequestFieldInactiveDays            = big.NewInt(1 << 15)
-	sequenceUpdateRequestFieldInactivityBaseline      = big.NewInt(1 << 16)
-	sequenceUpdateRequestFieldInsertSteps             = big.NewInt(1 << 17)
-	sequenceUpdateRequestFieldIntegrationEventKey     = big.NewInt(1 << 18)
-	sequenceUpdateRequestFieldIntegrationSlug         = big.NewInt(1 << 19)
-	sequenceUpdateRequestFieldLabels                  = big.NewInt(1 << 20)
-	sequenceUpdateRequestFieldListID                  = big.NewInt(1 << 21)
-	sequenceUpdateRequestFieldListIDs                 = big.NewInt(1 << 22)
-	sequenceUpdateRequestFieldListScope               = big.NewInt(1 << 23)
-	sequenceUpdateRequestFieldMinCount                = big.NewInt(1 << 24)
-	sequenceUpdateRequestFieldName                    = big.NewInt(1 << 25)
-	sequenceUpdateRequestFieldNodeUpdates             = big.NewInt(1 << 26)
-	sequenceUpdateRequestFieldPropertyFilters         = big.NewInt(1 << 27)
-	sequenceUpdateRequestFieldReplyProfileID          = big.NewInt(1 << 28)
-	sequenceUpdateRequestFieldReplyTo                 = big.NewInt(1 << 29)
-	sequenceUpdateRequestFieldReplyToName             = big.NewInt(1 << 30)
-	sequenceUpdateRequestFieldSegmentID               = big.NewInt(1 << 31)
-	sequenceUpdateRequestFieldSenderProfileID         = big.NewInt(1 << 32)
-	sequenceUpdateRequestFieldSendingWindow           = big.NewInt(1 << 33)
-	sequenceUpdateRequestFieldSmsSteps                = big.NewInt(1 << 34)
-	sequenceUpdateRequestFieldSteps                   = big.NewInt(1 << 35)
-	sequenceUpdateRequestFieldStopCondition           = big.NewInt(1 << 36)
-	sequenceUpdateRequestFieldStopOnSegmentExit       = big.NewInt(1 << 37)
-	sequenceUpdateRequestFieldSubscriberUpdateSteps   = big.NewInt(1 << 38)
-	sequenceUpdateRequestFieldTagName                 = big.NewInt(1 << 39)
-	sequenceUpdateRequestFieldTagNames                = big.NewInt(1 << 40)
-	sequenceUpdateRequestFieldTimeWindowDays          = big.NewInt(1 << 41)
-	sequenceUpdateRequestFieldTrigger                 = big.NewInt(1 << 42)
-	sequenceUpdateRequestFieldUserCancellable         = big.NewInt(1 << 43)
+	sequenceUpdateRequestFieldAudienceAutoEnroll      = big.NewInt(1 << 1)
+	sequenceUpdateRequestFieldBccEmails               = big.NewInt(1 << 2)
+	sequenceUpdateRequestFieldBranch                  = big.NewInt(1 << 3)
+	sequenceUpdateRequestFieldConfirmLiveChange       = big.NewInt(1 << 4)
+	sequenceUpdateRequestFieldConfirmStructuralChange = big.NewInt(1 << 5)
+	sequenceUpdateRequestFieldCustomIntegration       = big.NewInt(1 << 6)
+	sequenceUpdateRequestFieldDescription             = big.NewInt(1 << 7)
+	sequenceUpdateRequestFieldEmails                  = big.NewInt(1 << 8)
+	sequenceUpdateRequestFieldEnrollmentFieldPath     = big.NewInt(1 << 9)
+	sequenceUpdateRequestFieldEnrollmentMode          = big.NewInt(1 << 10)
+	sequenceUpdateRequestFieldEnrollmentPaused        = big.NewInt(1 << 11)
+	sequenceUpdateRequestFieldEventName               = big.NewInt(1 << 12)
+	sequenceUpdateRequestFieldFromEmail               = big.NewInt(1 << 13)
+	sequenceUpdateRequestFieldFromName                = big.NewInt(1 << 14)
+	sequenceUpdateRequestFieldGraphEdit               = big.NewInt(1 << 15)
+	sequenceUpdateRequestFieldInactiveDays            = big.NewInt(1 << 16)
+	sequenceUpdateRequestFieldInactivityBaseline      = big.NewInt(1 << 17)
+	sequenceUpdateRequestFieldInsertSteps             = big.NewInt(1 << 18)
+	sequenceUpdateRequestFieldIntegrationEventKey     = big.NewInt(1 << 19)
+	sequenceUpdateRequestFieldIntegrationSlug         = big.NewInt(1 << 20)
+	sequenceUpdateRequestFieldKeyDates                = big.NewInt(1 << 21)
+	sequenceUpdateRequestFieldLabels                  = big.NewInt(1 << 22)
+	sequenceUpdateRequestFieldListID                  = big.NewInt(1 << 23)
+	sequenceUpdateRequestFieldListIDs                 = big.NewInt(1 << 24)
+	sequenceUpdateRequestFieldListScope               = big.NewInt(1 << 25)
+	sequenceUpdateRequestFieldMinCount                = big.NewInt(1 << 26)
+	sequenceUpdateRequestFieldName                    = big.NewInt(1 << 27)
+	sequenceUpdateRequestFieldNodeUpdates             = big.NewInt(1 << 28)
+	sequenceUpdateRequestFieldPropertyFilters         = big.NewInt(1 << 29)
+	sequenceUpdateRequestFieldReplyProfileID          = big.NewInt(1 << 30)
+	sequenceUpdateRequestFieldReplyTo                 = big.NewInt(1 << 31)
+	sequenceUpdateRequestFieldReplyToName             = big.NewInt(1 << 32)
+	sequenceUpdateRequestFieldSegmentID               = big.NewInt(1 << 33)
+	sequenceUpdateRequestFieldSenderProfileID         = big.NewInt(1 << 34)
+	sequenceUpdateRequestFieldSendingWindow           = big.NewInt(1 << 35)
+	sequenceUpdateRequestFieldSmsSteps                = big.NewInt(1 << 36)
+	sequenceUpdateRequestFieldSteps                   = big.NewInt(1 << 37)
+	sequenceUpdateRequestFieldStopCondition           = big.NewInt(1 << 38)
+	sequenceUpdateRequestFieldStopOnSegmentExit       = big.NewInt(1 << 39)
+	sequenceUpdateRequestFieldSubscriberUpdateSteps   = big.NewInt(1 << 40)
+	sequenceUpdateRequestFieldTagName                 = big.NewInt(1 << 41)
+	sequenceUpdateRequestFieldTagNames                = big.NewInt(1 << 42)
+	sequenceUpdateRequestFieldTimeWindowDays          = big.NewInt(1 << 43)
+	sequenceUpdateRequestFieldTrigger                 = big.NewInt(1 << 44)
+	sequenceUpdateRequestFieldUserCancellable         = big.NewInt(1 << 45)
 )
 
 type SequenceUpdateRequest struct {
 	// Sequence ID
 	SequenceID string `json:"-" url:"-"`
+	// Keep enrolling later joiners of an audience until the last key date. Null clears it. Changing the trigger away from manual switches it off (endedReason "disabled").
+	AudienceAutoEnroll *SequenceAudienceAutoEnroll `json:"audienceAutoEnroll,omitempty" url:"-"`
 	// Email addresses that receive a blind copy of every email this sequence sends, such as a customer support inbox (max 10). Set to null to remove them.
 	BccEmails []string             `json:"bccEmails,omitempty" url:"-"`
 	Branch    *SequenceBranchInput `json:"branch,omitempty" url:"-"`
@@ -25387,6 +28014,8 @@ type SequenceUpdateRequest struct {
 	IntegrationEventKey *string `json:"integrationEventKey,omitempty" url:"-"`
 	// Catalog integration slug for an inbound_webhook trigger.
 	IntegrationSlug *string `json:"integrationSlug,omitempty" url:"-"`
+	// Replace the sequence key dates. Contacts already waiting on a key-date step are re-scheduled to the new dates. Set to null to remove them (rejected while a step still waits for one).
+	KeyDates *SequenceKeyDates `json:"keyDates,omitempty" url:"-"`
 	// Replacement dashboard label names. Missing labels are created.
 	Labels []string `json:"labels,omitempty" url:"-"`
 	// List ID for a replacement contact_added trigger.
@@ -25447,6 +28076,13 @@ func (s *SequenceUpdateRequest) require(field *big.Int) {
 func (s *SequenceUpdateRequest) SetSequenceID(sequenceID string) {
 	s.SequenceID = sequenceID
 	s.require(sequenceUpdateRequestFieldSequenceID)
+}
+
+// SetAudienceAutoEnroll sets the AudienceAutoEnroll field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceUpdateRequest) SetAudienceAutoEnroll(audienceAutoEnroll *SequenceAudienceAutoEnroll) {
+	s.AudienceAutoEnroll = audienceAutoEnroll
+	s.require(sequenceUpdateRequestFieldAudienceAutoEnroll)
 }
 
 // SetBccEmails sets the BccEmails field and marks it as non-optional;
@@ -25580,6 +28216,13 @@ func (s *SequenceUpdateRequest) SetIntegrationEventKey(integrationEventKey *stri
 func (s *SequenceUpdateRequest) SetIntegrationSlug(integrationSlug *string) {
 	s.IntegrationSlug = integrationSlug
 	s.require(sequenceUpdateRequestFieldIntegrationSlug)
+}
+
+// SetKeyDates sets the KeyDates field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceUpdateRequest) SetKeyDates(keyDates *SequenceKeyDates) {
+	s.KeyDates = keyDates
+	s.require(sequenceUpdateRequestFieldKeyDates)
 }
 
 // SetLabels sets the Labels field and marks it as non-optional;
