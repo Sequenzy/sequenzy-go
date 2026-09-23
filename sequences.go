@@ -895,14 +895,17 @@ func (e *EnableSequencesRequest) SetSequenceID(sequenceID string) {
 var (
 	enrollAudienceSequencesRequestFieldSequenceID   = big.NewInt(1 << 0)
 	enrollAudienceSequencesRequestFieldAudience     = big.NewInt(1 << 1)
-	enrollAudienceSequencesRequestFieldScheduledFor = big.NewInt(1 << 2)
-	enrollAudienceSequencesRequestFieldTargetNodeID = big.NewInt(1 << 3)
+	enrollAudienceSequencesRequestFieldData         = big.NewInt(1 << 2)
+	enrollAudienceSequencesRequestFieldScheduledFor = big.NewInt(1 << 3)
+	enrollAudienceSequencesRequestFieldTargetNodeID = big.NewInt(1 << 4)
 )
 
 type EnrollAudienceSequencesRequest struct {
 	// Sequence ID.
 	SequenceID string            `json:"-" url:"-"`
 	Audience   *SequenceAudience `json:"audience" url:"-"`
+	// Run-level data shared by everyone in this run (a sale end time, a discount percentage, a cut-off time). Stored on the run and copied into every enrolled contact's sequence context at enrollment time; the sequence's emails and conditions read it as `{{enrollment.<field>}}` (nested paths like `{{enrollment.draw.date}}` work). Must be a JSON object of at most 8 KB, 100 top-level keys and 8 levels of nesting; keys named __proto__, constructor or prototype and strings containing NUL characters are rejected. Omit, null or {} for none. Auto-enroll syncs do not carry run data.
+	Data map[string]any `json:"data,omitempty" url:"-"`
 	// Start the run at this moment instead of now (up to one year ahead). The run is created queued with a delayed job and can be cancelled before it starts. A past value starts now.
 	ScheduledFor *time.Time `json:"scheduledFor,omitempty" url:"-"`
 	// Step to start contacts at. Defaults to the first step after the trigger. Cannot be a trigger node.
@@ -931,6 +934,13 @@ func (e *EnrollAudienceSequencesRequest) SetSequenceID(sequenceID string) {
 func (e *EnrollAudienceSequencesRequest) SetAudience(audience *SequenceAudience) {
 	e.Audience = audience
 	e.require(enrollAudienceSequencesRequestFieldAudience)
+}
+
+// SetData sets the Data field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EnrollAudienceSequencesRequest) SetData(data map[string]any) {
+	e.Data = data
+	e.require(enrollAudienceSequencesRequestFieldData)
 }
 
 // SetScheduledFor sets the ScheduledFor field and marks it as non-optional;
@@ -4240,18 +4250,19 @@ var (
 	sequenceAudienceEnrollmentFieldCancelRequestedAt = big.NewInt(1 << 1)
 	sequenceAudienceEnrollmentFieldCompletedAt       = big.NewInt(1 << 2)
 	sequenceAudienceEnrollmentFieldCreatedAt         = big.NewInt(1 << 3)
-	sequenceAudienceEnrollmentFieldEnrolledCount     = big.NewInt(1 << 4)
-	sequenceAudienceEnrollmentFieldError             = big.NewInt(1 << 5)
-	sequenceAudienceEnrollmentFieldEstimatedCount    = big.NewInt(1 << 6)
-	sequenceAudienceEnrollmentFieldID                = big.NewInt(1 << 7)
-	sequenceAudienceEnrollmentFieldProcessedCount    = big.NewInt(1 << 8)
-	sequenceAudienceEnrollmentFieldScheduledFor      = big.NewInt(1 << 9)
-	sequenceAudienceEnrollmentFieldSequenceID        = big.NewInt(1 << 10)
-	sequenceAudienceEnrollmentFieldSkippedCount      = big.NewInt(1 << 11)
-	sequenceAudienceEnrollmentFieldSource            = big.NewInt(1 << 12)
-	sequenceAudienceEnrollmentFieldStartedAt         = big.NewInt(1 << 13)
-	sequenceAudienceEnrollmentFieldStatus            = big.NewInt(1 << 14)
-	sequenceAudienceEnrollmentFieldTargetNodeID      = big.NewInt(1 << 15)
+	sequenceAudienceEnrollmentFieldData              = big.NewInt(1 << 4)
+	sequenceAudienceEnrollmentFieldEnrolledCount     = big.NewInt(1 << 5)
+	sequenceAudienceEnrollmentFieldError             = big.NewInt(1 << 6)
+	sequenceAudienceEnrollmentFieldEstimatedCount    = big.NewInt(1 << 7)
+	sequenceAudienceEnrollmentFieldID                = big.NewInt(1 << 8)
+	sequenceAudienceEnrollmentFieldProcessedCount    = big.NewInt(1 << 9)
+	sequenceAudienceEnrollmentFieldScheduledFor      = big.NewInt(1 << 10)
+	sequenceAudienceEnrollmentFieldSequenceID        = big.NewInt(1 << 11)
+	sequenceAudienceEnrollmentFieldSkippedCount      = big.NewInt(1 << 12)
+	sequenceAudienceEnrollmentFieldSource            = big.NewInt(1 << 13)
+	sequenceAudienceEnrollmentFieldStartedAt         = big.NewInt(1 << 14)
+	sequenceAudienceEnrollmentFieldStatus            = big.NewInt(1 << 15)
+	sequenceAudienceEnrollmentFieldTargetNodeID      = big.NewInt(1 << 16)
 )
 
 type SequenceAudienceEnrollment struct {
@@ -4259,8 +4270,10 @@ type SequenceAudienceEnrollment struct {
 	CancelRequestedAt *time.Time        `json:"cancelRequestedAt,omitempty" url:"cancelRequestedAt,omitempty"`
 	CompletedAt       *time.Time        `json:"completedAt,omitempty" url:"completedAt,omitempty"`
 	CreatedAt         *time.Time        `json:"createdAt,omitempty" url:"createdAt,omitempty"`
-	EnrolledCount     *int              `json:"enrolledCount,omitempty" url:"enrolledCount,omitempty"`
-	Error             *string           `json:"error,omitempty" url:"error,omitempty"`
+	// Run-level data passed when the run was started, read by the run's emails as `{{enrollment.<field>}}`. Null when none was given.
+	Data          map[string]any `json:"data,omitempty" url:"data,omitempty"`
+	EnrolledCount *int           `json:"enrolledCount,omitempty" url:"enrolledCount,omitempty"`
+	Error         *string        `json:"error,omitempty" url:"error,omitempty"`
 	// Audience size estimated when the run started.
 	EstimatedCount *int    `json:"estimatedCount,omitempty" url:"estimatedCount,omitempty"`
 	ID             *string `json:"id,omitempty" url:"id,omitempty"`
@@ -4310,6 +4323,13 @@ func (s *SequenceAudienceEnrollment) GetCreatedAt() *time.Time {
 		return nil
 	}
 	return s.CreatedAt
+}
+
+func (s *SequenceAudienceEnrollment) GetData() map[string]any {
+	if s == nil {
+		return nil
+	}
+	return s.Data
 }
 
 func (s *SequenceAudienceEnrollment) GetEnrolledCount() *int {
@@ -4436,6 +4456,13 @@ func (s *SequenceAudienceEnrollment) SetCompletedAt(completedAt *time.Time) {
 func (s *SequenceAudienceEnrollment) SetCreatedAt(createdAt *time.Time) {
 	s.CreatedAt = createdAt
 	s.require(sequenceAudienceEnrollmentFieldCreatedAt)
+}
+
+// SetData sets the Data field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceAudienceEnrollment) SetData(data map[string]any) {
+	s.Data = data
+	s.require(sequenceAudienceEnrollmentFieldData)
 }
 
 // SetEnrolledCount sets the EnrolledCount field and marks it as non-optional;
