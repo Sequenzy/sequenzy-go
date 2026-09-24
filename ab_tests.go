@@ -119,7 +119,7 @@ type CreateAbTestsRequest struct {
 	ConfirmLiveChange *bool `json:"confirmLiveChange,omitempty" url:"-"`
 	// Test name. Defaults to "A/B Test for <campaign name>".
 	Name *string `json:"name,omitempty" url:"-"`
-	// Campaign-only duration before winner selection. Sequence tests select after winnerThreshold recipients.
+	// Campaign-only duration before winner selection. Sequence tests select after winnerThreshold recipients, once one variant leads on human opens or clicks.
 	TestDurationMinutes *int `json:"testDurationMinutes,omitempty" url:"-"`
 	// Campaign-only share of the audience that receives test sends. Sequence tests use winnerThreshold.
 	TestPercentage *int `json:"testPercentage,omitempty" url:"-"`

@@ -604,6 +604,31 @@ func (c *Client) List(
 	return response.Body, nil
 }
 
+// Lists the custom attribute names in use across the account, so you can reuse existing names and value types when creating or updating subscribers. Value types and examples come from up to 100 recent contacts with custom attributes. Names that only older contacts carry come from the account-wide attribute index, which returns up to the 500 most widely used names, and are included with sampledContacts 0 and the type of their indexed example (a boolean is reported for an example of "true" or "false"). Reserved profile fields (email, first and last name) and internal attributes are not listed. Requires subscribers:read.
+//
+// Example:
+//
+//	request := &sequenzygo.ListAttributesSubscribersRequest{}
+//	client.Subscribers.ListAttributes(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) ListAttributes(
+	ctx context.Context,
+	request *sequenzygo.ListAttributesSubscribersRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.ListAttributesSubscribersResponse, error) {
+	response, err := c.WithRawResponse.ListAttributes(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Lists internal notes for a subscriber identified by email address.
 //
 // Example:

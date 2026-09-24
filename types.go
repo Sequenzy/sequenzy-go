@@ -5057,6 +5057,325 @@ func (r RenderEmailResponseUnresolvedMergeTagsItemReason) Ptr() *RenderEmailResp
 	return &r
 }
 
+// Returned with status 422 when the request does not match the endpoint's field types, for example a missing required field, a value outside an allowed set, or a number sent as a string. Fix the field named in `property` and retry.
+var (
+	requestValidationErrorFieldErrors   = big.NewInt(1 << 0)
+	requestValidationErrorFieldFound    = big.NewInt(1 << 1)
+	requestValidationErrorFieldMessage  = big.NewInt(1 << 2)
+	requestValidationErrorFieldOn       = big.NewInt(1 << 3)
+	requestValidationErrorFieldProperty = big.NewInt(1 << 4)
+	requestValidationErrorFieldSummary  = big.NewInt(1 << 5)
+	requestValidationErrorFieldType     = big.NewInt(1 << 6)
+)
+
+type RequestValidationError struct {
+	// The first failures found, at most 10.
+	Errors []*RequestValidationErrorErrorsItem `json:"errors,omitempty" url:"errors,omitempty"`
+	// The request part as received, after unknown fields were removed.
+	Found   any     `json:"found,omitempty" url:"found,omitempty"`
+	Message *string `json:"message,omitempty" url:"message,omitempty"`
+	// Request part that failed, such as `body` or `query`. A query parameter outside its numeric range reports `property` here, with `property` set to `root` and the parameter value in `found`.
+	On *string `json:"on,omitempty" url:"on,omitempty"`
+	// JSON Pointer to the first failing field.
+	Property *string `json:"property,omitempty" url:"property,omitempty"`
+	// Readable description of the first failure.
+	Summary *string `json:"summary,omitempty" url:"summary,omitempty"`
+	Type    *string `json:"type,omitempty" url:"type,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *RequestValidationError) GetErrors() []*RequestValidationErrorErrorsItem {
+	if r == nil {
+		return nil
+	}
+	return r.Errors
+}
+
+func (r *RequestValidationError) GetFound() any {
+	if r == nil {
+		return nil
+	}
+	return r.Found
+}
+
+func (r *RequestValidationError) GetMessage() *string {
+	if r == nil {
+		return nil
+	}
+	return r.Message
+}
+
+func (r *RequestValidationError) GetOn() *string {
+	if r == nil {
+		return nil
+	}
+	return r.On
+}
+
+func (r *RequestValidationError) GetProperty() *string {
+	if r == nil {
+		return nil
+	}
+	return r.Property
+}
+
+func (r *RequestValidationError) GetSummary() *string {
+	if r == nil {
+		return nil
+	}
+	return r.Summary
+}
+
+func (r *RequestValidationError) GetType() *string {
+	if r == nil {
+		return nil
+	}
+	return r.Type
+}
+
+func (r *RequestValidationError) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *RequestValidationError) require(field *big.Int) {
+	if r.explicitFields == nil {
+		r.explicitFields = big.NewInt(0)
+	}
+	r.explicitFields.Or(r.explicitFields, field)
+}
+
+// SetErrors sets the Errors field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RequestValidationError) SetErrors(errors []*RequestValidationErrorErrorsItem) {
+	r.Errors = errors
+	r.require(requestValidationErrorFieldErrors)
+}
+
+// SetFound sets the Found field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RequestValidationError) SetFound(found any) {
+	r.Found = found
+	r.require(requestValidationErrorFieldFound)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RequestValidationError) SetMessage(message *string) {
+	r.Message = message
+	r.require(requestValidationErrorFieldMessage)
+}
+
+// SetOn sets the On field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RequestValidationError) SetOn(on *string) {
+	r.On = on
+	r.require(requestValidationErrorFieldOn)
+}
+
+// SetProperty sets the Property field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RequestValidationError) SetProperty(property *string) {
+	r.Property = property
+	r.require(requestValidationErrorFieldProperty)
+}
+
+// SetSummary sets the Summary field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RequestValidationError) SetSummary(summary *string) {
+	r.Summary = summary
+	r.require(requestValidationErrorFieldSummary)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RequestValidationError) SetType(type_ *string) {
+	r.Type = type_
+	r.require(requestValidationErrorFieldType)
+}
+
+func (r *RequestValidationError) UnmarshalJSON(data []byte) error {
+	type unmarshaler RequestValidationError
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = RequestValidationError(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *RequestValidationError) MarshalJSON() ([]byte, error) {
+	type embed RequestValidationError
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *RequestValidationError) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+var (
+	requestValidationErrorErrorsItemFieldAllowedValues = big.NewInt(1 << 0)
+	requestValidationErrorErrorsItemFieldMessage       = big.NewInt(1 << 1)
+	requestValidationErrorErrorsItemFieldPath          = big.NewInt(1 << 2)
+	requestValidationErrorErrorsItemFieldSummary       = big.NewInt(1 << 3)
+)
+
+type RequestValidationErrorErrorsItem struct {
+	// Accepted values when the field takes a fixed set of values.
+	AllowedValues []any   `json:"allowedValues,omitempty" url:"allowedValues,omitempty"`
+	Message       *string `json:"message,omitempty" url:"message,omitempty"`
+	Path          *string `json:"path,omitempty" url:"path,omitempty"`
+	Summary       *string `json:"summary,omitempty" url:"summary,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *RequestValidationErrorErrorsItem) GetAllowedValues() []any {
+	if r == nil {
+		return nil
+	}
+	return r.AllowedValues
+}
+
+func (r *RequestValidationErrorErrorsItem) GetMessage() *string {
+	if r == nil {
+		return nil
+	}
+	return r.Message
+}
+
+func (r *RequestValidationErrorErrorsItem) GetPath() *string {
+	if r == nil {
+		return nil
+	}
+	return r.Path
+}
+
+func (r *RequestValidationErrorErrorsItem) GetSummary() *string {
+	if r == nil {
+		return nil
+	}
+	return r.Summary
+}
+
+func (r *RequestValidationErrorErrorsItem) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *RequestValidationErrorErrorsItem) require(field *big.Int) {
+	if r.explicitFields == nil {
+		r.explicitFields = big.NewInt(0)
+	}
+	r.explicitFields.Or(r.explicitFields, field)
+}
+
+// SetAllowedValues sets the AllowedValues field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RequestValidationErrorErrorsItem) SetAllowedValues(allowedValues []any) {
+	r.AllowedValues = allowedValues
+	r.require(requestValidationErrorErrorsItemFieldAllowedValues)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RequestValidationErrorErrorsItem) SetMessage(message *string) {
+	r.Message = message
+	r.require(requestValidationErrorErrorsItemFieldMessage)
+}
+
+// SetPath sets the Path field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RequestValidationErrorErrorsItem) SetPath(path *string) {
+	r.Path = path
+	r.require(requestValidationErrorErrorsItemFieldPath)
+}
+
+// SetSummary sets the Summary field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RequestValidationErrorErrorsItem) SetSummary(summary *string) {
+	r.Summary = summary
+	r.require(requestValidationErrorErrorsItemFieldSummary)
+}
+
+func (r *RequestValidationErrorErrorsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler RequestValidationErrorErrorsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = RequestValidationErrorErrorsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *RequestValidationErrorErrorsItem) MarshalJSON() ([]byte, error) {
+	type embed RequestValidationErrorErrorsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *RequestValidationErrorErrorsItem) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
 // Point-in-time counts of active and waiting enrollment tokens for a sequence. This live snapshot is not limited by historical period, start, or end filters. Counts represent enrollment runs, not necessarily distinct subscribers.
 var (
 	sequenceEnrollmentCountsFieldActive        = big.NewInt(1 << 0)

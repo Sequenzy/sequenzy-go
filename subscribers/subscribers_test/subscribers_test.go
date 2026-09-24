@@ -614,6 +614,30 @@ func TestSubscribersListWithWireMock(
 	VerifyRequestCount(t, "TestSubscribersListWithWireMock", "GET", "/subscribers", nil, 1)
 }
 
+func TestSubscribersListAttributesWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.ListAttributesSubscribersRequest{}
+	_, invocationErr := client.Subscribers.ListAttributes(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestSubscribersListAttributesWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestSubscribersListAttributesWithWireMock", "GET", "/subscribers/attributes", nil, 1)
+}
+
 func TestSubscribersListNotesWithWireMock(
 	t *testing.T,
 ) {

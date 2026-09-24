@@ -11,18 +11,21 @@ import (
 )
 
 var (
-	triggerEventsRequestFieldCustomAttributes = big.NewInt(1 << 0)
-	triggerEventsRequestFieldEmail            = big.NewInt(1 << 1)
-	triggerEventsRequestFieldEvent            = big.NewInt(1 << 2)
-	triggerEventsRequestFieldEventID          = big.NewInt(1 << 3)
-	triggerEventsRequestFieldExternalID       = big.NewInt(1 << 4)
-	triggerEventsRequestFieldFirstName        = big.NewInt(1 << 5)
-	triggerEventsRequestFieldLastName         = big.NewInt(1 << 6)
-	triggerEventsRequestFieldOccurredAt       = big.NewInt(1 << 7)
-	triggerEventsRequestFieldProperties       = big.NewInt(1 << 8)
+	triggerEventsRequestFieldAccount          = big.NewInt(1 << 0)
+	triggerEventsRequestFieldCustomAttributes = big.NewInt(1 << 1)
+	triggerEventsRequestFieldEmail            = big.NewInt(1 << 2)
+	triggerEventsRequestFieldEvent            = big.NewInt(1 << 3)
+	triggerEventsRequestFieldEventID          = big.NewInt(1 << 4)
+	triggerEventsRequestFieldExternalID       = big.NewInt(1 << 5)
+	triggerEventsRequestFieldFirstName        = big.NewInt(1 << 6)
+	triggerEventsRequestFieldLastName         = big.NewInt(1 << 7)
+	triggerEventsRequestFieldOccurredAt       = big.NewInt(1 << 8)
+	triggerEventsRequestFieldProperties       = big.NewInt(1 << 9)
 )
 
 type TriggerEventsRequest struct {
+	// Attach the contact to an account (your customer's organization, unrelated to your Sequenzy account). Pass the account's externalId as a string, or an object with externalId plus optional name, domain, role (owner, admin, member) and attributes. The account is created when missing and its context is added to the event as `event.account.*`. Only used once the workspace has Accounts on (it has at least one account, or Accounts was turned on in the dashboard). Before that, the field is ignored in any shape and the response includes `accountIgnored`.
+	Account *TriggerEventsRequestAccount `json:"account,omitempty" url:"-"`
 	// Optional attributes to set on the subscriber if created
 	CustomAttributes map[string]any `json:"customAttributes,omitempty" url:"-"`
 	// Required when creating a new subscriber. Optional when externalId identifies an existing subscriber.
@@ -50,6 +53,13 @@ func (t *TriggerEventsRequest) require(field *big.Int) {
 		t.explicitFields = big.NewInt(0)
 	}
 	t.explicitFields.Or(t.explicitFields, field)
+}
+
+// SetAccount sets the Account field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TriggerEventsRequest) SetAccount(account *TriggerEventsRequestAccount) {
+	t.Account = account
+	t.require(triggerEventsRequestFieldAccount)
 }
 
 // SetCustomAttributes sets the CustomAttributes field and marks it as non-optional;
@@ -876,20 +886,262 @@ func (t *TriggerBulkEventsResponseSubscriber) String() string {
 	return fmt.Sprintf("%#v", t)
 }
 
+// Attach the contact to an account (your customer's organization, unrelated to your Sequenzy account). Pass the account's externalId as a string, or an object with externalId plus optional name, domain, role (owner, admin, member) and attributes. The account is created when missing and its context is added to the event as `event.account.*`. Only used once the workspace has Accounts on (it has at least one account, or Accounts was turned on in the dashboard). Before that, the field is ignored in any shape and the response includes `accountIgnored`.
+type TriggerEventsRequestAccount struct {
+	String                                string
+	TriggerEventsRequestAccountAttributes *TriggerEventsRequestAccountAttributes
+
+	typ string
+}
+
+func (t *TriggerEventsRequestAccount) GetString() string {
+	if t == nil {
+		return ""
+	}
+	return t.String
+}
+
+func (t *TriggerEventsRequestAccount) GetTriggerEventsRequestAccountAttributes() *TriggerEventsRequestAccountAttributes {
+	if t == nil {
+		return nil
+	}
+	return t.TriggerEventsRequestAccountAttributes
+}
+
+func (t *TriggerEventsRequestAccount) UnmarshalJSON(data []byte) error {
+	var valueString string
+	if err := json.Unmarshal(data, &valueString); err == nil {
+		t.typ = "String"
+		t.String = valueString
+		return nil
+	}
+	valueTriggerEventsRequestAccountAttributes := new(TriggerEventsRequestAccountAttributes)
+	if err := json.Unmarshal(data, &valueTriggerEventsRequestAccountAttributes); err == nil {
+		t.typ = "TriggerEventsRequestAccountAttributes"
+		t.TriggerEventsRequestAccountAttributes = valueTriggerEventsRequestAccountAttributes
+		return nil
+	}
+	return fmt.Errorf("%s cannot be deserialized as a %T", data, t)
+}
+
+func (t TriggerEventsRequestAccount) MarshalJSON() ([]byte, error) {
+	if t.typ == "String" || t.String != "" {
+		return json.Marshal(t.String)
+	}
+	if t.typ == "TriggerEventsRequestAccountAttributes" || t.TriggerEventsRequestAccountAttributes != nil {
+		return json.Marshal(t.TriggerEventsRequestAccountAttributes)
+	}
+	return nil, fmt.Errorf("type %T does not include a non-empty union type", t)
+}
+
+type TriggerEventsRequestAccountVisitor interface {
+	VisitString(string) error
+	VisitTriggerEventsRequestAccountAttributes(*TriggerEventsRequestAccountAttributes) error
+}
+
+func (t *TriggerEventsRequestAccount) Accept(visitor TriggerEventsRequestAccountVisitor) error {
+	if t.typ == "String" || t.String != "" {
+		return visitor.VisitString(t.String)
+	}
+	if t.typ == "TriggerEventsRequestAccountAttributes" || t.TriggerEventsRequestAccountAttributes != nil {
+		return visitor.VisitTriggerEventsRequestAccountAttributes(t.TriggerEventsRequestAccountAttributes)
+	}
+	return fmt.Errorf("type %T does not include a non-empty union type", t)
+}
+
 var (
-	triggerEventsResponseFieldDuplicate          = big.NewInt(1 << 0)
-	triggerEventsResponseFieldDuplicates         = big.NewInt(1 << 1)
-	triggerEventsResponseFieldEvent              = big.NewInt(1 << 2)
-	triggerEventsResponseFieldEvents             = big.NewInt(1 << 3)
-	triggerEventsResponseFieldHistorical         = big.NewInt(1 << 4)
-	triggerEventsResponseFieldInserted           = big.NewInt(1 << 5)
-	triggerEventsResponseFieldOptIn              = big.NewInt(1 << 6)
-	triggerEventsResponseFieldSideEffectFailures = big.NewInt(1 << 7)
-	triggerEventsResponseFieldSubscriber         = big.NewInt(1 << 8)
-	triggerEventsResponseFieldSuccess            = big.NewInt(1 << 9)
+	triggerEventsRequestAccountAttributesFieldAttributes = big.NewInt(1 << 0)
+	triggerEventsRequestAccountAttributesFieldDomain     = big.NewInt(1 << 1)
+	triggerEventsRequestAccountAttributesFieldExternalID = big.NewInt(1 << 2)
+	triggerEventsRequestAccountAttributesFieldName       = big.NewInt(1 << 3)
+	triggerEventsRequestAccountAttributesFieldRole       = big.NewInt(1 << 4)
+)
+
+type TriggerEventsRequestAccountAttributes struct {
+	Attributes map[string]any                             `json:"attributes,omitempty" url:"attributes,omitempty"`
+	Domain     *string                                    `json:"domain,omitempty" url:"domain,omitempty"`
+	ExternalID string                                     `json:"externalId" url:"externalId"`
+	Name       *string                                    `json:"name,omitempty" url:"name,omitempty"`
+	Role       *TriggerEventsRequestAccountAttributesRole `json:"role,omitempty" url:"role,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (t *TriggerEventsRequestAccountAttributes) GetAttributes() map[string]any {
+	if t == nil {
+		return nil
+	}
+	return t.Attributes
+}
+
+func (t *TriggerEventsRequestAccountAttributes) GetDomain() *string {
+	if t == nil {
+		return nil
+	}
+	return t.Domain
+}
+
+func (t *TriggerEventsRequestAccountAttributes) GetExternalID() string {
+	if t == nil {
+		return ""
+	}
+	return t.ExternalID
+}
+
+func (t *TriggerEventsRequestAccountAttributes) GetName() *string {
+	if t == nil {
+		return nil
+	}
+	return t.Name
+}
+
+func (t *TriggerEventsRequestAccountAttributes) GetRole() *TriggerEventsRequestAccountAttributesRole {
+	if t == nil {
+		return nil
+	}
+	return t.Role
+}
+
+func (t *TriggerEventsRequestAccountAttributes) GetExtraProperties() map[string]interface{} {
+	if t == nil {
+		return nil
+	}
+	return t.extraProperties
+}
+
+func (t *TriggerEventsRequestAccountAttributes) require(field *big.Int) {
+	if t.explicitFields == nil {
+		t.explicitFields = big.NewInt(0)
+	}
+	t.explicitFields.Or(t.explicitFields, field)
+}
+
+// SetAttributes sets the Attributes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TriggerEventsRequestAccountAttributes) SetAttributes(attributes map[string]any) {
+	t.Attributes = attributes
+	t.require(triggerEventsRequestAccountAttributesFieldAttributes)
+}
+
+// SetDomain sets the Domain field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TriggerEventsRequestAccountAttributes) SetDomain(domain *string) {
+	t.Domain = domain
+	t.require(triggerEventsRequestAccountAttributesFieldDomain)
+}
+
+// SetExternalID sets the ExternalID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TriggerEventsRequestAccountAttributes) SetExternalID(externalID string) {
+	t.ExternalID = externalID
+	t.require(triggerEventsRequestAccountAttributesFieldExternalID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TriggerEventsRequestAccountAttributes) SetName(name *string) {
+	t.Name = name
+	t.require(triggerEventsRequestAccountAttributesFieldName)
+}
+
+// SetRole sets the Role field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TriggerEventsRequestAccountAttributes) SetRole(role *TriggerEventsRequestAccountAttributesRole) {
+	t.Role = role
+	t.require(triggerEventsRequestAccountAttributesFieldRole)
+}
+
+func (t *TriggerEventsRequestAccountAttributes) UnmarshalJSON(data []byte) error {
+	type unmarshaler TriggerEventsRequestAccountAttributes
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*t = TriggerEventsRequestAccountAttributes(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+	t.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (t *TriggerEventsRequestAccountAttributes) MarshalJSON() ([]byte, error) {
+	type embed TriggerEventsRequestAccountAttributes
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*t),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, t.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (t *TriggerEventsRequestAccountAttributes) String() string {
+	if t == nil {
+		return "<nil>"
+	}
+	if len(t.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(t.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(t); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", t)
+}
+
+type TriggerEventsRequestAccountAttributesRole string
+
+const (
+	TriggerEventsRequestAccountAttributesRoleOwner  TriggerEventsRequestAccountAttributesRole = "owner"
+	TriggerEventsRequestAccountAttributesRoleAdmin  TriggerEventsRequestAccountAttributesRole = "admin"
+	TriggerEventsRequestAccountAttributesRoleMember TriggerEventsRequestAccountAttributesRole = "member"
+)
+
+func NewTriggerEventsRequestAccountAttributesRoleFromString(s string) (TriggerEventsRequestAccountAttributesRole, error) {
+	switch s {
+	case "owner":
+		return TriggerEventsRequestAccountAttributesRoleOwner, nil
+	case "admin":
+		return TriggerEventsRequestAccountAttributesRoleAdmin, nil
+	case "member":
+		return TriggerEventsRequestAccountAttributesRoleMember, nil
+	}
+	var t TriggerEventsRequestAccountAttributesRole
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (t TriggerEventsRequestAccountAttributesRole) Ptr() *TriggerEventsRequestAccountAttributesRole {
+	return &t
+}
+
+var (
+	triggerEventsResponseFieldAccount            = big.NewInt(1 << 0)
+	triggerEventsResponseFieldAccountIgnored     = big.NewInt(1 << 1)
+	triggerEventsResponseFieldDuplicate          = big.NewInt(1 << 2)
+	triggerEventsResponseFieldDuplicates         = big.NewInt(1 << 3)
+	triggerEventsResponseFieldEvent              = big.NewInt(1 << 4)
+	triggerEventsResponseFieldEvents             = big.NewInt(1 << 5)
+	triggerEventsResponseFieldHistorical         = big.NewInt(1 << 6)
+	triggerEventsResponseFieldInserted           = big.NewInt(1 << 7)
+	triggerEventsResponseFieldOptIn              = big.NewInt(1 << 8)
+	triggerEventsResponseFieldSideEffectFailures = big.NewInt(1 << 9)
+	triggerEventsResponseFieldSubscriber         = big.NewInt(1 << 10)
+	triggerEventsResponseFieldSuccess            = big.NewInt(1 << 11)
 )
 
 type TriggerEventsResponse struct {
+	// Present when `account` attached the contact to an account.
+	Account *TriggerEventsResponseAccount `json:"account,omitempty" url:"account,omitempty"`
+	// Present when the request included `account` but the workspace has not turned Accounts on, so the field was ignored. Create an account with POST /accounts or turn Accounts on in the dashboard.
+	AccountIgnored *TriggerEventsResponseAccountIgnored `json:"accountIgnored,omitempty" url:"accountIgnored,omitempty"`
 	// Present and true when a live event's supplied eventId was already recorded for this contact and event name. Nothing was written and no side effects ran; event holds the existing event. Historical responses use duplicates instead.
 	Duplicate *bool `json:"duplicate,omitempty" url:"duplicate,omitempty"`
 	// Historical event rows skipped because their idempotency receipt already existed.
@@ -913,6 +1165,20 @@ type TriggerEventsResponse struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (t *TriggerEventsResponse) GetAccount() *TriggerEventsResponseAccount {
+	if t == nil {
+		return nil
+	}
+	return t.Account
+}
+
+func (t *TriggerEventsResponse) GetAccountIgnored() *TriggerEventsResponseAccountIgnored {
+	if t == nil {
+		return nil
+	}
+	return t.AccountIgnored
 }
 
 func (t *TriggerEventsResponse) GetDuplicate() *bool {
@@ -997,6 +1263,20 @@ func (t *TriggerEventsResponse) require(field *big.Int) {
 		t.explicitFields = big.NewInt(0)
 	}
 	t.explicitFields.Or(t.explicitFields, field)
+}
+
+// SetAccount sets the Account field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TriggerEventsResponse) SetAccount(account *TriggerEventsResponseAccount) {
+	t.Account = account
+	t.require(triggerEventsResponseFieldAccount)
+}
+
+// SetAccountIgnored sets the AccountIgnored field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TriggerEventsResponse) SetAccountIgnored(accountIgnored *TriggerEventsResponseAccountIgnored) {
+	t.AccountIgnored = accountIgnored
+	t.require(triggerEventsResponseFieldAccountIgnored)
 }
 
 // SetDuplicate sets the Duplicate field and marks it as non-optional;
@@ -1109,6 +1389,269 @@ func (t *TriggerEventsResponse) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", t)
+}
+
+// Present when `account` attached the contact to an account.
+var (
+	triggerEventsResponseAccountFieldCreated    = big.NewInt(1 << 0)
+	triggerEventsResponseAccountFieldExternalID = big.NewInt(1 << 1)
+	triggerEventsResponseAccountFieldRole       = big.NewInt(1 << 2)
+)
+
+type TriggerEventsResponseAccount struct {
+	// Whether this request created the account.
+	Created    *bool                             `json:"created,omitempty" url:"created,omitempty"`
+	ExternalID *string                           `json:"externalId,omitempty" url:"externalId,omitempty"`
+	Role       *TriggerEventsResponseAccountRole `json:"role,omitempty" url:"role,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (t *TriggerEventsResponseAccount) GetCreated() *bool {
+	if t == nil {
+		return nil
+	}
+	return t.Created
+}
+
+func (t *TriggerEventsResponseAccount) GetExternalID() *string {
+	if t == nil {
+		return nil
+	}
+	return t.ExternalID
+}
+
+func (t *TriggerEventsResponseAccount) GetRole() *TriggerEventsResponseAccountRole {
+	if t == nil {
+		return nil
+	}
+	return t.Role
+}
+
+func (t *TriggerEventsResponseAccount) GetExtraProperties() map[string]interface{} {
+	if t == nil {
+		return nil
+	}
+	return t.extraProperties
+}
+
+func (t *TriggerEventsResponseAccount) require(field *big.Int) {
+	if t.explicitFields == nil {
+		t.explicitFields = big.NewInt(0)
+	}
+	t.explicitFields.Or(t.explicitFields, field)
+}
+
+// SetCreated sets the Created field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TriggerEventsResponseAccount) SetCreated(created *bool) {
+	t.Created = created
+	t.require(triggerEventsResponseAccountFieldCreated)
+}
+
+// SetExternalID sets the ExternalID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TriggerEventsResponseAccount) SetExternalID(externalID *string) {
+	t.ExternalID = externalID
+	t.require(triggerEventsResponseAccountFieldExternalID)
+}
+
+// SetRole sets the Role field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TriggerEventsResponseAccount) SetRole(role *TriggerEventsResponseAccountRole) {
+	t.Role = role
+	t.require(triggerEventsResponseAccountFieldRole)
+}
+
+func (t *TriggerEventsResponseAccount) UnmarshalJSON(data []byte) error {
+	type unmarshaler TriggerEventsResponseAccount
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*t = TriggerEventsResponseAccount(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+	t.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (t *TriggerEventsResponseAccount) MarshalJSON() ([]byte, error) {
+	type embed TriggerEventsResponseAccount
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*t),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, t.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (t *TriggerEventsResponseAccount) String() string {
+	if t == nil {
+		return "<nil>"
+	}
+	if len(t.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(t.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(t); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", t)
+}
+
+// Present when the request included `account` but the workspace has not turned Accounts on, so the field was ignored. Create an account with POST /accounts or turn Accounts on in the dashboard.
+var (
+	triggerEventsResponseAccountIgnoredFieldMessage = big.NewInt(1 << 0)
+	triggerEventsResponseAccountIgnoredFieldReason  = big.NewInt(1 << 1)
+)
+
+type TriggerEventsResponseAccountIgnored struct {
+	Message *string                                    `json:"message,omitempty" url:"message,omitempty"`
+	Reason  *TriggerEventsResponseAccountIgnoredReason `json:"reason,omitempty" url:"reason,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (t *TriggerEventsResponseAccountIgnored) GetMessage() *string {
+	if t == nil {
+		return nil
+	}
+	return t.Message
+}
+
+func (t *TriggerEventsResponseAccountIgnored) GetReason() *TriggerEventsResponseAccountIgnoredReason {
+	if t == nil {
+		return nil
+	}
+	return t.Reason
+}
+
+func (t *TriggerEventsResponseAccountIgnored) GetExtraProperties() map[string]interface{} {
+	if t == nil {
+		return nil
+	}
+	return t.extraProperties
+}
+
+func (t *TriggerEventsResponseAccountIgnored) require(field *big.Int) {
+	if t.explicitFields == nil {
+		t.explicitFields = big.NewInt(0)
+	}
+	t.explicitFields.Or(t.explicitFields, field)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TriggerEventsResponseAccountIgnored) SetMessage(message *string) {
+	t.Message = message
+	t.require(triggerEventsResponseAccountIgnoredFieldMessage)
+}
+
+// SetReason sets the Reason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TriggerEventsResponseAccountIgnored) SetReason(reason *TriggerEventsResponseAccountIgnoredReason) {
+	t.Reason = reason
+	t.require(triggerEventsResponseAccountIgnoredFieldReason)
+}
+
+func (t *TriggerEventsResponseAccountIgnored) UnmarshalJSON(data []byte) error {
+	type unmarshaler TriggerEventsResponseAccountIgnored
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*t = TriggerEventsResponseAccountIgnored(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+	t.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (t *TriggerEventsResponseAccountIgnored) MarshalJSON() ([]byte, error) {
+	type embed TriggerEventsResponseAccountIgnored
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*t),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, t.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (t *TriggerEventsResponseAccountIgnored) String() string {
+	if t == nil {
+		return "<nil>"
+	}
+	if len(t.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(t.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(t); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", t)
+}
+
+type TriggerEventsResponseAccountIgnoredReason string
+
+const (
+	TriggerEventsResponseAccountIgnoredReasonAccountsNotEnabled TriggerEventsResponseAccountIgnoredReason = "accounts_not_enabled"
+)
+
+func NewTriggerEventsResponseAccountIgnoredReasonFromString(s string) (TriggerEventsResponseAccountIgnoredReason, error) {
+	switch s {
+	case "accounts_not_enabled":
+		return TriggerEventsResponseAccountIgnoredReasonAccountsNotEnabled, nil
+	}
+	var t TriggerEventsResponseAccountIgnoredReason
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (t TriggerEventsResponseAccountIgnoredReason) Ptr() *TriggerEventsResponseAccountIgnoredReason {
+	return &t
+}
+
+type TriggerEventsResponseAccountRole string
+
+const (
+	TriggerEventsResponseAccountRoleOwner  TriggerEventsResponseAccountRole = "owner"
+	TriggerEventsResponseAccountRoleAdmin  TriggerEventsResponseAccountRole = "admin"
+	TriggerEventsResponseAccountRoleMember TriggerEventsResponseAccountRole = "member"
+)
+
+func NewTriggerEventsResponseAccountRoleFromString(s string) (TriggerEventsResponseAccountRole, error) {
+	switch s {
+	case "owner":
+		return TriggerEventsResponseAccountRoleOwner, nil
+	case "admin":
+		return TriggerEventsResponseAccountRoleAdmin, nil
+	case "member":
+		return TriggerEventsResponseAccountRoleMember, nil
+	}
+	var t TriggerEventsResponseAccountRole
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (t TriggerEventsResponseAccountRole) Ptr() *TriggerEventsResponseAccountRole {
+	return &t
 }
 
 var (

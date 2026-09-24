@@ -171,7 +171,7 @@ client.AbTests.Create(
 <dl>
 <dd>
 
-**testDurationMinutes:** `*int` — Campaign-only duration before winner selection. Sequence tests select after winnerThreshold recipients.
+**testDurationMinutes:** `*int` — Campaign-only duration before winner selection. Sequence tests select after winnerThreshold recipients, once one variant leads on human opens or clicks.
     
 </dd>
 </dl>
@@ -1394,6 +1394,1211 @@ client.Account.UpdateAPIKey(
 <dd>
 
 **scopes:** `[]string` — Replacement explicit permission scopes. Overrides preset when provided.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Accounts
+<details><summary><code>client.Accounts.AcceptSuggestions(request) -> *sequenzygo.AccountSuggestionsAcceptResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Creates an account for each domain (external ID and domain set to the domain, name derived from it) and adds the domain's contacts that belong to no account as members. When one account already uses the domain as its domain or external ID, contacts are added to it instead; with several, the domain is skipped (`multiple_accounts`). A domain whose contacts already partly belong to another account is skipped (`already_in_account`) so an organization is not duplicated. Domains without eligible contacts are skipped (`no_contacts`). Existing roles, names and domains are kept, no sync rules run, segment-entered sequences are not triggered, and retries are safe. Accounts hold at most 5,000 members, the attribute fan-out limit; `truncated` reports contacts left out.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.AcceptSuggestionsAccountsRequest{
+    Domains: []string{
+        "domains",
+    },
+}
+client.Accounts.AcceptSuggestions(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**domains:** `[]string` — Domains to accept, such as `acme.com`. Normalized to lowercase; duplicates are ignored. Personal and disposable providers are rejected.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Accounts.AddMember(ExternalIDPathParam, request) -> *sequenzygo.AccountMemberChangeResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Adds a contact to the account (creating the contact when `email` is new). Re-adding an existing member with a role updates it; without a role keeps the current one.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.AddMemberAccountsRequest{
+    ExternalIDPathParam: "externalId",
+}
+client.Accounts.AddMember(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**externalIDPathParam:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**email:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**externalID:** `*string` — Contact external ID, as an alternative to email.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**firstName:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**lastName:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**role:** `*sequenzygo.AddMemberAccountsRequestRole` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Accounts.CreateFromOrganizationID(request) -> *sequenzygo.CreateFromOrganizationIDAccountsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Starts a background job that creates one account per distinct value of `propertyKey` and adds each contact seen with that value as a `member`. Accounts are named from `nameKey` when set, otherwise after the work email domain most of their contacts share; existing names, domains and roles are kept. No emails are sent, no sync rules run and segment-entered sequences are not triggered. A run already queued or running for the same key is returned with `alreadyRunning` set instead of starting another; its `job.settings` show the source and name key it uses. Reruns are safe. Accounts is turned on before the job is queued and stays on even if the job fails.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.AccountOrganizationIDKey{
+    PropertyKey: "propertyKey",
+}
+client.Accounts.CreateFromOrganizationID(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**nameKey:** `*string` — Property or attribute holding the organization name. Without it, accounts are named after the work email domain their contacts share.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**propertyKey:** `string` — Event property or contact attribute holding your organization ID, such as `workspaceId`. Trimmed.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**source:** `*sequenzygo.AccountOrganizationIDKeySource` — Where the ID lives.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Accounts.Delete(ExternalID) -> *sequenzygo.DeleteAccountsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Deletes the account and its memberships. Contacts are kept; their `account.*` attributes are cleared.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.DeleteAccountsRequest{
+    ExternalID: "externalId",
+}
+client.Accounts.Delete(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**externalID:** `string` — Customer-owned organization ID (URL-encode slashes).
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Accounts.DetectOrganizationIDs() -> *sequenzygo.DetectOrganizationIDsAccountsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Finds event properties from the last 180 days (such as `workspaceId` or `organization_id`) and contact attributes (such as `account_id`) that look like your own organization ID, so you can create accounts from data you already send. Most useful first. Read-only; preview a candidate before creating accounts from it.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+client.Accounts.DetectOrganizationIDs(
+    context.TODO(),
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Accounts.GetByExternalID(ExternalID) -> *sequenzygo.GetByExternalIDAccountsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns the account and up to 100 members, owners first.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.GetByExternalIDAccountsRequest{
+    ExternalID: "externalId",
+}
+client.Accounts.GetByExternalID(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**externalID:** `string` — Customer-owned organization ID (URL-encode slashes).
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Accounts.GetOrganizationIDJob(JobID) -> *sequenzygo.GetOrganizationIDJobAccountsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Reports a job started by `POST /account-suggestions/organization-ids`. Finished jobs are kept for a limited time, after which this returns 404; the accounts stay.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.GetOrganizationIDJobAccountsRequest{
+    JobID: "jobId",
+}
+client.Accounts.GetOrganizationIDJob(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**jobID:** `string` — The `jobId` returned when the job started, URL-encoded.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Accounts.List() -> *sequenzygo.ListAccountsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists the B2B accounts (organizations) in the workspace. Search matches name, external ID and domain. Sort with `sort` (updatedAt, createdAt, name, memberCount, lastEventAt) and `order` (asc, desc).
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.ListAccountsRequest{}
+client.Accounts.List(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**limit:** `*int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**order:** `*sequenzygo.ListAccountsRequestOrder` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page:** `*int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**search:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sort:** `*sequenzygo.ListAccountsRequestSort` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Accounts.ListEvents(ExternalID) -> *sequenzygo.ListEventsAccountsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Recent events recorded on the account timeline, newest first (maximum 500).
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.ListEventsAccountsRequest{
+    ExternalID: "externalId",
+}
+client.Accounts.ListEvents(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**externalID:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `*int` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Accounts.ListMembers(ExternalID) -> *sequenzygo.ListMembersAccountsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists the contacts that belong to the account with their role. Owners first, then admins, then members.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.ListMembersAccountsRequest{
+    ExternalID: "externalId",
+}
+client.Accounts.ListMembers(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**externalID:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `*int` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Accounts.ListSuggestions() -> *sequenzygo.ListSuggestionsAccountsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Suggests accounts from work email domains that several contacts share, with up to 10 sample emails each. Personal and disposable providers (gmail.com, outlook.com, yopmail.com, ...), the workspace's own sending domains and their subdomains, domains where any contact already belongs to an account, and domains an account already uses (as its domain or external ID) are skipped. Largest domains first. Read-only; nothing is created until you accept a suggestion.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.ListSuggestionsAccountsRequest{}
+client.Accounts.ListSuggestions(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**limit:** `*int` — Number of suggestions. Values outside 1-100 are clamped; non-numeric values use the default.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**minContacts:** `*int` — Contacts a domain needs to be suggested. Values outside 2-1000 are clamped; non-numeric values use the default.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Accounts.PreviewFromOrganizationID() -> *sequenzygo.PreviewFromOrganizationIDAccountsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Shows the biggest organizations that creating accounts from `propertyKey` would make, with the name each account would get and sample contacts. Read-only.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.PreviewFromOrganizationIDAccountsRequest{
+    PropertyKey: "propertyKey",
+}
+client.Accounts.PreviewFromOrganizationID(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**limit:** `*int` — Organizations to return. Values outside 1-50 are clamped; non-numeric values use the default.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**nameKey:** `*string` — Property or attribute holding the organization name.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**propertyKey:** `string` — Event property or contact attribute holding your organization ID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**source:** `*sequenzygo.PreviewFromOrganizationIDAccountsRequestSource` — Where the ID lives.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Accounts.RemoveMember(ExternalIDPathParam, request) -> *sequenzygo.RemoveMemberAccountsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Removes a contact from the account. The contact is kept; its `account.*` attributes are cleared or replaced by another account it belongs to.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.RemoveMemberAccountsRequest{
+    ExternalIDPathParam: "externalId",
+}
+client.Accounts.RemoveMember(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**externalIDPathParam:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**email:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**externalID:** `*string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Accounts.TriggerEvent(ExternalID, request) -> *sequenzygo.TriggerEventAccountsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Records an event on the account timeline and delivers it as a contact event to the chosen recipients (`owners` by default, falling back to admins when there is no owner; `admins` includes owners; `all` every member; `none` records only). Each delivery runs the normal event pipeline with `event.account.*` properties. Pass `eventId` to make retries idempotent. Retries reuse the original recipients and event data, skip completed deliveries, and resume failed work without duplicating events or sequence enrollments.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.TriggerEventAccountsRequest{
+    ExternalID: "externalId",
+    Event: "trial_ending",
+}
+client.Accounts.TriggerEvent(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**externalID:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**event:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**eventID:** `*string` — Idempotency key scoped to this account, including when accounts share members. Retries keep the original recipients, properties and event time and resume incomplete deliveries.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**occurredAt:** `*time.Time` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**properties:** `map[string]any` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**recipients:** `*sequenzygo.TriggerEventAccountsRequestRecipients` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Accounts.Update(ExternalID, request) -> *sequenzygo.UpdateAccountsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Updates name, domain and attributes of an existing account. Returns 404 when the account does not exist.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.AccountPatchInput{
+    ExternalID: "externalId",
+}
+client.Accounts.Update(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**externalID:** `string` — Customer-owned organization ID (URL-encode slashes).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**attributes:** `map[string]any` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**domain:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**name:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**replaceAttributes:** `*bool` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Accounts.Upsert(request) -> *sequenzygo.AccountUpsertResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Upserts an account by its customer-owned externalId. Attributes merge into the stored attributes (null deletes a key; replaceAttributes replaces them all). Optional members are added in the same call. Account attributes fan out to every member for segments and `{{account.*}}` merge tags.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.AccountUpsertInput{
+    ExternalID: "org_123",
+}
+client.Accounts.Upsert(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**attributes:** `map[string]any` — Up to 100 attributes. Null values delete keys when merging.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**domain:** `*string` — Normalized to a hostname such as acme.com.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**externalID:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**members:** `[]*sequenzygo.AccountUpsertInputMembersItem` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**name:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**replaceAttributes:** `*bool` 
     
 </dd>
 </dl>
@@ -18605,6 +19810,64 @@ client.Subscribers.List(
 </dl>
 </details>
 
+<details><summary><code>client.Subscribers.ListAttributes() -> *sequenzygo.ListAttributesSubscribersResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists the custom attribute names in use across the account, so you can reuse existing names and value types when creating or updating subscribers. Value types and examples come from up to 100 recent contacts with custom attributes. Names that only older contacts carry come from the account-wide attribute index, which returns up to the 500 most widely used names, and are included with sampledContacts 0 and the type of their indexed example (a boolean is reported for an example of "true" or "false"). Reserved profile fields (email, first and last name) and internal attributes are not listed. Requires subscribers:read.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.ListAttributesSubscribersRequest{}
+client.Subscribers.ListAttributes(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**includeNested:** `*sequenzygo.ListAttributesSubscribersRequestIncludeNested` — Also list nested paths such as profile.tier. Must be true or false. Defaults to false.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Subscribers.ListNotes(Email) -> *sequenzygo.ListNotesSubscribersResponse</code></summary>
 <dl>
 <dd>
@@ -19002,6 +20265,14 @@ client.Subscribers.Update(
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**timezone:** `*string` — IANA timezone identifier such as America/New_York, stored as a native profile field and used for recipient-local campaign delivery. An invalid identifier returns 400 VALIDATION_ERROR. Omit to keep unchanged, or send null to clear.
+    
+</dd>
+</dl>
 </dd>
 </dl>
 
@@ -19367,6 +20638,14 @@ client.Subscribers.Events.Trigger(
 
 <dl>
 <dd>
+
+<dl>
+<dd>
+
+**account:** `*subscribers.TriggerEventsRequestAccount` — Attach the contact to an account (your customer's organization, unrelated to your Sequenzy account). Pass the account's externalId as a string, or an object with externalId plus optional name, domain, role (owner, admin, member) and attributes. The account is created when missing and its context is added to the event as `event.account.*`. Only used once the workspace has Accounts on (it has at least one account, or Accounts was turned on in the dashboard). Before that, the field is ignored in any shape and the response includes `accountIgnored`.
+    
+</dd>
+</dl>
 
 <dl>
 <dd>
@@ -22952,7 +24231,7 @@ client.Webhooks.Update(
 <dl>
 <dd>
 
-Adds a sending domain to the authenticated company and returns the SPF, DKIM, MAIL FROM, and inbound DNS records required for setup.
+Adds a sending domain to the authenticated company and returns the SPF, DKIM, MAIL FROM, and inbound DNS records required for setup. A domain belongs to exactly one company, so confirm the target company before adding it.
 </dd>
 </dl>
 </dd>

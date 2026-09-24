@@ -3610,6 +3610,7 @@ var (
 	sequenceActionResponseFieldSequenceID                   = big.NewInt(1 << 6)
 	sequenceActionResponseFieldStatus                       = big.NewInt(1 << 7)
 	sequenceActionResponseFieldSuccess                      = big.NewInt(1 << 8)
+	sequenceActionResponseFieldWarnings                     = big.NewInt(1 << 9)
 )
 
 type SequenceActionResponse struct {
@@ -3626,6 +3627,8 @@ type SequenceActionResponse struct {
 	SequenceID                   *string         `json:"sequenceId,omitempty" url:"sequenceId,omitempty"`
 	Status                       *SequenceStatus `json:"status,omitempty" url:"status,omitempty"`
 	Success                      *bool           `json:"success,omitempty" url:"success,omitempty"`
+	// Enable only. Non-blocking readiness warnings, such as empty branch paths or a `contact_added` trigger with no list, which enrolls every contact added to the company. Absent when there is nothing to report.
+	Warnings []string `json:"warnings,omitempty" url:"warnings,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -3695,6 +3698,13 @@ func (s *SequenceActionResponse) GetSuccess() *bool {
 		return nil
 	}
 	return s.Success
+}
+
+func (s *SequenceActionResponse) GetWarnings() []string {
+	if s == nil {
+		return nil
+	}
+	return s.Warnings
 }
 
 func (s *SequenceActionResponse) GetExtraProperties() map[string]interface{} {
@@ -3772,6 +3782,13 @@ func (s *SequenceActionResponse) SetStatus(status *SequenceStatus) {
 func (s *SequenceActionResponse) SetSuccess(success *bool) {
 	s.Success = success
 	s.require(sequenceActionResponseFieldSuccess)
+}
+
+// SetWarnings sets the Warnings field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceActionResponse) SetWarnings(warnings []string) {
+	s.Warnings = warnings
+	s.require(sequenceActionResponseFieldWarnings)
 }
 
 func (s *SequenceActionResponse) UnmarshalJSON(data []byte) error {
@@ -5940,7 +5957,8 @@ type SequenceCreateResponse struct {
 	RequiredEvents    []string                        `json:"requiredEvents,omitempty" url:"requiredEvents,omitempty"`
 	Sequence          *SequenceCreateResponseSequence `json:"sequence,omitempty" url:"sequence,omitempty"`
 	Success           *bool                           `json:"success,omitempty" url:"success,omitempty"`
-	Warnings          *BlockFieldWarnings             `json:"warnings,omitempty" url:"warnings,omitempty"`
+	// Non-blocking advisories about a created sequence. Besides block and sender-identity advisories, POST /sequences reports request fields that were ignored (such as a nested `triggerConfig`, `delay: 2`, `delayDays` or a body `companyId` that differs from the selected company), `contact_added` list IDs not found in the company, and a `contact_added` trigger sent with no list and no `listScope`. The sequence is still created as a draft; fix these before enabling it. Absent when there is nothing to report.
+	Warnings *BlockFieldWarnings `json:"warnings,omitempty" url:"warnings,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -24645,14 +24663,15 @@ type GenerateSequencesResponse struct {
 	// Endpoint, payload contract, example, documentation, and integration-guide pointer returned for custom event triggers.
 	EventTracking *SequenceCreateResponseEventTracking `json:"eventTracking,omitempty" url:"eventTracking,omitempty"`
 	// Code snippet returned for custom event triggers.
-	EventTrackingCode  *string                         `json:"eventTrackingCode,omitempty" url:"eventTrackingCode,omitempty"`
-	Message            *string                         `json:"message,omitempty" url:"message,omitempty"`
-	RequiredEvents     []string                        `json:"requiredEvents,omitempty" url:"requiredEvents,omitempty"`
-	Sequence           *SequenceCreateResponseSequence `json:"sequence,omitempty" url:"sequence,omitempty"`
-	Success            *bool                           `json:"success,omitempty" url:"success,omitempty"`
-	Warnings           *BlockFieldWarnings             `json:"warnings,omitempty" url:"warnings,omitempty"`
-	Deprecated         *bool                           `json:"deprecated,omitempty" url:"deprecated,omitempty"`
-	DeprecationMessage *string                         `json:"deprecationMessage,omitempty" url:"deprecationMessage,omitempty"`
+	EventTrackingCode *string                         `json:"eventTrackingCode,omitempty" url:"eventTrackingCode,omitempty"`
+	Message           *string                         `json:"message,omitempty" url:"message,omitempty"`
+	RequiredEvents    []string                        `json:"requiredEvents,omitempty" url:"requiredEvents,omitempty"`
+	Sequence          *SequenceCreateResponseSequence `json:"sequence,omitempty" url:"sequence,omitempty"`
+	Success           *bool                           `json:"success,omitempty" url:"success,omitempty"`
+	// Non-blocking advisories about a created sequence. Besides block and sender-identity advisories, POST /sequences reports request fields that were ignored (such as a nested `triggerConfig`, `delay: 2`, `delayDays` or a body `companyId` that differs from the selected company), `contact_added` list IDs not found in the company, and a `contact_added` trigger sent with no list and no `listScope`. The sequence is still created as a draft; fix these before enabling it. Absent when there is nothing to report.
+	Warnings           *BlockFieldWarnings `json:"warnings,omitempty" url:"warnings,omitempty"`
+	Deprecated         *bool               `json:"deprecated,omitempty" url:"deprecated,omitempty"`
+	DeprecationMessage *string             `json:"deprecationMessage,omitempty" url:"deprecationMessage,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -27317,7 +27336,8 @@ var (
 type UpdateSequencesResponse struct {
 	Sequence *UpdateSequencesResponseSequence `json:"sequence,omitempty" url:"sequence,omitempty"`
 	Success  *bool                            `json:"success,omitempty" url:"success,omitempty"`
-	Warnings *BlockFieldWarnings              `json:"warnings,omitempty" url:"warnings,omitempty"`
+	// Non-blocking advisories about the update. Besides block and sender advisories, this names request fields that were ignored (such as `triggerConfig` or a non-object step `delay`) and `contact_added` list IDs not found in the company, which block enabling. Absent when there is nothing to report.
+	Warnings *BlockFieldWarnings `json:"warnings,omitempty" url:"warnings,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`

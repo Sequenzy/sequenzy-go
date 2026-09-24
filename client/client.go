@@ -5,6 +5,7 @@ package client
 import (
 	abtests "github.com/sequenzy/sequenzy-go/abtests"
 	account "github.com/sequenzy/sequenzy-go/account"
+	accounts "github.com/sequenzy/sequenzy-go/accounts"
 	analytics "github.com/sequenzy/sequenzy-go/analytics"
 	audiencesyncs "github.com/sequenzy/sequenzy-go/audiencesyncs"
 	campaigns "github.com/sequenzy/sequenzy-go/campaigns"
@@ -53,6 +54,7 @@ import (
 type Client struct {
 	AbTests                 *abtests.Client
 	Account                 *account.Client
+	Accounts                *accounts.Client
 	Analytics               *analytics.Client
 	AudienceSyncs           *audiencesyncs.Client
 	Campaigns               *campaigns.Client
@@ -104,6 +106,7 @@ func NewClient(opts ...option.RequestOption) *Client {
 	return &Client{
 		AbTests:                 abtests.NewClient(options),
 		Account:                 account.NewClient(options),
+		Accounts:                accounts.NewClient(options),
 		Analytics:               analytics.NewClient(options),
 		AudienceSyncs:           audiencesyncs.NewClient(options),
 		Campaigns:               campaigns.NewClient(options),

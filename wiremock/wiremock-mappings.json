@@ -623,6 +623,556 @@
       }
     },
     {
+      "id": "3eee726b-ba84-4d49-9932-3789342c2007",
+      "name": "Accept account suggestions - default",
+      "request": {
+        "urlPathTemplate": "/account-suggestions",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"accountsCreated\": 1,\n  \"membershipsCreated\": 1,\n  \"results\": [\n    {\n      \"account\": {\n        \"attributes\": {\n          \"plan\": \"pro\",\n          \"seats\": 5\n        },\n        \"domain\": \"acme.com\",\n        \"externalId\": \"org_123\",\n        \"id\": \"acc_abc123\",\n        \"name\": \"Acme\"\n      },\n      \"contactCount\": 1,\n      \"domain\": \"domain\",\n      \"membersAdded\": 1,\n      \"reason\": \"no_contacts\",\n      \"status\": \"created\",\n      \"truncated\": true\n    }\n  ],\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "3eee726b-ba84-4d49-9932-3789342c2007",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "8d8fac1e-aa5b-4c0f-b6d9-3acedbfe965c",
+      "name": "Add account member - default",
+      "request": {
+        "urlPathTemplate": "/accounts/{externalIdPathParam}/members",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "externalIdPathParam": {
+            "equalTo": "externalId"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account\": {\n    \"attributes\": {\n      \"plan\": \"pro\",\n      \"seats\": 5\n    },\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"domain\": \"acme.com\",\n    \"externalId\": \"org_123\",\n    \"id\": \"acc_abc123\",\n    \"lastEventAt\": \"2024-01-15T09:30:00Z\",\n    \"memberCount\": 1,\n    \"name\": \"Acme\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"member\": {\n    \"created\": true,\n    \"email\": \"email\",\n    \"externalId\": \"externalId\",\n    \"role\": \"owner\",\n    \"subscriberCreated\": true,\n    \"subscriberId\": \"subscriberId\"\n  },\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "8d8fac1e-aa5b-4c0f-b6d9-3acedbfe965c",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "914469e8-a5bd-443a-bf80-acfb2d92cd1d",
+      "name": "Create accounts from an organization ID - default",
+      "request": {
+        "urlPathTemplate": "/account-suggestions/organization-ids",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 202,
+        "body": "{\n  \"alreadyRunning\": true,\n  \"job\": {\n    \"error\": \"error\",\n    \"jobId\": \"jobId\",\n    \"result\": {\n      \"accountsCreated\": 1,\n      \"accountsUpdated\": 1,\n      \"membershipsCreated\": 1,\n      \"membershipsUpdated\": 1,\n      \"skipped\": 1,\n      \"truncated\": true\n    },\n    \"settings\": {\n      \"nameKey\": \"nameKey\",\n      \"propertyKey\": \"propertyKey\",\n      \"source\": \"event\"\n    },\n    \"state\": \"queued\"\n  },\n  \"jobId\": \"jobId\",\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "914469e8-a5bd-443a-bf80-acfb2d92cd1d",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "9945c13d-2450-4148-b2e1-bb3db25f3b5c",
+      "name": "Delete account - default",
+      "request": {
+        "urlPathTemplate": "/accounts/{externalId}",
+        "method": "DELETE",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "externalId": {
+            "equalTo": "externalId"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"deleted\": true,\n  \"membersCleared\": 1,\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "9945c13d-2450-4148-b2e1-bb3db25f3b5c",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "0f992987-4a38-4011-9966-f64db370ba20",
+      "name": "Detect organization ID keys - default",
+      "request": {
+        "urlPathTemplate": "/account-suggestions/organization-ids",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"candidates\": [\n    {\n      \"accountCount\": 1,\n      \"eventCount\": 1,\n      \"eventNames\": [\n        \"eventNames\"\n      ],\n      \"nameKey\": \"nameKey\",\n      \"propertyKey\": \"propertyKey\",\n      \"source\": \"event\"\n    }\n  ],\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "0f992987-4a38-4011-9966-f64db370ba20",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
+      "id": "be594687-929d-4d3b-900c-ba9dca8c0753",
+      "name": "Get account - default",
+      "request": {
+        "urlPathTemplate": "/accounts/{externalId}",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "externalId": {
+            "equalTo": "externalId"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account\": {\n    \"attributes\": {\n      \"plan\": \"pro\",\n      \"seats\": 5\n    },\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"domain\": \"acme.com\",\n    \"externalId\": \"org_123\",\n    \"id\": \"acc_abc123\",\n    \"lastEventAt\": \"2024-01-15T09:30:00Z\",\n    \"memberCount\": 1,\n    \"name\": \"Acme\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"members\": [\n    {\n      \"accountId\": \"accountId\",\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"email\": \"email\",\n      \"externalId\": \"externalId\",\n      \"firstName\": \"firstName\",\n      \"id\": \"id\",\n      \"lastName\": \"lastName\",\n      \"role\": \"owner\",\n      \"status\": \"status\",\n      \"subscriberId\": \"subscriberId\"\n    }\n  ],\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "be594687-929d-4d3b-900c-ba9dca8c0753",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "826f045b-1481-417a-b0c6-9f2d861d1a61",
+      "name": "Get an organization ID account job - default",
+      "request": {
+        "urlPathTemplate": "/account-suggestions/organization-ids/jobs/{jobId}",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "jobId": {
+            "equalTo": "jobId"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"job\": {\n    \"error\": \"error\",\n    \"jobId\": \"jobId\",\n    \"result\": {\n      \"accountsCreated\": 1,\n      \"accountsUpdated\": 1,\n      \"membershipsCreated\": 1,\n      \"membershipsUpdated\": 1,\n      \"skipped\": 1,\n      \"truncated\": true\n    },\n    \"settings\": {\n      \"nameKey\": \"nameKey\",\n      \"propertyKey\": \"propertyKey\",\n      \"source\": \"event\"\n    },\n    \"state\": \"queued\"\n  },\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "826f045b-1481-417a-b0c6-9f2d861d1a61",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "c42d1646-b456-4e5d-bfc8-abc16e3ac976",
+      "name": "List accounts - default",
+      "request": {
+        "urlPathTemplate": "/accounts",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"accounts\": [\n    {\n      \"attributes\": {\n        \"plan\": \"pro\",\n        \"seats\": 5\n      },\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"domain\": \"acme.com\",\n      \"externalId\": \"org_123\",\n      \"id\": \"acc_abc123\",\n      \"lastEventAt\": \"2024-01-15T09:30:00Z\",\n      \"memberCount\": 1,\n      \"name\": \"Acme\",\n      \"updatedAt\": \"2024-01-15T09:30:00Z\"\n    }\n  ],\n  \"hasMore\": true,\n  \"limit\": 1,\n  \"page\": 1,\n  \"success\": true,\n  \"total\": 1\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "c42d1646-b456-4e5d-bfc8-abc16e3ac976",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
+      "id": "d4d246af-07ff-43b0-9ae0-a7ee656cfbc5",
+      "name": "List account events - default",
+      "request": {
+        "urlPathTemplate": "/accounts/{externalId}/events",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "externalId": {
+            "equalTo": "externalId"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account\": {\n    \"externalId\": \"externalId\",\n    \"id\": \"id\"\n  },\n  \"events\": [\n    {\n      \"eventTime\": \"2024-01-15T09:30:00Z\",\n      \"id\": \"id\",\n      \"name\": \"name\",\n      \"properties\": {\n        \"key\": \"value\"\n      },\n      \"recipientCount\": 1\n    }\n  ],\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "d4d246af-07ff-43b0-9ae0-a7ee656cfbc5",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "71f204c4-6586-4bfa-9d8c-78719f87849e",
+      "name": "List account members - default",
+      "request": {
+        "urlPathTemplate": "/accounts/{externalId}/members",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "externalId": {
+            "equalTo": "externalId"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account\": {\n    \"externalId\": \"externalId\",\n    \"id\": \"id\"\n  },\n  \"members\": [\n    {\n      \"accountId\": \"accountId\",\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"email\": \"email\",\n      \"externalId\": \"externalId\",\n      \"firstName\": \"firstName\",\n      \"id\": \"id\",\n      \"lastName\": \"lastName\",\n      \"role\": \"owner\",\n      \"status\": \"status\",\n      \"subscriberId\": \"subscriberId\"\n    }\n  ],\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "71f204c4-6586-4bfa-9d8c-78719f87849e",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "280203ff-5230-4f0a-a760-a55dbaccdade",
+      "name": "List account suggestions - default",
+      "request": {
+        "urlPathTemplate": "/account-suggestions",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"success\": true,\n  \"suggestions\": [\n    {\n      \"contactCount\": 7,\n      \"domain\": \"acme.com\",\n      \"name\": \"Acme\",\n      \"sampleEmails\": [\n        \"ana@acme.com\",\n        \"ben@acme.com\"\n      ]\n    }\n  ]\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "280203ff-5230-4f0a-a760-a55dbaccdade",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
+      "id": "190547aa-68ba-44af-9599-e77577917a24",
+      "name": "Preview accounts from an organization ID - default",
+      "request": {
+        "urlPathTemplate": "/account-suggestions/organization-ids/preview",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "queryParameters": {
+          "propertyKey": {
+            "equalTo": "propertyKey"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"organizations\": [\n    {\n      \"contactCount\": 1,\n      \"domain\": \"domain\",\n      \"externalId\": \"externalId\",\n      \"name\": \"name\",\n      \"sampleEmails\": [\n        \"sampleEmails\"\n      ]\n    }\n  ],\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "190547aa-68ba-44af-9599-e77577917a24",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
+      "id": "8bd5559c-1835-41f8-aeb9-f540aefb361c",
+      "name": "Remove account member - default",
+      "request": {
+        "urlPathTemplate": "/accounts/{externalIdPathParam}/members",
+        "method": "DELETE",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "externalIdPathParam": {
+            "equalTo": "externalId"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account\": {\n    \"attributes\": {\n      \"plan\": \"pro\",\n      \"seats\": 5\n    },\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"domain\": \"acme.com\",\n    \"externalId\": \"org_123\",\n    \"id\": \"acc_abc123\",\n    \"lastEventAt\": \"2024-01-15T09:30:00Z\",\n    \"memberCount\": 1,\n    \"name\": \"Acme\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"removed\": true,\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "8bd5559c-1835-41f8-aeb9-f540aefb361c",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "2ee3c3d1-8033-43fe-b634-fa8361553334",
+      "name": "Trigger account event - default",
+      "request": {
+        "urlPathTemplate": "/accounts/{externalId}/events",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "externalId": {
+            "equalTo": "externalId"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account\": {\n    \"attributes\": {\n      \"plan\": \"pro\",\n      \"seats\": 5\n    },\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"domain\": \"acme.com\",\n    \"externalId\": \"org_123\",\n    \"id\": \"acc_abc123\",\n    \"lastEventAt\": \"2024-01-15T09:30:00Z\",\n    \"memberCount\": 1,\n    \"name\": \"Acme\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"deliveries\": [\n    {\n      \"automationsTriggered\": [\n        \"automationsTriggered\"\n      ],\n      \"email\": \"email\",\n      \"error\": \"error\",\n      \"role\": \"owner\",\n      \"skipped\": \"contact_deleted\",\n      \"subscriberId\": \"subscriberId\",\n      \"success\": true\n    }\n  ],\n  \"duplicate\": true,\n  \"event\": {\n    \"id\": \"id\",\n    \"name\": \"name\",\n    \"time\": \"2024-01-15T09:30:00Z\"\n  },\n  \"recipientCount\": 1,\n  \"recipients\": \"owners\",\n  \"success\": true,\n  \"truncated\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "2ee3c3d1-8033-43fe-b634-fa8361553334",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "6df7fe21-c5ab-48f7-9870-8c2e279fd8e5",
+      "name": "Update account - default",
+      "request": {
+        "urlPathTemplate": "/accounts/{externalId}",
+        "method": "PATCH",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "externalId": {
+            "equalTo": "externalId"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account\": {\n    \"attributes\": {\n      \"plan\": \"pro\",\n      \"seats\": 5\n    },\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"domain\": \"acme.com\",\n    \"externalId\": \"org_123\",\n    \"id\": \"acc_abc123\",\n    \"lastEventAt\": \"2024-01-15T09:30:00Z\",\n    \"memberCount\": 1,\n    \"name\": \"Acme\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "6df7fe21-c5ab-48f7-9870-8c2e279fd8e5",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "82d044d5-b8ff-4557-9d19-a7ca3a4f56b6",
+      "name": "Create or update account - default",
+      "request": {
+        "urlPathTemplate": "/accounts",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account\": {\n    \"attributes\": {\n      \"plan\": \"pro\",\n      \"seats\": 5\n    },\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"domain\": \"acme.com\",\n    \"externalId\": \"org_123\",\n    \"id\": \"acc_abc123\",\n    \"lastEventAt\": \"2024-01-15T09:30:00Z\",\n    \"memberCount\": 1,\n    \"name\": \"Acme\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"created\": true,\n  \"members\": [\n    {\n      \"created\": true,\n      \"email\": \"email\",\n      \"externalId\": \"externalId\",\n      \"role\": \"role\",\n      \"subscriberId\": \"subscriberId\"\n    }\n  ],\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "82d044d5-b8ff-4557-9d19-a7ca3a4f56b6",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "2f4c91f7-0088-4f51-a1f1-5dfabbde773e",
       "name": "Get campaign metrics - default",
       "request": {
@@ -5913,7 +6463,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"acceptsNewEnrollments\": true,\n  \"effectiveStatus\": \"draft\",\n  \"effectiveStatusSummary\": \"effectiveStatusSummary\",\n  \"enrollmentPaused\": true,\n  \"message\": \"Sequence enabled\",\n  \"processesExistingEnrollments\": true,\n  \"sequenceId\": \"seq_abc123\",\n  \"status\": \"draft\",\n  \"success\": true\n}",
+        "body": "{\n  \"acceptsNewEnrollments\": true,\n  \"effectiveStatus\": \"draft\",\n  \"effectiveStatusSummary\": \"effectiveStatusSummary\",\n  \"enrollmentPaused\": true,\n  \"message\": \"Sequence enabled\",\n  \"processesExistingEnrollments\": true,\n  \"sequenceId\": \"seq_abc123\",\n  \"status\": \"draft\",\n  \"success\": true,\n  \"warnings\": [\n    \"warnings\"\n  ]\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -5988,7 +6538,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"acceptsNewEnrollments\": true,\n  \"effectiveStatus\": \"draft\",\n  \"effectiveStatusSummary\": \"effectiveStatusSummary\",\n  \"enrollmentPaused\": true,\n  \"message\": \"Sequence enabled\",\n  \"processesExistingEnrollments\": true,\n  \"sequenceId\": \"seq_abc123\",\n  \"status\": \"draft\",\n  \"success\": true\n}",
+        "body": "{\n  \"acceptsNewEnrollments\": true,\n  \"effectiveStatus\": \"draft\",\n  \"effectiveStatusSummary\": \"effectiveStatusSummary\",\n  \"enrollmentPaused\": true,\n  \"message\": \"Sequence enabled\",\n  \"processesExistingEnrollments\": true,\n  \"sequenceId\": \"seq_abc123\",\n  \"status\": \"draft\",\n  \"success\": true,\n  \"warnings\": [\n    \"warnings\"\n  ]\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -6060,7 +6610,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"acceptsNewEnrollments\": true,\n  \"effectiveStatus\": \"draft\",\n  \"effectiveStatusSummary\": \"effectiveStatusSummary\",\n  \"enrollmentPaused\": true,\n  \"message\": \"Sequence enabled\",\n  \"processesExistingEnrollments\": true,\n  \"sequenceId\": \"seq_abc123\",\n  \"status\": \"draft\",\n  \"success\": true\n}",
+        "body": "{\n  \"acceptsNewEnrollments\": true,\n  \"effectiveStatus\": \"draft\",\n  \"effectiveStatusSummary\": \"effectiveStatusSummary\",\n  \"enrollmentPaused\": true,\n  \"message\": \"Sequence enabled\",\n  \"processesExistingEnrollments\": true,\n  \"sequenceId\": \"seq_abc123\",\n  \"status\": \"draft\",\n  \"success\": true,\n  \"warnings\": [\n    \"warnings\"\n  ]\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -6689,7 +7239,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"acceptsNewEnrollments\": true,\n  \"effectiveStatus\": \"draft\",\n  \"effectiveStatusSummary\": \"effectiveStatusSummary\",\n  \"enrollmentPaused\": true,\n  \"message\": \"Sequence enabled\",\n  \"processesExistingEnrollments\": true,\n  \"sequenceId\": \"seq_abc123\",\n  \"status\": \"draft\",\n  \"success\": true\n}",
+        "body": "{\n  \"acceptsNewEnrollments\": true,\n  \"effectiveStatus\": \"draft\",\n  \"effectiveStatusSummary\": \"effectiveStatusSummary\",\n  \"enrollmentPaused\": true,\n  \"message\": \"Sequence enabled\",\n  \"processesExistingEnrollments\": true,\n  \"sequenceId\": \"seq_abc123\",\n  \"status\": \"draft\",\n  \"success\": true,\n  \"warnings\": [\n    \"warnings\"\n  ]\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -6800,7 +7350,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"acceptsNewEnrollments\": true,\n  \"effectiveStatus\": \"draft\",\n  \"effectiveStatusSummary\": \"effectiveStatusSummary\",\n  \"enrollmentPaused\": true,\n  \"message\": \"Sequence enabled\",\n  \"processesExistingEnrollments\": true,\n  \"sequenceId\": \"seq_abc123\",\n  \"status\": \"draft\",\n  \"success\": true\n}",
+        "body": "{\n  \"acceptsNewEnrollments\": true,\n  \"effectiveStatus\": \"draft\",\n  \"effectiveStatusSummary\": \"effectiveStatusSummary\",\n  \"enrollmentPaused\": true,\n  \"message\": \"Sequence enabled\",\n  \"processesExistingEnrollments\": true,\n  \"sequenceId\": \"seq_abc123\",\n  \"status\": \"draft\",\n  \"success\": true,\n  \"warnings\": [\n    \"warnings\"\n  ]\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -7989,6 +8539,38 @@
       "postServeActions": []
     },
     {
+      "id": "1318a824-dd5b-460f-903a-d869105e3d9d",
+      "name": "List subscriber attributes - default",
+      "request": {
+        "urlPathTemplate": "/subscribers/attributes",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"attributes\": [\n    {\n      \"isArray\": false,\n      \"key\": \"zip\",\n      \"mixedTypes\": false,\n      \"sampledContacts\": 42,\n      \"sampleValue\": \"02134\",\n      \"valueType\": \"string\"\n    }\n  ],\n  \"sampledContacts\": 100,\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "1318a824-dd5b-460f-903a-d869105e3d9d",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
       "id": "c6ab9a6d-b3cc-4099-b0bc-960c5d28851a",
       "name": "List subscriber notes - default",
       "request": {
@@ -8246,7 +8828,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"duplicate\": true,\n  \"duplicates\": 0,\n  \"event\": {\n    \"definitionCreated\": true,\n    \"id\": \"id\",\n    \"name\": \"name\"\n  },\n  \"events\": [\n    {\n      \"id\": \"id\",\n      \"name\": \"name\",\n      \"occurredAt\": \"2024-01-15T09:30:00Z\"\n    }\n  ],\n  \"historical\": true,\n  \"inserted\": 1,\n  \"optIn\": {\n    \"emailQueued\": true,\n    \"required\": true\n  },\n  \"sideEffectFailures\": [\n    \"apply-sync-rules\"\n  ],\n  \"subscriber\": {\n    \"created\": true,\n    \"email\": \"email\",\n    \"id\": \"id\"\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"account\": {\n    \"created\": true,\n    \"externalId\": \"externalId\",\n    \"role\": \"owner\"\n  },\n  \"accountIgnored\": {\n    \"message\": \"message\",\n    \"reason\": \"accounts_not_enabled\"\n  },\n  \"duplicate\": true,\n  \"duplicates\": 0,\n  \"event\": {\n    \"definitionCreated\": true,\n    \"id\": \"id\",\n    \"name\": \"name\"\n  },\n  \"events\": [\n    {\n      \"id\": \"id\",\n      \"name\": \"name\",\n      \"occurredAt\": \"2024-01-15T09:30:00Z\"\n    }\n  ],\n  \"historical\": true,\n  \"inserted\": 1,\n  \"optIn\": {\n    \"emailQueued\": true,\n    \"required\": true\n  },\n  \"sideEffectFailures\": [\n    \"apply-sync-rules\"\n  ],\n  \"subscriber\": {\n    \"created\": true,\n    \"email\": \"email\",\n    \"id\": \"id\"\n  },\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -10765,6 +11347,6 @@
     }
   ],
   "meta": {
-    "total": 311
+    "total": 328
   }
 }

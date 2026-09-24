@@ -1051,6 +1051,32 @@ func (l *ListSubscribersRequest) SetUnsubscribedBefore(unsubscribedBefore *strin
 }
 
 var (
+	listAttributesSubscribersRequestFieldIncludeNested = big.NewInt(1 << 0)
+)
+
+type ListAttributesSubscribersRequest struct {
+	// Also list nested paths such as profile.tier. Must be true or false. Defaults to false.
+	IncludeNested *ListAttributesSubscribersRequestIncludeNested `json:"-" url:"includeNested,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (l *ListAttributesSubscribersRequest) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetIncludeNested sets the IncludeNested field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListAttributesSubscribersRequest) SetIncludeNested(includeNested *ListAttributesSubscribersRequestIncludeNested) {
+	l.IncludeNested = includeNested
+	l.require(listAttributesSubscribersRequestFieldIncludeNested)
+}
+
+var (
 	listNotesSubscribersRequestFieldEmail = big.NewInt(1 << 0)
 )
 
@@ -8842,6 +8868,342 @@ func (i *ImportEventsSubscribersResponseSideEffectFailuresItem) String() string 
 	return fmt.Sprintf("%#v", i)
 }
 
+type ListAttributesSubscribersRequestIncludeNested string
+
+const (
+	ListAttributesSubscribersRequestIncludeNestedTrue  ListAttributesSubscribersRequestIncludeNested = "true"
+	ListAttributesSubscribersRequestIncludeNestedFalse ListAttributesSubscribersRequestIncludeNested = "false"
+)
+
+func NewListAttributesSubscribersRequestIncludeNestedFromString(s string) (ListAttributesSubscribersRequestIncludeNested, error) {
+	switch s {
+	case "true":
+		return ListAttributesSubscribersRequestIncludeNestedTrue, nil
+	case "false":
+		return ListAttributesSubscribersRequestIncludeNestedFalse, nil
+	}
+	var t ListAttributesSubscribersRequestIncludeNested
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListAttributesSubscribersRequestIncludeNested) Ptr() *ListAttributesSubscribersRequestIncludeNested {
+	return &l
+}
+
+var (
+	listAttributesSubscribersResponseFieldAttributes      = big.NewInt(1 << 0)
+	listAttributesSubscribersResponseFieldSampledContacts = big.NewInt(1 << 1)
+	listAttributesSubscribersResponseFieldSuccess         = big.NewInt(1 << 2)
+)
+
+type ListAttributesSubscribersResponse struct {
+	// Attributes seen on the sampled contacts, most common first, followed by names only older contacts carry.
+	Attributes []*ListAttributesSubscribersResponseAttributesItem `json:"attributes" url:"attributes"`
+	// Recent contacts with custom attributes that were sampled.
+	SampledContacts int  `json:"sampledContacts" url:"sampledContacts"`
+	Success         bool `json:"success" url:"success"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListAttributesSubscribersResponse) GetAttributes() []*ListAttributesSubscribersResponseAttributesItem {
+	if l == nil {
+		return nil
+	}
+	return l.Attributes
+}
+
+func (l *ListAttributesSubscribersResponse) GetSampledContacts() int {
+	if l == nil {
+		return 0
+	}
+	return l.SampledContacts
+}
+
+func (l *ListAttributesSubscribersResponse) GetSuccess() bool {
+	if l == nil {
+		return false
+	}
+	return l.Success
+}
+
+func (l *ListAttributesSubscribersResponse) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListAttributesSubscribersResponse) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetAttributes sets the Attributes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListAttributesSubscribersResponse) SetAttributes(attributes []*ListAttributesSubscribersResponseAttributesItem) {
+	l.Attributes = attributes
+	l.require(listAttributesSubscribersResponseFieldAttributes)
+}
+
+// SetSampledContacts sets the SampledContacts field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListAttributesSubscribersResponse) SetSampledContacts(sampledContacts int) {
+	l.SampledContacts = sampledContacts
+	l.require(listAttributesSubscribersResponseFieldSampledContacts)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListAttributesSubscribersResponse) SetSuccess(success bool) {
+	l.Success = success
+	l.require(listAttributesSubscribersResponseFieldSuccess)
+}
+
+func (l *ListAttributesSubscribersResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListAttributesSubscribersResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListAttributesSubscribersResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListAttributesSubscribersResponse) MarshalJSON() ([]byte, error) {
+	type embed ListAttributesSubscribersResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListAttributesSubscribersResponse) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	listAttributesSubscribersResponseAttributesItemFieldIsArray         = big.NewInt(1 << 0)
+	listAttributesSubscribersResponseAttributesItemFieldKey             = big.NewInt(1 << 1)
+	listAttributesSubscribersResponseAttributesItemFieldMixedTypes      = big.NewInt(1 << 2)
+	listAttributesSubscribersResponseAttributesItemFieldSampledContacts = big.NewInt(1 << 3)
+	listAttributesSubscribersResponseAttributesItemFieldSampleValue     = big.NewInt(1 << 4)
+	listAttributesSubscribersResponseAttributesItemFieldValueType       = big.NewInt(1 << 5)
+)
+
+type ListAttributesSubscribersResponseAttributesItem struct {
+	// Whether the attribute holds a list of values on the sampled contacts. Always false for names that only older contacts carry, because the attribute index does not record list shape.
+	IsArray bool `json:"isArray" url:"isArray"`
+	// Attribute name, or a dot path for nested attributes.
+	Key string `json:"key" url:"key"`
+	// True when sampled contacts hold different types for this attribute, for example zip codes stored as numbers on some contacts and strings on others. valueType is then string, the only type that keeps every value intact.
+	MixedTypes bool `json:"mixedTypes" url:"mixedTypes"`
+	// How many of the sampled contacts carry the attribute. 0 when only older contacts carry it.
+	SampledContacts int `json:"sampledContacts" url:"sampledContacts"`
+	// An example value as text, truncated to 50 characters. List examples from sampled contacts show up to three items. Null when no example is available.
+	SampleValue *string `json:"sampleValue,omitempty" url:"sampleValue,omitempty"`
+	// JSON type of the example value. For a list attribute, the type of its items. string when mixedTypes is true.
+	ValueType ListAttributesSubscribersResponseAttributesItemValueType `json:"valueType" url:"valueType"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListAttributesSubscribersResponseAttributesItem) GetIsArray() bool {
+	if l == nil {
+		return false
+	}
+	return l.IsArray
+}
+
+func (l *ListAttributesSubscribersResponseAttributesItem) GetKey() string {
+	if l == nil {
+		return ""
+	}
+	return l.Key
+}
+
+func (l *ListAttributesSubscribersResponseAttributesItem) GetMixedTypes() bool {
+	if l == nil {
+		return false
+	}
+	return l.MixedTypes
+}
+
+func (l *ListAttributesSubscribersResponseAttributesItem) GetSampledContacts() int {
+	if l == nil {
+		return 0
+	}
+	return l.SampledContacts
+}
+
+func (l *ListAttributesSubscribersResponseAttributesItem) GetSampleValue() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SampleValue
+}
+
+func (l *ListAttributesSubscribersResponseAttributesItem) GetValueType() ListAttributesSubscribersResponseAttributesItemValueType {
+	if l == nil {
+		return ""
+	}
+	return l.ValueType
+}
+
+func (l *ListAttributesSubscribersResponseAttributesItem) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListAttributesSubscribersResponseAttributesItem) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetIsArray sets the IsArray field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListAttributesSubscribersResponseAttributesItem) SetIsArray(isArray bool) {
+	l.IsArray = isArray
+	l.require(listAttributesSubscribersResponseAttributesItemFieldIsArray)
+}
+
+// SetKey sets the Key field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListAttributesSubscribersResponseAttributesItem) SetKey(key string) {
+	l.Key = key
+	l.require(listAttributesSubscribersResponseAttributesItemFieldKey)
+}
+
+// SetMixedTypes sets the MixedTypes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListAttributesSubscribersResponseAttributesItem) SetMixedTypes(mixedTypes bool) {
+	l.MixedTypes = mixedTypes
+	l.require(listAttributesSubscribersResponseAttributesItemFieldMixedTypes)
+}
+
+// SetSampledContacts sets the SampledContacts field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListAttributesSubscribersResponseAttributesItem) SetSampledContacts(sampledContacts int) {
+	l.SampledContacts = sampledContacts
+	l.require(listAttributesSubscribersResponseAttributesItemFieldSampledContacts)
+}
+
+// SetSampleValue sets the SampleValue field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListAttributesSubscribersResponseAttributesItem) SetSampleValue(sampleValue *string) {
+	l.SampleValue = sampleValue
+	l.require(listAttributesSubscribersResponseAttributesItemFieldSampleValue)
+}
+
+// SetValueType sets the ValueType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListAttributesSubscribersResponseAttributesItem) SetValueType(valueType ListAttributesSubscribersResponseAttributesItemValueType) {
+	l.ValueType = valueType
+	l.require(listAttributesSubscribersResponseAttributesItemFieldValueType)
+}
+
+func (l *ListAttributesSubscribersResponseAttributesItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListAttributesSubscribersResponseAttributesItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListAttributesSubscribersResponseAttributesItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListAttributesSubscribersResponseAttributesItem) MarshalJSON() ([]byte, error) {
+	type embed ListAttributesSubscribersResponseAttributesItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListAttributesSubscribersResponseAttributesItem) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+// JSON type of the example value. For a list attribute, the type of its items. string when mixedTypes is true.
+type ListAttributesSubscribersResponseAttributesItemValueType string
+
+const (
+	ListAttributesSubscribersResponseAttributesItemValueTypeString  ListAttributesSubscribersResponseAttributesItemValueType = "string"
+	ListAttributesSubscribersResponseAttributesItemValueTypeNumber  ListAttributesSubscribersResponseAttributesItemValueType = "number"
+	ListAttributesSubscribersResponseAttributesItemValueTypeBoolean ListAttributesSubscribersResponseAttributesItemValueType = "boolean"
+)
+
+func NewListAttributesSubscribersResponseAttributesItemValueTypeFromString(s string) (ListAttributesSubscribersResponseAttributesItemValueType, error) {
+	switch s {
+	case "string":
+		return ListAttributesSubscribersResponseAttributesItemValueTypeString, nil
+	case "number":
+		return ListAttributesSubscribersResponseAttributesItemValueTypeNumber, nil
+	case "boolean":
+		return ListAttributesSubscribersResponseAttributesItemValueTypeBoolean, nil
+	}
+	var t ListAttributesSubscribersResponseAttributesItemValueType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListAttributesSubscribersResponseAttributesItemValueType) Ptr() *ListAttributesSubscribersResponseAttributesItemValueType {
+	return &l
+}
+
 var (
 	listNotesByExternalIDSubscribersResponseFieldNotes   = big.NewInt(1 << 0)
 	listNotesByExternalIDSubscribersResponseFieldSuccess = big.NewInt(1 << 1)
@@ -10024,6 +10386,7 @@ var (
 	updateSubscribersRequestFieldSmsConsent               = big.NewInt(1 << 9)
 	updateSubscribersRequestFieldStatus                   = big.NewInt(1 << 10)
 	updateSubscribersRequestFieldTags                     = big.NewInt(1 << 11)
+	updateSubscribersRequestFieldTimezone                 = big.NewInt(1 << 12)
 )
 
 type UpdateSubscribersRequest struct {
@@ -10050,6 +10413,8 @@ type UpdateSubscribersRequest struct {
 	// Setting `unsubscribed` performs a full global unsubscribe.
 	Status *UpdateSubscribersRequestStatus `json:"status,omitempty" url:"-"`
 	Tags   []string                        `json:"tags,omitempty" url:"-"`
+	// IANA timezone identifier such as America/New_York, stored as a native profile field and used for recipient-local campaign delivery. An invalid identifier returns 400 VALIDATION_ERROR. Omit to keep unchanged, or send null to clear.
+	Timezone *string `json:"timezone,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -10144,6 +10509,13 @@ func (u *UpdateSubscribersRequest) SetStatus(status *UpdateSubscribersRequestSta
 func (u *UpdateSubscribersRequest) SetTags(tags []string) {
 	u.Tags = tags
 	u.require(updateSubscribersRequestFieldTags)
+}
+
+// SetTimezone sets the Timezone field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateSubscribersRequest) SetTimezone(timezone *string) {
+	u.Timezone = timezone
+	u.require(updateSubscribersRequestFieldTimezone)
 }
 
 func (u *UpdateSubscribersRequest) UnmarshalJSON(data []byte) error {
