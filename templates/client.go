@@ -61,6 +61,31 @@ func (c *Client) Create(
 	return response.Body, nil
 }
 
+// Remixes a public email from the Sequenzy email gallery into a new email template for your company. The new email keeps the example's exact layout and design; AI rewrites every piece of text for your company and your logo, brand color and website links are swapped in. It is saved as an HTML template. The example brand is never named, and none of its copy, offers or claims are reused. Its legal footer is removed; your own compliant footer is added when you send. Generation usually takes 5 to 20 seconds. Nothing is saved when generation fails; every successful call creates another template. Requires `templates:write`.
+//
+// Example:
+//
+//	request := &sequenzygo.CreateFromExampleTemplatesRequest{}
+//	client.Templates.CreateFromExample(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) CreateFromExample(
+	ctx context.Context,
+	request *sequenzygo.CreateFromExampleTemplatesRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.CreateFromExampleTemplatesResponse, error) {
+	response, err := c.WithRawResponse.CreateFromExample(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Creates (or fetches) the public view-in-browser link for an individual email - a transactional email, a sequence email, or a standalone template. Accepts a template ID or a transactional email's ID or slug; for a sequence email, pass the step's emailId. The hosted page renders an anonymized copy - sample contact, inert unsubscribe link, no open/click tracking - so the URL is safe to forward to anyone. Idempotent - an already-active link is returned with created=false instead of being rotated. Campaigns use their own campaign-level share link, which follows the A/B winning variant.
 //
 // Example:
@@ -142,7 +167,7 @@ func (c *Client) Get(
 	return response.Body, nil
 }
 
-// Lists saved email templates for the authenticated company, optionally filtered by label. Templates are the company's saved email bodies: standalone templates plus the bodies behind campaigns and transactional emails, so dashboard-designed emails appear here too. A campaign's `emailId` points at its entry in this list, and any template ID can be passed as `templateId` when creating a campaign. Bodies are kept when their campaign or transactional email is deleted. Results are newest first and paginated: 50 per page by default, up to 100. Page with `offset` while `pagination.hasMore` is true.
+// Lists saved email templates for the authenticated company, optionally filtered by label. Templates are the company's saved email bodies: standalone templates plus the bodies behind campaigns and transactional emails, so dashboard-designed emails appear here too. A campaign's `emailId` points at its entry in this list, and any template ID can be passed as `templateId` when creating a campaign. Bodies are kept when their campaign or transactional email is deleted. Content snapshots of code-managed transactional emails (created by sends with `trackAs`) are not listed and cannot be used as `templateId`. Results are newest first and paginated: 50 per page by default, up to 100. Page with `offset` while `pagination.hasMore` is true.
 //
 // Example:
 //

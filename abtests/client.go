@@ -169,7 +169,7 @@ func (c *Client) Get(
 	return response.Body, nil
 }
 
-// Returns aggregate and per-variant engagement stats for an A/B test.
+// Returns aggregate and per-variant engagement stats for an A/B test, plus the statistical significance of the test's winner metric.
 //
 // Example:
 //
@@ -248,7 +248,34 @@ func (c *Client) Restart(
 	return response.Body, nil
 }
 
-// Selects a winner for a campaign A/B test in the testing phase and queues the winning variant for the remaining audience.
+// Clears the winner of a sequence A/B test so contacts reaching the step are split across its variants again, keeping the results collected so far. Automatic winner selection is turned off for the test, so it keeps splitting until a winner is selected. Requires the sequences:write scope and, while the sequence is active, confirmLiveChange.
+//
+// Example:
+//
+//	request := &sequenzygo.ResumeAbTestsRequest{
+//	    AbTestID: "abTestId",
+//	}
+//	client.AbTests.Resume(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Resume(
+	ctx context.Context,
+	request *sequenzygo.ResumeAbTestsRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.ResumeAbTestsResponse, error) {
+	response, err := c.WithRawResponse.Resume(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Selects a winner for a campaign A/B test in the testing phase and queues the winning variant for the remaining audience. For a sequence A/B test, selects or changes the winner that future contacts reaching the step receive, including a winner picked automatically; contacts who already got a variant keep it. Campaign tests require the campaigns:send scope; sequence tests require sequences:write and, while the sequence is active, confirmLiveChange.
 //
 // Example:
 //

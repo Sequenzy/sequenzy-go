@@ -512,12 +512,71 @@ func (r *RestartAbTestsRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
-	selectWinnerAbTestsRequestFieldAbTestID  = big.NewInt(1 << 0)
-	selectWinnerAbTestsRequestFieldVariantID = big.NewInt(1 << 1)
+	resumeAbTestsRequestFieldAbTestID          = big.NewInt(1 << 0)
+	resumeAbTestsRequestFieldConfirmLiveChange = big.NewInt(1 << 1)
+)
+
+type ResumeAbTestsRequest struct {
+	AbTestID string `json:"-" url:"-"`
+	// Required as true when the sequence is active.
+	ConfirmLiveChange *bool `json:"confirmLiveChange,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (r *ResumeAbTestsRequest) require(field *big.Int) {
+	if r.explicitFields == nil {
+		r.explicitFields = big.NewInt(0)
+	}
+	r.explicitFields.Or(r.explicitFields, field)
+}
+
+// SetAbTestID sets the AbTestID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResumeAbTestsRequest) SetAbTestID(abTestID string) {
+	r.AbTestID = abTestID
+	r.require(resumeAbTestsRequestFieldAbTestID)
+}
+
+// SetConfirmLiveChange sets the ConfirmLiveChange field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResumeAbTestsRequest) SetConfirmLiveChange(confirmLiveChange *bool) {
+	r.ConfirmLiveChange = confirmLiveChange
+	r.require(resumeAbTestsRequestFieldConfirmLiveChange)
+}
+
+func (r *ResumeAbTestsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler ResumeAbTestsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*r = ResumeAbTestsRequest(body)
+	return nil
+}
+
+func (r *ResumeAbTestsRequest) MarshalJSON() ([]byte, error) {
+	type embed ResumeAbTestsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
+	selectWinnerAbTestsRequestFieldAbTestID          = big.NewInt(1 << 0)
+	selectWinnerAbTestsRequestFieldConfirmLiveChange = big.NewInt(1 << 1)
+	selectWinnerAbTestsRequestFieldVariantID         = big.NewInt(1 << 2)
 )
 
 type SelectWinnerAbTestsRequest struct {
 	AbTestID string `json:"-" url:"-"`
+	// Sequence tests only. Required as true when the sequence is active. Campaign tests ignore it.
+	ConfirmLiveChange *bool `json:"confirmLiveChange,omitempty" url:"-"`
 	// Variant to select as the winner.
 	VariantID string `json:"variantId" url:"-"`
 
@@ -537,6 +596,13 @@ func (s *SelectWinnerAbTestsRequest) require(field *big.Int) {
 func (s *SelectWinnerAbTestsRequest) SetAbTestID(abTestID string) {
 	s.AbTestID = abTestID
 	s.require(selectWinnerAbTestsRequestFieldAbTestID)
+}
+
+// SetConfirmLiveChange sets the ConfirmLiveChange field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SelectWinnerAbTestsRequest) SetConfirmLiveChange(confirmLiveChange *bool) {
+	s.ConfirmLiveChange = confirmLiveChange
+	s.require(selectWinnerAbTestsRequestFieldConfirmLiveChange)
 }
 
 // SetVariantID sets the VariantID field and marks it as non-optional;
@@ -569,31 +635,34 @@ func (s *SelectWinnerAbTestsRequest) MarshalJSON() ([]byte, error) {
 
 var (
 	abTestFieldAutomationNodeID    = big.NewInt(1 << 0)
-	abTestFieldCampaignID          = big.NewInt(1 << 1)
-	abTestFieldCompanyID           = big.NewInt(1 << 2)
-	abTestFieldCreatedAt           = big.NewInt(1 << 3)
-	abTestFieldID                  = big.NewInt(1 << 4)
-	abTestFieldKind                = big.NewInt(1 << 5)
-	abTestFieldName                = big.NewInt(1 << 6)
-	abTestFieldPendingSampleUpdate = big.NewInt(1 << 7)
-	abTestFieldProgress            = big.NewInt(1 << 8)
-	abTestFieldSettings            = big.NewInt(1 << 9)
-	abTestFieldStatus              = big.NewInt(1 << 10)
-	abTestFieldTestDurationMinutes = big.NewInt(1 << 11)
-	abTestFieldTestEndsAt          = big.NewInt(1 << 12)
-	abTestFieldTestPercentage      = big.NewInt(1 << 13)
-	abTestFieldTestStartedAt       = big.NewInt(1 << 14)
-	abTestFieldTestType            = big.NewInt(1 << 15)
-	abTestFieldUpdatedAt           = big.NewInt(1 << 16)
-	abTestFieldVariants            = big.NewInt(1 << 17)
-	abTestFieldWinnerCriteria      = big.NewInt(1 << 18)
-	abTestFieldWinnerSelectedAt    = big.NewInt(1 << 19)
-	abTestFieldWinnerThreshold     = big.NewInt(1 << 20)
-	abTestFieldWinningVariantID    = big.NewInt(1 << 21)
+	abTestFieldAutoSelectWinner    = big.NewInt(1 << 1)
+	abTestFieldCampaignID          = big.NewInt(1 << 2)
+	abTestFieldCompanyID           = big.NewInt(1 << 3)
+	abTestFieldCreatedAt           = big.NewInt(1 << 4)
+	abTestFieldID                  = big.NewInt(1 << 5)
+	abTestFieldKind                = big.NewInt(1 << 6)
+	abTestFieldName                = big.NewInt(1 << 7)
+	abTestFieldPendingSampleUpdate = big.NewInt(1 << 8)
+	abTestFieldProgress            = big.NewInt(1 << 9)
+	abTestFieldSettings            = big.NewInt(1 << 10)
+	abTestFieldStatus              = big.NewInt(1 << 11)
+	abTestFieldTestDurationMinutes = big.NewInt(1 << 12)
+	abTestFieldTestEndsAt          = big.NewInt(1 << 13)
+	abTestFieldTestPercentage      = big.NewInt(1 << 14)
+	abTestFieldTestStartedAt       = big.NewInt(1 << 15)
+	abTestFieldTestType            = big.NewInt(1 << 16)
+	abTestFieldUpdatedAt           = big.NewInt(1 << 17)
+	abTestFieldVariants            = big.NewInt(1 << 18)
+	abTestFieldWinnerCriteria      = big.NewInt(1 << 19)
+	abTestFieldWinnerSelectedAt    = big.NewInt(1 << 20)
+	abTestFieldWinnerThreshold     = big.NewInt(1 << 21)
+	abTestFieldWinningVariantID    = big.NewInt(1 << 22)
 )
 
 type AbTest struct {
-	AutomationNodeID *string    `json:"automationNodeId,omitempty" url:"automationNodeId,omitempty"`
+	AutomationNodeID *string `json:"automationNodeId,omitempty" url:"automationNodeId,omitempty"`
+	// Whether a winner is picked automatically once winnerThreshold is reached and one variant leads. False after testing is resumed; contacts are then split until a winner is selected. Present for sequence tests.
+	AutoSelectWinner *bool      `json:"autoSelectWinner,omitempty" url:"autoSelectWinner,omitempty"`
 	CampaignID       *string    `json:"campaignId,omitempty" url:"campaignId,omitempty"`
 	CompanyID        *string    `json:"companyId,omitempty" url:"companyId,omitempty"`
 	CreatedAt        *time.Time `json:"createdAt,omitempty" url:"createdAt,omitempty"`
@@ -636,6 +705,13 @@ func (a *AbTest) GetAutomationNodeID() *string {
 		return nil
 	}
 	return a.AutomationNodeID
+}
+
+func (a *AbTest) GetAutoSelectWinner() *bool {
+	if a == nil {
+		return nil
+	}
+	return a.AutoSelectWinner
 }
 
 func (a *AbTest) GetCampaignID() *string {
@@ -804,6 +880,13 @@ func (a *AbTest) require(field *big.Int) {
 func (a *AbTest) SetAutomationNodeID(automationNodeID *string) {
 	a.AutomationNodeID = automationNodeID
 	a.require(abTestFieldAutomationNodeID)
+}
+
+// SetAutoSelectWinner sets the AutoSelectWinner field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AbTest) SetAutoSelectWinner(autoSelectWinner *bool) {
+	a.AutoSelectWinner = autoSelectWinner
+	a.require(abTestFieldAutoSelectWinner)
 }
 
 // SetCampaignID sets the CampaignID field and marks it as non-optional;
@@ -1553,6 +1636,259 @@ func (a *AbTestProgressVariantsItem) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", a)
+}
+
+// Statistical significance of the test's winner metric. The leading variant is compared with every other variant using a two-sided two-proportion z-test, Bonferroni-corrected for the number of comparisons. Rates are measured over delivered emails, or sends when no deliveries were recorded. Before a winner is selected it uses the same time range as the stats. Once a winner is selected, it compares only emails sent before the winner was chosen (with all of their later opens and clicks) and ignores period, start and end, because the winner's later sends are counted under its variant.
+var (
+	abTestSignificanceFieldConfidence         = big.NewInt(1 << 0)
+	abTestSignificanceFieldConfidenceLevel    = big.NewInt(1 << 1)
+	abTestSignificanceFieldLeaderVariantID    = big.NewInt(1 << 2)
+	abTestSignificanceFieldLeaderVariantLabel = big.NewInt(1 << 3)
+	abTestSignificanceFieldMetric             = big.NewInt(1 << 4)
+	abTestSignificanceFieldPValue             = big.NewInt(1 << 5)
+	abTestSignificanceFieldRelativeLift       = big.NewInt(1 << 6)
+	abTestSignificanceFieldStatus             = big.NewInt(1 << 7)
+)
+
+type AbTestSignificance struct {
+	// One minus the corrected p-value, from 0 to 1. Values at or above confidenceLevel mean the difference is unlikely to be chance. Very strong results can round to exactly 1. Null while data is insufficient.
+	Confidence *float64 `json:"confidence,omitempty" url:"confidence,omitempty"`
+	// Confidence required for `significant`, from 0 to 1.
+	ConfidenceLevel float64 `json:"confidenceLevel" url:"confidenceLevel"`
+	// Variant with the highest rate, or null when the top variants are tied.
+	LeaderVariantID    *string `json:"leaderVariantId,omitempty" url:"leaderVariantId,omitempty"`
+	LeaderVariantLabel *string `json:"leaderVariantLabel,omitempty" url:"leaderVariantLabel,omitempty"`
+	// Metric compared, taken from the test's winner criteria.
+	Metric AbTestSignificanceMetric `json:"metric" url:"metric"`
+	// Corrected two-sided p-value of the weakest leader comparison. Very strong results can round to exactly 0. Null while data is insufficient.
+	PValue *float64 `json:"pValue,omitempty" url:"pValue,omitempty"`
+	// Relative improvement of the leader over the closest variant (0.3 means 30% higher). Null without a leader or when the closest variant has no opens/clicks.
+	RelativeLift *float64 `json:"relativeLift,omitempty" url:"relativeLift,omitempty"`
+	// `insufficient_data` means a variant has fewer than 30 recipients or too few opens/clicks (or non-conversions) for a reliable result. `significant` means confidence reached `confidenceLevel`.
+	Status AbTestSignificanceStatus `json:"status" url:"status"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AbTestSignificance) GetConfidence() *float64 {
+	if a == nil {
+		return nil
+	}
+	return a.Confidence
+}
+
+func (a *AbTestSignificance) GetConfidenceLevel() float64 {
+	if a == nil {
+		return 0
+	}
+	return a.ConfidenceLevel
+}
+
+func (a *AbTestSignificance) GetLeaderVariantID() *string {
+	if a == nil {
+		return nil
+	}
+	return a.LeaderVariantID
+}
+
+func (a *AbTestSignificance) GetLeaderVariantLabel() *string {
+	if a == nil {
+		return nil
+	}
+	return a.LeaderVariantLabel
+}
+
+func (a *AbTestSignificance) GetMetric() AbTestSignificanceMetric {
+	if a == nil {
+		return ""
+	}
+	return a.Metric
+}
+
+func (a *AbTestSignificance) GetPValue() *float64 {
+	if a == nil {
+		return nil
+	}
+	return a.PValue
+}
+
+func (a *AbTestSignificance) GetRelativeLift() *float64 {
+	if a == nil {
+		return nil
+	}
+	return a.RelativeLift
+}
+
+func (a *AbTestSignificance) GetStatus() AbTestSignificanceStatus {
+	if a == nil {
+		return ""
+	}
+	return a.Status
+}
+
+func (a *AbTestSignificance) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AbTestSignificance) require(field *big.Int) {
+	if a.explicitFields == nil {
+		a.explicitFields = big.NewInt(0)
+	}
+	a.explicitFields.Or(a.explicitFields, field)
+}
+
+// SetConfidence sets the Confidence field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AbTestSignificance) SetConfidence(confidence *float64) {
+	a.Confidence = confidence
+	a.require(abTestSignificanceFieldConfidence)
+}
+
+// SetConfidenceLevel sets the ConfidenceLevel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AbTestSignificance) SetConfidenceLevel(confidenceLevel float64) {
+	a.ConfidenceLevel = confidenceLevel
+	a.require(abTestSignificanceFieldConfidenceLevel)
+}
+
+// SetLeaderVariantID sets the LeaderVariantID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AbTestSignificance) SetLeaderVariantID(leaderVariantID *string) {
+	a.LeaderVariantID = leaderVariantID
+	a.require(abTestSignificanceFieldLeaderVariantID)
+}
+
+// SetLeaderVariantLabel sets the LeaderVariantLabel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AbTestSignificance) SetLeaderVariantLabel(leaderVariantLabel *string) {
+	a.LeaderVariantLabel = leaderVariantLabel
+	a.require(abTestSignificanceFieldLeaderVariantLabel)
+}
+
+// SetMetric sets the Metric field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AbTestSignificance) SetMetric(metric AbTestSignificanceMetric) {
+	a.Metric = metric
+	a.require(abTestSignificanceFieldMetric)
+}
+
+// SetPValue sets the PValue field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AbTestSignificance) SetPValue(pValue *float64) {
+	a.PValue = pValue
+	a.require(abTestSignificanceFieldPValue)
+}
+
+// SetRelativeLift sets the RelativeLift field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AbTestSignificance) SetRelativeLift(relativeLift *float64) {
+	a.RelativeLift = relativeLift
+	a.require(abTestSignificanceFieldRelativeLift)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AbTestSignificance) SetStatus(status AbTestSignificanceStatus) {
+	a.Status = status
+	a.require(abTestSignificanceFieldStatus)
+}
+
+func (a *AbTestSignificance) UnmarshalJSON(data []byte) error {
+	type unmarshaler AbTestSignificance
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AbTestSignificance(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AbTestSignificance) MarshalJSON() ([]byte, error) {
+	type embed AbTestSignificance
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AbTestSignificance) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+// Metric compared, taken from the test's winner criteria.
+type AbTestSignificanceMetric string
+
+const (
+	AbTestSignificanceMetricOpenRate  AbTestSignificanceMetric = "open_rate"
+	AbTestSignificanceMetricClickRate AbTestSignificanceMetric = "click_rate"
+)
+
+func NewAbTestSignificanceMetricFromString(s string) (AbTestSignificanceMetric, error) {
+	switch s {
+	case "open_rate":
+		return AbTestSignificanceMetricOpenRate, nil
+	case "click_rate":
+		return AbTestSignificanceMetricClickRate, nil
+	}
+	var t AbTestSignificanceMetric
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AbTestSignificanceMetric) Ptr() *AbTestSignificanceMetric {
+	return &a
+}
+
+// `insufficient_data` means a variant has fewer than 30 recipients or too few opens/clicks (or non-conversions) for a reliable result. `significant` means confidence reached `confidenceLevel`.
+type AbTestSignificanceStatus string
+
+const (
+	AbTestSignificanceStatusInsufficientData AbTestSignificanceStatus = "insufficient_data"
+	AbTestSignificanceStatusNotSignificant   AbTestSignificanceStatus = "not_significant"
+	AbTestSignificanceStatusSignificant      AbTestSignificanceStatus = "significant"
+)
+
+func NewAbTestSignificanceStatusFromString(s string) (AbTestSignificanceStatus, error) {
+	switch s {
+	case "insufficient_data":
+		return AbTestSignificanceStatusInsufficientData, nil
+	case "not_significant":
+		return AbTestSignificanceStatusNotSignificant, nil
+	case "significant":
+		return AbTestSignificanceStatusSignificant, nil
+	}
+	var t AbTestSignificanceStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AbTestSignificanceStatus) Ptr() *AbTestSignificanceStatus {
+	return &a
 }
 
 // Effective sequence variant strategy. Present for sequence tests.
@@ -2637,23 +2973,25 @@ func (g GetStatsAbTestsRequestPeriod) Ptr() *GetStatsAbTestsRequestPeriod {
 }
 
 var (
-	getStatsAbTestsResponseFieldAbTestID = big.NewInt(1 << 0)
-	getStatsAbTestsResponseFieldEnd      = big.NewInt(1 << 1)
-	getStatsAbTestsResponseFieldPeriod   = big.NewInt(1 << 2)
-	getStatsAbTestsResponseFieldStart    = big.NewInt(1 << 3)
-	getStatsAbTestsResponseFieldStats    = big.NewInt(1 << 4)
-	getStatsAbTestsResponseFieldSuccess  = big.NewInt(1 << 5)
-	getStatsAbTestsResponseFieldVariants = big.NewInt(1 << 6)
+	getStatsAbTestsResponseFieldAbTestID     = big.NewInt(1 << 0)
+	getStatsAbTestsResponseFieldEnd          = big.NewInt(1 << 1)
+	getStatsAbTestsResponseFieldPeriod       = big.NewInt(1 << 2)
+	getStatsAbTestsResponseFieldSignificance = big.NewInt(1 << 3)
+	getStatsAbTestsResponseFieldStart        = big.NewInt(1 << 4)
+	getStatsAbTestsResponseFieldStats        = big.NewInt(1 << 5)
+	getStatsAbTestsResponseFieldSuccess      = big.NewInt(1 << 6)
+	getStatsAbTestsResponseFieldVariants     = big.NewInt(1 << 7)
 )
 
 type GetStatsAbTestsResponse struct {
-	AbTestID *string                                `json:"abTestId,omitempty" url:"abTestId,omitempty"`
-	End      *time.Time                             `json:"end,omitempty" url:"end,omitempty"`
-	Period   *string                                `json:"period,omitempty" url:"period,omitempty"`
-	Start    *time.Time                             `json:"start,omitempty" url:"start,omitempty"`
-	Stats    map[string]any                         `json:"stats,omitempty" url:"stats,omitempty"`
-	Success  *bool                                  `json:"success,omitempty" url:"success,omitempty"`
-	Variants []*GetStatsAbTestsResponseVariantsItem `json:"variants,omitempty" url:"variants,omitempty"`
+	AbTestID     *string                                `json:"abTestId,omitempty" url:"abTestId,omitempty"`
+	End          *time.Time                             `json:"end,omitempty" url:"end,omitempty"`
+	Period       *string                                `json:"period,omitempty" url:"period,omitempty"`
+	Significance *AbTestSignificance                    `json:"significance,omitempty" url:"significance,omitempty"`
+	Start        *time.Time                             `json:"start,omitempty" url:"start,omitempty"`
+	Stats        map[string]any                         `json:"stats,omitempty" url:"stats,omitempty"`
+	Success      *bool                                  `json:"success,omitempty" url:"success,omitempty"`
+	Variants     []*GetStatsAbTestsResponseVariantsItem `json:"variants,omitempty" url:"variants,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -2681,6 +3019,13 @@ func (g *GetStatsAbTestsResponse) GetPeriod() *string {
 		return nil
 	}
 	return g.Period
+}
+
+func (g *GetStatsAbTestsResponse) GetSignificance() *AbTestSignificance {
+	if g == nil {
+		return nil
+	}
+	return g.Significance
 }
 
 func (g *GetStatsAbTestsResponse) GetStart() *time.Time {
@@ -2744,6 +3089,13 @@ func (g *GetStatsAbTestsResponse) SetEnd(end *time.Time) {
 func (g *GetStatsAbTestsResponse) SetPeriod(period *string) {
 	g.Period = period
 	g.require(getStatsAbTestsResponseFieldPeriod)
+}
+
+// SetSignificance sets the Significance field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetStatsAbTestsResponse) SetSignificance(significance *AbTestSignificance) {
+	g.Significance = significance
+	g.require(getStatsAbTestsResponseFieldSignificance)
 }
 
 // SetStart sets the Start field and marks it as non-optional;
@@ -3248,6 +3600,106 @@ func (r *RestartAbTestsResponse) String() string {
 }
 
 var (
+	resumeAbTestsResponseFieldAbTest  = big.NewInt(1 << 0)
+	resumeAbTestsResponseFieldSuccess = big.NewInt(1 << 1)
+)
+
+type ResumeAbTestsResponse struct {
+	AbTest  *AbTest `json:"abTest,omitempty" url:"abTest,omitempty"`
+	Success *bool   `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *ResumeAbTestsResponse) GetAbTest() *AbTest {
+	if r == nil {
+		return nil
+	}
+	return r.AbTest
+}
+
+func (r *ResumeAbTestsResponse) GetSuccess() *bool {
+	if r == nil {
+		return nil
+	}
+	return r.Success
+}
+
+func (r *ResumeAbTestsResponse) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *ResumeAbTestsResponse) require(field *big.Int) {
+	if r.explicitFields == nil {
+		r.explicitFields = big.NewInt(0)
+	}
+	r.explicitFields.Or(r.explicitFields, field)
+}
+
+// SetAbTest sets the AbTest field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResumeAbTestsResponse) SetAbTest(abTest *AbTest) {
+	r.AbTest = abTest
+	r.require(resumeAbTestsResponseFieldAbTest)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResumeAbTestsResponse) SetSuccess(success *bool) {
+	r.Success = success
+	r.require(resumeAbTestsResponseFieldSuccess)
+}
+
+func (r *ResumeAbTestsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler ResumeAbTestsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = ResumeAbTestsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *ResumeAbTestsResponse) MarshalJSON() ([]byte, error) {
+	type embed ResumeAbTestsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *ResumeAbTestsResponse) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+var (
 	selectWinnerAbTestsResponseFieldAbTest  = big.NewInt(1 << 0)
 	selectWinnerAbTestsResponseFieldSuccess = big.NewInt(1 << 1)
 )
@@ -3611,20 +4063,23 @@ func (u *UpdateVariantAbTestsResponse) String() string {
 
 var (
 	updateAbTestsRequestFieldAbTestID            = big.NewInt(1 << 0)
-	updateAbTestsRequestFieldCancelSampleUpdate  = big.NewInt(1 << 1)
-	updateAbTestsRequestFieldConfirmLiveChange   = big.NewInt(1 << 2)
-	updateAbTestsRequestFieldExpectedUpdatedAt   = big.NewInt(1 << 3)
-	updateAbTestsRequestFieldName                = big.NewInt(1 << 4)
-	updateAbTestsRequestFieldTestDurationMinutes = big.NewInt(1 << 5)
-	updateAbTestsRequestFieldTestPercentage      = big.NewInt(1 << 6)
-	updateAbTestsRequestFieldTestType            = big.NewInt(1 << 7)
-	updateAbTestsRequestFieldWinnerCriteria      = big.NewInt(1 << 8)
-	updateAbTestsRequestFieldWinnerThreshold     = big.NewInt(1 << 9)
+	updateAbTestsRequestFieldAutoSelectWinner    = big.NewInt(1 << 1)
+	updateAbTestsRequestFieldCancelSampleUpdate  = big.NewInt(1 << 2)
+	updateAbTestsRequestFieldConfirmLiveChange   = big.NewInt(1 << 3)
+	updateAbTestsRequestFieldExpectedUpdatedAt   = big.NewInt(1 << 4)
+	updateAbTestsRequestFieldName                = big.NewInt(1 << 5)
+	updateAbTestsRequestFieldTestDurationMinutes = big.NewInt(1 << 6)
+	updateAbTestsRequestFieldTestPercentage      = big.NewInt(1 << 7)
+	updateAbTestsRequestFieldTestType            = big.NewInt(1 << 8)
+	updateAbTestsRequestFieldWinnerCriteria      = big.NewInt(1 << 9)
+	updateAbTestsRequestFieldWinnerThreshold     = big.NewInt(1 << 10)
 )
 
 type UpdateAbTestsRequest struct {
 	// A/B test ID.
 	AbTestID string `json:"-" url:"-"`
+	// Sequence-only. True picks the leading variant once winnerThreshold is reached; false keeps splitting until a winner is selected. Resume sets it to false.
+	AutoSelectWinner *bool `json:"autoSelectWinner,omitempty" url:"-"`
 	// Discard a failed campaign sample request. Cannot be combined with testPercentage; does not undo committed sends.
 	CancelSampleUpdate *bool `json:"cancelSampleUpdate,omitempty" url:"-"`
 	// Required when sequence settings affect an active test or a test with recorded activity.
@@ -3659,6 +4114,13 @@ func (u *UpdateAbTestsRequest) require(field *big.Int) {
 func (u *UpdateAbTestsRequest) SetAbTestID(abTestID string) {
 	u.AbTestID = abTestID
 	u.require(updateAbTestsRequestFieldAbTestID)
+}
+
+// SetAutoSelectWinner sets the AutoSelectWinner field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAbTestsRequest) SetAutoSelectWinner(autoSelectWinner *bool) {
+	u.AutoSelectWinner = autoSelectWinner
+	u.require(updateAbTestsRequestFieldAutoSelectWinner)
 }
 
 // SetCancelSampleUpdate sets the CancelSampleUpdate field and marks it as non-optional;

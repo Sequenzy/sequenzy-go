@@ -283,6 +283,32 @@ func TestAbTestsRestartWithWireMock(
 	VerifyRequestCount(t, "TestAbTestsRestartWithWireMock", "POST", "/ab-tests/abTestId/restart", nil, 1)
 }
 
+func TestAbTestsResumeWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.ResumeAbTestsRequest{
+		AbTestID: "abTestId",
+	}
+	_, invocationErr := client.AbTests.Resume(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestAbTestsResumeWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestAbTestsResumeWithWireMock", "POST", "/ab-tests/abTestId/resume", nil, 1)
+}
+
 func TestAbTestsSelectWinnerWithWireMock(
 	t *testing.T,
 ) {

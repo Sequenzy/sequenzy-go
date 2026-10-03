@@ -26,7 +26,7 @@ type TrackingSettings struct {
 	ReplyTracking *TrackingSettingsReplyTracking `json:"replyTracking,omitempty" url:"replyTracking,omitempty"`
 	Success       *bool                          `json:"success,omitempty" url:"success,omitempty"`
 	Tracking      *TrackingSettingsTracking      `json:"tracking,omitempty" url:"tracking,omitempty"`
-	// Null when click links use the shared Sequenzy tracking domain.
+	// Company tracking domain, used by every sending domain for tracked links and opens. Null when links use the shared Sequenzy tracking domain; links also use it while the tracking domain is not verified. Manage it with the Tracking Domain endpoints.
 	TrackingDomain *TrackingSettingsTrackingDomain `json:"trackingDomain,omitempty" url:"trackingDomain,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -526,7 +526,7 @@ type TrackingSettingsTracking struct {
 	ClickTrackingEnabled          *bool `json:"clickTrackingEnabled,omitempty" url:"clickTrackingEnabled,omitempty"`
 	DefaultAttributionWindowHours *int  `json:"defaultAttributionWindowHours,omitempty" url:"defaultAttributionWindowHours,omitempty"`
 	OpenTrackingEnabled           *bool `json:"openTrackingEnabled,omitempty" url:"openTrackingEnabled,omitempty"`
-	// Opt-in aggressive bot detection (strict user-agent patterns, datacenter IPs, cross-send IP sweeps). Off by default; enabling it can lower reported open and click rates.
+	// Opt-in aggressive bot detection (strict user-agent patterns, datacenter and Microsoft Azure IPs, fast campaign and sequence clicks from IPs clicking other recipients' emails, cross-send IP sweeps). Off by default; enabling it can lower reported open and click rates.
 	StrictBotFilteringEnabled *bool `json:"strictBotFilteringEnabled,omitempty" url:"strictBotFilteringEnabled,omitempty"`
 	// Click tracking default for sends through the Send Email API. Account-wide click tracking must also be enabled; per-send trackingSettings can only opt out.
 	TransactionalClickTrackingEnabled *bool `json:"transactionalClickTrackingEnabled,omitempty" url:"transactionalClickTrackingEnabled,omitempty"`
@@ -696,7 +696,7 @@ func (t *TrackingSettingsTracking) String() string {
 	return fmt.Sprintf("%#v", t)
 }
 
-// Null when click links use the shared Sequenzy tracking domain.
+// Company tracking domain, used by every sending domain for tracked links and opens. Null when links use the shared Sequenzy tracking domain; links also use it while the tracking domain is not verified. Manage it with the Tracking Domain endpoints.
 var (
 	trackingSettingsTrackingDomainFieldDomain        = big.NewInt(1 << 0)
 	trackingSettingsTrackingDomainFieldError         = big.NewInt(1 << 1)
@@ -1039,7 +1039,7 @@ type UpdateTrackingSettingsResponse struct {
 	ReplyTracking *TrackingSettingsReplyTracking `json:"replyTracking,omitempty" url:"replyTracking,omitempty"`
 	Success       *bool                          `json:"success,omitempty" url:"success,omitempty"`
 	Tracking      *TrackingSettingsTracking      `json:"tracking,omitempty" url:"tracking,omitempty"`
-	// Null when click links use the shared Sequenzy tracking domain.
+	// Company tracking domain, used by every sending domain for tracked links and opens. Null when links use the shared Sequenzy tracking domain; links also use it while the tracking domain is not verified. Manage it with the Tracking Domain endpoints.
 	TrackingDomain *TrackingSettingsTrackingDomain `json:"trackingDomain,omitempty" url:"trackingDomain,omitempty"`
 	Message        *string                         `json:"message,omitempty" url:"message,omitempty"`
 
@@ -1233,7 +1233,7 @@ type UpdateTrackingSettingsRequest struct {
 	DoubleOptInRedirectURL *string `json:"doubleOptInRedirectUrl,omitempty" url:"-"`
 	// Whether to embed the open-tracking pixel.
 	OpenTrackingEnabled *bool `json:"openTrackingEnabled,omitempty" url:"-"`
-	// Opt-in aggressive bot detection (strict user-agent patterns, datacenter IPs, cross-send IP sweeps). Off by default; enabling it can lower reported open and click rates.
+	// Opt-in aggressive bot detection (strict user-agent patterns, datacenter and Microsoft Azure IPs, fast campaign and sequence clicks from IPs clicking other recipients' emails, cross-send IP sweeps). Off by default; enabling it can lower reported open and click rates.
 	StrictBotFilteringEnabled *bool `json:"strictBotFilteringEnabled,omitempty" url:"-"`
 	// Click tracking default for sends through the Send Email API. Account-wide click tracking must also be enabled; per-send trackingSettings can only opt out.
 	TransactionalClickTrackingEnabled *bool `json:"transactionalClickTrackingEnabled,omitempty" url:"-"`

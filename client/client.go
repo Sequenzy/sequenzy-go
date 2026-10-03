@@ -12,6 +12,7 @@ import (
 	companies "github.com/sequenzy/sequenzy-go/companies"
 	conversations "github.com/sequenzy/sequenzy-go/conversations"
 	core "github.com/sequenzy/sequenzy-go/core"
+	dataexports "github.com/sequenzy/sequenzy-go/dataexports"
 	emailaistyle "github.com/sequenzy/sequenzy-go/emailaistyle"
 	emailblocks "github.com/sequenzy/sequenzy-go/emailblocks"
 	emailcomponents "github.com/sequenzy/sequenzy-go/emailcomponents"
@@ -20,6 +21,7 @@ import (
 	emailsends "github.com/sequenzy/sequenzy-go/emailsends"
 	events "github.com/sequenzy/sequenzy-go/events"
 	feedback "github.com/sequenzy/sequenzy-go/feedback"
+	frequencycap "github.com/sequenzy/sequenzy-go/frequencycap"
 	generation "github.com/sequenzy/sequenzy-go/generation"
 	integrations "github.com/sequenzy/sequenzy-go/integrations"
 	internal "github.com/sequenzy/sequenzy-go/internal"
@@ -31,6 +33,8 @@ import (
 	option "github.com/sequenzy/sequenzy-go/option"
 	orders "github.com/sequenzy/sequenzy-go/orders"
 	products "github.com/sequenzy/sequenzy-go/products"
+	push "github.com/sequenzy/sequenzy-go/push"
+	references "github.com/sequenzy/sequenzy-go/references"
 	segments "github.com/sequenzy/sequenzy-go/segments"
 	senderprofiles "github.com/sequenzy/sequenzy-go/senderprofiles"
 	sendingstatus "github.com/sequenzy/sequenzy-go/sendingstatus"
@@ -43,8 +47,10 @@ import (
 	tags "github.com/sequenzy/sequenzy-go/tags"
 	team "github.com/sequenzy/sequenzy-go/team"
 	templates "github.com/sequenzy/sequenzy-go/templates"
+	trackingdomain "github.com/sequenzy/sequenzy-go/trackingdomain"
 	trackingsettings "github.com/sequenzy/sequenzy-go/trackingsettings"
 	transactional "github.com/sequenzy/sequenzy-go/transactional"
+	warehousesync "github.com/sequenzy/sequenzy-go/warehousesync"
 	webhooks "github.com/sequenzy/sequenzy-go/webhooks"
 	websites "github.com/sequenzy/sequenzy-go/websites"
 	webtrackingkeys "github.com/sequenzy/sequenzy-go/webtrackingkeys"
@@ -60,6 +66,7 @@ type Client struct {
 	Campaigns               *campaigns.Client
 	Companies               *companies.Client
 	Conversations           *conversations.Client
+	DataExports             *dataexports.Client
 	EmailAiStyle            *emailaistyle.Client
 	EmailBlocks             *emailblocks.Client
 	EmailComponents         *emailcomponents.Client
@@ -68,6 +75,7 @@ type Client struct {
 	EmailSends              *emailsends.Client
 	Events                  *events.Client
 	Feedback                *feedback.Client
+	FrequencyCap            *frequencycap.Client
 	Generation              *generation.Client
 	Integrations            *integrations.Client
 	LandingPages            *landingpages.Client
@@ -77,6 +85,8 @@ type Client struct {
 	NotificationPreferences *notificationpreferences.Client
 	Orders                  *orders.Client
 	Products                *products.Client
+	Push                    *push.Client
+	References              *references.Client
 	Segments                *segments.Client
 	SenderProfiles          *senderprofiles.Client
 	SendingStatus           *sendingstatus.Client
@@ -89,8 +99,10 @@ type Client struct {
 	Tags                    *tags.Client
 	Team                    *team.Client
 	Templates               *templates.Client
+	TrackingDomain          *trackingdomain.Client
 	TrackingSettings        *trackingsettings.Client
 	Transactional           *transactional.Client
+	WarehouseSync           *warehousesync.Client
 	Webhooks                *webhooks.Client
 	Websites                *websites.Client
 	WebTrackingKeys         *webtrackingkeys.Client
@@ -112,6 +124,7 @@ func NewClient(opts ...option.RequestOption) *Client {
 		Campaigns:               campaigns.NewClient(options),
 		Companies:               companies.NewClient(options),
 		Conversations:           conversations.NewClient(options),
+		DataExports:             dataexports.NewClient(options),
 		EmailAiStyle:            emailaistyle.NewClient(options),
 		EmailBlocks:             emailblocks.NewClient(options),
 		EmailComponents:         emailcomponents.NewClient(options),
@@ -120,6 +133,7 @@ func NewClient(opts ...option.RequestOption) *Client {
 		EmailSends:              emailsends.NewClient(options),
 		Events:                  events.NewClient(options),
 		Feedback:                feedback.NewClient(options),
+		FrequencyCap:            frequencycap.NewClient(options),
 		Generation:              generation.NewClient(options),
 		Integrations:            integrations.NewClient(options),
 		LandingPages:            landingpages.NewClient(options),
@@ -129,6 +143,8 @@ func NewClient(opts ...option.RequestOption) *Client {
 		NotificationPreferences: notificationpreferences.NewClient(options),
 		Orders:                  orders.NewClient(options),
 		Products:                products.NewClient(options),
+		Push:                    push.NewClient(options),
+		References:              references.NewClient(options),
 		Segments:                segments.NewClient(options),
 		SenderProfiles:          senderprofiles.NewClient(options),
 		SendingStatus:           sendingstatus.NewClient(options),
@@ -141,8 +157,10 @@ func NewClient(opts ...option.RequestOption) *Client {
 		Tags:                    tags.NewClient(options),
 		Team:                    team.NewClient(options),
 		Templates:               templates.NewClient(options),
+		TrackingDomain:          trackingdomain.NewClient(options),
 		TrackingSettings:        trackingsettings.NewClient(options),
 		Transactional:           transactional.NewClient(options),
+		WarehouseSync:           warehousesync.NewClient(options),
 		Webhooks:                webhooks.NewClient(options),
 		Websites:                websites.NewClient(options),
 		WebTrackingKeys:         webtrackingkeys.NewClient(options),

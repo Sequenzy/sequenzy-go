@@ -11,12 +11,18 @@ import (
 )
 
 var (
-	addWebsitesRequestFieldDomain = big.NewInt(1 << 0)
+	addWebsitesRequestFieldDomain         = big.NewInt(1 << 0)
+	addWebsitesRequestFieldMailFromPrefix = big.NewInt(1 << 1)
+	addWebsitesRequestFieldTrackingPrefix = big.NewInt(1 << 2)
 )
 
 type AddWebsitesRequest struct {
 	// Domain to add.
 	Domain string `json:"domain" url:"-"`
+	// Bounce (MAIL FROM) subdomain label. Defaults to send. One DNS label of 1 to 63 letters, numbers or hyphens; inbound is reserved. Applies only when the domain is created; re-adding an existing domain returns its stored records.
+	MailFromPrefix *string `json:"mailFromPrefix,omitempty" url:"-"`
+	// Label of the company tracking domain created on the domain's root (<label>.<root>) when the company has none yet; ignored otherwise. Defaults to links. When the hostname is taken, the label followed by 2 to 5 is tried (for example links2); when none is free, the domain is added without a tracking domain. A label that would land on the bounce hostname returns 400. Change the tracking domain later with PUT /tracking-domain.
+	TrackingPrefix *string `json:"trackingPrefix,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -34,6 +40,20 @@ func (a *AddWebsitesRequest) require(field *big.Int) {
 func (a *AddWebsitesRequest) SetDomain(domain string) {
 	a.Domain = domain
 	a.require(addWebsitesRequestFieldDomain)
+}
+
+// SetMailFromPrefix sets the MailFromPrefix field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AddWebsitesRequest) SetMailFromPrefix(mailFromPrefix *string) {
+	a.MailFromPrefix = mailFromPrefix
+	a.require(addWebsitesRequestFieldMailFromPrefix)
+}
+
+// SetTrackingPrefix sets the TrackingPrefix field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AddWebsitesRequest) SetTrackingPrefix(trackingPrefix *string) {
+	a.TrackingPrefix = trackingPrefix
+	a.require(addWebsitesRequestFieldTrackingPrefix)
 }
 
 func (a *AddWebsitesRequest) UnmarshalJSON(data []byte) error {
@@ -54,6 +74,63 @@ func (a *AddWebsitesRequest) MarshalJSON() ([]byte, error) {
 		embed: embed(*a),
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
+	configureSendingDomainTrackingRequestFieldDomain         = big.NewInt(1 << 0)
+	configureSendingDomainTrackingRequestFieldTrackingPrefix = big.NewInt(1 << 1)
+)
+
+type ConfigureSendingDomainTrackingRequest struct {
+	// Configured sending domain
+	Domain string `json:"-" url:"-"`
+	// Tracking subdomain label, for example links. One DNS label of 1 to 63 letters, numbers or hyphens; inbound is reserved.
+	TrackingPrefix string `json:"trackingPrefix" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (c *ConfigureSendingDomainTrackingRequest) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetDomain sets the Domain field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ConfigureSendingDomainTrackingRequest) SetDomain(domain string) {
+	c.Domain = domain
+	c.require(configureSendingDomainTrackingRequestFieldDomain)
+}
+
+// SetTrackingPrefix sets the TrackingPrefix field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ConfigureSendingDomainTrackingRequest) SetTrackingPrefix(trackingPrefix string) {
+	c.TrackingPrefix = trackingPrefix
+	c.require(configureSendingDomainTrackingRequestFieldTrackingPrefix)
+}
+
+func (c *ConfigureSendingDomainTrackingRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler ConfigureSendingDomainTrackingRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*c = ConfigureSendingDomainTrackingRequest(body)
+	return nil
+}
+
+func (c *ConfigureSendingDomainTrackingRequest) MarshalJSON() ([]byte, error) {
+	type embed ConfigureSendingDomainTrackingRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
 	return json.Marshal(explicitMarshaler)
 }
 
@@ -84,27 +161,31 @@ func (g *GetWebsitesRequest) SetDomain(domain string) {
 }
 
 var (
-	websiteFieldCreatedAt          = big.NewInt(1 << 0)
-	websiteFieldDkim               = big.NewInt(1 << 1)
-	websiteFieldDNSRecords         = big.NewInt(1 << 2)
-	websiteFieldDNSVerified        = big.NewInt(1 << 3)
-	websiteFieldDomain             = big.NewInt(1 << 4)
-	websiteFieldID                 = big.NewInt(1 << 5)
-	websiteFieldLastVerifiedAt     = big.NewInt(1 << 6)
-	websiteFieldMailFrom           = big.NewInt(1 << 7)
-	websiteFieldMessage            = big.NewInt(1 << 8)
-	websiteFieldNextVerificationAt = big.NewInt(1 << 9)
-	websiteFieldReadiness          = big.NewInt(1 << 10)
-	websiteFieldReadyToSend        = big.NewInt(1 << 11)
-	websiteFieldSpf                = big.NewInt(1 << 12)
-	websiteFieldStatus             = big.NewInt(1 << 13)
+	websiteFieldBounceRecords      = big.NewInt(1 << 0)
+	websiteFieldCreatedAt          = big.NewInt(1 << 1)
+	websiteFieldDkim               = big.NewInt(1 << 2)
+	websiteFieldDNSRecords         = big.NewInt(1 << 3)
+	websiteFieldDNSVerified        = big.NewInt(1 << 4)
+	websiteFieldDomain             = big.NewInt(1 << 5)
+	websiteFieldID                 = big.NewInt(1 << 6)
+	websiteFieldLastVerifiedAt     = big.NewInt(1 << 7)
+	websiteFieldMailFrom           = big.NewInt(1 << 8)
+	websiteFieldMessage            = big.NewInt(1 << 9)
+	websiteFieldNextVerificationAt = big.NewInt(1 << 10)
+	websiteFieldReadiness          = big.NewInt(1 << 11)
+	websiteFieldReadyToSend        = big.NewInt(1 << 12)
+	websiteFieldSpf                = big.NewInt(1 << 13)
+	websiteFieldStatus             = big.NewInt(1 << 14)
+	websiteFieldTracking           = big.NewInt(1 << 15)
 )
 
 type Website struct {
-	CreatedAt *time.Time `json:"createdAt,omitempty" url:"createdAt,omitempty"`
+	// How the bounce subdomain is published. With style cname (domains added since the single CNAME shipped), publish cnameRecord instead of the spf.record and mailFrom.mxRecord records, which verification keeps checking through the CNAME. With style mx_txt (domains added earlier), publish those two records. The style is set when the domain is added.
+	BounceRecords *WebsiteBounceRecords `json:"bounceRecords,omitempty" url:"bounceRecords,omitempty"`
+	CreatedAt     *time.Time            `json:"createdAt,omitempty" url:"createdAt,omitempty"`
 	// Normalized DKIM type, status, and diagnostics.
 	Dkim map[string]any `json:"dkim,omitempty" url:"dkim,omitempty"`
-	// The DNS records to publish and their per-record verification status. Custom reply routing is independent of sending readiness. GET returns stored results; POST verify performs a fresh check.
+	// The DNS records and their per-record verification status. Publish the DKIM record, DMARC when present, and the bounce records described by bounceRecords (returnPathCnameRecord when bounceRecords.style is cname, otherwise spfRecord and mxRecord; never both at the same name). Custom reply routing is independent of sending readiness. GET returns stored results; POST verify performs a fresh check.
 	DNSRecords *WebsiteDNSRecords `json:"dnsRecords,omitempty" url:"dnsRecords,omitempty"`
 	// Whether the customer DNS records are verified.
 	DNSVerified    *bool      `json:"dnsVerified,omitempty" url:"dnsVerified,omitempty"`
@@ -124,12 +205,21 @@ type Website struct {
 	Spf map[string]any `json:"spf,omitempty" url:"spf,omitempty"`
 	// Stored DNS verification status. This does not imply that a sending transport is ready.
 	Status *WebsiteStatus `json:"status,omitempty" url:"status,omitempty"`
+	// Link tracking for this domain. Every sending domain uses the company tracking domain, which never gates verification or sending; until it verifies, links use the shared Sequenzy tracking domain. Manage it with the Tracking Domain endpoints.
+	Tracking *WebsiteTracking `json:"tracking,omitempty" url:"tracking,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (w *Website) GetBounceRecords() *WebsiteBounceRecords {
+	if w == nil {
+		return nil
+	}
+	return w.BounceRecords
 }
 
 func (w *Website) GetCreatedAt() *time.Time {
@@ -230,6 +320,13 @@ func (w *Website) GetStatus() *WebsiteStatus {
 	return w.Status
 }
 
+func (w *Website) GetTracking() *WebsiteTracking {
+	if w == nil {
+		return nil
+	}
+	return w.Tracking
+}
+
 func (w *Website) GetExtraProperties() map[string]interface{} {
 	if w == nil {
 		return nil
@@ -242,6 +339,13 @@ func (w *Website) require(field *big.Int) {
 		w.explicitFields = big.NewInt(0)
 	}
 	w.explicitFields.Or(w.explicitFields, field)
+}
+
+// SetBounceRecords sets the BounceRecords field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *Website) SetBounceRecords(bounceRecords *WebsiteBounceRecords) {
+	w.BounceRecords = bounceRecords
+	w.require(websiteFieldBounceRecords)
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -342,6 +446,13 @@ func (w *Website) SetStatus(status *WebsiteStatus) {
 	w.require(websiteFieldStatus)
 }
 
+// SetTracking sets the Tracking field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *Website) SetTracking(tracking *WebsiteTracking) {
+	w.Tracking = tracking
+	w.require(websiteFieldTracking)
+}
+
 func (w *Website) UnmarshalJSON(data []byte) error {
 	type embed Website
 	var unmarshaler = struct {
@@ -400,12 +511,302 @@ func (w *Website) String() string {
 	return fmt.Sprintf("%#v", w)
 }
 
-// The DNS records to publish and their per-record verification status. Custom reply routing is independent of sending readiness. GET returns stored results; POST verify performs a fresh check.
+// How the bounce subdomain is published. With style cname (domains added since the single CNAME shipped), publish cnameRecord instead of the spf.record and mailFrom.mxRecord records, which verification keeps checking through the CNAME. With style mx_txt (domains added earlier), publish those two records. The style is set when the domain is added.
+var (
+	websiteBounceRecordsFieldCnameRecord = big.NewInt(1 << 0)
+	websiteBounceRecordsFieldDiagnostic  = big.NewInt(1 << 1)
+	websiteBounceRecordsFieldStatus      = big.NewInt(1 << 2)
+	websiteBounceRecordsFieldStyle       = big.NewInt(1 << 3)
+)
+
+type WebsiteBounceRecords struct {
+	// The CNAME to publish when style is cname, otherwise null.
+	CnameRecord *WebsiteBounceRecordsCnameRecord `json:"cnameRecord,omitempty" url:"cnameRecord,omitempty"`
+	// For style cname, why the CNAME is not verified yet (missing, pointing elsewhere, other records on the name, or a proxied record). Null for style mx_txt; read spf.diagnostic and mailFrom.diagnostic instead.
+	Diagnostic map[string]any `json:"diagnostic,omitempty" url:"diagnostic,omitempty"`
+	// verified once SPF and MX both resolve correctly at the bounce subdomain, whichever records produce them.
+	Status WebsiteBounceRecordsStatus `json:"status" url:"status"`
+	Style  WebsiteBounceRecordsStyle  `json:"style" url:"style"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (w *WebsiteBounceRecords) GetCnameRecord() *WebsiteBounceRecordsCnameRecord {
+	if w == nil {
+		return nil
+	}
+	return w.CnameRecord
+}
+
+func (w *WebsiteBounceRecords) GetDiagnostic() map[string]any {
+	if w == nil {
+		return nil
+	}
+	return w.Diagnostic
+}
+
+func (w *WebsiteBounceRecords) GetStatus() WebsiteBounceRecordsStatus {
+	if w == nil {
+		return ""
+	}
+	return w.Status
+}
+
+func (w *WebsiteBounceRecords) GetStyle() WebsiteBounceRecordsStyle {
+	if w == nil {
+		return ""
+	}
+	return w.Style
+}
+
+func (w *WebsiteBounceRecords) GetExtraProperties() map[string]interface{} {
+	if w == nil {
+		return nil
+	}
+	return w.extraProperties
+}
+
+func (w *WebsiteBounceRecords) require(field *big.Int) {
+	if w.explicitFields == nil {
+		w.explicitFields = big.NewInt(0)
+	}
+	w.explicitFields.Or(w.explicitFields, field)
+}
+
+// SetCnameRecord sets the CnameRecord field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteBounceRecords) SetCnameRecord(cnameRecord *WebsiteBounceRecordsCnameRecord) {
+	w.CnameRecord = cnameRecord
+	w.require(websiteBounceRecordsFieldCnameRecord)
+}
+
+// SetDiagnostic sets the Diagnostic field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteBounceRecords) SetDiagnostic(diagnostic map[string]any) {
+	w.Diagnostic = diagnostic
+	w.require(websiteBounceRecordsFieldDiagnostic)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteBounceRecords) SetStatus(status WebsiteBounceRecordsStatus) {
+	w.Status = status
+	w.require(websiteBounceRecordsFieldStatus)
+}
+
+// SetStyle sets the Style field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteBounceRecords) SetStyle(style WebsiteBounceRecordsStyle) {
+	w.Style = style
+	w.require(websiteBounceRecordsFieldStyle)
+}
+
+func (w *WebsiteBounceRecords) UnmarshalJSON(data []byte) error {
+	type unmarshaler WebsiteBounceRecords
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*w = WebsiteBounceRecords(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *w)
+	if err != nil {
+		return err
+	}
+	w.extraProperties = extraProperties
+	w.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (w *WebsiteBounceRecords) MarshalJSON() ([]byte, error) {
+	type embed WebsiteBounceRecords
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*w),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, w.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (w *WebsiteBounceRecords) String() string {
+	if w == nil {
+		return "<nil>"
+	}
+	if len(w.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(w.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(w); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", w)
+}
+
+// The CNAME to publish when style is cname, otherwise null.
+var (
+	websiteBounceRecordsCnameRecordFieldName  = big.NewInt(1 << 0)
+	websiteBounceRecordsCnameRecordFieldValue = big.NewInt(1 << 1)
+)
+
+type WebsiteBounceRecordsCnameRecord struct {
+	Name  string `json:"name" url:"name"`
+	Value string `json:"value" url:"value"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (w *WebsiteBounceRecordsCnameRecord) GetName() string {
+	if w == nil {
+		return ""
+	}
+	return w.Name
+}
+
+func (w *WebsiteBounceRecordsCnameRecord) GetValue() string {
+	if w == nil {
+		return ""
+	}
+	return w.Value
+}
+
+func (w *WebsiteBounceRecordsCnameRecord) GetExtraProperties() map[string]interface{} {
+	if w == nil {
+		return nil
+	}
+	return w.extraProperties
+}
+
+func (w *WebsiteBounceRecordsCnameRecord) require(field *big.Int) {
+	if w.explicitFields == nil {
+		w.explicitFields = big.NewInt(0)
+	}
+	w.explicitFields.Or(w.explicitFields, field)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteBounceRecordsCnameRecord) SetName(name string) {
+	w.Name = name
+	w.require(websiteBounceRecordsCnameRecordFieldName)
+}
+
+// SetValue sets the Value field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteBounceRecordsCnameRecord) SetValue(value string) {
+	w.Value = value
+	w.require(websiteBounceRecordsCnameRecordFieldValue)
+}
+
+func (w *WebsiteBounceRecordsCnameRecord) UnmarshalJSON(data []byte) error {
+	type unmarshaler WebsiteBounceRecordsCnameRecord
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*w = WebsiteBounceRecordsCnameRecord(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *w)
+	if err != nil {
+		return err
+	}
+	w.extraProperties = extraProperties
+	w.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (w *WebsiteBounceRecordsCnameRecord) MarshalJSON() ([]byte, error) {
+	type embed WebsiteBounceRecordsCnameRecord
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*w),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, w.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (w *WebsiteBounceRecordsCnameRecord) String() string {
+	if w == nil {
+		return "<nil>"
+	}
+	if len(w.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(w.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(w); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", w)
+}
+
+// verified once SPF and MX both resolve correctly at the bounce subdomain, whichever records produce them.
+type WebsiteBounceRecordsStatus string
+
+const (
+	WebsiteBounceRecordsStatusPending       WebsiteBounceRecordsStatus = "pending"
+	WebsiteBounceRecordsStatusVerified      WebsiteBounceRecordsStatus = "verified"
+	WebsiteBounceRecordsStatusMisconfigured WebsiteBounceRecordsStatus = "misconfigured"
+)
+
+func NewWebsiteBounceRecordsStatusFromString(s string) (WebsiteBounceRecordsStatus, error) {
+	switch s {
+	case "pending":
+		return WebsiteBounceRecordsStatusPending, nil
+	case "verified":
+		return WebsiteBounceRecordsStatusVerified, nil
+	case "misconfigured":
+		return WebsiteBounceRecordsStatusMisconfigured, nil
+	}
+	var t WebsiteBounceRecordsStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (w WebsiteBounceRecordsStatus) Ptr() *WebsiteBounceRecordsStatus {
+	return &w
+}
+
+type WebsiteBounceRecordsStyle string
+
+const (
+	WebsiteBounceRecordsStyleCname WebsiteBounceRecordsStyle = "cname"
+	WebsiteBounceRecordsStyleMxTxt WebsiteBounceRecordsStyle = "mx_txt"
+)
+
+func NewWebsiteBounceRecordsStyleFromString(s string) (WebsiteBounceRecordsStyle, error) {
+	switch s {
+	case "cname":
+		return WebsiteBounceRecordsStyleCname, nil
+	case "mx_txt":
+		return WebsiteBounceRecordsStyleMxTxt, nil
+	}
+	var t WebsiteBounceRecordsStyle
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (w WebsiteBounceRecordsStyle) Ptr() *WebsiteBounceRecordsStyle {
+	return &w
+}
+
+// The DNS records and their per-record verification status. Publish the DKIM record, DMARC when present, and the bounce records described by bounceRecords (returnPathCnameRecord when bounceRecords.style is cname, otherwise spfRecord and mxRecord; never both at the same name). Custom reply routing is independent of sending readiness. GET returns stored results; POST verify performs a fresh check.
 var (
 	websiteDNSRecordsFieldInboundRoutingError       = big.NewInt(1 << 0)
 	websiteDNSRecordsFieldInboundRoutingStatus      = big.NewInt(1 << 1)
 	websiteDNSRecordsFieldInboundVerificationRecord = big.NewInt(1 << 2)
 	websiteDNSRecordsFieldInboundVerificationStatus = big.NewInt(1 << 3)
+	websiteDNSRecordsFieldReturnPathCnameDiagnostic = big.NewInt(1 << 4)
+	websiteDNSRecordsFieldReturnPathCnameRecord     = big.NewInt(1 << 5)
+	websiteDNSRecordsFieldReturnPathCnameStatus     = big.NewInt(1 << 6)
+	websiteDNSRecordsFieldTrackingRecord            = big.NewInt(1 << 7)
+	websiteDNSRecordsFieldTrackingStatus            = big.NewInt(1 << 8)
 )
 
 type WebsiteDNSRecords struct {
@@ -417,6 +818,15 @@ type WebsiteDNSRecords struct {
 	InboundVerificationRecord *WebsiteDNSRecordsInboundVerificationRecord `json:"inboundVerificationRecord,omitempty" url:"inboundVerificationRecord,omitempty"`
 	// Stored receiving-domain ownership status, absent before it has been checked. Pending is not active routing. Existing sending-domain verification can satisfy ownership without an additional TXT record.
 	InboundVerificationStatus *WebsiteDNSRecordsInboundVerificationStatus `json:"inboundVerificationStatus,omitempty" url:"inboundVerificationStatus,omitempty"`
+	// Why the bounce CNAME is not verified yet, when known.
+	ReturnPathCnameDiagnostic map[string]any `json:"returnPathCnameDiagnostic,omitempty" url:"returnPathCnameDiagnostic,omitempty"`
+	// The single bounce CNAME, present when bounceRecords.style is cname. It replaces spfRecord and mxRecord, which stay listed because verification checks them through the CNAME. Never publish it alongside them.
+	ReturnPathCnameRecord *WebsiteDNSRecordsReturnPathCnameRecord `json:"returnPathCnameRecord,omitempty" url:"returnPathCnameRecord,omitempty"`
+	ReturnPathCnameStatus *WebsiteDNSRecordsReturnPathCnameStatus `json:"returnPathCnameStatus,omitempty" url:"returnPathCnameStatus,omitempty"`
+	// CNAME record for the company tracking domain, present when the company has one. It is optional and never gates verification or sending; publish it with the other records to brand tracked links. Proxying must be off.
+	TrackingRecord *WebsiteDNSRecordsTrackingRecord `json:"trackingRecord,omitempty" url:"trackingRecord,omitempty"`
+	// Verification status of trackingRecord, including its HTTPS certificate. Informational; it never affects the domain's status.
+	TrackingStatus *WebsiteDNSRecordsTrackingStatus `json:"trackingStatus,omitempty" url:"trackingStatus,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -452,6 +862,41 @@ func (w *WebsiteDNSRecords) GetInboundVerificationStatus() *WebsiteDNSRecordsInb
 		return nil
 	}
 	return w.InboundVerificationStatus
+}
+
+func (w *WebsiteDNSRecords) GetReturnPathCnameDiagnostic() map[string]any {
+	if w == nil {
+		return nil
+	}
+	return w.ReturnPathCnameDiagnostic
+}
+
+func (w *WebsiteDNSRecords) GetReturnPathCnameRecord() *WebsiteDNSRecordsReturnPathCnameRecord {
+	if w == nil {
+		return nil
+	}
+	return w.ReturnPathCnameRecord
+}
+
+func (w *WebsiteDNSRecords) GetReturnPathCnameStatus() *WebsiteDNSRecordsReturnPathCnameStatus {
+	if w == nil {
+		return nil
+	}
+	return w.ReturnPathCnameStatus
+}
+
+func (w *WebsiteDNSRecords) GetTrackingRecord() *WebsiteDNSRecordsTrackingRecord {
+	if w == nil {
+		return nil
+	}
+	return w.TrackingRecord
+}
+
+func (w *WebsiteDNSRecords) GetTrackingStatus() *WebsiteDNSRecordsTrackingStatus {
+	if w == nil {
+		return nil
+	}
+	return w.TrackingStatus
 }
 
 func (w *WebsiteDNSRecords) GetExtraProperties() map[string]interface{} {
@@ -494,6 +939,41 @@ func (w *WebsiteDNSRecords) SetInboundVerificationRecord(inboundVerificationReco
 func (w *WebsiteDNSRecords) SetInboundVerificationStatus(inboundVerificationStatus *WebsiteDNSRecordsInboundVerificationStatus) {
 	w.InboundVerificationStatus = inboundVerificationStatus
 	w.require(websiteDNSRecordsFieldInboundVerificationStatus)
+}
+
+// SetReturnPathCnameDiagnostic sets the ReturnPathCnameDiagnostic field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSRecords) SetReturnPathCnameDiagnostic(returnPathCnameDiagnostic map[string]any) {
+	w.ReturnPathCnameDiagnostic = returnPathCnameDiagnostic
+	w.require(websiteDNSRecordsFieldReturnPathCnameDiagnostic)
+}
+
+// SetReturnPathCnameRecord sets the ReturnPathCnameRecord field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSRecords) SetReturnPathCnameRecord(returnPathCnameRecord *WebsiteDNSRecordsReturnPathCnameRecord) {
+	w.ReturnPathCnameRecord = returnPathCnameRecord
+	w.require(websiteDNSRecordsFieldReturnPathCnameRecord)
+}
+
+// SetReturnPathCnameStatus sets the ReturnPathCnameStatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSRecords) SetReturnPathCnameStatus(returnPathCnameStatus *WebsiteDNSRecordsReturnPathCnameStatus) {
+	w.ReturnPathCnameStatus = returnPathCnameStatus
+	w.require(websiteDNSRecordsFieldReturnPathCnameStatus)
+}
+
+// SetTrackingRecord sets the TrackingRecord field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSRecords) SetTrackingRecord(trackingRecord *WebsiteDNSRecordsTrackingRecord) {
+	w.TrackingRecord = trackingRecord
+	w.require(websiteDNSRecordsFieldTrackingRecord)
+}
+
+// SetTrackingStatus sets the TrackingStatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSRecords) SetTrackingStatus(trackingStatus *WebsiteDNSRecordsTrackingStatus) {
+	w.TrackingStatus = trackingStatus
+	w.require(websiteDNSRecordsFieldTrackingStatus)
 }
 
 func (w *WebsiteDNSRecords) UnmarshalJSON(data []byte) error {
@@ -696,6 +1176,262 @@ func (w WebsiteDNSRecordsInboundVerificationStatus) Ptr() *WebsiteDNSRecordsInbo
 	return &w
 }
 
+// The single bounce CNAME, present when bounceRecords.style is cname. It replaces spfRecord and mxRecord, which stay listed because verification checks them through the CNAME. Never publish it alongside them.
+var (
+	websiteDNSRecordsReturnPathCnameRecordFieldName  = big.NewInt(1 << 0)
+	websiteDNSRecordsReturnPathCnameRecordFieldValue = big.NewInt(1 << 1)
+)
+
+type WebsiteDNSRecordsReturnPathCnameRecord struct {
+	Name  string `json:"name" url:"name"`
+	Value string `json:"value" url:"value"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (w *WebsiteDNSRecordsReturnPathCnameRecord) GetName() string {
+	if w == nil {
+		return ""
+	}
+	return w.Name
+}
+
+func (w *WebsiteDNSRecordsReturnPathCnameRecord) GetValue() string {
+	if w == nil {
+		return ""
+	}
+	return w.Value
+}
+
+func (w *WebsiteDNSRecordsReturnPathCnameRecord) GetExtraProperties() map[string]interface{} {
+	if w == nil {
+		return nil
+	}
+	return w.extraProperties
+}
+
+func (w *WebsiteDNSRecordsReturnPathCnameRecord) require(field *big.Int) {
+	if w.explicitFields == nil {
+		w.explicitFields = big.NewInt(0)
+	}
+	w.explicitFields.Or(w.explicitFields, field)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSRecordsReturnPathCnameRecord) SetName(name string) {
+	w.Name = name
+	w.require(websiteDNSRecordsReturnPathCnameRecordFieldName)
+}
+
+// SetValue sets the Value field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSRecordsReturnPathCnameRecord) SetValue(value string) {
+	w.Value = value
+	w.require(websiteDNSRecordsReturnPathCnameRecordFieldValue)
+}
+
+func (w *WebsiteDNSRecordsReturnPathCnameRecord) UnmarshalJSON(data []byte) error {
+	type unmarshaler WebsiteDNSRecordsReturnPathCnameRecord
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*w = WebsiteDNSRecordsReturnPathCnameRecord(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *w)
+	if err != nil {
+		return err
+	}
+	w.extraProperties = extraProperties
+	w.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (w *WebsiteDNSRecordsReturnPathCnameRecord) MarshalJSON() ([]byte, error) {
+	type embed WebsiteDNSRecordsReturnPathCnameRecord
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*w),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, w.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (w *WebsiteDNSRecordsReturnPathCnameRecord) String() string {
+	if w == nil {
+		return "<nil>"
+	}
+	if len(w.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(w.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(w); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", w)
+}
+
+type WebsiteDNSRecordsReturnPathCnameStatus string
+
+const (
+	WebsiteDNSRecordsReturnPathCnameStatusPending       WebsiteDNSRecordsReturnPathCnameStatus = "pending"
+	WebsiteDNSRecordsReturnPathCnameStatusVerified      WebsiteDNSRecordsReturnPathCnameStatus = "verified"
+	WebsiteDNSRecordsReturnPathCnameStatusMisconfigured WebsiteDNSRecordsReturnPathCnameStatus = "misconfigured"
+)
+
+func NewWebsiteDNSRecordsReturnPathCnameStatusFromString(s string) (WebsiteDNSRecordsReturnPathCnameStatus, error) {
+	switch s {
+	case "pending":
+		return WebsiteDNSRecordsReturnPathCnameStatusPending, nil
+	case "verified":
+		return WebsiteDNSRecordsReturnPathCnameStatusVerified, nil
+	case "misconfigured":
+		return WebsiteDNSRecordsReturnPathCnameStatusMisconfigured, nil
+	}
+	var t WebsiteDNSRecordsReturnPathCnameStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (w WebsiteDNSRecordsReturnPathCnameStatus) Ptr() *WebsiteDNSRecordsReturnPathCnameStatus {
+	return &w
+}
+
+// CNAME record for the company tracking domain, present when the company has one. It is optional and never gates verification or sending; publish it with the other records to brand tracked links. Proxying must be off.
+var (
+	websiteDNSRecordsTrackingRecordFieldName  = big.NewInt(1 << 0)
+	websiteDNSRecordsTrackingRecordFieldValue = big.NewInt(1 << 1)
+)
+
+type WebsiteDNSRecordsTrackingRecord struct {
+	Name  string `json:"name" url:"name"`
+	Value string `json:"value" url:"value"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (w *WebsiteDNSRecordsTrackingRecord) GetName() string {
+	if w == nil {
+		return ""
+	}
+	return w.Name
+}
+
+func (w *WebsiteDNSRecordsTrackingRecord) GetValue() string {
+	if w == nil {
+		return ""
+	}
+	return w.Value
+}
+
+func (w *WebsiteDNSRecordsTrackingRecord) GetExtraProperties() map[string]interface{} {
+	if w == nil {
+		return nil
+	}
+	return w.extraProperties
+}
+
+func (w *WebsiteDNSRecordsTrackingRecord) require(field *big.Int) {
+	if w.explicitFields == nil {
+		w.explicitFields = big.NewInt(0)
+	}
+	w.explicitFields.Or(w.explicitFields, field)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSRecordsTrackingRecord) SetName(name string) {
+	w.Name = name
+	w.require(websiteDNSRecordsTrackingRecordFieldName)
+}
+
+// SetValue sets the Value field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSRecordsTrackingRecord) SetValue(value string) {
+	w.Value = value
+	w.require(websiteDNSRecordsTrackingRecordFieldValue)
+}
+
+func (w *WebsiteDNSRecordsTrackingRecord) UnmarshalJSON(data []byte) error {
+	type unmarshaler WebsiteDNSRecordsTrackingRecord
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*w = WebsiteDNSRecordsTrackingRecord(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *w)
+	if err != nil {
+		return err
+	}
+	w.extraProperties = extraProperties
+	w.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (w *WebsiteDNSRecordsTrackingRecord) MarshalJSON() ([]byte, error) {
+	type embed WebsiteDNSRecordsTrackingRecord
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*w),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, w.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (w *WebsiteDNSRecordsTrackingRecord) String() string {
+	if w == nil {
+		return "<nil>"
+	}
+	if len(w.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(w.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(w); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", w)
+}
+
+// Verification status of trackingRecord, including its HTTPS certificate. Informational; it never affects the domain's status.
+type WebsiteDNSRecordsTrackingStatus string
+
+const (
+	WebsiteDNSRecordsTrackingStatusNotStarted WebsiteDNSRecordsTrackingStatus = "not_started"
+	WebsiteDNSRecordsTrackingStatusPending    WebsiteDNSRecordsTrackingStatus = "pending"
+	WebsiteDNSRecordsTrackingStatusVerified   WebsiteDNSRecordsTrackingStatus = "verified"
+	WebsiteDNSRecordsTrackingStatusFailed     WebsiteDNSRecordsTrackingStatus = "failed"
+)
+
+func NewWebsiteDNSRecordsTrackingStatusFromString(s string) (WebsiteDNSRecordsTrackingStatus, error) {
+	switch s {
+	case "not_started":
+		return WebsiteDNSRecordsTrackingStatusNotStarted, nil
+	case "pending":
+		return WebsiteDNSRecordsTrackingStatusPending, nil
+	case "verified":
+		return WebsiteDNSRecordsTrackingStatusVerified, nil
+	case "failed":
+		return WebsiteDNSRecordsTrackingStatusFailed, nil
+	}
+	var t WebsiteDNSRecordsTrackingStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (w WebsiteDNSRecordsTrackingStatus) Ptr() *WebsiteDNSRecordsTrackingStatus {
+	return &w
+}
+
 // Customer-facing sending readiness. When readyToSend is false, reason says why; dns_* reasons describe your DNS records, while activation reasons resolve on Sequenzy's side.
 var (
 	websiteReadinessFieldReason = big.NewInt(1 << 0)
@@ -894,6 +1630,382 @@ func (w WebsiteStatus) Ptr() *WebsiteStatus {
 	return &w
 }
 
+// Link tracking for this domain. Every sending domain uses the company tracking domain, which never gates verification or sending; until it verifies, links use the shared Sequenzy tracking domain. Manage it with the Tracking Domain endpoints.
+var (
+	websiteTrackingFieldCnameRecord = big.NewInt(1 << 0)
+	websiteTrackingFieldError       = big.NewInt(1 << 1)
+	websiteTrackingFieldHostname    = big.NewInt(1 << 2)
+	websiteTrackingFieldPolicy      = big.NewInt(1 << 3)
+	websiteTrackingFieldReady       = big.NewInt(1 << 4)
+	websiteTrackingFieldRequired    = big.NewInt(1 << 5)
+	websiteTrackingFieldStatus      = big.NewInt(1 << 6)
+)
+
+type WebsiteTracking struct {
+	// The CNAME to publish for hostname.
+	CnameRecord *WebsiteTrackingCnameRecord `json:"cnameRecord,omitempty" url:"cnameRecord,omitempty"`
+	// Last tracking verification error, if any.
+	Error *string `json:"error,omitempty" url:"error,omitempty"`
+	// The company tracking hostname, or null when links use the shared Sequenzy tracking domain.
+	Hostname *string `json:"hostname,omitempty" url:"hostname,omitempty"`
+	// Always legacy. Kept for compatibility.
+	Policy *WebsiteTrackingPolicy `json:"policy,omitempty" url:"policy,omitempty"`
+	// Whether hostname is verified and serving HTTPS.
+	Ready *bool `json:"ready,omitempty" url:"ready,omitempty"`
+	// Always false; tracking never gates sending. Kept for compatibility.
+	Required *bool `json:"required,omitempty" url:"required,omitempty"`
+	// Verification status of hostname, including HTTPS. not_started until you confirm DNS setup with Verify Sending Domain or check it with Verify Tracking Domain.
+	Status *WebsiteTrackingStatus `json:"status,omitempty" url:"status,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (w *WebsiteTracking) GetCnameRecord() *WebsiteTrackingCnameRecord {
+	if w == nil {
+		return nil
+	}
+	return w.CnameRecord
+}
+
+func (w *WebsiteTracking) GetError() *string {
+	if w == nil {
+		return nil
+	}
+	return w.Error
+}
+
+func (w *WebsiteTracking) GetHostname() *string {
+	if w == nil {
+		return nil
+	}
+	return w.Hostname
+}
+
+func (w *WebsiteTracking) GetPolicy() *WebsiteTrackingPolicy {
+	if w == nil {
+		return nil
+	}
+	return w.Policy
+}
+
+func (w *WebsiteTracking) GetReady() *bool {
+	if w == nil {
+		return nil
+	}
+	return w.Ready
+}
+
+func (w *WebsiteTracking) GetRequired() *bool {
+	if w == nil {
+		return nil
+	}
+	return w.Required
+}
+
+func (w *WebsiteTracking) GetStatus() *WebsiteTrackingStatus {
+	if w == nil {
+		return nil
+	}
+	return w.Status
+}
+
+func (w *WebsiteTracking) GetExtraProperties() map[string]interface{} {
+	if w == nil {
+		return nil
+	}
+	return w.extraProperties
+}
+
+func (w *WebsiteTracking) require(field *big.Int) {
+	if w.explicitFields == nil {
+		w.explicitFields = big.NewInt(0)
+	}
+	w.explicitFields.Or(w.explicitFields, field)
+}
+
+// SetCnameRecord sets the CnameRecord field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteTracking) SetCnameRecord(cnameRecord *WebsiteTrackingCnameRecord) {
+	w.CnameRecord = cnameRecord
+	w.require(websiteTrackingFieldCnameRecord)
+}
+
+// SetError sets the Error field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteTracking) SetError(error_ *string) {
+	w.Error = error_
+	w.require(websiteTrackingFieldError)
+}
+
+// SetHostname sets the Hostname field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteTracking) SetHostname(hostname *string) {
+	w.Hostname = hostname
+	w.require(websiteTrackingFieldHostname)
+}
+
+// SetPolicy sets the Policy field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteTracking) SetPolicy(policy *WebsiteTrackingPolicy) {
+	w.Policy = policy
+	w.require(websiteTrackingFieldPolicy)
+}
+
+// SetReady sets the Ready field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteTracking) SetReady(ready *bool) {
+	w.Ready = ready
+	w.require(websiteTrackingFieldReady)
+}
+
+// SetRequired sets the Required field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteTracking) SetRequired(required *bool) {
+	w.Required = required
+	w.require(websiteTrackingFieldRequired)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteTracking) SetStatus(status *WebsiteTrackingStatus) {
+	w.Status = status
+	w.require(websiteTrackingFieldStatus)
+}
+
+func (w *WebsiteTracking) UnmarshalJSON(data []byte) error {
+	type unmarshaler WebsiteTracking
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*w = WebsiteTracking(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *w)
+	if err != nil {
+		return err
+	}
+	w.extraProperties = extraProperties
+	w.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (w *WebsiteTracking) MarshalJSON() ([]byte, error) {
+	type embed WebsiteTracking
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*w),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, w.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (w *WebsiteTracking) String() string {
+	if w == nil {
+		return "<nil>"
+	}
+	if len(w.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(w.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(w); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", w)
+}
+
+// The CNAME to publish for hostname.
+var (
+	websiteTrackingCnameRecordFieldName  = big.NewInt(1 << 0)
+	websiteTrackingCnameRecordFieldType  = big.NewInt(1 << 1)
+	websiteTrackingCnameRecordFieldValue = big.NewInt(1 << 2)
+)
+
+type WebsiteTrackingCnameRecord struct {
+	Name  *string                         `json:"name,omitempty" url:"name,omitempty"`
+	Type  *WebsiteTrackingCnameRecordType `json:"type,omitempty" url:"type,omitempty"`
+	Value *string                         `json:"value,omitempty" url:"value,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (w *WebsiteTrackingCnameRecord) GetName() *string {
+	if w == nil {
+		return nil
+	}
+	return w.Name
+}
+
+func (w *WebsiteTrackingCnameRecord) GetType() *WebsiteTrackingCnameRecordType {
+	if w == nil {
+		return nil
+	}
+	return w.Type
+}
+
+func (w *WebsiteTrackingCnameRecord) GetValue() *string {
+	if w == nil {
+		return nil
+	}
+	return w.Value
+}
+
+func (w *WebsiteTrackingCnameRecord) GetExtraProperties() map[string]interface{} {
+	if w == nil {
+		return nil
+	}
+	return w.extraProperties
+}
+
+func (w *WebsiteTrackingCnameRecord) require(field *big.Int) {
+	if w.explicitFields == nil {
+		w.explicitFields = big.NewInt(0)
+	}
+	w.explicitFields.Or(w.explicitFields, field)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteTrackingCnameRecord) SetName(name *string) {
+	w.Name = name
+	w.require(websiteTrackingCnameRecordFieldName)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteTrackingCnameRecord) SetType(type_ *WebsiteTrackingCnameRecordType) {
+	w.Type = type_
+	w.require(websiteTrackingCnameRecordFieldType)
+}
+
+// SetValue sets the Value field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteTrackingCnameRecord) SetValue(value *string) {
+	w.Value = value
+	w.require(websiteTrackingCnameRecordFieldValue)
+}
+
+func (w *WebsiteTrackingCnameRecord) UnmarshalJSON(data []byte) error {
+	type unmarshaler WebsiteTrackingCnameRecord
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*w = WebsiteTrackingCnameRecord(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *w)
+	if err != nil {
+		return err
+	}
+	w.extraProperties = extraProperties
+	w.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (w *WebsiteTrackingCnameRecord) MarshalJSON() ([]byte, error) {
+	type embed WebsiteTrackingCnameRecord
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*w),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, w.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (w *WebsiteTrackingCnameRecord) String() string {
+	if w == nil {
+		return "<nil>"
+	}
+	if len(w.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(w.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(w); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", w)
+}
+
+type WebsiteTrackingCnameRecordType string
+
+const (
+	WebsiteTrackingCnameRecordTypeCname WebsiteTrackingCnameRecordType = "CNAME"
+)
+
+func NewWebsiteTrackingCnameRecordTypeFromString(s string) (WebsiteTrackingCnameRecordType, error) {
+	switch s {
+	case "CNAME":
+		return WebsiteTrackingCnameRecordTypeCname, nil
+	}
+	var t WebsiteTrackingCnameRecordType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (w WebsiteTrackingCnameRecordType) Ptr() *WebsiteTrackingCnameRecordType {
+	return &w
+}
+
+// Always legacy. Kept for compatibility.
+type WebsiteTrackingPolicy string
+
+const (
+	WebsiteTrackingPolicyRequired WebsiteTrackingPolicy = "required"
+	WebsiteTrackingPolicyLegacy   WebsiteTrackingPolicy = "legacy"
+)
+
+func NewWebsiteTrackingPolicyFromString(s string) (WebsiteTrackingPolicy, error) {
+	switch s {
+	case "required":
+		return WebsiteTrackingPolicyRequired, nil
+	case "legacy":
+		return WebsiteTrackingPolicyLegacy, nil
+	}
+	var t WebsiteTrackingPolicy
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (w WebsiteTrackingPolicy) Ptr() *WebsiteTrackingPolicy {
+	return &w
+}
+
+// Verification status of hostname, including HTTPS. not_started until you confirm DNS setup with Verify Sending Domain or check it with Verify Tracking Domain.
+type WebsiteTrackingStatus string
+
+const (
+	WebsiteTrackingStatusNotStarted WebsiteTrackingStatus = "not_started"
+	WebsiteTrackingStatusPending    WebsiteTrackingStatus = "pending"
+	WebsiteTrackingStatusVerified   WebsiteTrackingStatus = "verified"
+	WebsiteTrackingStatusFailed     WebsiteTrackingStatus = "failed"
+)
+
+func NewWebsiteTrackingStatusFromString(s string) (WebsiteTrackingStatus, error) {
+	switch s {
+	case "not_started":
+		return WebsiteTrackingStatusNotStarted, nil
+	case "pending":
+		return WebsiteTrackingStatusPending, nil
+	case "verified":
+		return WebsiteTrackingStatusVerified, nil
+	case "failed":
+		return WebsiteTrackingStatusFailed, nil
+	}
+	var t WebsiteTrackingStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (w WebsiteTrackingStatus) Ptr() *WebsiteTrackingStatus {
+	return &w
+}
+
 var (
 	addWebsitesResponseFieldSuccess = big.NewInt(1 << 0)
 	addWebsitesResponseFieldWebsite = big.NewInt(1 << 1)
@@ -992,6 +2104,123 @@ func (a *AddWebsitesResponse) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", a)
+}
+
+var (
+	configureSendingDomainTrackingResponseFieldMessage = big.NewInt(1 << 0)
+	configureSendingDomainTrackingResponseFieldSuccess = big.NewInt(1 << 1)
+	configureSendingDomainTrackingResponseFieldWebsite = big.NewInt(1 << 2)
+)
+
+type ConfigureSendingDomainTrackingResponse struct {
+	// Present when nothing changed because the company already uses another tracking domain.
+	Message *string  `json:"message,omitempty" url:"message,omitempty"`
+	Success *bool    `json:"success,omitempty" url:"success,omitempty"`
+	Website *Website `json:"website,omitempty" url:"website,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *ConfigureSendingDomainTrackingResponse) GetMessage() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Message
+}
+
+func (c *ConfigureSendingDomainTrackingResponse) GetSuccess() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.Success
+}
+
+func (c *ConfigureSendingDomainTrackingResponse) GetWebsite() *Website {
+	if c == nil {
+		return nil
+	}
+	return c.Website
+}
+
+func (c *ConfigureSendingDomainTrackingResponse) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *ConfigureSendingDomainTrackingResponse) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ConfigureSendingDomainTrackingResponse) SetMessage(message *string) {
+	c.Message = message
+	c.require(configureSendingDomainTrackingResponseFieldMessage)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ConfigureSendingDomainTrackingResponse) SetSuccess(success *bool) {
+	c.Success = success
+	c.require(configureSendingDomainTrackingResponseFieldSuccess)
+}
+
+// SetWebsite sets the Website field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ConfigureSendingDomainTrackingResponse) SetWebsite(website *Website) {
+	c.Website = website
+	c.require(configureSendingDomainTrackingResponseFieldWebsite)
+}
+
+func (c *ConfigureSendingDomainTrackingResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler ConfigureSendingDomainTrackingResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = ConfigureSendingDomainTrackingResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *ConfigureSendingDomainTrackingResponse) MarshalJSON() ([]byte, error) {
+	type embed ConfigureSendingDomainTrackingResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *ConfigureSendingDomainTrackingResponse) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
 }
 
 var (

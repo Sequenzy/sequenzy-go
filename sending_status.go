@@ -309,7 +309,7 @@ type SendingStatus struct {
 	PausedAt      *time.Time                  `json:"pausedAt,omitempty" url:"pausedAt,omitempty"`
 	// Enforcement message including the measured rate, the threshold it crossed, and the volume it was measured over.
 	PauseReason *string `json:"pauseReason,omitempty" url:"pauseReason,omitempty"`
-	// Only high_hard_bounce_rate can be cleared through the resume endpoint.
+	// Only high_hard_bounce_rate can be cleared through the resume endpoint. over_email_limit lifts automatically once the account has email allowance again.
 	PauseReasonKind *SendingStatusPauseReasonKind `json:"pauseReasonKind,omitempty" url:"pauseReasonKind,omitempty"`
 	Remediation     *SendingStatusRemediation     `json:"remediation,omitempty" url:"remediation,omitempty"`
 	SelfResume      *SendingStatusSelfResume      `json:"selfResume,omitempty" url:"selfResume,omitempty"`
@@ -696,7 +696,7 @@ func (s SendingStatusMetricsWindowKind) Ptr() *SendingStatusMetricsWindowKind {
 	return &s
 }
 
-// Only high_hard_bounce_rate can be cleared through the resume endpoint.
+// Only high_hard_bounce_rate can be cleared through the resume endpoint. over_email_limit lifts automatically once the account has email allowance again.
 type SendingStatusPauseReasonKind string
 
 const (
@@ -704,6 +704,7 @@ const (
 	SendingStatusPauseReasonKindHighSoftBounceRate SendingStatusPauseReasonKind = "high_soft_bounce_rate"
 	SendingStatusPauseReasonKindHighComplaintRate  SendingStatusPauseReasonKind = "high_complaint_rate"
 	SendingStatusPauseReasonKindPhishingGuard      SendingStatusPauseReasonKind = "phishing_guard"
+	SendingStatusPauseReasonKindOverEmailLimit     SendingStatusPauseReasonKind = "over_email_limit"
 	SendingStatusPauseReasonKindManual             SendingStatusPauseReasonKind = "manual"
 	SendingStatusPauseReasonKindOther              SendingStatusPauseReasonKind = "other"
 )
@@ -718,6 +719,8 @@ func NewSendingStatusPauseReasonKindFromString(s string) (SendingStatusPauseReas
 		return SendingStatusPauseReasonKindHighComplaintRate, nil
 	case "phishing_guard":
 		return SendingStatusPauseReasonKindPhishingGuard, nil
+	case "over_email_limit":
+		return SendingStatusPauseReasonKindOverEmailLimit, nil
 	case "manual":
 		return SendingStatusPauseReasonKindManual, nil
 	case "other":
@@ -1423,7 +1426,7 @@ type ResumeSendingStatusResponse struct {
 	PausedAt      *time.Time                  `json:"pausedAt,omitempty" url:"pausedAt,omitempty"`
 	// Enforcement message including the measured rate, the threshold it crossed, and the volume it was measured over.
 	PauseReason *string `json:"pauseReason,omitempty" url:"pauseReason,omitempty"`
-	// Only high_hard_bounce_rate can be cleared through the resume endpoint.
+	// Only high_hard_bounce_rate can be cleared through the resume endpoint. over_email_limit lifts automatically once the account has email allowance again.
 	PauseReasonKind *SendingStatusPauseReasonKind `json:"pauseReasonKind,omitempty" url:"pauseReasonKind,omitempty"`
 	Remediation     *SendingStatusRemediation     `json:"remediation,omitempty" url:"remediation,omitempty"`
 	SelfResume      *SendingStatusSelfResume      `json:"selfResume,omitempty" url:"selfResume,omitempty"`

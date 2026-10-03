@@ -1265,9 +1265,10 @@ type LandingPageButtonBlock struct {
 	SectionVariant *string                            `json:"sectionVariant,omitempty" url:"sectionVariant,omitempty"`
 	Align          *LandingPageButtonBlockAlign       `json:"align,omitempty" url:"align,omitempty"`
 	Slot           LandingPageButtonBlockSlot         `json:"slot" url:"slot"`
-	Text           string                             `json:"text" url:"text"`
-	URL            *string                            `json:"url,omitempty" url:"url,omitempty"`
-	Variant        *LandingPageButtonBlockVariant     `json:"variant,omitempty" url:"variant,omitempty"`
+	// Plain text or inline HTML (bold, italic, links, colors). At most 80 visible characters; formatting markup does not count toward that limit.
+	Text    string                         `json:"text" url:"text"`
+	URL     *string                        `json:"url,omitempty" url:"url,omitempty"`
+	Variant *LandingPageButtonBlockVariant `json:"variant,omitempty" url:"variant,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -5548,9 +5549,10 @@ type LandingPageHeadingBlock struct {
 	SectionLayout  *LandingPageBlockBaseSectionLayout `json:"sectionLayout,omitempty" url:"sectionLayout,omitempty"`
 	SectionVariant *string                            `json:"sectionVariant,omitempty" url:"sectionVariant,omitempty"`
 	Align          *LandingPageHeadingBlockAlign      `json:"align,omitempty" url:"align,omitempty"`
-	Content        string                             `json:"content" url:"content"`
-	Level          *int                               `json:"level,omitempty" url:"level,omitempty"`
-	Slot           LandingPageHeadingBlockSlot        `json:"slot" url:"slot"`
+	// Plain text or inline HTML (bold, italic, links, colors). At most 180 visible characters; formatting markup does not count toward that limit.
+	Content string                      `json:"content" url:"content"`
+	Level   *int                        `json:"level,omitempty" url:"level,omitempty"`
+	Slot    LandingPageHeadingBlockSlot `json:"slot" url:"slot"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -8801,9 +8803,10 @@ type LandingPageTextBlock struct {
 	SectionLayout  *LandingPageBlockBaseSectionLayout `json:"sectionLayout,omitempty" url:"sectionLayout,omitempty"`
 	SectionVariant *string                            `json:"sectionVariant,omitempty" url:"sectionVariant,omitempty"`
 	Align          *LandingPageTextBlockAlign         `json:"align,omitempty" url:"align,omitempty"`
-	Content        string                             `json:"content" url:"content"`
-	Slot           LandingPageTextBlockSlot           `json:"slot" url:"slot"`
-	Variant        *LandingPageTextBlockVariant       `json:"variant,omitempty" url:"variant,omitempty"`
+	// Plain text or inline HTML (bold, italic, links, colors). At most 700 visible characters; formatting markup does not count toward that limit.
+	Content string                       `json:"content" url:"content"`
+	Slot    LandingPageTextBlockSlot     `json:"slot" url:"slot"`
+	Variant *LandingPageTextBlockVariant `json:"variant,omitempty" url:"variant,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`

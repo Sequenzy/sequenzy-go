@@ -67,6 +67,14 @@ func TestSettersCreateSavedFormRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetResubscribeBehavior", func(t *testing.T) {
+		obj := &CreateSavedFormRequest{}
+		var fernTestValueResubscribeBehavior *CreateSavedFormRequestResubscribeBehavior
+		obj.SetResubscribeBehavior(fernTestValueResubscribeBehavior)
+		assert.Equal(t, fernTestValueResubscribeBehavior, obj.ResubscribeBehavior)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetShowFirstName", func(t *testing.T) {
 		obj := &CreateSavedFormRequest{}
 		var fernTestValueShowFirstName *bool
@@ -304,6 +312,37 @@ func TestSettersMarkExplicitCreateSavedFormRequest(t *testing.T) {
 
 		// Act
 		obj.SetRedirectURL(fernTestValueRedirectURL)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetResubscribeBehavior_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateSavedFormRequest{}
+		var fernTestValueResubscribeBehavior *CreateSavedFormRequestResubscribeBehavior
+
+		// Act
+		obj.SetResubscribeBehavior(fernTestValueResubscribeBehavior)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -570,6 +609,14 @@ func TestSettersCreateSavedPopupRequest(t *testing.T) {
 		var fernTestValueRedirectURL *string
 		obj.SetRedirectURL(fernTestValueRedirectURL)
 		assert.Equal(t, fernTestValueRedirectURL, obj.RedirectURL)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetResubscribeBehavior", func(t *testing.T) {
+		obj := &CreateSavedPopupRequest{}
+		var fernTestValueResubscribeBehavior *CreateSavedPopupRequestResubscribeBehavior
+		obj.SetResubscribeBehavior(fernTestValueResubscribeBehavior)
+		assert.Equal(t, fernTestValueResubscribeBehavior, obj.ResubscribeBehavior)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -966,6 +1013,37 @@ func TestSettersMarkExplicitCreateSavedPopupRequest(t *testing.T) {
 
 		// Act
 		obj.SetRedirectURL(fernTestValueRedirectURL)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetResubscribeBehavior_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateSavedPopupRequest{}
+		var fernTestValueResubscribeBehavior *CreateSavedPopupRequestResubscribeBehavior
+
+		// Act
+		obj.SetResubscribeBehavior(fernTestValueResubscribeBehavior)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -2324,6 +2402,14 @@ func TestSettersSubmitCompanyScopedSavedSignupFormRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetSequenzyToken", func(t *testing.T) {
+		obj := &SubmitCompanyScopedSavedSignupFormRequest{}
+		var fernTestValueSequenzyToken *string
+		obj.SetSequenzyToken(fernTestValueSequenzyToken)
+		assert.Equal(t, fernTestValueSequenzyToken, obj.SequenzyToken)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetTagIDs", func(t *testing.T) {
 		obj := &SubmitCompanyScopedSavedSignupFormRequest{}
 		var fernTestValueTagIDs []string
@@ -2723,6 +2809,37 @@ func TestSettersMarkExplicitSubmitCompanyScopedSavedSignupFormRequest(t *testing
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetSequenzyToken_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SubmitCompanyScopedSavedSignupFormRequest{}
+		var fernTestValueSequenzyToken *string
+
+		// Act
+		obj.SetSequenzyToken(fernTestValueSequenzyToken)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetTagIDs_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -2864,6 +2981,14 @@ func TestSettersSubmitSavedPopupRequest(t *testing.T) {
 		var fernTestValuePhone *string
 		obj.SetPhone(fernTestValuePhone)
 		assert.Equal(t, fernTestValuePhone, obj.Phone)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetSequenzyToken", func(t *testing.T) {
+		obj := &SubmitSavedPopupRequest{}
+		var fernTestValueSequenzyToken *string
+		obj.SetSequenzyToken(fernTestValueSequenzyToken)
+		assert.Equal(t, fernTestValueSequenzyToken, obj.SequenzyToken)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -3064,6 +3189,37 @@ func TestSettersMarkExplicitSubmitSavedPopupRequest(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetSequenzyToken_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SubmitSavedPopupRequest{}
+		var fernTestValueSequenzyToken *string
+
+		// Act
+		obj.SetSequenzyToken(fernTestValueSequenzyToken)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetWebsite_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -3207,6 +3363,14 @@ func TestSettersSubmitSignupFormRequest(t *testing.T) {
 		var fernTestValueRedirectURL *string
 		obj.SetRedirectURL(fernTestValueRedirectURL)
 		assert.Equal(t, fernTestValueRedirectURL, obj.RedirectURL)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetSequenzyToken", func(t *testing.T) {
+		obj := &SubmitSignupFormRequest{}
+		var fernTestValueSequenzyToken *string
+		obj.SetSequenzyToken(fernTestValueSequenzyToken)
+		assert.Equal(t, fernTestValueSequenzyToken, obj.SequenzyToken)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -3640,6 +3804,37 @@ func TestSettersMarkExplicitSubmitSignupFormRequest(t *testing.T) {
 
 		// Act
 		obj.SetRedirectURL(fernTestValueRedirectURL)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSequenzyToken_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SubmitSignupFormRequest{}
+		var fernTestValueSequenzyToken *string
+
+		// Act
+		obj.SetSequenzyToken(fernTestValueSequenzyToken)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -9987,6 +10182,14 @@ func TestSettersFormCaptureSettings(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetResubscribeBehavior", func(t *testing.T) {
+		obj := &FormCaptureSettings{}
+		var fernTestValueResubscribeBehavior FormCaptureSettingsResubscribeBehavior
+		obj.SetResubscribeBehavior(fernTestValueResubscribeBehavior)
+		assert.Equal(t, fernTestValueResubscribeBehavior, obj.ResubscribeBehavior)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetTagIDs", func(t *testing.T) {
 		obj := &FormCaptureSettings{}
 		var fernTestValueTagIDs []string
@@ -10121,6 +10324,29 @@ func TestGettersFormCaptureSettings(t *testing.T) {
 			}
 		}()
 		_ = obj.GetRedirectURL() // Should return zero value
+	})
+
+	t.Run("GetResubscribeBehavior", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FormCaptureSettings{}
+		var expected FormCaptureSettingsResubscribeBehavior
+		obj.ResubscribeBehavior = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetResubscribeBehavior(), "getter should return the property value")
+	})
+
+	t.Run("GetResubscribeBehavior_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *FormCaptureSettings
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetResubscribeBehavior() // Should return zero value
 	})
 
 	t.Run("GetTagIDs", func(t *testing.T) {
@@ -10291,6 +10517,37 @@ func TestSettersMarkExplicitFormCaptureSettings(t *testing.T) {
 
 		// Act
 		obj.SetRedirectURL(fernTestValueRedirectURL)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetResubscribeBehavior_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FormCaptureSettings{}
+		var fernTestValueResubscribeBehavior FormCaptureSettingsResubscribeBehavior
+
+		// Act
+		obj.SetResubscribeBehavior(fernTestValueResubscribeBehavior)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -12970,6 +13227,14 @@ func TestSettersSavedFormSettings(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetResubscribeBehavior", func(t *testing.T) {
+		obj := &SavedFormSettings{}
+		var fernTestValueResubscribeBehavior SavedFormSettingsResubscribeBehavior
+		obj.SetResubscribeBehavior(fernTestValueResubscribeBehavior)
+		assert.Equal(t, fernTestValueResubscribeBehavior, obj.ResubscribeBehavior)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetShowFirstName", func(t *testing.T) {
 		obj := &SavedFormSettings{}
 		var fernTestValueShowFirstName bool
@@ -13764,6 +14029,29 @@ func TestGettersSavedFormSettings(t *testing.T) {
 			}
 		}()
 		_ = obj.GetRedirectURL() // Should return zero value
+	})
+
+	t.Run("GetResubscribeBehavior", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SavedFormSettings{}
+		var expected SavedFormSettingsResubscribeBehavior
+		obj.ResubscribeBehavior = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetResubscribeBehavior(), "getter should return the property value")
+	})
+
+	t.Run("GetResubscribeBehavior_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SavedFormSettings
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetResubscribeBehavior() // Should return zero value
 	})
 
 	t.Run("GetShowFirstName", func(t *testing.T) {
@@ -14810,6 +15098,37 @@ func TestSettersMarkExplicitSavedFormSettings(t *testing.T) {
 
 		// Act
 		obj.SetRedirectURL(fernTestValueRedirectURL)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetResubscribeBehavior_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SavedFormSettings{}
+		var fernTestValueResubscribeBehavior SavedFormSettingsResubscribeBehavior
+
+		// Act
+		obj.SetResubscribeBehavior(fernTestValueResubscribeBehavior)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -25862,6 +26181,14 @@ func TestSettersUpdateSavedFormRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetResubscribeBehavior", func(t *testing.T) {
+		obj := &UpdateSavedFormRequest{}
+		var fernTestValueResubscribeBehavior *UpdateSavedFormRequestResubscribeBehavior
+		obj.SetResubscribeBehavior(fernTestValueResubscribeBehavior)
+		assert.Equal(t, fernTestValueResubscribeBehavior, obj.ResubscribeBehavior)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetSuccessMessage", func(t *testing.T) {
 		obj := &UpdateSavedFormRequest{}
 		var fernTestValueSuccessMessage *string
@@ -26168,6 +26495,37 @@ func TestSettersMarkExplicitUpdateSavedFormRequest(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetResubscribeBehavior_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateSavedFormRequest{}
+		var fernTestValueResubscribeBehavior *UpdateSavedFormRequestResubscribeBehavior
+
+		// Act
+		obj.SetResubscribeBehavior(fernTestValueResubscribeBehavior)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetSuccessMessage_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -26357,6 +26715,14 @@ func TestSettersUpdateSavedPopupRequest(t *testing.T) {
 		var fernTestValueRedirectURL *string
 		obj.SetRedirectURL(fernTestValueRedirectURL)
 		assert.Equal(t, fernTestValueRedirectURL, obj.RedirectURL)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetResubscribeBehavior", func(t *testing.T) {
+		obj := &UpdateSavedPopupRequest{}
+		var fernTestValueResubscribeBehavior *UpdateSavedPopupRequestResubscribeBehavior
+		obj.SetResubscribeBehavior(fernTestValueResubscribeBehavior)
+		assert.Equal(t, fernTestValueResubscribeBehavior, obj.ResubscribeBehavior)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -26776,6 +27142,37 @@ func TestSettersMarkExplicitUpdateSavedPopupRequest(t *testing.T) {
 
 		// Act
 		obj.SetRedirectURL(fernTestValueRedirectURL)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetResubscribeBehavior_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateSavedPopupRequest{}
+		var fernTestValueResubscribeBehavior *UpdateSavedPopupRequestResubscribeBehavior
+
+		// Act
+		obj.SetResubscribeBehavior(fernTestValueResubscribeBehavior)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -30244,6 +30641,35 @@ func TestEnumCreateSavedFormRequestDuplicateStrategy(t *testing.T) {
 	})
 }
 
+func TestEnumCreateSavedFormRequestResubscribeBehavior(t *testing.T) {
+	t.Run("NewFromString_reactivate", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateSavedFormRequestResubscribeBehaviorFromString("reactivate")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateSavedFormRequestResubscribeBehavior("reactivate"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_double_opt_in", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateSavedFormRequestResubscribeBehaviorFromString("double_opt_in")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateSavedFormRequestResubscribeBehavior("double_opt_in"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewCreateSavedFormRequestResubscribeBehaviorFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewCreateSavedFormRequestResubscribeBehaviorFromString("reactivate")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumCreateSavedPopupRequestDuplicateStrategy(t *testing.T) {
 	t.Run("NewFromString_skip", func(t *testing.T) {
 		t.Parallel()
@@ -30366,6 +30792,35 @@ func TestEnumCreateSavedPopupRequestPresentation(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewCreateSavedPopupRequestPresentationFromString("modal")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumCreateSavedPopupRequestResubscribeBehavior(t *testing.T) {
+	t.Run("NewFromString_reactivate", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateSavedPopupRequestResubscribeBehaviorFromString("reactivate")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateSavedPopupRequestResubscribeBehavior("reactivate"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_double_opt_in", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateSavedPopupRequestResubscribeBehaviorFromString("double_opt_in")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateSavedPopupRequestResubscribeBehavior("double_opt_in"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewCreateSavedPopupRequestResubscribeBehaviorFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewCreateSavedPopupRequestResubscribeBehaviorFromString("reactivate")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -30759,6 +31214,35 @@ func TestEnumFormCaptureSettingsListMode(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewFormCaptureSettingsListModeFromString("all")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumFormCaptureSettingsResubscribeBehavior(t *testing.T) {
+	t.Run("NewFromString_reactivate", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFormCaptureSettingsResubscribeBehaviorFromString("reactivate")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FormCaptureSettingsResubscribeBehavior("reactivate"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_double_opt_in", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFormCaptureSettingsResubscribeBehaviorFromString("double_opt_in")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FormCaptureSettingsResubscribeBehavior("double_opt_in"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewFormCaptureSettingsResubscribeBehaviorFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewFormCaptureSettingsResubscribeBehaviorFromString("reactivate")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -31360,6 +31844,35 @@ func TestEnumSavedFormSettingsListMode(t *testing.T) {
 	})
 }
 
+func TestEnumSavedFormSettingsResubscribeBehavior(t *testing.T) {
+	t.Run("NewFromString_reactivate", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSavedFormSettingsResubscribeBehaviorFromString("reactivate")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SavedFormSettingsResubscribeBehavior("reactivate"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_double_opt_in", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSavedFormSettingsResubscribeBehaviorFromString("double_opt_in")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SavedFormSettingsResubscribeBehavior("double_opt_in"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewSavedFormSettingsResubscribeBehaviorFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewSavedFormSettingsResubscribeBehaviorFromString("reactivate")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumSavedFormSettingsTemplateID(t *testing.T) {
 	t.Run("NewFromString_minimal", func(t *testing.T) {
 		t.Parallel()
@@ -31862,6 +32375,35 @@ func TestEnumUpdateSavedFormRequestDuplicateStrategy(t *testing.T) {
 	})
 }
 
+func TestEnumUpdateSavedFormRequestResubscribeBehavior(t *testing.T) {
+	t.Run("NewFromString_reactivate", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateSavedFormRequestResubscribeBehaviorFromString("reactivate")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateSavedFormRequestResubscribeBehavior("reactivate"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_double_opt_in", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateSavedFormRequestResubscribeBehaviorFromString("double_opt_in")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateSavedFormRequestResubscribeBehavior("double_opt_in"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewUpdateSavedFormRequestResubscribeBehaviorFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewUpdateSavedFormRequestResubscribeBehaviorFromString("reactivate")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumUpdateSavedPopupRequestDuplicateStrategy(t *testing.T) {
 	t.Run("NewFromString_skip", func(t *testing.T) {
 		t.Parallel()
@@ -31984,6 +32526,35 @@ func TestEnumUpdateSavedPopupRequestPresentation(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewUpdateSavedPopupRequestPresentationFromString("modal")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumUpdateSavedPopupRequestResubscribeBehavior(t *testing.T) {
+	t.Run("NewFromString_reactivate", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateSavedPopupRequestResubscribeBehaviorFromString("reactivate")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateSavedPopupRequestResubscribeBehavior("reactivate"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_double_opt_in", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateSavedPopupRequestResubscribeBehaviorFromString("double_opt_in")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateSavedPopupRequestResubscribeBehavior("double_opt_in"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewUpdateSavedPopupRequestResubscribeBehaviorFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewUpdateSavedPopupRequestResubscribeBehaviorFromString("reactivate")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)

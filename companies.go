@@ -11,15 +11,24 @@ import (
 )
 
 var (
-	createCompaniesRequestFieldDomain = big.NewInt(1 << 0)
-	createCompaniesRequestFieldName   = big.NewInt(1 << 1)
+	createCompaniesRequestFieldDescription         = big.NewInt(1 << 0)
+	createCompaniesRequestFieldDomain              = big.NewInt(1 << 1)
+	createCompaniesRequestFieldName                = big.NewInt(1 << 2)
+	createCompaniesRequestFieldNoWebsite           = big.NewInt(1 << 3)
+	createCompaniesRequestFieldWithWelcomeSequence = big.NewInt(1 << 4)
 )
 
 type CreateCompaniesRequest struct {
-	// Company website domain or URL.
-	Domain string `json:"domain" url:"-"`
+	// Optional business description used as context for welcome-sequence generation. Without a website, a non-null value that is not a string of up to 500 characters returns 400; with a domain it is ignored, and website processing may replace the stored description.
+	Description *string `json:"description,omitempty" url:"-"`
+	// Company website domain or URL. Required unless noWebsite is true. When both are sent, the domain is used.
+	Domain *string `json:"domain,omitempty" url:"-"`
 	// Company display name. If omitted, Sequenzy derives it from the domain.
 	Name *string `json:"name,omitempty" url:"-"`
+	// Create a ready workspace without a website. Requires name when no domain is sent. Ignored when a non-blank domain is sent.
+	NoWebsite *bool `json:"noWebsite,omitempty" url:"-"`
+	// Set true to create a draft four-email welcome sequence and queue its generation. Defaults to false; any other value is treated as false.
+	WithWelcomeSequence *bool `json:"withWelcomeSequence,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -32,9 +41,16 @@ func (c *CreateCompaniesRequest) require(field *big.Int) {
 	c.explicitFields.Or(c.explicitFields, field)
 }
 
+// SetDescription sets the Description field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateCompaniesRequest) SetDescription(description *string) {
+	c.Description = description
+	c.require(createCompaniesRequestFieldDescription)
+}
+
 // SetDomain sets the Domain field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCompaniesRequest) SetDomain(domain string) {
+func (c *CreateCompaniesRequest) SetDomain(domain *string) {
 	c.Domain = domain
 	c.require(createCompaniesRequestFieldDomain)
 }
@@ -44,6 +60,20 @@ func (c *CreateCompaniesRequest) SetDomain(domain string) {
 func (c *CreateCompaniesRequest) SetName(name *string) {
 	c.Name = name
 	c.require(createCompaniesRequestFieldName)
+}
+
+// SetNoWebsite sets the NoWebsite field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateCompaniesRequest) SetNoWebsite(noWebsite *bool) {
+	c.NoWebsite = noWebsite
+	c.require(createCompaniesRequestFieldNoWebsite)
+}
+
+// SetWithWelcomeSequence sets the WithWelcomeSequence field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateCompaniesRequest) SetWithWelcomeSequence(withWelcomeSequence *bool) {
+	c.WithWelcomeSequence = withWelcomeSequence
+	c.require(createCompaniesRequestFieldWithWelcomeSequence)
 }
 
 func (c *CreateCompaniesRequest) UnmarshalJSON(data []byte) error {
@@ -1233,15 +1263,19 @@ func (c CompanyReplyTrackingDomainMode) Ptr() *CompanyReplyTrackingDomainMode {
 }
 
 var (
-	createCompaniesResponseFieldCompany = big.NewInt(1 << 0)
-	createCompaniesResponseFieldMessage = big.NewInt(1 << 1)
-	createCompaniesResponseFieldSuccess = big.NewInt(1 << 2)
+	createCompaniesResponseFieldCompany                = big.NewInt(1 << 0)
+	createCompaniesResponseFieldMessage                = big.NewInt(1 << 1)
+	createCompaniesResponseFieldSuccess                = big.NewInt(1 << 2)
+	createCompaniesResponseFieldWelcomeAutomationID    = big.NewInt(1 << 3)
+	createCompaniesResponseFieldWelcomeEnrichmentJobID = big.NewInt(1 << 4)
 )
 
 type CreateCompaniesResponse struct {
-	Company *CreateCompaniesResponseCompany `json:"company,omitempty" url:"company,omitempty"`
-	Message *string                         `json:"message,omitempty" url:"message,omitempty"`
-	Success *bool                           `json:"success,omitempty" url:"success,omitempty"`
+	Company                *CreateCompaniesResponseCompany `json:"company,omitempty" url:"company,omitempty"`
+	Message                *string                         `json:"message,omitempty" url:"message,omitempty"`
+	Success                *bool                           `json:"success,omitempty" url:"success,omitempty"`
+	WelcomeAutomationID    *string                         `json:"welcomeAutomationId,omitempty" url:"welcomeAutomationId,omitempty"`
+	WelcomeEnrichmentJobID *string                         `json:"welcomeEnrichmentJobId,omitempty" url:"welcomeEnrichmentJobId,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1269,6 +1303,20 @@ func (c *CreateCompaniesResponse) GetSuccess() *bool {
 		return nil
 	}
 	return c.Success
+}
+
+func (c *CreateCompaniesResponse) GetWelcomeAutomationID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.WelcomeAutomationID
+}
+
+func (c *CreateCompaniesResponse) GetWelcomeEnrichmentJobID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.WelcomeEnrichmentJobID
 }
 
 func (c *CreateCompaniesResponse) GetExtraProperties() map[string]interface{} {
@@ -1304,6 +1352,20 @@ func (c *CreateCompaniesResponse) SetMessage(message *string) {
 func (c *CreateCompaniesResponse) SetSuccess(success *bool) {
 	c.Success = success
 	c.require(createCompaniesResponseFieldSuccess)
+}
+
+// SetWelcomeAutomationID sets the WelcomeAutomationID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateCompaniesResponse) SetWelcomeAutomationID(welcomeAutomationID *string) {
+	c.WelcomeAutomationID = welcomeAutomationID
+	c.require(createCompaniesResponseFieldWelcomeAutomationID)
+}
+
+// SetWelcomeEnrichmentJobID sets the WelcomeEnrichmentJobID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateCompaniesResponse) SetWelcomeEnrichmentJobID(welcomeEnrichmentJobID *string) {
+	c.WelcomeEnrichmentJobID = welcomeEnrichmentJobID
+	c.require(createCompaniesResponseFieldWelcomeEnrichmentJobID)
 }
 
 func (c *CreateCompaniesResponse) UnmarshalJSON(data []byte) error {

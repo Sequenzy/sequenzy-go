@@ -445,6 +445,201 @@ func (b *BadRequestErrorBody) String() string {
 	return fmt.Sprintf("%#v", b)
 }
 
+// Optional stable machine-readable error discriminator when available.
+type BadRequestErrorBodyCode string
+
+const (
+	BadRequestErrorBodyCodeSegmentReferenceDepthExceeded BadRequestErrorBodyCode = "SEGMENT_REFERENCE_DEPTH_EXCEEDED"
+	BadRequestErrorBodyCodeSegmentReferenceCountExceeded BadRequestErrorBodyCode = "SEGMENT_REFERENCE_COUNT_EXCEEDED"
+)
+
+func NewBadRequestErrorBodyCodeFromString(s string) (BadRequestErrorBodyCode, error) {
+	switch s {
+	case "SEGMENT_REFERENCE_DEPTH_EXCEEDED":
+		return BadRequestErrorBodyCodeSegmentReferenceDepthExceeded, nil
+	case "SEGMENT_REFERENCE_COUNT_EXCEEDED":
+		return BadRequestErrorBodyCodeSegmentReferenceCountExceeded, nil
+	}
+	var t BadRequestErrorBodyCode
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (b BadRequestErrorBodyCode) Ptr() *BadRequestErrorBodyCode {
+	return &b
+}
+
+var (
+	badRequestErrorBodyDetailsFieldLimit          = big.NewInt(1 << 0)
+	badRequestErrorBodyDetailsFieldMaxDepth       = big.NewInt(1 << 1)
+	badRequestErrorBodyDetailsFieldMaxReferences  = big.NewInt(1 << 2)
+	badRequestErrorBodyDetailsFieldReferenceChain = big.NewInt(1 << 3)
+	badRequestErrorBodyDetailsFieldSegmentID      = big.NewInt(1 << 4)
+)
+
+type BadRequestErrorBodyDetails struct {
+	Limit         *BadRequestErrorBodyDetailsLimit `json:"limit,omitempty" url:"limit,omitempty"`
+	MaxDepth      *int                             `json:"maxDepth,omitempty" url:"maxDepth,omitempty"`
+	MaxReferences *int                             `json:"maxReferences,omitempty" url:"maxReferences,omitempty"`
+	// Segment IDs already followed to reach segmentId, outermost first. Does not include the segment being counted.
+	ReferenceChain []string `json:"referenceChain,omitempty" url:"referenceChain,omitempty"`
+	// Referenced segment that exceeded the limit.
+	SegmentID *string `json:"segmentId,omitempty" url:"segmentId,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (b *BadRequestErrorBodyDetails) GetLimit() *BadRequestErrorBodyDetailsLimit {
+	if b == nil {
+		return nil
+	}
+	return b.Limit
+}
+
+func (b *BadRequestErrorBodyDetails) GetMaxDepth() *int {
+	if b == nil {
+		return nil
+	}
+	return b.MaxDepth
+}
+
+func (b *BadRequestErrorBodyDetails) GetMaxReferences() *int {
+	if b == nil {
+		return nil
+	}
+	return b.MaxReferences
+}
+
+func (b *BadRequestErrorBodyDetails) GetReferenceChain() []string {
+	if b == nil {
+		return nil
+	}
+	return b.ReferenceChain
+}
+
+func (b *BadRequestErrorBodyDetails) GetSegmentID() *string {
+	if b == nil {
+		return nil
+	}
+	return b.SegmentID
+}
+
+func (b *BadRequestErrorBodyDetails) GetExtraProperties() map[string]interface{} {
+	if b == nil {
+		return nil
+	}
+	return b.extraProperties
+}
+
+func (b *BadRequestErrorBodyDetails) require(field *big.Int) {
+	if b.explicitFields == nil {
+		b.explicitFields = big.NewInt(0)
+	}
+	b.explicitFields.Or(b.explicitFields, field)
+}
+
+// SetLimit sets the Limit field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *BadRequestErrorBodyDetails) SetLimit(limit *BadRequestErrorBodyDetailsLimit) {
+	b.Limit = limit
+	b.require(badRequestErrorBodyDetailsFieldLimit)
+}
+
+// SetMaxDepth sets the MaxDepth field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *BadRequestErrorBodyDetails) SetMaxDepth(maxDepth *int) {
+	b.MaxDepth = maxDepth
+	b.require(badRequestErrorBodyDetailsFieldMaxDepth)
+}
+
+// SetMaxReferences sets the MaxReferences field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *BadRequestErrorBodyDetails) SetMaxReferences(maxReferences *int) {
+	b.MaxReferences = maxReferences
+	b.require(badRequestErrorBodyDetailsFieldMaxReferences)
+}
+
+// SetReferenceChain sets the ReferenceChain field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *BadRequestErrorBodyDetails) SetReferenceChain(referenceChain []string) {
+	b.ReferenceChain = referenceChain
+	b.require(badRequestErrorBodyDetailsFieldReferenceChain)
+}
+
+// SetSegmentID sets the SegmentID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *BadRequestErrorBodyDetails) SetSegmentID(segmentID *string) {
+	b.SegmentID = segmentID
+	b.require(badRequestErrorBodyDetailsFieldSegmentID)
+}
+
+func (b *BadRequestErrorBodyDetails) UnmarshalJSON(data []byte) error {
+	type unmarshaler BadRequestErrorBodyDetails
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*b = BadRequestErrorBodyDetails(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *b)
+	if err != nil {
+		return err
+	}
+	b.extraProperties = extraProperties
+	b.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (b *BadRequestErrorBodyDetails) MarshalJSON() ([]byte, error) {
+	type embed BadRequestErrorBodyDetails
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*b),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, b.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (b *BadRequestErrorBodyDetails) String() string {
+	if b == nil {
+		return "<nil>"
+	}
+	if len(b.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(b.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(b); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", b)
+}
+
+type BadRequestErrorBodyDetailsLimit string
+
+const (
+	BadRequestErrorBodyDetailsLimitDepth BadRequestErrorBodyDetailsLimit = "depth"
+	BadRequestErrorBodyDetailsLimitTotal BadRequestErrorBodyDetailsLimit = "total"
+)
+
+func NewBadRequestErrorBodyDetailsLimitFromString(s string) (BadRequestErrorBodyDetailsLimit, error) {
+	switch s {
+	case "depth":
+		return BadRequestErrorBodyDetailsLimitDepth, nil
+	case "total":
+		return BadRequestErrorBodyDetailsLimitTotal, nil
+	}
+	var t BadRequestErrorBodyDetailsLimit
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (b BadRequestErrorBodyDetailsLimit) Ptr() *BadRequestErrorBodyDetailsLimit {
+	return &b
+}
+
 var (
 	badRequestErrorBodyErrorFieldCode    = big.NewInt(1 << 0)
 	badRequestErrorBodyErrorFieldMessage = big.NewInt(1 << 1)
@@ -696,6 +891,68 @@ func (c *CommerceCustomer) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", c)
+}
+
+type ConflictErrorBody struct {
+	AgentFriendlyError *AgentFriendlyError
+	Error              *Error
+
+	typ string
+}
+
+func (c *ConflictErrorBody) GetAgentFriendlyError() *AgentFriendlyError {
+	if c == nil {
+		return nil
+	}
+	return c.AgentFriendlyError
+}
+
+func (c *ConflictErrorBody) GetError() *Error {
+	if c == nil {
+		return nil
+	}
+	return c.Error
+}
+
+func (c *ConflictErrorBody) UnmarshalJSON(data []byte) error {
+	valueAgentFriendlyError := new(AgentFriendlyError)
+	if err := json.Unmarshal(data, &valueAgentFriendlyError); err == nil {
+		c.typ = "AgentFriendlyError"
+		c.AgentFriendlyError = valueAgentFriendlyError
+		return nil
+	}
+	valueError := new(Error)
+	if err := json.Unmarshal(data, &valueError); err == nil {
+		c.typ = "Error"
+		c.Error = valueError
+		return nil
+	}
+	return fmt.Errorf("%s cannot be deserialized as a %T", data, c)
+}
+
+func (c ConflictErrorBody) MarshalJSON() ([]byte, error) {
+	if c.typ == "AgentFriendlyError" || c.AgentFriendlyError != nil {
+		return json.Marshal(c.AgentFriendlyError)
+	}
+	if c.typ == "Error" || c.Error != nil {
+		return json.Marshal(c.Error)
+	}
+	return nil, fmt.Errorf("type %T does not include a non-empty union type", c)
+}
+
+type ConflictErrorBodyVisitor interface {
+	VisitAgentFriendlyError(*AgentFriendlyError) error
+	VisitError(*Error) error
+}
+
+func (c *ConflictErrorBody) Accept(visitor ConflictErrorBodyVisitor) error {
+	if c.typ == "AgentFriendlyError" || c.AgentFriendlyError != nil {
+		return visitor.VisitAgentFriendlyError(c.AgentFriendlyError)
+	}
+	if c.typ == "Error" || c.Error != nil {
+		return visitor.VisitError(c.Error)
+	}
+	return fmt.Errorf("type %T does not include a non-empty union type", c)
 }
 
 var (
@@ -2411,14 +2668,17 @@ func (e EngagementStatsRateDenominatorBasis) Ptr() *EngagementStatsRateDenominat
 var (
 	errorFieldCode      = big.NewInt(1 << 0)
 	errorFieldError     = big.NewInt(1 << 1)
-	errorFieldRetryable = big.NewInt(1 << 2)
-	errorFieldSuccess   = big.NewInt(1 << 3)
+	errorFieldIssues    = big.NewInt(1 << 2)
+	errorFieldRetryable = big.NewInt(1 << 3)
+	errorFieldSuccess   = big.NewInt(1 << 4)
 )
 
 type Error struct {
 	// Optional stable machine-readable error discriminator when available.
 	Code  *string `json:"code,omitempty" url:"code,omitempty"`
 	Error string  `json:"error" url:"error"`
+	// Field-level problems with the request, when the endpoint reports them. Up to ten entries; `error` summarizes the first three.
+	Issues []*InputIssue `json:"issues,omitempty" url:"issues,omitempty"`
 	// Whether retrying the request can recover from the error.
 	Retryable *bool `json:"retryable,omitempty" url:"retryable,omitempty"`
 	Success   *bool `json:"success,omitempty" url:"success,omitempty"`
@@ -2442,6 +2702,13 @@ func (e *Error) GetError() string {
 		return ""
 	}
 	return e.Error
+}
+
+func (e *Error) GetIssues() []*InputIssue {
+	if e == nil {
+		return nil
+	}
+	return e.Issues
 }
 
 func (e *Error) GetRetryable() *bool {
@@ -2484,6 +2751,13 @@ func (e *Error) SetCode(code *string) {
 func (e *Error) SetError(error_ string) {
 	e.Error = error_
 	e.require(errorFieldError)
+}
+
+// SetIssues sets the Issues field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *Error) SetIssues(issues []*InputIssue) {
+	e.Issues = issues
+	e.require(errorFieldIssues)
 }
 
 // SetRetryable sets the Retryable field and marks it as non-optional;
@@ -2856,9 +3130,9 @@ type FilterLeaf struct {
 	ID    string          `json:"id" url:"id"`
 	// Required when the filter is inside a v2 root group.
 	Kind *FilterLeafKind `json:"kind,omitempty" url:"kind,omitempty"`
-	// Valid operators depend on the field. status/segment: is, is_not. smsStatus: is, is_not (values: subscribed, unsubscribed, not_subscribed). phone: is_not_empty, is_empty (empty value). tag: contains, not_contains, is_empty, is_not_empty. email: contains, not_contains for domain or substring matching, is, is_not for an exact case-insensitive address. emailProvider/list: is, is_not, is_empty, is_not_empty. firstName/lastName: contains, not_contains, is_empty, is_not_empty. added: less_than, more_than. attribute: is, is_not, is_empty, is_not_empty, gte, lte, gt, lt, contains, not_contains. event and email engagement fields: is, is_not, at_least, less_than_count. emailBounced also supports is_temporary_bounce and is_permanent_bounce. stripeProduct: is, is_not, at_least, less_than_count. stripeCurrentProduct/stripeTrialProduct: is, is_not, gte, lte, gt, lt. commerceProduct/commerceCollection: is, is_not, at_least, less_than_count.
+	// Valid operators depend on the field. status/segment: is, is_not. smsStatus: is, is_not (values: subscribed, unsubscribed, not_subscribed). phone: is_not_empty, is_empty (empty value). tag: contains, not_contains, is_empty, is_not_empty. email: contains, not_contains for domain or substring matching, is, is_not for an exact case-insensitive address. emailProvider/list: is, is_not, is_empty, is_not_empty. firstName/lastName: contains, not_contains, is_empty, is_not_empty. added: less_than, more_than. attribute: is, is_not, is_empty, is_not_empty, gte, lte, gt, lt, contains, not_contains. event and email engagement fields: is, is_not, at_least, less_than_count. emailBounced also supports is_temporary_bounce and is_permanent_bounce. stripeProduct: is, is_not, at_least, less_than_count. stripeCurrentProduct/stripeTrialProduct: is, is_not, gte, lte, gt, lt. commerceProduct/commerceCollection: is, is_not, at_least, less_than_count. pushDevice: is, is_not (values: any, web, ios, android; matches active push devices). pushSent/pushDelivered/pushClicked: is, is_not with a time range such as 30d or all (test sends are ignored).
 	Operator FilterLeafOperator `json:"operator" url:"operator"`
-	// Event filters use `eventName:30d` or `eventName:5:30d`. Segment filters use a segment ID. Email engagement fields use a rolling time window (`7d`, `30d`, `90d`, `180d`, `all`), a specific campaign via `campaign:<campaign_id>`, an email-type scope via `marketing:<timeRange>` (marketing-policy campaign, automation, and Send API traffic) or `transactional:<timeRange>` (transactional-policy sends; with is/is_not or the emailBounced subtype operators; scopes require a send-time policy snapshot, so ambiguous older events remain unscoped), or `count:timeRange` (such as `10:30d` or `10:all`) with at_least/less_than_count. Stripe product filters use `prod_123` for bought/current/trialing checks, `prod_123:3` for payment thresholds, and product-scoped values such as `prod_123:is_canceled`, `prod_123:cancels_at:2026-05-26`, `prod_123:end_at:2026-05-26`, or `prod_123:start_at:7 days ago`. Commerce product filters use `provider:productId` (provider one of `shopify`, `woocommerce`, `api`), optionally with an order-count threshold (`shopify:42:2`); a bare product ID matches the ID on any provider. Commerce collection filters use a collection ID or handle (`skincare`), optionally provider-prefixed and/or with an order-count threshold (`shopify:skincare:2`), and match anyone whose orders contain any product currently in that collection.
+	// Event filters use `eventName:30d` or `eventName:5:30d`. Segment filters use a segment ID. Email engagement fields use a rolling time window (`7d`, `30d`, `90d`, `180d`, `all`), a specific campaign via `campaign:<campaign_id>`, an email-type scope via `marketing:<timeRange>` (marketing-policy campaign, automation, and Send API traffic) or `transactional:<timeRange>` (transactional-policy sends; with is/is_not or the emailBounced subtype operators; scopes require a send-time policy snapshot, so ambiguous older events remain unscoped), or `count:timeRange` (such as `10:30d` or `10:all`) with at_least/less_than_count. Stripe product filters use `prod_123` for bought/current/trialing checks, `prod_123:3` for payment thresholds, and product-scoped values such as `prod_123:is_canceled`, `prod_123:cancels_at:2026-05-26`, `prod_123:end_at:2026-05-26`, or `prod_123:start_at:7 days ago`. Commerce product filters use `provider:productId` (provider one of `shopify`, `woocommerce`, `api`), optionally with an order-count threshold (`shopify:42:2`); a bare product ID matches the ID on any provider. Commerce collection filters use a collection ID or handle (`skincare`), optionally provider-prefixed and/or with an order-count threshold (`shopify:skincare:2`), and match anyone whose orders contain any product currently in that collection. Push device filters use `any`, `web`, `ios`, or `android`. Push sent, delivered, and clicked filters use a time range (`7d`, `30d`, `all`).
 	Value string `json:"value" url:"value"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -3021,6 +3295,10 @@ const (
 	FilterLeafFieldEmailClicked         FilterLeafField = "emailClicked"
 	FilterLeafFieldEmailBounced         FilterLeafField = "emailBounced"
 	FilterLeafFieldEmailComplained      FilterLeafField = "emailComplained"
+	FilterLeafFieldPushDevice           FilterLeafField = "pushDevice"
+	FilterLeafFieldPushSent             FilterLeafField = "pushSent"
+	FilterLeafFieldPushDelivered        FilterLeafField = "pushDelivered"
+	FilterLeafFieldPushClicked          FilterLeafField = "pushClicked"
 )
 
 func NewFilterLeafFieldFromString(s string) (FilterLeafField, error) {
@@ -3073,6 +3351,14 @@ func NewFilterLeafFieldFromString(s string) (FilterLeafField, error) {
 		return FilterLeafFieldEmailBounced, nil
 	case "emailComplained":
 		return FilterLeafFieldEmailComplained, nil
+	case "pushDevice":
+		return FilterLeafFieldPushDevice, nil
+	case "pushSent":
+		return FilterLeafFieldPushSent, nil
+	case "pushDelivered":
+		return FilterLeafFieldPushDelivered, nil
+	case "pushClicked":
+		return FilterLeafFieldPushClicked, nil
 	}
 	var t FilterLeafField
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -3102,7 +3388,7 @@ func (f FilterLeafKind) Ptr() *FilterLeafKind {
 	return &f
 }
 
-// Valid operators depend on the field. status/segment: is, is_not. smsStatus: is, is_not (values: subscribed, unsubscribed, not_subscribed). phone: is_not_empty, is_empty (empty value). tag: contains, not_contains, is_empty, is_not_empty. email: contains, not_contains for domain or substring matching, is, is_not for an exact case-insensitive address. emailProvider/list: is, is_not, is_empty, is_not_empty. firstName/lastName: contains, not_contains, is_empty, is_not_empty. added: less_than, more_than. attribute: is, is_not, is_empty, is_not_empty, gte, lte, gt, lt, contains, not_contains. event and email engagement fields: is, is_not, at_least, less_than_count. emailBounced also supports is_temporary_bounce and is_permanent_bounce. stripeProduct: is, is_not, at_least, less_than_count. stripeCurrentProduct/stripeTrialProduct: is, is_not, gte, lte, gt, lt. commerceProduct/commerceCollection: is, is_not, at_least, less_than_count.
+// Valid operators depend on the field. status/segment: is, is_not. smsStatus: is, is_not (values: subscribed, unsubscribed, not_subscribed). phone: is_not_empty, is_empty (empty value). tag: contains, not_contains, is_empty, is_not_empty. email: contains, not_contains for domain or substring matching, is, is_not for an exact case-insensitive address. emailProvider/list: is, is_not, is_empty, is_not_empty. firstName/lastName: contains, not_contains, is_empty, is_not_empty. added: less_than, more_than. attribute: is, is_not, is_empty, is_not_empty, gte, lte, gt, lt, contains, not_contains. event and email engagement fields: is, is_not, at_least, less_than_count. emailBounced also supports is_temporary_bounce and is_permanent_bounce. stripeProduct: is, is_not, at_least, less_than_count. stripeCurrentProduct/stripeTrialProduct: is, is_not, gte, lte, gt, lt. commerceProduct/commerceCollection: is, is_not, at_least, less_than_count. pushDevice: is, is_not (values: any, web, ios, android; matches active push devices). pushSent/pushDelivered/pushClicked: is, is_not with a time range such as 30d or all (test sends are ignored).
 type FilterLeafOperator string
 
 const (
@@ -3165,6 +3451,125 @@ func NewFilterLeafOperatorFromString(s string) (FilterLeafOperator, error) {
 
 func (f FilterLeafOperator) Ptr() *FilterLeafOperator {
 	return &f
+}
+
+var (
+	inputIssueFieldAllowedValues = big.NewInt(1 << 0)
+	inputIssueFieldMessage       = big.NewInt(1 << 1)
+	inputIssueFieldPath          = big.NewInt(1 << 2)
+)
+
+type InputIssue struct {
+	// Accepted values when the field only takes a fixed set of values.
+	AllowedValues []any `json:"allowedValues,omitempty" url:"allowedValues,omitempty"`
+	// What is wrong with the field.
+	Message string `json:"message" url:"message"`
+	// Dotted field path, such as `audience.subscriberIds[0]`. Empty when the problem is with the request body itself.
+	Path string `json:"path" url:"path"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (i *InputIssue) GetAllowedValues() []any {
+	if i == nil {
+		return nil
+	}
+	return i.AllowedValues
+}
+
+func (i *InputIssue) GetMessage() string {
+	if i == nil {
+		return ""
+	}
+	return i.Message
+}
+
+func (i *InputIssue) GetPath() string {
+	if i == nil {
+		return ""
+	}
+	return i.Path
+}
+
+func (i *InputIssue) GetExtraProperties() map[string]interface{} {
+	if i == nil {
+		return nil
+	}
+	return i.extraProperties
+}
+
+func (i *InputIssue) require(field *big.Int) {
+	if i.explicitFields == nil {
+		i.explicitFields = big.NewInt(0)
+	}
+	i.explicitFields.Or(i.explicitFields, field)
+}
+
+// SetAllowedValues sets the AllowedValues field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InputIssue) SetAllowedValues(allowedValues []any) {
+	i.AllowedValues = allowedValues
+	i.require(inputIssueFieldAllowedValues)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InputIssue) SetMessage(message string) {
+	i.Message = message
+	i.require(inputIssueFieldMessage)
+}
+
+// SetPath sets the Path field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InputIssue) SetPath(path string) {
+	i.Path = path
+	i.require(inputIssueFieldPath)
+}
+
+func (i *InputIssue) UnmarshalJSON(data []byte) error {
+	type unmarshaler InputIssue
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*i = InputIssue(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+	i.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InputIssue) MarshalJSON() ([]byte, error) {
+	type embed InputIssue
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*i),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (i *InputIssue) String() string {
+	if i == nil {
+		return "<nil>"
+	}
+	if len(i.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
 }
 
 var (
@@ -6034,18 +6439,21 @@ func (s *ServiceUnavailableErrorBody) String() string {
 var (
 	templateUpdateErrorFieldCode      = big.NewInt(1 << 0)
 	templateUpdateErrorFieldError     = big.NewInt(1 << 1)
-	templateUpdateErrorFieldRetryable = big.NewInt(1 << 2)
-	templateUpdateErrorFieldSuccess   = big.NewInt(1 << 3)
-	templateUpdateErrorFieldAbTests   = big.NewInt(1 << 4)
-	templateUpdateErrorFieldDocsURL   = big.NewInt(1 << 5)
-	templateUpdateErrorFieldHowToFix  = big.NewInt(1 << 6)
-	templateUpdateErrorFieldTitle     = big.NewInt(1 << 7)
+	templateUpdateErrorFieldIssues    = big.NewInt(1 << 2)
+	templateUpdateErrorFieldRetryable = big.NewInt(1 << 3)
+	templateUpdateErrorFieldSuccess   = big.NewInt(1 << 4)
+	templateUpdateErrorFieldAbTests   = big.NewInt(1 << 5)
+	templateUpdateErrorFieldDocsURL   = big.NewInt(1 << 6)
+	templateUpdateErrorFieldHowToFix  = big.NewInt(1 << 7)
+	templateUpdateErrorFieldTitle     = big.NewInt(1 << 8)
 )
 
 type TemplateUpdateError struct {
 	// Optional stable machine-readable error discriminator when available.
 	Code  *string `json:"code,omitempty" url:"code,omitempty"`
 	Error string  `json:"error" url:"error"`
+	// Field-level problems with the request, when the endpoint reports them. Up to ten entries; `error` summarizes the first three.
+	Issues []*InputIssue `json:"issues,omitempty" url:"issues,omitempty"`
 	// Whether retrying the request can recover from the error.
 	Retryable *bool                      `json:"retryable,omitempty" url:"retryable,omitempty"`
 	Success   *bool                      `json:"success,omitempty" url:"success,omitempty"`
@@ -6073,6 +6481,13 @@ func (t *TemplateUpdateError) GetError() string {
 		return ""
 	}
 	return t.Error
+}
+
+func (t *TemplateUpdateError) GetIssues() []*InputIssue {
+	if t == nil {
+		return nil
+	}
+	return t.Issues
 }
 
 func (t *TemplateUpdateError) GetRetryable() *bool {
@@ -6143,6 +6558,13 @@ func (t *TemplateUpdateError) SetCode(code *string) {
 func (t *TemplateUpdateError) SetError(error_ string) {
 	t.Error = error_
 	t.require(templateUpdateErrorFieldError)
+}
+
+// SetIssues sets the Issues field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TemplateUpdateError) SetIssues(issues []*InputIssue) {
+	t.Issues = issues
+	t.require(templateUpdateErrorFieldIssues)
 }
 
 // SetRetryable sets the Retryable field and marks it as non-optional;
@@ -6530,25 +6952,13 @@ func (u *UnauthorizedErrorBodyError) String() string {
 }
 
 var (
-	unprocessableEntityErrorBodyFieldErrors   = big.NewInt(1 << 0)
-	unprocessableEntityErrorBodyFieldExpected = big.NewInt(1 << 1)
-	unprocessableEntityErrorBodyFieldFound    = big.NewInt(1 << 2)
-	unprocessableEntityErrorBodyFieldMessage  = big.NewInt(1 << 3)
-	unprocessableEntityErrorBodyFieldOn       = big.NewInt(1 << 4)
-	unprocessableEntityErrorBodyFieldProperty = big.NewInt(1 << 5)
-	unprocessableEntityErrorBodyFieldSummary  = big.NewInt(1 << 6)
-	unprocessableEntityErrorBodyFieldType     = big.NewInt(1 << 7)
+	unprocessableEntityErrorBodyFieldError   = big.NewInt(1 << 0)
+	unprocessableEntityErrorBodyFieldSuccess = big.NewInt(1 << 1)
 )
 
 type UnprocessableEntityErrorBody struct {
-	Errors   []map[string]any `json:"errors,omitempty" url:"errors,omitempty"`
-	Expected map[string]any   `json:"expected,omitempty" url:"expected,omitempty"`
-	Found    map[string]any   `json:"found,omitempty" url:"found,omitempty"`
-	Message  *string          `json:"message,omitempty" url:"message,omitempty"`
-	On       *string          `json:"on,omitempty" url:"on,omitempty"`
-	Property *string          `json:"property,omitempty" url:"property,omitempty"`
-	Summary  *string          `json:"summary,omitempty" url:"summary,omitempty"`
-	Type     *string          `json:"type,omitempty" url:"type,omitempty"`
+	Error   *string `json:"error,omitempty" url:"error,omitempty"`
+	Success *bool   `json:"success,omitempty" url:"success,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -6557,60 +6967,18 @@ type UnprocessableEntityErrorBody struct {
 	rawJSON         json.RawMessage
 }
 
-func (u *UnprocessableEntityErrorBody) GetErrors() []map[string]any {
+func (u *UnprocessableEntityErrorBody) GetError() *string {
 	if u == nil {
 		return nil
 	}
-	return u.Errors
+	return u.Error
 }
 
-func (u *UnprocessableEntityErrorBody) GetExpected() map[string]any {
+func (u *UnprocessableEntityErrorBody) GetSuccess() *bool {
 	if u == nil {
 		return nil
 	}
-	return u.Expected
-}
-
-func (u *UnprocessableEntityErrorBody) GetFound() map[string]any {
-	if u == nil {
-		return nil
-	}
-	return u.Found
-}
-
-func (u *UnprocessableEntityErrorBody) GetMessage() *string {
-	if u == nil {
-		return nil
-	}
-	return u.Message
-}
-
-func (u *UnprocessableEntityErrorBody) GetOn() *string {
-	if u == nil {
-		return nil
-	}
-	return u.On
-}
-
-func (u *UnprocessableEntityErrorBody) GetProperty() *string {
-	if u == nil {
-		return nil
-	}
-	return u.Property
-}
-
-func (u *UnprocessableEntityErrorBody) GetSummary() *string {
-	if u == nil {
-		return nil
-	}
-	return u.Summary
-}
-
-func (u *UnprocessableEntityErrorBody) GetType() *string {
-	if u == nil {
-		return nil
-	}
-	return u.Type
+	return u.Success
 }
 
 func (u *UnprocessableEntityErrorBody) GetExtraProperties() map[string]interface{} {
@@ -6627,60 +6995,18 @@ func (u *UnprocessableEntityErrorBody) require(field *big.Int) {
 	u.explicitFields.Or(u.explicitFields, field)
 }
 
-// SetErrors sets the Errors field and marks it as non-optional;
+// SetError sets the Error field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UnprocessableEntityErrorBody) SetErrors(errors []map[string]any) {
-	u.Errors = errors
-	u.require(unprocessableEntityErrorBodyFieldErrors)
+func (u *UnprocessableEntityErrorBody) SetError(error_ *string) {
+	u.Error = error_
+	u.require(unprocessableEntityErrorBodyFieldError)
 }
 
-// SetExpected sets the Expected field and marks it as non-optional;
+// SetSuccess sets the Success field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UnprocessableEntityErrorBody) SetExpected(expected map[string]any) {
-	u.Expected = expected
-	u.require(unprocessableEntityErrorBodyFieldExpected)
-}
-
-// SetFound sets the Found field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UnprocessableEntityErrorBody) SetFound(found map[string]any) {
-	u.Found = found
-	u.require(unprocessableEntityErrorBodyFieldFound)
-}
-
-// SetMessage sets the Message field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UnprocessableEntityErrorBody) SetMessage(message *string) {
-	u.Message = message
-	u.require(unprocessableEntityErrorBodyFieldMessage)
-}
-
-// SetOn sets the On field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UnprocessableEntityErrorBody) SetOn(on *string) {
-	u.On = on
-	u.require(unprocessableEntityErrorBodyFieldOn)
-}
-
-// SetProperty sets the Property field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UnprocessableEntityErrorBody) SetProperty(property *string) {
-	u.Property = property
-	u.require(unprocessableEntityErrorBodyFieldProperty)
-}
-
-// SetSummary sets the Summary field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UnprocessableEntityErrorBody) SetSummary(summary *string) {
-	u.Summary = summary
-	u.require(unprocessableEntityErrorBodyFieldSummary)
-}
-
-// SetType sets the Type field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UnprocessableEntityErrorBody) SetType(type_ *string) {
-	u.Type = type_
-	u.require(unprocessableEntityErrorBodyFieldType)
+func (u *UnprocessableEntityErrorBody) SetSuccess(success *bool) {
+	u.Success = success
+	u.require(unprocessableEntityErrorBodyFieldSuccess)
 }
 
 func (u *UnprocessableEntityErrorBody) UnmarshalJSON(data []byte) error {

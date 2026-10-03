@@ -77,6 +77,63 @@ func VerifyRequestCount(
 	require.Equal(t, expected, len(result.Requests))
 }
 
+func TestConversationsBulkUpdateStatusWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.BulkUpdateStatusConversationsRequest{
+		ConversationIDs: []string{
+			"conversationIds",
+		},
+		Status: sequenzygo.BulkUpdateStatusConversationsRequestStatusOpen,
+	}
+	_, invocationErr := client.Conversations.BulkUpdateStatus(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestConversationsBulkUpdateStatusWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestConversationsBulkUpdateStatusWithWireMock", "POST", "/conversations/bulk/status", nil, 1)
+}
+
+func TestConversationsForwardMessageWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.ForwardMessageConversationsRequest{
+		ConversationID: "conversationId",
+		MessageID:      "messageId",
+		To:             "to",
+	}
+	_, invocationErr := client.Conversations.ForwardMessage(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestConversationsForwardMessageWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestConversationsForwardMessageWithWireMock", "POST", "/conversations/conversationId/messages/messageId/forward", nil, 1)
+}
+
 func TestConversationsGetWithWireMock(
 	t *testing.T,
 ) {
@@ -101,6 +158,28 @@ func TestConversationsGetWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestConversationsGetWithWireMock", "GET", "/conversations/conversationId", nil, 1)
+}
+
+func TestConversationsGetInboxAddressWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	_, invocationErr := client.Conversations.GetInboxAddress(
+		context.TODO(),
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestConversationsGetInboxAddressWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestConversationsGetInboxAddressWithWireMock", "GET", "/conversations/inbox-address", nil, 1)
 }
 
 func TestConversationsListWithWireMock(
@@ -153,6 +232,32 @@ func TestConversationsMarkReadWithWireMock(
 	VerifyRequestCount(t, "TestConversationsMarkReadWithWireMock", "POST", "/conversations/conversationId/read", nil, 1)
 }
 
+func TestConversationsMarkUnreadWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.MarkUnreadConversationsRequest{
+		ConversationID: "conversationId",
+	}
+	_, invocationErr := client.Conversations.MarkUnread(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestConversationsMarkUnreadWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestConversationsMarkUnreadWithWireMock", "POST", "/conversations/conversationId/unread", nil, 1)
+}
+
 func TestConversationsSendMessageWithWireMock(
 	t *testing.T,
 ) {
@@ -177,6 +282,30 @@ func TestConversationsSendMessageWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestConversationsSendMessageWithWireMock", "POST", "/conversations/conversationId/messages", nil, 1)
+}
+
+func TestConversationsUpdateInboxAddressWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.UpdateInboxAddressRequest{}
+	_, invocationErr := client.Conversations.UpdateInboxAddress(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestConversationsUpdateInboxAddressWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestConversationsUpdateInboxAddressWithWireMock", "PUT", "/conversations/inbox-address", nil, 1)
 }
 
 func TestConversationsUpdateStatusWithWireMock(

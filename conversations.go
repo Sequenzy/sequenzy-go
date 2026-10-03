@@ -11,6 +11,140 @@ import (
 )
 
 var (
+	bulkUpdateStatusConversationsRequestFieldConversationIDs = big.NewInt(1 << 0)
+	bulkUpdateStatusConversationsRequestFieldStatus          = big.NewInt(1 << 1)
+)
+
+type BulkUpdateStatusConversationsRequest struct {
+	// Conversation IDs to update, up to 100. Whitespace is trimmed and blank or repeated IDs are ignored; at least one non-blank ID is required.
+	ConversationIDs []string `json:"conversationIds" url:"-"`
+	// New status for every listed conversation.
+	Status BulkUpdateStatusConversationsRequestStatus `json:"status" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (b *BulkUpdateStatusConversationsRequest) require(field *big.Int) {
+	if b.explicitFields == nil {
+		b.explicitFields = big.NewInt(0)
+	}
+	b.explicitFields.Or(b.explicitFields, field)
+}
+
+// SetConversationIDs sets the ConversationIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *BulkUpdateStatusConversationsRequest) SetConversationIDs(conversationIDs []string) {
+	b.ConversationIDs = conversationIDs
+	b.require(bulkUpdateStatusConversationsRequestFieldConversationIDs)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *BulkUpdateStatusConversationsRequest) SetStatus(status BulkUpdateStatusConversationsRequestStatus) {
+	b.Status = status
+	b.require(bulkUpdateStatusConversationsRequestFieldStatus)
+}
+
+func (b *BulkUpdateStatusConversationsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler BulkUpdateStatusConversationsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*b = BulkUpdateStatusConversationsRequest(body)
+	return nil
+}
+
+func (b *BulkUpdateStatusConversationsRequest) MarshalJSON() ([]byte, error) {
+	type embed BulkUpdateStatusConversationsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*b),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, b.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
+	forwardMessageConversationsRequestFieldConversationID  = big.NewInt(1 << 0)
+	forwardMessageConversationsRequestFieldMessageID       = big.NewInt(1 << 1)
+	forwardMessageConversationsRequestFieldSenderProfileID = big.NewInt(1 << 2)
+	forwardMessageConversationsRequestFieldTo              = big.NewInt(1 << 3)
+)
+
+type ForwardMessageConversationsRequest struct {
+	// Conversation ID.
+	ConversationID string `json:"-" url:"-"`
+	// ID of the message to forward.
+	MessageID string `json:"-" url:"-"`
+	// Sender profile to forward from. Its sending domain must be verified. When omitted, the company default sender is used.
+	SenderProfileID *string `json:"senderProfileId,omitempty" url:"-"`
+	// One email address to forward the message to.
+	To string `json:"to" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (f *ForwardMessageConversationsRequest) require(field *big.Int) {
+	if f.explicitFields == nil {
+		f.explicitFields = big.NewInt(0)
+	}
+	f.explicitFields.Or(f.explicitFields, field)
+}
+
+// SetConversationID sets the ConversationID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *ForwardMessageConversationsRequest) SetConversationID(conversationID string) {
+	f.ConversationID = conversationID
+	f.require(forwardMessageConversationsRequestFieldConversationID)
+}
+
+// SetMessageID sets the MessageID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *ForwardMessageConversationsRequest) SetMessageID(messageID string) {
+	f.MessageID = messageID
+	f.require(forwardMessageConversationsRequestFieldMessageID)
+}
+
+// SetSenderProfileID sets the SenderProfileID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *ForwardMessageConversationsRequest) SetSenderProfileID(senderProfileID *string) {
+	f.SenderProfileID = senderProfileID
+	f.require(forwardMessageConversationsRequestFieldSenderProfileID)
+}
+
+// SetTo sets the To field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *ForwardMessageConversationsRequest) SetTo(to string) {
+	f.To = to
+	f.require(forwardMessageConversationsRequestFieldTo)
+}
+
+func (f *ForwardMessageConversationsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler ForwardMessageConversationsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*f = ForwardMessageConversationsRequest(body)
+	return nil
+}
+
+func (f *ForwardMessageConversationsRequest) MarshalJSON() ([]byte, error) {
+	type embed ForwardMessageConversationsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*f),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, f.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
 	getConversationsRequestFieldConversationID = big.NewInt(1 << 0)
 )
 
@@ -129,20 +263,52 @@ func (m *MarkReadConversationsRequest) SetConversationID(conversationID string) 
 }
 
 var (
-	sendMessageConversationsRequestFieldConversationID = big.NewInt(1 << 0)
-	sendMessageConversationsRequestFieldBodyHTML       = big.NewInt(1 << 1)
-	sendMessageConversationsRequestFieldBodyText       = big.NewInt(1 << 2)
-	sendMessageConversationsRequestFieldSubject        = big.NewInt(1 << 3)
-	sendMessageConversationsRequestFieldType           = big.NewInt(1 << 4)
+	markUnreadConversationsRequestFieldConversationID = big.NewInt(1 << 0)
+)
+
+type MarkUnreadConversationsRequest struct {
+	// Conversation ID.
+	ConversationID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (m *MarkUnreadConversationsRequest) require(field *big.Int) {
+	if m.explicitFields == nil {
+		m.explicitFields = big.NewInt(0)
+	}
+	m.explicitFields.Or(m.explicitFields, field)
+}
+
+// SetConversationID sets the ConversationID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MarkUnreadConversationsRequest) SetConversationID(conversationID string) {
+	m.ConversationID = conversationID
+	m.require(markUnreadConversationsRequestFieldConversationID)
+}
+
+var (
+	sendMessageConversationsRequestFieldConversationID  = big.NewInt(1 << 0)
+	sendMessageConversationsRequestFieldAttachments     = big.NewInt(1 << 1)
+	sendMessageConversationsRequestFieldBodyHTML        = big.NewInt(1 << 2)
+	sendMessageConversationsRequestFieldBodyText        = big.NewInt(1 << 3)
+	sendMessageConversationsRequestFieldSenderProfileID = big.NewInt(1 << 4)
+	sendMessageConversationsRequestFieldSubject         = big.NewInt(1 << 5)
+	sendMessageConversationsRequestFieldType            = big.NewInt(1 << 6)
 )
 
 type SendMessageConversationsRequest struct {
 	// Conversation ID.
 	ConversationID string `json:"-" url:"-"`
+	// Files to attach, up to 10 and 15 MB total after decoding. Requires attachment storage on the server (see Get Inbox Address).
+	Attachments []*SendMessageConversationsRequestAttachmentsItem `json:"attachments,omitempty" url:"-"`
 	// HTML body. Outbound messages require bodyText or bodyHtml.
 	BodyHTML *string `json:"bodyHtml,omitempty" url:"-"`
 	// Plain text body. Outbound messages require bodyText or bodyHtml.
 	BodyText *string `json:"bodyText,omitempty" url:"-"`
+	// Sender profile to send an outbound reply from. Its sending domain must be verified. Ignored for notes. When omitted, the reply is sent from the API key owner's email address, which must be on one of your verified sending domains.
+	SenderProfileID *string `json:"senderProfileId,omitempty" url:"-"`
 	// Message subject. Defaults to the conversation subject.
 	Subject *string `json:"subject,omitempty" url:"-"`
 	// outbound sends an email reply, note adds an internal team note.
@@ -166,6 +332,13 @@ func (s *SendMessageConversationsRequest) SetConversationID(conversationID strin
 	s.require(sendMessageConversationsRequestFieldConversationID)
 }
 
+// SetAttachments sets the Attachments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendMessageConversationsRequest) SetAttachments(attachments []*SendMessageConversationsRequestAttachmentsItem) {
+	s.Attachments = attachments
+	s.require(sendMessageConversationsRequestFieldAttachments)
+}
+
 // SetBodyHTML sets the BodyHTML field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *SendMessageConversationsRequest) SetBodyHTML(bodyHTML *string) {
@@ -178,6 +351,13 @@ func (s *SendMessageConversationsRequest) SetBodyHTML(bodyHTML *string) {
 func (s *SendMessageConversationsRequest) SetBodyText(bodyText *string) {
 	s.BodyText = bodyText
 	s.require(sendMessageConversationsRequestFieldBodyText)
+}
+
+// SetSenderProfileID sets the SenderProfileID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendMessageConversationsRequest) SetSenderProfileID(senderProfileID *string) {
+	s.SenderProfileID = senderProfileID
+	s.require(sendMessageConversationsRequestFieldSenderProfileID)
 }
 
 // SetSubject sets the Subject field and marks it as non-optional;
@@ -216,6 +396,157 @@ func (s *SendMessageConversationsRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
+	conversationAttachmentFieldContentType = big.NewInt(1 << 0)
+	conversationAttachmentFieldDownloadURL = big.NewInt(1 << 1)
+	conversationAttachmentFieldFilename    = big.NewInt(1 << 2)
+	conversationAttachmentFieldS3Key       = big.NewInt(1 << 3)
+	conversationAttachmentFieldSize        = big.NewInt(1 << 4)
+)
+
+type ConversationAttachment struct {
+	ContentType string `json:"contentType" url:"contentType"`
+	// Signed download link valid for one hour, returned by Get Conversation for stored files. Null when the file was not stored (for example, attachment storage is not configured, the file was flagged by the virus scan, or its retention period ended).
+	DownloadURL *string `json:"downloadUrl,omitempty" url:"downloadUrl,omitempty"`
+	Filename    string  `json:"filename" url:"filename"`
+	// Internal storage key. Present only when the file is stored.
+	S3Key *string `json:"s3Key,omitempty" url:"s3Key,omitempty"`
+	// Size in bytes.
+	Size int `json:"size" url:"size"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *ConversationAttachment) GetContentType() string {
+	if c == nil {
+		return ""
+	}
+	return c.ContentType
+}
+
+func (c *ConversationAttachment) GetDownloadURL() *string {
+	if c == nil {
+		return nil
+	}
+	return c.DownloadURL
+}
+
+func (c *ConversationAttachment) GetFilename() string {
+	if c == nil {
+		return ""
+	}
+	return c.Filename
+}
+
+func (c *ConversationAttachment) GetS3Key() *string {
+	if c == nil {
+		return nil
+	}
+	return c.S3Key
+}
+
+func (c *ConversationAttachment) GetSize() int {
+	if c == nil {
+		return 0
+	}
+	return c.Size
+}
+
+func (c *ConversationAttachment) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *ConversationAttachment) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetContentType sets the ContentType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ConversationAttachment) SetContentType(contentType string) {
+	c.ContentType = contentType
+	c.require(conversationAttachmentFieldContentType)
+}
+
+// SetDownloadURL sets the DownloadURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ConversationAttachment) SetDownloadURL(downloadURL *string) {
+	c.DownloadURL = downloadURL
+	c.require(conversationAttachmentFieldDownloadURL)
+}
+
+// SetFilename sets the Filename field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ConversationAttachment) SetFilename(filename string) {
+	c.Filename = filename
+	c.require(conversationAttachmentFieldFilename)
+}
+
+// SetS3Key sets the S3Key field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ConversationAttachment) SetS3Key(s3Key *string) {
+	c.S3Key = s3Key
+	c.require(conversationAttachmentFieldS3Key)
+}
+
+// SetSize sets the Size field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ConversationAttachment) SetSize(size int) {
+	c.Size = size
+	c.require(conversationAttachmentFieldSize)
+}
+
+func (c *ConversationAttachment) UnmarshalJSON(data []byte) error {
+	type unmarshaler ConversationAttachment
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = ConversationAttachment(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *ConversationAttachment) MarshalJSON() ([]byte, error) {
+	type embed ConversationAttachment
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *ConversationAttachment) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
 	conversationMessageFieldAttachments    = big.NewInt(1 << 0)
 	conversationMessageFieldBodyHTML       = big.NewInt(1 << 1)
 	conversationMessageFieldBodyText       = big.NewInt(1 << 2)
@@ -232,20 +563,21 @@ var (
 )
 
 type ConversationMessage struct {
-	Attachments    []map[string]any `json:"attachments,omitempty" url:"attachments,omitempty"`
-	BodyHTML       *string          `json:"bodyHtml,omitempty" url:"bodyHtml,omitempty"`
-	BodyText       *string          `json:"bodyText,omitempty" url:"bodyText,omitempty"`
-	ConversationID *string          `json:"conversationId,omitempty" url:"conversationId,omitempty"`
-	CreatedAt      *time.Time       `json:"createdAt,omitempty" url:"createdAt,omitempty"`
-	// pending, sent, or failed for outbound messages. Null for notes.
-	DeliveryStatus *string                  `json:"deliveryStatus,omitempty" url:"deliveryStatus,omitempty"`
-	FromEmail      *string                  `json:"fromEmail,omitempty" url:"fromEmail,omitempty"`
-	FromName       *string                  `json:"fromName,omitempty" url:"fromName,omitempty"`
-	FromUserID     *string                  `json:"fromUserId,omitempty" url:"fromUserId,omitempty"`
-	ID             *string                  `json:"id,omitempty" url:"id,omitempty"`
-	IsRead         *bool                    `json:"isRead,omitempty" url:"isRead,omitempty"`
-	Subject        *string                  `json:"subject,omitempty" url:"subject,omitempty"`
-	Type           *ConversationMessageType `json:"type,omitempty" url:"type,omitempty"`
+	Attachments    []*ConversationAttachment `json:"attachments,omitempty" url:"attachments,omitempty"`
+	BodyHTML       *string                   `json:"bodyHtml,omitempty" url:"bodyHtml,omitempty"`
+	BodyText       *string                   `json:"bodyText,omitempty" url:"bodyText,omitempty"`
+	ConversationID *string                   `json:"conversationId,omitempty" url:"conversationId,omitempty"`
+	CreatedAt      *time.Time                `json:"createdAt,omitempty" url:"createdAt,omitempty"`
+	// pending, sent, or failed for outbound messages and forwards. Null for notes.
+	DeliveryStatus *string `json:"deliveryStatus,omitempty" url:"deliveryStatus,omitempty"`
+	FromEmail      *string `json:"fromEmail,omitempty" url:"fromEmail,omitempty"`
+	FromName       *string `json:"fromName,omitempty" url:"fromName,omitempty"`
+	FromUserID     *string `json:"fromUserId,omitempty" url:"fromUserId,omitempty"`
+	ID             *string `json:"id,omitempty" url:"id,omitempty"`
+	IsRead         *bool   `json:"isRead,omitempty" url:"isRead,omitempty"`
+	Subject        *string `json:"subject,omitempty" url:"subject,omitempty"`
+	// inbound for received email, outbound for team replies, note for internal notes, and system for recorded forwards.
+	Type *ConversationMessageType `json:"type,omitempty" url:"type,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -254,7 +586,7 @@ type ConversationMessage struct {
 	rawJSON         json.RawMessage
 }
 
-func (c *ConversationMessage) GetAttachments() []map[string]any {
+func (c *ConversationMessage) GetAttachments() []*ConversationAttachment {
 	if c == nil {
 		return nil
 	}
@@ -361,7 +693,7 @@ func (c *ConversationMessage) require(field *big.Int) {
 
 // SetAttachments sets the Attachments field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *ConversationMessage) SetAttachments(attachments []map[string]any) {
+func (c *ConversationMessage) SetAttachments(attachments []*ConversationAttachment) {
 	c.Attachments = attachments
 	c.require(conversationMessageFieldAttachments)
 }
@@ -500,12 +832,14 @@ func (c *ConversationMessage) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
+// inbound for received email, outbound for team replies, note for internal notes, and system for recorded forwards.
 type ConversationMessageType string
 
 const (
 	ConversationMessageTypeInbound  ConversationMessageType = "inbound"
 	ConversationMessageTypeOutbound ConversationMessageType = "outbound"
 	ConversationMessageTypeNote     ConversationMessageType = "note"
+	ConversationMessageTypeSystem   ConversationMessageType = "system"
 )
 
 func NewConversationMessageTypeFromString(s string) (ConversationMessageType, error) {
@@ -516,6 +850,8 @@ func NewConversationMessageTypeFromString(s string) (ConversationMessageType, er
 		return ConversationMessageTypeOutbound, nil
 	case "note":
 		return ConversationMessageTypeNote, nil
+	case "system":
+		return ConversationMessageTypeSystem, nil
 	}
 	var t ConversationMessageType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -526,33 +862,36 @@ func (c ConversationMessageType) Ptr() *ConversationMessageType {
 }
 
 var (
-	conversationSummaryFieldContext         = big.NewInt(1 << 0)
-	conversationSummaryFieldCreatedAt       = big.NewInt(1 << 1)
-	conversationSummaryFieldHasUnread       = big.NewInt(1 << 2)
-	conversationSummaryFieldID              = big.NewInt(1 << 3)
-	conversationSummaryFieldLastMessageAt   = big.NewInt(1 << 4)
-	conversationSummaryFieldLastMessageBy   = big.NewInt(1 << 5)
-	conversationSummaryFieldMessageCount    = big.NewInt(1 << 6)
-	conversationSummaryFieldStatus          = big.NewInt(1 << 7)
-	conversationSummaryFieldSubject         = big.NewInt(1 << 8)
-	conversationSummaryFieldSubscriberEmail = big.NewInt(1 << 9)
-	conversationSummaryFieldSubscriberID    = big.NewInt(1 << 10)
-	conversationSummaryFieldSubscriberName  = big.NewInt(1 << 11)
+	conversationSummaryFieldContext            = big.NewInt(1 << 0)
+	conversationSummaryFieldCreatedAt          = big.NewInt(1 << 1)
+	conversationSummaryFieldHasUnread          = big.NewInt(1 << 2)
+	conversationSummaryFieldID                 = big.NewInt(1 << 3)
+	conversationSummaryFieldLastMessageAt      = big.NewInt(1 << 4)
+	conversationSummaryFieldLastMessageBy      = big.NewInt(1 << 5)
+	conversationSummaryFieldLastMessagePreview = big.NewInt(1 << 6)
+	conversationSummaryFieldMessageCount       = big.NewInt(1 << 7)
+	conversationSummaryFieldStatus             = big.NewInt(1 << 8)
+	conversationSummaryFieldSubject            = big.NewInt(1 << 9)
+	conversationSummaryFieldSubscriberEmail    = big.NewInt(1 << 10)
+	conversationSummaryFieldSubscriberID       = big.NewInt(1 << 11)
+	conversationSummaryFieldSubscriberName     = big.NewInt(1 << 12)
 )
 
 type ConversationSummary struct {
-	Context         *ConversationSummaryContext `json:"context,omitempty" url:"context,omitempty"`
-	CreatedAt       *time.Time                  `json:"createdAt,omitempty" url:"createdAt,omitempty"`
-	HasUnread       *bool                       `json:"hasUnread,omitempty" url:"hasUnread,omitempty"`
-	ID              *string                     `json:"id,omitempty" url:"id,omitempty"`
-	LastMessageAt   *time.Time                  `json:"lastMessageAt,omitempty" url:"lastMessageAt,omitempty"`
-	LastMessageBy   *string                     `json:"lastMessageBy,omitempty" url:"lastMessageBy,omitempty"`
-	MessageCount    *int                        `json:"messageCount,omitempty" url:"messageCount,omitempty"`
-	Status          *ConversationSummaryStatus  `json:"status,omitempty" url:"status,omitempty"`
-	Subject         *string                     `json:"subject,omitempty" url:"subject,omitempty"`
-	SubscriberEmail *string                     `json:"subscriberEmail,omitempty" url:"subscriberEmail,omitempty"`
-	SubscriberID    *string                     `json:"subscriberId,omitempty" url:"subscriberId,omitempty"`
-	SubscriberName  *string                     `json:"subscriberName,omitempty" url:"subscriberName,omitempty"`
+	Context       *ConversationSummaryContext `json:"context,omitempty" url:"context,omitempty"`
+	CreatedAt     *time.Time                  `json:"createdAt,omitempty" url:"createdAt,omitempty"`
+	HasUnread     *bool                       `json:"hasUnread,omitempty" url:"hasUnread,omitempty"`
+	ID            *string                     `json:"id,omitempty" url:"id,omitempty"`
+	LastMessageAt *time.Time                  `json:"lastMessageAt,omitempty" url:"lastMessageAt,omitempty"`
+	LastMessageBy *string                     `json:"lastMessageBy,omitempty" url:"lastMessageBy,omitempty"`
+	// Plain-text preview of the latest subscriber or team reply, with quoted history, signatures and markup removed and truncated to 200 characters. Internal notes are not included. Null when no reply has readable text.
+	LastMessagePreview *ConversationSummaryLastMessagePreview `json:"lastMessagePreview,omitempty" url:"lastMessagePreview,omitempty"`
+	MessageCount       *int                                   `json:"messageCount,omitempty" url:"messageCount,omitempty"`
+	Status             *ConversationSummaryStatus             `json:"status,omitempty" url:"status,omitempty"`
+	Subject            *string                                `json:"subject,omitempty" url:"subject,omitempty"`
+	SubscriberEmail    *string                                `json:"subscriberEmail,omitempty" url:"subscriberEmail,omitempty"`
+	SubscriberID       *string                                `json:"subscriberId,omitempty" url:"subscriberId,omitempty"`
+	SubscriberName     *string                                `json:"subscriberName,omitempty" url:"subscriberName,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -601,6 +940,13 @@ func (c *ConversationSummary) GetLastMessageBy() *string {
 		return nil
 	}
 	return c.LastMessageBy
+}
+
+func (c *ConversationSummary) GetLastMessagePreview() *ConversationSummaryLastMessagePreview {
+	if c == nil {
+		return nil
+	}
+	return c.LastMessagePreview
 }
 
 func (c *ConversationSummary) GetMessageCount() *int {
@@ -699,6 +1045,13 @@ func (c *ConversationSummary) SetLastMessageAt(lastMessageAt *time.Time) {
 func (c *ConversationSummary) SetLastMessageBy(lastMessageBy *string) {
 	c.LastMessageBy = lastMessageBy
 	c.require(conversationSummaryFieldLastMessageBy)
+}
+
+// SetLastMessagePreview sets the LastMessagePreview field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ConversationSummary) SetLastMessagePreview(lastMessagePreview *ConversationSummaryLastMessagePreview) {
+	c.LastMessagePreview = lastMessagePreview
+	c.require(conversationSummaryFieldLastMessagePreview)
 }
 
 // SetMessageCount sets the MessageCount field and marks it as non-optional;
@@ -803,9 +1156,9 @@ var (
 )
 
 type ConversationSummaryContext struct {
-	// Campaign or sequence name.
+	// Campaign or sequence name, "Transactional", or "Inbox".
 	Label *string `json:"label,omitempty" url:"label,omitempty"`
-	// Originating email type (campaign, sequence, transactional, or unknown).
+	// Where the conversation started: campaign, sequence, or transactional for replies to those emails, inbox for email sent to the company inbox address, or unknown.
 	Type *string `json:"type,omitempty" url:"type,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -899,6 +1252,131 @@ func (c *ConversationSummaryContext) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
+// Plain-text preview of the latest subscriber or team reply, with quoted history, signatures and markup removed and truncated to 200 characters. Internal notes are not included. Null when no reply has readable text.
+var (
+	conversationSummaryLastMessagePreviewFieldText = big.NewInt(1 << 0)
+	conversationSummaryLastMessagePreviewFieldType = big.NewInt(1 << 1)
+)
+
+type ConversationSummaryLastMessagePreview struct {
+	Text string `json:"text" url:"text"`
+	// `inbound` for a subscriber reply, `outbound` for a team reply.
+	Type ConversationSummaryLastMessagePreviewType `json:"type" url:"type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *ConversationSummaryLastMessagePreview) GetText() string {
+	if c == nil {
+		return ""
+	}
+	return c.Text
+}
+
+func (c *ConversationSummaryLastMessagePreview) GetType() ConversationSummaryLastMessagePreviewType {
+	if c == nil {
+		return ""
+	}
+	return c.Type
+}
+
+func (c *ConversationSummaryLastMessagePreview) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *ConversationSummaryLastMessagePreview) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetText sets the Text field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ConversationSummaryLastMessagePreview) SetText(text string) {
+	c.Text = text
+	c.require(conversationSummaryLastMessagePreviewFieldText)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ConversationSummaryLastMessagePreview) SetType(type_ ConversationSummaryLastMessagePreviewType) {
+	c.Type = type_
+	c.require(conversationSummaryLastMessagePreviewFieldType)
+}
+
+func (c *ConversationSummaryLastMessagePreview) UnmarshalJSON(data []byte) error {
+	type unmarshaler ConversationSummaryLastMessagePreview
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = ConversationSummaryLastMessagePreview(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *ConversationSummaryLastMessagePreview) MarshalJSON() ([]byte, error) {
+	type embed ConversationSummaryLastMessagePreview
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *ConversationSummaryLastMessagePreview) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+// `inbound` for a subscriber reply, `outbound` for a team reply.
+type ConversationSummaryLastMessagePreviewType string
+
+const (
+	ConversationSummaryLastMessagePreviewTypeInbound  ConversationSummaryLastMessagePreviewType = "inbound"
+	ConversationSummaryLastMessagePreviewTypeOutbound ConversationSummaryLastMessagePreviewType = "outbound"
+)
+
+func NewConversationSummaryLastMessagePreviewTypeFromString(s string) (ConversationSummaryLastMessagePreviewType, error) {
+	switch s {
+	case "inbound":
+		return ConversationSummaryLastMessagePreviewTypeInbound, nil
+	case "outbound":
+		return ConversationSummaryLastMessagePreviewTypeOutbound, nil
+	}
+	var t ConversationSummaryLastMessagePreviewType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c ConversationSummaryLastMessagePreviewType) Ptr() *ConversationSummaryLastMessagePreviewType {
+	return &c
+}
+
 type ConversationSummaryStatus string
 
 const (
@@ -919,6 +1397,703 @@ func NewConversationSummaryStatusFromString(s string) (ConversationSummaryStatus
 
 func (c ConversationSummaryStatus) Ptr() *ConversationSummaryStatus {
 	return &c
+}
+
+// The branded address you chose, or null.
+var (
+	inboxCustomAddressFieldAddress   = big.NewInt(1 << 0)
+	inboxCustomAddressFieldDomain    = big.NewInt(1 << 1)
+	inboxCustomAddressFieldLocalPart = big.NewInt(1 << 2)
+	inboxCustomAddressFieldStatus    = big.NewInt(1 << 3)
+)
+
+type InboxCustomAddress struct {
+	// The full address, such as support@inbound.acme.com. Null until the domain's inbound host is known.
+	Address *string `json:"address,omitempty" url:"address,omitempty"`
+	// The verified sending domain.
+	Domain    string `json:"domain" url:"domain"`
+	LocalPart string `json:"localPart" url:"localPart"`
+	// `active` once the inbound MX record is verified; `pending` until then.
+	Status InboxCustomAddressStatus `json:"status" url:"status"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (i *InboxCustomAddress) GetAddress() *string {
+	if i == nil {
+		return nil
+	}
+	return i.Address
+}
+
+func (i *InboxCustomAddress) GetDomain() string {
+	if i == nil {
+		return ""
+	}
+	return i.Domain
+}
+
+func (i *InboxCustomAddress) GetLocalPart() string {
+	if i == nil {
+		return ""
+	}
+	return i.LocalPart
+}
+
+func (i *InboxCustomAddress) GetStatus() InboxCustomAddressStatus {
+	if i == nil {
+		return ""
+	}
+	return i.Status
+}
+
+func (i *InboxCustomAddress) GetExtraProperties() map[string]interface{} {
+	if i == nil {
+		return nil
+	}
+	return i.extraProperties
+}
+
+func (i *InboxCustomAddress) require(field *big.Int) {
+	if i.explicitFields == nil {
+		i.explicitFields = big.NewInt(0)
+	}
+	i.explicitFields.Or(i.explicitFields, field)
+}
+
+// SetAddress sets the Address field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InboxCustomAddress) SetAddress(address *string) {
+	i.Address = address
+	i.require(inboxCustomAddressFieldAddress)
+}
+
+// SetDomain sets the Domain field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InboxCustomAddress) SetDomain(domain string) {
+	i.Domain = domain
+	i.require(inboxCustomAddressFieldDomain)
+}
+
+// SetLocalPart sets the LocalPart field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InboxCustomAddress) SetLocalPart(localPart string) {
+	i.LocalPart = localPart
+	i.require(inboxCustomAddressFieldLocalPart)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InboxCustomAddress) SetStatus(status InboxCustomAddressStatus) {
+	i.Status = status
+	i.require(inboxCustomAddressFieldStatus)
+}
+
+func (i *InboxCustomAddress) UnmarshalJSON(data []byte) error {
+	type unmarshaler InboxCustomAddress
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*i = InboxCustomAddress(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+	i.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InboxCustomAddress) MarshalJSON() ([]byte, error) {
+	type embed InboxCustomAddress
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*i),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (i *InboxCustomAddress) String() string {
+	if i == nil {
+		return "<nil>"
+	}
+	if len(i.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
+// `active` once the inbound MX record is verified; `pending` until then.
+type InboxCustomAddressStatus string
+
+const (
+	InboxCustomAddressStatusActive  InboxCustomAddressStatus = "active"
+	InboxCustomAddressStatusPending InboxCustomAddressStatus = "pending"
+)
+
+func NewInboxCustomAddressStatusFromString(s string) (InboxCustomAddressStatus, error) {
+	switch s {
+	case "active":
+		return InboxCustomAddressStatusActive, nil
+	case "pending":
+		return InboxCustomAddressStatusPending, nil
+	}
+	var t InboxCustomAddressStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (i InboxCustomAddressStatus) Ptr() *InboxCustomAddressStatus {
+	return &i
+}
+
+// New status for every listed conversation.
+type BulkUpdateStatusConversationsRequestStatus string
+
+const (
+	BulkUpdateStatusConversationsRequestStatusOpen   BulkUpdateStatusConversationsRequestStatus = "open"
+	BulkUpdateStatusConversationsRequestStatusClosed BulkUpdateStatusConversationsRequestStatus = "closed"
+)
+
+func NewBulkUpdateStatusConversationsRequestStatusFromString(s string) (BulkUpdateStatusConversationsRequestStatus, error) {
+	switch s {
+	case "open":
+		return BulkUpdateStatusConversationsRequestStatusOpen, nil
+	case "closed":
+		return BulkUpdateStatusConversationsRequestStatusClosed, nil
+	}
+	var t BulkUpdateStatusConversationsRequestStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (b BulkUpdateStatusConversationsRequestStatus) Ptr() *BulkUpdateStatusConversationsRequestStatus {
+	return &b
+}
+
+var (
+	bulkUpdateStatusConversationsResponseFieldNotFound     = big.NewInt(1 << 0)
+	bulkUpdateStatusConversationsResponseFieldNotFoundIDs  = big.NewInt(1 << 1)
+	bulkUpdateStatusConversationsResponseFieldRequested    = big.NewInt(1 << 2)
+	bulkUpdateStatusConversationsResponseFieldStatus       = big.NewInt(1 << 3)
+	bulkUpdateStatusConversationsResponseFieldSuccess      = big.NewInt(1 << 4)
+	bulkUpdateStatusConversationsResponseFieldUnchanged    = big.NewInt(1 << 5)
+	bulkUpdateStatusConversationsResponseFieldUnchangedIDs = big.NewInt(1 << 6)
+	bulkUpdateStatusConversationsResponseFieldUpdated      = big.NewInt(1 << 7)
+	bulkUpdateStatusConversationsResponseFieldUpdatedIDs   = big.NewInt(1 << 8)
+)
+
+type BulkUpdateStatusConversationsResponse struct {
+	// IDs that do not exist in the company.
+	NotFound *int `json:"notFound,omitempty" url:"notFound,omitempty"`
+	// IDs that do not exist in the company, in request order.
+	NotFoundIDs []string `json:"notFoundIds,omitempty" url:"notFoundIds,omitempty"`
+	// Distinct conversation IDs in the request.
+	Requested *int                                         `json:"requested,omitempty" url:"requested,omitempty"`
+	Status    *BulkUpdateStatusConversationsResponseStatus `json:"status,omitempty" url:"status,omitempty"`
+	Success   *bool                                        `json:"success,omitempty" url:"success,omitempty"`
+	// Conversations that already had the status.
+	Unchanged *int `json:"unchanged,omitempty" url:"unchanged,omitempty"`
+	// IDs that already had the status, in request order.
+	UnchangedIDs []string `json:"unchangedIds,omitempty" url:"unchangedIds,omitempty"`
+	// Conversations whose status changed.
+	Updated *int `json:"updated,omitempty" url:"updated,omitempty"`
+	// IDs whose status changed, in request order.
+	UpdatedIDs []string `json:"updatedIds,omitempty" url:"updatedIds,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (b *BulkUpdateStatusConversationsResponse) GetNotFound() *int {
+	if b == nil {
+		return nil
+	}
+	return b.NotFound
+}
+
+func (b *BulkUpdateStatusConversationsResponse) GetNotFoundIDs() []string {
+	if b == nil {
+		return nil
+	}
+	return b.NotFoundIDs
+}
+
+func (b *BulkUpdateStatusConversationsResponse) GetRequested() *int {
+	if b == nil {
+		return nil
+	}
+	return b.Requested
+}
+
+func (b *BulkUpdateStatusConversationsResponse) GetStatus() *BulkUpdateStatusConversationsResponseStatus {
+	if b == nil {
+		return nil
+	}
+	return b.Status
+}
+
+func (b *BulkUpdateStatusConversationsResponse) GetSuccess() *bool {
+	if b == nil {
+		return nil
+	}
+	return b.Success
+}
+
+func (b *BulkUpdateStatusConversationsResponse) GetUnchanged() *int {
+	if b == nil {
+		return nil
+	}
+	return b.Unchanged
+}
+
+func (b *BulkUpdateStatusConversationsResponse) GetUnchangedIDs() []string {
+	if b == nil {
+		return nil
+	}
+	return b.UnchangedIDs
+}
+
+func (b *BulkUpdateStatusConversationsResponse) GetUpdated() *int {
+	if b == nil {
+		return nil
+	}
+	return b.Updated
+}
+
+func (b *BulkUpdateStatusConversationsResponse) GetUpdatedIDs() []string {
+	if b == nil {
+		return nil
+	}
+	return b.UpdatedIDs
+}
+
+func (b *BulkUpdateStatusConversationsResponse) GetExtraProperties() map[string]interface{} {
+	if b == nil {
+		return nil
+	}
+	return b.extraProperties
+}
+
+func (b *BulkUpdateStatusConversationsResponse) require(field *big.Int) {
+	if b.explicitFields == nil {
+		b.explicitFields = big.NewInt(0)
+	}
+	b.explicitFields.Or(b.explicitFields, field)
+}
+
+// SetNotFound sets the NotFound field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *BulkUpdateStatusConversationsResponse) SetNotFound(notFound *int) {
+	b.NotFound = notFound
+	b.require(bulkUpdateStatusConversationsResponseFieldNotFound)
+}
+
+// SetNotFoundIDs sets the NotFoundIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *BulkUpdateStatusConversationsResponse) SetNotFoundIDs(notFoundIDs []string) {
+	b.NotFoundIDs = notFoundIDs
+	b.require(bulkUpdateStatusConversationsResponseFieldNotFoundIDs)
+}
+
+// SetRequested sets the Requested field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *BulkUpdateStatusConversationsResponse) SetRequested(requested *int) {
+	b.Requested = requested
+	b.require(bulkUpdateStatusConversationsResponseFieldRequested)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *BulkUpdateStatusConversationsResponse) SetStatus(status *BulkUpdateStatusConversationsResponseStatus) {
+	b.Status = status
+	b.require(bulkUpdateStatusConversationsResponseFieldStatus)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *BulkUpdateStatusConversationsResponse) SetSuccess(success *bool) {
+	b.Success = success
+	b.require(bulkUpdateStatusConversationsResponseFieldSuccess)
+}
+
+// SetUnchanged sets the Unchanged field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *BulkUpdateStatusConversationsResponse) SetUnchanged(unchanged *int) {
+	b.Unchanged = unchanged
+	b.require(bulkUpdateStatusConversationsResponseFieldUnchanged)
+}
+
+// SetUnchangedIDs sets the UnchangedIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *BulkUpdateStatusConversationsResponse) SetUnchangedIDs(unchangedIDs []string) {
+	b.UnchangedIDs = unchangedIDs
+	b.require(bulkUpdateStatusConversationsResponseFieldUnchangedIDs)
+}
+
+// SetUpdated sets the Updated field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *BulkUpdateStatusConversationsResponse) SetUpdated(updated *int) {
+	b.Updated = updated
+	b.require(bulkUpdateStatusConversationsResponseFieldUpdated)
+}
+
+// SetUpdatedIDs sets the UpdatedIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *BulkUpdateStatusConversationsResponse) SetUpdatedIDs(updatedIDs []string) {
+	b.UpdatedIDs = updatedIDs
+	b.require(bulkUpdateStatusConversationsResponseFieldUpdatedIDs)
+}
+
+func (b *BulkUpdateStatusConversationsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler BulkUpdateStatusConversationsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*b = BulkUpdateStatusConversationsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *b)
+	if err != nil {
+		return err
+	}
+	b.extraProperties = extraProperties
+	b.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (b *BulkUpdateStatusConversationsResponse) MarshalJSON() ([]byte, error) {
+	type embed BulkUpdateStatusConversationsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*b),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, b.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (b *BulkUpdateStatusConversationsResponse) String() string {
+	if b == nil {
+		return "<nil>"
+	}
+	if len(b.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(b.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(b); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", b)
+}
+
+type BulkUpdateStatusConversationsResponseStatus string
+
+const (
+	BulkUpdateStatusConversationsResponseStatusOpen   BulkUpdateStatusConversationsResponseStatus = "open"
+	BulkUpdateStatusConversationsResponseStatusClosed BulkUpdateStatusConversationsResponseStatus = "closed"
+)
+
+func NewBulkUpdateStatusConversationsResponseStatusFromString(s string) (BulkUpdateStatusConversationsResponseStatus, error) {
+	switch s {
+	case "open":
+		return BulkUpdateStatusConversationsResponseStatusOpen, nil
+	case "closed":
+		return BulkUpdateStatusConversationsResponseStatusClosed, nil
+	}
+	var t BulkUpdateStatusConversationsResponseStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (b BulkUpdateStatusConversationsResponseStatus) Ptr() *BulkUpdateStatusConversationsResponseStatus {
+	return &b
+}
+
+var (
+	forwardMessageConversationsResponseFieldForward = big.NewInt(1 << 0)
+	forwardMessageConversationsResponseFieldSuccess = big.NewInt(1 << 1)
+)
+
+type ForwardMessageConversationsResponse struct {
+	Forward *ForwardMessageConversationsResponseForward `json:"forward,omitempty" url:"forward,omitempty"`
+	Success *bool                                       `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (f *ForwardMessageConversationsResponse) GetForward() *ForwardMessageConversationsResponseForward {
+	if f == nil {
+		return nil
+	}
+	return f.Forward
+}
+
+func (f *ForwardMessageConversationsResponse) GetSuccess() *bool {
+	if f == nil {
+		return nil
+	}
+	return f.Success
+}
+
+func (f *ForwardMessageConversationsResponse) GetExtraProperties() map[string]interface{} {
+	if f == nil {
+		return nil
+	}
+	return f.extraProperties
+}
+
+func (f *ForwardMessageConversationsResponse) require(field *big.Int) {
+	if f.explicitFields == nil {
+		f.explicitFields = big.NewInt(0)
+	}
+	f.explicitFields.Or(f.explicitFields, field)
+}
+
+// SetForward sets the Forward field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *ForwardMessageConversationsResponse) SetForward(forward *ForwardMessageConversationsResponseForward) {
+	f.Forward = forward
+	f.require(forwardMessageConversationsResponseFieldForward)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *ForwardMessageConversationsResponse) SetSuccess(success *bool) {
+	f.Success = success
+	f.require(forwardMessageConversationsResponseFieldSuccess)
+}
+
+func (f *ForwardMessageConversationsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler ForwardMessageConversationsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*f = ForwardMessageConversationsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+	f.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (f *ForwardMessageConversationsResponse) MarshalJSON() ([]byte, error) {
+	type embed ForwardMessageConversationsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*f),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, f.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (f *ForwardMessageConversationsResponse) String() string {
+	if f == nil {
+		return "<nil>"
+	}
+	if len(f.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(f.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(f); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", f)
+}
+
+var (
+	forwardMessageConversationsResponseForwardFieldConversationID = big.NewInt(1 << 0)
+	forwardMessageConversationsResponseForwardFieldCreatedAt      = big.NewInt(1 << 1)
+	forwardMessageConversationsResponseForwardFieldDeliveryStatus = big.NewInt(1 << 2)
+	forwardMessageConversationsResponseForwardFieldID             = big.NewInt(1 << 3)
+	forwardMessageConversationsResponseForwardFieldMessageID      = big.NewInt(1 << 4)
+	forwardMessageConversationsResponseForwardFieldTo             = big.NewInt(1 << 5)
+)
+
+type ForwardMessageConversationsResponseForward struct {
+	ConversationID *string    `json:"conversationId,omitempty" url:"conversationId,omitempty"`
+	CreatedAt      *time.Time `json:"createdAt,omitempty" url:"createdAt,omitempty"`
+	DeliveryStatus *string    `json:"deliveryStatus,omitempty" url:"deliveryStatus,omitempty"`
+	// ID of the system message that records the forward.
+	ID *string `json:"id,omitempty" url:"id,omitempty"`
+	// ID of the forwarded message.
+	MessageID *string `json:"messageId,omitempty" url:"messageId,omitempty"`
+	To        *string `json:"to,omitempty" url:"to,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (f *ForwardMessageConversationsResponseForward) GetConversationID() *string {
+	if f == nil {
+		return nil
+	}
+	return f.ConversationID
+}
+
+func (f *ForwardMessageConversationsResponseForward) GetCreatedAt() *time.Time {
+	if f == nil {
+		return nil
+	}
+	return f.CreatedAt
+}
+
+func (f *ForwardMessageConversationsResponseForward) GetDeliveryStatus() *string {
+	if f == nil {
+		return nil
+	}
+	return f.DeliveryStatus
+}
+
+func (f *ForwardMessageConversationsResponseForward) GetID() *string {
+	if f == nil {
+		return nil
+	}
+	return f.ID
+}
+
+func (f *ForwardMessageConversationsResponseForward) GetMessageID() *string {
+	if f == nil {
+		return nil
+	}
+	return f.MessageID
+}
+
+func (f *ForwardMessageConversationsResponseForward) GetTo() *string {
+	if f == nil {
+		return nil
+	}
+	return f.To
+}
+
+func (f *ForwardMessageConversationsResponseForward) GetExtraProperties() map[string]interface{} {
+	if f == nil {
+		return nil
+	}
+	return f.extraProperties
+}
+
+func (f *ForwardMessageConversationsResponseForward) require(field *big.Int) {
+	if f.explicitFields == nil {
+		f.explicitFields = big.NewInt(0)
+	}
+	f.explicitFields.Or(f.explicitFields, field)
+}
+
+// SetConversationID sets the ConversationID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *ForwardMessageConversationsResponseForward) SetConversationID(conversationID *string) {
+	f.ConversationID = conversationID
+	f.require(forwardMessageConversationsResponseForwardFieldConversationID)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *ForwardMessageConversationsResponseForward) SetCreatedAt(createdAt *time.Time) {
+	f.CreatedAt = createdAt
+	f.require(forwardMessageConversationsResponseForwardFieldCreatedAt)
+}
+
+// SetDeliveryStatus sets the DeliveryStatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *ForwardMessageConversationsResponseForward) SetDeliveryStatus(deliveryStatus *string) {
+	f.DeliveryStatus = deliveryStatus
+	f.require(forwardMessageConversationsResponseForwardFieldDeliveryStatus)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *ForwardMessageConversationsResponseForward) SetID(id *string) {
+	f.ID = id
+	f.require(forwardMessageConversationsResponseForwardFieldID)
+}
+
+// SetMessageID sets the MessageID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *ForwardMessageConversationsResponseForward) SetMessageID(messageID *string) {
+	f.MessageID = messageID
+	f.require(forwardMessageConversationsResponseForwardFieldMessageID)
+}
+
+// SetTo sets the To field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *ForwardMessageConversationsResponseForward) SetTo(to *string) {
+	f.To = to
+	f.require(forwardMessageConversationsResponseForwardFieldTo)
+}
+
+func (f *ForwardMessageConversationsResponseForward) UnmarshalJSON(data []byte) error {
+	type embed ForwardMessageConversationsResponseForward
+	var unmarshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"createdAt,omitempty"`
+	}{
+		embed: embed(*f),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*f = ForwardMessageConversationsResponseForward(unmarshaler.embed)
+	f.CreatedAt = unmarshaler.CreatedAt.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+	f.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (f *ForwardMessageConversationsResponseForward) MarshalJSON() ([]byte, error) {
+	type embed ForwardMessageConversationsResponseForward
+	var marshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"createdAt,omitempty"`
+	}{
+		embed:     embed(*f),
+		CreatedAt: internal.NewOptionalDateTime(f.CreatedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, f.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (f *ForwardMessageConversationsResponseForward) String() string {
+	if f == nil {
+		return "<nil>"
+	}
+	if len(f.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(f.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(f); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", f)
 }
 
 var (
@@ -1008,6 +2183,292 @@ func (g *GetConversationsResponse) MarshalJSON() ([]byte, error) {
 }
 
 func (g *GetConversationsResponse) String() string {
+	if g == nil {
+		return "<nil>"
+	}
+	if len(g.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(g.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(g); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", g)
+}
+
+var (
+	getInboxAddressResponseFieldInbox   = big.NewInt(1 << 0)
+	getInboxAddressResponseFieldSuccess = big.NewInt(1 << 1)
+)
+
+type GetInboxAddressResponse struct {
+	Inbox   *GetInboxAddressResponseInbox `json:"inbox,omitempty" url:"inbox,omitempty"`
+	Success *bool                         `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (g *GetInboxAddressResponse) GetInbox() *GetInboxAddressResponseInbox {
+	if g == nil {
+		return nil
+	}
+	return g.Inbox
+}
+
+func (g *GetInboxAddressResponse) GetSuccess() *bool {
+	if g == nil {
+		return nil
+	}
+	return g.Success
+}
+
+func (g *GetInboxAddressResponse) GetExtraProperties() map[string]interface{} {
+	if g == nil {
+		return nil
+	}
+	return g.extraProperties
+}
+
+func (g *GetInboxAddressResponse) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetInbox sets the Inbox field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetInboxAddressResponse) SetInbox(inbox *GetInboxAddressResponseInbox) {
+	g.Inbox = inbox
+	g.require(getInboxAddressResponseFieldInbox)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetInboxAddressResponse) SetSuccess(success *bool) {
+	g.Success = success
+	g.require(getInboxAddressResponseFieldSuccess)
+}
+
+func (g *GetInboxAddressResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler GetInboxAddressResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*g = GetInboxAddressResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *g)
+	if err != nil {
+		return err
+	}
+	g.extraProperties = extraProperties
+	g.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (g *GetInboxAddressResponse) MarshalJSON() ([]byte, error) {
+	type embed GetInboxAddressResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*g),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (g *GetInboxAddressResponse) String() string {
+	if g == nil {
+		return "<nil>"
+	}
+	if len(g.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(g.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(g); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", g)
+}
+
+var (
+	getInboxAddressResponseInboxFieldAddress              = big.NewInt(1 << 0)
+	getInboxAddressResponseInboxFieldAddresses            = big.NewInt(1 << 1)
+	getInboxAddressResponseInboxFieldAttachmentsAvailable = big.NewInt(1 << 2)
+	getInboxAddressResponseInboxFieldCustomAddress        = big.NewInt(1 << 3)
+	getInboxAddressResponseInboxFieldDefaultAddress       = big.NewInt(1 << 4)
+	getInboxAddressResponseInboxFieldEnabled              = big.NewInt(1 << 5)
+	getInboxAddressResponseInboxFieldRetentionDays        = big.NewInt(1 << 6)
+)
+
+type GetInboxAddressResponseInbox struct {
+	// The address to share. Your branded address once it is active, otherwise the default address.
+	Address string `json:"address" url:"address"`
+	// Every address that currently delivers to this inbox, starting with `address`.
+	Addresses []string `json:"addresses" url:"addresses"`
+	// Whether attachment content is stored and can be sent with replies.
+	AttachmentsAvailable bool                `json:"attachmentsAvailable" url:"attachmentsAvailable"`
+	CustomAddress        *InboxCustomAddress `json:"customAddress,omitempty" url:"customAddress,omitempty"`
+	// inbox+{companyId}@inbound.sequenzy.com. Always works.
+	DefaultAddress string `json:"defaultAddress" url:"defaultAddress"`
+	// Whether the company receives email. When false, replies and inbox address email are not stored.
+	Enabled bool `json:"enabled" url:"enabled"`
+	// Days received email and attachments are kept.
+	RetentionDays int `json:"retentionDays" url:"retentionDays"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (g *GetInboxAddressResponseInbox) GetAddress() string {
+	if g == nil {
+		return ""
+	}
+	return g.Address
+}
+
+func (g *GetInboxAddressResponseInbox) GetAddresses() []string {
+	if g == nil {
+		return nil
+	}
+	return g.Addresses
+}
+
+func (g *GetInboxAddressResponseInbox) GetAttachmentsAvailable() bool {
+	if g == nil {
+		return false
+	}
+	return g.AttachmentsAvailable
+}
+
+func (g *GetInboxAddressResponseInbox) GetCustomAddress() *InboxCustomAddress {
+	if g == nil {
+		return nil
+	}
+	return g.CustomAddress
+}
+
+func (g *GetInboxAddressResponseInbox) GetDefaultAddress() string {
+	if g == nil {
+		return ""
+	}
+	return g.DefaultAddress
+}
+
+func (g *GetInboxAddressResponseInbox) GetEnabled() bool {
+	if g == nil {
+		return false
+	}
+	return g.Enabled
+}
+
+func (g *GetInboxAddressResponseInbox) GetRetentionDays() int {
+	if g == nil {
+		return 0
+	}
+	return g.RetentionDays
+}
+
+func (g *GetInboxAddressResponseInbox) GetExtraProperties() map[string]interface{} {
+	if g == nil {
+		return nil
+	}
+	return g.extraProperties
+}
+
+func (g *GetInboxAddressResponseInbox) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetAddress sets the Address field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetInboxAddressResponseInbox) SetAddress(address string) {
+	g.Address = address
+	g.require(getInboxAddressResponseInboxFieldAddress)
+}
+
+// SetAddresses sets the Addresses field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetInboxAddressResponseInbox) SetAddresses(addresses []string) {
+	g.Addresses = addresses
+	g.require(getInboxAddressResponseInboxFieldAddresses)
+}
+
+// SetAttachmentsAvailable sets the AttachmentsAvailable field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetInboxAddressResponseInbox) SetAttachmentsAvailable(attachmentsAvailable bool) {
+	g.AttachmentsAvailable = attachmentsAvailable
+	g.require(getInboxAddressResponseInboxFieldAttachmentsAvailable)
+}
+
+// SetCustomAddress sets the CustomAddress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetInboxAddressResponseInbox) SetCustomAddress(customAddress *InboxCustomAddress) {
+	g.CustomAddress = customAddress
+	g.require(getInboxAddressResponseInboxFieldCustomAddress)
+}
+
+// SetDefaultAddress sets the DefaultAddress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetInboxAddressResponseInbox) SetDefaultAddress(defaultAddress string) {
+	g.DefaultAddress = defaultAddress
+	g.require(getInboxAddressResponseInboxFieldDefaultAddress)
+}
+
+// SetEnabled sets the Enabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetInboxAddressResponseInbox) SetEnabled(enabled bool) {
+	g.Enabled = enabled
+	g.require(getInboxAddressResponseInboxFieldEnabled)
+}
+
+// SetRetentionDays sets the RetentionDays field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetInboxAddressResponseInbox) SetRetentionDays(retentionDays int) {
+	g.RetentionDays = retentionDays
+	g.require(getInboxAddressResponseInboxFieldRetentionDays)
+}
+
+func (g *GetInboxAddressResponseInbox) UnmarshalJSON(data []byte) error {
+	type unmarshaler GetInboxAddressResponseInbox
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*g = GetInboxAddressResponseInbox(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *g)
+	if err != nil {
+		return err
+	}
+	g.extraProperties = extraProperties
+	g.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (g *GetInboxAddressResponseInbox) MarshalJSON() ([]byte, error) {
+	type embed GetInboxAddressResponseInbox
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*g),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (g *GetInboxAddressResponseInbox) String() string {
 	if g == nil {
 		return "<nil>"
 	}
@@ -1283,6 +2744,324 @@ func (m *MarkReadConversationsResponse) String() string {
 	return fmt.Sprintf("%#v", m)
 }
 
+var (
+	markUnreadConversationsResponseFieldConversation = big.NewInt(1 << 0)
+	markUnreadConversationsResponseFieldSuccess      = big.NewInt(1 << 1)
+)
+
+type MarkUnreadConversationsResponse struct {
+	Conversation *MarkUnreadConversationsResponseConversation `json:"conversation,omitempty" url:"conversation,omitempty"`
+	Success      *bool                                        `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (m *MarkUnreadConversationsResponse) GetConversation() *MarkUnreadConversationsResponseConversation {
+	if m == nil {
+		return nil
+	}
+	return m.Conversation
+}
+
+func (m *MarkUnreadConversationsResponse) GetSuccess() *bool {
+	if m == nil {
+		return nil
+	}
+	return m.Success
+}
+
+func (m *MarkUnreadConversationsResponse) GetExtraProperties() map[string]interface{} {
+	if m == nil {
+		return nil
+	}
+	return m.extraProperties
+}
+
+func (m *MarkUnreadConversationsResponse) require(field *big.Int) {
+	if m.explicitFields == nil {
+		m.explicitFields = big.NewInt(0)
+	}
+	m.explicitFields.Or(m.explicitFields, field)
+}
+
+// SetConversation sets the Conversation field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MarkUnreadConversationsResponse) SetConversation(conversation *MarkUnreadConversationsResponseConversation) {
+	m.Conversation = conversation
+	m.require(markUnreadConversationsResponseFieldConversation)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MarkUnreadConversationsResponse) SetSuccess(success *bool) {
+	m.Success = success
+	m.require(markUnreadConversationsResponseFieldSuccess)
+}
+
+func (m *MarkUnreadConversationsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler MarkUnreadConversationsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*m = MarkUnreadConversationsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *m)
+	if err != nil {
+		return err
+	}
+	m.extraProperties = extraProperties
+	m.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (m *MarkUnreadConversationsResponse) MarshalJSON() ([]byte, error) {
+	type embed MarkUnreadConversationsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*m),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (m *MarkUnreadConversationsResponse) String() string {
+	if m == nil {
+		return "<nil>"
+	}
+	if len(m.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(m); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", m)
+}
+
+var (
+	markUnreadConversationsResponseConversationFieldHasUnread = big.NewInt(1 << 0)
+	markUnreadConversationsResponseConversationFieldID        = big.NewInt(1 << 1)
+)
+
+type MarkUnreadConversationsResponseConversation struct {
+	HasUnread *bool   `json:"hasUnread,omitempty" url:"hasUnread,omitempty"`
+	ID        *string `json:"id,omitempty" url:"id,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (m *MarkUnreadConversationsResponseConversation) GetHasUnread() *bool {
+	if m == nil {
+		return nil
+	}
+	return m.HasUnread
+}
+
+func (m *MarkUnreadConversationsResponseConversation) GetID() *string {
+	if m == nil {
+		return nil
+	}
+	return m.ID
+}
+
+func (m *MarkUnreadConversationsResponseConversation) GetExtraProperties() map[string]interface{} {
+	if m == nil {
+		return nil
+	}
+	return m.extraProperties
+}
+
+func (m *MarkUnreadConversationsResponseConversation) require(field *big.Int) {
+	if m.explicitFields == nil {
+		m.explicitFields = big.NewInt(0)
+	}
+	m.explicitFields.Or(m.explicitFields, field)
+}
+
+// SetHasUnread sets the HasUnread field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MarkUnreadConversationsResponseConversation) SetHasUnread(hasUnread *bool) {
+	m.HasUnread = hasUnread
+	m.require(markUnreadConversationsResponseConversationFieldHasUnread)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MarkUnreadConversationsResponseConversation) SetID(id *string) {
+	m.ID = id
+	m.require(markUnreadConversationsResponseConversationFieldID)
+}
+
+func (m *MarkUnreadConversationsResponseConversation) UnmarshalJSON(data []byte) error {
+	type unmarshaler MarkUnreadConversationsResponseConversation
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*m = MarkUnreadConversationsResponseConversation(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *m)
+	if err != nil {
+		return err
+	}
+	m.extraProperties = extraProperties
+	m.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (m *MarkUnreadConversationsResponseConversation) MarshalJSON() ([]byte, error) {
+	type embed MarkUnreadConversationsResponseConversation
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*m),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (m *MarkUnreadConversationsResponseConversation) String() string {
+	if m == nil {
+		return "<nil>"
+	}
+	if len(m.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(m); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", m)
+}
+
+var (
+	sendMessageConversationsRequestAttachmentsItemFieldContent     = big.NewInt(1 << 0)
+	sendMessageConversationsRequestAttachmentsItemFieldContentType = big.NewInt(1 << 1)
+	sendMessageConversationsRequestAttachmentsItemFieldFilename    = big.NewInt(1 << 2)
+)
+
+type SendMessageConversationsRequestAttachmentsItem struct {
+	// Base64-encoded file content.
+	Content string `json:"content" url:"content"`
+	// MIME type. Inferred from the file name when omitted or invalid.
+	ContentType *string `json:"contentType,omitempty" url:"contentType,omitempty"`
+	Filename    string  `json:"filename" url:"filename"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SendMessageConversationsRequestAttachmentsItem) GetContent() string {
+	if s == nil {
+		return ""
+	}
+	return s.Content
+}
+
+func (s *SendMessageConversationsRequestAttachmentsItem) GetContentType() *string {
+	if s == nil {
+		return nil
+	}
+	return s.ContentType
+}
+
+func (s *SendMessageConversationsRequestAttachmentsItem) GetFilename() string {
+	if s == nil {
+		return ""
+	}
+	return s.Filename
+}
+
+func (s *SendMessageConversationsRequestAttachmentsItem) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SendMessageConversationsRequestAttachmentsItem) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetContent sets the Content field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendMessageConversationsRequestAttachmentsItem) SetContent(content string) {
+	s.Content = content
+	s.require(sendMessageConversationsRequestAttachmentsItemFieldContent)
+}
+
+// SetContentType sets the ContentType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendMessageConversationsRequestAttachmentsItem) SetContentType(contentType *string) {
+	s.ContentType = contentType
+	s.require(sendMessageConversationsRequestAttachmentsItemFieldContentType)
+}
+
+// SetFilename sets the Filename field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendMessageConversationsRequestAttachmentsItem) SetFilename(filename string) {
+	s.Filename = filename
+	s.require(sendMessageConversationsRequestAttachmentsItemFieldFilename)
+}
+
+func (s *SendMessageConversationsRequestAttachmentsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler SendMessageConversationsRequestAttachmentsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SendMessageConversationsRequestAttachmentsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SendMessageConversationsRequestAttachmentsItem) MarshalJSON() ([]byte, error) {
+	type embed SendMessageConversationsRequestAttachmentsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SendMessageConversationsRequestAttachmentsItem) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
 // outbound sends an email reply, note adds an internal team note.
 type SendMessageConversationsRequestType string
 
@@ -1404,6 +3183,107 @@ func (s *SendMessageConversationsResponse) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	updateInboxAddressResponseFieldInbox   = big.NewInt(1 << 0)
+	updateInboxAddressResponseFieldSuccess = big.NewInt(1 << 1)
+)
+
+type UpdateInboxAddressResponse struct {
+	// Same shape as Get Inbox Address.
+	Inbox   map[string]any `json:"inbox,omitempty" url:"inbox,omitempty"`
+	Success *bool          `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateInboxAddressResponse) GetInbox() map[string]any {
+	if u == nil {
+		return nil
+	}
+	return u.Inbox
+}
+
+func (u *UpdateInboxAddressResponse) GetSuccess() *bool {
+	if u == nil {
+		return nil
+	}
+	return u.Success
+}
+
+func (u *UpdateInboxAddressResponse) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateInboxAddressResponse) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetInbox sets the Inbox field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInboxAddressResponse) SetInbox(inbox map[string]any) {
+	u.Inbox = inbox
+	u.require(updateInboxAddressResponseFieldInbox)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInboxAddressResponse) SetSuccess(success *bool) {
+	u.Success = success
+	u.require(updateInboxAddressResponseFieldSuccess)
+}
+
+func (u *UpdateInboxAddressResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateInboxAddressResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateInboxAddressResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateInboxAddressResponse) MarshalJSON() ([]byte, error) {
+	type embed UpdateInboxAddressResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateInboxAddressResponse) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
 }
 
 // New conversation status.
@@ -1649,6 +3529,63 @@ func NewUpdateStatusConversationsResponseConversationStatusFromString(s string) 
 
 func (u UpdateStatusConversationsResponseConversationStatus) Ptr() *UpdateStatusConversationsResponseConversationStatus {
 	return &u
+}
+
+var (
+	updateInboxAddressRequestFieldDomain    = big.NewInt(1 << 0)
+	updateInboxAddressRequestFieldLocalPart = big.NewInt(1 << 1)
+)
+
+type UpdateInboxAddressRequest struct {
+	// A verified sending domain of the company, such as `acme.com`. Null to clear.
+	Domain *string `json:"domain,omitempty" url:"-"`
+	// Name before the @, such as `support`. Letters, numbers, dots, dashes and underscores, starting and ending with a letter or number. Stored in lowercase. Null to clear.
+	LocalPart *string `json:"localPart,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (u *UpdateInboxAddressRequest) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetDomain sets the Domain field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInboxAddressRequest) SetDomain(domain *string) {
+	u.Domain = domain
+	u.require(updateInboxAddressRequestFieldDomain)
+}
+
+// SetLocalPart sets the LocalPart field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInboxAddressRequest) SetLocalPart(localPart *string) {
+	u.LocalPart = localPart
+	u.require(updateInboxAddressRequestFieldLocalPart)
+}
+
+func (u *UpdateInboxAddressRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateInboxAddressRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*u = UpdateInboxAddressRequest(body)
+	return nil
+}
+
+func (u *UpdateInboxAddressRequest) MarshalJSON() ([]byte, error) {
+	type embed UpdateInboxAddressRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
 }
 
 var (

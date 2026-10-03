@@ -262,35 +262,36 @@ var (
 	sequenceCreateRequestFieldEnrollmentFieldPath = big.NewInt(1 << 6)
 	sequenceCreateRequestFieldEnrollmentMode      = big.NewInt(1 << 7)
 	sequenceCreateRequestFieldEventName           = big.NewInt(1 << 8)
-	sequenceCreateRequestFieldFromEmail           = big.NewInt(1 << 9)
-	sequenceCreateRequestFieldFromName            = big.NewInt(1 << 10)
-	sequenceCreateRequestFieldGoal                = big.NewInt(1 << 11)
-	sequenceCreateRequestFieldInactiveDays        = big.NewInt(1 << 12)
-	sequenceCreateRequestFieldInactivityBaseline  = big.NewInt(1 << 13)
-	sequenceCreateRequestFieldIntegrationEventKey = big.NewInt(1 << 14)
-	sequenceCreateRequestFieldIntegrationSlug     = big.NewInt(1 << 15)
-	sequenceCreateRequestFieldKeyDates            = big.NewInt(1 << 16)
-	sequenceCreateRequestFieldLabels              = big.NewInt(1 << 17)
-	sequenceCreateRequestFieldListID              = big.NewInt(1 << 18)
-	sequenceCreateRequestFieldListIDs             = big.NewInt(1 << 19)
-	sequenceCreateRequestFieldListScope           = big.NewInt(1 << 20)
-	sequenceCreateRequestFieldMinCount            = big.NewInt(1 << 21)
-	sequenceCreateRequestFieldName                = big.NewInt(1 << 22)
-	sequenceCreateRequestFieldPropertyFilters     = big.NewInt(1 << 23)
-	sequenceCreateRequestFieldReplyProfileID      = big.NewInt(1 << 24)
-	sequenceCreateRequestFieldReplyTo             = big.NewInt(1 << 25)
-	sequenceCreateRequestFieldReplyToName         = big.NewInt(1 << 26)
-	sequenceCreateRequestFieldSegmentID           = big.NewInt(1 << 27)
-	sequenceCreateRequestFieldSenderProfileID     = big.NewInt(1 << 28)
-	sequenceCreateRequestFieldSendingWindow       = big.NewInt(1 << 29)
-	sequenceCreateRequestFieldSteps               = big.NewInt(1 << 30)
-	sequenceCreateRequestFieldStopCondition       = big.NewInt(1 << 31)
-	sequenceCreateRequestFieldStopOnSegmentExit   = big.NewInt(1 << 32)
-	sequenceCreateRequestFieldTagName             = big.NewInt(1 << 33)
-	sequenceCreateRequestFieldTagNames            = big.NewInt(1 << 34)
-	sequenceCreateRequestFieldTimeWindowDays      = big.NewInt(1 << 35)
-	sequenceCreateRequestFieldTrigger             = big.NewInt(1 << 36)
-	sequenceCreateRequestFieldUserCancellable     = big.NewInt(1 << 37)
+	sequenceCreateRequestFieldFrequencyCapEnabled = big.NewInt(1 << 9)
+	sequenceCreateRequestFieldFromEmail           = big.NewInt(1 << 10)
+	sequenceCreateRequestFieldFromName            = big.NewInt(1 << 11)
+	sequenceCreateRequestFieldGoal                = big.NewInt(1 << 12)
+	sequenceCreateRequestFieldInactiveDays        = big.NewInt(1 << 13)
+	sequenceCreateRequestFieldInactivityBaseline  = big.NewInt(1 << 14)
+	sequenceCreateRequestFieldIntegrationEventKey = big.NewInt(1 << 15)
+	sequenceCreateRequestFieldIntegrationSlug     = big.NewInt(1 << 16)
+	sequenceCreateRequestFieldKeyDates            = big.NewInt(1 << 17)
+	sequenceCreateRequestFieldLabels              = big.NewInt(1 << 18)
+	sequenceCreateRequestFieldListID              = big.NewInt(1 << 19)
+	sequenceCreateRequestFieldListIDs             = big.NewInt(1 << 20)
+	sequenceCreateRequestFieldListScope           = big.NewInt(1 << 21)
+	sequenceCreateRequestFieldMinCount            = big.NewInt(1 << 22)
+	sequenceCreateRequestFieldName                = big.NewInt(1 << 23)
+	sequenceCreateRequestFieldPropertyFilters     = big.NewInt(1 << 24)
+	sequenceCreateRequestFieldReplyProfileID      = big.NewInt(1 << 25)
+	sequenceCreateRequestFieldReplyTo             = big.NewInt(1 << 26)
+	sequenceCreateRequestFieldReplyToName         = big.NewInt(1 << 27)
+	sequenceCreateRequestFieldSegmentID           = big.NewInt(1 << 28)
+	sequenceCreateRequestFieldSenderProfileID     = big.NewInt(1 << 29)
+	sequenceCreateRequestFieldSendingWindow       = big.NewInt(1 << 30)
+	sequenceCreateRequestFieldSteps               = big.NewInt(1 << 31)
+	sequenceCreateRequestFieldStopCondition       = big.NewInt(1 << 32)
+	sequenceCreateRequestFieldStopOnSegmentExit   = big.NewInt(1 << 33)
+	sequenceCreateRequestFieldTagName             = big.NewInt(1 << 34)
+	sequenceCreateRequestFieldTagNames            = big.NewInt(1 << 35)
+	sequenceCreateRequestFieldTimeWindowDays      = big.NewInt(1 << 36)
+	sequenceCreateRequestFieldTrigger             = big.NewInt(1 << 37)
+	sequenceCreateRequestFieldUserCancellable     = big.NewInt(1 << 38)
 )
 
 type SequenceCreateRequest struct {
@@ -311,6 +312,8 @@ type SequenceCreateRequest struct {
 	EnrollmentMode      *SequenceEnrollmentMode `json:"enrollmentMode,omitempty" url:"-"`
 	// Event name for event_received, inbound_webhook, inactivity, and frequency triggers.
 	EventName *string `json:"eventName,omitempty" url:"-"`
+	// Whether the sequence respects the company frequency cap (`/frequency-cap`). When true, an email step is skipped for a contact who already received the cap's number of campaign or marketing sequence emails in its window, and the contact continues to the next step. Transactional steps are never skipped and transactional emails never count. Has no effect until a cap is set.
+	FrequencyCapEnabled *bool `json:"frequencyCapEnabled,omitempty" url:"-"`
 	// From address for every email in this sequence. Its domain must be configured and verified.
 	FromEmail *string `json:"fromEmail,omitempty" url:"-"`
 	// Display name recipients see, e.g. 'Brennon at TradeTally'. Selects the sender identity of that name on fromEmail, creating it when the address has no identity by that name; the mailbox's other display names, and everything pinned to them, are untouched. Requires fromEmail; omit it when using senderProfileId, which already carries its own display name.
@@ -346,7 +349,7 @@ type SequenceCreateRequest struct {
 	ReplyTo *string `json:"replyTo,omitempty" url:"-"`
 	// Display name for the Reply-To address. Requires replyTo; omit it when using replyProfileId, which already carries its own display name. An address carries one Reply-To name company-wide, so if replyTo already has a saved profile under a different name, that saved name is kept and the response `warnings` array says so.
 	ReplyToName *string `json:"replyToName,omitempty" url:"-"`
-	// Segment ID for segment_entered triggers.
+	// Segment ID for segment_entered and segment_exited triggers.
 	SegmentID *string `json:"segmentId,omitempty" url:"-"`
 	// Existing sender profile ID. It already supplies both the From address and display name, so send it on its own and omit fromEmail and fromName. To keep this profile under a different display name, set fromName on the email steps instead, where it is a per-step override.
 	SenderProfileID *string                `json:"senderProfileId,omitempty" url:"-"`
@@ -439,6 +442,13 @@ func (s *SequenceCreateRequest) SetEnrollmentMode(enrollmentMode *SequenceEnroll
 func (s *SequenceCreateRequest) SetEventName(eventName *string) {
 	s.EventName = eventName
 	s.require(sequenceCreateRequestFieldEventName)
+}
+
+// SetFrequencyCapEnabled sets the FrequencyCapEnabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceCreateRequest) SetFrequencyCapEnabled(frequencyCapEnabled *bool) {
+	s.FrequencyCapEnabled = frequencyCapEnabled
+	s.require(sequenceCreateRequestFieldFrequencyCapEnabled)
 }
 
 // SetFromEmail sets the FromEmail field and marks it as non-optional;
@@ -662,6 +672,103 @@ func (s *SequenceCreateRequest) MarshalJSON() ([]byte, error) {
 		embed: embed(*s),
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
+	createFromExampleSequencesRequestFieldBrand      = big.NewInt(1 << 0)
+	createFromExampleSequencesRequestFieldBrief      = big.NewInt(1 << 1)
+	createFromExampleSequencesRequestFieldEmailStyle = big.NewInt(1 << 2)
+	createFromExampleSequencesRequestFieldName       = big.NewInt(1 << 3)
+	createFromExampleSequencesRequestFieldSequence   = big.NewInt(1 << 4)
+	createFromExampleSequencesRequestFieldURL        = big.NewInt(1 << 5)
+)
+
+type CreateFromExampleSequencesRequest struct {
+	// Gallery brand slug. Use with `sequence` instead of `url`.
+	Brand *string `json:"brand,omitempty" url:"-"`
+	// Optional direction applied to every email. Takes priority over the example.
+	Brief *string `json:"brief,omitempty" url:"-"`
+	// Generated email style. Defaults to the company's email style preference.
+	EmailStyle *CreateFromExampleSequencesRequestEmailStyle `json:"emailStyle,omitempty" url:"-"`
+	// Sequence name. Defaults to the sequence type, such as "Onboarding sequence".
+	Name *string `json:"name,omitempty" url:"-"`
+	// Gallery sequence slug. Use with `brand` instead of `url`.
+	Sequence *string `json:"sequence,omitempty" url:"-"`
+	// Gallery sequence page URL, such as `https://sequenzy.com/email-examples/brands/linear/sequences/onboarding`.
+	URL *string `json:"url,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (c *CreateFromExampleSequencesRequest) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetBrand sets the Brand field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleSequencesRequest) SetBrand(brand *string) {
+	c.Brand = brand
+	c.require(createFromExampleSequencesRequestFieldBrand)
+}
+
+// SetBrief sets the Brief field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleSequencesRequest) SetBrief(brief *string) {
+	c.Brief = brief
+	c.require(createFromExampleSequencesRequestFieldBrief)
+}
+
+// SetEmailStyle sets the EmailStyle field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleSequencesRequest) SetEmailStyle(emailStyle *CreateFromExampleSequencesRequestEmailStyle) {
+	c.EmailStyle = emailStyle
+	c.require(createFromExampleSequencesRequestFieldEmailStyle)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleSequencesRequest) SetName(name *string) {
+	c.Name = name
+	c.require(createFromExampleSequencesRequestFieldName)
+}
+
+// SetSequence sets the Sequence field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleSequencesRequest) SetSequence(sequence *string) {
+	c.Sequence = sequence
+	c.require(createFromExampleSequencesRequestFieldSequence)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleSequencesRequest) SetURL(url *string) {
+	c.URL = url
+	c.require(createFromExampleSequencesRequestFieldURL)
+}
+
+func (c *CreateFromExampleSequencesRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateFromExampleSequencesRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*c = CreateFromExampleSequencesRequest(body)
+	return nil
+}
+
+func (c *CreateFromExampleSequencesRequest) MarshalJSON() ([]byte, error) {
+	type embed CreateFromExampleSequencesRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
 	return json.Marshal(explicitMarshaler)
 }
 
@@ -5346,34 +5453,42 @@ func (s SequenceBranchInputSplitMode) Ptr() *SequenceBranchInputSplitMode {
 // Step created inside a sequence path.
 var (
 	sequenceBranchPathStepInputFieldBlocks           = big.NewInt(1 << 0)
-	sequenceBranchPathStepInputFieldConfig           = big.NewInt(1 << 1)
-	sequenceBranchPathStepInputFieldDelay            = big.NewInt(1 << 2)
-	sequenceBranchPathStepInputFieldDelayMs          = big.NewInt(1 << 3)
-	sequenceBranchPathStepInputFieldDiscount         = big.NewInt(1 << 4)
-	sequenceBranchPathStepInputFieldFromEmail        = big.NewInt(1 << 5)
-	sequenceBranchPathStepInputFieldFromName         = big.NewInt(1 << 6)
-	sequenceBranchPathStepInputFieldHTML             = big.NewInt(1 << 7)
-	sequenceBranchPathStepInputFieldImageURLs        = big.NewInt(1 << 8)
-	sequenceBranchPathStepInputFieldIneligibleAction = big.NewInt(1 << 9)
-	sequenceBranchPathStepInputFieldLabel            = big.NewInt(1 << 10)
-	sequenceBranchPathStepInputFieldName             = big.NewInt(1 << 11)
-	sequenceBranchPathStepInputFieldNodeType         = big.NewInt(1 << 12)
-	sequenceBranchPathStepInputFieldPreviewText      = big.NewInt(1 << 13)
-	sequenceBranchPathStepInputFieldReplyProfileID   = big.NewInt(1 << 14)
-	sequenceBranchPathStepInputFieldReplyTo          = big.NewInt(1 << 15)
-	sequenceBranchPathStepInputFieldReplyToName      = big.NewInt(1 << 16)
-	sequenceBranchPathStepInputFieldSenderProfileID  = big.NewInt(1 << 17)
-	sequenceBranchPathStepInputFieldSubject          = big.NewInt(1 << 18)
-	sequenceBranchPathStepInputFieldText             = big.NewInt(1 << 19)
-	sequenceBranchPathStepInputFieldType             = big.NewInt(1 << 20)
-	sequenceBranchPathStepInputFieldWaitUntil        = big.NewInt(1 << 21)
-	sequenceBranchPathStepInputFieldWaitUntilKeyDate = big.NewInt(1 << 22)
-	sequenceBranchPathStepInputFieldWaitUntilWeekday = big.NewInt(1 << 23)
+	sequenceBranchPathStepInputFieldBody             = big.NewInt(1 << 1)
+	sequenceBranchPathStepInputFieldConfig           = big.NewInt(1 << 2)
+	sequenceBranchPathStepInputFieldDelay            = big.NewInt(1 << 3)
+	sequenceBranchPathStepInputFieldDelayMs          = big.NewInt(1 << 4)
+	sequenceBranchPathStepInputFieldDiscount         = big.NewInt(1 << 5)
+	sequenceBranchPathStepInputFieldFromEmail        = big.NewInt(1 << 6)
+	sequenceBranchPathStepInputFieldFromName         = big.NewInt(1 << 7)
+	sequenceBranchPathStepInputFieldHTML             = big.NewInt(1 << 8)
+	sequenceBranchPathStepInputFieldIconURL          = big.NewInt(1 << 9)
+	sequenceBranchPathStepInputFieldImageURL         = big.NewInt(1 << 10)
+	sequenceBranchPathStepInputFieldImageURLs        = big.NewInt(1 << 11)
+	sequenceBranchPathStepInputFieldIneligibleAction = big.NewInt(1 << 12)
+	sequenceBranchPathStepInputFieldLabel            = big.NewInt(1 << 13)
+	sequenceBranchPathStepInputFieldName             = big.NewInt(1 << 14)
+	sequenceBranchPathStepInputFieldNodeType         = big.NewInt(1 << 15)
+	sequenceBranchPathStepInputFieldPlatforms        = big.NewInt(1 << 16)
+	sequenceBranchPathStepInputFieldPreviewText      = big.NewInt(1 << 17)
+	sequenceBranchPathStepInputFieldReplyProfileID   = big.NewInt(1 << 18)
+	sequenceBranchPathStepInputFieldReplyTo          = big.NewInt(1 << 19)
+	sequenceBranchPathStepInputFieldReplyToName      = big.NewInt(1 << 20)
+	sequenceBranchPathStepInputFieldSenderProfileID  = big.NewInt(1 << 21)
+	sequenceBranchPathStepInputFieldSubject          = big.NewInt(1 << 22)
+	sequenceBranchPathStepInputFieldText             = big.NewInt(1 << 23)
+	sequenceBranchPathStepInputFieldTitle            = big.NewInt(1 << 24)
+	sequenceBranchPathStepInputFieldType             = big.NewInt(1 << 25)
+	sequenceBranchPathStepInputFieldURL              = big.NewInt(1 << 26)
+	sequenceBranchPathStepInputFieldWaitUntil        = big.NewInt(1 << 27)
+	sequenceBranchPathStepInputFieldWaitUntilKeyDate = big.NewInt(1 << 28)
+	sequenceBranchPathStepInputFieldWaitUntilWeekday = big.NewInt(1 << 29)
 )
 
 type SequenceBranchPathStepInput struct {
 	// Email blocks for email steps. Put visual styling under styles; top-level style keys such as backgroundColor, backgroundOpacity, borderColor, borderWidth, and borderRadius are normalized into styles.
-	Blocks []*EmailBlock           `json:"blocks,omitempty" url:"blocks,omitempty"`
+	Blocks []*EmailBlock `json:"blocks,omitempty" url:"blocks,omitempty"`
+	// Push steps only. Notification message; merge tags work.
+	Body   *string                 `json:"body,omitempty" url:"body,omitempty"`
 	Config *SequencePathStepConfig `json:"config,omitempty" url:"config,omitempty"`
 	Delay  *SequenceDelayInput     `json:"delay,omitempty" url:"delay,omitempty"`
 	// Delay in milliseconds. Useful for standalone delay steps.
@@ -5386,9 +5501,13 @@ type SequenceBranchPathStepInput struct {
 	FromName *string `json:"fromName,omitempty" url:"fromName,omitempty"`
 	// HTML content for email steps.
 	HTML *string `json:"html,omitempty" url:"html,omitempty"`
+	// Push steps only. Optional https web push icon.
+	IconURL *string `json:"iconUrl,omitempty" url:"iconUrl,omitempty"`
+	// Push steps only. Optional https image.
+	ImageURL *string `json:"imageUrl,omitempty" url:"imageUrl,omitempty"`
 	// SMS steps only. Up to 2 publicly reachable image URLs sent as MMS media.
 	ImageURLs []string `json:"imageUrls,omitempty" url:"imageUrls,omitempty"`
-	// SMS steps only. skip (default) continues the sequence when the contact can't receive SMS; exit removes them from the sequence.
+	// SMS and push steps. skip (default) continues the sequence when the contact can't receive the message (SMS - no phone, no consent, unsupported country; push - no active device); exit removes them from the sequence.
 	IneligibleAction *SequenceBranchPathStepInputIneligibleAction `json:"ineligibleAction,omitempty" url:"ineligibleAction,omitempty"`
 	// SMS steps only. Display label for the step in the builder.
 	Label *string `json:"label,omitempty" url:"label,omitempty"`
@@ -5396,6 +5515,8 @@ type SequenceBranchPathStepInput struct {
 	Name *string `json:"name,omitempty" url:"name,omitempty"`
 	// Advanced node type for non-email sequence path actions.
 	NodeType *SequenceBranchPathStepInputNodeType `json:"nodeType,omitempty" url:"nodeType,omitempty"`
+	// Push steps only. Limit delivery to these platforms; omit for all.
+	Platforms []SequenceBranchPathStepInputPlatformsItem `json:"platforms,omitempty" url:"platforms,omitempty"`
 	// Email preview text.
 	PreviewText *string `json:"previewText,omitempty" url:"previewText,omitempty"`
 	// Email steps only. Reply profile for the new step. Omit to inherit from the preceding email step. Mutually exclusive with replyTo.
@@ -5410,11 +5531,15 @@ type SequenceBranchPathStepInput struct {
 	Subject *string `json:"subject,omitempty" url:"subject,omitempty"`
 	// SMS steps only. Plain-text message body; merge tags like {{FIRST_NAME}} work.
 	Text *string `json:"text,omitempty" url:"text,omitempty"`
-	// Step type. Omit for email steps, use sms for a native SMS step, or use delay for a standalone wait.
-	Type             *SequenceBranchPathStepInputType `json:"type,omitempty" url:"type,omitempty"`
-	WaitUntil        *SequenceWaitUntilInput          `json:"waitUntil,omitempty" url:"waitUntil,omitempty"`
-	WaitUntilKeyDate *SequenceWaitUntilKeyDateInput   `json:"waitUntilKeyDate,omitempty" url:"waitUntilKeyDate,omitempty"`
-	WaitUntilWeekday *SequenceWaitUntilWeekdayInput   `json:"waitUntilWeekday,omitempty" url:"waitUntilWeekday,omitempty"`
+	// Push steps only. Notification title; merge tags work.
+	Title *string `json:"title,omitempty" url:"title,omitempty"`
+	// Step type. Omit for email steps, use sms for a native SMS step, push for a push notification step, or use delay for a standalone wait.
+	Type *SequenceBranchPathStepInputType `json:"type,omitempty" url:"type,omitempty"`
+	// Push steps only. Link opened on tap - an https URL or an app deep link.
+	URL              *string                        `json:"url,omitempty" url:"url,omitempty"`
+	WaitUntil        *SequenceWaitUntilInput        `json:"waitUntil,omitempty" url:"waitUntil,omitempty"`
+	WaitUntilKeyDate *SequenceWaitUntilKeyDateInput `json:"waitUntilKeyDate,omitempty" url:"waitUntilKeyDate,omitempty"`
+	WaitUntilWeekday *SequenceWaitUntilWeekdayInput `json:"waitUntilWeekday,omitempty" url:"waitUntilWeekday,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -5428,6 +5553,13 @@ func (s *SequenceBranchPathStepInput) GetBlocks() []*EmailBlock {
 		return nil
 	}
 	return s.Blocks
+}
+
+func (s *SequenceBranchPathStepInput) GetBody() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Body
 }
 
 func (s *SequenceBranchPathStepInput) GetConfig() *SequencePathStepConfig {
@@ -5479,6 +5611,20 @@ func (s *SequenceBranchPathStepInput) GetHTML() *string {
 	return s.HTML
 }
 
+func (s *SequenceBranchPathStepInput) GetIconURL() *string {
+	if s == nil {
+		return nil
+	}
+	return s.IconURL
+}
+
+func (s *SequenceBranchPathStepInput) GetImageURL() *string {
+	if s == nil {
+		return nil
+	}
+	return s.ImageURL
+}
+
 func (s *SequenceBranchPathStepInput) GetImageURLs() []string {
 	if s == nil {
 		return nil
@@ -5512,6 +5658,13 @@ func (s *SequenceBranchPathStepInput) GetNodeType() *SequenceBranchPathStepInput
 		return nil
 	}
 	return s.NodeType
+}
+
+func (s *SequenceBranchPathStepInput) GetPlatforms() []SequenceBranchPathStepInputPlatformsItem {
+	if s == nil {
+		return nil
+	}
+	return s.Platforms
 }
 
 func (s *SequenceBranchPathStepInput) GetPreviewText() *string {
@@ -5563,11 +5716,25 @@ func (s *SequenceBranchPathStepInput) GetText() *string {
 	return s.Text
 }
 
+func (s *SequenceBranchPathStepInput) GetTitle() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Title
+}
+
 func (s *SequenceBranchPathStepInput) GetType() *SequenceBranchPathStepInputType {
 	if s == nil {
 		return nil
 	}
 	return s.Type
+}
+
+func (s *SequenceBranchPathStepInput) GetURL() *string {
+	if s == nil {
+		return nil
+	}
+	return s.URL
 }
 
 func (s *SequenceBranchPathStepInput) GetWaitUntil() *SequenceWaitUntilInput {
@@ -5610,6 +5777,13 @@ func (s *SequenceBranchPathStepInput) require(field *big.Int) {
 func (s *SequenceBranchPathStepInput) SetBlocks(blocks []*EmailBlock) {
 	s.Blocks = blocks
 	s.require(sequenceBranchPathStepInputFieldBlocks)
+}
+
+// SetBody sets the Body field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceBranchPathStepInput) SetBody(body *string) {
+	s.Body = body
+	s.require(sequenceBranchPathStepInputFieldBody)
 }
 
 // SetConfig sets the Config field and marks it as non-optional;
@@ -5661,6 +5835,20 @@ func (s *SequenceBranchPathStepInput) SetHTML(html *string) {
 	s.require(sequenceBranchPathStepInputFieldHTML)
 }
 
+// SetIconURL sets the IconURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceBranchPathStepInput) SetIconURL(iconURL *string) {
+	s.IconURL = iconURL
+	s.require(sequenceBranchPathStepInputFieldIconURL)
+}
+
+// SetImageURL sets the ImageURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceBranchPathStepInput) SetImageURL(imageURL *string) {
+	s.ImageURL = imageURL
+	s.require(sequenceBranchPathStepInputFieldImageURL)
+}
+
 // SetImageURLs sets the ImageURLs field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *SequenceBranchPathStepInput) SetImageURLs(imageURLs []string) {
@@ -5694,6 +5882,13 @@ func (s *SequenceBranchPathStepInput) SetName(name *string) {
 func (s *SequenceBranchPathStepInput) SetNodeType(nodeType *SequenceBranchPathStepInputNodeType) {
 	s.NodeType = nodeType
 	s.require(sequenceBranchPathStepInputFieldNodeType)
+}
+
+// SetPlatforms sets the Platforms field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceBranchPathStepInput) SetPlatforms(platforms []SequenceBranchPathStepInputPlatformsItem) {
+	s.Platforms = platforms
+	s.require(sequenceBranchPathStepInputFieldPlatforms)
 }
 
 // SetPreviewText sets the PreviewText field and marks it as non-optional;
@@ -5745,11 +5940,25 @@ func (s *SequenceBranchPathStepInput) SetText(text *string) {
 	s.require(sequenceBranchPathStepInputFieldText)
 }
 
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceBranchPathStepInput) SetTitle(title *string) {
+	s.Title = title
+	s.require(sequenceBranchPathStepInputFieldTitle)
+}
+
 // SetType sets the Type field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *SequenceBranchPathStepInput) SetType(type_ *SequenceBranchPathStepInputType) {
 	s.Type = type_
 	s.require(sequenceBranchPathStepInputFieldType)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceBranchPathStepInput) SetURL(url *string) {
+	s.URL = url
+	s.require(sequenceBranchPathStepInputFieldURL)
 }
 
 // SetWaitUntil sets the WaitUntil field and marks it as non-optional;
@@ -5815,7 +6024,7 @@ func (s *SequenceBranchPathStepInput) String() string {
 	return fmt.Sprintf("%#v", s)
 }
 
-// SMS steps only. skip (default) continues the sequence when the contact can't receive SMS; exit removes them from the sequence.
+// SMS and push steps. skip (default) continues the sequence when the contact can't receive the message (SMS - no phone, no consent, unsupported country; push - no active device); exit removes them from the sequence.
 type SequenceBranchPathStepInputIneligibleAction string
 
 const (
@@ -5845,6 +6054,7 @@ const (
 	SequenceBranchPathStepInputNodeTypeLogicDelay             SequenceBranchPathStepInputNodeType = "logic_delay"
 	SequenceBranchPathStepInputNodeTypeActionEmail            SequenceBranchPathStepInputNodeType = "action_email"
 	SequenceBranchPathStepInputNodeTypeActionSms              SequenceBranchPathStepInputNodeType = "action_sms"
+	SequenceBranchPathStepInputNodeTypeActionPush             SequenceBranchPathStepInputNodeType = "action_push"
 	SequenceBranchPathStepInputNodeTypeActionCreateDiscount   SequenceBranchPathStepInputNodeType = "action_create_discount"
 	SequenceBranchPathStepInputNodeTypeActionAddTag           SequenceBranchPathStepInputNodeType = "action_add_tag"
 	SequenceBranchPathStepInputNodeTypeActionRemoveTag        SequenceBranchPathStepInputNodeType = "action_remove_tag"
@@ -5865,6 +6075,8 @@ func NewSequenceBranchPathStepInputNodeTypeFromString(s string) (SequenceBranchP
 		return SequenceBranchPathStepInputNodeTypeActionEmail, nil
 	case "action_sms":
 		return SequenceBranchPathStepInputNodeTypeActionSms, nil
+	case "action_push":
+		return SequenceBranchPathStepInputNodeTypeActionPush, nil
 	case "action_create_discount":
 		return SequenceBranchPathStepInputNodeTypeActionCreateDiscount, nil
 	case "action_add_tag":
@@ -5894,12 +6106,38 @@ func (s SequenceBranchPathStepInputNodeType) Ptr() *SequenceBranchPathStepInputN
 	return &s
 }
 
-// Step type. Omit for email steps, use sms for a native SMS step, or use delay for a standalone wait.
+type SequenceBranchPathStepInputPlatformsItem string
+
+const (
+	SequenceBranchPathStepInputPlatformsItemWeb     SequenceBranchPathStepInputPlatformsItem = "web"
+	SequenceBranchPathStepInputPlatformsItemIos     SequenceBranchPathStepInputPlatformsItem = "ios"
+	SequenceBranchPathStepInputPlatformsItemAndroid SequenceBranchPathStepInputPlatformsItem = "android"
+)
+
+func NewSequenceBranchPathStepInputPlatformsItemFromString(s string) (SequenceBranchPathStepInputPlatformsItem, error) {
+	switch s {
+	case "web":
+		return SequenceBranchPathStepInputPlatformsItemWeb, nil
+	case "ios":
+		return SequenceBranchPathStepInputPlatformsItemIos, nil
+	case "android":
+		return SequenceBranchPathStepInputPlatformsItemAndroid, nil
+	}
+	var t SequenceBranchPathStepInputPlatformsItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SequenceBranchPathStepInputPlatformsItem) Ptr() *SequenceBranchPathStepInputPlatformsItem {
+	return &s
+}
+
+// Step type. Omit for email steps, use sms for a native SMS step, push for a push notification step, or use delay for a standalone wait.
 type SequenceBranchPathStepInputType string
 
 const (
 	SequenceBranchPathStepInputTypeEmail            SequenceBranchPathStepInputType = "email"
 	SequenceBranchPathStepInputTypeSms              SequenceBranchPathStepInputType = "sms"
+	SequenceBranchPathStepInputTypePush             SequenceBranchPathStepInputType = "push"
 	SequenceBranchPathStepInputTypeDelay            SequenceBranchPathStepInputType = "delay"
 	SequenceBranchPathStepInputTypeCreateDiscount   SequenceBranchPathStepInputType = "create_discount"
 	SequenceBranchPathStepInputTypeDiscount         SequenceBranchPathStepInputType = "discount"
@@ -5915,6 +6153,8 @@ func NewSequenceBranchPathStepInputTypeFromString(s string) (SequenceBranchPathS
 		return SequenceBranchPathStepInputTypeEmail, nil
 	case "sms":
 		return SequenceBranchPathStepInputTypeSms, nil
+	case "push":
+		return SequenceBranchPathStepInputTypePush, nil
 	case "delay":
 		return SequenceBranchPathStepInputTypeDelay, nil
 	case "create_discount":
@@ -6593,16 +6833,17 @@ var (
 	sequenceCreateResponseSequenceFieldEmailCount                   = big.NewInt(1 << 4)
 	sequenceCreateResponseSequenceFieldEnrichmentStatus             = big.NewInt(1 << 5)
 	sequenceCreateResponseSequenceFieldEnrollmentPaused             = big.NewInt(1 << 6)
-	sequenceCreateResponseSequenceFieldID                           = big.NewInt(1 << 7)
-	sequenceCreateResponseSequenceFieldKeyDates                     = big.NewInt(1 << 8)
-	sequenceCreateResponseSequenceFieldName                         = big.NewInt(1 << 9)
-	sequenceCreateResponseSequenceFieldNodeCount                    = big.NewInt(1 << 10)
-	sequenceCreateResponseSequenceFieldProcessesExistingEnrollments = big.NewInt(1 << 11)
-	sequenceCreateResponseSequenceFieldSendingWindow                = big.NewInt(1 << 12)
-	sequenceCreateResponseSequenceFieldStatus                       = big.NewInt(1 << 13)
-	sequenceCreateResponseSequenceFieldStopCondition                = big.NewInt(1 << 14)
-	sequenceCreateResponseSequenceFieldSubscriberUpdateCount        = big.NewInt(1 << 15)
-	sequenceCreateResponseSequenceFieldTrigger                      = big.NewInt(1 << 16)
+	sequenceCreateResponseSequenceFieldFrequencyCapEnabled          = big.NewInt(1 << 7)
+	sequenceCreateResponseSequenceFieldID                           = big.NewInt(1 << 8)
+	sequenceCreateResponseSequenceFieldKeyDates                     = big.NewInt(1 << 9)
+	sequenceCreateResponseSequenceFieldName                         = big.NewInt(1 << 10)
+	sequenceCreateResponseSequenceFieldNodeCount                    = big.NewInt(1 << 11)
+	sequenceCreateResponseSequenceFieldProcessesExistingEnrollments = big.NewInt(1 << 12)
+	sequenceCreateResponseSequenceFieldSendingWindow                = big.NewInt(1 << 13)
+	sequenceCreateResponseSequenceFieldStatus                       = big.NewInt(1 << 14)
+	sequenceCreateResponseSequenceFieldStopCondition                = big.NewInt(1 << 15)
+	sequenceCreateResponseSequenceFieldSubscriberUpdateCount        = big.NewInt(1 << 16)
+	sequenceCreateResponseSequenceFieldTrigger                      = big.NewInt(1 << 17)
 )
 
 type SequenceCreateResponseSequence struct {
@@ -6615,11 +6856,13 @@ type SequenceCreateResponseSequence struct {
 	EmailCount             *float64 `json:"emailCount,omitempty" url:"emailCount,omitempty"`
 	EnrichmentStatus       *string  `json:"enrichmentStatus,omitempty" url:"enrichmentStatus,omitempty"`
 	// Whether new enrollments are paused while current recipients continue.
-	EnrollmentPaused *bool             `json:"enrollmentPaused,omitempty" url:"enrollmentPaused,omitempty"`
-	ID               *string           `json:"id,omitempty" url:"id,omitempty"`
-	KeyDates         *SequenceKeyDates `json:"keyDates,omitempty" url:"keyDates,omitempty"`
-	Name             *string           `json:"name,omitempty" url:"name,omitempty"`
-	NodeCount        *float64          `json:"nodeCount,omitempty" url:"nodeCount,omitempty"`
+	EnrollmentPaused *bool `json:"enrollmentPaused,omitempty" url:"enrollmentPaused,omitempty"`
+	// Whether email steps respect the company frequency cap.
+	FrequencyCapEnabled *bool             `json:"frequencyCapEnabled,omitempty" url:"frequencyCapEnabled,omitempty"`
+	ID                  *string           `json:"id,omitempty" url:"id,omitempty"`
+	KeyDates            *SequenceKeyDates `json:"keyDates,omitempty" url:"keyDates,omitempty"`
+	Name                *string           `json:"name,omitempty" url:"name,omitempty"`
+	NodeCount           *float64          `json:"nodeCount,omitempty" url:"nodeCount,omitempty"`
 	// Whether subscribers already inside the sequence keep advancing and receiving steps.
 	ProcessesExistingEnrollments *bool                  `json:"processesExistingEnrollments,omitempty" url:"processesExistingEnrollments,omitempty"`
 	SendingWindow                *SequenceSendingWindow `json:"sendingWindow,omitempty" url:"sendingWindow,omitempty"`
@@ -6682,6 +6925,13 @@ func (s *SequenceCreateResponseSequence) GetEnrollmentPaused() *bool {
 		return nil
 	}
 	return s.EnrollmentPaused
+}
+
+func (s *SequenceCreateResponseSequence) GetFrequencyCapEnabled() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.FrequencyCapEnabled
 }
 
 func (s *SequenceCreateResponseSequence) GetID() *string {
@@ -6817,6 +7067,13 @@ func (s *SequenceCreateResponseSequence) SetEnrollmentPaused(enrollmentPaused *b
 	s.require(sequenceCreateResponseSequenceFieldEnrollmentPaused)
 }
 
+// SetFrequencyCapEnabled sets the FrequencyCapEnabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceCreateResponseSequence) SetFrequencyCapEnabled(frequencyCapEnabled *bool) {
+	s.FrequencyCapEnabled = frequencyCapEnabled
+	s.require(sequenceCreateResponseSequenceFieldFrequencyCapEnabled)
+}
+
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *SequenceCreateResponseSequence) SetID(id *string) {
@@ -6929,7 +7186,7 @@ func (s *SequenceCreateResponseSequence) String() string {
 	return fmt.Sprintf("%#v", s)
 }
 
-// Delay before this step runs. Use duration fields for fixed waits, mode until_date with untilDateField for event/date-field waits, mode until_weekday with the weekday window fields, or mode until_key_date with untilKeyDate (prefer the waitUntilKeyDate shorthand).
+// Delay before this step runs. Use duration fields for fixed waits, mode until_date with untilDateField for a date from the trigger event or a contact attribute (untilDateSource), mode until_weekday with the weekday window fields, or mode until_key_date with untilKeyDate (prefer the waitUntilKeyDate shorthand).
 var (
 	sequenceDelayInputFieldDays                 = big.NewInt(1 << 0)
 	sequenceDelayInputFieldDirection            = big.NewInt(1 << 1)
@@ -6940,15 +7197,17 @@ var (
 	sequenceDelayInputFieldMissingAction        = big.NewInt(1 << 6)
 	sequenceDelayInputFieldMode                 = big.NewInt(1 << 7)
 	sequenceDelayInputFieldPastAction           = big.NewInt(1 << 8)
-	sequenceDelayInputFieldUntilDateField       = big.NewInt(1 << 9)
-	sequenceDelayInputFieldUntilDays            = big.NewInt(1 << 10)
-	sequenceDelayInputFieldUntilEndTime         = big.NewInt(1 << 11)
-	sequenceDelayInputFieldUntilKeyDate         = big.NewInt(1 << 12)
-	sequenceDelayInputFieldUntilMissingAction   = big.NewInt(1 << 13)
-	sequenceDelayInputFieldUntilOffsetDirection = big.NewInt(1 << 14)
-	sequenceDelayInputFieldUntilPastAction      = big.NewInt(1 << 15)
-	sequenceDelayInputFieldUntilStartTime       = big.NewInt(1 << 16)
-	sequenceDelayInputFieldUntilTimezone        = big.NewInt(1 << 17)
+	sequenceDelayInputFieldSource               = big.NewInt(1 << 9)
+	sequenceDelayInputFieldUntilDateField       = big.NewInt(1 << 10)
+	sequenceDelayInputFieldUntilDateSource      = big.NewInt(1 << 11)
+	sequenceDelayInputFieldUntilDays            = big.NewInt(1 << 12)
+	sequenceDelayInputFieldUntilEndTime         = big.NewInt(1 << 13)
+	sequenceDelayInputFieldUntilKeyDate         = big.NewInt(1 << 14)
+	sequenceDelayInputFieldUntilMissingAction   = big.NewInt(1 << 15)
+	sequenceDelayInputFieldUntilOffsetDirection = big.NewInt(1 << 16)
+	sequenceDelayInputFieldUntilPastAction      = big.NewInt(1 << 17)
+	sequenceDelayInputFieldUntilStartTime       = big.NewInt(1 << 18)
+	sequenceDelayInputFieldUntilTimezone        = big.NewInt(1 << 19)
 )
 
 type SequenceDelayInput struct {
@@ -6967,8 +7226,12 @@ type SequenceDelayInput struct {
 	Mode *SequenceDelayInputMode `json:"mode,omitempty" url:"mode,omitempty"`
 	// Alias for untilPastAction.
 	PastAction *SequenceDelayInputPastAction `json:"pastAction,omitempty" url:"pastAction,omitempty"`
-	// Event/subscriber date field path to wait until when mode is until_date.
+	// Alias for untilDateSource.
+	Source *SequenceDelayInputSource `json:"source,omitempty" url:"source,omitempty"`
+	// Date field path to wait until when mode is until_date, read from the source chosen by untilDateSource.
 	UntilDateField *string `json:"untilDateField,omitempty" url:"untilDateField,omitempty"`
+	// Where untilDateField is read from when mode is until_date. event reads the trigger event properties; attribute reads the contact's custom attributes when the step is reached. Defaults to event.
+	UntilDateSource *SequenceDelayInputUntilDateSource `json:"untilDateSource,omitempty" url:"untilDateSource,omitempty"`
 	// Weekdays the wait may release on when mode is until_weekday.
 	UntilDays []string `json:"untilDays,omitempty" url:"untilDays,omitempty"`
 	// Window end in 24-hour HH:mm local time when mode is until_weekday. Defaults to the end-of-day boundary 24:00.
@@ -6979,7 +7242,7 @@ type SequenceDelayInput struct {
 	UntilMissingAction *SequenceDelayInputUntilMissingAction `json:"untilMissingAction,omitempty" url:"untilMissingAction,omitempty"`
 	// Whether the offset runs before or after the date field. Defaults to after.
 	UntilOffsetDirection *SequenceDelayInputUntilOffsetDirection `json:"untilOffsetDirection,omitempty" url:"untilOffsetDirection,omitempty"`
-	// For until_key_date, what a late enrollee does when the moment already passed. Defaults to skip.
+	// For until_key_date and until_date, what a late enrollee does when the moment already passed. continue moves on immediately, skip skips the following email and action steps until the next wait, condition or branch, exit ends the enrollment. Defaults to skip for until_key_date and continue for until_date.
 	UntilPastAction *SequenceDelayInputUntilPastAction `json:"untilPastAction,omitempty" url:"untilPastAction,omitempty"`
 	// Window start in 24-hour HH:mm local time when mode is until_weekday.
 	UntilStartTime *string `json:"untilStartTime,omitempty" url:"untilStartTime,omitempty"`
@@ -7056,11 +7319,25 @@ func (s *SequenceDelayInput) GetPastAction() *SequenceDelayInputPastAction {
 	return s.PastAction
 }
 
+func (s *SequenceDelayInput) GetSource() *SequenceDelayInputSource {
+	if s == nil {
+		return nil
+	}
+	return s.Source
+}
+
 func (s *SequenceDelayInput) GetUntilDateField() *string {
 	if s == nil {
 		return nil
 	}
 	return s.UntilDateField
+}
+
+func (s *SequenceDelayInput) GetUntilDateSource() *SequenceDelayInputUntilDateSource {
+	if s == nil {
+		return nil
+	}
+	return s.UntilDateSource
 }
 
 func (s *SequenceDelayInput) GetUntilDays() []string {
@@ -7196,11 +7473,25 @@ func (s *SequenceDelayInput) SetPastAction(pastAction *SequenceDelayInputPastAct
 	s.require(sequenceDelayInputFieldPastAction)
 }
 
+// SetSource sets the Source field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDelayInput) SetSource(source *SequenceDelayInputSource) {
+	s.Source = source
+	s.require(sequenceDelayInputFieldSource)
+}
+
 // SetUntilDateField sets the UntilDateField field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *SequenceDelayInput) SetUntilDateField(untilDateField *string) {
 	s.UntilDateField = untilDateField
 	s.require(sequenceDelayInputFieldUntilDateField)
+}
+
+// SetUntilDateSource sets the UntilDateSource field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDelayInput) SetUntilDateSource(untilDateSource *SequenceDelayInputUntilDateSource) {
+	s.UntilDateSource = untilDateSource
+	s.require(sequenceDelayInputFieldUntilDateSource)
 }
 
 // SetUntilDays sets the UntilDays field and marks it as non-optional;
@@ -7402,6 +7693,52 @@ func (s SequenceDelayInputPastAction) Ptr() *SequenceDelayInputPastAction {
 	return &s
 }
 
+// Alias for untilDateSource.
+type SequenceDelayInputSource string
+
+const (
+	SequenceDelayInputSourceEvent     SequenceDelayInputSource = "event"
+	SequenceDelayInputSourceAttribute SequenceDelayInputSource = "attribute"
+)
+
+func NewSequenceDelayInputSourceFromString(s string) (SequenceDelayInputSource, error) {
+	switch s {
+	case "event":
+		return SequenceDelayInputSourceEvent, nil
+	case "attribute":
+		return SequenceDelayInputSourceAttribute, nil
+	}
+	var t SequenceDelayInputSource
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SequenceDelayInputSource) Ptr() *SequenceDelayInputSource {
+	return &s
+}
+
+// Where untilDateField is read from when mode is until_date. event reads the trigger event properties; attribute reads the contact's custom attributes when the step is reached. Defaults to event.
+type SequenceDelayInputUntilDateSource string
+
+const (
+	SequenceDelayInputUntilDateSourceEvent     SequenceDelayInputUntilDateSource = "event"
+	SequenceDelayInputUntilDateSourceAttribute SequenceDelayInputUntilDateSource = "attribute"
+)
+
+func NewSequenceDelayInputUntilDateSourceFromString(s string) (SequenceDelayInputUntilDateSource, error) {
+	switch s {
+	case "event":
+		return SequenceDelayInputUntilDateSourceEvent, nil
+	case "attribute":
+		return SequenceDelayInputUntilDateSourceAttribute, nil
+	}
+	var t SequenceDelayInputUntilDateSource
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SequenceDelayInputUntilDateSource) Ptr() *SequenceDelayInputUntilDateSource {
+	return &s
+}
+
 // What to do when the date field is missing or invalid. Defaults to continue.
 type SequenceDelayInputUntilMissingAction string
 
@@ -7448,7 +7785,7 @@ func (s SequenceDelayInputUntilOffsetDirection) Ptr() *SequenceDelayInputUntilOf
 	return &s
 }
 
-// For until_key_date, what a late enrollee does when the moment already passed. Defaults to skip.
+// For until_key_date and until_date, what a late enrollee does when the moment already passed. continue moves on immediately, skip skips the following email and action steps until the next wait, condition or branch, exit ends the enrollment. Defaults to skip for until_key_date and continue for until_date.
 type SequenceDelayInputUntilPastAction string
 
 const (
@@ -7600,40 +7937,41 @@ var (
 	sequenceDetailsFieldEffectiveStatus              = big.NewInt(1 << 5)
 	sequenceDetailsFieldEffectiveStatusSummary       = big.NewInt(1 << 6)
 	sequenceDetailsFieldEnrollmentPaused             = big.NewInt(1 << 7)
-	sequenceDetailsFieldFromEmail                    = big.NewInt(1 << 8)
-	sequenceDetailsFieldFromName                     = big.NewInt(1 << 9)
-	sequenceDetailsFieldID                           = big.NewInt(1 << 10)
-	sequenceDetailsFieldKeyDates                     = big.NewInt(1 << 11)
-	sequenceDetailsFieldLabelIDs                     = big.NewInt(1 << 12)
-	sequenceDetailsFieldLabels                       = big.NewInt(1 << 13)
-	sequenceDetailsFieldName                         = big.NewInt(1 << 14)
-	sequenceDetailsFieldPausedAt                     = big.NewInt(1 << 15)
-	sequenceDetailsFieldPausedByUser                 = big.NewInt(1 << 16)
-	sequenceDetailsFieldPausedByUserID               = big.NewInt(1 << 17)
-	sequenceDetailsFieldPauseReason                  = big.NewInt(1 << 18)
-	sequenceDetailsFieldPauseSource                  = big.NewInt(1 << 19)
-	sequenceDetailsFieldProcessesExistingEnrollments = big.NewInt(1 << 20)
-	sequenceDetailsFieldReplyProfileID               = big.NewInt(1 << 21)
-	sequenceDetailsFieldReplyToEmail                 = big.NewInt(1 << 22)
-	sequenceDetailsFieldReplyToName                  = big.NewInt(1 << 23)
-	sequenceDetailsFieldSenderProfileID              = big.NewInt(1 << 24)
-	sequenceDetailsFieldSendingWindow                = big.NewInt(1 << 25)
-	sequenceDetailsFieldStatus                       = big.NewInt(1 << 26)
-	sequenceDetailsFieldTrigger                      = big.NewInt(1 << 27)
-	sequenceDetailsFieldTriggerConfig                = big.NewInt(1 << 28)
-	sequenceDetailsFieldUpdatedAt                    = big.NewInt(1 << 29)
-	sequenceDetailsFieldUserCancellable              = big.NewInt(1 << 30)
-	sequenceDetailsFieldAbTestCount                  = big.NewInt(1 << 31)
-	sequenceDetailsFieldDiscountCount                = big.NewInt(1 << 32)
-	sequenceDetailsFieldEdges                        = big.NewInt(1 << 33)
-	sequenceDetailsFieldEmailCount                   = big.NewInt(1 << 34)
-	sequenceDetailsFieldEmails                       = big.NewInt(1 << 35)
-	sequenceDetailsFieldEnrichedCount                = big.NewInt(1 << 36)
-	sequenceDetailsFieldEnrichmentStatus             = big.NewInt(1 << 37)
-	sequenceDetailsFieldGraphRevision                = big.NewInt(1 << 38)
-	sequenceDetailsFieldNodes                        = big.NewInt(1 << 39)
-	sequenceDetailsFieldStopCondition                = big.NewInt(1 << 40)
-	sequenceDetailsFieldSubscriberUpdateCount        = big.NewInt(1 << 41)
+	sequenceDetailsFieldFrequencyCapEnabled          = big.NewInt(1 << 8)
+	sequenceDetailsFieldFromEmail                    = big.NewInt(1 << 9)
+	sequenceDetailsFieldFromName                     = big.NewInt(1 << 10)
+	sequenceDetailsFieldID                           = big.NewInt(1 << 11)
+	sequenceDetailsFieldKeyDates                     = big.NewInt(1 << 12)
+	sequenceDetailsFieldLabelIDs                     = big.NewInt(1 << 13)
+	sequenceDetailsFieldLabels                       = big.NewInt(1 << 14)
+	sequenceDetailsFieldName                         = big.NewInt(1 << 15)
+	sequenceDetailsFieldPausedAt                     = big.NewInt(1 << 16)
+	sequenceDetailsFieldPausedByUser                 = big.NewInt(1 << 17)
+	sequenceDetailsFieldPausedByUserID               = big.NewInt(1 << 18)
+	sequenceDetailsFieldPauseReason                  = big.NewInt(1 << 19)
+	sequenceDetailsFieldPauseSource                  = big.NewInt(1 << 20)
+	sequenceDetailsFieldProcessesExistingEnrollments = big.NewInt(1 << 21)
+	sequenceDetailsFieldReplyProfileID               = big.NewInt(1 << 22)
+	sequenceDetailsFieldReplyToEmail                 = big.NewInt(1 << 23)
+	sequenceDetailsFieldReplyToName                  = big.NewInt(1 << 24)
+	sequenceDetailsFieldSenderProfileID              = big.NewInt(1 << 25)
+	sequenceDetailsFieldSendingWindow                = big.NewInt(1 << 26)
+	sequenceDetailsFieldStatus                       = big.NewInt(1 << 27)
+	sequenceDetailsFieldTrigger                      = big.NewInt(1 << 28)
+	sequenceDetailsFieldTriggerConfig                = big.NewInt(1 << 29)
+	sequenceDetailsFieldUpdatedAt                    = big.NewInt(1 << 30)
+	sequenceDetailsFieldUserCancellable              = big.NewInt(1 << 31)
+	sequenceDetailsFieldAbTestCount                  = big.NewInt(1 << 32)
+	sequenceDetailsFieldDiscountCount                = big.NewInt(1 << 33)
+	sequenceDetailsFieldEdges                        = big.NewInt(1 << 34)
+	sequenceDetailsFieldEmailCount                   = big.NewInt(1 << 35)
+	sequenceDetailsFieldEmails                       = big.NewInt(1 << 36)
+	sequenceDetailsFieldEnrichedCount                = big.NewInt(1 << 37)
+	sequenceDetailsFieldEnrichmentStatus             = big.NewInt(1 << 38)
+	sequenceDetailsFieldGraphRevision                = big.NewInt(1 << 39)
+	sequenceDetailsFieldNodes                        = big.NewInt(1 << 40)
+	sequenceDetailsFieldStopCondition                = big.NewInt(1 << 41)
+	sequenceDetailsFieldSubscriberUpdateCount        = big.NewInt(1 << 42)
 )
 
 type SequenceDetails struct {
@@ -7648,19 +7986,21 @@ type SequenceDetails struct {
 	// One plain-language sentence describing the run state, safe to show a user verbatim.
 	EffectiveStatusSummary *string `json:"effectiveStatusSummary,omitempty" url:"effectiveStatusSummary,omitempty"`
 	// Whether new enrollments are paused while current recipients continue.
-	EnrollmentPaused *bool                        `json:"enrollmentPaused,omitempty" url:"enrollmentPaused,omitempty"`
-	FromEmail        *string                      `json:"fromEmail,omitempty" url:"fromEmail,omitempty"`
-	FromName         *string                      `json:"fromName,omitempty" url:"fromName,omitempty"`
-	ID               *string                      `json:"id,omitempty" url:"id,omitempty"`
-	KeyDates         *SequenceKeyDates            `json:"keyDates,omitempty" url:"keyDates,omitempty"`
-	LabelIDs         []string                     `json:"labelIds,omitempty" url:"labelIds,omitempty"`
-	Labels           []string                     `json:"labels,omitempty" url:"labels,omitempty"`
-	Name             *string                      `json:"name,omitempty" url:"name,omitempty"`
-	PausedAt         *time.Time                   `json:"pausedAt,omitempty" url:"pausedAt,omitempty"`
-	PausedByUser     *SequenceSummaryPausedByUser `json:"pausedByUser,omitempty" url:"pausedByUser,omitempty"`
-	PausedByUserID   *string                      `json:"pausedByUserId,omitempty" url:"pausedByUserId,omitempty"`
-	PauseReason      *string                      `json:"pauseReason,omitempty" url:"pauseReason,omitempty"`
-	PauseSource      *string                      `json:"pauseSource,omitempty" url:"pauseSource,omitempty"`
+	EnrollmentPaused *bool `json:"enrollmentPaused,omitempty" url:"enrollmentPaused,omitempty"`
+	// Whether email steps respect the company frequency cap.
+	FrequencyCapEnabled *bool                        `json:"frequencyCapEnabled,omitempty" url:"frequencyCapEnabled,omitempty"`
+	FromEmail           *string                      `json:"fromEmail,omitempty" url:"fromEmail,omitempty"`
+	FromName            *string                      `json:"fromName,omitempty" url:"fromName,omitempty"`
+	ID                  *string                      `json:"id,omitempty" url:"id,omitempty"`
+	KeyDates            *SequenceKeyDates            `json:"keyDates,omitempty" url:"keyDates,omitempty"`
+	LabelIDs            []string                     `json:"labelIds,omitempty" url:"labelIds,omitempty"`
+	Labels              []string                     `json:"labels,omitempty" url:"labels,omitempty"`
+	Name                *string                      `json:"name,omitempty" url:"name,omitempty"`
+	PausedAt            *time.Time                   `json:"pausedAt,omitempty" url:"pausedAt,omitempty"`
+	PausedByUser        *SequenceSummaryPausedByUser `json:"pausedByUser,omitempty" url:"pausedByUser,omitempty"`
+	PausedByUserID      *string                      `json:"pausedByUserId,omitempty" url:"pausedByUserId,omitempty"`
+	PauseReason         *string                      `json:"pauseReason,omitempty" url:"pauseReason,omitempty"`
+	PauseSource         *string                      `json:"pauseSource,omitempty" url:"pauseSource,omitempty"`
 	// Whether subscribers already inside the sequence keep advancing and receiving steps.
 	ProcessesExistingEnrollments *bool                  `json:"processesExistingEnrollments,omitempty" url:"processesExistingEnrollments,omitempty"`
 	ReplyProfileID               *string                `json:"replyProfileId,omitempty" url:"replyProfileId,omitempty"`
@@ -7750,6 +8090,13 @@ func (s *SequenceDetails) GetEnrollmentPaused() *bool {
 		return nil
 	}
 	return s.EnrollmentPaused
+}
+
+func (s *SequenceDetails) GetFrequencyCapEnabled() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.FrequencyCapEnabled
 }
 
 func (s *SequenceDetails) GetFromEmail() *string {
@@ -8058,6 +8405,13 @@ func (s *SequenceDetails) SetEffectiveStatusSummary(effectiveStatusSummary *stri
 func (s *SequenceDetails) SetEnrollmentPaused(enrollmentPaused *bool) {
 	s.EnrollmentPaused = enrollmentPaused
 	s.require(sequenceDetailsFieldEnrollmentPaused)
+}
+
+// SetFrequencyCapEnabled sets the FrequencyCapEnabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDetails) SetFrequencyCapEnabled(frequencyCapEnabled *bool) {
+	s.FrequencyCapEnabled = frequencyCapEnabled
+	s.require(sequenceDetailsFieldFrequencyCapEnabled)
 }
 
 // SetFromEmail sets the FromEmail field and marks it as non-optional;
@@ -8894,7 +9248,7 @@ type SequenceEmail struct {
 	// Graph-derived email depth, or null when the node is not reachable from a trigger. Parallel branch emails intentionally share a depth.
 	StructuralStepNumber *float64 `json:"structuralStepNumber,omitempty" url:"structuralStepNumber,omitempty"`
 	Subject              *string  `json:"subject,omitempty" url:"subject,omitempty"`
-	// Date-field wait metadata for dynamic wait-until-date delays.
+	// Date-field wait metadata (field, source, direction, missingAction, pastAction, offset) for dynamic wait-until-date delays.
 	WaitUntil *SequenceWaitUntilInput `json:"waitUntil,omitempty" url:"waitUntil,omitempty"`
 	// Key-date wait metadata (key, direction, missingAction, pastAction, offset) for until_key_date delays.
 	WaitUntilKeyDate *SequenceWaitUntilKeyDateInput `json:"waitUntilKeyDate,omitempty" url:"waitUntilKeyDate,omitempty"`
@@ -18570,43 +18924,49 @@ var (
 	sequenceStepInputFieldAttachments       = big.NewInt(1 << 2)
 	sequenceStepInputFieldBccEmails         = big.NewInt(1 << 3)
 	sequenceStepInputFieldBlocks            = big.NewInt(1 << 4)
-	sequenceStepInputFieldCcEmails          = big.NewInt(1 << 5)
-	sequenceStepInputFieldCodePrefix        = big.NewInt(1 << 6)
-	sequenceStepInputFieldConfig            = big.NewInt(1 << 7)
-	sequenceStepInputFieldCurrency          = big.NewInt(1 << 8)
-	sequenceStepInputFieldDelay             = big.NewInt(1 << 9)
-	sequenceStepInputFieldDelayMs           = big.NewInt(1 << 10)
-	sequenceStepInputFieldDiscount          = big.NewInt(1 << 11)
-	sequenceStepInputFieldDiscountType      = big.NewInt(1 << 12)
-	sequenceStepInputFieldDuration          = big.NewInt(1 << 13)
-	sequenceStepInputFieldDurationInMonths  = big.NewInt(1 << 14)
-	sequenceStepInputFieldExpiresAt         = big.NewInt(1 << 15)
-	sequenceStepInputFieldExpiresInHours    = big.NewInt(1 << 16)
-	sequenceStepInputFieldFromEmail         = big.NewInt(1 << 17)
-	sequenceStepInputFieldFromName          = big.NewInt(1 << 18)
-	sequenceStepInputFieldHTML              = big.NewInt(1 << 19)
-	sequenceStepInputFieldImageURLs         = big.NewInt(1 << 20)
-	sequenceStepInputFieldIneligibleAction  = big.NewInt(1 << 21)
-	sequenceStepInputFieldIsTransactional   = big.NewInt(1 << 22)
-	sequenceStepInputFieldLabel             = big.NewInt(1 << 23)
-	sequenceStepInputFieldLockToSubscriber  = big.NewInt(1 << 24)
-	sequenceStepInputFieldMaxRedemptions    = big.NewInt(1 << 25)
-	sequenceStepInputFieldName              = big.NewInt(1 << 26)
-	sequenceStepInputFieldNodeType          = big.NewInt(1 << 27)
-	sequenceStepInputFieldPercentOff        = big.NewInt(1 << 28)
-	sequenceStepInputFieldPlanIDs           = big.NewInt(1 << 29)
-	sequenceStepInputFieldPreviewText       = big.NewInt(1 << 30)
-	sequenceStepInputFieldProvider          = big.NewInt(1 << 31)
-	sequenceStepInputFieldReplyProfileID    = big.NewInt(1 << 32)
-	sequenceStepInputFieldReplyTo           = big.NewInt(1 << 33)
-	sequenceStepInputFieldReplyToName       = big.NewInt(1 << 34)
-	sequenceStepInputFieldSenderProfileID   = big.NewInt(1 << 35)
-	sequenceStepInputFieldSubject           = big.NewInt(1 << 36)
-	sequenceStepInputFieldText              = big.NewInt(1 << 37)
-	sequenceStepInputFieldType              = big.NewInt(1 << 38)
-	sequenceStepInputFieldWaitUntil         = big.NewInt(1 << 39)
-	sequenceStepInputFieldWaitUntilKeyDate  = big.NewInt(1 << 40)
-	sequenceStepInputFieldWaitUntilWeekday  = big.NewInt(1 << 41)
+	sequenceStepInputFieldBody              = big.NewInt(1 << 5)
+	sequenceStepInputFieldCcEmails          = big.NewInt(1 << 6)
+	sequenceStepInputFieldCodePrefix        = big.NewInt(1 << 7)
+	sequenceStepInputFieldConfig            = big.NewInt(1 << 8)
+	sequenceStepInputFieldCurrency          = big.NewInt(1 << 9)
+	sequenceStepInputFieldDelay             = big.NewInt(1 << 10)
+	sequenceStepInputFieldDelayMs           = big.NewInt(1 << 11)
+	sequenceStepInputFieldDiscount          = big.NewInt(1 << 12)
+	sequenceStepInputFieldDiscountType      = big.NewInt(1 << 13)
+	sequenceStepInputFieldDuration          = big.NewInt(1 << 14)
+	sequenceStepInputFieldDurationInMonths  = big.NewInt(1 << 15)
+	sequenceStepInputFieldExpiresAt         = big.NewInt(1 << 16)
+	sequenceStepInputFieldExpiresInHours    = big.NewInt(1 << 17)
+	sequenceStepInputFieldFromEmail         = big.NewInt(1 << 18)
+	sequenceStepInputFieldFromName          = big.NewInt(1 << 19)
+	sequenceStepInputFieldHTML              = big.NewInt(1 << 20)
+	sequenceStepInputFieldIconURL           = big.NewInt(1 << 21)
+	sequenceStepInputFieldImageURL          = big.NewInt(1 << 22)
+	sequenceStepInputFieldImageURLs         = big.NewInt(1 << 23)
+	sequenceStepInputFieldIneligibleAction  = big.NewInt(1 << 24)
+	sequenceStepInputFieldIsTransactional   = big.NewInt(1 << 25)
+	sequenceStepInputFieldLabel             = big.NewInt(1 << 26)
+	sequenceStepInputFieldLockToSubscriber  = big.NewInt(1 << 27)
+	sequenceStepInputFieldMaxRedemptions    = big.NewInt(1 << 28)
+	sequenceStepInputFieldName              = big.NewInt(1 << 29)
+	sequenceStepInputFieldNodeType          = big.NewInt(1 << 30)
+	sequenceStepInputFieldPercentOff        = big.NewInt(1 << 31)
+	sequenceStepInputFieldPlanIDs           = big.NewInt(1 << 32)
+	sequenceStepInputFieldPlatforms         = big.NewInt(1 << 33)
+	sequenceStepInputFieldPreviewText       = big.NewInt(1 << 34)
+	sequenceStepInputFieldProvider          = big.NewInt(1 << 35)
+	sequenceStepInputFieldReplyProfileID    = big.NewInt(1 << 36)
+	sequenceStepInputFieldReplyTo           = big.NewInt(1 << 37)
+	sequenceStepInputFieldReplyToName       = big.NewInt(1 << 38)
+	sequenceStepInputFieldSenderProfileID   = big.NewInt(1 << 39)
+	sequenceStepInputFieldSubject           = big.NewInt(1 << 40)
+	sequenceStepInputFieldText              = big.NewInt(1 << 41)
+	sequenceStepInputFieldTitle             = big.NewInt(1 << 42)
+	sequenceStepInputFieldType              = big.NewInt(1 << 43)
+	sequenceStepInputFieldURL               = big.NewInt(1 << 44)
+	sequenceStepInputFieldWaitUntil         = big.NewInt(1 << 45)
+	sequenceStepInputFieldWaitUntilKeyDate  = big.NewInt(1 << 46)
+	sequenceStepInputFieldWaitUntilWeekday  = big.NewInt(1 << 47)
 )
 
 type SequenceStepInput struct {
@@ -18620,6 +18980,8 @@ type SequenceStepInput struct {
 	BccEmails []string `json:"bccEmails,omitempty" url:"bccEmails,omitempty"`
 	// Structured Sequenzy email blocks. Provide either blocks or html. Put visual styling under styles; top-level style keys such as backgroundColor, backgroundOpacity, borderColor, borderWidth, and borderRadius are normalized into styles.
 	Blocks []*EmailBlock `json:"blocks,omitempty" url:"blocks,omitempty"`
+	// Push steps only. Notification message; merge tags work.
+	Body *string `json:"body,omitempty" url:"body,omitempty"`
 	// Addresses CC'd on this email step. Send an empty array to clear them.
 	CcEmails []string `json:"ccEmails,omitempty" url:"ccEmails,omitempty"`
 	// Optional prefix for generated dynamic codes. The final code also includes a subscriber/token suffix.
@@ -18648,9 +19010,13 @@ type SequenceStepInput struct {
 	FromName *string `json:"fromName,omitempty" url:"fromName,omitempty"`
 	// Raw HTML preserved as one HTML block. Provide either html or blocks.
 	HTML *string `json:"html,omitempty" url:"html,omitempty"`
+	// Push steps only. Optional https web push icon.
+	IconURL *string `json:"iconUrl,omitempty" url:"iconUrl,omitempty"`
+	// Push steps only. Optional https image.
+	ImageURL *string `json:"imageUrl,omitempty" url:"imageUrl,omitempty"`
 	// SMS steps only. Up to 2 publicly reachable image URLs sent as MMS media.
 	ImageURLs []string `json:"imageUrls,omitempty" url:"imageUrls,omitempty"`
-	// SMS steps only. skip (default) continues the sequence when the contact can't receive SMS; exit removes them from the sequence.
+	// SMS and push steps. skip (default) continues the sequence when the contact can't receive the message (SMS - no phone, no consent, unsupported country; push - no active device); exit removes them from the sequence.
 	IneligibleAction *SequenceStepInputIneligibleAction `json:"ineligibleAction,omitempty" url:"ineligibleAction,omitempty"`
 	// Send this email without the marketing unsubscribe footer.
 	IsTransactional *bool `json:"isTransactional,omitempty" url:"isTransactional,omitempty"`
@@ -18668,6 +19034,8 @@ type SequenceStepInput struct {
 	PercentOff *float64 `json:"percentOff,omitempty" url:"percentOff,omitempty"`
 	// Provider product IDs when appliesToAllPlans is false. Stripe uses IDs like prod_abc123; Shopify accepts numeric product IDs or gid://shopify/Product/... IDs.
 	PlanIDs []string `json:"planIds,omitempty" url:"planIds,omitempty"`
+	// Push steps only. Limit delivery to these platforms; omit for all.
+	Platforms []SequenceStepInputPlatformsItem `json:"platforms,omitempty" url:"platforms,omitempty"`
 	// Optional email preview text.
 	PreviewText *string `json:"previewText,omitempty" url:"previewText,omitempty"`
 	// Legacy top-level discount provider. Prefer discount.provider. Supports stripe and shopify.
@@ -18684,8 +19052,12 @@ type SequenceStepInput struct {
 	Subject *string `json:"subject,omitempty" url:"subject,omitempty"`
 	// SMS steps only. Plain-text message body; merge tags like {{FIRST_NAME}} work. Do not include opt-out text or a brand prefix - Sequenzy adds both automatically at send time.
 	Text *string `json:"text,omitempty" url:"text,omitempty"`
-	// Step type. Omit or use email for email content; use sms for a native SMS step; use create_discount for a dynamic discount; use update_subscriber for an Update Subscriber action.
-	Type             *SequenceStepInputType         `json:"type,omitempty" url:"type,omitempty"`
+	// Push steps only. Notification title; merge tags work.
+	Title *string `json:"title,omitempty" url:"title,omitempty"`
+	// Step type. Omit or use email for email content; use sms for a native SMS step; use push for a push notification step; use create_discount for a dynamic discount; use update_subscriber for an Update Subscriber action.
+	Type *SequenceStepInputType `json:"type,omitempty" url:"type,omitempty"`
+	// Push steps only. Link opened on tap - an https URL or an app deep link.
+	URL              *string                        `json:"url,omitempty" url:"url,omitempty"`
 	WaitUntil        *SequenceWaitUntilInput        `json:"waitUntil,omitempty" url:"waitUntil,omitempty"`
 	WaitUntilKeyDate *SequenceWaitUntilKeyDateInput `json:"waitUntilKeyDate,omitempty" url:"waitUntilKeyDate,omitempty"`
 	WaitUntilWeekday *SequenceWaitUntilWeekdayInput `json:"waitUntilWeekday,omitempty" url:"waitUntilWeekday,omitempty"`
@@ -18730,6 +19102,13 @@ func (s *SequenceStepInput) GetBlocks() []*EmailBlock {
 		return nil
 	}
 	return s.Blocks
+}
+
+func (s *SequenceStepInput) GetBody() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Body
 }
 
 func (s *SequenceStepInput) GetCcEmails() []string {
@@ -18837,6 +19216,20 @@ func (s *SequenceStepInput) GetHTML() *string {
 	return s.HTML
 }
 
+func (s *SequenceStepInput) GetIconURL() *string {
+	if s == nil {
+		return nil
+	}
+	return s.IconURL
+}
+
+func (s *SequenceStepInput) GetImageURL() *string {
+	if s == nil {
+		return nil
+	}
+	return s.ImageURL
+}
+
 func (s *SequenceStepInput) GetImageURLs() []string {
 	if s == nil {
 		return nil
@@ -18907,6 +19300,13 @@ func (s *SequenceStepInput) GetPlanIDs() []string {
 	return s.PlanIDs
 }
 
+func (s *SequenceStepInput) GetPlatforms() []SequenceStepInputPlatformsItem {
+	if s == nil {
+		return nil
+	}
+	return s.Platforms
+}
+
 func (s *SequenceStepInput) GetPreviewText() *string {
 	if s == nil {
 		return nil
@@ -18963,11 +19363,25 @@ func (s *SequenceStepInput) GetText() *string {
 	return s.Text
 }
 
+func (s *SequenceStepInput) GetTitle() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Title
+}
+
 func (s *SequenceStepInput) GetType() *SequenceStepInputType {
 	if s == nil {
 		return nil
 	}
 	return s.Type
+}
+
+func (s *SequenceStepInput) GetURL() *string {
+	if s == nil {
+		return nil
+	}
+	return s.URL
 }
 
 func (s *SequenceStepInput) GetWaitUntil() *SequenceWaitUntilInput {
@@ -19038,6 +19452,13 @@ func (s *SequenceStepInput) SetBccEmails(bccEmails []string) {
 func (s *SequenceStepInput) SetBlocks(blocks []*EmailBlock) {
 	s.Blocks = blocks
 	s.require(sequenceStepInputFieldBlocks)
+}
+
+// SetBody sets the Body field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceStepInput) SetBody(body *string) {
+	s.Body = body
+	s.require(sequenceStepInputFieldBody)
 }
 
 // SetCcEmails sets the CcEmails field and marks it as non-optional;
@@ -19145,6 +19566,20 @@ func (s *SequenceStepInput) SetHTML(html *string) {
 	s.require(sequenceStepInputFieldHTML)
 }
 
+// SetIconURL sets the IconURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceStepInput) SetIconURL(iconURL *string) {
+	s.IconURL = iconURL
+	s.require(sequenceStepInputFieldIconURL)
+}
+
+// SetImageURL sets the ImageURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceStepInput) SetImageURL(imageURL *string) {
+	s.ImageURL = imageURL
+	s.require(sequenceStepInputFieldImageURL)
+}
+
 // SetImageURLs sets the ImageURLs field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *SequenceStepInput) SetImageURLs(imageURLs []string) {
@@ -19215,6 +19650,13 @@ func (s *SequenceStepInput) SetPlanIDs(planIDs []string) {
 	s.require(sequenceStepInputFieldPlanIDs)
 }
 
+// SetPlatforms sets the Platforms field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceStepInput) SetPlatforms(platforms []SequenceStepInputPlatformsItem) {
+	s.Platforms = platforms
+	s.require(sequenceStepInputFieldPlatforms)
+}
+
 // SetPreviewText sets the PreviewText field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *SequenceStepInput) SetPreviewText(previewText *string) {
@@ -19271,11 +19713,25 @@ func (s *SequenceStepInput) SetText(text *string) {
 	s.require(sequenceStepInputFieldText)
 }
 
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceStepInput) SetTitle(title *string) {
+	s.Title = title
+	s.require(sequenceStepInputFieldTitle)
+}
+
 // SetType sets the Type field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *SequenceStepInput) SetType(type_ *SequenceStepInputType) {
 	s.Type = type_
 	s.require(sequenceStepInputFieldType)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceStepInput) SetURL(url *string) {
+	s.URL = url
+	s.require(sequenceStepInputFieldURL)
 }
 
 // SetWaitUntil sets the WaitUntil field and marks it as non-optional;
@@ -19390,7 +19846,7 @@ func (s SequenceStepInputDuration) Ptr() *SequenceStepInputDuration {
 	return &s
 }
 
-// SMS steps only. skip (default) continues the sequence when the contact can't receive SMS; exit removes them from the sequence.
+// SMS and push steps. skip (default) continues the sequence when the contact can't receive the message (SMS - no phone, no consent, unsupported country; push - no active device); exit removes them from the sequence.
 type SequenceStepInputIneligibleAction string
 
 const (
@@ -19419,6 +19875,7 @@ type SequenceStepInputNodeType string
 const (
 	SequenceStepInputNodeTypeActionEmail            SequenceStepInputNodeType = "action_email"
 	SequenceStepInputNodeTypeActionSms              SequenceStepInputNodeType = "action_sms"
+	SequenceStepInputNodeTypeActionPush             SequenceStepInputNodeType = "action_push"
 	SequenceStepInputNodeTypeActionCreateDiscount   SequenceStepInputNodeType = "action_create_discount"
 	SequenceStepInputNodeTypeActionUpdateAttributes SequenceStepInputNodeType = "action_update_attributes"
 )
@@ -19429,6 +19886,8 @@ func NewSequenceStepInputNodeTypeFromString(s string) (SequenceStepInputNodeType
 		return SequenceStepInputNodeTypeActionEmail, nil
 	case "action_sms":
 		return SequenceStepInputNodeTypeActionSms, nil
+	case "action_push":
+		return SequenceStepInputNodeTypeActionPush, nil
 	case "action_create_discount":
 		return SequenceStepInputNodeTypeActionCreateDiscount, nil
 	case "action_update_attributes":
@@ -19439,6 +19898,31 @@ func NewSequenceStepInputNodeTypeFromString(s string) (SequenceStepInputNodeType
 }
 
 func (s SequenceStepInputNodeType) Ptr() *SequenceStepInputNodeType {
+	return &s
+}
+
+type SequenceStepInputPlatformsItem string
+
+const (
+	SequenceStepInputPlatformsItemWeb     SequenceStepInputPlatformsItem = "web"
+	SequenceStepInputPlatformsItemIos     SequenceStepInputPlatformsItem = "ios"
+	SequenceStepInputPlatformsItemAndroid SequenceStepInputPlatformsItem = "android"
+)
+
+func NewSequenceStepInputPlatformsItemFromString(s string) (SequenceStepInputPlatformsItem, error) {
+	switch s {
+	case "web":
+		return SequenceStepInputPlatformsItemWeb, nil
+	case "ios":
+		return SequenceStepInputPlatformsItemIos, nil
+	case "android":
+		return SequenceStepInputPlatformsItemAndroid, nil
+	}
+	var t SequenceStepInputPlatformsItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SequenceStepInputPlatformsItem) Ptr() *SequenceStepInputPlatformsItem {
 	return &s
 }
 
@@ -19465,12 +19949,13 @@ func (s SequenceStepInputProvider) Ptr() *SequenceStepInputProvider {
 	return &s
 }
 
-// Step type. Omit or use email for email content; use sms for a native SMS step; use create_discount for a dynamic discount; use update_subscriber for an Update Subscriber action.
+// Step type. Omit or use email for email content; use sms for a native SMS step; use push for a push notification step; use create_discount for a dynamic discount; use update_subscriber for an Update Subscriber action.
 type SequenceStepInputType string
 
 const (
 	SequenceStepInputTypeEmail            SequenceStepInputType = "email"
 	SequenceStepInputTypeSms              SequenceStepInputType = "sms"
+	SequenceStepInputTypePush             SequenceStepInputType = "push"
 	SequenceStepInputTypeCreateDiscount   SequenceStepInputType = "create_discount"
 	SequenceStepInputTypeDiscount         SequenceStepInputType = "discount"
 	SequenceStepInputTypeUpdateSubscriber SequenceStepInputType = "update_subscriber"
@@ -19482,6 +19967,8 @@ func NewSequenceStepInputTypeFromString(s string) (SequenceStepInputType, error)
 		return SequenceStepInputTypeEmail, nil
 	case "sms":
 		return SequenceStepInputTypeSms, nil
+	case "push":
+		return SequenceStepInputTypePush, nil
 	case "create_discount":
 		return SequenceStepInputTypeCreateDiscount, nil
 	case "discount":
@@ -20609,29 +21096,30 @@ var (
 	sequenceSummaryFieldEffectiveStatus              = big.NewInt(1 << 5)
 	sequenceSummaryFieldEffectiveStatusSummary       = big.NewInt(1 << 6)
 	sequenceSummaryFieldEnrollmentPaused             = big.NewInt(1 << 7)
-	sequenceSummaryFieldFromEmail                    = big.NewInt(1 << 8)
-	sequenceSummaryFieldFromName                     = big.NewInt(1 << 9)
-	sequenceSummaryFieldID                           = big.NewInt(1 << 10)
-	sequenceSummaryFieldKeyDates                     = big.NewInt(1 << 11)
-	sequenceSummaryFieldLabelIDs                     = big.NewInt(1 << 12)
-	sequenceSummaryFieldLabels                       = big.NewInt(1 << 13)
-	sequenceSummaryFieldName                         = big.NewInt(1 << 14)
-	sequenceSummaryFieldPausedAt                     = big.NewInt(1 << 15)
-	sequenceSummaryFieldPausedByUser                 = big.NewInt(1 << 16)
-	sequenceSummaryFieldPausedByUserID               = big.NewInt(1 << 17)
-	sequenceSummaryFieldPauseReason                  = big.NewInt(1 << 18)
-	sequenceSummaryFieldPauseSource                  = big.NewInt(1 << 19)
-	sequenceSummaryFieldProcessesExistingEnrollments = big.NewInt(1 << 20)
-	sequenceSummaryFieldReplyProfileID               = big.NewInt(1 << 21)
-	sequenceSummaryFieldReplyToEmail                 = big.NewInt(1 << 22)
-	sequenceSummaryFieldReplyToName                  = big.NewInt(1 << 23)
-	sequenceSummaryFieldSenderProfileID              = big.NewInt(1 << 24)
-	sequenceSummaryFieldSendingWindow                = big.NewInt(1 << 25)
-	sequenceSummaryFieldStatus                       = big.NewInt(1 << 26)
-	sequenceSummaryFieldTrigger                      = big.NewInt(1 << 27)
-	sequenceSummaryFieldTriggerConfig                = big.NewInt(1 << 28)
-	sequenceSummaryFieldUpdatedAt                    = big.NewInt(1 << 29)
-	sequenceSummaryFieldUserCancellable              = big.NewInt(1 << 30)
+	sequenceSummaryFieldFrequencyCapEnabled          = big.NewInt(1 << 8)
+	sequenceSummaryFieldFromEmail                    = big.NewInt(1 << 9)
+	sequenceSummaryFieldFromName                     = big.NewInt(1 << 10)
+	sequenceSummaryFieldID                           = big.NewInt(1 << 11)
+	sequenceSummaryFieldKeyDates                     = big.NewInt(1 << 12)
+	sequenceSummaryFieldLabelIDs                     = big.NewInt(1 << 13)
+	sequenceSummaryFieldLabels                       = big.NewInt(1 << 14)
+	sequenceSummaryFieldName                         = big.NewInt(1 << 15)
+	sequenceSummaryFieldPausedAt                     = big.NewInt(1 << 16)
+	sequenceSummaryFieldPausedByUser                 = big.NewInt(1 << 17)
+	sequenceSummaryFieldPausedByUserID               = big.NewInt(1 << 18)
+	sequenceSummaryFieldPauseReason                  = big.NewInt(1 << 19)
+	sequenceSummaryFieldPauseSource                  = big.NewInt(1 << 20)
+	sequenceSummaryFieldProcessesExistingEnrollments = big.NewInt(1 << 21)
+	sequenceSummaryFieldReplyProfileID               = big.NewInt(1 << 22)
+	sequenceSummaryFieldReplyToEmail                 = big.NewInt(1 << 23)
+	sequenceSummaryFieldReplyToName                  = big.NewInt(1 << 24)
+	sequenceSummaryFieldSenderProfileID              = big.NewInt(1 << 25)
+	sequenceSummaryFieldSendingWindow                = big.NewInt(1 << 26)
+	sequenceSummaryFieldStatus                       = big.NewInt(1 << 27)
+	sequenceSummaryFieldTrigger                      = big.NewInt(1 << 28)
+	sequenceSummaryFieldTriggerConfig                = big.NewInt(1 << 29)
+	sequenceSummaryFieldUpdatedAt                    = big.NewInt(1 << 30)
+	sequenceSummaryFieldUserCancellable              = big.NewInt(1 << 31)
 )
 
 type SequenceSummary struct {
@@ -20646,19 +21134,21 @@ type SequenceSummary struct {
 	// One plain-language sentence describing the run state, safe to show a user verbatim.
 	EffectiveStatusSummary *string `json:"effectiveStatusSummary,omitempty" url:"effectiveStatusSummary,omitempty"`
 	// Whether new enrollments are paused while current recipients continue.
-	EnrollmentPaused *bool                        `json:"enrollmentPaused,omitempty" url:"enrollmentPaused,omitempty"`
-	FromEmail        *string                      `json:"fromEmail,omitempty" url:"fromEmail,omitempty"`
-	FromName         *string                      `json:"fromName,omitempty" url:"fromName,omitempty"`
-	ID               *string                      `json:"id,omitempty" url:"id,omitempty"`
-	KeyDates         *SequenceKeyDates            `json:"keyDates,omitempty" url:"keyDates,omitempty"`
-	LabelIDs         []string                     `json:"labelIds,omitempty" url:"labelIds,omitempty"`
-	Labels           []string                     `json:"labels,omitempty" url:"labels,omitempty"`
-	Name             *string                      `json:"name,omitempty" url:"name,omitempty"`
-	PausedAt         *time.Time                   `json:"pausedAt,omitempty" url:"pausedAt,omitempty"`
-	PausedByUser     *SequenceSummaryPausedByUser `json:"pausedByUser,omitempty" url:"pausedByUser,omitempty"`
-	PausedByUserID   *string                      `json:"pausedByUserId,omitempty" url:"pausedByUserId,omitempty"`
-	PauseReason      *string                      `json:"pauseReason,omitempty" url:"pauseReason,omitempty"`
-	PauseSource      *string                      `json:"pauseSource,omitempty" url:"pauseSource,omitempty"`
+	EnrollmentPaused *bool `json:"enrollmentPaused,omitempty" url:"enrollmentPaused,omitempty"`
+	// Whether email steps respect the company frequency cap.
+	FrequencyCapEnabled *bool                        `json:"frequencyCapEnabled,omitempty" url:"frequencyCapEnabled,omitempty"`
+	FromEmail           *string                      `json:"fromEmail,omitempty" url:"fromEmail,omitempty"`
+	FromName            *string                      `json:"fromName,omitempty" url:"fromName,omitempty"`
+	ID                  *string                      `json:"id,omitempty" url:"id,omitempty"`
+	KeyDates            *SequenceKeyDates            `json:"keyDates,omitempty" url:"keyDates,omitempty"`
+	LabelIDs            []string                     `json:"labelIds,omitempty" url:"labelIds,omitempty"`
+	Labels              []string                     `json:"labels,omitempty" url:"labels,omitempty"`
+	Name                *string                      `json:"name,omitempty" url:"name,omitempty"`
+	PausedAt            *time.Time                   `json:"pausedAt,omitempty" url:"pausedAt,omitempty"`
+	PausedByUser        *SequenceSummaryPausedByUser `json:"pausedByUser,omitempty" url:"pausedByUser,omitempty"`
+	PausedByUserID      *string                      `json:"pausedByUserId,omitempty" url:"pausedByUserId,omitempty"`
+	PauseReason         *string                      `json:"pauseReason,omitempty" url:"pauseReason,omitempty"`
+	PauseSource         *string                      `json:"pauseSource,omitempty" url:"pauseSource,omitempty"`
 	// Whether subscribers already inside the sequence keep advancing and receiving steps.
 	ProcessesExistingEnrollments *bool                  `json:"processesExistingEnrollments,omitempty" url:"processesExistingEnrollments,omitempty"`
 	ReplyProfileID               *string                `json:"replyProfileId,omitempty" url:"replyProfileId,omitempty"`
@@ -20733,6 +21223,13 @@ func (s *SequenceSummary) GetEnrollmentPaused() *bool {
 		return nil
 	}
 	return s.EnrollmentPaused
+}
+
+func (s *SequenceSummary) GetFrequencyCapEnabled() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.FrequencyCapEnabled
 }
 
 func (s *SequenceSummary) GetFromEmail() *string {
@@ -20964,6 +21461,13 @@ func (s *SequenceSummary) SetEffectiveStatusSummary(effectiveStatusSummary *stri
 func (s *SequenceSummary) SetEnrollmentPaused(enrollmentPaused *bool) {
 	s.EnrollmentPaused = enrollmentPaused
 	s.require(sequenceSummaryFieldEnrollmentPaused)
+}
+
+// SetFrequencyCapEnabled sets the FrequencyCapEnabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceSummary) SetFrequencyCapEnabled(frequencyCapEnabled *bool) {
+	s.FrequencyCapEnabled = frequencyCapEnabled
+	s.require(sequenceSummaryFieldFrequencyCapEnabled)
 }
 
 // SetFromEmail sets the FromEmail field and marks it as non-optional;
@@ -22073,13 +22577,14 @@ func (s *SequenceTriggerPropertyFilterValueThreeItem) Accept(visitor SequenceTri
 	return fmt.Errorf("type %T does not include a non-empty union type", s)
 }
 
-// How contacts enter the sequence. `manual` never enrolls anyone automatically; use it with key dates for one-time countdown campaigns and enroll the audience with the enroll-audience endpoint.
+// How contacts enter the sequence. `segment_exited` enrolls active contacts who stop matching the segment; unsubscribing or bouncing does not count as leaving. `manual` never enrolls anyone automatically; use it with key dates for one-time countdown campaigns and enroll the audience with the enroll-audience endpoint.
 type SequenceTriggerType string
 
 const (
 	SequenceTriggerTypeContactAdded   SequenceTriggerType = "contact_added"
 	SequenceTriggerTypeTagAdded       SequenceTriggerType = "tag_added"
 	SequenceTriggerTypeSegmentEntered SequenceTriggerType = "segment_entered"
+	SequenceTriggerTypeSegmentExited  SequenceTriggerType = "segment_exited"
 	SequenceTriggerTypeEventReceived  SequenceTriggerType = "event_received"
 	SequenceTriggerTypeInboundWebhook SequenceTriggerType = "inbound_webhook"
 	SequenceTriggerTypeInactivity     SequenceTriggerType = "inactivity"
@@ -22095,6 +22600,8 @@ func NewSequenceTriggerTypeFromString(s string) (SequenceTriggerType, error) {
 		return SequenceTriggerTypeTagAdded, nil
 	case "segment_entered":
 		return SequenceTriggerTypeSegmentEntered, nil
+	case "segment_exited":
+		return SequenceTriggerTypeSegmentExited, nil
 	case "event_received":
 		return SequenceTriggerTypeEventReceived, nil
 	case "inbound_webhook":
@@ -22114,7 +22621,7 @@ func (s SequenceTriggerType) Ptr() *SequenceTriggerType {
 	return &s
 }
 
-// Wait until a date from the enrollment event/subscriber data, optionally offset before or after that date.
+// Wait until a date from the trigger event or a contact attribute, optionally offset before or after that date. The value must be an ISO 8601 date or a Unix timestamp in seconds or milliseconds.
 var (
 	sequenceWaitUntilInputFieldDays                 = big.NewInt(1 << 0)
 	sequenceWaitUntilInputFieldDirection            = big.NewInt(1 << 1)
@@ -22123,9 +22630,13 @@ var (
 	sequenceWaitUntilInputFieldMinutes              = big.NewInt(1 << 4)
 	sequenceWaitUntilInputFieldMissingAction        = big.NewInt(1 << 5)
 	sequenceWaitUntilInputFieldOffset               = big.NewInt(1 << 6)
-	sequenceWaitUntilInputFieldUntilDateField       = big.NewInt(1 << 7)
-	sequenceWaitUntilInputFieldUntilMissingAction   = big.NewInt(1 << 8)
-	sequenceWaitUntilInputFieldUntilOffsetDirection = big.NewInt(1 << 9)
+	sequenceWaitUntilInputFieldPastAction           = big.NewInt(1 << 7)
+	sequenceWaitUntilInputFieldSource               = big.NewInt(1 << 8)
+	sequenceWaitUntilInputFieldUntilDateField       = big.NewInt(1 << 9)
+	sequenceWaitUntilInputFieldUntilDateSource      = big.NewInt(1 << 10)
+	sequenceWaitUntilInputFieldUntilMissingAction   = big.NewInt(1 << 11)
+	sequenceWaitUntilInputFieldUntilOffsetDirection = big.NewInt(1 << 12)
+	sequenceWaitUntilInputFieldUntilPastAction      = big.NewInt(1 << 13)
 )
 
 type SequenceWaitUntilInput struct {
@@ -22133,7 +22644,7 @@ type SequenceWaitUntilInput struct {
 	Days *float64 `json:"days,omitempty" url:"days,omitempty"`
 	// Whether the offset runs before or after the field date. Defaults to after.
 	Direction *SequenceWaitUntilInputDirection `json:"direction,omitempty" url:"direction,omitempty"`
-	// Event/subscriber date field path to wait until.
+	// Date field path to wait until, read from the source.
 	Field *string `json:"field,omitempty" url:"field,omitempty"`
 	// Shorthand offset hours when offset is omitted.
 	Hours *float64 `json:"hours,omitempty" url:"hours,omitempty"`
@@ -22142,12 +22653,20 @@ type SequenceWaitUntilInput struct {
 	// What to do when the date field is missing or invalid. Defaults to continue.
 	MissingAction *SequenceWaitUntilInputMissingAction `json:"missingAction,omitempty" url:"missingAction,omitempty"`
 	Offset        *SequenceDelayOffsetInput            `json:"offset,omitempty" url:"offset,omitempty"`
+	// What to do when the date, after the offset, already passed when the contact reaches this wait. continue moves on immediately, skip skips the following email and action steps until the next wait, condition or branch so late joiners only get what is still ahead, exit ends the enrollment. Defaults to continue.
+	PastAction *SequenceWaitUntilInputPastAction `json:"pastAction,omitempty" url:"pastAction,omitempty"`
+	// Where field is read from. event reads the trigger event properties and needs an event trigger. attribute reads the contact's custom attributes when the step is reached, so it works with any trigger. If the date moves later while a contact is waiting, the contact waits for the new date; moving it earlier does not release them sooner, and a date removed while waiting follows missingAction. Defaults to event.
+	Source *SequenceWaitUntilInputSource `json:"source,omitempty" url:"source,omitempty"`
 	// Alias for field.
 	UntilDateField *string `json:"untilDateField,omitempty" url:"untilDateField,omitempty"`
+	// Alias for source.
+	UntilDateSource *SequenceWaitUntilInputUntilDateSource `json:"untilDateSource,omitempty" url:"untilDateSource,omitempty"`
 	// Alias for missingAction.
 	UntilMissingAction *SequenceWaitUntilInputUntilMissingAction `json:"untilMissingAction,omitempty" url:"untilMissingAction,omitempty"`
 	// Alias for direction.
 	UntilOffsetDirection *SequenceWaitUntilInputUntilOffsetDirection `json:"untilOffsetDirection,omitempty" url:"untilOffsetDirection,omitempty"`
+	// Alias for pastAction.
+	UntilPastAction *SequenceWaitUntilInputUntilPastAction `json:"untilPastAction,omitempty" url:"untilPastAction,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -22205,11 +22724,32 @@ func (s *SequenceWaitUntilInput) GetOffset() *SequenceDelayOffsetInput {
 	return s.Offset
 }
 
+func (s *SequenceWaitUntilInput) GetPastAction() *SequenceWaitUntilInputPastAction {
+	if s == nil {
+		return nil
+	}
+	return s.PastAction
+}
+
+func (s *SequenceWaitUntilInput) GetSource() *SequenceWaitUntilInputSource {
+	if s == nil {
+		return nil
+	}
+	return s.Source
+}
+
 func (s *SequenceWaitUntilInput) GetUntilDateField() *string {
 	if s == nil {
 		return nil
 	}
 	return s.UntilDateField
+}
+
+func (s *SequenceWaitUntilInput) GetUntilDateSource() *SequenceWaitUntilInputUntilDateSource {
+	if s == nil {
+		return nil
+	}
+	return s.UntilDateSource
 }
 
 func (s *SequenceWaitUntilInput) GetUntilMissingAction() *SequenceWaitUntilInputUntilMissingAction {
@@ -22224,6 +22764,13 @@ func (s *SequenceWaitUntilInput) GetUntilOffsetDirection() *SequenceWaitUntilInp
 		return nil
 	}
 	return s.UntilOffsetDirection
+}
+
+func (s *SequenceWaitUntilInput) GetUntilPastAction() *SequenceWaitUntilInputUntilPastAction {
+	if s == nil {
+		return nil
+	}
+	return s.UntilPastAction
 }
 
 func (s *SequenceWaitUntilInput) GetExtraProperties() map[string]interface{} {
@@ -22289,11 +22836,32 @@ func (s *SequenceWaitUntilInput) SetOffset(offset *SequenceDelayOffsetInput) {
 	s.require(sequenceWaitUntilInputFieldOffset)
 }
 
+// SetPastAction sets the PastAction field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceWaitUntilInput) SetPastAction(pastAction *SequenceWaitUntilInputPastAction) {
+	s.PastAction = pastAction
+	s.require(sequenceWaitUntilInputFieldPastAction)
+}
+
+// SetSource sets the Source field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceWaitUntilInput) SetSource(source *SequenceWaitUntilInputSource) {
+	s.Source = source
+	s.require(sequenceWaitUntilInputFieldSource)
+}
+
 // SetUntilDateField sets the UntilDateField field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *SequenceWaitUntilInput) SetUntilDateField(untilDateField *string) {
 	s.UntilDateField = untilDateField
 	s.require(sequenceWaitUntilInputFieldUntilDateField)
+}
+
+// SetUntilDateSource sets the UntilDateSource field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceWaitUntilInput) SetUntilDateSource(untilDateSource *SequenceWaitUntilInputUntilDateSource) {
+	s.UntilDateSource = untilDateSource
+	s.require(sequenceWaitUntilInputFieldUntilDateSource)
 }
 
 // SetUntilMissingAction sets the UntilMissingAction field and marks it as non-optional;
@@ -22308,6 +22876,13 @@ func (s *SequenceWaitUntilInput) SetUntilMissingAction(untilMissingAction *Seque
 func (s *SequenceWaitUntilInput) SetUntilOffsetDirection(untilOffsetDirection *SequenceWaitUntilInputUntilOffsetDirection) {
 	s.UntilOffsetDirection = untilOffsetDirection
 	s.require(sequenceWaitUntilInputFieldUntilOffsetDirection)
+}
+
+// SetUntilPastAction sets the UntilPastAction field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceWaitUntilInput) SetUntilPastAction(untilPastAction *SequenceWaitUntilInputUntilPastAction) {
+	s.UntilPastAction = untilPastAction
+	s.require(sequenceWaitUntilInputFieldUntilPastAction)
 }
 
 func (s *SequenceWaitUntilInput) UnmarshalJSON(data []byte) error {
@@ -22398,6 +22973,78 @@ func (s SequenceWaitUntilInputMissingAction) Ptr() *SequenceWaitUntilInputMissin
 	return &s
 }
 
+// What to do when the date, after the offset, already passed when the contact reaches this wait. continue moves on immediately, skip skips the following email and action steps until the next wait, condition or branch so late joiners only get what is still ahead, exit ends the enrollment. Defaults to continue.
+type SequenceWaitUntilInputPastAction string
+
+const (
+	SequenceWaitUntilInputPastActionContinue SequenceWaitUntilInputPastAction = "continue"
+	SequenceWaitUntilInputPastActionSkip     SequenceWaitUntilInputPastAction = "skip"
+	SequenceWaitUntilInputPastActionExit     SequenceWaitUntilInputPastAction = "exit"
+)
+
+func NewSequenceWaitUntilInputPastActionFromString(s string) (SequenceWaitUntilInputPastAction, error) {
+	switch s {
+	case "continue":
+		return SequenceWaitUntilInputPastActionContinue, nil
+	case "skip":
+		return SequenceWaitUntilInputPastActionSkip, nil
+	case "exit":
+		return SequenceWaitUntilInputPastActionExit, nil
+	}
+	var t SequenceWaitUntilInputPastAction
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SequenceWaitUntilInputPastAction) Ptr() *SequenceWaitUntilInputPastAction {
+	return &s
+}
+
+// Where field is read from. event reads the trigger event properties and needs an event trigger. attribute reads the contact's custom attributes when the step is reached, so it works with any trigger. If the date moves later while a contact is waiting, the contact waits for the new date; moving it earlier does not release them sooner, and a date removed while waiting follows missingAction. Defaults to event.
+type SequenceWaitUntilInputSource string
+
+const (
+	SequenceWaitUntilInputSourceEvent     SequenceWaitUntilInputSource = "event"
+	SequenceWaitUntilInputSourceAttribute SequenceWaitUntilInputSource = "attribute"
+)
+
+func NewSequenceWaitUntilInputSourceFromString(s string) (SequenceWaitUntilInputSource, error) {
+	switch s {
+	case "event":
+		return SequenceWaitUntilInputSourceEvent, nil
+	case "attribute":
+		return SequenceWaitUntilInputSourceAttribute, nil
+	}
+	var t SequenceWaitUntilInputSource
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SequenceWaitUntilInputSource) Ptr() *SequenceWaitUntilInputSource {
+	return &s
+}
+
+// Alias for source.
+type SequenceWaitUntilInputUntilDateSource string
+
+const (
+	SequenceWaitUntilInputUntilDateSourceEvent     SequenceWaitUntilInputUntilDateSource = "event"
+	SequenceWaitUntilInputUntilDateSourceAttribute SequenceWaitUntilInputUntilDateSource = "attribute"
+)
+
+func NewSequenceWaitUntilInputUntilDateSourceFromString(s string) (SequenceWaitUntilInputUntilDateSource, error) {
+	switch s {
+	case "event":
+		return SequenceWaitUntilInputUntilDateSourceEvent, nil
+	case "attribute":
+		return SequenceWaitUntilInputUntilDateSourceAttribute, nil
+	}
+	var t SequenceWaitUntilInputUntilDateSource
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SequenceWaitUntilInputUntilDateSource) Ptr() *SequenceWaitUntilInputUntilDateSource {
+	return &s
+}
+
 // Alias for missingAction.
 type SequenceWaitUntilInputUntilMissingAction string
 
@@ -22441,6 +23088,32 @@ func NewSequenceWaitUntilInputUntilOffsetDirectionFromString(s string) (Sequence
 }
 
 func (s SequenceWaitUntilInputUntilOffsetDirection) Ptr() *SequenceWaitUntilInputUntilOffsetDirection {
+	return &s
+}
+
+// Alias for pastAction.
+type SequenceWaitUntilInputUntilPastAction string
+
+const (
+	SequenceWaitUntilInputUntilPastActionContinue SequenceWaitUntilInputUntilPastAction = "continue"
+	SequenceWaitUntilInputUntilPastActionSkip     SequenceWaitUntilInputUntilPastAction = "skip"
+	SequenceWaitUntilInputUntilPastActionExit     SequenceWaitUntilInputUntilPastAction = "exit"
+)
+
+func NewSequenceWaitUntilInputUntilPastActionFromString(s string) (SequenceWaitUntilInputUntilPastAction, error) {
+	switch s {
+	case "continue":
+		return SequenceWaitUntilInputUntilPastActionContinue, nil
+	case "skip":
+		return SequenceWaitUntilInputUntilPastActionSkip, nil
+	case "exit":
+		return SequenceWaitUntilInputUntilPastActionExit, nil
+	}
+	var t SequenceWaitUntilInputUntilPastAction
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SequenceWaitUntilInputUntilPastAction) Ptr() *SequenceWaitUntilInputUntilPastAction {
 	return &s
 }
 
@@ -23469,7 +24142,7 @@ func (s SubscriberUpdateConfigStatus) Ptr() *SubscriberUpdateConfigStatus {
 	return &s
 }
 
-// URL-backed email attachment. The file is fetched from the URL at send time (max 10 attachments and 7MB total per email). For event-triggered sequences, path may be an event merge tag such as {{event.file_url}} that resolves to a public URL for each enrollment. Base64 content is not supported here.
+// URL-backed email attachment. The file is fetched from the URL at send time (max 10 attachments and 15MB total per email). For event-triggered sequences, path may be an event merge tag such as {{event.file_url}} that resolves to a public URL for each enrollment. Base64 content is not supported here.
 var (
 	uRLAttachmentFieldFilename = big.NewInt(1 << 0)
 	uRLAttachmentFieldPath     = big.NewInt(1 << 1)
@@ -23874,6 +24547,834 @@ func (c *ConfigureInboundWebhookSequencesResponse) MarshalJSON() ([]byte, error)
 }
 
 func (c *ConfigureInboundWebhookSequencesResponse) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+// Generated email style. Defaults to the company's email style preference.
+type CreateFromExampleSequencesRequestEmailStyle string
+
+const (
+	CreateFromExampleSequencesRequestEmailStyleVisual CreateFromExampleSequencesRequestEmailStyle = "visual"
+	CreateFromExampleSequencesRequestEmailStylePlain  CreateFromExampleSequencesRequestEmailStyle = "plain"
+)
+
+func NewCreateFromExampleSequencesRequestEmailStyleFromString(s string) (CreateFromExampleSequencesRequestEmailStyle, error) {
+	switch s {
+	case "visual":
+		return CreateFromExampleSequencesRequestEmailStyleVisual, nil
+	case "plain":
+		return CreateFromExampleSequencesRequestEmailStylePlain, nil
+	}
+	var t CreateFromExampleSequencesRequestEmailStyle
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateFromExampleSequencesRequestEmailStyle) Ptr() *CreateFromExampleSequencesRequestEmailStyle {
+	return &c
+}
+
+var (
+	createFromExampleSequencesResponseFieldExample  = big.NewInt(1 << 0)
+	createFromExampleSequencesResponseFieldMessage  = big.NewInt(1 << 1)
+	createFromExampleSequencesResponseFieldSequence = big.NewInt(1 << 2)
+	createFromExampleSequencesResponseFieldSuccess  = big.NewInt(1 << 3)
+	createFromExampleSequencesResponseFieldWarnings = big.NewInt(1 << 4)
+)
+
+type CreateFromExampleSequencesResponse struct {
+	Example  *CreateFromExampleSequencesResponseExample  `json:"example,omitempty" url:"example,omitempty"`
+	Message  *string                                     `json:"message,omitempty" url:"message,omitempty"`
+	Sequence *CreateFromExampleSequencesResponseSequence `json:"sequence,omitempty" url:"sequence,omitempty"`
+	Success  *bool                                       `json:"success,omitempty" url:"success,omitempty"`
+	// Present when email writing could not be queued.
+	Warnings []string `json:"warnings,omitempty" url:"warnings,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateFromExampleSequencesResponse) GetExample() *CreateFromExampleSequencesResponseExample {
+	if c == nil {
+		return nil
+	}
+	return c.Example
+}
+
+func (c *CreateFromExampleSequencesResponse) GetMessage() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Message
+}
+
+func (c *CreateFromExampleSequencesResponse) GetSequence() *CreateFromExampleSequencesResponseSequence {
+	if c == nil {
+		return nil
+	}
+	return c.Sequence
+}
+
+func (c *CreateFromExampleSequencesResponse) GetSuccess() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.Success
+}
+
+func (c *CreateFromExampleSequencesResponse) GetWarnings() []string {
+	if c == nil {
+		return nil
+	}
+	return c.Warnings
+}
+
+func (c *CreateFromExampleSequencesResponse) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateFromExampleSequencesResponse) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetExample sets the Example field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleSequencesResponse) SetExample(example *CreateFromExampleSequencesResponseExample) {
+	c.Example = example
+	c.require(createFromExampleSequencesResponseFieldExample)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleSequencesResponse) SetMessage(message *string) {
+	c.Message = message
+	c.require(createFromExampleSequencesResponseFieldMessage)
+}
+
+// SetSequence sets the Sequence field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleSequencesResponse) SetSequence(sequence *CreateFromExampleSequencesResponseSequence) {
+	c.Sequence = sequence
+	c.require(createFromExampleSequencesResponseFieldSequence)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleSequencesResponse) SetSuccess(success *bool) {
+	c.Success = success
+	c.require(createFromExampleSequencesResponseFieldSuccess)
+}
+
+// SetWarnings sets the Warnings field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleSequencesResponse) SetWarnings(warnings []string) {
+	c.Warnings = warnings
+	c.require(createFromExampleSequencesResponseFieldWarnings)
+}
+
+func (c *CreateFromExampleSequencesResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateFromExampleSequencesResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateFromExampleSequencesResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateFromExampleSequencesResponse) MarshalJSON() ([]byte, error) {
+	type embed CreateFromExampleSequencesResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateFromExampleSequencesResponse) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	createFromExampleSequencesResponseExampleFieldBrand             = big.NewInt(1 << 0)
+	createFromExampleSequencesResponseExampleFieldName              = big.NewInt(1 << 1)
+	createFromExampleSequencesResponseExampleFieldOmittedEmailCount = big.NewInt(1 << 2)
+	createFromExampleSequencesResponseExampleFieldURL               = big.NewInt(1 << 3)
+)
+
+type CreateFromExampleSequencesResponseExample struct {
+	Brand *string `json:"brand,omitempty" url:"brand,omitempty"`
+	Name  *string `json:"name,omitempty" url:"name,omitempty"`
+	// Emails in the example beyond the 12-step limit that were not cloned.
+	OmittedEmailCount *int    `json:"omittedEmailCount,omitempty" url:"omittedEmailCount,omitempty"`
+	URL               *string `json:"url,omitempty" url:"url,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateFromExampleSequencesResponseExample) GetBrand() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Brand
+}
+
+func (c *CreateFromExampleSequencesResponseExample) GetName() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Name
+}
+
+func (c *CreateFromExampleSequencesResponseExample) GetOmittedEmailCount() *int {
+	if c == nil {
+		return nil
+	}
+	return c.OmittedEmailCount
+}
+
+func (c *CreateFromExampleSequencesResponseExample) GetURL() *string {
+	if c == nil {
+		return nil
+	}
+	return c.URL
+}
+
+func (c *CreateFromExampleSequencesResponseExample) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateFromExampleSequencesResponseExample) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetBrand sets the Brand field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleSequencesResponseExample) SetBrand(brand *string) {
+	c.Brand = brand
+	c.require(createFromExampleSequencesResponseExampleFieldBrand)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleSequencesResponseExample) SetName(name *string) {
+	c.Name = name
+	c.require(createFromExampleSequencesResponseExampleFieldName)
+}
+
+// SetOmittedEmailCount sets the OmittedEmailCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleSequencesResponseExample) SetOmittedEmailCount(omittedEmailCount *int) {
+	c.OmittedEmailCount = omittedEmailCount
+	c.require(createFromExampleSequencesResponseExampleFieldOmittedEmailCount)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleSequencesResponseExample) SetURL(url *string) {
+	c.URL = url
+	c.require(createFromExampleSequencesResponseExampleFieldURL)
+}
+
+func (c *CreateFromExampleSequencesResponseExample) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateFromExampleSequencesResponseExample
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateFromExampleSequencesResponseExample(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateFromExampleSequencesResponseExample) MarshalJSON() ([]byte, error) {
+	type embed CreateFromExampleSequencesResponseExample
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateFromExampleSequencesResponseExample) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	createFromExampleSequencesResponseSequenceFieldEmailCount         = big.NewInt(1 << 0)
+	createFromExampleSequencesResponseSequenceFieldEnrichmentStatus   = big.NewInt(1 << 1)
+	createFromExampleSequencesResponseSequenceFieldEventName          = big.NewInt(1 << 2)
+	createFromExampleSequencesResponseSequenceFieldID                 = big.NewInt(1 << 3)
+	createFromExampleSequencesResponseSequenceFieldName               = big.NewInt(1 << 4)
+	createFromExampleSequencesResponseSequenceFieldStatus             = big.NewInt(1 << 5)
+	createFromExampleSequencesResponseSequenceFieldSteps              = big.NewInt(1 << 6)
+	createFromExampleSequencesResponseSequenceFieldStopCondition      = big.NewInt(1 << 7)
+	createFromExampleSequencesResponseSequenceFieldTagName            = big.NewInt(1 << 8)
+	createFromExampleSequencesResponseSequenceFieldTrigger            = big.NewInt(1 << 9)
+	createFromExampleSequencesResponseSequenceFieldTriggerDescription = big.NewInt(1 << 10)
+)
+
+type CreateFromExampleSequencesResponseSequence struct {
+	EmailCount *int `json:"emailCount,omitempty" url:"emailCount,omitempty"`
+	// `processing` while AI writes the emails; poll Get Sequence, which reports `pending`, then `in_progress`, then `complete`. `not_queued` means the draft exists but writing could not start: open it in the dashboard to write the emails, and do not create it again.
+	EnrichmentStatus *CreateFromExampleSequencesResponseSequenceEnrichmentStatus `json:"enrichmentStatus,omitempty" url:"enrichmentStatus,omitempty"`
+	// Entry event for event triggers (`ecommerce.cart_abandoned` or `ecommerce.order_placed`).
+	EventName *string                                                `json:"eventName,omitempty" url:"eventName,omitempty"`
+	ID        *string                                                `json:"id,omitempty" url:"id,omitempty"`
+	Name      *string                                                `json:"name,omitempty" url:"name,omitempty"`
+	Status    *string                                                `json:"status,omitempty" url:"status,omitempty"`
+	Steps     []*CreateFromExampleSequencesResponseSequenceStepsItem `json:"steps,omitempty" url:"steps,omitempty"`
+	// The early exit rule the sequence was created with, when it has one. Abandoned cart stops on `ecommerce.order_placed`; re-engagement stops when the `inactive` tag is removed (`does_not_have_tag`).
+	StopCondition *CreateFromExampleSequencesResponseSequenceStopCondition `json:"stopCondition,omitempty" url:"stopCondition,omitempty"`
+	// Entry tag for tag triggers (`inactive` for re-engagement).
+	TagName *string `json:"tagName,omitempty" url:"tagName,omitempty"`
+	// Trigger node type, such as `trigger_list` or `trigger_event`.
+	Trigger            *string `json:"trigger,omitempty" url:"trigger,omitempty"`
+	TriggerDescription *string `json:"triggerDescription,omitempty" url:"triggerDescription,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateFromExampleSequencesResponseSequence) GetEmailCount() *int {
+	if c == nil {
+		return nil
+	}
+	return c.EmailCount
+}
+
+func (c *CreateFromExampleSequencesResponseSequence) GetEnrichmentStatus() *CreateFromExampleSequencesResponseSequenceEnrichmentStatus {
+	if c == nil {
+		return nil
+	}
+	return c.EnrichmentStatus
+}
+
+func (c *CreateFromExampleSequencesResponseSequence) GetEventName() *string {
+	if c == nil {
+		return nil
+	}
+	return c.EventName
+}
+
+func (c *CreateFromExampleSequencesResponseSequence) GetID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.ID
+}
+
+func (c *CreateFromExampleSequencesResponseSequence) GetName() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Name
+}
+
+func (c *CreateFromExampleSequencesResponseSequence) GetStatus() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Status
+}
+
+func (c *CreateFromExampleSequencesResponseSequence) GetSteps() []*CreateFromExampleSequencesResponseSequenceStepsItem {
+	if c == nil {
+		return nil
+	}
+	return c.Steps
+}
+
+func (c *CreateFromExampleSequencesResponseSequence) GetStopCondition() *CreateFromExampleSequencesResponseSequenceStopCondition {
+	if c == nil {
+		return nil
+	}
+	return c.StopCondition
+}
+
+func (c *CreateFromExampleSequencesResponseSequence) GetTagName() *string {
+	if c == nil {
+		return nil
+	}
+	return c.TagName
+}
+
+func (c *CreateFromExampleSequencesResponseSequence) GetTrigger() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Trigger
+}
+
+func (c *CreateFromExampleSequencesResponseSequence) GetTriggerDescription() *string {
+	if c == nil {
+		return nil
+	}
+	return c.TriggerDescription
+}
+
+func (c *CreateFromExampleSequencesResponseSequence) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateFromExampleSequencesResponseSequence) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetEmailCount sets the EmailCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleSequencesResponseSequence) SetEmailCount(emailCount *int) {
+	c.EmailCount = emailCount
+	c.require(createFromExampleSequencesResponseSequenceFieldEmailCount)
+}
+
+// SetEnrichmentStatus sets the EnrichmentStatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleSequencesResponseSequence) SetEnrichmentStatus(enrichmentStatus *CreateFromExampleSequencesResponseSequenceEnrichmentStatus) {
+	c.EnrichmentStatus = enrichmentStatus
+	c.require(createFromExampleSequencesResponseSequenceFieldEnrichmentStatus)
+}
+
+// SetEventName sets the EventName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleSequencesResponseSequence) SetEventName(eventName *string) {
+	c.EventName = eventName
+	c.require(createFromExampleSequencesResponseSequenceFieldEventName)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleSequencesResponseSequence) SetID(id *string) {
+	c.ID = id
+	c.require(createFromExampleSequencesResponseSequenceFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleSequencesResponseSequence) SetName(name *string) {
+	c.Name = name
+	c.require(createFromExampleSequencesResponseSequenceFieldName)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleSequencesResponseSequence) SetStatus(status *string) {
+	c.Status = status
+	c.require(createFromExampleSequencesResponseSequenceFieldStatus)
+}
+
+// SetSteps sets the Steps field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleSequencesResponseSequence) SetSteps(steps []*CreateFromExampleSequencesResponseSequenceStepsItem) {
+	c.Steps = steps
+	c.require(createFromExampleSequencesResponseSequenceFieldSteps)
+}
+
+// SetStopCondition sets the StopCondition field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleSequencesResponseSequence) SetStopCondition(stopCondition *CreateFromExampleSequencesResponseSequenceStopCondition) {
+	c.StopCondition = stopCondition
+	c.require(createFromExampleSequencesResponseSequenceFieldStopCondition)
+}
+
+// SetTagName sets the TagName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleSequencesResponseSequence) SetTagName(tagName *string) {
+	c.TagName = tagName
+	c.require(createFromExampleSequencesResponseSequenceFieldTagName)
+}
+
+// SetTrigger sets the Trigger field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleSequencesResponseSequence) SetTrigger(trigger *string) {
+	c.Trigger = trigger
+	c.require(createFromExampleSequencesResponseSequenceFieldTrigger)
+}
+
+// SetTriggerDescription sets the TriggerDescription field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleSequencesResponseSequence) SetTriggerDescription(triggerDescription *string) {
+	c.TriggerDescription = triggerDescription
+	c.require(createFromExampleSequencesResponseSequenceFieldTriggerDescription)
+}
+
+func (c *CreateFromExampleSequencesResponseSequence) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateFromExampleSequencesResponseSequence
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateFromExampleSequencesResponseSequence(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateFromExampleSequencesResponseSequence) MarshalJSON() ([]byte, error) {
+	type embed CreateFromExampleSequencesResponseSequence
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateFromExampleSequencesResponseSequence) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+// `processing` while AI writes the emails; poll Get Sequence, which reports `pending`, then `in_progress`, then `complete`. `not_queued` means the draft exists but writing could not start: open it in the dashboard to write the emails, and do not create it again.
+type CreateFromExampleSequencesResponseSequenceEnrichmentStatus string
+
+const (
+	CreateFromExampleSequencesResponseSequenceEnrichmentStatusProcessing CreateFromExampleSequencesResponseSequenceEnrichmentStatus = "processing"
+	CreateFromExampleSequencesResponseSequenceEnrichmentStatusNotQueued  CreateFromExampleSequencesResponseSequenceEnrichmentStatus = "not_queued"
+)
+
+func NewCreateFromExampleSequencesResponseSequenceEnrichmentStatusFromString(s string) (CreateFromExampleSequencesResponseSequenceEnrichmentStatus, error) {
+	switch s {
+	case "processing":
+		return CreateFromExampleSequencesResponseSequenceEnrichmentStatusProcessing, nil
+	case "not_queued":
+		return CreateFromExampleSequencesResponseSequenceEnrichmentStatusNotQueued, nil
+	}
+	var t CreateFromExampleSequencesResponseSequenceEnrichmentStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateFromExampleSequencesResponseSequenceEnrichmentStatus) Ptr() *CreateFromExampleSequencesResponseSequenceEnrichmentStatus {
+	return &c
+}
+
+var (
+	createFromExampleSequencesResponseSequenceStepsItemFieldDelayMs     = big.NewInt(1 << 0)
+	createFromExampleSequencesResponseSequenceStepsItemFieldOriginalDay = big.NewInt(1 << 1)
+	createFromExampleSequencesResponseSequenceStepsItemFieldStepNumber  = big.NewInt(1 << 2)
+	createFromExampleSequencesResponseSequenceStepsItemFieldTitle       = big.NewInt(1 << 3)
+)
+
+type CreateFromExampleSequencesResponseSequenceStepsItem struct {
+	// Wait before this email, after the trigger or the previous email.
+	DelayMs *int `json:"delayMs,omitempty" url:"delayMs,omitempty"`
+	// Day this email arrived in the example.
+	OriginalDay *int    `json:"originalDay,omitempty" url:"originalDay,omitempty"`
+	StepNumber  *int    `json:"stepNumber,omitempty" url:"stepNumber,omitempty"`
+	Title       *string `json:"title,omitempty" url:"title,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateFromExampleSequencesResponseSequenceStepsItem) GetDelayMs() *int {
+	if c == nil {
+		return nil
+	}
+	return c.DelayMs
+}
+
+func (c *CreateFromExampleSequencesResponseSequenceStepsItem) GetOriginalDay() *int {
+	if c == nil {
+		return nil
+	}
+	return c.OriginalDay
+}
+
+func (c *CreateFromExampleSequencesResponseSequenceStepsItem) GetStepNumber() *int {
+	if c == nil {
+		return nil
+	}
+	return c.StepNumber
+}
+
+func (c *CreateFromExampleSequencesResponseSequenceStepsItem) GetTitle() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Title
+}
+
+func (c *CreateFromExampleSequencesResponseSequenceStepsItem) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateFromExampleSequencesResponseSequenceStepsItem) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetDelayMs sets the DelayMs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleSequencesResponseSequenceStepsItem) SetDelayMs(delayMs *int) {
+	c.DelayMs = delayMs
+	c.require(createFromExampleSequencesResponseSequenceStepsItemFieldDelayMs)
+}
+
+// SetOriginalDay sets the OriginalDay field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleSequencesResponseSequenceStepsItem) SetOriginalDay(originalDay *int) {
+	c.OriginalDay = originalDay
+	c.require(createFromExampleSequencesResponseSequenceStepsItemFieldOriginalDay)
+}
+
+// SetStepNumber sets the StepNumber field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleSequencesResponseSequenceStepsItem) SetStepNumber(stepNumber *int) {
+	c.StepNumber = stepNumber
+	c.require(createFromExampleSequencesResponseSequenceStepsItemFieldStepNumber)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleSequencesResponseSequenceStepsItem) SetTitle(title *string) {
+	c.Title = title
+	c.require(createFromExampleSequencesResponseSequenceStepsItemFieldTitle)
+}
+
+func (c *CreateFromExampleSequencesResponseSequenceStepsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateFromExampleSequencesResponseSequenceStepsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateFromExampleSequencesResponseSequenceStepsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateFromExampleSequencesResponseSequenceStepsItem) MarshalJSON() ([]byte, error) {
+	type embed CreateFromExampleSequencesResponseSequenceStepsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateFromExampleSequencesResponseSequenceStepsItem) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+// The early exit rule the sequence was created with, when it has one. Abandoned cart stops on `ecommerce.order_placed`; re-engagement stops when the `inactive` tag is removed (`does_not_have_tag`).
+var (
+	createFromExampleSequencesResponseSequenceStopConditionFieldMatchConfig = big.NewInt(1 << 0)
+	createFromExampleSequencesResponseSequenceStopConditionFieldType        = big.NewInt(1 << 1)
+	createFromExampleSequencesResponseSequenceStopConditionFieldValue       = big.NewInt(1 << 2)
+)
+
+type CreateFromExampleSequencesResponseSequenceStopCondition struct {
+	MatchConfig map[string]any `json:"matchConfig,omitempty" url:"matchConfig,omitempty"`
+	Type        *string        `json:"type,omitempty" url:"type,omitempty"`
+	Value       *string        `json:"value,omitempty" url:"value,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateFromExampleSequencesResponseSequenceStopCondition) GetMatchConfig() map[string]any {
+	if c == nil {
+		return nil
+	}
+	return c.MatchConfig
+}
+
+func (c *CreateFromExampleSequencesResponseSequenceStopCondition) GetType() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Type
+}
+
+func (c *CreateFromExampleSequencesResponseSequenceStopCondition) GetValue() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Value
+}
+
+func (c *CreateFromExampleSequencesResponseSequenceStopCondition) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateFromExampleSequencesResponseSequenceStopCondition) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetMatchConfig sets the MatchConfig field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleSequencesResponseSequenceStopCondition) SetMatchConfig(matchConfig map[string]any) {
+	c.MatchConfig = matchConfig
+	c.require(createFromExampleSequencesResponseSequenceStopConditionFieldMatchConfig)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleSequencesResponseSequenceStopCondition) SetType(type_ *string) {
+	c.Type = type_
+	c.require(createFromExampleSequencesResponseSequenceStopConditionFieldType)
+}
+
+// SetValue sets the Value field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleSequencesResponseSequenceStopCondition) SetValue(value *string) {
+	c.Value = value
+	c.require(createFromExampleSequencesResponseSequenceStopConditionFieldValue)
+}
+
+func (c *CreateFromExampleSequencesResponseSequenceStopCondition) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateFromExampleSequencesResponseSequenceStopCondition
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateFromExampleSequencesResponseSequenceStopCondition(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateFromExampleSequencesResponseSequenceStopCondition) MarshalJSON() ([]byte, error) {
+	type embed CreateFromExampleSequencesResponseSequenceStopCondition
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateFromExampleSequencesResponseSequenceStopCondition) String() string {
 	if c == nil {
 		return "<nil>"
 	}
@@ -27989,39 +29490,40 @@ var (
 	sequenceUpdateRequestFieldEnrollmentMode          = big.NewInt(1 << 10)
 	sequenceUpdateRequestFieldEnrollmentPaused        = big.NewInt(1 << 11)
 	sequenceUpdateRequestFieldEventName               = big.NewInt(1 << 12)
-	sequenceUpdateRequestFieldFromEmail               = big.NewInt(1 << 13)
-	sequenceUpdateRequestFieldFromName                = big.NewInt(1 << 14)
-	sequenceUpdateRequestFieldGraphEdit               = big.NewInt(1 << 15)
-	sequenceUpdateRequestFieldInactiveDays            = big.NewInt(1 << 16)
-	sequenceUpdateRequestFieldInactivityBaseline      = big.NewInt(1 << 17)
-	sequenceUpdateRequestFieldInsertSteps             = big.NewInt(1 << 18)
-	sequenceUpdateRequestFieldIntegrationEventKey     = big.NewInt(1 << 19)
-	sequenceUpdateRequestFieldIntegrationSlug         = big.NewInt(1 << 20)
-	sequenceUpdateRequestFieldKeyDates                = big.NewInt(1 << 21)
-	sequenceUpdateRequestFieldLabels                  = big.NewInt(1 << 22)
-	sequenceUpdateRequestFieldListID                  = big.NewInt(1 << 23)
-	sequenceUpdateRequestFieldListIDs                 = big.NewInt(1 << 24)
-	sequenceUpdateRequestFieldListScope               = big.NewInt(1 << 25)
-	sequenceUpdateRequestFieldMinCount                = big.NewInt(1 << 26)
-	sequenceUpdateRequestFieldName                    = big.NewInt(1 << 27)
-	sequenceUpdateRequestFieldNodeUpdates             = big.NewInt(1 << 28)
-	sequenceUpdateRequestFieldPropertyFilters         = big.NewInt(1 << 29)
-	sequenceUpdateRequestFieldReplyProfileID          = big.NewInt(1 << 30)
-	sequenceUpdateRequestFieldReplyTo                 = big.NewInt(1 << 31)
-	sequenceUpdateRequestFieldReplyToName             = big.NewInt(1 << 32)
-	sequenceUpdateRequestFieldSegmentID               = big.NewInt(1 << 33)
-	sequenceUpdateRequestFieldSenderProfileID         = big.NewInt(1 << 34)
-	sequenceUpdateRequestFieldSendingWindow           = big.NewInt(1 << 35)
-	sequenceUpdateRequestFieldSmsSteps                = big.NewInt(1 << 36)
-	sequenceUpdateRequestFieldSteps                   = big.NewInt(1 << 37)
-	sequenceUpdateRequestFieldStopCondition           = big.NewInt(1 << 38)
-	sequenceUpdateRequestFieldStopOnSegmentExit       = big.NewInt(1 << 39)
-	sequenceUpdateRequestFieldSubscriberUpdateSteps   = big.NewInt(1 << 40)
-	sequenceUpdateRequestFieldTagName                 = big.NewInt(1 << 41)
-	sequenceUpdateRequestFieldTagNames                = big.NewInt(1 << 42)
-	sequenceUpdateRequestFieldTimeWindowDays          = big.NewInt(1 << 43)
-	sequenceUpdateRequestFieldTrigger                 = big.NewInt(1 << 44)
-	sequenceUpdateRequestFieldUserCancellable         = big.NewInt(1 << 45)
+	sequenceUpdateRequestFieldFrequencyCapEnabled     = big.NewInt(1 << 13)
+	sequenceUpdateRequestFieldFromEmail               = big.NewInt(1 << 14)
+	sequenceUpdateRequestFieldFromName                = big.NewInt(1 << 15)
+	sequenceUpdateRequestFieldGraphEdit               = big.NewInt(1 << 16)
+	sequenceUpdateRequestFieldInactiveDays            = big.NewInt(1 << 17)
+	sequenceUpdateRequestFieldInactivityBaseline      = big.NewInt(1 << 18)
+	sequenceUpdateRequestFieldInsertSteps             = big.NewInt(1 << 19)
+	sequenceUpdateRequestFieldIntegrationEventKey     = big.NewInt(1 << 20)
+	sequenceUpdateRequestFieldIntegrationSlug         = big.NewInt(1 << 21)
+	sequenceUpdateRequestFieldKeyDates                = big.NewInt(1 << 22)
+	sequenceUpdateRequestFieldLabels                  = big.NewInt(1 << 23)
+	sequenceUpdateRequestFieldListID                  = big.NewInt(1 << 24)
+	sequenceUpdateRequestFieldListIDs                 = big.NewInt(1 << 25)
+	sequenceUpdateRequestFieldListScope               = big.NewInt(1 << 26)
+	sequenceUpdateRequestFieldMinCount                = big.NewInt(1 << 27)
+	sequenceUpdateRequestFieldName                    = big.NewInt(1 << 28)
+	sequenceUpdateRequestFieldNodeUpdates             = big.NewInt(1 << 29)
+	sequenceUpdateRequestFieldPropertyFilters         = big.NewInt(1 << 30)
+	sequenceUpdateRequestFieldReplyProfileID          = big.NewInt(1 << 31)
+	sequenceUpdateRequestFieldReplyTo                 = big.NewInt(1 << 32)
+	sequenceUpdateRequestFieldReplyToName             = big.NewInt(1 << 33)
+	sequenceUpdateRequestFieldSegmentID               = big.NewInt(1 << 34)
+	sequenceUpdateRequestFieldSenderProfileID         = big.NewInt(1 << 35)
+	sequenceUpdateRequestFieldSendingWindow           = big.NewInt(1 << 36)
+	sequenceUpdateRequestFieldSmsSteps                = big.NewInt(1 << 37)
+	sequenceUpdateRequestFieldSteps                   = big.NewInt(1 << 38)
+	sequenceUpdateRequestFieldStopCondition           = big.NewInt(1 << 39)
+	sequenceUpdateRequestFieldStopOnSegmentExit       = big.NewInt(1 << 40)
+	sequenceUpdateRequestFieldSubscriberUpdateSteps   = big.NewInt(1 << 41)
+	sequenceUpdateRequestFieldTagName                 = big.NewInt(1 << 42)
+	sequenceUpdateRequestFieldTagNames                = big.NewInt(1 << 43)
+	sequenceUpdateRequestFieldTimeWindowDays          = big.NewInt(1 << 44)
+	sequenceUpdateRequestFieldTrigger                 = big.NewInt(1 << 45)
+	sequenceUpdateRequestFieldUserCancellable         = big.NewInt(1 << 46)
 )
 
 type SequenceUpdateRequest struct {
@@ -28049,6 +29551,8 @@ type SequenceUpdateRequest struct {
 	EnrollmentPaused *bool `json:"enrollmentPaused,omitempty" url:"-"`
 	// Event name for event_received, inbound_webhook, inactivity, or frequency triggers.
 	EventName *string `json:"eventName,omitempty" url:"-"`
+	// Whether the sequence respects the company frequency cap (`/frequency-cap`). When true, an email step is skipped for a contact already at the cap, and the contact continues to the next step. Transactional steps are never skipped. Omit to leave it unchanged.
+	FrequencyCapEnabled *bool `json:"frequencyCapEnabled,omitempty" url:"-"`
 	// From address for every email in this sequence. Its domain must be configured and verified.
 	FromEmail *string `json:"fromEmail,omitempty" url:"-"`
 	// Display name recipients see, e.g. 'Brennon at TradeTally'. Selects the sender identity of that name on fromEmail, creating it when the address has no identity by that name; the mailbox's other display names, and everything pinned to them, are untouched. Requires fromEmail; omit it when using senderProfileId, which already carries its own display name.
@@ -28083,7 +29587,7 @@ type SequenceUpdateRequest struct {
 	ReplyTo *string `json:"replyTo,omitempty" url:"-"`
 	// Display name for the Reply-To address. Requires replyTo; omit it when using replyProfileId, which already carries its own display name. An address carries one Reply-To name company-wide, so if replyTo already has a saved profile under a different name, that saved name is kept and the response `warnings` array says so.
 	ReplyToName *string `json:"replyToName,omitempty" url:"-"`
-	// Segment ID for a replacement segment_entered trigger.
+	// Segment ID for a replacement segment_entered or segment_exited trigger.
 	SegmentID *string `json:"segmentId,omitempty" url:"-"`
 	// Existing sender profile ID. It already supplies both the From address and display name, so send it on its own and omit fromEmail and fromName. To keep this profile under a different display name, set fromName on the email steps instead, where it is a per-step override.
 	SenderProfileID *string                `json:"senderProfileId,omitempty" url:"-"`
@@ -28207,6 +29711,13 @@ func (s *SequenceUpdateRequest) SetEnrollmentPaused(enrollmentPaused *bool) {
 func (s *SequenceUpdateRequest) SetEventName(eventName *string) {
 	s.EventName = eventName
 	s.require(sequenceUpdateRequestFieldEventName)
+}
+
+// SetFrequencyCapEnabled sets the FrequencyCapEnabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceUpdateRequest) SetFrequencyCapEnabled(frequencyCapEnabled *bool) {
+	s.FrequencyCapEnabled = frequencyCapEnabled
+	s.require(sequenceUpdateRequestFieldFrequencyCapEnabled)
 }
 
 // SetFromEmail sets the FromEmail field and marks it as non-optional;

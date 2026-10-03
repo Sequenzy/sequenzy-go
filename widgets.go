@@ -11,18 +11,19 @@ import (
 )
 
 var (
-	createSavedFormRequestFieldButtonText        = big.NewInt(1 << 0)
-	createSavedFormRequestFieldDescription       = big.NewInt(1 << 1)
-	createSavedFormRequestFieldDuplicateStrategy = big.NewInt(1 << 2)
-	createSavedFormRequestFieldHeadline          = big.NewInt(1 << 3)
-	createSavedFormRequestFieldListIDs           = big.NewInt(1 << 4)
-	createSavedFormRequestFieldName              = big.NewInt(1 << 5)
-	createSavedFormRequestFieldRedirectURL       = big.NewInt(1 << 6)
-	createSavedFormRequestFieldShowFirstName     = big.NewInt(1 << 7)
-	createSavedFormRequestFieldShowLastName      = big.NewInt(1 << 8)
-	createSavedFormRequestFieldSuccessMessage    = big.NewInt(1 << 9)
-	createSavedFormRequestFieldTagIDs            = big.NewInt(1 << 10)
-	createSavedFormRequestFieldTheme             = big.NewInt(1 << 11)
+	createSavedFormRequestFieldButtonText          = big.NewInt(1 << 0)
+	createSavedFormRequestFieldDescription         = big.NewInt(1 << 1)
+	createSavedFormRequestFieldDuplicateStrategy   = big.NewInt(1 << 2)
+	createSavedFormRequestFieldHeadline            = big.NewInt(1 << 3)
+	createSavedFormRequestFieldListIDs             = big.NewInt(1 << 4)
+	createSavedFormRequestFieldName                = big.NewInt(1 << 5)
+	createSavedFormRequestFieldRedirectURL         = big.NewInt(1 << 6)
+	createSavedFormRequestFieldResubscribeBehavior = big.NewInt(1 << 7)
+	createSavedFormRequestFieldShowFirstName       = big.NewInt(1 << 8)
+	createSavedFormRequestFieldShowLastName        = big.NewInt(1 << 9)
+	createSavedFormRequestFieldSuccessMessage      = big.NewInt(1 << 10)
+	createSavedFormRequestFieldTagIDs              = big.NewInt(1 << 11)
+	createSavedFormRequestFieldTheme               = big.NewInt(1 << 12)
 )
 
 type CreateSavedFormRequest struct {
@@ -33,10 +34,12 @@ type CreateSavedFormRequest struct {
 	ListIDs           []string                                 `json:"listIds" url:"-"`
 	Name              string                                   `json:"name" url:"-"`
 	RedirectURL       *string                                  `json:"redirectUrl,omitempty" url:"-"`
-	ShowFirstName     *bool                                    `json:"showFirstName,omitempty" url:"-"`
-	ShowLastName      *bool                                    `json:"showLastName,omitempty" url:"-"`
-	SuccessMessage    *string                                  `json:"successMessage,omitempty" url:"-"`
-	TagIDs            []string                                 `json:"tagIds,omitempty" url:"-"`
+	// What happens when a contact who unsubscribed from all email submits this form again. `reactivate` resubscribes them and restores the form's lists. `double_opt_in` sends the workspace confirmation email first and resubscribes them when they confirm. Turning it on requires a double opt-in confirmation email and a sender profile, otherwise the request returns 400; if either is removed later, returning unsubscribed contacts stay unsubscribed. Workspace double opt-in always requires confirmation. `duplicateStrategy` never changes subscription status.
+	ResubscribeBehavior *CreateSavedFormRequestResubscribeBehavior `json:"resubscribeBehavior,omitempty" url:"-"`
+	ShowFirstName       *bool                                      `json:"showFirstName,omitempty" url:"-"`
+	ShowLastName        *bool                                      `json:"showLastName,omitempty" url:"-"`
+	SuccessMessage      *string                                    `json:"successMessage,omitempty" url:"-"`
+	TagIDs              []string                                   `json:"tagIds,omitempty" url:"-"`
 	// Optional visual theme overrides (accentColor, backgroundColor, textColor, mutedTextColor, cardColor, borderColor as "#rrggbb", borderRadius 0-32, headingFontFamily, bodyFontFamily, density).
 	Theme map[string]any `json:"theme,omitempty" url:"-"`
 
@@ -100,6 +103,13 @@ func (c *CreateSavedFormRequest) SetRedirectURL(redirectURL *string) {
 	c.require(createSavedFormRequestFieldRedirectURL)
 }
 
+// SetResubscribeBehavior sets the ResubscribeBehavior field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateSavedFormRequest) SetResubscribeBehavior(resubscribeBehavior *CreateSavedFormRequestResubscribeBehavior) {
+	c.ResubscribeBehavior = resubscribeBehavior
+	c.require(createSavedFormRequestFieldResubscribeBehavior)
+}
+
 // SetShowFirstName sets the ShowFirstName field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreateSavedFormRequest) SetShowFirstName(showFirstName *bool) {
@@ -157,26 +167,27 @@ func (c *CreateSavedFormRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
-	createSavedPopupRequestFieldBlocks            = big.NewInt(1 << 0)
-	createSavedPopupRequestFieldButtonText        = big.NewInt(1 << 1)
-	createSavedPopupRequestFieldDescription       = big.NewInt(1 << 2)
-	createSavedPopupRequestFieldDuplicateStrategy = big.NewInt(1 << 3)
-	createSavedPopupRequestFieldFrequency         = big.NewInt(1 << 4)
-	createSavedPopupRequestFieldHeadline          = big.NewInt(1 << 5)
-	createSavedPopupRequestFieldListIDs           = big.NewInt(1 << 6)
-	createSavedPopupRequestFieldName              = big.NewInt(1 << 7)
-	createSavedPopupRequestFieldPlacement         = big.NewInt(1 << 8)
-	createSavedPopupRequestFieldPresentation      = big.NewInt(1 << 9)
-	createSavedPopupRequestFieldRedirectURL       = big.NewInt(1 << 10)
-	createSavedPopupRequestFieldSchedule          = big.NewInt(1 << 11)
-	createSavedPopupRequestFieldStatus            = big.NewInt(1 << 12)
-	createSavedPopupRequestFieldSuccessMessage    = big.NewInt(1 << 13)
-	createSavedPopupRequestFieldTagIDs            = big.NewInt(1 << 14)
-	createSavedPopupRequestFieldTargeting         = big.NewInt(1 << 15)
-	createSavedPopupRequestFieldTemplate          = big.NewInt(1 << 16)
-	createSavedPopupRequestFieldTheme             = big.NewInt(1 << 17)
-	createSavedPopupRequestFieldTrigger           = big.NewInt(1 << 18)
-	createSavedPopupRequestFieldVisual            = big.NewInt(1 << 19)
+	createSavedPopupRequestFieldBlocks              = big.NewInt(1 << 0)
+	createSavedPopupRequestFieldButtonText          = big.NewInt(1 << 1)
+	createSavedPopupRequestFieldDescription         = big.NewInt(1 << 2)
+	createSavedPopupRequestFieldDuplicateStrategy   = big.NewInt(1 << 3)
+	createSavedPopupRequestFieldFrequency           = big.NewInt(1 << 4)
+	createSavedPopupRequestFieldHeadline            = big.NewInt(1 << 5)
+	createSavedPopupRequestFieldListIDs             = big.NewInt(1 << 6)
+	createSavedPopupRequestFieldName                = big.NewInt(1 << 7)
+	createSavedPopupRequestFieldPlacement           = big.NewInt(1 << 8)
+	createSavedPopupRequestFieldPresentation        = big.NewInt(1 << 9)
+	createSavedPopupRequestFieldRedirectURL         = big.NewInt(1 << 10)
+	createSavedPopupRequestFieldResubscribeBehavior = big.NewInt(1 << 11)
+	createSavedPopupRequestFieldSchedule            = big.NewInt(1 << 12)
+	createSavedPopupRequestFieldStatus              = big.NewInt(1 << 13)
+	createSavedPopupRequestFieldSuccessMessage      = big.NewInt(1 << 14)
+	createSavedPopupRequestFieldTagIDs              = big.NewInt(1 << 15)
+	createSavedPopupRequestFieldTargeting           = big.NewInt(1 << 16)
+	createSavedPopupRequestFieldTemplate            = big.NewInt(1 << 17)
+	createSavedPopupRequestFieldTheme               = big.NewInt(1 << 18)
+	createSavedPopupRequestFieldTrigger             = big.NewInt(1 << 19)
+	createSavedPopupRequestFieldVisual              = big.NewInt(1 << 20)
 )
 
 type CreateSavedPopupRequest struct {
@@ -188,16 +199,18 @@ type CreateSavedPopupRequest struct {
 	Frequency         *SavedPopupFrequency                      `json:"frequency,omitempty" url:"-"`
 	Headline          *string                                   `json:"headline,omitempty" url:"-"`
 	// Lists every signup is added to. Omit or pass an empty array to capture into every list.
-	ListIDs        []string                             `json:"listIds,omitempty" url:"-"`
-	Name           string                               `json:"name" url:"-"`
-	Placement      *CreateSavedPopupRequestPlacement    `json:"placement,omitempty" url:"-"`
-	Presentation   *CreateSavedPopupRequestPresentation `json:"presentation,omitempty" url:"-"`
-	RedirectURL    *string                              `json:"redirectUrl,omitempty" url:"-"`
-	Schedule       *SavedPopupSchedule                  `json:"schedule,omitempty" url:"-"`
-	Status         *CreateSavedPopupRequestStatus       `json:"status,omitempty" url:"-"`
-	SuccessMessage *string                              `json:"successMessage,omitempty" url:"-"`
-	TagIDs         []string                             `json:"tagIds,omitempty" url:"-"`
-	Targeting      *SavedPopupTargeting                 `json:"targeting,omitempty" url:"-"`
+	ListIDs      []string                             `json:"listIds,omitempty" url:"-"`
+	Name         string                               `json:"name" url:"-"`
+	Placement    *CreateSavedPopupRequestPlacement    `json:"placement,omitempty" url:"-"`
+	Presentation *CreateSavedPopupRequestPresentation `json:"presentation,omitempty" url:"-"`
+	RedirectURL  *string                              `json:"redirectUrl,omitempty" url:"-"`
+	// What happens when a contact who unsubscribed from all email submits this popup again. `reactivate` resubscribes them and restores the popup's lists. `double_opt_in` sends the workspace confirmation email first and resubscribes them when they confirm. Turning it on requires a double opt-in confirmation email and a sender profile, otherwise the request returns 400; if either is removed later, returning unsubscribed contacts stay unsubscribed. Workspace double opt-in always requires confirmation. `duplicateStrategy` never changes subscription status.
+	ResubscribeBehavior *CreateSavedPopupRequestResubscribeBehavior `json:"resubscribeBehavior,omitempty" url:"-"`
+	Schedule            *SavedPopupSchedule                         `json:"schedule,omitempty" url:"-"`
+	Status              *CreateSavedPopupRequestStatus              `json:"status,omitempty" url:"-"`
+	SuccessMessage      *string                                     `json:"successMessage,omitempty" url:"-"`
+	TagIDs              []string                                    `json:"tagIds,omitempty" url:"-"`
+	Targeting           *SavedPopupTargeting                        `json:"targeting,omitempty" url:"-"`
 	// Starting design for the popup's blocks and theme.
 	Template *CreateSavedPopupRequestTemplate `json:"template,omitempty" url:"-"`
 	// Optional visual theme overrides (accentColor, backgroundColor, textColor, mutedTextColor, cardColor, borderColor as "#rrggbb", borderRadius 0-32, headingFontFamily, bodyFontFamily, density).
@@ -291,6 +304,13 @@ func (c *CreateSavedPopupRequest) SetPresentation(presentation *CreateSavedPopup
 func (c *CreateSavedPopupRequest) SetRedirectURL(redirectURL *string) {
 	c.RedirectURL = redirectURL
 	c.require(createSavedPopupRequestFieldRedirectURL)
+}
+
+// SetResubscribeBehavior sets the ResubscribeBehavior field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateSavedPopupRequest) SetResubscribeBehavior(resubscribeBehavior *CreateSavedPopupRequestResubscribeBehavior) {
+	c.ResubscribeBehavior = resubscribeBehavior
+	c.require(createSavedPopupRequestFieldResubscribeBehavior)
 }
 
 // SetSchedule sets the Schedule field and marks it as non-optional;
@@ -791,9 +811,10 @@ var (
 	submitCompanyScopedSavedSignupFormRequestFieldListIDsBracketed       = big.NewInt(1 << 9)
 	submitCompanyScopedSavedSignupFormRequestFieldPhone                  = big.NewInt(1 << 10)
 	submitCompanyScopedSavedSignupFormRequestFieldRedirectURL            = big.NewInt(1 << 11)
-	submitCompanyScopedSavedSignupFormRequestFieldTagIDs                 = big.NewInt(1 << 12)
-	submitCompanyScopedSavedSignupFormRequestFieldTagIDsBracketed        = big.NewInt(1 << 13)
-	submitCompanyScopedSavedSignupFormRequestFieldWebsite                = big.NewInt(1 << 14)
+	submitCompanyScopedSavedSignupFormRequestFieldSequenzyToken          = big.NewInt(1 << 12)
+	submitCompanyScopedSavedSignupFormRequestFieldTagIDs                 = big.NewInt(1 << 13)
+	submitCompanyScopedSavedSignupFormRequestFieldTagIDsBracketed        = big.NewInt(1 << 14)
+	submitCompanyScopedSavedSignupFormRequestFieldWebsite                = big.NewInt(1 << 15)
 )
 
 type SubmitCompanyScopedSavedSignupFormRequest struct {
@@ -819,6 +840,8 @@ type SubmitCompanyScopedSavedSignupFormRequest struct {
 	Phone *string `json:"phone,omitempty" url:"-"`
 	// Ignored for saved forms. Stored form settings are used.
 	RedirectURL *string `json:"redirectUrl,omitempty" url:"-"`
+	// Signed bot-protection token that Sequenzy's hosted embed script and popups add automatically. Custom integrations can omit it. Submissions without a valid token may be asked to confirm by email. Workspaces with strict protection ignore submissions without a token, or with a token for a different form or popup, and return the normal success response.
+	SequenzyToken *string `json:"sequenzyToken,omitempty" url:"-"`
 	// Ignored for saved forms. Stored form settings are used.
 	TagIDs []string `json:"tagIds,omitempty" url:"-"`
 	// Ignored for saved forms. Stored form settings are used.
@@ -921,6 +944,13 @@ func (s *SubmitCompanyScopedSavedSignupFormRequest) SetRedirectURL(redirectURL *
 	s.require(submitCompanyScopedSavedSignupFormRequestFieldRedirectURL)
 }
 
+// SetSequenzyToken sets the SequenzyToken field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubmitCompanyScopedSavedSignupFormRequest) SetSequenzyToken(sequenzyToken *string) {
+	s.SequenzyToken = sequenzyToken
+	s.require(submitCompanyScopedSavedSignupFormRequestFieldSequenzyToken)
+}
+
 // SetTagIDs sets the TagIDs field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *SubmitCompanyScopedSavedSignupFormRequest) SetTagIDs(tagIDs []string) {
@@ -970,7 +1000,8 @@ var (
 	submitSavedPopupRequestFieldFirstName        = big.NewInt(1 << 3)
 	submitSavedPopupRequestFieldLastName         = big.NewInt(1 << 4)
 	submitSavedPopupRequestFieldPhone            = big.NewInt(1 << 5)
-	submitSavedPopupRequestFieldWebsite          = big.NewInt(1 << 6)
+	submitSavedPopupRequestFieldSequenzyToken    = big.NewInt(1 << 6)
+	submitSavedPopupRequestFieldWebsite          = big.NewInt(1 << 7)
 )
 
 type SubmitSavedPopupRequest struct {
@@ -984,6 +1015,8 @@ type SubmitSavedPopupRequest struct {
 	LastName  *string `json:"lastName,omitempty" url:"-"`
 	// Subscriber phone number in E.164 or US national format, when configured on the popup. Stored on the base subscriber profile and does not grant SMS consent.
 	Phone *string `json:"phone,omitempty" url:"-"`
+	// Signed bot-protection token that Sequenzy's hosted embed script and popups add automatically. Custom integrations can omit it. Submissions without a valid token may be asked to confirm by email. Workspaces with strict protection ignore submissions without a token, or with a token for a different form or popup, and return the normal success response.
+	SequenzyToken *string `json:"sequenzyToken,omitempty" url:"-"`
 	// Honeypot field. Leave empty.
 	Website *string `json:"website,omitempty" url:"-"`
 
@@ -1040,6 +1073,13 @@ func (s *SubmitSavedPopupRequest) SetPhone(phone *string) {
 	s.require(submitSavedPopupRequestFieldPhone)
 }
 
+// SetSequenzyToken sets the SequenzyToken field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubmitSavedPopupRequest) SetSequenzyToken(sequenzyToken *string) {
+	s.SequenzyToken = sequenzyToken
+	s.require(submitSavedPopupRequestFieldSequenzyToken)
+}
+
 // SetWebsite sets the Website field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *SubmitSavedPopupRequest) SetWebsite(website *string) {
@@ -1083,14 +1123,15 @@ var (
 	submitSignupFormRequestFieldListIDs                    = big.NewInt(1 << 11)
 	submitSignupFormRequestFieldPhone                      = big.NewInt(1 << 12)
 	submitSignupFormRequestFieldRedirectURL                = big.NewInt(1 << 13)
-	submitSignupFormRequestFieldTagIDs                     = big.NewInt(1 << 14)
-	submitSignupFormRequestFieldWebsite                    = big.NewInt(1 << 15)
+	submitSignupFormRequestFieldSequenzyToken              = big.NewInt(1 << 14)
+	submitSignupFormRequestFieldTagIDs                     = big.NewInt(1 << 15)
+	submitSignupFormRequestFieldWebsite                    = big.NewInt(1 << 16)
 )
 
 type SubmitSignupFormRequest struct {
 	// A saved form ID, or a company ID for legacy generated forms
 	CompanyIDOrFormID string `json:"-" url:"-"`
-	// How to handle an existing contact with the submitted email. Use skip to preserve fields, merge to fill missing fields, or overwrite to replace submitted fields. Merge and overwrite require duplicateStrategyToken from the form builder.
+	// How to handle profile fields of an existing contact with the submitted email. Use skip to preserve fields, merge to fill missing fields, or overwrite to replace submitted fields. Merge and overwrite require duplicateStrategyToken from the form builder. Does not affect whether an unsubscribed contact is resubscribed.
 	DuplicateStrategy *SubmitSignupFormRequestDuplicateStrategy `json:"-" url:"duplicateStrategy,omitempty"`
 	// Signed token generated by the form builder for the selected duplicateStrategy. Required for merge or overwrite.
 	DuplicateStrategyToken *string `json:"-" url:"duplicateStrategyToken,omitempty"`
@@ -1113,6 +1154,8 @@ type SubmitSignupFormRequest struct {
 	Phone *string `json:"phone,omitempty" url:"-"`
 	// Http(s) URL or bare domain to redirect to after successful submission
 	RedirectURL *string `json:"redirectUrl,omitempty" url:"-"`
+	// Signed bot-protection token that Sequenzy's hosted embed script and popups add automatically. Custom integrations can omit it. Submissions without a valid token may be asked to confirm by email. Workspaces with strict protection ignore submissions without a token, or with a token for a different form or popup, and return the normal success response.
+	SequenzyToken *string `json:"sequenzyToken,omitempty" url:"-"`
 	// Existing tag IDs to apply to the subscriber
 	TagIDs []string `json:"tagIds,omitempty" url:"-"`
 	// Honeypot field. Leave empty.
@@ -1225,6 +1268,13 @@ func (s *SubmitSignupFormRequest) SetPhone(phone *string) {
 func (s *SubmitSignupFormRequest) SetRedirectURL(redirectURL *string) {
 	s.RedirectURL = redirectURL
 	s.require(submitSignupFormRequestFieldRedirectURL)
+}
+
+// SetSequenzyToken sets the SequenzyToken field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubmitSignupFormRequest) SetSequenzyToken(sequenzyToken *string) {
+	s.SequenzyToken = sequenzyToken
+	s.require(submitSignupFormRequestFieldSequenzyToken)
 }
 
 // SetTagIDs sets the TagIDs field and marks it as non-optional;
@@ -4586,12 +4636,13 @@ func (f *FormCaptureFieldOption) String() string {
 }
 
 var (
-	formCaptureSettingsFieldAfterSubmission   = big.NewInt(1 << 0)
-	formCaptureSettingsFieldDuplicateStrategy = big.NewInt(1 << 1)
-	formCaptureSettingsFieldListIDs           = big.NewInt(1 << 2)
-	formCaptureSettingsFieldListMode          = big.NewInt(1 << 3)
-	formCaptureSettingsFieldRedirectURL       = big.NewInt(1 << 4)
-	formCaptureSettingsFieldTagIDs            = big.NewInt(1 << 5)
+	formCaptureSettingsFieldAfterSubmission     = big.NewInt(1 << 0)
+	formCaptureSettingsFieldDuplicateStrategy   = big.NewInt(1 << 1)
+	formCaptureSettingsFieldListIDs             = big.NewInt(1 << 2)
+	formCaptureSettingsFieldListMode            = big.NewInt(1 << 3)
+	formCaptureSettingsFieldRedirectURL         = big.NewInt(1 << 4)
+	formCaptureSettingsFieldResubscribeBehavior = big.NewInt(1 << 5)
+	formCaptureSettingsFieldTagIDs              = big.NewInt(1 << 6)
 )
 
 type FormCaptureSettings struct {
@@ -4600,7 +4651,9 @@ type FormCaptureSettings struct {
 	ListIDs           []string                             `json:"listIds" url:"listIds"`
 	ListMode          FormCaptureSettingsListMode          `json:"listMode" url:"listMode"`
 	RedirectURL       string                               `json:"redirectUrl" url:"redirectUrl"`
-	TagIDs            []string                             `json:"tagIds" url:"tagIds"`
+	// What happens when a contact who unsubscribed from all email submits the form or popup again. `reactivate` resubscribes them and restores the target lists. `double_opt_in` sends the workspace confirmation email first. Workspace double opt-in always requires confirmation.
+	ResubscribeBehavior FormCaptureSettingsResubscribeBehavior `json:"resubscribeBehavior" url:"resubscribeBehavior"`
+	TagIDs              []string                               `json:"tagIds" url:"tagIds"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -4642,6 +4695,13 @@ func (f *FormCaptureSettings) GetRedirectURL() string {
 		return ""
 	}
 	return f.RedirectURL
+}
+
+func (f *FormCaptureSettings) GetResubscribeBehavior() FormCaptureSettingsResubscribeBehavior {
+	if f == nil {
+		return ""
+	}
+	return f.ResubscribeBehavior
 }
 
 func (f *FormCaptureSettings) GetTagIDs() []string {
@@ -4698,6 +4758,13 @@ func (f *FormCaptureSettings) SetListMode(listMode FormCaptureSettingsListMode) 
 func (f *FormCaptureSettings) SetRedirectURL(redirectURL string) {
 	f.RedirectURL = redirectURL
 	f.require(formCaptureSettingsFieldRedirectURL)
+}
+
+// SetResubscribeBehavior sets the ResubscribeBehavior field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FormCaptureSettings) SetResubscribeBehavior(resubscribeBehavior FormCaptureSettingsResubscribeBehavior) {
+	f.ResubscribeBehavior = resubscribeBehavior
+	f.require(formCaptureSettingsFieldResubscribeBehavior)
 }
 
 // SetTagIDs sets the TagIDs field and marks it as non-optional;
@@ -4818,6 +4885,29 @@ func NewFormCaptureSettingsListModeFromString(s string) (FormCaptureSettingsList
 }
 
 func (f FormCaptureSettingsListMode) Ptr() *FormCaptureSettingsListMode {
+	return &f
+}
+
+// What happens when a contact who unsubscribed from all email submits the form or popup again. `reactivate` resubscribes them and restores the target lists. `double_opt_in` sends the workspace confirmation email first. Workspace double opt-in always requires confirmation.
+type FormCaptureSettingsResubscribeBehavior string
+
+const (
+	FormCaptureSettingsResubscribeBehaviorReactivate  FormCaptureSettingsResubscribeBehavior = "reactivate"
+	FormCaptureSettingsResubscribeBehaviorDoubleOptIn FormCaptureSettingsResubscribeBehavior = "double_opt_in"
+)
+
+func NewFormCaptureSettingsResubscribeBehaviorFromString(s string) (FormCaptureSettingsResubscribeBehavior, error) {
+	switch s {
+	case "reactivate":
+		return FormCaptureSettingsResubscribeBehaviorReactivate, nil
+	case "double_opt_in":
+		return FormCaptureSettingsResubscribeBehaviorDoubleOptIn, nil
+	}
+	var t FormCaptureSettingsResubscribeBehavior
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (f FormCaptureSettingsResubscribeBehavior) Ptr() *FormCaptureSettingsResubscribeBehavior {
 	return &f
 }
 
@@ -5898,15 +5988,16 @@ var (
 	savedFormSettingsFieldPlaceholderFirstName = big.NewInt(1 << 24)
 	savedFormSettingsFieldPlaceholderLastName  = big.NewInt(1 << 25)
 	savedFormSettingsFieldRedirectURL          = big.NewInt(1 << 26)
-	savedFormSettingsFieldShowFirstName        = big.NewInt(1 << 27)
-	savedFormSettingsFieldShowLastName         = big.NewInt(1 << 28)
-	savedFormSettingsFieldSuccessFontColor     = big.NewInt(1 << 29)
-	savedFormSettingsFieldSuccessFontSize      = big.NewInt(1 << 30)
-	savedFormSettingsFieldSuccessMessage       = big.NewInt(1 << 31)
-	savedFormSettingsFieldTagIDs               = big.NewInt(1 << 32)
-	savedFormSettingsFieldTemplateID           = big.NewInt(1 << 33)
-	savedFormSettingsFieldThemeMode            = big.NewInt(1 << 34)
-	savedFormSettingsFieldVisualPlacement      = big.NewInt(1 << 35)
+	savedFormSettingsFieldResubscribeBehavior  = big.NewInt(1 << 27)
+	savedFormSettingsFieldShowFirstName        = big.NewInt(1 << 28)
+	savedFormSettingsFieldShowLastName         = big.NewInt(1 << 29)
+	savedFormSettingsFieldSuccessFontColor     = big.NewInt(1 << 30)
+	savedFormSettingsFieldSuccessFontSize      = big.NewInt(1 << 31)
+	savedFormSettingsFieldSuccessMessage       = big.NewInt(1 << 32)
+	savedFormSettingsFieldTagIDs               = big.NewInt(1 << 33)
+	savedFormSettingsFieldTemplateID           = big.NewInt(1 << 34)
+	savedFormSettingsFieldThemeMode            = big.NewInt(1 << 35)
+	savedFormSettingsFieldVisualPlacement      = big.NewInt(1 << 36)
 )
 
 type SavedFormSettings struct {
@@ -5937,15 +6028,17 @@ type SavedFormSettings struct {
 	PlaceholderFirstName string                               `json:"placeholderFirstName" url:"placeholderFirstName"`
 	PlaceholderLastName  string                               `json:"placeholderLastName" url:"placeholderLastName"`
 	RedirectURL          string                               `json:"redirectUrl" url:"redirectUrl"`
-	ShowFirstName        bool                                 `json:"showFirstName" url:"showFirstName"`
-	ShowLastName         bool                                 `json:"showLastName" url:"showLastName"`
-	SuccessFontColor     *string                              `json:"successFontColor,omitempty" url:"successFontColor,omitempty"`
-	SuccessFontSize      string                               `json:"successFontSize" url:"successFontSize"`
-	SuccessMessage       string                               `json:"successMessage" url:"successMessage"`
-	TagIDs               []string                             `json:"tagIds" url:"tagIds"`
-	TemplateID           SavedFormSettingsTemplateID          `json:"templateId" url:"templateId"`
-	ThemeMode            SavedFormSettingsThemeMode           `json:"themeMode" url:"themeMode"`
-	VisualPlacement      SavedFormSettingsVisualPlacement     `json:"visualPlacement" url:"visualPlacement"`
+	// What happens when a contact who unsubscribed from all email submits the form or popup again. `reactivate` resubscribes them and restores the target lists. `double_opt_in` sends the workspace confirmation email first. Workspace double opt-in always requires confirmation.
+	ResubscribeBehavior SavedFormSettingsResubscribeBehavior `json:"resubscribeBehavior" url:"resubscribeBehavior"`
+	ShowFirstName       bool                                 `json:"showFirstName" url:"showFirstName"`
+	ShowLastName        bool                                 `json:"showLastName" url:"showLastName"`
+	SuccessFontColor    *string                              `json:"successFontColor,omitempty" url:"successFontColor,omitempty"`
+	SuccessFontSize     string                               `json:"successFontSize" url:"successFontSize"`
+	SuccessMessage      string                               `json:"successMessage" url:"successMessage"`
+	TagIDs              []string                             `json:"tagIds" url:"tagIds"`
+	TemplateID          SavedFormSettingsTemplateID          `json:"templateId" url:"templateId"`
+	ThemeMode           SavedFormSettingsThemeMode           `json:"themeMode" url:"themeMode"`
+	VisualPlacement     SavedFormSettingsVisualPlacement     `json:"visualPlacement" url:"visualPlacement"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -6141,6 +6234,13 @@ func (s *SavedFormSettings) GetRedirectURL() string {
 		return ""
 	}
 	return s.RedirectURL
+}
+
+func (s *SavedFormSettings) GetResubscribeBehavior() SavedFormSettingsResubscribeBehavior {
+	if s == nil {
+		return ""
+	}
+	return s.ResubscribeBehavior
 }
 
 func (s *SavedFormSettings) GetShowFirstName() bool {
@@ -6407,6 +6507,13 @@ func (s *SavedFormSettings) SetPlaceholderLastName(placeholderLastName string) {
 func (s *SavedFormSettings) SetRedirectURL(redirectURL string) {
 	s.RedirectURL = redirectURL
 	s.require(savedFormSettingsFieldRedirectURL)
+}
+
+// SetResubscribeBehavior sets the ResubscribeBehavior field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormSettings) SetResubscribeBehavior(resubscribeBehavior SavedFormSettingsResubscribeBehavior) {
+	s.ResubscribeBehavior = resubscribeBehavior
+	s.require(savedFormSettingsFieldResubscribeBehavior)
 }
 
 // SetShowFirstName sets the ShowFirstName field and marks it as non-optional;
@@ -6753,6 +6860,29 @@ func NewSavedFormSettingsListModeFromString(s string) (SavedFormSettingsListMode
 }
 
 func (s SavedFormSettingsListMode) Ptr() *SavedFormSettingsListMode {
+	return &s
+}
+
+// What happens when a contact who unsubscribed from all email submits the form or popup again. `reactivate` resubscribes them and restores the target lists. `double_opt_in` sends the workspace confirmation email first. Workspace double opt-in always requires confirmation.
+type SavedFormSettingsResubscribeBehavior string
+
+const (
+	SavedFormSettingsResubscribeBehaviorReactivate  SavedFormSettingsResubscribeBehavior = "reactivate"
+	SavedFormSettingsResubscribeBehaviorDoubleOptIn SavedFormSettingsResubscribeBehavior = "double_opt_in"
+)
+
+func NewSavedFormSettingsResubscribeBehaviorFromString(s string) (SavedFormSettingsResubscribeBehavior, error) {
+	switch s {
+	case "reactivate":
+		return SavedFormSettingsResubscribeBehaviorReactivate, nil
+	case "double_opt_in":
+		return SavedFormSettingsResubscribeBehaviorDoubleOptIn, nil
+	}
+	var t SavedFormSettingsResubscribeBehavior
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SavedFormSettingsResubscribeBehavior) Ptr() *SavedFormSettingsResubscribeBehavior {
 	return &s
 }
 
@@ -8305,6 +8435,29 @@ func (c CreateSavedFormRequestDuplicateStrategy) Ptr() *CreateSavedFormRequestDu
 	return &c
 }
 
+// What happens when a contact who unsubscribed from all email submits this form again. `reactivate` resubscribes them and restores the form's lists. `double_opt_in` sends the workspace confirmation email first and resubscribes them when they confirm. Turning it on requires a double opt-in confirmation email and a sender profile, otherwise the request returns 400; if either is removed later, returning unsubscribed contacts stay unsubscribed. Workspace double opt-in always requires confirmation. `duplicateStrategy` never changes subscription status.
+type CreateSavedFormRequestResubscribeBehavior string
+
+const (
+	CreateSavedFormRequestResubscribeBehaviorReactivate  CreateSavedFormRequestResubscribeBehavior = "reactivate"
+	CreateSavedFormRequestResubscribeBehaviorDoubleOptIn CreateSavedFormRequestResubscribeBehavior = "double_opt_in"
+)
+
+func NewCreateSavedFormRequestResubscribeBehaviorFromString(s string) (CreateSavedFormRequestResubscribeBehavior, error) {
+	switch s {
+	case "reactivate":
+		return CreateSavedFormRequestResubscribeBehaviorReactivate, nil
+	case "double_opt_in":
+		return CreateSavedFormRequestResubscribeBehaviorDoubleOptIn, nil
+	}
+	var t CreateSavedFormRequestResubscribeBehavior
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateSavedFormRequestResubscribeBehavior) Ptr() *CreateSavedFormRequestResubscribeBehavior {
+	return &c
+}
+
 var (
 	createSavedFormResponseFieldEmbed   = big.NewInt(1 << 0)
 	createSavedFormResponseFieldForm    = big.NewInt(1 << 1)
@@ -8502,6 +8655,29 @@ func NewCreateSavedPopupRequestPresentationFromString(s string) (CreateSavedPopu
 }
 
 func (c CreateSavedPopupRequestPresentation) Ptr() *CreateSavedPopupRequestPresentation {
+	return &c
+}
+
+// What happens when a contact who unsubscribed from all email submits this popup again. `reactivate` resubscribes them and restores the popup's lists. `double_opt_in` sends the workspace confirmation email first and resubscribes them when they confirm. Turning it on requires a double opt-in confirmation email and a sender profile, otherwise the request returns 400; if either is removed later, returning unsubscribed contacts stay unsubscribed. Workspace double opt-in always requires confirmation. `duplicateStrategy` never changes subscription status.
+type CreateSavedPopupRequestResubscribeBehavior string
+
+const (
+	CreateSavedPopupRequestResubscribeBehaviorReactivate  CreateSavedPopupRequestResubscribeBehavior = "reactivate"
+	CreateSavedPopupRequestResubscribeBehaviorDoubleOptIn CreateSavedPopupRequestResubscribeBehavior = "double_opt_in"
+)
+
+func NewCreateSavedPopupRequestResubscribeBehaviorFromString(s string) (CreateSavedPopupRequestResubscribeBehavior, error) {
+	switch s {
+	case "reactivate":
+		return CreateSavedPopupRequestResubscribeBehaviorReactivate, nil
+	case "double_opt_in":
+		return CreateSavedPopupRequestResubscribeBehaviorDoubleOptIn, nil
+	}
+	var t CreateSavedPopupRequestResubscribeBehavior
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateSavedPopupRequestResubscribeBehavior) Ptr() *CreateSavedPopupRequestResubscribeBehavior {
 	return &c
 }
 
@@ -11909,6 +12085,29 @@ func (u UpdateSavedFormRequestDuplicateStrategy) Ptr() *UpdateSavedFormRequestDu
 	return &u
 }
 
+// What happens when a contact who unsubscribed from all email submits this form again. `reactivate` resubscribes them and restores the form's lists. `double_opt_in` sends the workspace confirmation email first and resubscribes them when they confirm. Turning it on requires a double opt-in confirmation email and a sender profile, otherwise the request returns 400; if either is removed later, returning unsubscribed contacts stay unsubscribed. Workspace double opt-in always requires confirmation. `duplicateStrategy` never changes subscription status.
+type UpdateSavedFormRequestResubscribeBehavior string
+
+const (
+	UpdateSavedFormRequestResubscribeBehaviorReactivate  UpdateSavedFormRequestResubscribeBehavior = "reactivate"
+	UpdateSavedFormRequestResubscribeBehaviorDoubleOptIn UpdateSavedFormRequestResubscribeBehavior = "double_opt_in"
+)
+
+func NewUpdateSavedFormRequestResubscribeBehaviorFromString(s string) (UpdateSavedFormRequestResubscribeBehavior, error) {
+	switch s {
+	case "reactivate":
+		return UpdateSavedFormRequestResubscribeBehaviorReactivate, nil
+	case "double_opt_in":
+		return UpdateSavedFormRequestResubscribeBehaviorDoubleOptIn, nil
+	}
+	var t UpdateSavedFormRequestResubscribeBehavior
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateSavedFormRequestResubscribeBehavior) Ptr() *UpdateSavedFormRequestResubscribeBehavior {
+	return &u
+}
+
 var (
 	updateSavedFormResponseFieldEmbed   = big.NewInt(1 << 0)
 	updateSavedFormResponseFieldForm    = big.NewInt(1 << 1)
@@ -12126,6 +12325,29 @@ func (u UpdateSavedPopupRequestPresentation) Ptr() *UpdateSavedPopupRequestPrese
 	return &u
 }
 
+// What happens when a contact who unsubscribed from all email submits this popup again. `reactivate` resubscribes them and restores the popup's lists. `double_opt_in` sends the workspace confirmation email first and resubscribes them when they confirm. Turning it on requires a double opt-in confirmation email and a sender profile, otherwise the request returns 400; if either is removed later, returning unsubscribed contacts stay unsubscribed. Workspace double opt-in always requires confirmation. `duplicateStrategy` never changes subscription status.
+type UpdateSavedPopupRequestResubscribeBehavior string
+
+const (
+	UpdateSavedPopupRequestResubscribeBehaviorReactivate  UpdateSavedPopupRequestResubscribeBehavior = "reactivate"
+	UpdateSavedPopupRequestResubscribeBehaviorDoubleOptIn UpdateSavedPopupRequestResubscribeBehavior = "double_opt_in"
+)
+
+func NewUpdateSavedPopupRequestResubscribeBehaviorFromString(s string) (UpdateSavedPopupRequestResubscribeBehavior, error) {
+	switch s {
+	case "reactivate":
+		return UpdateSavedPopupRequestResubscribeBehaviorReactivate, nil
+	case "double_opt_in":
+		return UpdateSavedPopupRequestResubscribeBehaviorDoubleOptIn, nil
+	}
+	var t UpdateSavedPopupRequestResubscribeBehavior
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateSavedPopupRequestResubscribeBehavior) Ptr() *UpdateSavedPopupRequestResubscribeBehavior {
+	return &u
+}
+
 type UpdateSavedPopupRequestStatus string
 
 const (
@@ -12281,18 +12503,19 @@ func (u *UpdateSavedPopupResponse) String() string {
 }
 
 var (
-	updateSavedFormRequestFieldCompanyIDOrFormID = big.NewInt(1 << 0)
-	updateSavedFormRequestFieldBlocks            = big.NewInt(1 << 1)
-	updateSavedFormRequestFieldButtonText        = big.NewInt(1 << 2)
-	updateSavedFormRequestFieldDescription       = big.NewInt(1 << 3)
-	updateSavedFormRequestFieldDuplicateStrategy = big.NewInt(1 << 4)
-	updateSavedFormRequestFieldHeadline          = big.NewInt(1 << 5)
-	updateSavedFormRequestFieldListIDs           = big.NewInt(1 << 6)
-	updateSavedFormRequestFieldName              = big.NewInt(1 << 7)
-	updateSavedFormRequestFieldRedirectURL       = big.NewInt(1 << 8)
-	updateSavedFormRequestFieldSuccessMessage    = big.NewInt(1 << 9)
-	updateSavedFormRequestFieldTagIDs            = big.NewInt(1 << 10)
-	updateSavedFormRequestFieldTheme             = big.NewInt(1 << 11)
+	updateSavedFormRequestFieldCompanyIDOrFormID   = big.NewInt(1 << 0)
+	updateSavedFormRequestFieldBlocks              = big.NewInt(1 << 1)
+	updateSavedFormRequestFieldButtonText          = big.NewInt(1 << 2)
+	updateSavedFormRequestFieldDescription         = big.NewInt(1 << 3)
+	updateSavedFormRequestFieldDuplicateStrategy   = big.NewInt(1 << 4)
+	updateSavedFormRequestFieldHeadline            = big.NewInt(1 << 5)
+	updateSavedFormRequestFieldListIDs             = big.NewInt(1 << 6)
+	updateSavedFormRequestFieldName                = big.NewInt(1 << 7)
+	updateSavedFormRequestFieldRedirectURL         = big.NewInt(1 << 8)
+	updateSavedFormRequestFieldResubscribeBehavior = big.NewInt(1 << 9)
+	updateSavedFormRequestFieldSuccessMessage      = big.NewInt(1 << 10)
+	updateSavedFormRequestFieldTagIDs              = big.NewInt(1 << 11)
+	updateSavedFormRequestFieldTheme               = big.NewInt(1 << 12)
 )
 
 type UpdateSavedFormRequest struct {
@@ -12307,8 +12530,10 @@ type UpdateSavedFormRequest struct {
 	ListIDs           []string                                 `json:"listIds,omitempty" url:"-"`
 	Name              *string                                  `json:"name,omitempty" url:"-"`
 	// HTTP or HTTPS success redirect. An empty string switches back to the confirmation message.
-	RedirectURL    *string `json:"redirectUrl,omitempty" url:"-"`
-	SuccessMessage *string `json:"successMessage,omitempty" url:"-"`
+	RedirectURL *string `json:"redirectUrl,omitempty" url:"-"`
+	// What happens when a contact who unsubscribed from all email submits this form again. `reactivate` resubscribes them and restores the form's lists. `double_opt_in` sends the workspace confirmation email first and resubscribes them when they confirm. Turning it on requires a double opt-in confirmation email and a sender profile, otherwise the request returns 400; if either is removed later, returning unsubscribed contacts stay unsubscribed. Workspace double opt-in always requires confirmation. `duplicateStrategy` never changes subscription status.
+	ResubscribeBehavior *UpdateSavedFormRequestResubscribeBehavior `json:"resubscribeBehavior,omitempty" url:"-"`
+	SuccessMessage      *string                                    `json:"successMessage,omitempty" url:"-"`
 	// Replacement tag IDs. An empty array clears tags.
 	TagIDs []string `json:"tagIds,omitempty" url:"-"`
 	// Visual theme overrides merged into the current theme (accentColor, backgroundColor, textColor, mutedTextColor, cardColor, borderColor as "#rrggbb", borderRadius 0-32, headingFontFamily, bodyFontFamily, density).
@@ -12388,6 +12613,13 @@ func (u *UpdateSavedFormRequest) SetRedirectURL(redirectURL *string) {
 	u.require(updateSavedFormRequestFieldRedirectURL)
 }
 
+// SetResubscribeBehavior sets the ResubscribeBehavior field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateSavedFormRequest) SetResubscribeBehavior(resubscribeBehavior *UpdateSavedFormRequestResubscribeBehavior) {
+	u.ResubscribeBehavior = resubscribeBehavior
+	u.require(updateSavedFormRequestFieldResubscribeBehavior)
+}
+
 // SetSuccessMessage sets the SuccessMessage field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateSavedFormRequest) SetSuccessMessage(successMessage *string) {
@@ -12431,26 +12663,27 @@ func (u *UpdateSavedFormRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
-	updateSavedPopupRequestFieldPopupID           = big.NewInt(1 << 0)
-	updateSavedPopupRequestFieldBlocks            = big.NewInt(1 << 1)
-	updateSavedPopupRequestFieldButtonText        = big.NewInt(1 << 2)
-	updateSavedPopupRequestFieldDescription       = big.NewInt(1 << 3)
-	updateSavedPopupRequestFieldDuplicateStrategy = big.NewInt(1 << 4)
-	updateSavedPopupRequestFieldFrequency         = big.NewInt(1 << 5)
-	updateSavedPopupRequestFieldHeadline          = big.NewInt(1 << 6)
-	updateSavedPopupRequestFieldListIDs           = big.NewInt(1 << 7)
-	updateSavedPopupRequestFieldName              = big.NewInt(1 << 8)
-	updateSavedPopupRequestFieldPlacement         = big.NewInt(1 << 9)
-	updateSavedPopupRequestFieldPresentation      = big.NewInt(1 << 10)
-	updateSavedPopupRequestFieldRedirectURL       = big.NewInt(1 << 11)
-	updateSavedPopupRequestFieldSchedule          = big.NewInt(1 << 12)
-	updateSavedPopupRequestFieldStatus            = big.NewInt(1 << 13)
-	updateSavedPopupRequestFieldSuccessMessage    = big.NewInt(1 << 14)
-	updateSavedPopupRequestFieldTagIDs            = big.NewInt(1 << 15)
-	updateSavedPopupRequestFieldTargeting         = big.NewInt(1 << 16)
-	updateSavedPopupRequestFieldTheme             = big.NewInt(1 << 17)
-	updateSavedPopupRequestFieldTrigger           = big.NewInt(1 << 18)
-	updateSavedPopupRequestFieldVisual            = big.NewInt(1 << 19)
+	updateSavedPopupRequestFieldPopupID             = big.NewInt(1 << 0)
+	updateSavedPopupRequestFieldBlocks              = big.NewInt(1 << 1)
+	updateSavedPopupRequestFieldButtonText          = big.NewInt(1 << 2)
+	updateSavedPopupRequestFieldDescription         = big.NewInt(1 << 3)
+	updateSavedPopupRequestFieldDuplicateStrategy   = big.NewInt(1 << 4)
+	updateSavedPopupRequestFieldFrequency           = big.NewInt(1 << 5)
+	updateSavedPopupRequestFieldHeadline            = big.NewInt(1 << 6)
+	updateSavedPopupRequestFieldListIDs             = big.NewInt(1 << 7)
+	updateSavedPopupRequestFieldName                = big.NewInt(1 << 8)
+	updateSavedPopupRequestFieldPlacement           = big.NewInt(1 << 9)
+	updateSavedPopupRequestFieldPresentation        = big.NewInt(1 << 10)
+	updateSavedPopupRequestFieldRedirectURL         = big.NewInt(1 << 11)
+	updateSavedPopupRequestFieldResubscribeBehavior = big.NewInt(1 << 12)
+	updateSavedPopupRequestFieldSchedule            = big.NewInt(1 << 13)
+	updateSavedPopupRequestFieldStatus              = big.NewInt(1 << 14)
+	updateSavedPopupRequestFieldSuccessMessage      = big.NewInt(1 << 15)
+	updateSavedPopupRequestFieldTagIDs              = big.NewInt(1 << 16)
+	updateSavedPopupRequestFieldTargeting           = big.NewInt(1 << 17)
+	updateSavedPopupRequestFieldTheme               = big.NewInt(1 << 18)
+	updateSavedPopupRequestFieldTrigger             = big.NewInt(1 << 19)
+	updateSavedPopupRequestFieldVisual              = big.NewInt(1 << 20)
 )
 
 type UpdateSavedPopupRequest struct {
@@ -12470,10 +12703,12 @@ type UpdateSavedPopupRequest struct {
 	Placement    *UpdateSavedPopupRequestPlacement    `json:"placement,omitempty" url:"-"`
 	Presentation *UpdateSavedPopupRequestPresentation `json:"presentation,omitempty" url:"-"`
 	// HTTP or HTTPS URL for successful signups. Pass an empty string to switch back to the confirmation message.
-	RedirectURL    *string                        `json:"redirectUrl,omitempty" url:"-"`
-	Schedule       *SavedPopupSchedule            `json:"schedule,omitempty" url:"-"`
-	Status         *UpdateSavedPopupRequestStatus `json:"status,omitempty" url:"-"`
-	SuccessMessage *string                        `json:"successMessage,omitempty" url:"-"`
+	RedirectURL *string `json:"redirectUrl,omitempty" url:"-"`
+	// What happens when a contact who unsubscribed from all email submits this popup again. `reactivate` resubscribes them and restores the popup's lists. `double_opt_in` sends the workspace confirmation email first and resubscribes them when they confirm. Turning it on requires a double opt-in confirmation email and a sender profile, otherwise the request returns 400; if either is removed later, returning unsubscribed contacts stay unsubscribed. Workspace double opt-in always requires confirmation. `duplicateStrategy` never changes subscription status.
+	ResubscribeBehavior *UpdateSavedPopupRequestResubscribeBehavior `json:"resubscribeBehavior,omitempty" url:"-"`
+	Schedule            *SavedPopupSchedule                         `json:"schedule,omitempty" url:"-"`
+	Status              *UpdateSavedPopupRequestStatus              `json:"status,omitempty" url:"-"`
+	SuccessMessage      *string                                     `json:"successMessage,omitempty" url:"-"`
 	// Replacement tag IDs. Pass an empty array to clear tags.
 	TagIDs    []string             `json:"tagIds,omitempty" url:"-"`
 	Targeting *SavedPopupTargeting `json:"targeting,omitempty" url:"-"`
@@ -12575,6 +12810,13 @@ func (u *UpdateSavedPopupRequest) SetPresentation(presentation *UpdateSavedPopup
 func (u *UpdateSavedPopupRequest) SetRedirectURL(redirectURL *string) {
 	u.RedirectURL = redirectURL
 	u.require(updateSavedPopupRequestFieldRedirectURL)
+}
+
+// SetResubscribeBehavior sets the ResubscribeBehavior field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateSavedPopupRequest) SetResubscribeBehavior(resubscribeBehavior *UpdateSavedPopupRequestResubscribeBehavior) {
+	u.ResubscribeBehavior = resubscribeBehavior
+	u.require(updateSavedPopupRequestFieldResubscribeBehavior)
 }
 
 // SetSchedule sets the Schedule field and marks it as non-optional;

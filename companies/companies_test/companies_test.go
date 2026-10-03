@@ -88,9 +88,7 @@ func TestCompaniesCreateWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithAPIKey("test-token"),
 	)
-	request := &sequenzygo.CreateCompaniesRequest{
-		Domain: "domain",
-	}
+	request := &sequenzygo.CreateCompaniesRequest{}
 	_, invocationErr := client.Companies.Create(
 		context.TODO(),
 		request,

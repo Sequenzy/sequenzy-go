@@ -156,6 +156,93 @@ func (c *CreateTemplatesRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
+	createFromExampleTemplatesRequestFieldBrand = big.NewInt(1 << 0)
+	createFromExampleTemplatesRequestFieldBrief = big.NewInt(1 << 1)
+	createFromExampleTemplatesRequestFieldEmail = big.NewInt(1 << 2)
+	createFromExampleTemplatesRequestFieldName  = big.NewInt(1 << 3)
+	createFromExampleTemplatesRequestFieldURL   = big.NewInt(1 << 4)
+)
+
+type CreateFromExampleTemplatesRequest struct {
+	// Gallery brand slug. Use with `email` instead of `url`.
+	Brand *string `json:"brand,omitempty" url:"-"`
+	// Optional direction for the new email. Takes priority over the example.
+	Brief *string `json:"brief,omitempty" url:"-"`
+	// Gallery email slug. Use with `brand` instead of `url`.
+	Email *string `json:"email,omitempty" url:"-"`
+	// Template name. Defaults to the generated subject followed by "(remix of {brand})".
+	Name *string `json:"name,omitempty" url:"-"`
+	// Gallery email page URL, such as `https://sequenzy.com/email-examples/brands/linear/emails/welcome-to-linear`.
+	URL *string `json:"url,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (c *CreateFromExampleTemplatesRequest) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetBrand sets the Brand field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleTemplatesRequest) SetBrand(brand *string) {
+	c.Brand = brand
+	c.require(createFromExampleTemplatesRequestFieldBrand)
+}
+
+// SetBrief sets the Brief field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleTemplatesRequest) SetBrief(brief *string) {
+	c.Brief = brief
+	c.require(createFromExampleTemplatesRequestFieldBrief)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleTemplatesRequest) SetEmail(email *string) {
+	c.Email = email
+	c.require(createFromExampleTemplatesRequestFieldEmail)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleTemplatesRequest) SetName(name *string) {
+	c.Name = name
+	c.require(createFromExampleTemplatesRequestFieldName)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleTemplatesRequest) SetURL(url *string) {
+	c.URL = url
+	c.require(createFromExampleTemplatesRequestFieldURL)
+}
+
+func (c *CreateFromExampleTemplatesRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateFromExampleTemplatesRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*c = CreateFromExampleTemplatesRequest(body)
+	return nil
+}
+
+func (c *CreateFromExampleTemplatesRequest) MarshalJSON() ([]byte, error) {
+	type embed CreateFromExampleTemplatesRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
 	createShareLinkTemplatesRequestFieldTemplateID = big.NewInt(1 << 0)
 )
 
@@ -360,8 +447,9 @@ var (
 	setLocalizationTemplatesRequestFieldLocale      = big.NewInt(1 << 1)
 	setLocalizationTemplatesRequestFieldBlocks      = big.NewInt(1 << 2)
 	setLocalizationTemplatesRequestFieldHTML        = big.NewInt(1 << 3)
-	setLocalizationTemplatesRequestFieldPreviewText = big.NewInt(1 << 4)
-	setLocalizationTemplatesRequestFieldSubject     = big.NewInt(1 << 5)
+	setLocalizationTemplatesRequestFieldKeepEdits   = big.NewInt(1 << 4)
+	setLocalizationTemplatesRequestFieldPreviewText = big.NewInt(1 << 5)
+	setLocalizationTemplatesRequestFieldSubject     = big.NewInt(1 << 6)
 )
 
 type SetLocalizationTemplatesRequest struct {
@@ -373,6 +461,8 @@ type SetLocalizationTemplatesRequest struct {
 	Blocks []*EmailBlock `json:"blocks,omitempty" url:"-"`
 	// Localized raw HTML. Provide exactly one of html or blocks.
 	HTML *string `json:"html,omitempty" url:"-"`
+	// Protect this translation like a dashboard edit. It is marked as edited (editedAt), automatic translation on save keeps it, and it becomes stale instead of being replaced when the original changes. Without it, the stored content is retranslated on the next save when automatic translation is on, and any earlier edit flag is cleared.
+	KeepEdits *bool `json:"keepEdits,omitempty" url:"-"`
 	// Optional localized inbox preview text.
 	PreviewText *string `json:"previewText,omitempty" url:"-"`
 	// Localized email subject line.
@@ -417,6 +507,13 @@ func (s *SetLocalizationTemplatesRequest) SetHTML(html *string) {
 	s.require(setLocalizationTemplatesRequestFieldHTML)
 }
 
+// SetKeepEdits sets the KeepEdits field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SetLocalizationTemplatesRequest) SetKeepEdits(keepEdits *bool) {
+	s.KeepEdits = keepEdits
+	s.require(setLocalizationTemplatesRequestFieldKeepEdits)
+}
+
 // SetPreviewText sets the PreviewText field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *SetLocalizationTemplatesRequest) SetPreviewText(previewText *string) {
@@ -455,6 +552,7 @@ func (s *SetLocalizationTemplatesRequest) MarshalJSON() ([]byte, error) {
 var (
 	syncLocalizationsTemplatesRequestFieldTemplateID = big.NewInt(1 << 0)
 	syncLocalizationsTemplatesRequestFieldLocales    = big.NewInt(1 << 1)
+	syncLocalizationsTemplatesRequestFieldSkipEdited = big.NewInt(1 << 2)
 )
 
 type SyncLocalizationsTemplatesRequest struct {
@@ -462,6 +560,8 @@ type SyncLocalizationsTemplatesRequest struct {
 	TemplateID string `json:"-" url:"-"`
 	// Enabled non-primary locale codes to sync. Omit to sync all of them.
 	Locales []string `json:"locales,omitempty" url:"-"`
+	// Keep translations someone edited instead of retranslating them. Kept locales are returned in skippedLocales.
+	SkipEdited *bool `json:"skipEdited,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -486,6 +586,13 @@ func (s *SyncLocalizationsTemplatesRequest) SetTemplateID(templateID string) {
 func (s *SyncLocalizationsTemplatesRequest) SetLocales(locales []string) {
 	s.Locales = locales
 	s.require(syncLocalizationsTemplatesRequestFieldLocales)
+}
+
+// SetSkipEdited sets the SkipEdited field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SyncLocalizationsTemplatesRequest) SetSkipEdited(skipEdited *bool) {
+	s.SkipEdited = skipEdited
+	s.require(syncLocalizationsTemplatesRequestFieldSkipEdited)
 }
 
 func (s *SyncLocalizationsTemplatesRequest) UnmarshalJSON(data []byte) error {
@@ -1076,19 +1183,22 @@ func (t *TemplateDetail) String() string {
 var (
 	templateLocalizationFieldBlocks      = big.NewInt(1 << 0)
 	templateLocalizationFieldCreatedAt   = big.NewInt(1 << 1)
-	templateLocalizationFieldLastError   = big.NewInt(1 << 2)
-	templateLocalizationFieldLocale      = big.NewInt(1 << 3)
-	templateLocalizationFieldPreviewText = big.NewInt(1 << 4)
-	templateLocalizationFieldSourceHash  = big.NewInt(1 << 5)
-	templateLocalizationFieldStatus      = big.NewInt(1 << 6)
-	templateLocalizationFieldSubject     = big.NewInt(1 << 7)
-	templateLocalizationFieldSyncedAt    = big.NewInt(1 << 8)
-	templateLocalizationFieldUpdatedAt   = big.NewInt(1 << 9)
+	templateLocalizationFieldEditedAt    = big.NewInt(1 << 2)
+	templateLocalizationFieldLastError   = big.NewInt(1 << 3)
+	templateLocalizationFieldLocale      = big.NewInt(1 << 4)
+	templateLocalizationFieldPreviewText = big.NewInt(1 << 5)
+	templateLocalizationFieldSourceHash  = big.NewInt(1 << 6)
+	templateLocalizationFieldStatus      = big.NewInt(1 << 7)
+	templateLocalizationFieldSubject     = big.NewInt(1 << 8)
+	templateLocalizationFieldSyncedAt    = big.NewInt(1 << 9)
+	templateLocalizationFieldUpdatedAt   = big.NewInt(1 << 10)
 )
 
 type TemplateLocalization struct {
-	Blocks      []*EmailBlock               `json:"blocks,omitempty" url:"blocks,omitempty"`
-	CreatedAt   *time.Time                  `json:"createdAt,omitempty" url:"createdAt,omitempty"`
+	Blocks    []*EmailBlock `json:"blocks,omitempty" url:"blocks,omitempty"`
+	CreatedAt *time.Time    `json:"createdAt,omitempty" url:"createdAt,omitempty"`
+	// When this translation was last edited in the dashboard or stored with keepEdits. Automatic translation on save keeps edited translations and marks them stale when the original changes. Null otherwise.
+	EditedAt    *time.Time                  `json:"editedAt,omitempty" url:"editedAt,omitempty"`
 	LastError   *string                     `json:"lastError,omitempty" url:"lastError,omitempty"`
 	Locale      *string                     `json:"locale,omitempty" url:"locale,omitempty"`
 	PreviewText *string                     `json:"previewText,omitempty" url:"previewText,omitempty"`
@@ -1117,6 +1227,13 @@ func (t *TemplateLocalization) GetCreatedAt() *time.Time {
 		return nil
 	}
 	return t.CreatedAt
+}
+
+func (t *TemplateLocalization) GetEditedAt() *time.Time {
+	if t == nil {
+		return nil
+	}
+	return t.EditedAt
 }
 
 func (t *TemplateLocalization) GetLastError() *string {
@@ -1203,6 +1320,13 @@ func (t *TemplateLocalization) SetCreatedAt(createdAt *time.Time) {
 	t.require(templateLocalizationFieldCreatedAt)
 }
 
+// SetEditedAt sets the EditedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TemplateLocalization) SetEditedAt(editedAt *time.Time) {
+	t.EditedAt = editedAt
+	t.require(templateLocalizationFieldEditedAt)
+}
+
 // SetLastError sets the LastError field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (t *TemplateLocalization) SetLastError(lastError *string) {
@@ -1264,6 +1388,7 @@ func (t *TemplateLocalization) UnmarshalJSON(data []byte) error {
 	var unmarshaler = struct {
 		embed
 		CreatedAt *internal.DateTime `json:"createdAt,omitempty"`
+		EditedAt  *internal.DateTime `json:"editedAt,omitempty"`
 		SyncedAt  *internal.DateTime `json:"syncedAt,omitempty"`
 		UpdatedAt *internal.DateTime `json:"updatedAt,omitempty"`
 	}{
@@ -1274,6 +1399,7 @@ func (t *TemplateLocalization) UnmarshalJSON(data []byte) error {
 	}
 	*t = TemplateLocalization(unmarshaler.embed)
 	t.CreatedAt = unmarshaler.CreatedAt.TimePtr()
+	t.EditedAt = unmarshaler.EditedAt.TimePtr()
 	t.SyncedAt = unmarshaler.SyncedAt.TimePtr()
 	t.UpdatedAt = unmarshaler.UpdatedAt.TimePtr()
 	extraProperties, err := internal.ExtractExtraProperties(data, *t)
@@ -1290,11 +1416,13 @@ func (t *TemplateLocalization) MarshalJSON() ([]byte, error) {
 	var marshaler = struct {
 		embed
 		CreatedAt *internal.DateTime `json:"createdAt,omitempty"`
+		EditedAt  *internal.DateTime `json:"editedAt,omitempty"`
 		SyncedAt  *internal.DateTime `json:"syncedAt,omitempty"`
 		UpdatedAt *internal.DateTime `json:"updatedAt,omitempty"`
 	}{
 		embed:     embed(*t),
 		CreatedAt: internal.NewOptionalDateTime(t.CreatedAt),
+		EditedAt:  internal.NewOptionalDateTime(t.EditedAt),
 		SyncedAt:  internal.NewOptionalDateTime(t.SyncedAt),
 		UpdatedAt: internal.NewOptionalDateTime(t.UpdatedAt),
 	}
@@ -1588,6 +1716,404 @@ func (t *TemplateSummary) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", t)
+}
+
+var (
+	createFromExampleTemplatesResponseFieldExample  = big.NewInt(1 << 0)
+	createFromExampleTemplatesResponseFieldMessage  = big.NewInt(1 << 1)
+	createFromExampleTemplatesResponseFieldSuccess  = big.NewInt(1 << 2)
+	createFromExampleTemplatesResponseFieldTemplate = big.NewInt(1 << 3)
+)
+
+type CreateFromExampleTemplatesResponse struct {
+	Example  *CreateFromExampleTemplatesResponseExample  `json:"example,omitempty" url:"example,omitempty"`
+	Message  *string                                     `json:"message,omitempty" url:"message,omitempty"`
+	Success  *bool                                       `json:"success,omitempty" url:"success,omitempty"`
+	Template *CreateFromExampleTemplatesResponseTemplate `json:"template,omitempty" url:"template,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateFromExampleTemplatesResponse) GetExample() *CreateFromExampleTemplatesResponseExample {
+	if c == nil {
+		return nil
+	}
+	return c.Example
+}
+
+func (c *CreateFromExampleTemplatesResponse) GetMessage() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Message
+}
+
+func (c *CreateFromExampleTemplatesResponse) GetSuccess() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.Success
+}
+
+func (c *CreateFromExampleTemplatesResponse) GetTemplate() *CreateFromExampleTemplatesResponseTemplate {
+	if c == nil {
+		return nil
+	}
+	return c.Template
+}
+
+func (c *CreateFromExampleTemplatesResponse) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateFromExampleTemplatesResponse) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetExample sets the Example field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleTemplatesResponse) SetExample(example *CreateFromExampleTemplatesResponseExample) {
+	c.Example = example
+	c.require(createFromExampleTemplatesResponseFieldExample)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleTemplatesResponse) SetMessage(message *string) {
+	c.Message = message
+	c.require(createFromExampleTemplatesResponseFieldMessage)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleTemplatesResponse) SetSuccess(success *bool) {
+	c.Success = success
+	c.require(createFromExampleTemplatesResponseFieldSuccess)
+}
+
+// SetTemplate sets the Template field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleTemplatesResponse) SetTemplate(template *CreateFromExampleTemplatesResponseTemplate) {
+	c.Template = template
+	c.require(createFromExampleTemplatesResponseFieldTemplate)
+}
+
+func (c *CreateFromExampleTemplatesResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateFromExampleTemplatesResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateFromExampleTemplatesResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateFromExampleTemplatesResponse) MarshalJSON() ([]byte, error) {
+	type embed CreateFromExampleTemplatesResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateFromExampleTemplatesResponse) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	createFromExampleTemplatesResponseExampleFieldBrand   = big.NewInt(1 << 0)
+	createFromExampleTemplatesResponseExampleFieldSubject = big.NewInt(1 << 1)
+	createFromExampleTemplatesResponseExampleFieldURL     = big.NewInt(1 << 2)
+)
+
+type CreateFromExampleTemplatesResponseExample struct {
+	Brand   *string `json:"brand,omitempty" url:"brand,omitempty"`
+	Subject *string `json:"subject,omitempty" url:"subject,omitempty"`
+	// Public gallery page of the example.
+	URL *string `json:"url,omitempty" url:"url,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateFromExampleTemplatesResponseExample) GetBrand() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Brand
+}
+
+func (c *CreateFromExampleTemplatesResponseExample) GetSubject() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Subject
+}
+
+func (c *CreateFromExampleTemplatesResponseExample) GetURL() *string {
+	if c == nil {
+		return nil
+	}
+	return c.URL
+}
+
+func (c *CreateFromExampleTemplatesResponseExample) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateFromExampleTemplatesResponseExample) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetBrand sets the Brand field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleTemplatesResponseExample) SetBrand(brand *string) {
+	c.Brand = brand
+	c.require(createFromExampleTemplatesResponseExampleFieldBrand)
+}
+
+// SetSubject sets the Subject field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleTemplatesResponseExample) SetSubject(subject *string) {
+	c.Subject = subject
+	c.require(createFromExampleTemplatesResponseExampleFieldSubject)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleTemplatesResponseExample) SetURL(url *string) {
+	c.URL = url
+	c.require(createFromExampleTemplatesResponseExampleFieldURL)
+}
+
+func (c *CreateFromExampleTemplatesResponseExample) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateFromExampleTemplatesResponseExample
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateFromExampleTemplatesResponseExample(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateFromExampleTemplatesResponseExample) MarshalJSON() ([]byte, error) {
+	type embed CreateFromExampleTemplatesResponseExample
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateFromExampleTemplatesResponseExample) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	createFromExampleTemplatesResponseTemplateFieldID          = big.NewInt(1 << 0)
+	createFromExampleTemplatesResponseTemplateFieldIsTemplate  = big.NewInt(1 << 1)
+	createFromExampleTemplatesResponseTemplateFieldName        = big.NewInt(1 << 2)
+	createFromExampleTemplatesResponseTemplateFieldPreviewText = big.NewInt(1 << 3)
+	createFromExampleTemplatesResponseTemplateFieldSubject     = big.NewInt(1 << 4)
+)
+
+type CreateFromExampleTemplatesResponseTemplate struct {
+	ID *string `json:"id,omitempty" url:"id,omitempty"`
+	// Always true. The new email is saved as a reusable template.
+	IsTemplate  *bool   `json:"isTemplate,omitempty" url:"isTemplate,omitempty"`
+	Name        *string `json:"name,omitempty" url:"name,omitempty"`
+	PreviewText *string `json:"previewText,omitempty" url:"previewText,omitempty"`
+	Subject     *string `json:"subject,omitempty" url:"subject,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateFromExampleTemplatesResponseTemplate) GetID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.ID
+}
+
+func (c *CreateFromExampleTemplatesResponseTemplate) GetIsTemplate() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.IsTemplate
+}
+
+func (c *CreateFromExampleTemplatesResponseTemplate) GetName() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Name
+}
+
+func (c *CreateFromExampleTemplatesResponseTemplate) GetPreviewText() *string {
+	if c == nil {
+		return nil
+	}
+	return c.PreviewText
+}
+
+func (c *CreateFromExampleTemplatesResponseTemplate) GetSubject() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Subject
+}
+
+func (c *CreateFromExampleTemplatesResponseTemplate) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateFromExampleTemplatesResponseTemplate) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleTemplatesResponseTemplate) SetID(id *string) {
+	c.ID = id
+	c.require(createFromExampleTemplatesResponseTemplateFieldID)
+}
+
+// SetIsTemplate sets the IsTemplate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleTemplatesResponseTemplate) SetIsTemplate(isTemplate *bool) {
+	c.IsTemplate = isTemplate
+	c.require(createFromExampleTemplatesResponseTemplateFieldIsTemplate)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleTemplatesResponseTemplate) SetName(name *string) {
+	c.Name = name
+	c.require(createFromExampleTemplatesResponseTemplateFieldName)
+}
+
+// SetPreviewText sets the PreviewText field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleTemplatesResponseTemplate) SetPreviewText(previewText *string) {
+	c.PreviewText = previewText
+	c.require(createFromExampleTemplatesResponseTemplateFieldPreviewText)
+}
+
+// SetSubject sets the Subject field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleTemplatesResponseTemplate) SetSubject(subject *string) {
+	c.Subject = subject
+	c.require(createFromExampleTemplatesResponseTemplateFieldSubject)
+}
+
+func (c *CreateFromExampleTemplatesResponseTemplate) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateFromExampleTemplatesResponseTemplate
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateFromExampleTemplatesResponseTemplate(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateFromExampleTemplatesResponseTemplate) MarshalJSON() ([]byte, error) {
+	type embed CreateFromExampleTemplatesResponseTemplate
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateFromExampleTemplatesResponseTemplate) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
 }
 
 var (
@@ -2755,15 +3281,18 @@ func (s *SetLocalizationTemplatesResponse) String() string {
 var (
 	syncLocalizationsTemplatesResponseFieldQueuedLocales      = big.NewInt(1 << 0)
 	syncLocalizationsTemplatesResponseFieldQueuedVariantCount = big.NewInt(1 << 1)
-	syncLocalizationsTemplatesResponseFieldSuccess            = big.NewInt(1 << 2)
-	syncLocalizationsTemplatesResponseFieldTemplateID         = big.NewInt(1 << 3)
+	syncLocalizationsTemplatesResponseFieldSkippedLocales     = big.NewInt(1 << 2)
+	syncLocalizationsTemplatesResponseFieldSuccess            = big.NewInt(1 << 3)
+	syncLocalizationsTemplatesResponseFieldTemplateID         = big.NewInt(1 << 4)
 )
 
 type SyncLocalizationsTemplatesResponse struct {
 	QueuedLocales      []string `json:"queuedLocales,omitempty" url:"queuedLocales,omitempty"`
 	QueuedVariantCount *int     `json:"queuedVariantCount,omitempty" url:"queuedVariantCount,omitempty"`
-	Success            *bool    `json:"success,omitempty" url:"success,omitempty"`
-	TemplateID         *string  `json:"templateId,omitempty" url:"templateId,omitempty"`
+	// Requested locales kept because someone edited them. Only returned when skipEdited is true.
+	SkippedLocales []string `json:"skippedLocales,omitempty" url:"skippedLocales,omitempty"`
+	Success        *bool    `json:"success,omitempty" url:"success,omitempty"`
+	TemplateID     *string  `json:"templateId,omitempty" url:"templateId,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -2784,6 +3313,13 @@ func (s *SyncLocalizationsTemplatesResponse) GetQueuedVariantCount() *int {
 		return nil
 	}
 	return s.QueuedVariantCount
+}
+
+func (s *SyncLocalizationsTemplatesResponse) GetSkippedLocales() []string {
+	if s == nil {
+		return nil
+	}
+	return s.SkippedLocales
 }
 
 func (s *SyncLocalizationsTemplatesResponse) GetSuccess() *bool {
@@ -2826,6 +3362,13 @@ func (s *SyncLocalizationsTemplatesResponse) SetQueuedLocales(queuedLocales []st
 func (s *SyncLocalizationsTemplatesResponse) SetQueuedVariantCount(queuedVariantCount *int) {
 	s.QueuedVariantCount = queuedVariantCount
 	s.require(syncLocalizationsTemplatesResponseFieldQueuedVariantCount)
+}
+
+// SetSkippedLocales sets the SkippedLocales field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SyncLocalizationsTemplatesResponse) SetSkippedLocales(skippedLocales []string) {
+	s.SkippedLocales = skippedLocales
+	s.require(syncLocalizationsTemplatesResponseFieldSkippedLocales)
 }
 
 // SetSuccess sets the Success field and marks it as non-optional;

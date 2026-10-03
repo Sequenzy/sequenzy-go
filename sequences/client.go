@@ -179,6 +179,31 @@ func (c *Client) Create(
 	return response.Body, nil
 }
 
+// Clones a public sequence from the Sequenzy email gallery into a draft sequence for your company. The draft keeps the example's trigger family and send timing, up to 12 emails, and AI then writes every email in your brand in the background (usually 30 to 60 seconds). Poll [Get Sequence](/api-reference/sequences/get) until `enrichmentStatus` is `complete`. The sequence sends nothing until you enable it. Every successful call creates another sequence, so do not retry after a success. Requires `sequences:write`.
+//
+// Example:
+//
+//	request := &sequenzygo.CreateFromExampleSequencesRequest{}
+//	client.Sequences.CreateFromExample(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) CreateFromExample(
+	ctx context.Context,
+	request *sequenzygo.CreateFromExampleSequencesRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.CreateFromExampleSequencesResponse, error) {
+	response, err := c.WithRawResponse.CreateFromExample(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Creates a conversion goal for an event, subscriber attribute change, or applied tag.
 //
 // Example:

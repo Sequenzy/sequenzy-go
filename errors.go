@@ -7,7 +7,7 @@ import (
 	core "github.com/sequenzy/sequenzy-go/core"
 )
 
-// Invalid tagging input
+// Invalid tagging input. `error` summarizes the failing fields, and `issues` lists their paths with the accepted values for fixed choices such as `kind`.
 type BadRequestError struct {
 	*core.APIError
 	Body any

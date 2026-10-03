@@ -34,6 +34,33 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
+// Returns the mail clients and device types that opened a campaign, as shares of its unique opens. Each email send counts once, attributed to the client of its first open. Covers the whole campaign.
+//
+// Example:
+//
+//	request := &sequenzygo.GetCampaignEmailClientMetricsRequest{
+//	    CampaignID: "campaignId",
+//	}
+//	client.Analytics.GetCampaignEmailClientMetrics(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) GetCampaignEmailClientMetrics(
+	ctx context.Context,
+	request *sequenzygo.GetCampaignEmailClientMetricsRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.GetCampaignEmailClientMetricsResponse, error) {
+	response, err := c.WithRawResponse.GetCampaignEmailClientMetrics(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Returns aggregated engagement metrics, attached campaign-goal results, a lifetime per-link click breakdown, and lifetime Poll/NPS summaries for a specific campaign. Clicked links and poll summaries are not limited by period/start/end.
 //
 // Example:
@@ -78,6 +105,31 @@ func (c *Client) GetCampaignStatsLegacy(
 	opts ...option.RequestOption,
 ) (*sequenzygo.GetCampaignStatsLegacyResponse, error) {
 	response, err := c.WithRawResponse.GetCampaignStatsLegacy(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Returns the mail clients and device types that opened your emails, as shares of unique opens. Each email send counts once, attributed to the client of its first open. Defaults to the last 90 days.
+//
+// Example:
+//
+//	request := &sequenzygo.GetEmailClientMetricsRequest{}
+//	client.Analytics.GetEmailClientMetrics(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) GetEmailClientMetrics(
+	ctx context.Context,
+	request *sequenzygo.GetEmailClientMetricsRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.GetEmailClientMetricsResponse, error) {
+	response, err := c.WithRawResponse.GetEmailClientMetrics(
 		ctx,
 		request,
 		opts...,

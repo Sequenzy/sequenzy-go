@@ -277,19 +277,21 @@ var (
 	sendTransactionalRequestFieldFrom                 = big.NewInt(1 << 6)
 	sendTransactionalRequestFieldFromEmail            = big.NewInt(1 << 7)
 	sendTransactionalRequestFieldFromName             = big.NewInt(1 << 8)
-	sendTransactionalRequestFieldHTML                 = big.NewInt(1 << 9)
-	sendTransactionalRequestFieldPreview              = big.NewInt(1 << 10)
-	sendTransactionalRequestFieldReplyProfileID       = big.NewInt(1 << 11)
-	sendTransactionalRequestFieldReplyTo              = big.NewInt(1 << 12)
-	sendTransactionalRequestFieldReplyToName          = big.NewInt(1 << 13)
-	sendTransactionalRequestFieldSenderProfileID      = big.NewInt(1 << 14)
-	sendTransactionalRequestFieldSlug                 = big.NewInt(1 << 15)
-	sendTransactionalRequestFieldSubject              = big.NewInt(1 << 16)
-	sendTransactionalRequestFieldSubscriberExternalID = big.NewInt(1 << 17)
-	sendTransactionalRequestFieldTemplateID           = big.NewInt(1 << 18)
-	sendTransactionalRequestFieldTo                   = big.NewInt(1 << 19)
-	sendTransactionalRequestFieldTrackingSettings     = big.NewInt(1 << 20)
-	sendTransactionalRequestFieldVariables            = big.NewInt(1 << 21)
+	sendTransactionalRequestFieldHeaders              = big.NewInt(1 << 9)
+	sendTransactionalRequestFieldHTML                 = big.NewInt(1 << 10)
+	sendTransactionalRequestFieldPreview              = big.NewInt(1 << 11)
+	sendTransactionalRequestFieldReplyProfileID       = big.NewInt(1 << 12)
+	sendTransactionalRequestFieldReplyTo              = big.NewInt(1 << 13)
+	sendTransactionalRequestFieldReplyToName          = big.NewInt(1 << 14)
+	sendTransactionalRequestFieldSenderProfileID      = big.NewInt(1 << 15)
+	sendTransactionalRequestFieldSlug                 = big.NewInt(1 << 16)
+	sendTransactionalRequestFieldSubject              = big.NewInt(1 << 17)
+	sendTransactionalRequestFieldSubscriberExternalID = big.NewInt(1 << 18)
+	sendTransactionalRequestFieldTemplateID           = big.NewInt(1 << 19)
+	sendTransactionalRequestFieldTo                   = big.NewInt(1 << 20)
+	sendTransactionalRequestFieldTrackAs              = big.NewInt(1 << 21)
+	sendTransactionalRequestFieldTrackingSettings     = big.NewInt(1 << 22)
+	sendTransactionalRequestFieldVariables            = big.NewInt(1 << 23)
 )
 
 type SendTransactionalRequest struct {
@@ -301,7 +303,7 @@ type SendTransactionalRequest struct {
 	//
 	// Set `contentId` to embed the file as an inline image the HTML references with `<img src="cid:VALUE">` instead of attaching it.
 	//
-	// Maximum 10 attachments and 7MB total per email.
+	// Maximum 10 attachments and 15MB total per email.
 	Attachments []*Attachment `json:"attachments,omitempty" url:"-"`
 	// Blind-carbon-copy recipient email address(es). Duplicates already present in `to` or `cc` are removed.
 	Bcc *SendTransactionalRequestBcc `json:"bcc,omitempty" url:"-"`
@@ -324,6 +326,8 @@ type SendTransactionalRequest struct {
 	FromEmail *string `json:"fromEmail,omitempty" url:"-"`
 	// Display name selecting an existing identity on fromEmail. Requires fromEmail; mutually exclusive with senderProfileId and from. Does not create a profile.
 	FromName *string `json:"fromName,omitempty" url:"-"`
+	// Extra email headers as header name to string value, up to 50 applied. Names use letters, digits and hyphens (max 100 characters); values are one line of printable ASCII and each `Name: value` line fits in 998 characters. A transactional send can carry your own `List-Unsubscribe`, plus `List-Unsubscribe-Post: List-Unsubscribe=One-Click` for RFC 8058 one-click unsubscribe; unsubscribes through your link are not suppressed in Sequenzy. Marketing sends always use Sequenzy's signed unsubscribe headers, so `List-Unsubscribe`, `List-Unsubscribe-Post`, `Precedence` and `Feedback-ID` are not applied. Headers Sequenzy manages (From, Sender, To, Cc, Bcc, Reply-To, Subject, Date, Message-ID, MIME-Version, Return-Path, Received, Received-SPF, Delivered-To, DKIM-Signature, Authentication-Results, and names starting with Content-, X-Sequenzy-, X-SES-, ARC- or Resent-) are never applied. A header that cannot be applied never fails the request; it is listed in the response `ignoredHeaders`. Names match case-insensitively; when names differ only in case, only the first one is considered, even if it is not applied. A retry of a failed delivery (dashboard or outage recovery) resends without these headers.
+	Headers map[string]string `json:"headers,omitempty" url:"-"`
 	// Compatibility alias for `body`. Accepted with `subject` for direct sends and must match `body` when both are provided.
 	HTML *string `json:"html,omitempty" url:"-"`
 	// Preview text for the email (only used with direct content)
@@ -346,6 +350,8 @@ type SendTransactionalRequest struct {
 	TemplateID *string `json:"templateId,omitempty" url:"-"`
 	// Recipient email address(es). Can be a single email string or an array of up to 50 emails.
 	To *SendTransactionalRequestTo `json:"to" url:"-"`
+	// Direct content only. Names the email type so its sends are counted under one code-managed transactional email, created on first use. Up to 255 ASCII letters, digits, spaces and `. _ - : /`, including at least one letter or digit; it is normalized like a slug. Cannot be combined with `slug`/`templateId`.
+	TrackAs *string `json:"trackAs,omitempty" url:"-"`
 	// Per-send tracking opt-outs. Omitted fields follow the company Transactional API open/click defaults. Set false to disable tracking for this send. Neither true nor omission can enable tracking disabled by account-wide or Transactional API settings.
 	TrackingSettings *SendTransactionalRequestTrackingSettings `json:"trackingSettings,omitempty" url:"-"`
 	// Variables for template replacement (works with both modes). Values can be scalars, nested objects, or arrays used by repeat blocks. For a single recipient, stored subscriber first and last names fill missing name variables; explicit request variables take precedence. Raw HTML templates can use simple subscriber/custom-attribute conditionals such as `{{#if subscriber.plan}}...{{else}}...{{/if}}` and `{{#unless subscriber.plan}}...{{/unless}}`. Variables are always HTML-escaped; a template can prefix a tag with `html.` (`{{html.prerenderedHtml}}`) to insert a trusted HTML value unescaped. Injected HTML is sanitized (scripts, event handlers, and dangerous URLs are stripped), only applies in HTML text position, and must not contain end-user input. Likely variable issues are returned as non-blocking diagnostics when possible; missing required variables without defaults render as empty strings and do not block sending.
@@ -425,6 +431,13 @@ func (s *SendTransactionalRequest) SetFromName(fromName *string) {
 	s.require(sendTransactionalRequestFieldFromName)
 }
 
+// SetHeaders sets the Headers field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendTransactionalRequest) SetHeaders(headers map[string]string) {
+	s.Headers = headers
+	s.require(sendTransactionalRequestFieldHeaders)
+}
+
 // SetHTML sets the HTML field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *SendTransactionalRequest) SetHTML(html *string) {
@@ -500,6 +513,13 @@ func (s *SendTransactionalRequest) SetTemplateID(templateID *string) {
 func (s *SendTransactionalRequest) SetTo(to *SendTransactionalRequestTo) {
 	s.To = to
 	s.require(sendTransactionalRequestFieldTo)
+}
+
+// SetTrackAs sets the TrackAs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendTransactionalRequest) SetTrackAs(trackAs *string) {
+	s.TrackAs = trackAs
+	s.require(sendTransactionalRequestFieldTrackAs)
 }
 
 // SetTrackingSettings sets the TrackingSettings field and marks it as non-optional;
@@ -696,9 +716,10 @@ var (
 	transactionalEmailFieldEnabled   = big.NewInt(1 << 2)
 	transactionalEmailFieldID        = big.NewInt(1 << 3)
 	transactionalEmailFieldLabels    = big.NewInt(1 << 4)
-	transactionalEmailFieldName      = big.NewInt(1 << 5)
-	transactionalEmailFieldSlug      = big.NewInt(1 << 6)
-	transactionalEmailFieldUpdatedAt = big.NewInt(1 << 7)
+	transactionalEmailFieldManagedBy = big.NewInt(1 << 5)
+	transactionalEmailFieldName      = big.NewInt(1 << 6)
+	transactionalEmailFieldSlug      = big.NewInt(1 << 7)
+	transactionalEmailFieldUpdatedAt = big.NewInt(1 << 8)
 )
 
 type TransactionalEmail struct {
@@ -707,10 +728,12 @@ type TransactionalEmail struct {
 	Enabled   *bool      `json:"enabled,omitempty" url:"enabled,omitempty"`
 	ID        *string    `json:"id,omitempty" url:"id,omitempty"`
 	// Assigned company label names. Empty when unlabelled.
-	Labels    []string   `json:"labels,omitempty" url:"labels,omitempty"`
-	Name      *string    `json:"name,omitempty" url:"name,omitempty"`
-	Slug      *string    `json:"slug,omitempty" url:"slug,omitempty"`
-	UpdatedAt *time.Time `json:"updatedAt,omitempty" url:"updatedAt,omitempty"`
+	Labels []string `json:"labels,omitempty" url:"labels,omitempty"`
+	// `code` when the email was created by a direct-content send with `trackAs`. Its content is a snapshot of a recent send, it cannot be sent by slug, and only `name`, `enabled` and `labels` can be updated. `dashboard` for every other transactional email.
+	ManagedBy *TransactionalEmailManagedBy `json:"managedBy,omitempty" url:"managedBy,omitempty"`
+	Name      *string                      `json:"name,omitempty" url:"name,omitempty"`
+	Slug      *string                      `json:"slug,omitempty" url:"slug,omitempty"`
+	UpdatedAt *time.Time                   `json:"updatedAt,omitempty" url:"updatedAt,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -752,6 +775,13 @@ func (t *TransactionalEmail) GetLabels() []string {
 		return nil
 	}
 	return t.Labels
+}
+
+func (t *TransactionalEmail) GetManagedBy() *TransactionalEmailManagedBy {
+	if t == nil {
+		return nil
+	}
+	return t.ManagedBy
 }
 
 func (t *TransactionalEmail) GetName() *string {
@@ -822,6 +852,13 @@ func (t *TransactionalEmail) SetID(id *string) {
 func (t *TransactionalEmail) SetLabels(labels []string) {
 	t.Labels = labels
 	t.require(transactionalEmailFieldLabels)
+}
+
+// SetManagedBy sets the ManagedBy field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TransactionalEmail) SetManagedBy(managedBy *TransactionalEmailManagedBy) {
+	t.ManagedBy = managedBy
+	t.require(transactionalEmailFieldManagedBy)
 }
 
 // SetName sets the Name field and marks it as non-optional;
@@ -905,15 +942,16 @@ var (
 	transactionalEmailDetailsFieldEnabled     = big.NewInt(1 << 2)
 	transactionalEmailDetailsFieldID          = big.NewInt(1 << 3)
 	transactionalEmailDetailsFieldLabels      = big.NewInt(1 << 4)
-	transactionalEmailDetailsFieldName        = big.NewInt(1 << 5)
-	transactionalEmailDetailsFieldSlug        = big.NewInt(1 << 6)
-	transactionalEmailDetailsFieldUpdatedAt   = big.NewInt(1 << 7)
-	transactionalEmailDetailsFieldBlocks      = big.NewInt(1 << 8)
-	transactionalEmailDetailsFieldEmail       = big.NewInt(1 << 9)
-	transactionalEmailDetailsFieldEmailPreset = big.NewInt(1 << 10)
-	transactionalEmailDetailsFieldPreviewText = big.NewInt(1 << 11)
-	transactionalEmailDetailsFieldSubject     = big.NewInt(1 << 12)
-	transactionalEmailDetailsFieldVariables   = big.NewInt(1 << 13)
+	transactionalEmailDetailsFieldManagedBy   = big.NewInt(1 << 5)
+	transactionalEmailDetailsFieldName        = big.NewInt(1 << 6)
+	transactionalEmailDetailsFieldSlug        = big.NewInt(1 << 7)
+	transactionalEmailDetailsFieldUpdatedAt   = big.NewInt(1 << 8)
+	transactionalEmailDetailsFieldBlocks      = big.NewInt(1 << 9)
+	transactionalEmailDetailsFieldEmail       = big.NewInt(1 << 10)
+	transactionalEmailDetailsFieldEmailPreset = big.NewInt(1 << 11)
+	transactionalEmailDetailsFieldPreviewText = big.NewInt(1 << 12)
+	transactionalEmailDetailsFieldSubject     = big.NewInt(1 << 13)
+	transactionalEmailDetailsFieldVariables   = big.NewInt(1 << 14)
 )
 
 type TransactionalEmailDetails struct {
@@ -922,16 +960,18 @@ type TransactionalEmailDetails struct {
 	Enabled   *bool      `json:"enabled,omitempty" url:"enabled,omitempty"`
 	ID        *string    `json:"id,omitempty" url:"id,omitempty"`
 	// Assigned company label names. Empty when unlabelled.
-	Labels      []string      `json:"labels,omitempty" url:"labels,omitempty"`
-	Name        *string       `json:"name,omitempty" url:"name,omitempty"`
-	Slug        *string       `json:"slug,omitempty" url:"slug,omitempty"`
-	UpdatedAt   *time.Time    `json:"updatedAt,omitempty" url:"updatedAt,omitempty"`
-	Blocks      []*EmailBlock `json:"blocks,omitempty" url:"blocks,omitempty"`
-	Email       *Email        `json:"email,omitempty" url:"email,omitempty"`
-	EmailPreset *EmailPreset  `json:"emailPreset,omitempty" url:"emailPreset,omitempty"`
-	PreviewText *string       `json:"previewText,omitempty" url:"previewText,omitempty"`
-	Subject     *string       `json:"subject,omitempty" url:"subject,omitempty"`
-	Variables   []string      `json:"variables,omitempty" url:"variables,omitempty"`
+	Labels []string `json:"labels,omitempty" url:"labels,omitempty"`
+	// `code` when the email was created by a direct-content send with `trackAs`. Its content is a snapshot of a recent send, it cannot be sent by slug, and only `name`, `enabled` and `labels` can be updated. `dashboard` for every other transactional email.
+	ManagedBy   *TransactionalEmailManagedBy `json:"managedBy,omitempty" url:"managedBy,omitempty"`
+	Name        *string                      `json:"name,omitempty" url:"name,omitempty"`
+	Slug        *string                      `json:"slug,omitempty" url:"slug,omitempty"`
+	UpdatedAt   *time.Time                   `json:"updatedAt,omitempty" url:"updatedAt,omitempty"`
+	Blocks      []*EmailBlock                `json:"blocks,omitempty" url:"blocks,omitempty"`
+	Email       *Email                       `json:"email,omitempty" url:"email,omitempty"`
+	EmailPreset *EmailPreset                 `json:"emailPreset,omitempty" url:"emailPreset,omitempty"`
+	PreviewText *string                      `json:"previewText,omitempty" url:"previewText,omitempty"`
+	Subject     *string                      `json:"subject,omitempty" url:"subject,omitempty"`
+	Variables   []string                     `json:"variables,omitempty" url:"variables,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -973,6 +1013,13 @@ func (t *TransactionalEmailDetails) GetLabels() []string {
 		return nil
 	}
 	return t.Labels
+}
+
+func (t *TransactionalEmailDetails) GetManagedBy() *TransactionalEmailManagedBy {
+	if t == nil {
+		return nil
+	}
+	return t.ManagedBy
 }
 
 func (t *TransactionalEmailDetails) GetName() *string {
@@ -1085,6 +1132,13 @@ func (t *TransactionalEmailDetails) SetID(id *string) {
 func (t *TransactionalEmailDetails) SetLabels(labels []string) {
 	t.Labels = labels
 	t.require(transactionalEmailDetailsFieldLabels)
+}
+
+// SetManagedBy sets the ManagedBy field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TransactionalEmailDetails) SetManagedBy(managedBy *TransactionalEmailManagedBy) {
+	t.ManagedBy = managedBy
+	t.require(transactionalEmailDetailsFieldManagedBy)
 }
 
 // SetName sets the Name field and marks it as non-optional;
@@ -1210,12 +1264,13 @@ var (
 	transactionalEmailListItemFieldEnabled     = big.NewInt(1 << 2)
 	transactionalEmailListItemFieldID          = big.NewInt(1 << 3)
 	transactionalEmailListItemFieldLabels      = big.NewInt(1 << 4)
-	transactionalEmailListItemFieldName        = big.NewInt(1 << 5)
-	transactionalEmailListItemFieldSlug        = big.NewInt(1 << 6)
-	transactionalEmailListItemFieldUpdatedAt   = big.NewInt(1 << 7)
-	transactionalEmailListItemFieldEmailPreset = big.NewInt(1 << 8)
-	transactionalEmailListItemFieldStats       = big.NewInt(1 << 9)
-	transactionalEmailListItemFieldSubject     = big.NewInt(1 << 10)
+	transactionalEmailListItemFieldManagedBy   = big.NewInt(1 << 5)
+	transactionalEmailListItemFieldName        = big.NewInt(1 << 6)
+	transactionalEmailListItemFieldSlug        = big.NewInt(1 << 7)
+	transactionalEmailListItemFieldUpdatedAt   = big.NewInt(1 << 8)
+	transactionalEmailListItemFieldEmailPreset = big.NewInt(1 << 9)
+	transactionalEmailListItemFieldStats       = big.NewInt(1 << 10)
+	transactionalEmailListItemFieldSubject     = big.NewInt(1 << 11)
 )
 
 type TransactionalEmailListItem struct {
@@ -1224,7 +1279,9 @@ type TransactionalEmailListItem struct {
 	Enabled   *bool      `json:"enabled,omitempty" url:"enabled,omitempty"`
 	ID        *string    `json:"id,omitempty" url:"id,omitempty"`
 	// Assigned company label names. Empty when unlabelled.
-	Labels      []string                         `json:"labels,omitempty" url:"labels,omitempty"`
+	Labels []string `json:"labels,omitempty" url:"labels,omitempty"`
+	// `code` when the email was created by a direct-content send with `trackAs`. Its content is a snapshot of a recent send, it cannot be sent by slug, and only `name`, `enabled` and `labels` can be updated. `dashboard` for every other transactional email.
+	ManagedBy   *TransactionalEmailManagedBy     `json:"managedBy,omitempty" url:"managedBy,omitempty"`
 	Name        *string                          `json:"name,omitempty" url:"name,omitempty"`
 	Slug        *string                          `json:"slug,omitempty" url:"slug,omitempty"`
 	UpdatedAt   *time.Time                       `json:"updatedAt,omitempty" url:"updatedAt,omitempty"`
@@ -1272,6 +1329,13 @@ func (t *TransactionalEmailListItem) GetLabels() []string {
 		return nil
 	}
 	return t.Labels
+}
+
+func (t *TransactionalEmailListItem) GetManagedBy() *TransactionalEmailManagedBy {
+	if t == nil {
+		return nil
+	}
+	return t.ManagedBy
 }
 
 func (t *TransactionalEmailListItem) GetName() *string {
@@ -1363,6 +1427,13 @@ func (t *TransactionalEmailListItem) SetID(id *string) {
 func (t *TransactionalEmailListItem) SetLabels(labels []string) {
 	t.Labels = labels
 	t.require(transactionalEmailListItemFieldLabels)
+}
+
+// SetManagedBy sets the ManagedBy field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TransactionalEmailListItem) SetManagedBy(managedBy *TransactionalEmailManagedBy) {
+	t.ManagedBy = managedBy
+	t.require(transactionalEmailListItemFieldManagedBy)
 }
 
 // SetName sets the Name field and marks it as non-optional;
@@ -1639,6 +1710,29 @@ func (t *TransactionalEmailListItemStats) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", t)
+}
+
+// `code` when the email was created by a direct-content send with `trackAs`. Its content is a snapshot of a recent send, it cannot be sent by slug, and only `name`, `enabled` and `labels` can be updated. `dashboard` for every other transactional email.
+type TransactionalEmailManagedBy string
+
+const (
+	TransactionalEmailManagedByDashboard TransactionalEmailManagedBy = "dashboard"
+	TransactionalEmailManagedByCode      TransactionalEmailManagedBy = "code"
+)
+
+func NewTransactionalEmailManagedByFromString(s string) (TransactionalEmailManagedBy, error) {
+	switch s {
+	case "dashboard":
+		return TransactionalEmailManagedByDashboard, nil
+	case "code":
+		return TransactionalEmailManagedByCode, nil
+	}
+	var t TransactionalEmailManagedBy
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (t TransactionalEmailManagedBy) Ptr() *TransactionalEmailManagedBy {
+	return &t
 }
 
 // Non-blocking warnings about template variable issues. The send is still queued when this object is present, and missing values without defaults render as empty strings.
@@ -2217,6 +2311,152 @@ func (t *TransactionalSendDiagnosticsUnusedVariablesItem) String() string {
 	return fmt.Sprintf("%#v", t)
 }
 
+// Entries in the request `headers` that the send was accepted without. Present only when at least one header was not applied. Idempotent replays report the ignored headers of the retried request. A retry that adds `headers` to a key first used without any replays the original send instead of returning 409.
+type TransactionalSendIgnoredHeaders = []*TransactionalSendIgnoredHeadersItem
+
+var (
+	transactionalSendIgnoredHeadersItemFieldName   = big.NewInt(1 << 0)
+	transactionalSendIgnoredHeadersItemFieldReason = big.NewInt(1 << 1)
+)
+
+type TransactionalSendIgnoredHeadersItem struct {
+	// Header name as sent, or `*` when `headers` was not an object.
+	Name string `json:"name" url:"name"`
+	// Why the header was not applied.
+	Reason TransactionalSendIgnoredHeadersItemReason `json:"reason" url:"reason"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (t *TransactionalSendIgnoredHeadersItem) GetName() string {
+	if t == nil {
+		return ""
+	}
+	return t.Name
+}
+
+func (t *TransactionalSendIgnoredHeadersItem) GetReason() TransactionalSendIgnoredHeadersItemReason {
+	if t == nil {
+		return ""
+	}
+	return t.Reason
+}
+
+func (t *TransactionalSendIgnoredHeadersItem) GetExtraProperties() map[string]interface{} {
+	if t == nil {
+		return nil
+	}
+	return t.extraProperties
+}
+
+func (t *TransactionalSendIgnoredHeadersItem) require(field *big.Int) {
+	if t.explicitFields == nil {
+		t.explicitFields = big.NewInt(0)
+	}
+	t.explicitFields.Or(t.explicitFields, field)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TransactionalSendIgnoredHeadersItem) SetName(name string) {
+	t.Name = name
+	t.require(transactionalSendIgnoredHeadersItemFieldName)
+}
+
+// SetReason sets the Reason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TransactionalSendIgnoredHeadersItem) SetReason(reason TransactionalSendIgnoredHeadersItemReason) {
+	t.Reason = reason
+	t.require(transactionalSendIgnoredHeadersItemFieldReason)
+}
+
+func (t *TransactionalSendIgnoredHeadersItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler TransactionalSendIgnoredHeadersItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*t = TransactionalSendIgnoredHeadersItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+	t.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (t *TransactionalSendIgnoredHeadersItem) MarshalJSON() ([]byte, error) {
+	type embed TransactionalSendIgnoredHeadersItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*t),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, t.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (t *TransactionalSendIgnoredHeadersItem) String() string {
+	if t == nil {
+		return "<nil>"
+	}
+	if len(t.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(t.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(t); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", t)
+}
+
+// Why the header was not applied.
+type TransactionalSendIgnoredHeadersItemReason string
+
+const (
+	TransactionalSendIgnoredHeadersItemReasonInvalidHeaders          TransactionalSendIgnoredHeadersItemReason = "invalid_headers"
+	TransactionalSendIgnoredHeadersItemReasonInvalidName             TransactionalSendIgnoredHeadersItemReason = "invalid_name"
+	TransactionalSendIgnoredHeadersItemReasonInvalidValue            TransactionalSendIgnoredHeadersItemReason = "invalid_value"
+	TransactionalSendIgnoredHeadersItemReasonDuplicate               TransactionalSendIgnoredHeadersItemReason = "duplicate"
+	TransactionalSendIgnoredHeadersItemReasonReserved                TransactionalSendIgnoredHeadersItemReason = "reserved"
+	TransactionalSendIgnoredHeadersItemReasonManagedInMarketingMode  TransactionalSendIgnoredHeadersItemReason = "managed_in_marketing_mode"
+	TransactionalSendIgnoredHeadersItemReasonRequiresListUnsubscribe TransactionalSendIgnoredHeadersItemReason = "requires_list_unsubscribe"
+	TransactionalSendIgnoredHeadersItemReasonTooManyHeaders          TransactionalSendIgnoredHeadersItemReason = "too_many_headers"
+)
+
+func NewTransactionalSendIgnoredHeadersItemReasonFromString(s string) (TransactionalSendIgnoredHeadersItemReason, error) {
+	switch s {
+	case "invalid_headers":
+		return TransactionalSendIgnoredHeadersItemReasonInvalidHeaders, nil
+	case "invalid_name":
+		return TransactionalSendIgnoredHeadersItemReasonInvalidName, nil
+	case "invalid_value":
+		return TransactionalSendIgnoredHeadersItemReasonInvalidValue, nil
+	case "duplicate":
+		return TransactionalSendIgnoredHeadersItemReasonDuplicate, nil
+	case "reserved":
+		return TransactionalSendIgnoredHeadersItemReasonReserved, nil
+	case "managed_in_marketing_mode":
+		return TransactionalSendIgnoredHeadersItemReasonManagedInMarketingMode, nil
+	case "requires_list_unsubscribe":
+		return TransactionalSendIgnoredHeadersItemReasonRequiresListUnsubscribe, nil
+	case "too_many_headers":
+		return TransactionalSendIgnoredHeadersItemReasonTooManyHeaders, nil
+	}
+	var t TransactionalSendIgnoredHeadersItemReason
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (t TransactionalSendIgnoredHeadersItemReason) Ptr() *TransactionalSendIgnoredHeadersItemReason {
+	return &t
+}
+
 var (
 	createTransactionalResponseFieldSuccess       = big.NewInt(1 << 0)
 	createTransactionalResponseFieldTransactional = big.NewInt(1 << 1)
@@ -2450,14 +2690,17 @@ func (d *DeleteTransactionalResponse) String() string {
 }
 
 var (
-	deleteTransactionalResponseDeletedFieldEmailID = big.NewInt(1 << 0)
-	deleteTransactionalResponseDeletedFieldID      = big.NewInt(1 << 1)
-	deleteTransactionalResponseDeletedFieldName    = big.NewInt(1 << 2)
-	deleteTransactionalResponseDeletedFieldSlug    = big.NewInt(1 << 3)
+	deleteTransactionalResponseDeletedFieldEmailDeleted = big.NewInt(1 << 0)
+	deleteTransactionalResponseDeletedFieldEmailID      = big.NewInt(1 << 1)
+	deleteTransactionalResponseDeletedFieldID           = big.NewInt(1 << 2)
+	deleteTransactionalResponseDeletedFieldName         = big.NewInt(1 << 3)
+	deleteTransactionalResponseDeletedFieldSlug         = big.NewInt(1 << 4)
 )
 
 type DeleteTransactionalResponseDeleted struct {
-	// The email content kept as a reusable template. Delete it separately with `DELETE /api/v1/templates/{templateId}`.
+	// True when the content was deleted with the email (code-managed emails, whose content is a snapshot of a real send). False when it was kept as a reusable template.
+	EmailDeleted *bool `json:"emailDeleted,omitempty" url:"emailDeleted,omitempty"`
+	// The email content kept as a reusable template. Delete it separately with `DELETE /api/v1/templates/{templateId}`. For a code-managed email this id no longer exists; see `emailDeleted`.
 	EmailID *string `json:"emailId,omitempty" url:"emailId,omitempty"`
 	ID      *string `json:"id,omitempty" url:"id,omitempty"`
 	Name    *string `json:"name,omitempty" url:"name,omitempty"`
@@ -2468,6 +2711,13 @@ type DeleteTransactionalResponseDeleted struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (d *DeleteTransactionalResponseDeleted) GetEmailDeleted() *bool {
+	if d == nil {
+		return nil
+	}
+	return d.EmailDeleted
 }
 
 func (d *DeleteTransactionalResponseDeleted) GetEmailID() *string {
@@ -2510,6 +2760,13 @@ func (d *DeleteTransactionalResponseDeleted) require(field *big.Int) {
 		d.explicitFields = big.NewInt(0)
 	}
 	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetEmailDeleted sets the EmailDeleted field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteTransactionalResponseDeleted) SetEmailDeleted(emailDeleted *bool) {
+	d.EmailDeleted = emailDeleted
+	d.require(deleteTransactionalResponseDeletedFieldEmailDeleted)
 }
 
 // SetEmailID sets the EmailID field and marks it as non-optional;
@@ -3179,17 +3436,17 @@ func (s *SendTransactionalRequestTrackingSettings) String() string {
 }
 
 type SendTransactionalResponse struct {
-	SendTransactionalResponseTransactional *SendTransactionalResponseTransactional
-	SendTransactionalResponseOne           *SendTransactionalResponseOne
+	SendTransactionalResponseZero *SendTransactionalResponseZero
+	SendTransactionalResponseOne  *SendTransactionalResponseOne
 
 	typ string
 }
 
-func (s *SendTransactionalResponse) GetSendTransactionalResponseTransactional() *SendTransactionalResponseTransactional {
+func (s *SendTransactionalResponse) GetSendTransactionalResponseZero() *SendTransactionalResponseZero {
 	if s == nil {
 		return nil
 	}
-	return s.SendTransactionalResponseTransactional
+	return s.SendTransactionalResponseZero
 }
 
 func (s *SendTransactionalResponse) GetSendTransactionalResponseOne() *SendTransactionalResponseOne {
@@ -3200,10 +3457,10 @@ func (s *SendTransactionalResponse) GetSendTransactionalResponseOne() *SendTrans
 }
 
 func (s *SendTransactionalResponse) UnmarshalJSON(data []byte) error {
-	valueSendTransactionalResponseTransactional := new(SendTransactionalResponseTransactional)
-	if err := json.Unmarshal(data, &valueSendTransactionalResponseTransactional); err == nil {
-		s.typ = "SendTransactionalResponseTransactional"
-		s.SendTransactionalResponseTransactional = valueSendTransactionalResponseTransactional
+	valueSendTransactionalResponseZero := new(SendTransactionalResponseZero)
+	if err := json.Unmarshal(data, &valueSendTransactionalResponseZero); err == nil {
+		s.typ = "SendTransactionalResponseZero"
+		s.SendTransactionalResponseZero = valueSendTransactionalResponseZero
 		return nil
 	}
 	valueSendTransactionalResponseOne := new(SendTransactionalResponseOne)
@@ -3216,8 +3473,8 @@ func (s *SendTransactionalResponse) UnmarshalJSON(data []byte) error {
 }
 
 func (s SendTransactionalResponse) MarshalJSON() ([]byte, error) {
-	if s.typ == "SendTransactionalResponseTransactional" || s.SendTransactionalResponseTransactional != nil {
-		return json.Marshal(s.SendTransactionalResponseTransactional)
+	if s.typ == "SendTransactionalResponseZero" || s.SendTransactionalResponseZero != nil {
+		return json.Marshal(s.SendTransactionalResponseZero)
 	}
 	if s.typ == "SendTransactionalResponseOne" || s.SendTransactionalResponseOne != nil {
 		return json.Marshal(s.SendTransactionalResponseOne)
@@ -3226,13 +3483,13 @@ func (s SendTransactionalResponse) MarshalJSON() ([]byte, error) {
 }
 
 type SendTransactionalResponseVisitor interface {
-	VisitSendTransactionalResponseTransactional(*SendTransactionalResponseTransactional) error
+	VisitSendTransactionalResponseZero(*SendTransactionalResponseZero) error
 	VisitSendTransactionalResponseOne(*SendTransactionalResponseOne) error
 }
 
 func (s *SendTransactionalResponse) Accept(visitor SendTransactionalResponseVisitor) error {
-	if s.typ == "SendTransactionalResponseTransactional" || s.SendTransactionalResponseTransactional != nil {
-		return visitor.VisitSendTransactionalResponseTransactional(s.SendTransactionalResponseTransactional)
+	if s.typ == "SendTransactionalResponseZero" || s.SendTransactionalResponseZero != nil {
+		return visitor.VisitSendTransactionalResponseZero(s.SendTransactionalResponseZero)
 	}
 	if s.typ == "SendTransactionalResponseOne" || s.SendTransactionalResponseOne != nil {
 		return visitor.VisitSendTransactionalResponseOne(s.SendTransactionalResponseOne)
@@ -3247,9 +3504,11 @@ var (
 	sendTransactionalResponseOneFieldEmailSendID      = big.NewInt(1 << 3)
 	sendTransactionalResponseOneFieldEmailType        = big.NewInt(1 << 4)
 	sendTransactionalResponseOneFieldIdempotentReplay = big.NewInt(1 << 5)
-	sendTransactionalResponseOneFieldJobID            = big.NewInt(1 << 6)
-	sendTransactionalResponseOneFieldSuccess          = big.NewInt(1 << 7)
-	sendTransactionalResponseOneFieldTo               = big.NewInt(1 << 8)
+	sendTransactionalResponseOneFieldIgnoredHeaders   = big.NewInt(1 << 6)
+	sendTransactionalResponseOneFieldJobID            = big.NewInt(1 << 7)
+	sendTransactionalResponseOneFieldSuccess          = big.NewInt(1 << 8)
+	sendTransactionalResponseOneFieldTo               = big.NewInt(1 << 9)
+	sendTransactionalResponseOneFieldTransactional    = big.NewInt(1 << 10)
 )
 
 type SendTransactionalResponseOne struct {
@@ -3263,11 +3522,14 @@ type SendTransactionalResponseOne struct {
 	// Delivery policy accepted for the queued email.
 	EmailType *SendTransactionalResponseOneEmailType `json:"emailType,omitempty" url:"emailType,omitempty"`
 	// True when this response replays an earlier request with the same Idempotency-Key.
-	IdempotentReplay *bool `json:"idempotentReplay,omitempty" url:"idempotentReplay,omitempty"`
+	IdempotentReplay *bool                            `json:"idempotentReplay,omitempty" url:"idempotentReplay,omitempty"`
+	IgnoredHeaders   *TransactionalSendIgnoredHeaders `json:"ignoredHeaders,omitempty" url:"ignoredHeaders,omitempty"`
 	// Legacy queue identifier retained for response compatibility.
 	JobID   *string                         `json:"jobId,omitempty" url:"jobId,omitempty"`
 	Success *bool                           `json:"success,omitempty" url:"success,omitempty"`
 	To      *SendTransactionalResponseOneTo `json:"to,omitempty" url:"to,omitempty"`
+	// Code-managed transactional email the send is counted under. Present only when the request set `trackAs`.
+	Transactional *SendTransactionalResponseOneTransactional `json:"transactional,omitempty" url:"transactional,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -3318,6 +3580,13 @@ func (s *SendTransactionalResponseOne) GetIdempotentReplay() *bool {
 	return s.IdempotentReplay
 }
 
+func (s *SendTransactionalResponseOne) GetIgnoredHeaders() *TransactionalSendIgnoredHeaders {
+	if s == nil {
+		return nil
+	}
+	return s.IgnoredHeaders
+}
+
 func (s *SendTransactionalResponseOne) GetJobID() *string {
 	if s == nil {
 		return nil
@@ -3337,6 +3606,13 @@ func (s *SendTransactionalResponseOne) GetTo() *SendTransactionalResponseOneTo {
 		return nil
 	}
 	return s.To
+}
+
+func (s *SendTransactionalResponseOne) GetTransactional() *SendTransactionalResponseOneTransactional {
+	if s == nil {
+		return nil
+	}
+	return s.Transactional
 }
 
 func (s *SendTransactionalResponseOne) GetExtraProperties() map[string]interface{} {
@@ -3395,6 +3671,13 @@ func (s *SendTransactionalResponseOne) SetIdempotentReplay(idempotentReplay *boo
 	s.require(sendTransactionalResponseOneFieldIdempotentReplay)
 }
 
+// SetIgnoredHeaders sets the IgnoredHeaders field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendTransactionalResponseOne) SetIgnoredHeaders(ignoredHeaders *TransactionalSendIgnoredHeaders) {
+	s.IgnoredHeaders = ignoredHeaders
+	s.require(sendTransactionalResponseOneFieldIgnoredHeaders)
+}
+
 // SetJobID sets the JobID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *SendTransactionalResponseOne) SetJobID(jobID *string) {
@@ -3414,6 +3697,13 @@ func (s *SendTransactionalResponseOne) SetSuccess(success *bool) {
 func (s *SendTransactionalResponseOne) SetTo(to *SendTransactionalResponseOneTo) {
 	s.To = to
 	s.require(sendTransactionalResponseOneFieldTo)
+}
+
+// SetTransactional sets the Transactional field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendTransactionalResponseOne) SetTransactional(transactional *SendTransactionalResponseOneTransactional) {
+	s.Transactional = transactional
+	s.require(sendTransactionalResponseOneFieldTransactional)
 }
 
 func (s *SendTransactionalResponseOne) UnmarshalJSON(data []byte) error {
@@ -3543,36 +3833,17 @@ func (s *SendTransactionalResponseOneTo) Accept(visitor SendTransactionalRespons
 	return fmt.Errorf("type %T does not include a non-empty union type", s)
 }
 
+// Code-managed transactional email the send is counted under. Present only when the request set `trackAs`.
 var (
-	sendTransactionalResponseTransactionalFieldBcc              = big.NewInt(1 << 0)
-	sendTransactionalResponseTransactionalFieldCc               = big.NewInt(1 << 1)
-	sendTransactionalResponseTransactionalFieldDiagnostics      = big.NewInt(1 << 2)
-	sendTransactionalResponseTransactionalFieldEmailSendID      = big.NewInt(1 << 3)
-	sendTransactionalResponseTransactionalFieldEmailType        = big.NewInt(1 << 4)
-	sendTransactionalResponseTransactionalFieldIdempotentReplay = big.NewInt(1 << 5)
-	sendTransactionalResponseTransactionalFieldJobID            = big.NewInt(1 << 6)
-	sendTransactionalResponseTransactionalFieldSuccess          = big.NewInt(1 << 7)
-	sendTransactionalResponseTransactionalFieldTo               = big.NewInt(1 << 8)
-	sendTransactionalResponseTransactionalFieldTransactional    = big.NewInt(1 << 9)
+	sendTransactionalResponseOneTransactionalFieldID   = big.NewInt(1 << 0)
+	sendTransactionalResponseOneTransactionalFieldName = big.NewInt(1 << 1)
+	sendTransactionalResponseOneTransactionalFieldSlug = big.NewInt(1 << 2)
 )
 
-type SendTransactionalResponseTransactional struct {
-	// Deduplicated BCC recipients; omitted when empty.
-	Bcc []string `json:"bcc,omitempty" url:"bcc,omitempty"`
-	// Deduplicated CC recipients; omitted when empty.
-	Cc          []string                      `json:"cc,omitempty" url:"cc,omitempty"`
-	Diagnostics *TransactionalSendDiagnostics `json:"diagnostics,omitempty" url:"diagnostics,omitempty"`
-	// Durable email delivery ID. Use this with GET /email-sends/{emailSendId}.
-	EmailSendID *string `json:"emailSendId,omitempty" url:"emailSendId,omitempty"`
-	// Delivery policy accepted for the queued email.
-	EmailType *SendTransactionalResponseTransactionalEmailType `json:"emailType,omitempty" url:"emailType,omitempty"`
-	// True when this response replays an earlier request with the same Idempotency-Key.
-	IdempotentReplay *bool `json:"idempotentReplay,omitempty" url:"idempotentReplay,omitempty"`
-	// Legacy queue identifier retained for response compatibility.
-	JobID         *string                                              `json:"jobId,omitempty" url:"jobId,omitempty"`
-	Success       *bool                                                `json:"success,omitempty" url:"success,omitempty"`
-	To            *SendTransactionalResponseTransactionalTo            `json:"to,omitempty" url:"to,omitempty"`
-	Transactional *SendTransactionalResponseTransactionalTransactional `json:"transactional,omitempty" url:"transactional,omitempty"`
+type SendTransactionalResponseOneTransactional struct {
+	ID   *string `json:"id,omitempty" url:"id,omitempty"`
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	Slug *string `json:"slug,omitempty" url:"slug,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -3581,167 +3852,69 @@ type SendTransactionalResponseTransactional struct {
 	rawJSON         json.RawMessage
 }
 
-func (s *SendTransactionalResponseTransactional) GetBcc() []string {
+func (s *SendTransactionalResponseOneTransactional) GetID() *string {
 	if s == nil {
 		return nil
 	}
-	return s.Bcc
+	return s.ID
 }
 
-func (s *SendTransactionalResponseTransactional) GetCc() []string {
+func (s *SendTransactionalResponseOneTransactional) GetName() *string {
 	if s == nil {
 		return nil
 	}
-	return s.Cc
+	return s.Name
 }
 
-func (s *SendTransactionalResponseTransactional) GetDiagnostics() *TransactionalSendDiagnostics {
+func (s *SendTransactionalResponseOneTransactional) GetSlug() *string {
 	if s == nil {
 		return nil
 	}
-	return s.Diagnostics
+	return s.Slug
 }
 
-func (s *SendTransactionalResponseTransactional) GetEmailSendID() *string {
-	if s == nil {
-		return nil
-	}
-	return s.EmailSendID
-}
-
-func (s *SendTransactionalResponseTransactional) GetEmailType() *SendTransactionalResponseTransactionalEmailType {
-	if s == nil {
-		return nil
-	}
-	return s.EmailType
-}
-
-func (s *SendTransactionalResponseTransactional) GetIdempotentReplay() *bool {
-	if s == nil {
-		return nil
-	}
-	return s.IdempotentReplay
-}
-
-func (s *SendTransactionalResponseTransactional) GetJobID() *string {
-	if s == nil {
-		return nil
-	}
-	return s.JobID
-}
-
-func (s *SendTransactionalResponseTransactional) GetSuccess() *bool {
-	if s == nil {
-		return nil
-	}
-	return s.Success
-}
-
-func (s *SendTransactionalResponseTransactional) GetTo() *SendTransactionalResponseTransactionalTo {
-	if s == nil {
-		return nil
-	}
-	return s.To
-}
-
-func (s *SendTransactionalResponseTransactional) GetTransactional() *SendTransactionalResponseTransactionalTransactional {
-	if s == nil {
-		return nil
-	}
-	return s.Transactional
-}
-
-func (s *SendTransactionalResponseTransactional) GetExtraProperties() map[string]interface{} {
+func (s *SendTransactionalResponseOneTransactional) GetExtraProperties() map[string]interface{} {
 	if s == nil {
 		return nil
 	}
 	return s.extraProperties
 }
 
-func (s *SendTransactionalResponseTransactional) require(field *big.Int) {
+func (s *SendTransactionalResponseOneTransactional) require(field *big.Int) {
 	if s.explicitFields == nil {
 		s.explicitFields = big.NewInt(0)
 	}
 	s.explicitFields.Or(s.explicitFields, field)
 }
 
-// SetBcc sets the Bcc field and marks it as non-optional;
+// SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SendTransactionalResponseTransactional) SetBcc(bcc []string) {
-	s.Bcc = bcc
-	s.require(sendTransactionalResponseTransactionalFieldBcc)
+func (s *SendTransactionalResponseOneTransactional) SetID(id *string) {
+	s.ID = id
+	s.require(sendTransactionalResponseOneTransactionalFieldID)
 }
 
-// SetCc sets the Cc field and marks it as non-optional;
+// SetName sets the Name field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SendTransactionalResponseTransactional) SetCc(cc []string) {
-	s.Cc = cc
-	s.require(sendTransactionalResponseTransactionalFieldCc)
+func (s *SendTransactionalResponseOneTransactional) SetName(name *string) {
+	s.Name = name
+	s.require(sendTransactionalResponseOneTransactionalFieldName)
 }
 
-// SetDiagnostics sets the Diagnostics field and marks it as non-optional;
+// SetSlug sets the Slug field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SendTransactionalResponseTransactional) SetDiagnostics(diagnostics *TransactionalSendDiagnostics) {
-	s.Diagnostics = diagnostics
-	s.require(sendTransactionalResponseTransactionalFieldDiagnostics)
+func (s *SendTransactionalResponseOneTransactional) SetSlug(slug *string) {
+	s.Slug = slug
+	s.require(sendTransactionalResponseOneTransactionalFieldSlug)
 }
 
-// SetEmailSendID sets the EmailSendID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SendTransactionalResponseTransactional) SetEmailSendID(emailSendID *string) {
-	s.EmailSendID = emailSendID
-	s.require(sendTransactionalResponseTransactionalFieldEmailSendID)
-}
-
-// SetEmailType sets the EmailType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SendTransactionalResponseTransactional) SetEmailType(emailType *SendTransactionalResponseTransactionalEmailType) {
-	s.EmailType = emailType
-	s.require(sendTransactionalResponseTransactionalFieldEmailType)
-}
-
-// SetIdempotentReplay sets the IdempotentReplay field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SendTransactionalResponseTransactional) SetIdempotentReplay(idempotentReplay *bool) {
-	s.IdempotentReplay = idempotentReplay
-	s.require(sendTransactionalResponseTransactionalFieldIdempotentReplay)
-}
-
-// SetJobID sets the JobID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SendTransactionalResponseTransactional) SetJobID(jobID *string) {
-	s.JobID = jobID
-	s.require(sendTransactionalResponseTransactionalFieldJobID)
-}
-
-// SetSuccess sets the Success field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SendTransactionalResponseTransactional) SetSuccess(success *bool) {
-	s.Success = success
-	s.require(sendTransactionalResponseTransactionalFieldSuccess)
-}
-
-// SetTo sets the To field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SendTransactionalResponseTransactional) SetTo(to *SendTransactionalResponseTransactionalTo) {
-	s.To = to
-	s.require(sendTransactionalResponseTransactionalFieldTo)
-}
-
-// SetTransactional sets the Transactional field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SendTransactionalResponseTransactional) SetTransactional(transactional *SendTransactionalResponseTransactionalTransactional) {
-	s.Transactional = transactional
-	s.require(sendTransactionalResponseTransactionalFieldTransactional)
-}
-
-func (s *SendTransactionalResponseTransactional) UnmarshalJSON(data []byte) error {
-	type unmarshaler SendTransactionalResponseTransactional
+func (s *SendTransactionalResponseOneTransactional) UnmarshalJSON(data []byte) error {
+	type unmarshaler SendTransactionalResponseOneTransactional
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*s = SendTransactionalResponseTransactional(value)
+	*s = SendTransactionalResponseOneTransactional(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *s)
 	if err != nil {
 		return err
@@ -3751,8 +3924,8 @@ func (s *SendTransactionalResponseTransactional) UnmarshalJSON(data []byte) erro
 	return nil
 }
 
-func (s *SendTransactionalResponseTransactional) MarshalJSON() ([]byte, error) {
-	type embed SendTransactionalResponseTransactional
+func (s *SendTransactionalResponseOneTransactional) MarshalJSON() ([]byte, error) {
+	type embed SendTransactionalResponseOneTransactional
 	var marshaler = struct {
 		embed
 	}{
@@ -3762,7 +3935,257 @@ func (s *SendTransactionalResponseTransactional) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-func (s *SendTransactionalResponseTransactional) String() string {
+func (s *SendTransactionalResponseOneTransactional) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	sendTransactionalResponseZeroFieldBcc              = big.NewInt(1 << 0)
+	sendTransactionalResponseZeroFieldCc               = big.NewInt(1 << 1)
+	sendTransactionalResponseZeroFieldDiagnostics      = big.NewInt(1 << 2)
+	sendTransactionalResponseZeroFieldEmailSendID      = big.NewInt(1 << 3)
+	sendTransactionalResponseZeroFieldEmailType        = big.NewInt(1 << 4)
+	sendTransactionalResponseZeroFieldIdempotentReplay = big.NewInt(1 << 5)
+	sendTransactionalResponseZeroFieldIgnoredHeaders   = big.NewInt(1 << 6)
+	sendTransactionalResponseZeroFieldJobID            = big.NewInt(1 << 7)
+	sendTransactionalResponseZeroFieldSuccess          = big.NewInt(1 << 8)
+	sendTransactionalResponseZeroFieldTo               = big.NewInt(1 << 9)
+	sendTransactionalResponseZeroFieldTransactional    = big.NewInt(1 << 10)
+)
+
+type SendTransactionalResponseZero struct {
+	// Deduplicated BCC recipients; omitted when empty.
+	Bcc []string `json:"bcc,omitempty" url:"bcc,omitempty"`
+	// Deduplicated CC recipients; omitted when empty.
+	Cc          []string                      `json:"cc,omitempty" url:"cc,omitempty"`
+	Diagnostics *TransactionalSendDiagnostics `json:"diagnostics,omitempty" url:"diagnostics,omitempty"`
+	// Durable email delivery ID. Use this with GET /email-sends/{emailSendId}.
+	EmailSendID *string `json:"emailSendId,omitempty" url:"emailSendId,omitempty"`
+	// Delivery policy accepted for the queued email.
+	EmailType *SendTransactionalResponseZeroEmailType `json:"emailType,omitempty" url:"emailType,omitempty"`
+	// True when this response replays an earlier request with the same Idempotency-Key.
+	IdempotentReplay *bool                            `json:"idempotentReplay,omitempty" url:"idempotentReplay,omitempty"`
+	IgnoredHeaders   *TransactionalSendIgnoredHeaders `json:"ignoredHeaders,omitempty" url:"ignoredHeaders,omitempty"`
+	// Legacy queue identifier retained for response compatibility.
+	JobID         *string                                     `json:"jobId,omitempty" url:"jobId,omitempty"`
+	Success       *bool                                       `json:"success,omitempty" url:"success,omitempty"`
+	To            *SendTransactionalResponseZeroTo            `json:"to,omitempty" url:"to,omitempty"`
+	Transactional *SendTransactionalResponseZeroTransactional `json:"transactional,omitempty" url:"transactional,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SendTransactionalResponseZero) GetBcc() []string {
+	if s == nil {
+		return nil
+	}
+	return s.Bcc
+}
+
+func (s *SendTransactionalResponseZero) GetCc() []string {
+	if s == nil {
+		return nil
+	}
+	return s.Cc
+}
+
+func (s *SendTransactionalResponseZero) GetDiagnostics() *TransactionalSendDiagnostics {
+	if s == nil {
+		return nil
+	}
+	return s.Diagnostics
+}
+
+func (s *SendTransactionalResponseZero) GetEmailSendID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.EmailSendID
+}
+
+func (s *SendTransactionalResponseZero) GetEmailType() *SendTransactionalResponseZeroEmailType {
+	if s == nil {
+		return nil
+	}
+	return s.EmailType
+}
+
+func (s *SendTransactionalResponseZero) GetIdempotentReplay() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.IdempotentReplay
+}
+
+func (s *SendTransactionalResponseZero) GetIgnoredHeaders() *TransactionalSendIgnoredHeaders {
+	if s == nil {
+		return nil
+	}
+	return s.IgnoredHeaders
+}
+
+func (s *SendTransactionalResponseZero) GetJobID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.JobID
+}
+
+func (s *SendTransactionalResponseZero) GetSuccess() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.Success
+}
+
+func (s *SendTransactionalResponseZero) GetTo() *SendTransactionalResponseZeroTo {
+	if s == nil {
+		return nil
+	}
+	return s.To
+}
+
+func (s *SendTransactionalResponseZero) GetTransactional() *SendTransactionalResponseZeroTransactional {
+	if s == nil {
+		return nil
+	}
+	return s.Transactional
+}
+
+func (s *SendTransactionalResponseZero) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SendTransactionalResponseZero) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetBcc sets the Bcc field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendTransactionalResponseZero) SetBcc(bcc []string) {
+	s.Bcc = bcc
+	s.require(sendTransactionalResponseZeroFieldBcc)
+}
+
+// SetCc sets the Cc field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendTransactionalResponseZero) SetCc(cc []string) {
+	s.Cc = cc
+	s.require(sendTransactionalResponseZeroFieldCc)
+}
+
+// SetDiagnostics sets the Diagnostics field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendTransactionalResponseZero) SetDiagnostics(diagnostics *TransactionalSendDiagnostics) {
+	s.Diagnostics = diagnostics
+	s.require(sendTransactionalResponseZeroFieldDiagnostics)
+}
+
+// SetEmailSendID sets the EmailSendID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendTransactionalResponseZero) SetEmailSendID(emailSendID *string) {
+	s.EmailSendID = emailSendID
+	s.require(sendTransactionalResponseZeroFieldEmailSendID)
+}
+
+// SetEmailType sets the EmailType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendTransactionalResponseZero) SetEmailType(emailType *SendTransactionalResponseZeroEmailType) {
+	s.EmailType = emailType
+	s.require(sendTransactionalResponseZeroFieldEmailType)
+}
+
+// SetIdempotentReplay sets the IdempotentReplay field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendTransactionalResponseZero) SetIdempotentReplay(idempotentReplay *bool) {
+	s.IdempotentReplay = idempotentReplay
+	s.require(sendTransactionalResponseZeroFieldIdempotentReplay)
+}
+
+// SetIgnoredHeaders sets the IgnoredHeaders field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendTransactionalResponseZero) SetIgnoredHeaders(ignoredHeaders *TransactionalSendIgnoredHeaders) {
+	s.IgnoredHeaders = ignoredHeaders
+	s.require(sendTransactionalResponseZeroFieldIgnoredHeaders)
+}
+
+// SetJobID sets the JobID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendTransactionalResponseZero) SetJobID(jobID *string) {
+	s.JobID = jobID
+	s.require(sendTransactionalResponseZeroFieldJobID)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendTransactionalResponseZero) SetSuccess(success *bool) {
+	s.Success = success
+	s.require(sendTransactionalResponseZeroFieldSuccess)
+}
+
+// SetTo sets the To field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendTransactionalResponseZero) SetTo(to *SendTransactionalResponseZeroTo) {
+	s.To = to
+	s.require(sendTransactionalResponseZeroFieldTo)
+}
+
+// SetTransactional sets the Transactional field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendTransactionalResponseZero) SetTransactional(transactional *SendTransactionalResponseZeroTransactional) {
+	s.Transactional = transactional
+	s.require(sendTransactionalResponseZeroFieldTransactional)
+}
+
+func (s *SendTransactionalResponseZero) UnmarshalJSON(data []byte) error {
+	type unmarshaler SendTransactionalResponseZero
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SendTransactionalResponseZero(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SendTransactionalResponseZero) MarshalJSON() ([]byte, error) {
+	type embed SendTransactionalResponseZero
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SendTransactionalResponseZero) String() string {
 	if s == nil {
 		return "<nil>"
 	}
@@ -3778,50 +4201,50 @@ func (s *SendTransactionalResponseTransactional) String() string {
 }
 
 // Delivery policy accepted for the queued email.
-type SendTransactionalResponseTransactionalEmailType string
+type SendTransactionalResponseZeroEmailType string
 
 const (
-	SendTransactionalResponseTransactionalEmailTypeMarketing     SendTransactionalResponseTransactionalEmailType = "marketing"
-	SendTransactionalResponseTransactionalEmailTypeTransactional SendTransactionalResponseTransactionalEmailType = "transactional"
+	SendTransactionalResponseZeroEmailTypeMarketing     SendTransactionalResponseZeroEmailType = "marketing"
+	SendTransactionalResponseZeroEmailTypeTransactional SendTransactionalResponseZeroEmailType = "transactional"
 )
 
-func NewSendTransactionalResponseTransactionalEmailTypeFromString(s string) (SendTransactionalResponseTransactionalEmailType, error) {
+func NewSendTransactionalResponseZeroEmailTypeFromString(s string) (SendTransactionalResponseZeroEmailType, error) {
 	switch s {
 	case "marketing":
-		return SendTransactionalResponseTransactionalEmailTypeMarketing, nil
+		return SendTransactionalResponseZeroEmailTypeMarketing, nil
 	case "transactional":
-		return SendTransactionalResponseTransactionalEmailTypeTransactional, nil
+		return SendTransactionalResponseZeroEmailTypeTransactional, nil
 	}
-	var t SendTransactionalResponseTransactionalEmailType
+	var t SendTransactionalResponseZeroEmailType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (s SendTransactionalResponseTransactionalEmailType) Ptr() *SendTransactionalResponseTransactionalEmailType {
+func (s SendTransactionalResponseZeroEmailType) Ptr() *SendTransactionalResponseZeroEmailType {
 	return &s
 }
 
-type SendTransactionalResponseTransactionalTo struct {
+type SendTransactionalResponseZeroTo struct {
 	String     string
 	StringList []string
 
 	typ string
 }
 
-func (s *SendTransactionalResponseTransactionalTo) GetString() string {
+func (s *SendTransactionalResponseZeroTo) GetString() string {
 	if s == nil {
 		return ""
 	}
 	return s.String
 }
 
-func (s *SendTransactionalResponseTransactionalTo) GetStringList() []string {
+func (s *SendTransactionalResponseZeroTo) GetStringList() []string {
 	if s == nil {
 		return nil
 	}
 	return s.StringList
 }
 
-func (s *SendTransactionalResponseTransactionalTo) UnmarshalJSON(data []byte) error {
+func (s *SendTransactionalResponseZeroTo) UnmarshalJSON(data []byte) error {
 	var valueString string
 	if err := json.Unmarshal(data, &valueString); err == nil {
 		s.typ = "String"
@@ -3837,7 +4260,7 @@ func (s *SendTransactionalResponseTransactionalTo) UnmarshalJSON(data []byte) er
 	return fmt.Errorf("%s cannot be deserialized as a %T", data, s)
 }
 
-func (s SendTransactionalResponseTransactionalTo) MarshalJSON() ([]byte, error) {
+func (s SendTransactionalResponseZeroTo) MarshalJSON() ([]byte, error) {
 	if s.typ == "String" || s.String != "" {
 		return json.Marshal(s.String)
 	}
@@ -3847,12 +4270,12 @@ func (s SendTransactionalResponseTransactionalTo) MarshalJSON() ([]byte, error) 
 	return nil, fmt.Errorf("type %T does not include a non-empty union type", s)
 }
 
-type SendTransactionalResponseTransactionalToVisitor interface {
+type SendTransactionalResponseZeroToVisitor interface {
 	VisitString(string) error
 	VisitStringList([]string) error
 }
 
-func (s *SendTransactionalResponseTransactionalTo) Accept(visitor SendTransactionalResponseTransactionalToVisitor) error {
+func (s *SendTransactionalResponseZeroTo) Accept(visitor SendTransactionalResponseZeroToVisitor) error {
 	if s.typ == "String" || s.String != "" {
 		return visitor.VisitString(s.String)
 	}
@@ -3863,12 +4286,12 @@ func (s *SendTransactionalResponseTransactionalTo) Accept(visitor SendTransactio
 }
 
 var (
-	sendTransactionalResponseTransactionalTransactionalFieldID   = big.NewInt(1 << 0)
-	sendTransactionalResponseTransactionalTransactionalFieldName = big.NewInt(1 << 1)
-	sendTransactionalResponseTransactionalTransactionalFieldSlug = big.NewInt(1 << 2)
+	sendTransactionalResponseZeroTransactionalFieldID   = big.NewInt(1 << 0)
+	sendTransactionalResponseZeroTransactionalFieldName = big.NewInt(1 << 1)
+	sendTransactionalResponseZeroTransactionalFieldSlug = big.NewInt(1 << 2)
 )
 
-type SendTransactionalResponseTransactionalTransactional struct {
+type SendTransactionalResponseZeroTransactional struct {
 	ID   *string `json:"id,omitempty" url:"id,omitempty"`
 	Name *string `json:"name,omitempty" url:"name,omitempty"`
 	Slug *string `json:"slug,omitempty" url:"slug,omitempty"`
@@ -3880,35 +4303,35 @@ type SendTransactionalResponseTransactionalTransactional struct {
 	rawJSON         json.RawMessage
 }
 
-func (s *SendTransactionalResponseTransactionalTransactional) GetID() *string {
+func (s *SendTransactionalResponseZeroTransactional) GetID() *string {
 	if s == nil {
 		return nil
 	}
 	return s.ID
 }
 
-func (s *SendTransactionalResponseTransactionalTransactional) GetName() *string {
+func (s *SendTransactionalResponseZeroTransactional) GetName() *string {
 	if s == nil {
 		return nil
 	}
 	return s.Name
 }
 
-func (s *SendTransactionalResponseTransactionalTransactional) GetSlug() *string {
+func (s *SendTransactionalResponseZeroTransactional) GetSlug() *string {
 	if s == nil {
 		return nil
 	}
 	return s.Slug
 }
 
-func (s *SendTransactionalResponseTransactionalTransactional) GetExtraProperties() map[string]interface{} {
+func (s *SendTransactionalResponseZeroTransactional) GetExtraProperties() map[string]interface{} {
 	if s == nil {
 		return nil
 	}
 	return s.extraProperties
 }
 
-func (s *SendTransactionalResponseTransactionalTransactional) require(field *big.Int) {
+func (s *SendTransactionalResponseZeroTransactional) require(field *big.Int) {
 	if s.explicitFields == nil {
 		s.explicitFields = big.NewInt(0)
 	}
@@ -3917,32 +4340,32 @@ func (s *SendTransactionalResponseTransactionalTransactional) require(field *big
 
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SendTransactionalResponseTransactionalTransactional) SetID(id *string) {
+func (s *SendTransactionalResponseZeroTransactional) SetID(id *string) {
 	s.ID = id
-	s.require(sendTransactionalResponseTransactionalTransactionalFieldID)
+	s.require(sendTransactionalResponseZeroTransactionalFieldID)
 }
 
 // SetName sets the Name field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SendTransactionalResponseTransactionalTransactional) SetName(name *string) {
+func (s *SendTransactionalResponseZeroTransactional) SetName(name *string) {
 	s.Name = name
-	s.require(sendTransactionalResponseTransactionalTransactionalFieldName)
+	s.require(sendTransactionalResponseZeroTransactionalFieldName)
 }
 
 // SetSlug sets the Slug field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SendTransactionalResponseTransactionalTransactional) SetSlug(slug *string) {
+func (s *SendTransactionalResponseZeroTransactional) SetSlug(slug *string) {
 	s.Slug = slug
-	s.require(sendTransactionalResponseTransactionalTransactionalFieldSlug)
+	s.require(sendTransactionalResponseZeroTransactionalFieldSlug)
 }
 
-func (s *SendTransactionalResponseTransactionalTransactional) UnmarshalJSON(data []byte) error {
-	type unmarshaler SendTransactionalResponseTransactionalTransactional
+func (s *SendTransactionalResponseZeroTransactional) UnmarshalJSON(data []byte) error {
+	type unmarshaler SendTransactionalResponseZeroTransactional
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*s = SendTransactionalResponseTransactionalTransactional(value)
+	*s = SendTransactionalResponseZeroTransactional(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *s)
 	if err != nil {
 		return err
@@ -3952,8 +4375,8 @@ func (s *SendTransactionalResponseTransactionalTransactional) UnmarshalJSON(data
 	return nil
 }
 
-func (s *SendTransactionalResponseTransactionalTransactional) MarshalJSON() ([]byte, error) {
-	type embed SendTransactionalResponseTransactionalTransactional
+func (s *SendTransactionalResponseZeroTransactional) MarshalJSON() ([]byte, error) {
+	type embed SendTransactionalResponseZeroTransactional
 	var marshaler = struct {
 		embed
 	}{
@@ -3963,7 +4386,7 @@ func (s *SendTransactionalResponseTransactionalTransactional) MarshalJSON() ([]b
 	return json.Marshal(explicitMarshaler)
 }
 
-func (s *SendTransactionalResponseTransactionalTransactional) String() string {
+func (s *SendTransactionalResponseZeroTransactional) String() string {
 	if s == nil {
 		return "<nil>"
 	}

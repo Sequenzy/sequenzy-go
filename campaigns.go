@@ -112,7 +112,7 @@ type CreateCampaignsRequest struct {
 	Subject *string `json:"subject,omitempty" url:"-"`
 	// Campaign audience saved on the draft. Omit to leave targeting unset and choose it when scheduling. The object is a union discriminated on type: {"type":"all"}, {"type":"lists","listIds":["list_123"]}, {"type":"segment","segmentId":"seg_123"}, {"type":"filtered","filters":[],"filterJoinOperator":"and"}, {"type":"rules","include":[],"exclude":[]}. Mutually exclusive with segmentId and listIds.
 	TargetLists map[string]any `json:"targetLists,omitempty" url:"-"`
-	// Company-owned email template to copy into the campaign. Mutually exclusive with prompt, HTML, and blocks.
+	// Company-owned email template to copy into the campaign. Mutually exclusive with prompt, HTML, and blocks. The content snapshot of a code-managed transactional email (created by sends with `trackAs`) is rejected with 400, because it holds one recipient's real content.
 	TemplateID *string `json:"templateId,omitempty" url:"-"`
 	// Generation tone; valid only with prompt.
 	Tone *string `json:"tone,omitempty" url:"-"`
@@ -1190,12 +1190,13 @@ func (s *SendTestCampaignsRequest) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-// Delivery channel. SMS campaigns are created and managed from the dashboard: they carry no email, so `subject` and `blocks` come back empty, and the email-only endpoints (update, schedule, pause, resume, duplicate, resend to non-openers) reject them. Campaign stats and campaign events reject them too, since both read email engagement.
+// Delivery channel. SMS campaigns are created and managed from the dashboard, and push campaigns through the /push/campaigns endpoints: they carry no email, so `subject` and `blocks` come back empty, and the email-only endpoints (update, schedule, pause, resume, duplicate, resend to non-openers) reject them. Campaign stats and campaign events reject them too, since both read email engagement. Cancelling a push campaign through POST /campaigns/{campaignId}/cancel uses the push lifecycle.
 type CampaignChannel string
 
 const (
 	CampaignChannelEmail CampaignChannel = "email"
 	CampaignChannelSms   CampaignChannel = "sms"
+	CampaignChannelPush  CampaignChannel = "push"
 )
 
 func NewCampaignChannelFromString(s string) (CampaignChannel, error) {
@@ -1204,6 +1205,8 @@ func NewCampaignChannelFromString(s string) (CampaignChannel, error) {
 		return CampaignChannelEmail, nil
 	case "sms":
 		return CampaignChannelSms, nil
+	case "push":
+		return CampaignChannelPush, nil
 	}
 	var t CampaignChannel
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

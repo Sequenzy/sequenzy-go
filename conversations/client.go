@@ -34,7 +34,66 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Returns one conversation with all messages, originating campaign or sequence context, and subscriber details.
+// Opens or closes up to 100 conversations in one request. Only conversations whose status changes are updated, so retries are safe. IDs that do not exist in the company are reported in `notFoundIds` and do not fail the request.
+//
+// Example:
+//
+//	request := &sequenzygo.BulkUpdateStatusConversationsRequest{
+//	    ConversationIDs: []string{
+//	        "conversationIds",
+//	    },
+//	    Status: sequenzygo.BulkUpdateStatusConversationsRequestStatusOpen,
+//	}
+//	client.Conversations.BulkUpdateStatus(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) BulkUpdateStatus(
+	ctx context.Context,
+	request *sequenzygo.BulkUpdateStatusConversationsRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.BulkUpdateStatusConversationsResponse, error) {
+	response, err := c.WithRawResponse.BulkUpdateStatus(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Emails a copy of one received or sent message, with its stored attachments up to 15 MB in total (files left out are listed in the forwarded email), to another address. The forward is recorded in the conversation as a system message whose deliveryStatus moves from pending to sent or failed. It does not change the conversation's status, unread state, or last activity. Notes cannot be forwarded.
+//
+// Example:
+//
+//	request := &sequenzygo.ForwardMessageConversationsRequest{
+//	    ConversationID: "conversationId",
+//	    MessageID: "messageId",
+//	    To: "to",
+//	}
+//	client.Conversations.ForwardMessage(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) ForwardMessage(
+	ctx context.Context,
+	request *sequenzygo.ForwardMessageConversationsRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.ForwardMessageConversationsResponse, error) {
+	response, err := c.WithRawResponse.ForwardMessage(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Returns one conversation with all messages, originating campaign or sequence context, and subscriber details. Stored attachments include a signed downloadUrl valid for one hour.
 //
 // Example:
 //
@@ -61,7 +120,28 @@ func (c *Client) Get(
 	return response.Body, nil
 }
 
-// Lists inbox conversations with subscriber replies, filtered by status, unread flag, or search term.
+// Returns the address anyone can email to reach this company's inbox, the same address on verified custom inbound domains, whether receiving is on, whether attachments are stored, and how long received email is kept.
+//
+// Example:
+//
+//	client.Conversations.GetInboxAddress(
+//	    context.TODO(),
+//	)
+func (c *Client) GetInboxAddress(
+	ctx context.Context,
+	opts ...option.RequestOption,
+) (*sequenzygo.GetInboxAddressResponse, error) {
+	response, err := c.WithRawResponse.GetInboxAddress(
+		ctx,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Lists inbox conversations: replies to your campaigns, sequences, and transactional email, plus email sent to your inbox address. Filter by status, unread flag, or search term.
 //
 // Example:
 //
@@ -113,6 +193,33 @@ func (c *Client) MarkRead(
 	return response.Body, nil
 }
 
+// Sets the conversation's unread flag and marks its latest received message unread.
+//
+// Example:
+//
+//	request := &sequenzygo.MarkUnreadConversationsRequest{
+//	    ConversationID: "conversationId",
+//	}
+//	client.Conversations.MarkUnread(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) MarkUnread(
+	ctx context.Context,
+	request *sequenzygo.MarkUnreadConversationsRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.MarkUnreadConversationsResponse, error) {
+	response, err := c.WithRawResponse.MarkUnread(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Sends an email reply to the subscriber or adds an internal note. Replies reopen closed conversations.
 //
 // Example:
@@ -130,6 +237,31 @@ func (c *Client) SendMessage(
 	opts ...option.RequestOption,
 ) (*sequenzygo.SendMessageConversationsResponse, error) {
 	response, err := c.WithRawResponse.SendMessage(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Sets a branded inbox address `{localPart}@inbound.{domain}` on one of your verified sending domains, or clears it when both fields are null. The address starts receiving once the domain's inbound MX record is verified; the default address keeps working. Returns the same body as Get Inbox Address.
+//
+// Example:
+//
+//	request := &sequenzygo.UpdateInboxAddressRequest{}
+//	client.Conversations.UpdateInboxAddress(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) UpdateInboxAddress(
+	ctx context.Context,
+	request *sequenzygo.UpdateInboxAddressRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.UpdateInboxAddressResponse, error) {
+	response, err := c.WithRawResponse.UpdateInboxAddress(
 		ctx,
 		request,
 		opts...,

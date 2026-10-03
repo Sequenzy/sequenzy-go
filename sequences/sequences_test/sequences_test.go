@@ -217,6 +217,30 @@ func TestSequencesCreateWithWireMock(
 	VerifyRequestCount(t, "TestSequencesCreateWithWireMock", "POST", "/sequences", nil, 1)
 }
 
+func TestSequencesCreateFromExampleWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.CreateFromExampleSequencesRequest{}
+	_, invocationErr := client.Sequences.CreateFromExample(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestSequencesCreateFromExampleWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestSequencesCreateFromExampleWithWireMock", "POST", "/sequences/from-example", nil, 1)
+}
+
 func TestSequencesCreateGoalWithWireMock(
 	t *testing.T,
 ) {

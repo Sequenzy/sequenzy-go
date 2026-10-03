@@ -34,7 +34,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Adds a sending domain to the authenticated company and returns the SPF, DKIM, MAIL FROM, and inbound DNS records required for setup. A domain belongs to exactly one company, so confirm the target company before adding it.
+// Adds a sending domain to the authenticated company and returns the SPF, DKIM, MAIL FROM, DMARC, and tracking DNS records required for setup. Tracked links use the company tracking domain, shared by every sending domain: the first domain creates it on its root (links.<root>) and returns its CNAME as dnsRecords.trackingRecord. It is optional and never gates verification or sending. A domain belongs to exactly one company, so confirm the target company before adding it.
 //
 // Example:
 //
@@ -51,6 +51,34 @@ func (c *Client) Add(
 	opts ...option.RequestOption,
 ) (*sequenzygo.AddWebsitesResponse, error) {
 	response, err := c.WithRawResponse.Add(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Deprecated: tracking is company-wide; use PUT /tracking-domain. Sets <trackingPrefix>.<domain> as the company tracking domain when the company has none. Publish the returned tracking.cnameRecord; sending never waits for it, and links use the shared Sequenzy tracking domain until it verifies. Repeating the company's current tracking hostname is a no-op. A different value is accepted but changes nothing, and the response message says so; it never replaces the company setting.
+//
+// Example:
+//
+//	request := &sequenzygo.ConfigureSendingDomainTrackingRequest{
+//	    Domain: "domain",
+//	    TrackingPrefix: "trackingPrefix",
+//	}
+//	client.Websites.ConfigureSendingDomainTracking(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) ConfigureSendingDomainTracking(
+	ctx context.Context,
+	request *sequenzygo.ConfigureSendingDomainTrackingRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.ConfigureSendingDomainTrackingResponse, error) {
+	response, err := c.WithRawResponse.ConfigureSendingDomainTracking(
 		ctx,
 		request,
 		opts...,

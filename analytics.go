@@ -11,6 +11,52 @@ import (
 )
 
 var (
+	getCampaignEmailClientMetricsRequestFieldCampaignID               = big.NewInt(1 << 0)
+	getCampaignEmailClientMetricsRequestFieldIncludeMachineEngagement = big.NewInt(1 << 1)
+	getCampaignEmailClientMetricsRequestFieldMailboxProvider          = big.NewInt(1 << 2)
+)
+
+type GetCampaignEmailClientMetricsRequest struct {
+	// Email campaign ID.
+	CampaignID string `json:"-" url:"-"`
+	// Include detected scanner, preview, and tracked asset opens.
+	IncludeMachineEngagement *bool `json:"-" url:"includeMachineEngagement,omitempty"`
+	// Recipient mailbox provider filter (e.g. gmail, microsoft, yahoo, icloud).
+	MailboxProvider *string `json:"-" url:"mailboxProvider,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (g *GetCampaignEmailClientMetricsRequest) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetCampaignID sets the CampaignID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetCampaignEmailClientMetricsRequest) SetCampaignID(campaignID string) {
+	g.CampaignID = campaignID
+	g.require(getCampaignEmailClientMetricsRequestFieldCampaignID)
+}
+
+// SetIncludeMachineEngagement sets the IncludeMachineEngagement field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetCampaignEmailClientMetricsRequest) SetIncludeMachineEngagement(includeMachineEngagement *bool) {
+	g.IncludeMachineEngagement = includeMachineEngagement
+	g.require(getCampaignEmailClientMetricsRequestFieldIncludeMachineEngagement)
+}
+
+// SetMailboxProvider sets the MailboxProvider field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetCampaignEmailClientMetricsRequest) SetMailboxProvider(mailboxProvider *string) {
+	g.MailboxProvider = mailboxProvider
+	g.require(getCampaignEmailClientMetricsRequestFieldMailboxProvider)
+}
+
+var (
 	getCampaignMetricsRequestFieldCampaignID               = big.NewInt(1 << 0)
 	getCampaignMetricsRequestFieldEnd                      = big.NewInt(1 << 1)
 	getCampaignMetricsRequestFieldIncludeMachineEngagement = big.NewInt(1 << 2)
@@ -160,6 +206,82 @@ func (g *GetCampaignStatsLegacyRequest) SetPeriod(period *GetCampaignStatsLegacy
 func (g *GetCampaignStatsLegacyRequest) SetStart(start *time.Time) {
 	g.Start = start
 	g.require(getCampaignStatsLegacyRequestFieldStart)
+}
+
+var (
+	getEmailClientMetricsRequestFieldEmailType                = big.NewInt(1 << 0)
+	getEmailClientMetricsRequestFieldEnd                      = big.NewInt(1 << 1)
+	getEmailClientMetricsRequestFieldIncludeMachineEngagement = big.NewInt(1 << 2)
+	getEmailClientMetricsRequestFieldMailboxProvider          = big.NewInt(1 << 3)
+	getEmailClientMetricsRequestFieldPeriod                   = big.NewInt(1 << 4)
+	getEmailClientMetricsRequestFieldStart                    = big.NewInt(1 << 5)
+)
+
+type GetEmailClientMetricsRequest struct {
+	// Structural email type filter. Marketer-role personal keys see campaign and sequence email only and cannot request transactional.
+	EmailType *GetEmailClientMetricsRequestEmailType `json:"-" url:"emailType,omitempty"`
+	// End of custom time range (ISO 8601). Must be used with `start`. Max range: 90 days.
+	End *time.Time `json:"-" url:"end,omitempty"`
+	// Include detected scanner, preview, and tracked asset opens.
+	IncludeMachineEngagement *bool `json:"-" url:"includeMachineEngagement,omitempty"`
+	// Recipient mailbox provider filter (e.g. gmail, microsoft, yahoo, icloud).
+	MailboxProvider *string `json:"-" url:"mailboxProvider,omitempty"`
+	// Sliding window over open times. Ignored when start/end are provided.
+	Period *GetEmailClientMetricsRequestPeriod `json:"-" url:"period,omitempty"`
+	// Start of custom time range (ISO 8601). Must be used with `end`.
+	Start *time.Time `json:"-" url:"start,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (g *GetEmailClientMetricsRequest) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetEmailType sets the EmailType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetEmailClientMetricsRequest) SetEmailType(emailType *GetEmailClientMetricsRequestEmailType) {
+	g.EmailType = emailType
+	g.require(getEmailClientMetricsRequestFieldEmailType)
+}
+
+// SetEnd sets the End field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetEmailClientMetricsRequest) SetEnd(end *time.Time) {
+	g.End = end
+	g.require(getEmailClientMetricsRequestFieldEnd)
+}
+
+// SetIncludeMachineEngagement sets the IncludeMachineEngagement field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetEmailClientMetricsRequest) SetIncludeMachineEngagement(includeMachineEngagement *bool) {
+	g.IncludeMachineEngagement = includeMachineEngagement
+	g.require(getEmailClientMetricsRequestFieldIncludeMachineEngagement)
+}
+
+// SetMailboxProvider sets the MailboxProvider field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetEmailClientMetricsRequest) SetMailboxProvider(mailboxProvider *string) {
+	g.MailboxProvider = mailboxProvider
+	g.require(getEmailClientMetricsRequestFieldMailboxProvider)
+}
+
+// SetPeriod sets the Period field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetEmailClientMetricsRequest) SetPeriod(period *GetEmailClientMetricsRequestPeriod) {
+	g.Period = period
+	g.require(getEmailClientMetricsRequestFieldPeriod)
+}
+
+// SetStart sets the Start field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetEmailClientMetricsRequest) SetStart(start *time.Time) {
+	g.Start = start
+	g.require(getEmailClientMetricsRequestFieldStart)
 }
 
 var (
@@ -2394,6 +2516,479 @@ func NewCommerceValueForecastStatusFromString(s string) (CommerceValueForecastSt
 
 func (c CommerceValueForecastStatus) Ptr() *CommerceValueForecastStatus {
 	return &c
+}
+
+// Mail client and device shares of unique opens. Each email send counts once, attributed to the user agent of its first open. Opens through the Gmail and Yahoo image proxies and Apple Mail Privacy Protection report the client with an unknown device.
+var (
+	emailClientBreakdownFieldClients           = big.NewInt(1 << 0)
+	emailClientBreakdownFieldDevices           = big.NewInt(1 << 1)
+	emailClientBreakdownFieldPrivacyProxyOpens = big.NewInt(1 << 2)
+	emailClientBreakdownFieldTotalOpens        = big.NewInt(1 << 3)
+)
+
+type EmailClientBreakdown struct {
+	// Mail clients, most opens first.
+	Clients []*EmailClientBreakdownClientsItem `json:"clients" url:"clients"`
+	// Device types, most opens first.
+	Devices []*EmailClientBreakdownDevicesItem `json:"devices" url:"devices"`
+	// Opens through the Gmail or Yahoo image proxies or Apple Mail Privacy Protection, where the reader's device is unknown.
+	PrivacyProxyOpens int `json:"privacyProxyOpens" url:"privacyProxyOpens"`
+	// Unique opens the breakdown covers. `0` when nothing was opened, in which case `clients` and `devices` are empty.
+	TotalOpens int `json:"totalOpens" url:"totalOpens"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (e *EmailClientBreakdown) GetClients() []*EmailClientBreakdownClientsItem {
+	if e == nil {
+		return nil
+	}
+	return e.Clients
+}
+
+func (e *EmailClientBreakdown) GetDevices() []*EmailClientBreakdownDevicesItem {
+	if e == nil {
+		return nil
+	}
+	return e.Devices
+}
+
+func (e *EmailClientBreakdown) GetPrivacyProxyOpens() int {
+	if e == nil {
+		return 0
+	}
+	return e.PrivacyProxyOpens
+}
+
+func (e *EmailClientBreakdown) GetTotalOpens() int {
+	if e == nil {
+		return 0
+	}
+	return e.TotalOpens
+}
+
+func (e *EmailClientBreakdown) GetExtraProperties() map[string]interface{} {
+	if e == nil {
+		return nil
+	}
+	return e.extraProperties
+}
+
+func (e *EmailClientBreakdown) require(field *big.Int) {
+	if e.explicitFields == nil {
+		e.explicitFields = big.NewInt(0)
+	}
+	e.explicitFields.Or(e.explicitFields, field)
+}
+
+// SetClients sets the Clients field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailClientBreakdown) SetClients(clients []*EmailClientBreakdownClientsItem) {
+	e.Clients = clients
+	e.require(emailClientBreakdownFieldClients)
+}
+
+// SetDevices sets the Devices field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailClientBreakdown) SetDevices(devices []*EmailClientBreakdownDevicesItem) {
+	e.Devices = devices
+	e.require(emailClientBreakdownFieldDevices)
+}
+
+// SetPrivacyProxyOpens sets the PrivacyProxyOpens field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailClientBreakdown) SetPrivacyProxyOpens(privacyProxyOpens int) {
+	e.PrivacyProxyOpens = privacyProxyOpens
+	e.require(emailClientBreakdownFieldPrivacyProxyOpens)
+}
+
+// SetTotalOpens sets the TotalOpens field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailClientBreakdown) SetTotalOpens(totalOpens int) {
+	e.TotalOpens = totalOpens
+	e.require(emailClientBreakdownFieldTotalOpens)
+}
+
+func (e *EmailClientBreakdown) UnmarshalJSON(data []byte) error {
+	type unmarshaler EmailClientBreakdown
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EmailClientBreakdown(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+	e.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EmailClientBreakdown) MarshalJSON() ([]byte, error) {
+	type embed EmailClientBreakdown
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*e),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (e *EmailClientBreakdown) String() string {
+	if e == nil {
+		return "<nil>"
+	}
+	if len(e.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(e.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+var (
+	emailClientBreakdownClientsItemFieldKey   = big.NewInt(1 << 0)
+	emailClientBreakdownClientsItemFieldLabel = big.NewInt(1 << 1)
+	emailClientBreakdownClientsItemFieldOpens = big.NewInt(1 << 2)
+	emailClientBreakdownClientsItemFieldShare = big.NewInt(1 << 3)
+)
+
+type EmailClientBreakdownClientsItem struct {
+	// `android_mail_app` covers Android apps that render mail in a WebView, such as Samsung Email. `web_browser` covers webmail, the new Outlook for Windows, and opens recorded from a link click without a tracked open. `apple_mail` also includes some apps built on Apple's WebKit, such as Outlook for Mac. `other` covers unrecognized and missing user agents.
+	Key   EmailClientBreakdownClientsItemKey `json:"key" url:"key"`
+	Label string                             `json:"label" url:"label"`
+	Opens int                                `json:"opens" url:"opens"`
+	// Percentage of `totalOpens`, from 0 to 100. Not rounded.
+	Share float64 `json:"share" url:"share"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (e *EmailClientBreakdownClientsItem) GetKey() EmailClientBreakdownClientsItemKey {
+	if e == nil {
+		return ""
+	}
+	return e.Key
+}
+
+func (e *EmailClientBreakdownClientsItem) GetLabel() string {
+	if e == nil {
+		return ""
+	}
+	return e.Label
+}
+
+func (e *EmailClientBreakdownClientsItem) GetOpens() int {
+	if e == nil {
+		return 0
+	}
+	return e.Opens
+}
+
+func (e *EmailClientBreakdownClientsItem) GetShare() float64 {
+	if e == nil {
+		return 0
+	}
+	return e.Share
+}
+
+func (e *EmailClientBreakdownClientsItem) GetExtraProperties() map[string]interface{} {
+	if e == nil {
+		return nil
+	}
+	return e.extraProperties
+}
+
+func (e *EmailClientBreakdownClientsItem) require(field *big.Int) {
+	if e.explicitFields == nil {
+		e.explicitFields = big.NewInt(0)
+	}
+	e.explicitFields.Or(e.explicitFields, field)
+}
+
+// SetKey sets the Key field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailClientBreakdownClientsItem) SetKey(key EmailClientBreakdownClientsItemKey) {
+	e.Key = key
+	e.require(emailClientBreakdownClientsItemFieldKey)
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailClientBreakdownClientsItem) SetLabel(label string) {
+	e.Label = label
+	e.require(emailClientBreakdownClientsItemFieldLabel)
+}
+
+// SetOpens sets the Opens field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailClientBreakdownClientsItem) SetOpens(opens int) {
+	e.Opens = opens
+	e.require(emailClientBreakdownClientsItemFieldOpens)
+}
+
+// SetShare sets the Share field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailClientBreakdownClientsItem) SetShare(share float64) {
+	e.Share = share
+	e.require(emailClientBreakdownClientsItemFieldShare)
+}
+
+func (e *EmailClientBreakdownClientsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler EmailClientBreakdownClientsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EmailClientBreakdownClientsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+	e.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EmailClientBreakdownClientsItem) MarshalJSON() ([]byte, error) {
+	type embed EmailClientBreakdownClientsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*e),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (e *EmailClientBreakdownClientsItem) String() string {
+	if e == nil {
+		return "<nil>"
+	}
+	if len(e.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(e.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+// `android_mail_app` covers Android apps that render mail in a WebView, such as Samsung Email. `web_browser` covers webmail, the new Outlook for Windows, and opens recorded from a link click without a tracked open. `apple_mail` also includes some apps built on Apple's WebKit, such as Outlook for Mac. `other` covers unrecognized and missing user agents.
+type EmailClientBreakdownClientsItemKey string
+
+const (
+	EmailClientBreakdownClientsItemKeyAppleMail      EmailClientBreakdownClientsItemKey = "apple_mail"
+	EmailClientBreakdownClientsItemKeyGmail          EmailClientBreakdownClientsItemKey = "gmail"
+	EmailClientBreakdownClientsItemKeyOutlook        EmailClientBreakdownClientsItemKey = "outlook"
+	EmailClientBreakdownClientsItemKeyYahooMail      EmailClientBreakdownClientsItemKey = "yahoo_mail"
+	EmailClientBreakdownClientsItemKeyThunderbird    EmailClientBreakdownClientsItemKey = "thunderbird"
+	EmailClientBreakdownClientsItemKeyAndroidMailApp EmailClientBreakdownClientsItemKey = "android_mail_app"
+	EmailClientBreakdownClientsItemKeyWebBrowser     EmailClientBreakdownClientsItemKey = "web_browser"
+	EmailClientBreakdownClientsItemKeyOther          EmailClientBreakdownClientsItemKey = "other"
+)
+
+func NewEmailClientBreakdownClientsItemKeyFromString(s string) (EmailClientBreakdownClientsItemKey, error) {
+	switch s {
+	case "apple_mail":
+		return EmailClientBreakdownClientsItemKeyAppleMail, nil
+	case "gmail":
+		return EmailClientBreakdownClientsItemKeyGmail, nil
+	case "outlook":
+		return EmailClientBreakdownClientsItemKeyOutlook, nil
+	case "yahoo_mail":
+		return EmailClientBreakdownClientsItemKeyYahooMail, nil
+	case "thunderbird":
+		return EmailClientBreakdownClientsItemKeyThunderbird, nil
+	case "android_mail_app":
+		return EmailClientBreakdownClientsItemKeyAndroidMailApp, nil
+	case "web_browser":
+		return EmailClientBreakdownClientsItemKeyWebBrowser, nil
+	case "other":
+		return EmailClientBreakdownClientsItemKeyOther, nil
+	}
+	var t EmailClientBreakdownClientsItemKey
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (e EmailClientBreakdownClientsItemKey) Ptr() *EmailClientBreakdownClientsItemKey {
+	return &e
+}
+
+var (
+	emailClientBreakdownDevicesItemFieldKey   = big.NewInt(1 << 0)
+	emailClientBreakdownDevicesItemFieldLabel = big.NewInt(1 << 1)
+	emailClientBreakdownDevicesItemFieldOpens = big.NewInt(1 << 2)
+	emailClientBreakdownDevicesItemFieldShare = big.NewInt(1 << 3)
+)
+
+type EmailClientBreakdownDevicesItem struct {
+	Key   EmailClientBreakdownDevicesItemKey `json:"key" url:"key"`
+	Label string                             `json:"label" url:"label"`
+	Opens int                                `json:"opens" url:"opens"`
+	// Percentage of `totalOpens`, from 0 to 100. Not rounded.
+	Share float64 `json:"share" url:"share"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (e *EmailClientBreakdownDevicesItem) GetKey() EmailClientBreakdownDevicesItemKey {
+	if e == nil {
+		return ""
+	}
+	return e.Key
+}
+
+func (e *EmailClientBreakdownDevicesItem) GetLabel() string {
+	if e == nil {
+		return ""
+	}
+	return e.Label
+}
+
+func (e *EmailClientBreakdownDevicesItem) GetOpens() int {
+	if e == nil {
+		return 0
+	}
+	return e.Opens
+}
+
+func (e *EmailClientBreakdownDevicesItem) GetShare() float64 {
+	if e == nil {
+		return 0
+	}
+	return e.Share
+}
+
+func (e *EmailClientBreakdownDevicesItem) GetExtraProperties() map[string]interface{} {
+	if e == nil {
+		return nil
+	}
+	return e.extraProperties
+}
+
+func (e *EmailClientBreakdownDevicesItem) require(field *big.Int) {
+	if e.explicitFields == nil {
+		e.explicitFields = big.NewInt(0)
+	}
+	e.explicitFields.Or(e.explicitFields, field)
+}
+
+// SetKey sets the Key field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailClientBreakdownDevicesItem) SetKey(key EmailClientBreakdownDevicesItemKey) {
+	e.Key = key
+	e.require(emailClientBreakdownDevicesItemFieldKey)
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailClientBreakdownDevicesItem) SetLabel(label string) {
+	e.Label = label
+	e.require(emailClientBreakdownDevicesItemFieldLabel)
+}
+
+// SetOpens sets the Opens field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailClientBreakdownDevicesItem) SetOpens(opens int) {
+	e.Opens = opens
+	e.require(emailClientBreakdownDevicesItemFieldOpens)
+}
+
+// SetShare sets the Share field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailClientBreakdownDevicesItem) SetShare(share float64) {
+	e.Share = share
+	e.require(emailClientBreakdownDevicesItemFieldShare)
+}
+
+func (e *EmailClientBreakdownDevicesItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler EmailClientBreakdownDevicesItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EmailClientBreakdownDevicesItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+	e.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EmailClientBreakdownDevicesItem) MarshalJSON() ([]byte, error) {
+	type embed EmailClientBreakdownDevicesItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*e),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (e *EmailClientBreakdownDevicesItem) String() string {
+	if e == nil {
+		return "<nil>"
+	}
+	if len(e.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(e.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+type EmailClientBreakdownDevicesItemKey string
+
+const (
+	EmailClientBreakdownDevicesItemKeyDesktop EmailClientBreakdownDevicesItemKey = "desktop"
+	EmailClientBreakdownDevicesItemKeyMobile  EmailClientBreakdownDevicesItemKey = "mobile"
+	EmailClientBreakdownDevicesItemKeyTablet  EmailClientBreakdownDevicesItemKey = "tablet"
+	EmailClientBreakdownDevicesItemKeyUnknown EmailClientBreakdownDevicesItemKey = "unknown"
+)
+
+func NewEmailClientBreakdownDevicesItemKeyFromString(s string) (EmailClientBreakdownDevicesItemKey, error) {
+	switch s {
+	case "desktop":
+		return EmailClientBreakdownDevicesItemKeyDesktop, nil
+	case "mobile":
+		return EmailClientBreakdownDevicesItemKeyMobile, nil
+	case "tablet":
+		return EmailClientBreakdownDevicesItemKeyTablet, nil
+	case "unknown":
+		return EmailClientBreakdownDevicesItemKeyUnknown, nil
+	}
+	var t EmailClientBreakdownDevicesItemKey
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (e EmailClientBreakdownDevicesItemKey) Ptr() *EmailClientBreakdownDevicesItemKey {
+	return &e
 }
 
 var (
@@ -5232,6 +5827,191 @@ func (t *TransactionalMetricsResponseTransactional) String() string {
 	return fmt.Sprintf("%#v", t)
 }
 
+var (
+	getCampaignEmailClientMetricsResponseFieldClients           = big.NewInt(1 << 0)
+	getCampaignEmailClientMetricsResponseFieldDevices           = big.NewInt(1 << 1)
+	getCampaignEmailClientMetricsResponseFieldPrivacyProxyOpens = big.NewInt(1 << 2)
+	getCampaignEmailClientMetricsResponseFieldTotalOpens        = big.NewInt(1 << 3)
+	getCampaignEmailClientMetricsResponseFieldCampaignID        = big.NewInt(1 << 4)
+	getCampaignEmailClientMetricsResponseFieldMailboxProvider   = big.NewInt(1 << 5)
+	getCampaignEmailClientMetricsResponseFieldSuccess           = big.NewInt(1 << 6)
+)
+
+type GetCampaignEmailClientMetricsResponse struct {
+	// Mail clients, most opens first.
+	Clients []*EmailClientBreakdownClientsItem `json:"clients" url:"clients"`
+	// Device types, most opens first.
+	Devices []*EmailClientBreakdownDevicesItem `json:"devices" url:"devices"`
+	// Opens through the Gmail or Yahoo image proxies or Apple Mail Privacy Protection, where the reader's device is unknown.
+	PrivacyProxyOpens int `json:"privacyProxyOpens" url:"privacyProxyOpens"`
+	// Unique opens the breakdown covers. `0` when nothing was opened, in which case `clients` and `devices` are empty.
+	TotalOpens int    `json:"totalOpens" url:"totalOpens"`
+	CampaignID string `json:"campaignId" url:"campaignId"`
+	// Echoed back when `mailboxProvider` is provided.
+	MailboxProvider *string `json:"mailboxProvider,omitempty" url:"mailboxProvider,omitempty"`
+	Success         bool    `json:"success" url:"success"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (g *GetCampaignEmailClientMetricsResponse) GetClients() []*EmailClientBreakdownClientsItem {
+	if g == nil {
+		return nil
+	}
+	return g.Clients
+}
+
+func (g *GetCampaignEmailClientMetricsResponse) GetDevices() []*EmailClientBreakdownDevicesItem {
+	if g == nil {
+		return nil
+	}
+	return g.Devices
+}
+
+func (g *GetCampaignEmailClientMetricsResponse) GetPrivacyProxyOpens() int {
+	if g == nil {
+		return 0
+	}
+	return g.PrivacyProxyOpens
+}
+
+func (g *GetCampaignEmailClientMetricsResponse) GetTotalOpens() int {
+	if g == nil {
+		return 0
+	}
+	return g.TotalOpens
+}
+
+func (g *GetCampaignEmailClientMetricsResponse) GetCampaignID() string {
+	if g == nil {
+		return ""
+	}
+	return g.CampaignID
+}
+
+func (g *GetCampaignEmailClientMetricsResponse) GetMailboxProvider() *string {
+	if g == nil {
+		return nil
+	}
+	return g.MailboxProvider
+}
+
+func (g *GetCampaignEmailClientMetricsResponse) GetSuccess() bool {
+	if g == nil {
+		return false
+	}
+	return g.Success
+}
+
+func (g *GetCampaignEmailClientMetricsResponse) GetExtraProperties() map[string]interface{} {
+	if g == nil {
+		return nil
+	}
+	return g.extraProperties
+}
+
+func (g *GetCampaignEmailClientMetricsResponse) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetClients sets the Clients field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetCampaignEmailClientMetricsResponse) SetClients(clients []*EmailClientBreakdownClientsItem) {
+	g.Clients = clients
+	g.require(getCampaignEmailClientMetricsResponseFieldClients)
+}
+
+// SetDevices sets the Devices field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetCampaignEmailClientMetricsResponse) SetDevices(devices []*EmailClientBreakdownDevicesItem) {
+	g.Devices = devices
+	g.require(getCampaignEmailClientMetricsResponseFieldDevices)
+}
+
+// SetPrivacyProxyOpens sets the PrivacyProxyOpens field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetCampaignEmailClientMetricsResponse) SetPrivacyProxyOpens(privacyProxyOpens int) {
+	g.PrivacyProxyOpens = privacyProxyOpens
+	g.require(getCampaignEmailClientMetricsResponseFieldPrivacyProxyOpens)
+}
+
+// SetTotalOpens sets the TotalOpens field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetCampaignEmailClientMetricsResponse) SetTotalOpens(totalOpens int) {
+	g.TotalOpens = totalOpens
+	g.require(getCampaignEmailClientMetricsResponseFieldTotalOpens)
+}
+
+// SetCampaignID sets the CampaignID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetCampaignEmailClientMetricsResponse) SetCampaignID(campaignID string) {
+	g.CampaignID = campaignID
+	g.require(getCampaignEmailClientMetricsResponseFieldCampaignID)
+}
+
+// SetMailboxProvider sets the MailboxProvider field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetCampaignEmailClientMetricsResponse) SetMailboxProvider(mailboxProvider *string) {
+	g.MailboxProvider = mailboxProvider
+	g.require(getCampaignEmailClientMetricsResponseFieldMailboxProvider)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetCampaignEmailClientMetricsResponse) SetSuccess(success bool) {
+	g.Success = success
+	g.require(getCampaignEmailClientMetricsResponseFieldSuccess)
+}
+
+func (g *GetCampaignEmailClientMetricsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler GetCampaignEmailClientMetricsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*g = GetCampaignEmailClientMetricsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *g)
+	if err != nil {
+		return err
+	}
+	g.extraProperties = extraProperties
+	g.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (g *GetCampaignEmailClientMetricsResponse) MarshalJSON() ([]byte, error) {
+	type embed GetCampaignEmailClientMetricsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*g),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (g *GetCampaignEmailClientMetricsResponse) String() string {
+	if g == nil {
+		return "<nil>"
+	}
+	if len(g.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(g.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(g); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", g)
+}
+
 type GetCampaignMetricsRequestPeriod string
 
 const (
@@ -5725,6 +6505,333 @@ func (g *GetCampaignStatsLegacyResponse) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", g)
+}
+
+type GetEmailClientMetricsRequestEmailType string
+
+const (
+	GetEmailClientMetricsRequestEmailTypeCampaign      GetEmailClientMetricsRequestEmailType = "campaign"
+	GetEmailClientMetricsRequestEmailTypeTransactional GetEmailClientMetricsRequestEmailType = "transactional"
+	GetEmailClientMetricsRequestEmailTypeSequence      GetEmailClientMetricsRequestEmailType = "sequence"
+)
+
+func NewGetEmailClientMetricsRequestEmailTypeFromString(s string) (GetEmailClientMetricsRequestEmailType, error) {
+	switch s {
+	case "campaign":
+		return GetEmailClientMetricsRequestEmailTypeCampaign, nil
+	case "transactional":
+		return GetEmailClientMetricsRequestEmailTypeTransactional, nil
+	case "sequence":
+		return GetEmailClientMetricsRequestEmailTypeSequence, nil
+	}
+	var t GetEmailClientMetricsRequestEmailType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (g GetEmailClientMetricsRequestEmailType) Ptr() *GetEmailClientMetricsRequestEmailType {
+	return &g
+}
+
+type GetEmailClientMetricsRequestPeriod string
+
+const (
+	GetEmailClientMetricsRequestPeriodOneH        GetEmailClientMetricsRequestPeriod = "1h"
+	GetEmailClientMetricsRequestPeriodTwentyFourH GetEmailClientMetricsRequestPeriod = "24h"
+	GetEmailClientMetricsRequestPeriodSevenD      GetEmailClientMetricsRequestPeriod = "7d"
+	GetEmailClientMetricsRequestPeriodThirtyD     GetEmailClientMetricsRequestPeriod = "30d"
+	GetEmailClientMetricsRequestPeriodNinetyD     GetEmailClientMetricsRequestPeriod = "90d"
+)
+
+func NewGetEmailClientMetricsRequestPeriodFromString(s string) (GetEmailClientMetricsRequestPeriod, error) {
+	switch s {
+	case "1h":
+		return GetEmailClientMetricsRequestPeriodOneH, nil
+	case "24h":
+		return GetEmailClientMetricsRequestPeriodTwentyFourH, nil
+	case "7d":
+		return GetEmailClientMetricsRequestPeriodSevenD, nil
+	case "30d":
+		return GetEmailClientMetricsRequestPeriodThirtyD, nil
+	case "90d":
+		return GetEmailClientMetricsRequestPeriodNinetyD, nil
+	}
+	var t GetEmailClientMetricsRequestPeriod
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (g GetEmailClientMetricsRequestPeriod) Ptr() *GetEmailClientMetricsRequestPeriod {
+	return &g
+}
+
+var (
+	getEmailClientMetricsResponseFieldClients           = big.NewInt(1 << 0)
+	getEmailClientMetricsResponseFieldDevices           = big.NewInt(1 << 1)
+	getEmailClientMetricsResponseFieldPrivacyProxyOpens = big.NewInt(1 << 2)
+	getEmailClientMetricsResponseFieldTotalOpens        = big.NewInt(1 << 3)
+	getEmailClientMetricsResponseFieldEmailType         = big.NewInt(1 << 4)
+	getEmailClientMetricsResponseFieldEnd               = big.NewInt(1 << 5)
+	getEmailClientMetricsResponseFieldMailboxProvider   = big.NewInt(1 << 6)
+	getEmailClientMetricsResponseFieldPeriod            = big.NewInt(1 << 7)
+	getEmailClientMetricsResponseFieldStart             = big.NewInt(1 << 8)
+	getEmailClientMetricsResponseFieldSuccess           = big.NewInt(1 << 9)
+)
+
+type GetEmailClientMetricsResponse struct {
+	// Mail clients, most opens first.
+	Clients []*EmailClientBreakdownClientsItem `json:"clients" url:"clients"`
+	// Device types, most opens first.
+	Devices []*EmailClientBreakdownDevicesItem `json:"devices" url:"devices"`
+	// Opens through the Gmail or Yahoo image proxies or Apple Mail Privacy Protection, where the reader's device is unknown.
+	PrivacyProxyOpens int `json:"privacyProxyOpens" url:"privacyProxyOpens"`
+	// Unique opens the breakdown covers. `0` when nothing was opened, in which case `clients` and `devices` are empty.
+	TotalOpens int                                     `json:"totalOpens" url:"totalOpens"`
+	EmailType  *GetEmailClientMetricsResponseEmailType `json:"emailType,omitempty" url:"emailType,omitempty"`
+	End        *time.Time                              `json:"end,omitempty" url:"end,omitempty"`
+	// Echoed back when `mailboxProvider` is provided.
+	MailboxProvider *string `json:"mailboxProvider,omitempty" url:"mailboxProvider,omitempty"`
+	// Applied period, or `custom` when start/end were provided.
+	Period  string     `json:"period" url:"period"`
+	Start   *time.Time `json:"start,omitempty" url:"start,omitempty"`
+	Success bool       `json:"success" url:"success"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (g *GetEmailClientMetricsResponse) GetClients() []*EmailClientBreakdownClientsItem {
+	if g == nil {
+		return nil
+	}
+	return g.Clients
+}
+
+func (g *GetEmailClientMetricsResponse) GetDevices() []*EmailClientBreakdownDevicesItem {
+	if g == nil {
+		return nil
+	}
+	return g.Devices
+}
+
+func (g *GetEmailClientMetricsResponse) GetPrivacyProxyOpens() int {
+	if g == nil {
+		return 0
+	}
+	return g.PrivacyProxyOpens
+}
+
+func (g *GetEmailClientMetricsResponse) GetTotalOpens() int {
+	if g == nil {
+		return 0
+	}
+	return g.TotalOpens
+}
+
+func (g *GetEmailClientMetricsResponse) GetEmailType() *GetEmailClientMetricsResponseEmailType {
+	if g == nil {
+		return nil
+	}
+	return g.EmailType
+}
+
+func (g *GetEmailClientMetricsResponse) GetEnd() *time.Time {
+	if g == nil {
+		return nil
+	}
+	return g.End
+}
+
+func (g *GetEmailClientMetricsResponse) GetMailboxProvider() *string {
+	if g == nil {
+		return nil
+	}
+	return g.MailboxProvider
+}
+
+func (g *GetEmailClientMetricsResponse) GetPeriod() string {
+	if g == nil {
+		return ""
+	}
+	return g.Period
+}
+
+func (g *GetEmailClientMetricsResponse) GetStart() *time.Time {
+	if g == nil {
+		return nil
+	}
+	return g.Start
+}
+
+func (g *GetEmailClientMetricsResponse) GetSuccess() bool {
+	if g == nil {
+		return false
+	}
+	return g.Success
+}
+
+func (g *GetEmailClientMetricsResponse) GetExtraProperties() map[string]interface{} {
+	if g == nil {
+		return nil
+	}
+	return g.extraProperties
+}
+
+func (g *GetEmailClientMetricsResponse) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetClients sets the Clients field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetEmailClientMetricsResponse) SetClients(clients []*EmailClientBreakdownClientsItem) {
+	g.Clients = clients
+	g.require(getEmailClientMetricsResponseFieldClients)
+}
+
+// SetDevices sets the Devices field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetEmailClientMetricsResponse) SetDevices(devices []*EmailClientBreakdownDevicesItem) {
+	g.Devices = devices
+	g.require(getEmailClientMetricsResponseFieldDevices)
+}
+
+// SetPrivacyProxyOpens sets the PrivacyProxyOpens field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetEmailClientMetricsResponse) SetPrivacyProxyOpens(privacyProxyOpens int) {
+	g.PrivacyProxyOpens = privacyProxyOpens
+	g.require(getEmailClientMetricsResponseFieldPrivacyProxyOpens)
+}
+
+// SetTotalOpens sets the TotalOpens field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetEmailClientMetricsResponse) SetTotalOpens(totalOpens int) {
+	g.TotalOpens = totalOpens
+	g.require(getEmailClientMetricsResponseFieldTotalOpens)
+}
+
+// SetEmailType sets the EmailType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetEmailClientMetricsResponse) SetEmailType(emailType *GetEmailClientMetricsResponseEmailType) {
+	g.EmailType = emailType
+	g.require(getEmailClientMetricsResponseFieldEmailType)
+}
+
+// SetEnd sets the End field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetEmailClientMetricsResponse) SetEnd(end *time.Time) {
+	g.End = end
+	g.require(getEmailClientMetricsResponseFieldEnd)
+}
+
+// SetMailboxProvider sets the MailboxProvider field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetEmailClientMetricsResponse) SetMailboxProvider(mailboxProvider *string) {
+	g.MailboxProvider = mailboxProvider
+	g.require(getEmailClientMetricsResponseFieldMailboxProvider)
+}
+
+// SetPeriod sets the Period field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetEmailClientMetricsResponse) SetPeriod(period string) {
+	g.Period = period
+	g.require(getEmailClientMetricsResponseFieldPeriod)
+}
+
+// SetStart sets the Start field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetEmailClientMetricsResponse) SetStart(start *time.Time) {
+	g.Start = start
+	g.require(getEmailClientMetricsResponseFieldStart)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetEmailClientMetricsResponse) SetSuccess(success bool) {
+	g.Success = success
+	g.require(getEmailClientMetricsResponseFieldSuccess)
+}
+
+func (g *GetEmailClientMetricsResponse) UnmarshalJSON(data []byte) error {
+	type embed GetEmailClientMetricsResponse
+	var unmarshaler = struct {
+		embed
+		End   *internal.DateTime `json:"end,omitempty"`
+		Start *internal.DateTime `json:"start,omitempty"`
+	}{
+		embed: embed(*g),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*g = GetEmailClientMetricsResponse(unmarshaler.embed)
+	g.End = unmarshaler.End.TimePtr()
+	g.Start = unmarshaler.Start.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *g)
+	if err != nil {
+		return err
+	}
+	g.extraProperties = extraProperties
+	g.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (g *GetEmailClientMetricsResponse) MarshalJSON() ([]byte, error) {
+	type embed GetEmailClientMetricsResponse
+	var marshaler = struct {
+		embed
+		End   *internal.DateTime `json:"end,omitempty"`
+		Start *internal.DateTime `json:"start,omitempty"`
+	}{
+		embed: embed(*g),
+		End:   internal.NewOptionalDateTime(g.End),
+		Start: internal.NewOptionalDateTime(g.Start),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (g *GetEmailClientMetricsResponse) String() string {
+	if g == nil {
+		return "<nil>"
+	}
+	if len(g.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(g.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(g); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", g)
+}
+
+type GetEmailClientMetricsResponseEmailType string
+
+const (
+	GetEmailClientMetricsResponseEmailTypeCampaign      GetEmailClientMetricsResponseEmailType = "campaign"
+	GetEmailClientMetricsResponseEmailTypeTransactional GetEmailClientMetricsResponseEmailType = "transactional"
+	GetEmailClientMetricsResponseEmailTypeSequence      GetEmailClientMetricsResponseEmailType = "sequence"
+)
+
+func NewGetEmailClientMetricsResponseEmailTypeFromString(s string) (GetEmailClientMetricsResponseEmailType, error) {
+	switch s {
+	case "campaign":
+		return GetEmailClientMetricsResponseEmailTypeCampaign, nil
+	case "transactional":
+		return GetEmailClientMetricsResponseEmailTypeTransactional, nil
+	case "sequence":
+		return GetEmailClientMetricsResponseEmailTypeSequence, nil
+	}
+	var t GetEmailClientMetricsResponseEmailType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (g GetEmailClientMetricsResponseEmailType) Ptr() *GetEmailClientMetricsResponseEmailType {
+	return &g
 }
 
 type GetMetricsRequestEmailType string

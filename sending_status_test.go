@@ -4314,6 +4314,13 @@ func TestEnumSendingStatusPauseReasonKind(t *testing.T) {
 		assert.Equal(t, SendingStatusPauseReasonKind("phishing_guard"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_over_email_limit", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSendingStatusPauseReasonKindFromString("over_email_limit")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SendingStatusPauseReasonKind("over_email_limit"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_manual", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewSendingStatusPauseReasonKindFromString("manual")

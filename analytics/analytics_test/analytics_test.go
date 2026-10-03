@@ -77,6 +77,32 @@ func VerifyRequestCount(
 	require.Equal(t, expected, len(result.Requests))
 }
 
+func TestAnalyticsGetCampaignEmailClientMetricsWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.GetCampaignEmailClientMetricsRequest{
+		CampaignID: "campaignId",
+	}
+	_, invocationErr := client.Analytics.GetCampaignEmailClientMetrics(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestAnalyticsGetCampaignEmailClientMetricsWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestAnalyticsGetCampaignEmailClientMetricsWithWireMock", "GET", "/metrics/campaigns/campaignId/clients", nil, 1)
+}
+
 func TestAnalyticsGetCampaignMetricsWithWireMock(
 	t *testing.T,
 ) {
@@ -127,6 +153,30 @@ func TestAnalyticsGetCampaignStatsLegacyWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestAnalyticsGetCampaignStatsLegacyWithWireMock", "GET", "/campaigns/campaignId/stats", nil, 1)
+}
+
+func TestAnalyticsGetEmailClientMetricsWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.GetEmailClientMetricsRequest{}
+	_, invocationErr := client.Analytics.GetEmailClientMetrics(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestAnalyticsGetEmailClientMetricsWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestAnalyticsGetEmailClientMetricsWithWireMock", "GET", "/metrics/clients", nil, 1)
 }
 
 func TestAnalyticsGetMetricsWithWireMock(

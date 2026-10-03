@@ -34,13 +34,11 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Creates a company workspace and queues brand processing for its website. Requires a personal account key (seq_user_...). Company-scoped keys (seq_live_... and legacy ek_... keys) are bound to a single company and are rejected with 403, because they could never access the workspace they created.
+// Creates a company workspace, optionally without a website, and can queue the onboarding welcome sequence. Requires a personal account key (seq_user_...). Company-scoped keys (seq_live_... and legacy ek_... keys) are bound to a single company and are rejected with 403, because they could never access the workspace they created.
 //
 // Example:
 //
-//	request := &sequenzygo.CreateCompaniesRequest{
-//	    Domain: "domain",
-//	}
+//	request := &sequenzygo.CreateCompaniesRequest{}
 //	client.Companies.Create(
 //	    context.TODO(),
 //	    request,
