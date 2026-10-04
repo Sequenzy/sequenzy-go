@@ -34,6 +34,60 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
+// Asks for a brand, usually a competitor, to be added to the Sequenzy email gallery, the same as **Suggest a brand** in the dashboard's gallery picker. Asking again for the same domain keeps the one request (a new `note` replaces the old) and returns 200 with `created` false, so retries never duplicate. If the brand is already in the gallery, the request comes back with status `available`. Requires `templates:write`.
+//
+// Example:
+//
+//	request := &sequenzygo.CreateGalleryBrandRequestRequest{
+//	    Website: "website",
+//	}
+//	client.References.CreateGalleryBrandRequest(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) CreateGalleryBrandRequest(
+	ctx context.Context,
+	request *sequenzygo.CreateGalleryBrandRequestRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.GalleryBrandRequestResult, error) {
+	response, err := c.WithRawResponse.CreateGalleryBrandRequest(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Withdraws one of your brand requests. A brand already added to the gallery stays there. Requires `templates:write`.
+//
+// Example:
+//
+//	request := &sequenzygo.DeleteGalleryBrandRequestRequest{
+//	    ID: "id",
+//	}
+//	client.References.DeleteGalleryBrandRequest(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) DeleteGalleryBrandRequest(
+	ctx context.Context,
+	request *sequenzygo.DeleteGalleryBrandRequestRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.DeleteGalleryBrandRequestResponse, error) {
+	response, err := c.WithRawResponse.DeleteGalleryBrandRequest(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Lists real emails (and, for sequences, whole sequences) from the Sequenzy email gallery to model a new email on, for the kind of email you are creating. By default they come from the gallery brands most like you, ranked by how close their best-matching emails are in meaning to your company description, closest first (rankings are reused for up to 10 minutes; a description change counts at once). Each `url` works with the from-example endpoints. Always empty when the gallery is not available. Requires `templates:read`.
 //
 // Example:
@@ -53,6 +107,27 @@ func (c *Client) ListEmailReferences(
 	response, err := c.WithRawResponse.ListEmailReferences(
 		ctx,
 		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Lists your requests to add brands (usually competitors) to the Sequenzy email gallery, newest first, with where each one stands. A request moves from `requested` to `collecting` once the brand is added to the gallery, then to `available` once its emails are in the gallery, when `brand.url` links to them and [List Email References](/api-reference/references/list) can return them. Requests are private to your company. Requires `templates:read`.
+//
+// Example:
+//
+//	client.References.ListGalleryBrandRequests(
+//	    context.TODO(),
+//	)
+func (c *Client) ListGalleryBrandRequests(
+	ctx context.Context,
+	opts ...option.RequestOption,
+) (*sequenzygo.ListGalleryBrandRequestsResponse, error) {
+	response, err := c.WithRawResponse.ListGalleryBrandRequests(
+		ctx,
 		opts...,
 	)
 	if err != nil {

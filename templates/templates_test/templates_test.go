@@ -229,6 +229,30 @@ func TestTemplatesListWithWireMock(
 	VerifyRequestCount(t, "TestTemplatesListWithWireMock", "GET", "/templates", nil, 1)
 }
 
+func TestTemplatesPreviewFromExampleWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.PreviewFromExampleTemplatesRequest{}
+	_, invocationErr := client.Templates.PreviewFromExample(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestTemplatesPreviewFromExampleWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestTemplatesPreviewFromExampleWithWireMock", "POST", "/templates/from-example/preview", nil, 1)
+}
+
 func TestTemplatesRenderWithWireMock(
 	t *testing.T,
 ) {

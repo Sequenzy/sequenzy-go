@@ -864,6 +864,30 @@ func TestSequencesPauseEnrollmentsWithWireMock(
 	VerifyRequestCount(t, "TestSequencesPauseEnrollmentsWithWireMock", "POST", "/sequences/sequenceId/pause-enrollments", nil, 1)
 }
 
+func TestSequencesPreviewFromExampleWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.PreviewFromExampleSequencesRequest{}
+	_, invocationErr := client.Sequences.PreviewFromExample(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestSequencesPreviewFromExampleWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestSequencesPreviewFromExampleWithWireMock", "POST", "/sequences/from-example/preview", nil, 1)
+}
+
 func TestSequencesRealignEnrollmentsWithWireMock(
 	t *testing.T,
 ) {

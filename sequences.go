@@ -676,12 +676,13 @@ func (s *SequenceCreateRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
-	createFromExampleSequencesRequestFieldBrand      = big.NewInt(1 << 0)
-	createFromExampleSequencesRequestFieldBrief      = big.NewInt(1 << 1)
-	createFromExampleSequencesRequestFieldEmailStyle = big.NewInt(1 << 2)
-	createFromExampleSequencesRequestFieldName       = big.NewInt(1 << 3)
-	createFromExampleSequencesRequestFieldSequence   = big.NewInt(1 << 4)
-	createFromExampleSequencesRequestFieldURL        = big.NewInt(1 << 5)
+	createFromExampleSequencesRequestFieldBrand       = big.NewInt(1 << 0)
+	createFromExampleSequencesRequestFieldBrief       = big.NewInt(1 << 1)
+	createFromExampleSequencesRequestFieldEmailStyle  = big.NewInt(1 << 2)
+	createFromExampleSequencesRequestFieldName        = big.NewInt(1 << 3)
+	createFromExampleSequencesRequestFieldSequence    = big.NewInt(1 << 4)
+	createFromExampleSequencesRequestFieldStepNumbers = big.NewInt(1 << 5)
+	createFromExampleSequencesRequestFieldURL         = big.NewInt(1 << 6)
 )
 
 type CreateFromExampleSequencesRequest struct {
@@ -695,6 +696,8 @@ type CreateFromExampleSequencesRequest struct {
 	Name *string `json:"name,omitempty" url:"-"`
 	// Gallery sequence slug. Use with `brand` instead of `url`.
 	Sequence *string `json:"sequence,omitempty" url:"-"`
+	// Which of the example's emails to clone, as 1-based positions in the gallery sequence (its Email 1, Email 2 and so on), not the `stepNumber` of the created sequence's steps. Duplicates are ignored and order does not matter. Each email keeps its original timing from the trigger. Defaults to the first 12. An empty list, more than 12 distinct positions, or a position outside the sequence returns 400; a list of more than 100 entries or non-integer entries fails validation with 422.
+	StepNumbers []int `json:"stepNumbers,omitempty" url:"-"`
 	// Gallery sequence page URL, such as `https://sequenzy.com/email-examples/brands/linear/sequences/onboarding`.
 	URL *string `json:"url,omitempty" url:"-"`
 
@@ -742,6 +745,13 @@ func (c *CreateFromExampleSequencesRequest) SetName(name *string) {
 func (c *CreateFromExampleSequencesRequest) SetSequence(sequence *string) {
 	c.Sequence = sequence
 	c.require(createFromExampleSequencesRequestFieldSequence)
+}
+
+// SetStepNumbers sets the StepNumbers field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleSequencesRequest) SetStepNumbers(stepNumbers []int) {
+	c.StepNumbers = stepNumbers
+	c.require(createFromExampleSequencesRequestFieldStepNumbers)
 }
 
 // SetURL sets the URL field and marks it as non-optional;
@@ -1966,6 +1976,93 @@ func (p *PauseEnrollmentsSequencesRequest) require(field *big.Int) {
 func (p *PauseEnrollmentsSequencesRequest) SetSequenceID(sequenceID string) {
 	p.SequenceID = sequenceID
 	p.require(pauseEnrollmentsSequencesRequestFieldSequenceID)
+}
+
+var (
+	previewFromExampleSequencesRequestFieldBrand    = big.NewInt(1 << 0)
+	previewFromExampleSequencesRequestFieldBrief    = big.NewInt(1 << 1)
+	previewFromExampleSequencesRequestFieldSequence = big.NewInt(1 << 2)
+	previewFromExampleSequencesRequestFieldURL      = big.NewInt(1 << 3)
+	previewFromExampleSequencesRequestFieldWebsite  = big.NewInt(1 << 4)
+)
+
+type PreviewFromExampleSequencesRequest struct {
+	// Gallery brand slug. Use with `sequence` instead of `url`.
+	Brand *string `json:"brand,omitempty" url:"-"`
+	// Optional direction for every email. Takes priority over the example.
+	Brief *string `json:"brief,omitempty" url:"-"`
+	// Gallery sequence slug. Use with `brand` instead of `url`.
+	Sequence *string `json:"sequence,omitempty" url:"-"`
+	// Gallery sequence page URL.
+	URL *string `json:"url,omitempty" url:"-"`
+	// Optional site or domain, such as `acme.com`, to write the preview for instead of your own brand. Its registrable domain is looked up like the public gallery preview. Omit it to use your company's brand profile.
+	Website *string `json:"website,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (p *PreviewFromExampleSequencesRequest) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetBrand sets the Brand field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewFromExampleSequencesRequest) SetBrand(brand *string) {
+	p.Brand = brand
+	p.require(previewFromExampleSequencesRequestFieldBrand)
+}
+
+// SetBrief sets the Brief field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewFromExampleSequencesRequest) SetBrief(brief *string) {
+	p.Brief = brief
+	p.require(previewFromExampleSequencesRequestFieldBrief)
+}
+
+// SetSequence sets the Sequence field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewFromExampleSequencesRequest) SetSequence(sequence *string) {
+	p.Sequence = sequence
+	p.require(previewFromExampleSequencesRequestFieldSequence)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewFromExampleSequencesRequest) SetURL(url *string) {
+	p.URL = url
+	p.require(previewFromExampleSequencesRequestFieldURL)
+}
+
+// SetWebsite sets the Website field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewFromExampleSequencesRequest) SetWebsite(website *string) {
+	p.Website = website
+	p.require(previewFromExampleSequencesRequestFieldWebsite)
+}
+
+func (p *PreviewFromExampleSequencesRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler PreviewFromExampleSequencesRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*p = PreviewFromExampleSequencesRequest(body)
+	return nil
+}
+
+func (p *PreviewFromExampleSequencesRequest) MarshalJSON() ([]byte, error) {
+	type embed PreviewFromExampleSequencesRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
 }
 
 var (
@@ -24737,15 +24834,18 @@ var (
 	createFromExampleSequencesResponseExampleFieldBrand             = big.NewInt(1 << 0)
 	createFromExampleSequencesResponseExampleFieldName              = big.NewInt(1 << 1)
 	createFromExampleSequencesResponseExampleFieldOmittedEmailCount = big.NewInt(1 << 2)
-	createFromExampleSequencesResponseExampleFieldURL               = big.NewInt(1 << 3)
+	createFromExampleSequencesResponseExampleFieldStepNumbers       = big.NewInt(1 << 3)
+	createFromExampleSequencesResponseExampleFieldURL               = big.NewInt(1 << 4)
 )
 
 type CreateFromExampleSequencesResponseExample struct {
 	Brand *string `json:"brand,omitempty" url:"brand,omitempty"`
 	Name  *string `json:"name,omitempty" url:"name,omitempty"`
-	// Emails in the example beyond the 12-step limit that were not cloned.
-	OmittedEmailCount *int    `json:"omittedEmailCount,omitempty" url:"omittedEmailCount,omitempty"`
-	URL               *string `json:"url,omitempty" url:"url,omitempty"`
+	// Emails in the example that were not cloned (not chosen in `stepNumbers`, or beyond the 12-step limit).
+	OmittedEmailCount *int `json:"omittedEmailCount,omitempty" url:"omittedEmailCount,omitempty"`
+	// Positions of the cloned emails in the example, ascending.
+	StepNumbers []int   `json:"stepNumbers,omitempty" url:"stepNumbers,omitempty"`
+	URL         *string `json:"url,omitempty" url:"url,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -24773,6 +24873,13 @@ func (c *CreateFromExampleSequencesResponseExample) GetOmittedEmailCount() *int 
 		return nil
 	}
 	return c.OmittedEmailCount
+}
+
+func (c *CreateFromExampleSequencesResponseExample) GetStepNumbers() []int {
+	if c == nil {
+		return nil
+	}
+	return c.StepNumbers
 }
 
 func (c *CreateFromExampleSequencesResponseExample) GetURL() *string {
@@ -24815,6 +24922,13 @@ func (c *CreateFromExampleSequencesResponseExample) SetName(name *string) {
 func (c *CreateFromExampleSequencesResponseExample) SetOmittedEmailCount(omittedEmailCount *int) {
 	c.OmittedEmailCount = omittedEmailCount
 	c.require(createFromExampleSequencesResponseExampleFieldOmittedEmailCount)
+}
+
+// SetStepNumbers sets the StepNumbers field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFromExampleSequencesResponseExample) SetStepNumbers(stepNumbers []int) {
+	c.StepNumbers = stepNumbers
+	c.require(createFromExampleSequencesResponseExampleFieldStepNumbers)
 }
 
 // SetURL sets the URL field and marks it as non-optional;
@@ -27796,6 +27910,587 @@ func (l *ListSequencesResponsePagination) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	previewFromExampleSequencesResponseFieldExample = big.NewInt(1 << 0)
+	previewFromExampleSequencesResponseFieldMessage = big.NewInt(1 << 1)
+	previewFromExampleSequencesResponseFieldPreview = big.NewInt(1 << 2)
+	previewFromExampleSequencesResponseFieldSuccess = big.NewInt(1 << 3)
+)
+
+type PreviewFromExampleSequencesResponse struct {
+	Example *PreviewFromExampleSequencesResponseExample `json:"example,omitempty" url:"example,omitempty"`
+	Message *string                                     `json:"message,omitempty" url:"message,omitempty"`
+	Preview *PreviewFromExampleSequencesResponsePreview `json:"preview,omitempty" url:"preview,omitempty"`
+	Success *bool                                       `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PreviewFromExampleSequencesResponse) GetExample() *PreviewFromExampleSequencesResponseExample {
+	if p == nil {
+		return nil
+	}
+	return p.Example
+}
+
+func (p *PreviewFromExampleSequencesResponse) GetMessage() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Message
+}
+
+func (p *PreviewFromExampleSequencesResponse) GetPreview() *PreviewFromExampleSequencesResponsePreview {
+	if p == nil {
+		return nil
+	}
+	return p.Preview
+}
+
+func (p *PreviewFromExampleSequencesResponse) GetSuccess() *bool {
+	if p == nil {
+		return nil
+	}
+	return p.Success
+}
+
+func (p *PreviewFromExampleSequencesResponse) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PreviewFromExampleSequencesResponse) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetExample sets the Example field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewFromExampleSequencesResponse) SetExample(example *PreviewFromExampleSequencesResponseExample) {
+	p.Example = example
+	p.require(previewFromExampleSequencesResponseFieldExample)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewFromExampleSequencesResponse) SetMessage(message *string) {
+	p.Message = message
+	p.require(previewFromExampleSequencesResponseFieldMessage)
+}
+
+// SetPreview sets the Preview field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewFromExampleSequencesResponse) SetPreview(preview *PreviewFromExampleSequencesResponsePreview) {
+	p.Preview = preview
+	p.require(previewFromExampleSequencesResponseFieldPreview)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewFromExampleSequencesResponse) SetSuccess(success *bool) {
+	p.Success = success
+	p.require(previewFromExampleSequencesResponseFieldSuccess)
+}
+
+func (p *PreviewFromExampleSequencesResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler PreviewFromExampleSequencesResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PreviewFromExampleSequencesResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PreviewFromExampleSequencesResponse) MarshalJSON() ([]byte, error) {
+	type embed PreviewFromExampleSequencesResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PreviewFromExampleSequencesResponse) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	previewFromExampleSequencesResponseExampleFieldBrand      = big.NewInt(1 << 0)
+	previewFromExampleSequencesResponseExampleFieldEmailCount = big.NewInt(1 << 1)
+	previewFromExampleSequencesResponseExampleFieldName       = big.NewInt(1 << 2)
+	previewFromExampleSequencesResponseExampleFieldURL        = big.NewInt(1 << 3)
+)
+
+type PreviewFromExampleSequencesResponseExample struct {
+	Brand      *string `json:"brand,omitempty" url:"brand,omitempty"`
+	EmailCount *int    `json:"emailCount,omitempty" url:"emailCount,omitempty"`
+	Name       *string `json:"name,omitempty" url:"name,omitempty"`
+	URL        *string `json:"url,omitempty" url:"url,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PreviewFromExampleSequencesResponseExample) GetBrand() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Brand
+}
+
+func (p *PreviewFromExampleSequencesResponseExample) GetEmailCount() *int {
+	if p == nil {
+		return nil
+	}
+	return p.EmailCount
+}
+
+func (p *PreviewFromExampleSequencesResponseExample) GetName() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Name
+}
+
+func (p *PreviewFromExampleSequencesResponseExample) GetURL() *string {
+	if p == nil {
+		return nil
+	}
+	return p.URL
+}
+
+func (p *PreviewFromExampleSequencesResponseExample) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PreviewFromExampleSequencesResponseExample) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetBrand sets the Brand field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewFromExampleSequencesResponseExample) SetBrand(brand *string) {
+	p.Brand = brand
+	p.require(previewFromExampleSequencesResponseExampleFieldBrand)
+}
+
+// SetEmailCount sets the EmailCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewFromExampleSequencesResponseExample) SetEmailCount(emailCount *int) {
+	p.EmailCount = emailCount
+	p.require(previewFromExampleSequencesResponseExampleFieldEmailCount)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewFromExampleSequencesResponseExample) SetName(name *string) {
+	p.Name = name
+	p.require(previewFromExampleSequencesResponseExampleFieldName)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewFromExampleSequencesResponseExample) SetURL(url *string) {
+	p.URL = url
+	p.require(previewFromExampleSequencesResponseExampleFieldURL)
+}
+
+func (p *PreviewFromExampleSequencesResponseExample) UnmarshalJSON(data []byte) error {
+	type unmarshaler PreviewFromExampleSequencesResponseExample
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PreviewFromExampleSequencesResponseExample(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PreviewFromExampleSequencesResponseExample) MarshalJSON() ([]byte, error) {
+	type embed PreviewFromExampleSequencesResponseExample
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PreviewFromExampleSequencesResponseExample) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	previewFromExampleSequencesResponsePreviewFieldBrandName           = big.NewInt(1 << 0)
+	previewFromExampleSequencesResponsePreviewFieldEmails              = big.NewInt(1 << 1)
+	previewFromExampleSequencesResponsePreviewFieldFailedEmailCount    = big.NewInt(1 << 2)
+	previewFromExampleSequencesResponsePreviewFieldRemainingEmailCount = big.NewInt(1 << 3)
+	previewFromExampleSequencesResponsePreviewFieldWebsite             = big.NewInt(1 << 4)
+)
+
+type PreviewFromExampleSequencesResponsePreview struct {
+	BrandName *string                                                 `json:"brandName,omitempty" url:"brandName,omitempty"`
+	Emails    []*PreviewFromExampleSequencesResponsePreviewEmailsItem `json:"emails,omitempty" url:"emails,omitempty"`
+	// Previewed emails that could not be written this time.
+	FailedEmailCount *int `json:"failedEmailCount,omitempty" url:"failedEmailCount,omitempty"`
+	// Emails in the example beyond the preview.
+	RemainingEmailCount *int `json:"remainingEmailCount,omitempty" url:"remainingEmailCount,omitempty"`
+	// The normalized `website` it was written for, or `null` for your own brand.
+	Website *string `json:"website,omitempty" url:"website,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PreviewFromExampleSequencesResponsePreview) GetBrandName() *string {
+	if p == nil {
+		return nil
+	}
+	return p.BrandName
+}
+
+func (p *PreviewFromExampleSequencesResponsePreview) GetEmails() []*PreviewFromExampleSequencesResponsePreviewEmailsItem {
+	if p == nil {
+		return nil
+	}
+	return p.Emails
+}
+
+func (p *PreviewFromExampleSequencesResponsePreview) GetFailedEmailCount() *int {
+	if p == nil {
+		return nil
+	}
+	return p.FailedEmailCount
+}
+
+func (p *PreviewFromExampleSequencesResponsePreview) GetRemainingEmailCount() *int {
+	if p == nil {
+		return nil
+	}
+	return p.RemainingEmailCount
+}
+
+func (p *PreviewFromExampleSequencesResponsePreview) GetWebsite() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Website
+}
+
+func (p *PreviewFromExampleSequencesResponsePreview) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PreviewFromExampleSequencesResponsePreview) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetBrandName sets the BrandName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewFromExampleSequencesResponsePreview) SetBrandName(brandName *string) {
+	p.BrandName = brandName
+	p.require(previewFromExampleSequencesResponsePreviewFieldBrandName)
+}
+
+// SetEmails sets the Emails field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewFromExampleSequencesResponsePreview) SetEmails(emails []*PreviewFromExampleSequencesResponsePreviewEmailsItem) {
+	p.Emails = emails
+	p.require(previewFromExampleSequencesResponsePreviewFieldEmails)
+}
+
+// SetFailedEmailCount sets the FailedEmailCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewFromExampleSequencesResponsePreview) SetFailedEmailCount(failedEmailCount *int) {
+	p.FailedEmailCount = failedEmailCount
+	p.require(previewFromExampleSequencesResponsePreviewFieldFailedEmailCount)
+}
+
+// SetRemainingEmailCount sets the RemainingEmailCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewFromExampleSequencesResponsePreview) SetRemainingEmailCount(remainingEmailCount *int) {
+	p.RemainingEmailCount = remainingEmailCount
+	p.require(previewFromExampleSequencesResponsePreviewFieldRemainingEmailCount)
+}
+
+// SetWebsite sets the Website field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewFromExampleSequencesResponsePreview) SetWebsite(website *string) {
+	p.Website = website
+	p.require(previewFromExampleSequencesResponsePreviewFieldWebsite)
+}
+
+func (p *PreviewFromExampleSequencesResponsePreview) UnmarshalJSON(data []byte) error {
+	type unmarshaler PreviewFromExampleSequencesResponsePreview
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PreviewFromExampleSequencesResponsePreview(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PreviewFromExampleSequencesResponsePreview) MarshalJSON() ([]byte, error) {
+	type embed PreviewFromExampleSequencesResponsePreview
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PreviewFromExampleSequencesResponsePreview) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	previewFromExampleSequencesResponsePreviewEmailsItemFieldDay             = big.NewInt(1 << 0)
+	previewFromExampleSequencesResponsePreviewEmailsItemFieldHTML            = big.NewInt(1 << 1)
+	previewFromExampleSequencesResponsePreviewEmailsItemFieldOriginalSubject = big.NewInt(1 << 2)
+	previewFromExampleSequencesResponsePreviewEmailsItemFieldPreviewText     = big.NewInt(1 << 3)
+	previewFromExampleSequencesResponsePreviewEmailsItemFieldStepNumber      = big.NewInt(1 << 4)
+	previewFromExampleSequencesResponsePreviewEmailsItemFieldSubject         = big.NewInt(1 << 5)
+)
+
+type PreviewFromExampleSequencesResponsePreviewEmailsItem struct {
+	// Days after the start of the example sequence.
+	Day             *int    `json:"day,omitempty" url:"day,omitempty"`
+	HTML            *string `json:"html,omitempty" url:"html,omitempty"`
+	OriginalSubject *string `json:"originalSubject,omitempty" url:"originalSubject,omitempty"`
+	PreviewText     *string `json:"previewText,omitempty" url:"previewText,omitempty"`
+	// Position of the email in the example, from 1.
+	StepNumber *int    `json:"stepNumber,omitempty" url:"stepNumber,omitempty"`
+	Subject    *string `json:"subject,omitempty" url:"subject,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PreviewFromExampleSequencesResponsePreviewEmailsItem) GetDay() *int {
+	if p == nil {
+		return nil
+	}
+	return p.Day
+}
+
+func (p *PreviewFromExampleSequencesResponsePreviewEmailsItem) GetHTML() *string {
+	if p == nil {
+		return nil
+	}
+	return p.HTML
+}
+
+func (p *PreviewFromExampleSequencesResponsePreviewEmailsItem) GetOriginalSubject() *string {
+	if p == nil {
+		return nil
+	}
+	return p.OriginalSubject
+}
+
+func (p *PreviewFromExampleSequencesResponsePreviewEmailsItem) GetPreviewText() *string {
+	if p == nil {
+		return nil
+	}
+	return p.PreviewText
+}
+
+func (p *PreviewFromExampleSequencesResponsePreviewEmailsItem) GetStepNumber() *int {
+	if p == nil {
+		return nil
+	}
+	return p.StepNumber
+}
+
+func (p *PreviewFromExampleSequencesResponsePreviewEmailsItem) GetSubject() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Subject
+}
+
+func (p *PreviewFromExampleSequencesResponsePreviewEmailsItem) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PreviewFromExampleSequencesResponsePreviewEmailsItem) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetDay sets the Day field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewFromExampleSequencesResponsePreviewEmailsItem) SetDay(day *int) {
+	p.Day = day
+	p.require(previewFromExampleSequencesResponsePreviewEmailsItemFieldDay)
+}
+
+// SetHTML sets the HTML field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewFromExampleSequencesResponsePreviewEmailsItem) SetHTML(html *string) {
+	p.HTML = html
+	p.require(previewFromExampleSequencesResponsePreviewEmailsItemFieldHTML)
+}
+
+// SetOriginalSubject sets the OriginalSubject field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewFromExampleSequencesResponsePreviewEmailsItem) SetOriginalSubject(originalSubject *string) {
+	p.OriginalSubject = originalSubject
+	p.require(previewFromExampleSequencesResponsePreviewEmailsItemFieldOriginalSubject)
+}
+
+// SetPreviewText sets the PreviewText field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewFromExampleSequencesResponsePreviewEmailsItem) SetPreviewText(previewText *string) {
+	p.PreviewText = previewText
+	p.require(previewFromExampleSequencesResponsePreviewEmailsItemFieldPreviewText)
+}
+
+// SetStepNumber sets the StepNumber field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewFromExampleSequencesResponsePreviewEmailsItem) SetStepNumber(stepNumber *int) {
+	p.StepNumber = stepNumber
+	p.require(previewFromExampleSequencesResponsePreviewEmailsItemFieldStepNumber)
+}
+
+// SetSubject sets the Subject field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewFromExampleSequencesResponsePreviewEmailsItem) SetSubject(subject *string) {
+	p.Subject = subject
+	p.require(previewFromExampleSequencesResponsePreviewEmailsItemFieldSubject)
+}
+
+func (p *PreviewFromExampleSequencesResponsePreviewEmailsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler PreviewFromExampleSequencesResponsePreviewEmailsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PreviewFromExampleSequencesResponsePreviewEmailsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PreviewFromExampleSequencesResponsePreviewEmailsItem) MarshalJSON() ([]byte, error) {
+	type embed PreviewFromExampleSequencesResponsePreviewEmailsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PreviewFromExampleSequencesResponsePreviewEmailsItem) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
 }
 
 var (

@@ -11,6 +11,88 @@ import (
 )
 
 var (
+	createGalleryBrandRequestRequestFieldNote    = big.NewInt(1 << 0)
+	createGalleryBrandRequestRequestFieldWebsite = big.NewInt(1 << 1)
+)
+
+type CreateGalleryBrandRequestRequest struct {
+	// Optional. What you want to see from the brand, such as its onboarding emails.
+	Note *string `json:"note,omitempty" url:"-"`
+	// The brand's website or domain, such as `competitor.com` or `https://competitor.com/pricing`. It is reduced to the registrable domain, so `www.competitor.com` and `competitor.com` are the same request. It cannot be your own website.
+	Website string `json:"website" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (c *CreateGalleryBrandRequestRequest) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetNote sets the Note field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateGalleryBrandRequestRequest) SetNote(note *string) {
+	c.Note = note
+	c.require(createGalleryBrandRequestRequestFieldNote)
+}
+
+// SetWebsite sets the Website field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateGalleryBrandRequestRequest) SetWebsite(website string) {
+	c.Website = website
+	c.require(createGalleryBrandRequestRequestFieldWebsite)
+}
+
+func (c *CreateGalleryBrandRequestRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateGalleryBrandRequestRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*c = CreateGalleryBrandRequestRequest(body)
+	return nil
+}
+
+func (c *CreateGalleryBrandRequestRequest) MarshalJSON() ([]byte, error) {
+	type embed CreateGalleryBrandRequestRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
+	deleteGalleryBrandRequestRequestFieldID = big.NewInt(1 << 0)
+)
+
+type DeleteGalleryBrandRequestRequest struct {
+	ID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (d *DeleteGalleryBrandRequestRequest) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteGalleryBrandRequestRequest) SetID(id string) {
+	d.ID = id
+	d.require(deleteGalleryBrandRequestRequestFieldID)
+}
+
+var (
 	listEmailReferencesRequestFieldKind    = big.NewInt(1 << 0)
 	listEmailReferencesRequestFieldLimit   = big.NewInt(1 << 1)
 	listEmailReferencesRequestFieldPage    = big.NewInt(1 << 2)
@@ -83,6 +165,591 @@ func (l *ListEmailReferencesRequest) SetScope(scope *ListEmailReferencesRequestS
 func (l *ListEmailReferencesRequest) SetSubtype(subtype *string) {
 	l.Subtype = subtype
 	l.require(listEmailReferencesRequestFieldSubtype)
+}
+
+var (
+	galleryBrandRequestFieldBrand         = big.NewInt(1 << 0)
+	galleryBrandRequestFieldDeclineReason = big.NewInt(1 << 1)
+	galleryBrandRequestFieldDomain        = big.NewInt(1 << 2)
+	galleryBrandRequestFieldID            = big.NewInt(1 << 3)
+	galleryBrandRequestFieldNote          = big.NewInt(1 << 4)
+	galleryBrandRequestFieldRequestedAt   = big.NewInt(1 << 5)
+	galleryBrandRequestFieldStatus        = big.NewInt(1 << 6)
+)
+
+type GalleryBrandRequest struct {
+	// The gallery brand, once its emails are in the gallery.
+	Brand         *GalleryBrandRequestBrand `json:"brand,omitempty" url:"brand,omitempty"`
+	DeclineReason *string                   `json:"declineReason,omitempty" url:"declineReason,omitempty"`
+	Domain        *string                   `json:"domain,omitempty" url:"domain,omitempty"`
+	ID            *string                   `json:"id,omitempty" url:"id,omitempty"`
+	Note          *string                   `json:"note,omitempty" url:"note,omitempty"`
+	RequestedAt   *time.Time                `json:"requestedAt,omitempty" url:"requestedAt,omitempty"`
+	// `requested`: not in the gallery yet. `collecting`: the brand is added and its emails are being collected. `available`: its emails are in the gallery. `declined`: it will not be added; see `declineReason`.
+	Status *GalleryBrandRequestStatus `json:"status,omitempty" url:"status,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (g *GalleryBrandRequest) GetBrand() *GalleryBrandRequestBrand {
+	if g == nil {
+		return nil
+	}
+	return g.Brand
+}
+
+func (g *GalleryBrandRequest) GetDeclineReason() *string {
+	if g == nil {
+		return nil
+	}
+	return g.DeclineReason
+}
+
+func (g *GalleryBrandRequest) GetDomain() *string {
+	if g == nil {
+		return nil
+	}
+	return g.Domain
+}
+
+func (g *GalleryBrandRequest) GetID() *string {
+	if g == nil {
+		return nil
+	}
+	return g.ID
+}
+
+func (g *GalleryBrandRequest) GetNote() *string {
+	if g == nil {
+		return nil
+	}
+	return g.Note
+}
+
+func (g *GalleryBrandRequest) GetRequestedAt() *time.Time {
+	if g == nil {
+		return nil
+	}
+	return g.RequestedAt
+}
+
+func (g *GalleryBrandRequest) GetStatus() *GalleryBrandRequestStatus {
+	if g == nil {
+		return nil
+	}
+	return g.Status
+}
+
+func (g *GalleryBrandRequest) GetExtraProperties() map[string]interface{} {
+	if g == nil {
+		return nil
+	}
+	return g.extraProperties
+}
+
+func (g *GalleryBrandRequest) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetBrand sets the Brand field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GalleryBrandRequest) SetBrand(brand *GalleryBrandRequestBrand) {
+	g.Brand = brand
+	g.require(galleryBrandRequestFieldBrand)
+}
+
+// SetDeclineReason sets the DeclineReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GalleryBrandRequest) SetDeclineReason(declineReason *string) {
+	g.DeclineReason = declineReason
+	g.require(galleryBrandRequestFieldDeclineReason)
+}
+
+// SetDomain sets the Domain field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GalleryBrandRequest) SetDomain(domain *string) {
+	g.Domain = domain
+	g.require(galleryBrandRequestFieldDomain)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GalleryBrandRequest) SetID(id *string) {
+	g.ID = id
+	g.require(galleryBrandRequestFieldID)
+}
+
+// SetNote sets the Note field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GalleryBrandRequest) SetNote(note *string) {
+	g.Note = note
+	g.require(galleryBrandRequestFieldNote)
+}
+
+// SetRequestedAt sets the RequestedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GalleryBrandRequest) SetRequestedAt(requestedAt *time.Time) {
+	g.RequestedAt = requestedAt
+	g.require(galleryBrandRequestFieldRequestedAt)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GalleryBrandRequest) SetStatus(status *GalleryBrandRequestStatus) {
+	g.Status = status
+	g.require(galleryBrandRequestFieldStatus)
+}
+
+func (g *GalleryBrandRequest) UnmarshalJSON(data []byte) error {
+	type embed GalleryBrandRequest
+	var unmarshaler = struct {
+		embed
+		RequestedAt *internal.DateTime `json:"requestedAt,omitempty"`
+	}{
+		embed: embed(*g),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*g = GalleryBrandRequest(unmarshaler.embed)
+	g.RequestedAt = unmarshaler.RequestedAt.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *g)
+	if err != nil {
+		return err
+	}
+	g.extraProperties = extraProperties
+	g.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (g *GalleryBrandRequest) MarshalJSON() ([]byte, error) {
+	type embed GalleryBrandRequest
+	var marshaler = struct {
+		embed
+		RequestedAt *internal.DateTime `json:"requestedAt,omitempty"`
+	}{
+		embed:       embed(*g),
+		RequestedAt: internal.NewOptionalDateTime(g.RequestedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (g *GalleryBrandRequest) String() string {
+	if g == nil {
+		return "<nil>"
+	}
+	if len(g.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(g.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(g); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", g)
+}
+
+// The gallery brand, once its emails are in the gallery.
+var (
+	galleryBrandRequestBrandFieldName = big.NewInt(1 << 0)
+	galleryBrandRequestBrandFieldSlug = big.NewInt(1 << 1)
+	galleryBrandRequestBrandFieldURL  = big.NewInt(1 << 2)
+)
+
+type GalleryBrandRequestBrand struct {
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	Slug *string `json:"slug,omitempty" url:"slug,omitempty"`
+	URL  *string `json:"url,omitempty" url:"url,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (g *GalleryBrandRequestBrand) GetName() *string {
+	if g == nil {
+		return nil
+	}
+	return g.Name
+}
+
+func (g *GalleryBrandRequestBrand) GetSlug() *string {
+	if g == nil {
+		return nil
+	}
+	return g.Slug
+}
+
+func (g *GalleryBrandRequestBrand) GetURL() *string {
+	if g == nil {
+		return nil
+	}
+	return g.URL
+}
+
+func (g *GalleryBrandRequestBrand) GetExtraProperties() map[string]interface{} {
+	if g == nil {
+		return nil
+	}
+	return g.extraProperties
+}
+
+func (g *GalleryBrandRequestBrand) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GalleryBrandRequestBrand) SetName(name *string) {
+	g.Name = name
+	g.require(galleryBrandRequestBrandFieldName)
+}
+
+// SetSlug sets the Slug field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GalleryBrandRequestBrand) SetSlug(slug *string) {
+	g.Slug = slug
+	g.require(galleryBrandRequestBrandFieldSlug)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GalleryBrandRequestBrand) SetURL(url *string) {
+	g.URL = url
+	g.require(galleryBrandRequestBrandFieldURL)
+}
+
+func (g *GalleryBrandRequestBrand) UnmarshalJSON(data []byte) error {
+	type unmarshaler GalleryBrandRequestBrand
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*g = GalleryBrandRequestBrand(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *g)
+	if err != nil {
+		return err
+	}
+	g.extraProperties = extraProperties
+	g.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (g *GalleryBrandRequestBrand) MarshalJSON() ([]byte, error) {
+	type embed GalleryBrandRequestBrand
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*g),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (g *GalleryBrandRequestBrand) String() string {
+	if g == nil {
+		return "<nil>"
+	}
+	if len(g.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(g.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(g); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", g)
+}
+
+var (
+	galleryBrandRequestResultFieldCreated = big.NewInt(1 << 0)
+	galleryBrandRequestResultFieldMessage = big.NewInt(1 << 1)
+	galleryBrandRequestResultFieldRequest = big.NewInt(1 << 2)
+	galleryBrandRequestResultFieldSuccess = big.NewInt(1 << 3)
+)
+
+type GalleryBrandRequestResult struct {
+	// False when your company had already requested this domain.
+	Created *bool                `json:"created,omitempty" url:"created,omitempty"`
+	Message *string              `json:"message,omitempty" url:"message,omitempty"`
+	Request *GalleryBrandRequest `json:"request,omitempty" url:"request,omitempty"`
+	Success *bool                `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (g *GalleryBrandRequestResult) GetCreated() *bool {
+	if g == nil {
+		return nil
+	}
+	return g.Created
+}
+
+func (g *GalleryBrandRequestResult) GetMessage() *string {
+	if g == nil {
+		return nil
+	}
+	return g.Message
+}
+
+func (g *GalleryBrandRequestResult) GetRequest() *GalleryBrandRequest {
+	if g == nil {
+		return nil
+	}
+	return g.Request
+}
+
+func (g *GalleryBrandRequestResult) GetSuccess() *bool {
+	if g == nil {
+		return nil
+	}
+	return g.Success
+}
+
+func (g *GalleryBrandRequestResult) GetExtraProperties() map[string]interface{} {
+	if g == nil {
+		return nil
+	}
+	return g.extraProperties
+}
+
+func (g *GalleryBrandRequestResult) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetCreated sets the Created field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GalleryBrandRequestResult) SetCreated(created *bool) {
+	g.Created = created
+	g.require(galleryBrandRequestResultFieldCreated)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GalleryBrandRequestResult) SetMessage(message *string) {
+	g.Message = message
+	g.require(galleryBrandRequestResultFieldMessage)
+}
+
+// SetRequest sets the Request field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GalleryBrandRequestResult) SetRequest(request *GalleryBrandRequest) {
+	g.Request = request
+	g.require(galleryBrandRequestResultFieldRequest)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GalleryBrandRequestResult) SetSuccess(success *bool) {
+	g.Success = success
+	g.require(galleryBrandRequestResultFieldSuccess)
+}
+
+func (g *GalleryBrandRequestResult) UnmarshalJSON(data []byte) error {
+	type unmarshaler GalleryBrandRequestResult
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*g = GalleryBrandRequestResult(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *g)
+	if err != nil {
+		return err
+	}
+	g.extraProperties = extraProperties
+	g.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (g *GalleryBrandRequestResult) MarshalJSON() ([]byte, error) {
+	type embed GalleryBrandRequestResult
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*g),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (g *GalleryBrandRequestResult) String() string {
+	if g == nil {
+		return "<nil>"
+	}
+	if len(g.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(g.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(g); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", g)
+}
+
+// `requested`: not in the gallery yet. `collecting`: the brand is added and its emails are being collected. `available`: its emails are in the gallery. `declined`: it will not be added; see `declineReason`.
+type GalleryBrandRequestStatus string
+
+const (
+	GalleryBrandRequestStatusRequested  GalleryBrandRequestStatus = "requested"
+	GalleryBrandRequestStatusCollecting GalleryBrandRequestStatus = "collecting"
+	GalleryBrandRequestStatusAvailable  GalleryBrandRequestStatus = "available"
+	GalleryBrandRequestStatusDeclined   GalleryBrandRequestStatus = "declined"
+)
+
+func NewGalleryBrandRequestStatusFromString(s string) (GalleryBrandRequestStatus, error) {
+	switch s {
+	case "requested":
+		return GalleryBrandRequestStatusRequested, nil
+	case "collecting":
+		return GalleryBrandRequestStatusCollecting, nil
+	case "available":
+		return GalleryBrandRequestStatusAvailable, nil
+	case "declined":
+		return GalleryBrandRequestStatusDeclined, nil
+	}
+	var t GalleryBrandRequestStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (g GalleryBrandRequestStatus) Ptr() *GalleryBrandRequestStatus {
+	return &g
+}
+
+var (
+	deleteGalleryBrandRequestResponseFieldDeleted = big.NewInt(1 << 0)
+	deleteGalleryBrandRequestResponseFieldID      = big.NewInt(1 << 1)
+	deleteGalleryBrandRequestResponseFieldSuccess = big.NewInt(1 << 2)
+)
+
+type DeleteGalleryBrandRequestResponse struct {
+	Deleted *bool   `json:"deleted,omitempty" url:"deleted,omitempty"`
+	ID      *string `json:"id,omitempty" url:"id,omitempty"`
+	Success *bool   `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DeleteGalleryBrandRequestResponse) GetDeleted() *bool {
+	if d == nil {
+		return nil
+	}
+	return d.Deleted
+}
+
+func (d *DeleteGalleryBrandRequestResponse) GetID() *string {
+	if d == nil {
+		return nil
+	}
+	return d.ID
+}
+
+func (d *DeleteGalleryBrandRequestResponse) GetSuccess() *bool {
+	if d == nil {
+		return nil
+	}
+	return d.Success
+}
+
+func (d *DeleteGalleryBrandRequestResponse) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DeleteGalleryBrandRequestResponse) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetDeleted sets the Deleted field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteGalleryBrandRequestResponse) SetDeleted(deleted *bool) {
+	d.Deleted = deleted
+	d.require(deleteGalleryBrandRequestResponseFieldDeleted)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteGalleryBrandRequestResponse) SetID(id *string) {
+	d.ID = id
+	d.require(deleteGalleryBrandRequestResponseFieldID)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteGalleryBrandRequestResponse) SetSuccess(success *bool) {
+	d.Success = success
+	d.require(deleteGalleryBrandRequestResponseFieldSuccess)
+}
+
+func (d *DeleteGalleryBrandRequestResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler DeleteGalleryBrandRequestResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DeleteGalleryBrandRequestResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DeleteGalleryBrandRequestResponse) MarshalJSON() ([]byte, error) {
+	type embed DeleteGalleryBrandRequestResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DeleteGalleryBrandRequestResponse) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
 }
 
 type ListEmailReferencesRequestKind string
@@ -480,31 +1147,41 @@ func (l *ListEmailReferencesResponseBrandsItem) String() string {
 }
 
 var (
-	listEmailReferencesResponseEmailsItemFieldBrand     = big.NewInt(1 << 0)
-	listEmailReferencesResponseEmailsItemFieldID        = big.NewInt(1 << 1)
-	listEmailReferencesResponseEmailsItemFieldPreheader = big.NewInt(1 << 2)
-	listEmailReferencesResponseEmailsItemFieldSentAt    = big.NewInt(1 << 3)
-	listEmailReferencesResponseEmailsItemFieldSubject   = big.NewInt(1 << 4)
-	listEmailReferencesResponseEmailsItemFieldSubtype   = big.NewInt(1 << 5)
-	listEmailReferencesResponseEmailsItemFieldType      = big.NewInt(1 << 6)
-	listEmailReferencesResponseEmailsItemFieldURL       = big.NewInt(1 << 7)
+	listEmailReferencesResponseEmailsItemFieldAnalysis  = big.NewInt(1 << 0)
+	listEmailReferencesResponseEmailsItemFieldBrand     = big.NewInt(1 << 1)
+	listEmailReferencesResponseEmailsItemFieldID        = big.NewInt(1 << 2)
+	listEmailReferencesResponseEmailsItemFieldPreheader = big.NewInt(1 << 3)
+	listEmailReferencesResponseEmailsItemFieldSentAt    = big.NewInt(1 << 4)
+	listEmailReferencesResponseEmailsItemFieldSubject   = big.NewInt(1 << 5)
+	listEmailReferencesResponseEmailsItemFieldSubtype   = big.NewInt(1 << 6)
+	listEmailReferencesResponseEmailsItemFieldType      = big.NewInt(1 << 7)
+	listEmailReferencesResponseEmailsItemFieldURL       = big.NewInt(1 << 8)
 )
 
 type ListEmailReferencesResponseEmailsItem struct {
-	Brand     *ListEmailReferencesResponseEmailsItemBrand `json:"brand,omitempty" url:"brand,omitempty"`
-	ID        *string                                     `json:"id,omitempty" url:"id,omitempty"`
-	Preheader *string                                     `json:"preheader,omitempty" url:"preheader,omitempty"`
-	SentAt    *time.Time                                  `json:"sentAt,omitempty" url:"sentAt,omitempty"`
-	Subject   *string                                     `json:"subject,omitempty" url:"subject,omitempty"`
-	Subtype   *string                                     `json:"subtype,omitempty" url:"subtype,omitempty"`
-	Type      *string                                     `json:"type,omitempty" url:"type,omitempty"`
-	URL       *string                                     `json:"url,omitempty" url:"url,omitempty"`
+	// The email's breakdown, `null` until it has been analyzed. Counts come from its HTML; `voice`, `language`, `structure` and `takeaways` from AI reading the copy. Any field is `null` (or an empty list) when unknown.
+	Analysis  *ListEmailReferencesResponseEmailsItemAnalysis `json:"analysis,omitempty" url:"analysis,omitempty"`
+	Brand     *ListEmailReferencesResponseEmailsItemBrand    `json:"brand,omitempty" url:"brand,omitempty"`
+	ID        *string                                        `json:"id,omitempty" url:"id,omitempty"`
+	Preheader *string                                        `json:"preheader,omitempty" url:"preheader,omitempty"`
+	SentAt    *time.Time                                     `json:"sentAt,omitempty" url:"sentAt,omitempty"`
+	Subject   *string                                        `json:"subject,omitempty" url:"subject,omitempty"`
+	Subtype   *string                                        `json:"subtype,omitempty" url:"subtype,omitempty"`
+	Type      *string                                        `json:"type,omitempty" url:"type,omitempty"`
+	URL       *string                                        `json:"url,omitempty" url:"url,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (l *ListEmailReferencesResponseEmailsItem) GetAnalysis() *ListEmailReferencesResponseEmailsItemAnalysis {
+	if l == nil {
+		return nil
+	}
+	return l.Analysis
 }
 
 func (l *ListEmailReferencesResponseEmailsItem) GetBrand() *ListEmailReferencesResponseEmailsItemBrand {
@@ -575,6 +1252,13 @@ func (l *ListEmailReferencesResponseEmailsItem) require(field *big.Int) {
 		l.explicitFields = big.NewInt(0)
 	}
 	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetAnalysis sets the Analysis field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEmailReferencesResponseEmailsItem) SetAnalysis(analysis *ListEmailReferencesResponseEmailsItemAnalysis) {
+	l.Analysis = analysis
+	l.require(listEmailReferencesResponseEmailsItemFieldAnalysis)
 }
 
 // SetBrand sets the Brand field and marks it as non-optional;
@@ -681,6 +1365,545 @@ func (l *ListEmailReferencesResponseEmailsItem) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", l)
+}
+
+// The email's breakdown, `null` until it has been analyzed. Counts come from its HTML; `voice`, `language`, `structure` and `takeaways` from AI reading the copy. Any field is `null` (or an empty list) when unknown.
+var (
+	listEmailReferencesResponseEmailsItemAnalysisFieldButtonCount        = big.NewInt(1 << 0)
+	listEmailReferencesResponseEmailsItemAnalysisFieldButtonLabels       = big.NewInt(1 << 1)
+	listEmailReferencesResponseEmailsItemAnalysisFieldColumns            = big.NewInt(1 << 2)
+	listEmailReferencesResponseEmailsItemAnalysisFieldDarkMode           = big.NewInt(1 << 3)
+	listEmailReferencesResponseEmailsItemAnalysisFieldFonts              = big.NewInt(1 << 4)
+	listEmailReferencesResponseEmailsItemAnalysisFieldFormat             = big.NewInt(1 << 5)
+	listEmailReferencesResponseEmailsItemAnalysisFieldHasGif             = big.NewInt(1 << 6)
+	listEmailReferencesResponseEmailsItemAnalysisFieldImageCount         = big.NewInt(1 << 7)
+	listEmailReferencesResponseEmailsItemAnalysisFieldLanguage           = big.NewInt(1 << 8)
+	listEmailReferencesResponseEmailsItemAnalysisFieldLinkCount          = big.NewInt(1 << 9)
+	listEmailReferencesResponseEmailsItemAnalysisFieldMainButton         = big.NewInt(1 << 10)
+	listEmailReferencesResponseEmailsItemAnalysisFieldReadingTimeSeconds = big.NewInt(1 << 11)
+	listEmailReferencesResponseEmailsItemAnalysisFieldSender             = big.NewInt(1 << 12)
+	listEmailReferencesResponseEmailsItemAnalysisFieldStructure          = big.NewInt(1 << 13)
+	listEmailReferencesResponseEmailsItemAnalysisFieldTakeaways          = big.NewInt(1 << 14)
+	listEmailReferencesResponseEmailsItemAnalysisFieldVoice              = big.NewInt(1 << 15)
+	listEmailReferencesResponseEmailsItemAnalysisFieldWordCount          = big.NewInt(1 << 16)
+)
+
+type ListEmailReferencesResponseEmailsItemAnalysis struct {
+	ButtonCount *int `json:"buttonCount,omitempty" url:"buttonCount,omitempty"`
+	// Button labels in reading order, up to 5.
+	ButtonLabels []string                                              `json:"buttonLabels,omitempty" url:"buttonLabels,omitempty"`
+	Columns      *ListEmailReferencesResponseEmailsItemAnalysisColumns `json:"columns,omitempty" url:"columns,omitempty"`
+	// Whether the email ships custom `prefers-color-scheme` dark styles.
+	DarkMode *bool `json:"darkMode,omitempty" url:"darkMode,omitempty"`
+	// Most used font families, up to 3.
+	Fonts  []string                                             `json:"fonts,omitempty" url:"fonts,omitempty"`
+	Format *ListEmailReferencesResponseEmailsItemAnalysisFormat `json:"format,omitempty" url:"format,omitempty"`
+	HasGif *bool                                                `json:"hasGif,omitempty" url:"hasGif,omitempty"`
+	// Content images; icons and spacers are left out.
+	ImageCount *int `json:"imageCount,omitempty" url:"imageCount,omitempty"`
+	// BCP 47 language code, such as `en`.
+	Language *string `json:"language,omitempty" url:"language,omitempty"`
+	// Links of any kind, buttons included.
+	LinkCount *int `json:"linkCount,omitempty" url:"linkCount,omitempty"`
+	// Label of the first button, the primary call to action.
+	MainButton         *string `json:"mainButton,omitempty" url:"mainButton,omitempty"`
+	ReadingTimeSeconds *int    `json:"readingTimeSeconds,omitempty" url:"readingTimeSeconds,omitempty"`
+	// The sender as shown on gallery pages, with personal details redacted. `null` when unknown.
+	Sender *ListEmailReferencesResponseEmailsItemAnalysisSender `json:"sender,omitempty" url:"sender,omitempty"`
+	// The email's beats in order, such as "Logo header" and "Primary button".
+	Structure []string `json:"structure,omitempty" url:"structure,omitempty"`
+	// Why the email works, as observations about its choices. Never performance claims.
+	Takeaways []string                                            `json:"takeaways,omitempty" url:"takeaways,omitempty"`
+	Voice     *ListEmailReferencesResponseEmailsItemAnalysisVoice `json:"voice,omitempty" url:"voice,omitempty"`
+	WordCount *int                                                `json:"wordCount,omitempty" url:"wordCount,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListEmailReferencesResponseEmailsItemAnalysis) GetButtonCount() *int {
+	if l == nil {
+		return nil
+	}
+	return l.ButtonCount
+}
+
+func (l *ListEmailReferencesResponseEmailsItemAnalysis) GetButtonLabels() []string {
+	if l == nil {
+		return nil
+	}
+	return l.ButtonLabels
+}
+
+func (l *ListEmailReferencesResponseEmailsItemAnalysis) GetColumns() *ListEmailReferencesResponseEmailsItemAnalysisColumns {
+	if l == nil {
+		return nil
+	}
+	return l.Columns
+}
+
+func (l *ListEmailReferencesResponseEmailsItemAnalysis) GetDarkMode() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.DarkMode
+}
+
+func (l *ListEmailReferencesResponseEmailsItemAnalysis) GetFonts() []string {
+	if l == nil {
+		return nil
+	}
+	return l.Fonts
+}
+
+func (l *ListEmailReferencesResponseEmailsItemAnalysis) GetFormat() *ListEmailReferencesResponseEmailsItemAnalysisFormat {
+	if l == nil {
+		return nil
+	}
+	return l.Format
+}
+
+func (l *ListEmailReferencesResponseEmailsItemAnalysis) GetHasGif() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.HasGif
+}
+
+func (l *ListEmailReferencesResponseEmailsItemAnalysis) GetImageCount() *int {
+	if l == nil {
+		return nil
+	}
+	return l.ImageCount
+}
+
+func (l *ListEmailReferencesResponseEmailsItemAnalysis) GetLanguage() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Language
+}
+
+func (l *ListEmailReferencesResponseEmailsItemAnalysis) GetLinkCount() *int {
+	if l == nil {
+		return nil
+	}
+	return l.LinkCount
+}
+
+func (l *ListEmailReferencesResponseEmailsItemAnalysis) GetMainButton() *string {
+	if l == nil {
+		return nil
+	}
+	return l.MainButton
+}
+
+func (l *ListEmailReferencesResponseEmailsItemAnalysis) GetReadingTimeSeconds() *int {
+	if l == nil {
+		return nil
+	}
+	return l.ReadingTimeSeconds
+}
+
+func (l *ListEmailReferencesResponseEmailsItemAnalysis) GetSender() *ListEmailReferencesResponseEmailsItemAnalysisSender {
+	if l == nil {
+		return nil
+	}
+	return l.Sender
+}
+
+func (l *ListEmailReferencesResponseEmailsItemAnalysis) GetStructure() []string {
+	if l == nil {
+		return nil
+	}
+	return l.Structure
+}
+
+func (l *ListEmailReferencesResponseEmailsItemAnalysis) GetTakeaways() []string {
+	if l == nil {
+		return nil
+	}
+	return l.Takeaways
+}
+
+func (l *ListEmailReferencesResponseEmailsItemAnalysis) GetVoice() *ListEmailReferencesResponseEmailsItemAnalysisVoice {
+	if l == nil {
+		return nil
+	}
+	return l.Voice
+}
+
+func (l *ListEmailReferencesResponseEmailsItemAnalysis) GetWordCount() *int {
+	if l == nil {
+		return nil
+	}
+	return l.WordCount
+}
+
+func (l *ListEmailReferencesResponseEmailsItemAnalysis) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListEmailReferencesResponseEmailsItemAnalysis) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetButtonCount sets the ButtonCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEmailReferencesResponseEmailsItemAnalysis) SetButtonCount(buttonCount *int) {
+	l.ButtonCount = buttonCount
+	l.require(listEmailReferencesResponseEmailsItemAnalysisFieldButtonCount)
+}
+
+// SetButtonLabels sets the ButtonLabels field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEmailReferencesResponseEmailsItemAnalysis) SetButtonLabels(buttonLabels []string) {
+	l.ButtonLabels = buttonLabels
+	l.require(listEmailReferencesResponseEmailsItemAnalysisFieldButtonLabels)
+}
+
+// SetColumns sets the Columns field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEmailReferencesResponseEmailsItemAnalysis) SetColumns(columns *ListEmailReferencesResponseEmailsItemAnalysisColumns) {
+	l.Columns = columns
+	l.require(listEmailReferencesResponseEmailsItemAnalysisFieldColumns)
+}
+
+// SetDarkMode sets the DarkMode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEmailReferencesResponseEmailsItemAnalysis) SetDarkMode(darkMode *bool) {
+	l.DarkMode = darkMode
+	l.require(listEmailReferencesResponseEmailsItemAnalysisFieldDarkMode)
+}
+
+// SetFonts sets the Fonts field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEmailReferencesResponseEmailsItemAnalysis) SetFonts(fonts []string) {
+	l.Fonts = fonts
+	l.require(listEmailReferencesResponseEmailsItemAnalysisFieldFonts)
+}
+
+// SetFormat sets the Format field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEmailReferencesResponseEmailsItemAnalysis) SetFormat(format *ListEmailReferencesResponseEmailsItemAnalysisFormat) {
+	l.Format = format
+	l.require(listEmailReferencesResponseEmailsItemAnalysisFieldFormat)
+}
+
+// SetHasGif sets the HasGif field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEmailReferencesResponseEmailsItemAnalysis) SetHasGif(hasGif *bool) {
+	l.HasGif = hasGif
+	l.require(listEmailReferencesResponseEmailsItemAnalysisFieldHasGif)
+}
+
+// SetImageCount sets the ImageCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEmailReferencesResponseEmailsItemAnalysis) SetImageCount(imageCount *int) {
+	l.ImageCount = imageCount
+	l.require(listEmailReferencesResponseEmailsItemAnalysisFieldImageCount)
+}
+
+// SetLanguage sets the Language field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEmailReferencesResponseEmailsItemAnalysis) SetLanguage(language *string) {
+	l.Language = language
+	l.require(listEmailReferencesResponseEmailsItemAnalysisFieldLanguage)
+}
+
+// SetLinkCount sets the LinkCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEmailReferencesResponseEmailsItemAnalysis) SetLinkCount(linkCount *int) {
+	l.LinkCount = linkCount
+	l.require(listEmailReferencesResponseEmailsItemAnalysisFieldLinkCount)
+}
+
+// SetMainButton sets the MainButton field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEmailReferencesResponseEmailsItemAnalysis) SetMainButton(mainButton *string) {
+	l.MainButton = mainButton
+	l.require(listEmailReferencesResponseEmailsItemAnalysisFieldMainButton)
+}
+
+// SetReadingTimeSeconds sets the ReadingTimeSeconds field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEmailReferencesResponseEmailsItemAnalysis) SetReadingTimeSeconds(readingTimeSeconds *int) {
+	l.ReadingTimeSeconds = readingTimeSeconds
+	l.require(listEmailReferencesResponseEmailsItemAnalysisFieldReadingTimeSeconds)
+}
+
+// SetSender sets the Sender field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEmailReferencesResponseEmailsItemAnalysis) SetSender(sender *ListEmailReferencesResponseEmailsItemAnalysisSender) {
+	l.Sender = sender
+	l.require(listEmailReferencesResponseEmailsItemAnalysisFieldSender)
+}
+
+// SetStructure sets the Structure field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEmailReferencesResponseEmailsItemAnalysis) SetStructure(structure []string) {
+	l.Structure = structure
+	l.require(listEmailReferencesResponseEmailsItemAnalysisFieldStructure)
+}
+
+// SetTakeaways sets the Takeaways field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEmailReferencesResponseEmailsItemAnalysis) SetTakeaways(takeaways []string) {
+	l.Takeaways = takeaways
+	l.require(listEmailReferencesResponseEmailsItemAnalysisFieldTakeaways)
+}
+
+// SetVoice sets the Voice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEmailReferencesResponseEmailsItemAnalysis) SetVoice(voice *ListEmailReferencesResponseEmailsItemAnalysisVoice) {
+	l.Voice = voice
+	l.require(listEmailReferencesResponseEmailsItemAnalysisFieldVoice)
+}
+
+// SetWordCount sets the WordCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEmailReferencesResponseEmailsItemAnalysis) SetWordCount(wordCount *int) {
+	l.WordCount = wordCount
+	l.require(listEmailReferencesResponseEmailsItemAnalysisFieldWordCount)
+}
+
+func (l *ListEmailReferencesResponseEmailsItemAnalysis) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListEmailReferencesResponseEmailsItemAnalysis
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListEmailReferencesResponseEmailsItemAnalysis(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListEmailReferencesResponseEmailsItemAnalysis) MarshalJSON() ([]byte, error) {
+	type embed ListEmailReferencesResponseEmailsItemAnalysis
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListEmailReferencesResponseEmailsItemAnalysis) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type ListEmailReferencesResponseEmailsItemAnalysisColumns string
+
+const (
+	ListEmailReferencesResponseEmailsItemAnalysisColumnsSingle ListEmailReferencesResponseEmailsItemAnalysisColumns = "single"
+	ListEmailReferencesResponseEmailsItemAnalysisColumnsMulti  ListEmailReferencesResponseEmailsItemAnalysisColumns = "multi"
+)
+
+func NewListEmailReferencesResponseEmailsItemAnalysisColumnsFromString(s string) (ListEmailReferencesResponseEmailsItemAnalysisColumns, error) {
+	switch s {
+	case "single":
+		return ListEmailReferencesResponseEmailsItemAnalysisColumnsSingle, nil
+	case "multi":
+		return ListEmailReferencesResponseEmailsItemAnalysisColumnsMulti, nil
+	}
+	var t ListEmailReferencesResponseEmailsItemAnalysisColumns
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListEmailReferencesResponseEmailsItemAnalysisColumns) Ptr() *ListEmailReferencesResponseEmailsItemAnalysisColumns {
+	return &l
+}
+
+type ListEmailReferencesResponseEmailsItemAnalysisFormat string
+
+const (
+	ListEmailReferencesResponseEmailsItemAnalysisFormatPlain     ListEmailReferencesResponseEmailsItemAnalysisFormat = "plain"
+	ListEmailReferencesResponseEmailsItemAnalysisFormatTextHeavy ListEmailReferencesResponseEmailsItemAnalysisFormat = "text_heavy"
+	ListEmailReferencesResponseEmailsItemAnalysisFormatBalanced  ListEmailReferencesResponseEmailsItemAnalysisFormat = "balanced"
+	ListEmailReferencesResponseEmailsItemAnalysisFormatVisual    ListEmailReferencesResponseEmailsItemAnalysisFormat = "visual"
+)
+
+func NewListEmailReferencesResponseEmailsItemAnalysisFormatFromString(s string) (ListEmailReferencesResponseEmailsItemAnalysisFormat, error) {
+	switch s {
+	case "plain":
+		return ListEmailReferencesResponseEmailsItemAnalysisFormatPlain, nil
+	case "text_heavy":
+		return ListEmailReferencesResponseEmailsItemAnalysisFormatTextHeavy, nil
+	case "balanced":
+		return ListEmailReferencesResponseEmailsItemAnalysisFormatBalanced, nil
+	case "visual":
+		return ListEmailReferencesResponseEmailsItemAnalysisFormatVisual, nil
+	}
+	var t ListEmailReferencesResponseEmailsItemAnalysisFormat
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListEmailReferencesResponseEmailsItemAnalysisFormat) Ptr() *ListEmailReferencesResponseEmailsItemAnalysisFormat {
+	return &l
+}
+
+// The sender as shown on gallery pages, with personal details redacted. `null` when unknown.
+var (
+	listEmailReferencesResponseEmailsItemAnalysisSenderFieldAddress = big.NewInt(1 << 0)
+	listEmailReferencesResponseEmailsItemAnalysisSenderFieldName    = big.NewInt(1 << 1)
+)
+
+type ListEmailReferencesResponseEmailsItemAnalysisSender struct {
+	Address *string `json:"address,omitempty" url:"address,omitempty"`
+	Name    *string `json:"name,omitempty" url:"name,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListEmailReferencesResponseEmailsItemAnalysisSender) GetAddress() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Address
+}
+
+func (l *ListEmailReferencesResponseEmailsItemAnalysisSender) GetName() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Name
+}
+
+func (l *ListEmailReferencesResponseEmailsItemAnalysisSender) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListEmailReferencesResponseEmailsItemAnalysisSender) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetAddress sets the Address field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEmailReferencesResponseEmailsItemAnalysisSender) SetAddress(address *string) {
+	l.Address = address
+	l.require(listEmailReferencesResponseEmailsItemAnalysisSenderFieldAddress)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEmailReferencesResponseEmailsItemAnalysisSender) SetName(name *string) {
+	l.Name = name
+	l.require(listEmailReferencesResponseEmailsItemAnalysisSenderFieldName)
+}
+
+func (l *ListEmailReferencesResponseEmailsItemAnalysisSender) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListEmailReferencesResponseEmailsItemAnalysisSender
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListEmailReferencesResponseEmailsItemAnalysisSender(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListEmailReferencesResponseEmailsItemAnalysisSender) MarshalJSON() ([]byte, error) {
+	type embed ListEmailReferencesResponseEmailsItemAnalysisSender
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListEmailReferencesResponseEmailsItemAnalysisSender) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type ListEmailReferencesResponseEmailsItemAnalysisVoice string
+
+const (
+	ListEmailReferencesResponseEmailsItemAnalysisVoiceFriendly      ListEmailReferencesResponseEmailsItemAnalysisVoice = "friendly"
+	ListEmailReferencesResponseEmailsItemAnalysisVoiceProfessional  ListEmailReferencesResponseEmailsItemAnalysisVoice = "professional"
+	ListEmailReferencesResponseEmailsItemAnalysisVoicePlayful       ListEmailReferencesResponseEmailsItemAnalysisVoice = "playful"
+	ListEmailReferencesResponseEmailsItemAnalysisVoiceUrgent        ListEmailReferencesResponseEmailsItemAnalysisVoice = "urgent"
+	ListEmailReferencesResponseEmailsItemAnalysisVoiceInspirational ListEmailReferencesResponseEmailsItemAnalysisVoice = "inspirational"
+	ListEmailReferencesResponseEmailsItemAnalysisVoiceInformative   ListEmailReferencesResponseEmailsItemAnalysisVoice = "informative"
+	ListEmailReferencesResponseEmailsItemAnalysisVoicePersonal      ListEmailReferencesResponseEmailsItemAnalysisVoice = "personal"
+)
+
+func NewListEmailReferencesResponseEmailsItemAnalysisVoiceFromString(s string) (ListEmailReferencesResponseEmailsItemAnalysisVoice, error) {
+	switch s {
+	case "friendly":
+		return ListEmailReferencesResponseEmailsItemAnalysisVoiceFriendly, nil
+	case "professional":
+		return ListEmailReferencesResponseEmailsItemAnalysisVoiceProfessional, nil
+	case "playful":
+		return ListEmailReferencesResponseEmailsItemAnalysisVoicePlayful, nil
+	case "urgent":
+		return ListEmailReferencesResponseEmailsItemAnalysisVoiceUrgent, nil
+	case "inspirational":
+		return ListEmailReferencesResponseEmailsItemAnalysisVoiceInspirational, nil
+	case "informative":
+		return ListEmailReferencesResponseEmailsItemAnalysisVoiceInformative, nil
+	case "personal":
+		return ListEmailReferencesResponseEmailsItemAnalysisVoicePersonal, nil
+	}
+	var t ListEmailReferencesResponseEmailsItemAnalysisVoice
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListEmailReferencesResponseEmailsItemAnalysisVoice) Ptr() *ListEmailReferencesResponseEmailsItemAnalysisVoice {
+	return &l
 }
 
 var (
@@ -1119,6 +2342,123 @@ func (l *ListEmailReferencesResponseSequencesItemBrand) MarshalJSON() ([]byte, e
 }
 
 func (l *ListEmailReferencesResponseSequencesItemBrand) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	listGalleryBrandRequestsResponseFieldLimit    = big.NewInt(1 << 0)
+	listGalleryBrandRequestsResponseFieldRequests = big.NewInt(1 << 1)
+	listGalleryBrandRequestsResponseFieldSuccess  = big.NewInt(1 << 2)
+)
+
+type ListGalleryBrandRequestsResponse struct {
+	// How many requests a company can keep, declined ones included.
+	Limit    *int                   `json:"limit,omitempty" url:"limit,omitempty"`
+	Requests []*GalleryBrandRequest `json:"requests,omitempty" url:"requests,omitempty"`
+	Success  *bool                  `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListGalleryBrandRequestsResponse) GetLimit() *int {
+	if l == nil {
+		return nil
+	}
+	return l.Limit
+}
+
+func (l *ListGalleryBrandRequestsResponse) GetRequests() []*GalleryBrandRequest {
+	if l == nil {
+		return nil
+	}
+	return l.Requests
+}
+
+func (l *ListGalleryBrandRequestsResponse) GetSuccess() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.Success
+}
+
+func (l *ListGalleryBrandRequestsResponse) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListGalleryBrandRequestsResponse) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetLimit sets the Limit field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListGalleryBrandRequestsResponse) SetLimit(limit *int) {
+	l.Limit = limit
+	l.require(listGalleryBrandRequestsResponseFieldLimit)
+}
+
+// SetRequests sets the Requests field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListGalleryBrandRequestsResponse) SetRequests(requests []*GalleryBrandRequest) {
+	l.Requests = requests
+	l.require(listGalleryBrandRequestsResponseFieldRequests)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListGalleryBrandRequestsResponse) SetSuccess(success *bool) {
+	l.Success = success
+	l.require(listGalleryBrandRequestsResponseFieldSuccess)
+}
+
+func (l *ListGalleryBrandRequestsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListGalleryBrandRequestsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListGalleryBrandRequestsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListGalleryBrandRequestsResponse) MarshalJSON() ([]byte, error) {
+	type embed ListGalleryBrandRequestsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListGalleryBrandRequestsResponse) String() string {
 	if l == nil {
 		return "<nil>"
 	}

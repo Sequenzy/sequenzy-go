@@ -377,6 +377,93 @@ func (l *ListTemplatesRequest) SetOffset(offset *int) {
 }
 
 var (
+	previewFromExampleTemplatesRequestFieldBrand   = big.NewInt(1 << 0)
+	previewFromExampleTemplatesRequestFieldBrief   = big.NewInt(1 << 1)
+	previewFromExampleTemplatesRequestFieldEmail   = big.NewInt(1 << 2)
+	previewFromExampleTemplatesRequestFieldURL     = big.NewInt(1 << 3)
+	previewFromExampleTemplatesRequestFieldWebsite = big.NewInt(1 << 4)
+)
+
+type PreviewFromExampleTemplatesRequest struct {
+	// Gallery brand slug. Use with `email` instead of `url`.
+	Brand *string `json:"brand,omitempty" url:"-"`
+	// Optional direction for the email. Takes priority over the example.
+	Brief *string `json:"brief,omitempty" url:"-"`
+	// Gallery email slug. Use with `brand` instead of `url`.
+	Email *string `json:"email,omitempty" url:"-"`
+	// Gallery email page URL, or a sequence page URL ending in `#email-{email}`.
+	URL *string `json:"url,omitempty" url:"-"`
+	// Optional site or domain, such as `acme.com`, to write the preview for instead of your own brand. Its registrable domain is looked up like the public gallery preview. Omit it to use your company's brand profile.
+	Website *string `json:"website,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (p *PreviewFromExampleTemplatesRequest) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetBrand sets the Brand field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewFromExampleTemplatesRequest) SetBrand(brand *string) {
+	p.Brand = brand
+	p.require(previewFromExampleTemplatesRequestFieldBrand)
+}
+
+// SetBrief sets the Brief field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewFromExampleTemplatesRequest) SetBrief(brief *string) {
+	p.Brief = brief
+	p.require(previewFromExampleTemplatesRequestFieldBrief)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewFromExampleTemplatesRequest) SetEmail(email *string) {
+	p.Email = email
+	p.require(previewFromExampleTemplatesRequestFieldEmail)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewFromExampleTemplatesRequest) SetURL(url *string) {
+	p.URL = url
+	p.require(previewFromExampleTemplatesRequestFieldURL)
+}
+
+// SetWebsite sets the Website field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewFromExampleTemplatesRequest) SetWebsite(website *string) {
+	p.Website = website
+	p.require(previewFromExampleTemplatesRequestFieldWebsite)
+}
+
+func (p *PreviewFromExampleTemplatesRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler PreviewFromExampleTemplatesRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*p = PreviewFromExampleTemplatesRequest(body)
+	return nil
+}
+
+func (p *PreviewFromExampleTemplatesRequest) MarshalJSON() ([]byte, error) {
+	type embed PreviewFromExampleTemplatesRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
 	renderTemplatesRequestFieldTemplateID = big.NewInt(1 << 0)
 )
 
@@ -3043,6 +3130,406 @@ func (l *ListTemplatesResponsePagination) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	previewFromExampleTemplatesResponseFieldExample = big.NewInt(1 << 0)
+	previewFromExampleTemplatesResponseFieldMessage = big.NewInt(1 << 1)
+	previewFromExampleTemplatesResponseFieldPreview = big.NewInt(1 << 2)
+	previewFromExampleTemplatesResponseFieldSuccess = big.NewInt(1 << 3)
+)
+
+type PreviewFromExampleTemplatesResponse struct {
+	Example *PreviewFromExampleTemplatesResponseExample `json:"example,omitempty" url:"example,omitempty"`
+	Message *string                                     `json:"message,omitempty" url:"message,omitempty"`
+	Preview *PreviewFromExampleTemplatesResponsePreview `json:"preview,omitempty" url:"preview,omitempty"`
+	Success *bool                                       `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PreviewFromExampleTemplatesResponse) GetExample() *PreviewFromExampleTemplatesResponseExample {
+	if p == nil {
+		return nil
+	}
+	return p.Example
+}
+
+func (p *PreviewFromExampleTemplatesResponse) GetMessage() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Message
+}
+
+func (p *PreviewFromExampleTemplatesResponse) GetPreview() *PreviewFromExampleTemplatesResponsePreview {
+	if p == nil {
+		return nil
+	}
+	return p.Preview
+}
+
+func (p *PreviewFromExampleTemplatesResponse) GetSuccess() *bool {
+	if p == nil {
+		return nil
+	}
+	return p.Success
+}
+
+func (p *PreviewFromExampleTemplatesResponse) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PreviewFromExampleTemplatesResponse) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetExample sets the Example field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewFromExampleTemplatesResponse) SetExample(example *PreviewFromExampleTemplatesResponseExample) {
+	p.Example = example
+	p.require(previewFromExampleTemplatesResponseFieldExample)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewFromExampleTemplatesResponse) SetMessage(message *string) {
+	p.Message = message
+	p.require(previewFromExampleTemplatesResponseFieldMessage)
+}
+
+// SetPreview sets the Preview field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewFromExampleTemplatesResponse) SetPreview(preview *PreviewFromExampleTemplatesResponsePreview) {
+	p.Preview = preview
+	p.require(previewFromExampleTemplatesResponseFieldPreview)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewFromExampleTemplatesResponse) SetSuccess(success *bool) {
+	p.Success = success
+	p.require(previewFromExampleTemplatesResponseFieldSuccess)
+}
+
+func (p *PreviewFromExampleTemplatesResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler PreviewFromExampleTemplatesResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PreviewFromExampleTemplatesResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PreviewFromExampleTemplatesResponse) MarshalJSON() ([]byte, error) {
+	type embed PreviewFromExampleTemplatesResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PreviewFromExampleTemplatesResponse) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	previewFromExampleTemplatesResponseExampleFieldBrand   = big.NewInt(1 << 0)
+	previewFromExampleTemplatesResponseExampleFieldSubject = big.NewInt(1 << 1)
+	previewFromExampleTemplatesResponseExampleFieldURL     = big.NewInt(1 << 2)
+)
+
+type PreviewFromExampleTemplatesResponseExample struct {
+	Brand   *string `json:"brand,omitempty" url:"brand,omitempty"`
+	Subject *string `json:"subject,omitempty" url:"subject,omitempty"`
+	// Public gallery page of the example.
+	URL *string `json:"url,omitempty" url:"url,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PreviewFromExampleTemplatesResponseExample) GetBrand() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Brand
+}
+
+func (p *PreviewFromExampleTemplatesResponseExample) GetSubject() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Subject
+}
+
+func (p *PreviewFromExampleTemplatesResponseExample) GetURL() *string {
+	if p == nil {
+		return nil
+	}
+	return p.URL
+}
+
+func (p *PreviewFromExampleTemplatesResponseExample) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PreviewFromExampleTemplatesResponseExample) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetBrand sets the Brand field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewFromExampleTemplatesResponseExample) SetBrand(brand *string) {
+	p.Brand = brand
+	p.require(previewFromExampleTemplatesResponseExampleFieldBrand)
+}
+
+// SetSubject sets the Subject field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewFromExampleTemplatesResponseExample) SetSubject(subject *string) {
+	p.Subject = subject
+	p.require(previewFromExampleTemplatesResponseExampleFieldSubject)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewFromExampleTemplatesResponseExample) SetURL(url *string) {
+	p.URL = url
+	p.require(previewFromExampleTemplatesResponseExampleFieldURL)
+}
+
+func (p *PreviewFromExampleTemplatesResponseExample) UnmarshalJSON(data []byte) error {
+	type unmarshaler PreviewFromExampleTemplatesResponseExample
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PreviewFromExampleTemplatesResponseExample(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PreviewFromExampleTemplatesResponseExample) MarshalJSON() ([]byte, error) {
+	type embed PreviewFromExampleTemplatesResponseExample
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PreviewFromExampleTemplatesResponseExample) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	previewFromExampleTemplatesResponsePreviewFieldBrandName   = big.NewInt(1 << 0)
+	previewFromExampleTemplatesResponsePreviewFieldHTML        = big.NewInt(1 << 1)
+	previewFromExampleTemplatesResponsePreviewFieldPreviewText = big.NewInt(1 << 2)
+	previewFromExampleTemplatesResponsePreviewFieldSubject     = big.NewInt(1 << 3)
+	previewFromExampleTemplatesResponsePreviewFieldWebsite     = big.NewInt(1 << 4)
+)
+
+type PreviewFromExampleTemplatesResponsePreview struct {
+	// The brand it is written for.
+	BrandName *string `json:"brandName,omitempty" url:"brandName,omitempty"`
+	// The rewritten email as HTML.
+	HTML        *string `json:"html,omitempty" url:"html,omitempty"`
+	PreviewText *string `json:"previewText,omitempty" url:"previewText,omitempty"`
+	Subject     *string `json:"subject,omitempty" url:"subject,omitempty"`
+	// The normalized `website` it was written for, or `null` for your own brand.
+	Website *string `json:"website,omitempty" url:"website,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PreviewFromExampleTemplatesResponsePreview) GetBrandName() *string {
+	if p == nil {
+		return nil
+	}
+	return p.BrandName
+}
+
+func (p *PreviewFromExampleTemplatesResponsePreview) GetHTML() *string {
+	if p == nil {
+		return nil
+	}
+	return p.HTML
+}
+
+func (p *PreviewFromExampleTemplatesResponsePreview) GetPreviewText() *string {
+	if p == nil {
+		return nil
+	}
+	return p.PreviewText
+}
+
+func (p *PreviewFromExampleTemplatesResponsePreview) GetSubject() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Subject
+}
+
+func (p *PreviewFromExampleTemplatesResponsePreview) GetWebsite() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Website
+}
+
+func (p *PreviewFromExampleTemplatesResponsePreview) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PreviewFromExampleTemplatesResponsePreview) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetBrandName sets the BrandName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewFromExampleTemplatesResponsePreview) SetBrandName(brandName *string) {
+	p.BrandName = brandName
+	p.require(previewFromExampleTemplatesResponsePreviewFieldBrandName)
+}
+
+// SetHTML sets the HTML field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewFromExampleTemplatesResponsePreview) SetHTML(html *string) {
+	p.HTML = html
+	p.require(previewFromExampleTemplatesResponsePreviewFieldHTML)
+}
+
+// SetPreviewText sets the PreviewText field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewFromExampleTemplatesResponsePreview) SetPreviewText(previewText *string) {
+	p.PreviewText = previewText
+	p.require(previewFromExampleTemplatesResponsePreviewFieldPreviewText)
+}
+
+// SetSubject sets the Subject field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewFromExampleTemplatesResponsePreview) SetSubject(subject *string) {
+	p.Subject = subject
+	p.require(previewFromExampleTemplatesResponsePreviewFieldSubject)
+}
+
+// SetWebsite sets the Website field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PreviewFromExampleTemplatesResponsePreview) SetWebsite(website *string) {
+	p.Website = website
+	p.require(previewFromExampleTemplatesResponsePreviewFieldWebsite)
+}
+
+func (p *PreviewFromExampleTemplatesResponsePreview) UnmarshalJSON(data []byte) error {
+	type unmarshaler PreviewFromExampleTemplatesResponsePreview
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PreviewFromExampleTemplatesResponsePreview(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PreviewFromExampleTemplatesResponsePreview) MarshalJSON() ([]byte, error) {
+	type embed PreviewFromExampleTemplatesResponsePreview
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PreviewFromExampleTemplatesResponsePreview) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
 }
 
 var (

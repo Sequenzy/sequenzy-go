@@ -7166,6 +7166,73 @@
       }
     },
     {
+      "id": "9cef4277-f2de-4ff7-b920-d16a9b013058",
+      "name": "Request a brand - default",
+      "request": {
+        "urlPathTemplate": "/gallery/brand-requests",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"created\": true,\n  \"message\": \"message\",\n  \"request\": {\n    \"brand\": {\n      \"name\": \"name\",\n      \"slug\": \"slug\",\n      \"url\": \"url\"\n    },\n    \"declineReason\": \"declineReason\",\n    \"domain\": \"competitor.com\",\n    \"id\": \"id\",\n    \"note\": \"note\",\n    \"requestedAt\": \"2024-01-15T09:30:00Z\",\n    \"status\": \"requested\"\n  },\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "9cef4277-f2de-4ff7-b920-d16a9b013058",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "4d55670c-c756-47bc-9d45-780f9d459540",
+      "name": "Remove a brand request - default",
+      "request": {
+        "urlPathTemplate": "/gallery/brand-requests/{id}",
+        "method": "DELETE",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"deleted\": true,\n  \"id\": \"id\",\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "4d55670c-c756-47bc-9d45-780f9d459540",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "98682cac-6bc0-45c7-a66e-a6b593c36f15",
       "name": "List email references - default",
       "request": {
@@ -7190,6 +7257,38 @@
         }
       },
       "uuid": "98682cac-6bc0-45c7-a66e-a6b593c36f15",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
+      "id": "68152d47-e5db-438d-a3ca-bd06487a6951",
+      "name": "List brand requests - default",
+      "request": {
+        "urlPathTemplate": "/gallery/brand-requests",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"limit\": 50,\n  \"requests\": [\n    {\n      \"declineReason\": \"declineReason\",\n      \"domain\": \"competitor.com\",\n      \"id\": \"id\",\n      \"note\": \"note\",\n      \"requestedAt\": \"2024-01-15T09:30:00Z\",\n      \"status\": \"requested\"\n    }\n  ],\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "68152d47-e5db-438d-a3ca-bd06487a6951",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -7768,7 +7867,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"example\": {\n    \"brand\": \"brand\",\n    \"name\": \"name\",\n    \"omittedEmailCount\": 1,\n    \"url\": \"url\"\n  },\n  \"message\": \"message\",\n  \"sequence\": {\n    \"emailCount\": 1,\n    \"enrichmentStatus\": \"processing\",\n    \"eventName\": \"eventName\",\n    \"id\": \"id\",\n    \"name\": \"name\",\n    \"status\": \"draft\",\n    \"steps\": [\n      {}\n    ],\n    \"stopCondition\": {\n      \"matchConfig\": {\n        \"key\": \"value\"\n      },\n      \"type\": \"type\",\n      \"value\": \"value\"\n    },\n    \"tagName\": \"tagName\",\n    \"trigger\": \"trigger\",\n    \"triggerDescription\": \"When someone signs up\"\n  },\n  \"success\": true,\n  \"warnings\": [\n    \"warnings\"\n  ]\n}",
+        "body": "{\n  \"example\": {\n    \"brand\": \"brand\",\n    \"name\": \"name\",\n    \"omittedEmailCount\": 1,\n    \"stepNumbers\": [\n      1\n    ],\n    \"url\": \"url\"\n  },\n  \"message\": \"message\",\n  \"sequence\": {\n    \"emailCount\": 1,\n    \"enrichmentStatus\": \"processing\",\n    \"eventName\": \"eventName\",\n    \"id\": \"id\",\n    \"name\": \"name\",\n    \"status\": \"draft\",\n    \"steps\": [\n      {}\n    ],\n    \"stopCondition\": {\n      \"matchConfig\": {\n        \"key\": \"value\"\n      },\n      \"type\": \"type\",\n      \"value\": \"value\"\n    },\n    \"tagName\": \"tagName\",\n    \"trigger\": \"trigger\",\n    \"triggerDescription\": \"When someone signs up\"\n  },\n  \"success\": true,\n  \"warnings\": [\n    \"warnings\"\n  ]\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -8622,6 +8721,37 @@
         }
       },
       "uuid": "e51cd2e7-89b4-44aa-8c2a-2c3e7884ce28",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "342f9864-4d78-4ab1-95be-1003ad402039",
+      "name": "Preview sequence from gallery example - default",
+      "request": {
+        "urlPathTemplate": "/sequences/from-example/preview",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"example\": {\n    \"brand\": \"brand\",\n    \"emailCount\": 1,\n    \"name\": \"name\",\n    \"url\": \"url\"\n  },\n  \"message\": \"message\",\n  \"preview\": {\n    \"brandName\": \"brandName\",\n    \"emails\": [\n      {}\n    ],\n    \"failedEmailCount\": 1,\n    \"remainingEmailCount\": 1,\n    \"website\": \"website\"\n  },\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "342f9864-4d78-4ab1-95be-1003ad402039",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -10927,6 +11057,37 @@
         }
       },
       "postServeActions": []
+    },
+    {
+      "id": "4516f194-809f-4757-8860-56a2cd1e0b8c",
+      "name": "Preview template from gallery example - default",
+      "request": {
+        "urlPathTemplate": "/templates/from-example/preview",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"example\": {\n    \"brand\": \"brand\",\n    \"subject\": \"subject\",\n    \"url\": \"url\"\n  },\n  \"message\": \"message\",\n  \"preview\": {\n    \"brandName\": \"brandName\",\n    \"html\": \"html\",\n    \"previewText\": \"previewText\",\n    \"subject\": \"subject\",\n    \"website\": \"website\"\n  },\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "4516f194-809f-4757-8860-56a2cd1e0b8c",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
     },
     {
       "id": "222b3ffc-ab64-49f0-9ee5-d6b1e1651634",
@@ -13402,6 +13563,6 @@
     }
   ],
   "meta": {
-    "total": 389
+    "total": 394
   }
 }

@@ -192,6 +192,31 @@ func (c *Client) List(
 	return response.Body, nil
 }
 
+// Rewrites a public email from the Sequenzy email gallery for your brand, or for another `website`, and returns it without saving anything. Same rewrite as Create Template from Example. Usually takes 5 to 20 seconds. Requires `templates:write`.
+//
+// Example:
+//
+//	request := &sequenzygo.PreviewFromExampleTemplatesRequest{}
+//	client.Templates.PreviewFromExample(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) PreviewFromExample(
+	ctx context.Context,
+	request *sequenzygo.PreviewFromExampleTemplatesRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.PreviewFromExampleTemplatesResponse, error) {
+	response, err := c.WithRawResponse.PreviewFromExample(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Render a template to the exact email-safe HTML that would be sent, for embedding a visual preview. Read-only: this never sends or modifies anything, and uses POST only so personalization input can travel in a request body.
 //
 // Example:

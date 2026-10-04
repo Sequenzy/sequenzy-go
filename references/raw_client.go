@@ -32,6 +32,95 @@ func NewRawClient(options *core.RequestOptions) *RawClient {
 	}
 }
 
+func (r *RawClient) CreateGalleryBrandRequest(
+	ctx context.Context,
+	request *sequenzygo.CreateGalleryBrandRequestRequest,
+	opts ...option.RequestOption,
+) (*core.Response[*sequenzygo.GalleryBrandRequestResult], error) {
+	options := core.NewRequestOptions(opts...)
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		r.baseURL,
+		"https://api.sequenzy.com/api/v1",
+	)
+	endpointURL := baseURL + "/gallery/brand-requests"
+	headers := internal.MergeHeaders(
+		r.options.ToHeader(),
+		options.ToHeader(),
+	)
+	headers.Add("Content-Type", "application/json")
+	var response *sequenzygo.GalleryBrandRequestResult
+	raw, err := r.caller.Call(
+		ctx,
+		&internal.CallParams{
+			URL:             endpointURL,
+			Method:          http.MethodPost,
+			Headers:         headers,
+			MaxAttempts:     options.MaxAttempts,
+			DisableRetries:  options.DisableRetries,
+			BodyProperties:  options.BodyProperties,
+			QueryParameters: options.QueryParameters,
+			Client:          options.HTTPClient,
+			Request:         request,
+			Response:        &response,
+			ErrorDecoder:    internal.NewErrorDecoder(sequenzygo.ErrorCodes),
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &core.Response[*sequenzygo.GalleryBrandRequestResult]{
+		StatusCode: raw.StatusCode,
+		Header:     raw.Header,
+		Body:       response,
+	}, nil
+}
+
+func (r *RawClient) DeleteGalleryBrandRequest(
+	ctx context.Context,
+	request *sequenzygo.DeleteGalleryBrandRequestRequest,
+	opts ...option.RequestOption,
+) (*core.Response[*sequenzygo.DeleteGalleryBrandRequestResponse], error) {
+	options := core.NewRequestOptions(opts...)
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		r.baseURL,
+		"https://api.sequenzy.com/api/v1",
+	)
+	endpointURL := internal.EncodeURL(
+		baseURL+"/gallery/brand-requests/%v",
+		request.ID,
+	)
+	headers := internal.MergeHeaders(
+		r.options.ToHeader(),
+		options.ToHeader(),
+	)
+	var response *sequenzygo.DeleteGalleryBrandRequestResponse
+	raw, err := r.caller.Call(
+		ctx,
+		&internal.CallParams{
+			URL:             endpointURL,
+			Method:          http.MethodDelete,
+			Headers:         headers,
+			MaxAttempts:     options.MaxAttempts,
+			DisableRetries:  options.DisableRetries,
+			BodyProperties:  options.BodyProperties,
+			QueryParameters: options.QueryParameters,
+			Client:          options.HTTPClient,
+			Response:        &response,
+			ErrorDecoder:    internal.NewErrorDecoder(sequenzygo.ErrorCodes),
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &core.Response[*sequenzygo.DeleteGalleryBrandRequestResponse]{
+		StatusCode: raw.StatusCode,
+		Header:     raw.Header,
+		Body:       response,
+	}, nil
+}
+
 func (r *RawClient) ListEmailReferences(
 	ctx context.Context,
 	request *sequenzygo.ListEmailReferencesRequest,
@@ -75,6 +164,47 @@ func (r *RawClient) ListEmailReferences(
 		return nil, err
 	}
 	return &core.Response[*sequenzygo.ListEmailReferencesResponse]{
+		StatusCode: raw.StatusCode,
+		Header:     raw.Header,
+		Body:       response,
+	}, nil
+}
+
+func (r *RawClient) ListGalleryBrandRequests(
+	ctx context.Context,
+	opts ...option.RequestOption,
+) (*core.Response[*sequenzygo.ListGalleryBrandRequestsResponse], error) {
+	options := core.NewRequestOptions(opts...)
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		r.baseURL,
+		"https://api.sequenzy.com/api/v1",
+	)
+	endpointURL := baseURL + "/gallery/brand-requests"
+	headers := internal.MergeHeaders(
+		r.options.ToHeader(),
+		options.ToHeader(),
+	)
+	var response *sequenzygo.ListGalleryBrandRequestsResponse
+	raw, err := r.caller.Call(
+		ctx,
+		&internal.CallParams{
+			URL:             endpointURL,
+			Method:          http.MethodGet,
+			Headers:         headers,
+			MaxAttempts:     options.MaxAttempts,
+			DisableRetries:  options.DisableRetries,
+			BodyProperties:  options.BodyProperties,
+			QueryParameters: options.QueryParameters,
+			Client:          options.HTTPClient,
+			Response:        &response,
+			ErrorDecoder:    internal.NewErrorDecoder(sequenzygo.ErrorCodes),
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &core.Response[*sequenzygo.ListGalleryBrandRequestsResponse]{
 		StatusCode: raw.StatusCode,
 		Header:     raw.Header,
 		Body:       response,

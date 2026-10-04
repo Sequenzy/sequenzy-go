@@ -77,6 +77,58 @@ func VerifyRequestCount(
 	require.Equal(t, expected, len(result.Requests))
 }
 
+func TestReferencesCreateGalleryBrandRequestWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.CreateGalleryBrandRequestRequest{
+		Website: "website",
+	}
+	_, invocationErr := client.References.CreateGalleryBrandRequest(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestReferencesCreateGalleryBrandRequestWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestReferencesCreateGalleryBrandRequestWithWireMock", "POST", "/gallery/brand-requests", nil, 1)
+}
+
+func TestReferencesDeleteGalleryBrandRequestWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.DeleteGalleryBrandRequestRequest{
+		ID: "id",
+	}
+	_, invocationErr := client.References.DeleteGalleryBrandRequest(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestReferencesDeleteGalleryBrandRequestWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestReferencesDeleteGalleryBrandRequestWithWireMock", "DELETE", "/gallery/brand-requests/id", nil, 1)
+}
+
 func TestReferencesListEmailReferencesWithWireMock(
 	t *testing.T,
 ) {
@@ -101,4 +153,26 @@ func TestReferencesListEmailReferencesWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestReferencesListEmailReferencesWithWireMock", "GET", "/references", map[string]interface{}{"kind": "campaign"}, 1)
+}
+
+func TestReferencesListGalleryBrandRequestsWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	_, invocationErr := client.References.ListGalleryBrandRequests(
+		context.TODO(),
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestReferencesListGalleryBrandRequestsWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestReferencesListGalleryBrandRequestsWithWireMock", "GET", "/gallery/brand-requests", nil, 1)
 }

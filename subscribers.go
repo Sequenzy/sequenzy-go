@@ -3621,7 +3621,8 @@ type SubscriberImportRecord struct {
 	FirstName  *string `json:"firstName,omitempty" url:"firstName,omitempty"`
 	LastName   *string `json:"lastName,omitempty" url:"lastName,omitempty"`
 	// Phone number. National-format values use the batch defaultPhoneCountry. Required when the record has no email.
-	Phone  *string                       `json:"phone,omitempty" url:"phone,omitempty"`
+	Phone *string `json:"phone,omitempty" url:"phone,omitempty"`
+	// Email status from the source platform. Unsubscribed and bounced records are stored with that status, never enroll in sequences and never receive a double opt-in confirmation, whatever optInMode is. An active record never resubscribes an existing unsubscribed or bounced contact. With merge or overwrite, an unsubscribed or bounced record applies that status to an existing active contact; an unsubscribe also stamps its list memberships and cancels its running sequences. With skip, existing contacts are left unchanged.
 	Status *SubscriberImportRecordStatus `json:"status,omitempty" url:"status,omitempty"`
 	Tags   []string                      `json:"tags,omitempty" url:"tags,omitempty"`
 	// IANA timezone identifier (e.g. America/New_York) used for recipient-local campaign delivery. Records with an invalid value import without it.
@@ -4025,6 +4026,7 @@ func (s *SubscriberImportRecordCustomAttributesValueThreeItem) Accept(visitor Su
 	return fmt.Errorf("type %T does not include a non-empty union type", s)
 }
 
+// Email status from the source platform. Unsubscribed and bounced records are stored with that status, never enroll in sequences and never receive a double opt-in confirmation, whatever optInMode is. An active record never resubscribes an existing unsubscribed or bounced contact. With merge or overwrite, an unsubscribed or bounced record applies that status to an existing active contact; an unsubscribe also stamps its list memberships and cancels its running sequences. With skip, existing contacts are left unchanged.
 type SubscriberImportRecordStatus string
 
 const (

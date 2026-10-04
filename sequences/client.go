@@ -179,7 +179,7 @@ func (c *Client) Create(
 	return response.Body, nil
 }
 
-// Clones a public sequence from the Sequenzy email gallery into a draft sequence for your company. The draft keeps the example's trigger family and send timing, up to 12 emails, and AI then writes every email in your brand in the background (usually 30 to 60 seconds). Poll [Get Sequence](/api-reference/sequences/get) until `enrichmentStatus` is `complete`. The sequence sends nothing until you enable it. Every successful call creates another sequence, so do not retry after a success. Requires `sequences:write`.
+// Clones a public sequence from the Sequenzy email gallery into a draft sequence for your company. The draft keeps the example's trigger family and send timing, up to 12 emails (the first 12 unless `stepNumbers` picks which), and AI then writes every email in your brand in the background (usually 30 to 60 seconds). Poll [Get Sequence](/api-reference/sequences/get) until `enrichmentStatus` is `complete`. The sequence sends nothing until you enable it. Every successful call creates another sequence, so do not retry after a success. Requires `sequences:write`.
 //
 // Example:
 //
@@ -840,6 +840,31 @@ func (c *Client) PauseEnrollments(
 	opts ...option.RequestOption,
 ) (*sequenzygo.SequenceActionResponse, error) {
 	response, err := c.WithRawResponse.PauseEnrollments(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Rewrites the first 3 emails of a public gallery sequence for your brand, or for another `website`, and returns them without creating anything. Emails that could not be written are counted in `failedEmailCount`; the call fails only when none could be written. Usually takes 10 to 30 seconds. Requires `sequences:write`.
+//
+// Example:
+//
+//	request := &sequenzygo.PreviewFromExampleSequencesRequest{}
+//	client.Sequences.PreviewFromExample(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) PreviewFromExample(
+	ctx context.Context,
+	request *sequenzygo.PreviewFromExampleSequencesRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.PreviewFromExampleSequencesResponse, error) {
+	response, err := c.WithRawResponse.PreviewFromExample(
 		ctx,
 		request,
 		opts...,
