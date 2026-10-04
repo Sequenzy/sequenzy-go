@@ -125,6 +125,35 @@ func (c *Client) CancelEnrollments(
 	return response.Body, nil
 }
 
+// Run the pre-send email check on a saved sequence email step: the same rules as the editor's email checker, plus live verification of every link and image, including links in every A/B variant and translation unless variantId or locale pins one version. Read-only: this never sends or modifies anything, and uses POST only so personalization input can travel in a request body.
+//
+// Example:
+//
+//	request := &sequenzygo.CheckStepSequencesRequest{
+//	    SequenceID: "sequenceId",
+//	    NodeID: "nodeId",
+//	    Body: &sequenzygo.CheckEmailRequest{},
+//	}
+//	client.Sequences.CheckStep(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) CheckStep(
+	ctx context.Context,
+	request *sequenzygo.CheckStepSequencesRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.CheckEmailResponse, error) {
+	response, err := c.WithRawResponse.CheckStep(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Creates or updates the endpoint attached to an inbound_webhook trigger. On first setup, omitted fields use catalog/custom integration defaults; on later calls, omitted fields keep their saved values. Use null to clear a saved mapping or sample.
 //
 // Example:

@@ -743,6 +743,1262 @@ func (b *BadRequestErrorBodyError) String() string {
 // Non-blocking advisories about a successful write. Present when an input was discarded or did not take effect as requested. This includes block fields that do not render as their names suggest, sequence email-step formatting restored on top of submitted blocks, and sender-identity conflicts such as a replyToName that differs from the saved profile. Each message identifies the affected input and gives recovery guidance. Absent when there is nothing to report.
 type BlockFieldWarnings = []string
 
+// Personalization and options for an email check. Omit every field to check for a sample contact with live link verification on.
+var (
+	checkEmailRequestFieldLinks        = big.NewInt(1 << 0)
+	checkEmailRequestFieldLocale       = big.NewInt(1 << 1)
+	checkEmailRequestFieldSubscriber   = big.NewInt(1 << 2)
+	checkEmailRequestFieldSubscriberID = big.NewInt(1 << 3)
+	checkEmailRequestFieldVariables    = big.NewInt(1 << 4)
+	checkEmailRequestFieldVariantID    = big.NewInt(1 << 5)
+)
+
+type CheckEmailRequest struct {
+	// Verify every link and image over the network: HTTP status, redirects, DNS, TLS certificates, and image type and size. Pass false for a fast, rules-only check.
+	Links *bool `json:"links,omitempty" url:"links,omitempty"`
+	// Check a specific localization instead of deriving it from the contact.
+	Locale *string `json:"locale,omitempty" url:"locale,omitempty"`
+	// Check as an ad-hoc contact. Mutually exclusive with subscriberId.
+	Subscriber *CheckEmailRequestSubscriber `json:"subscriber,omitempty" url:"subscriber,omitempty"`
+	// Check as this stored subscriber: picks their localization and reports merge tags and conditions that would not resolve for them. Link and content rules always run on the email as written. Mutually exclusive with subscriber. Requires the subscribers:read scope as well.
+	SubscriberID *string `json:"subscriberId,omitempty" url:"subscriberId,omitempty"`
+	// Extra merge variables layered over the contact's attributes.
+	Variables map[string]any `json:"variables,omitempty" url:"variables,omitempty"`
+	// Check a specific A/B test variant. Required for sequence steps whose nodeType is action_ab_test. Sequence variants also need the ab_tests:read scope. Ignored for templates.
+	VariantID *string `json:"variantId,omitempty" url:"variantId,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CheckEmailRequest) GetLinks() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.Links
+}
+
+func (c *CheckEmailRequest) GetLocale() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Locale
+}
+
+func (c *CheckEmailRequest) GetSubscriber() *CheckEmailRequestSubscriber {
+	if c == nil {
+		return nil
+	}
+	return c.Subscriber
+}
+
+func (c *CheckEmailRequest) GetSubscriberID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.SubscriberID
+}
+
+func (c *CheckEmailRequest) GetVariables() map[string]any {
+	if c == nil {
+		return nil
+	}
+	return c.Variables
+}
+
+func (c *CheckEmailRequest) GetVariantID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.VariantID
+}
+
+func (c *CheckEmailRequest) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CheckEmailRequest) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetLinks sets the Links field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckEmailRequest) SetLinks(links *bool) {
+	c.Links = links
+	c.require(checkEmailRequestFieldLinks)
+}
+
+// SetLocale sets the Locale field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckEmailRequest) SetLocale(locale *string) {
+	c.Locale = locale
+	c.require(checkEmailRequestFieldLocale)
+}
+
+// SetSubscriber sets the Subscriber field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckEmailRequest) SetSubscriber(subscriber *CheckEmailRequestSubscriber) {
+	c.Subscriber = subscriber
+	c.require(checkEmailRequestFieldSubscriber)
+}
+
+// SetSubscriberID sets the SubscriberID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckEmailRequest) SetSubscriberID(subscriberID *string) {
+	c.SubscriberID = subscriberID
+	c.require(checkEmailRequestFieldSubscriberID)
+}
+
+// SetVariables sets the Variables field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckEmailRequest) SetVariables(variables map[string]any) {
+	c.Variables = variables
+	c.require(checkEmailRequestFieldVariables)
+}
+
+// SetVariantID sets the VariantID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckEmailRequest) SetVariantID(variantID *string) {
+	c.VariantID = variantID
+	c.require(checkEmailRequestFieldVariantID)
+}
+
+func (c *CheckEmailRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler CheckEmailRequest
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CheckEmailRequest(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CheckEmailRequest) MarshalJSON() ([]byte, error) {
+	type embed CheckEmailRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CheckEmailRequest) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+// Check as an ad-hoc contact. Mutually exclusive with subscriberId.
+var (
+	checkEmailRequestSubscriberFieldCustomAttributes = big.NewInt(1 << 0)
+	checkEmailRequestSubscriberFieldEmail            = big.NewInt(1 << 1)
+	checkEmailRequestSubscriberFieldFirstName        = big.NewInt(1 << 2)
+	checkEmailRequestSubscriberFieldLastName         = big.NewInt(1 << 3)
+	checkEmailRequestSubscriberFieldTags             = big.NewInt(1 << 4)
+)
+
+type CheckEmailRequestSubscriber struct {
+	CustomAttributes map[string]any `json:"customAttributes,omitempty" url:"customAttributes,omitempty"`
+	Email            string         `json:"email" url:"email"`
+	FirstName        *string        `json:"firstName,omitempty" url:"firstName,omitempty"`
+	LastName         *string        `json:"lastName,omitempty" url:"lastName,omitempty"`
+	// Tags this ad-hoc contact carries, for tag block conditions.
+	Tags []string `json:"tags,omitempty" url:"tags,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CheckEmailRequestSubscriber) GetCustomAttributes() map[string]any {
+	if c == nil {
+		return nil
+	}
+	return c.CustomAttributes
+}
+
+func (c *CheckEmailRequestSubscriber) GetEmail() string {
+	if c == nil {
+		return ""
+	}
+	return c.Email
+}
+
+func (c *CheckEmailRequestSubscriber) GetFirstName() *string {
+	if c == nil {
+		return nil
+	}
+	return c.FirstName
+}
+
+func (c *CheckEmailRequestSubscriber) GetLastName() *string {
+	if c == nil {
+		return nil
+	}
+	return c.LastName
+}
+
+func (c *CheckEmailRequestSubscriber) GetTags() []string {
+	if c == nil {
+		return nil
+	}
+	return c.Tags
+}
+
+func (c *CheckEmailRequestSubscriber) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CheckEmailRequestSubscriber) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetCustomAttributes sets the CustomAttributes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckEmailRequestSubscriber) SetCustomAttributes(customAttributes map[string]any) {
+	c.CustomAttributes = customAttributes
+	c.require(checkEmailRequestSubscriberFieldCustomAttributes)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckEmailRequestSubscriber) SetEmail(email string) {
+	c.Email = email
+	c.require(checkEmailRequestSubscriberFieldEmail)
+}
+
+// SetFirstName sets the FirstName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckEmailRequestSubscriber) SetFirstName(firstName *string) {
+	c.FirstName = firstName
+	c.require(checkEmailRequestSubscriberFieldFirstName)
+}
+
+// SetLastName sets the LastName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckEmailRequestSubscriber) SetLastName(lastName *string) {
+	c.LastName = lastName
+	c.require(checkEmailRequestSubscriberFieldLastName)
+}
+
+// SetTags sets the Tags field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckEmailRequestSubscriber) SetTags(tags []string) {
+	c.Tags = tags
+	c.require(checkEmailRequestSubscriberFieldTags)
+}
+
+func (c *CheckEmailRequestSubscriber) UnmarshalJSON(data []byte) error {
+	type unmarshaler CheckEmailRequestSubscriber
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CheckEmailRequestSubscriber(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CheckEmailRequestSubscriber) MarshalJSON() ([]byte, error) {
+	type embed CheckEmailRequestSubscriber
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CheckEmailRequestSubscriber) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	checkEmailResponseFieldCategories            = big.NewInt(1 << 0)
+	checkEmailResponseFieldEntity                = big.NewInt(1 << 1)
+	checkEmailResponseFieldGrade                 = big.NewInt(1 << 2)
+	checkEmailResponseFieldIssues                = big.NewInt(1 << 3)
+	checkEmailResponseFieldLinks                 = big.NewInt(1 << 4)
+	checkEmailResponseFieldLinksChecked          = big.NewInt(1 << 5)
+	checkEmailResponseFieldLinkSummary           = big.NewInt(1 << 6)
+	checkEmailResponseFieldLocale                = big.NewInt(1 << 7)
+	checkEmailResponseFieldPlacement             = big.NewInt(1 << 8)
+	checkEmailResponseFieldPreviewText           = big.NewInt(1 << 9)
+	checkEmailResponseFieldScore                 = big.NewInt(1 << 10)
+	checkEmailResponseFieldSubject               = big.NewInt(1 << 11)
+	checkEmailResponseFieldSuccess               = big.NewInt(1 << 12)
+	checkEmailResponseFieldUnevaluatedConditions = big.NewInt(1 << 13)
+	checkEmailResponseFieldUnresolvedMergeTags   = big.NewInt(1 << 14)
+)
+
+type CheckEmailResponse struct {
+	Categories *CheckEmailResponseCategories `json:"categories,omitempty" url:"categories,omitempty"`
+	Entity     *CheckEmailResponseEntity     `json:"entity,omitempty" url:"entity,omitempty"`
+	Grade      *CheckEmailResponseGrade      `json:"grade,omitempty" url:"grade,omitempty"`
+	// Findings sorted by severity, errors first.
+	Issues []*EmailCheckIssue `json:"issues,omitempty" url:"issues,omitempty"`
+	// Every link and image in the email with its result.
+	Links []*EmailCheckLink `json:"links,omitempty" url:"links,omitempty"`
+	// False when links was false in the request.
+	LinksChecked *bool                          `json:"linksChecked,omitempty" url:"linksChecked,omitempty"`
+	LinkSummary  *CheckEmailResponseLinkSummary `json:"linkSummary,omitempty" url:"linkSummary,omitempty"`
+	Locale       *string                        `json:"locale,omitempty" url:"locale,omitempty"`
+	// Predicted inbox tab.
+	Placement   *CheckEmailResponsePlacement `json:"placement,omitempty" url:"placement,omitempty"`
+	PreviewText *string                      `json:"previewText,omitempty" url:"previewText,omitempty"`
+	// Overall score across subject (25%), preview text (15%) and content (40%), including live link findings, rescaled to 100. Sender settings are not part of this check, so the editor's score (which weighs the sender at 20%) can differ slightly.
+	Score *int `json:"score,omitempty" url:"score,omitempty"`
+	// Subject line with merge tags resolved for the checked contact.
+	Subject *string `json:"subject,omitempty" url:"subject,omitempty"`
+	Success *bool   `json:"success,omitempty" url:"success,omitempty"`
+	// Same as the render endpoints' unevaluatedConditions.
+	UnevaluatedConditions []map[string]any `json:"unevaluatedConditions,omitempty" url:"unevaluatedConditions,omitempty"`
+	// Same as the render endpoints' unresolvedMergeTags.
+	UnresolvedMergeTags []*CheckEmailResponseUnresolvedMergeTagsItem `json:"unresolvedMergeTags,omitempty" url:"unresolvedMergeTags,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CheckEmailResponse) GetCategories() *CheckEmailResponseCategories {
+	if c == nil {
+		return nil
+	}
+	return c.Categories
+}
+
+func (c *CheckEmailResponse) GetEntity() *CheckEmailResponseEntity {
+	if c == nil {
+		return nil
+	}
+	return c.Entity
+}
+
+func (c *CheckEmailResponse) GetGrade() *CheckEmailResponseGrade {
+	if c == nil {
+		return nil
+	}
+	return c.Grade
+}
+
+func (c *CheckEmailResponse) GetIssues() []*EmailCheckIssue {
+	if c == nil {
+		return nil
+	}
+	return c.Issues
+}
+
+func (c *CheckEmailResponse) GetLinks() []*EmailCheckLink {
+	if c == nil {
+		return nil
+	}
+	return c.Links
+}
+
+func (c *CheckEmailResponse) GetLinksChecked() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.LinksChecked
+}
+
+func (c *CheckEmailResponse) GetLinkSummary() *CheckEmailResponseLinkSummary {
+	if c == nil {
+		return nil
+	}
+	return c.LinkSummary
+}
+
+func (c *CheckEmailResponse) GetLocale() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Locale
+}
+
+func (c *CheckEmailResponse) GetPlacement() *CheckEmailResponsePlacement {
+	if c == nil {
+		return nil
+	}
+	return c.Placement
+}
+
+func (c *CheckEmailResponse) GetPreviewText() *string {
+	if c == nil {
+		return nil
+	}
+	return c.PreviewText
+}
+
+func (c *CheckEmailResponse) GetScore() *int {
+	if c == nil {
+		return nil
+	}
+	return c.Score
+}
+
+func (c *CheckEmailResponse) GetSubject() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Subject
+}
+
+func (c *CheckEmailResponse) GetSuccess() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.Success
+}
+
+func (c *CheckEmailResponse) GetUnevaluatedConditions() []map[string]any {
+	if c == nil {
+		return nil
+	}
+	return c.UnevaluatedConditions
+}
+
+func (c *CheckEmailResponse) GetUnresolvedMergeTags() []*CheckEmailResponseUnresolvedMergeTagsItem {
+	if c == nil {
+		return nil
+	}
+	return c.UnresolvedMergeTags
+}
+
+func (c *CheckEmailResponse) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CheckEmailResponse) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetCategories sets the Categories field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckEmailResponse) SetCategories(categories *CheckEmailResponseCategories) {
+	c.Categories = categories
+	c.require(checkEmailResponseFieldCategories)
+}
+
+// SetEntity sets the Entity field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckEmailResponse) SetEntity(entity *CheckEmailResponseEntity) {
+	c.Entity = entity
+	c.require(checkEmailResponseFieldEntity)
+}
+
+// SetGrade sets the Grade field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckEmailResponse) SetGrade(grade *CheckEmailResponseGrade) {
+	c.Grade = grade
+	c.require(checkEmailResponseFieldGrade)
+}
+
+// SetIssues sets the Issues field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckEmailResponse) SetIssues(issues []*EmailCheckIssue) {
+	c.Issues = issues
+	c.require(checkEmailResponseFieldIssues)
+}
+
+// SetLinks sets the Links field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckEmailResponse) SetLinks(links []*EmailCheckLink) {
+	c.Links = links
+	c.require(checkEmailResponseFieldLinks)
+}
+
+// SetLinksChecked sets the LinksChecked field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckEmailResponse) SetLinksChecked(linksChecked *bool) {
+	c.LinksChecked = linksChecked
+	c.require(checkEmailResponseFieldLinksChecked)
+}
+
+// SetLinkSummary sets the LinkSummary field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckEmailResponse) SetLinkSummary(linkSummary *CheckEmailResponseLinkSummary) {
+	c.LinkSummary = linkSummary
+	c.require(checkEmailResponseFieldLinkSummary)
+}
+
+// SetLocale sets the Locale field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckEmailResponse) SetLocale(locale *string) {
+	c.Locale = locale
+	c.require(checkEmailResponseFieldLocale)
+}
+
+// SetPlacement sets the Placement field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckEmailResponse) SetPlacement(placement *CheckEmailResponsePlacement) {
+	c.Placement = placement
+	c.require(checkEmailResponseFieldPlacement)
+}
+
+// SetPreviewText sets the PreviewText field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckEmailResponse) SetPreviewText(previewText *string) {
+	c.PreviewText = previewText
+	c.require(checkEmailResponseFieldPreviewText)
+}
+
+// SetScore sets the Score field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckEmailResponse) SetScore(score *int) {
+	c.Score = score
+	c.require(checkEmailResponseFieldScore)
+}
+
+// SetSubject sets the Subject field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckEmailResponse) SetSubject(subject *string) {
+	c.Subject = subject
+	c.require(checkEmailResponseFieldSubject)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckEmailResponse) SetSuccess(success *bool) {
+	c.Success = success
+	c.require(checkEmailResponseFieldSuccess)
+}
+
+// SetUnevaluatedConditions sets the UnevaluatedConditions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckEmailResponse) SetUnevaluatedConditions(unevaluatedConditions []map[string]any) {
+	c.UnevaluatedConditions = unevaluatedConditions
+	c.require(checkEmailResponseFieldUnevaluatedConditions)
+}
+
+// SetUnresolvedMergeTags sets the UnresolvedMergeTags field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckEmailResponse) SetUnresolvedMergeTags(unresolvedMergeTags []*CheckEmailResponseUnresolvedMergeTagsItem) {
+	c.UnresolvedMergeTags = unresolvedMergeTags
+	c.require(checkEmailResponseFieldUnresolvedMergeTags)
+}
+
+func (c *CheckEmailResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler CheckEmailResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CheckEmailResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CheckEmailResponse) MarshalJSON() ([]byte, error) {
+	type embed CheckEmailResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CheckEmailResponse) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	checkEmailResponseCategoriesFieldContent = big.NewInt(1 << 0)
+	checkEmailResponseCategoriesFieldPreview = big.NewInt(1 << 1)
+	checkEmailResponseCategoriesFieldSubject = big.NewInt(1 << 2)
+)
+
+type CheckEmailResponseCategories struct {
+	Content *EmailCheckCategoryScore `json:"content,omitempty" url:"content,omitempty"`
+	Preview *EmailCheckCategoryScore `json:"preview,omitempty" url:"preview,omitempty"`
+	Subject *EmailCheckCategoryScore `json:"subject,omitempty" url:"subject,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CheckEmailResponseCategories) GetContent() *EmailCheckCategoryScore {
+	if c == nil {
+		return nil
+	}
+	return c.Content
+}
+
+func (c *CheckEmailResponseCategories) GetPreview() *EmailCheckCategoryScore {
+	if c == nil {
+		return nil
+	}
+	return c.Preview
+}
+
+func (c *CheckEmailResponseCategories) GetSubject() *EmailCheckCategoryScore {
+	if c == nil {
+		return nil
+	}
+	return c.Subject
+}
+
+func (c *CheckEmailResponseCategories) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CheckEmailResponseCategories) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetContent sets the Content field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckEmailResponseCategories) SetContent(content *EmailCheckCategoryScore) {
+	c.Content = content
+	c.require(checkEmailResponseCategoriesFieldContent)
+}
+
+// SetPreview sets the Preview field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckEmailResponseCategories) SetPreview(preview *EmailCheckCategoryScore) {
+	c.Preview = preview
+	c.require(checkEmailResponseCategoriesFieldPreview)
+}
+
+// SetSubject sets the Subject field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckEmailResponseCategories) SetSubject(subject *EmailCheckCategoryScore) {
+	c.Subject = subject
+	c.require(checkEmailResponseCategoriesFieldSubject)
+}
+
+func (c *CheckEmailResponseCategories) UnmarshalJSON(data []byte) error {
+	type unmarshaler CheckEmailResponseCategories
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CheckEmailResponseCategories(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CheckEmailResponseCategories) MarshalJSON() ([]byte, error) {
+	type embed CheckEmailResponseCategories
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CheckEmailResponseCategories) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	checkEmailResponseEntityFieldID        = big.NewInt(1 << 0)
+	checkEmailResponseEntityFieldType      = big.NewInt(1 << 1)
+	checkEmailResponseEntityFieldVariantID = big.NewInt(1 << 2)
+)
+
+type CheckEmailResponseEntity struct {
+	ID        *string                       `json:"id,omitempty" url:"id,omitempty"`
+	Type      *CheckEmailResponseEntityType `json:"type,omitempty" url:"type,omitempty"`
+	VariantID *string                       `json:"variantId,omitempty" url:"variantId,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CheckEmailResponseEntity) GetID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.ID
+}
+
+func (c *CheckEmailResponseEntity) GetType() *CheckEmailResponseEntityType {
+	if c == nil {
+		return nil
+	}
+	return c.Type
+}
+
+func (c *CheckEmailResponseEntity) GetVariantID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.VariantID
+}
+
+func (c *CheckEmailResponseEntity) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CheckEmailResponseEntity) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckEmailResponseEntity) SetID(id *string) {
+	c.ID = id
+	c.require(checkEmailResponseEntityFieldID)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckEmailResponseEntity) SetType(type_ *CheckEmailResponseEntityType) {
+	c.Type = type_
+	c.require(checkEmailResponseEntityFieldType)
+}
+
+// SetVariantID sets the VariantID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckEmailResponseEntity) SetVariantID(variantID *string) {
+	c.VariantID = variantID
+	c.require(checkEmailResponseEntityFieldVariantID)
+}
+
+func (c *CheckEmailResponseEntity) UnmarshalJSON(data []byte) error {
+	type unmarshaler CheckEmailResponseEntity
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CheckEmailResponseEntity(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CheckEmailResponseEntity) MarshalJSON() ([]byte, error) {
+	type embed CheckEmailResponseEntity
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CheckEmailResponseEntity) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+type CheckEmailResponseEntityType string
+
+const (
+	CheckEmailResponseEntityTypeCampaign     CheckEmailResponseEntityType = "campaign"
+	CheckEmailResponseEntityTypeSequenceStep CheckEmailResponseEntityType = "sequence_step"
+	CheckEmailResponseEntityTypeTemplate     CheckEmailResponseEntityType = "template"
+)
+
+func NewCheckEmailResponseEntityTypeFromString(s string) (CheckEmailResponseEntityType, error) {
+	switch s {
+	case "campaign":
+		return CheckEmailResponseEntityTypeCampaign, nil
+	case "sequence_step":
+		return CheckEmailResponseEntityTypeSequenceStep, nil
+	case "template":
+		return CheckEmailResponseEntityTypeTemplate, nil
+	}
+	var t CheckEmailResponseEntityType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CheckEmailResponseEntityType) Ptr() *CheckEmailResponseEntityType {
+	return &c
+}
+
+type CheckEmailResponseGrade string
+
+const (
+	CheckEmailResponseGradeA CheckEmailResponseGrade = "A"
+	CheckEmailResponseGradeB CheckEmailResponseGrade = "B"
+	CheckEmailResponseGradeC CheckEmailResponseGrade = "C"
+	CheckEmailResponseGradeD CheckEmailResponseGrade = "D"
+	CheckEmailResponseGradeF CheckEmailResponseGrade = "F"
+)
+
+func NewCheckEmailResponseGradeFromString(s string) (CheckEmailResponseGrade, error) {
+	switch s {
+	case "A":
+		return CheckEmailResponseGradeA, nil
+	case "B":
+		return CheckEmailResponseGradeB, nil
+	case "C":
+		return CheckEmailResponseGradeC, nil
+	case "D":
+		return CheckEmailResponseGradeD, nil
+	case "F":
+		return CheckEmailResponseGradeF, nil
+	}
+	var t CheckEmailResponseGrade
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CheckEmailResponseGrade) Ptr() *CheckEmailResponseGrade {
+	return &c
+}
+
+var (
+	checkEmailResponseLinkSummaryFieldBroken     = big.NewInt(1 << 0)
+	checkEmailResponseLinkSummaryFieldChecked    = big.NewInt(1 << 1)
+	checkEmailResponseLinkSummaryFieldNotChecked = big.NewInt(1 << 2)
+	checkEmailResponseLinkSummaryFieldOk         = big.NewInt(1 << 3)
+	checkEmailResponseLinkSummaryFieldRestricted = big.NewInt(1 << 4)
+	checkEmailResponseLinkSummaryFieldTotal      = big.NewInt(1 << 5)
+	checkEmailResponseLinkSummaryFieldWarnings   = big.NewInt(1 << 6)
+)
+
+type CheckEmailResponseLinkSummary struct {
+	// Links with status broken or invalid.
+	Broken  *int `json:"broken,omitempty" url:"broken,omitempty"`
+	Checked *int `json:"checked,omitempty" url:"checked,omitempty"`
+	// Links with status personalized or not_checked.
+	NotChecked *int `json:"notChecked,omitempty" url:"notChecked,omitempty"`
+	Ok         *int `json:"ok,omitempty" url:"ok,omitempty"`
+	Restricted *int `json:"restricted,omitempty" url:"restricted,omitempty"`
+	Total      *int `json:"total,omitempty" url:"total,omitempty"`
+	// Links with status server_error or unreachable.
+	Warnings *int `json:"warnings,omitempty" url:"warnings,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CheckEmailResponseLinkSummary) GetBroken() *int {
+	if c == nil {
+		return nil
+	}
+	return c.Broken
+}
+
+func (c *CheckEmailResponseLinkSummary) GetChecked() *int {
+	if c == nil {
+		return nil
+	}
+	return c.Checked
+}
+
+func (c *CheckEmailResponseLinkSummary) GetNotChecked() *int {
+	if c == nil {
+		return nil
+	}
+	return c.NotChecked
+}
+
+func (c *CheckEmailResponseLinkSummary) GetOk() *int {
+	if c == nil {
+		return nil
+	}
+	return c.Ok
+}
+
+func (c *CheckEmailResponseLinkSummary) GetRestricted() *int {
+	if c == nil {
+		return nil
+	}
+	return c.Restricted
+}
+
+func (c *CheckEmailResponseLinkSummary) GetTotal() *int {
+	if c == nil {
+		return nil
+	}
+	return c.Total
+}
+
+func (c *CheckEmailResponseLinkSummary) GetWarnings() *int {
+	if c == nil {
+		return nil
+	}
+	return c.Warnings
+}
+
+func (c *CheckEmailResponseLinkSummary) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CheckEmailResponseLinkSummary) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetBroken sets the Broken field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckEmailResponseLinkSummary) SetBroken(broken *int) {
+	c.Broken = broken
+	c.require(checkEmailResponseLinkSummaryFieldBroken)
+}
+
+// SetChecked sets the Checked field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckEmailResponseLinkSummary) SetChecked(checked *int) {
+	c.Checked = checked
+	c.require(checkEmailResponseLinkSummaryFieldChecked)
+}
+
+// SetNotChecked sets the NotChecked field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckEmailResponseLinkSummary) SetNotChecked(notChecked *int) {
+	c.NotChecked = notChecked
+	c.require(checkEmailResponseLinkSummaryFieldNotChecked)
+}
+
+// SetOk sets the Ok field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckEmailResponseLinkSummary) SetOk(ok *int) {
+	c.Ok = ok
+	c.require(checkEmailResponseLinkSummaryFieldOk)
+}
+
+// SetRestricted sets the Restricted field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckEmailResponseLinkSummary) SetRestricted(restricted *int) {
+	c.Restricted = restricted
+	c.require(checkEmailResponseLinkSummaryFieldRestricted)
+}
+
+// SetTotal sets the Total field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckEmailResponseLinkSummary) SetTotal(total *int) {
+	c.Total = total
+	c.require(checkEmailResponseLinkSummaryFieldTotal)
+}
+
+// SetWarnings sets the Warnings field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckEmailResponseLinkSummary) SetWarnings(warnings *int) {
+	c.Warnings = warnings
+	c.require(checkEmailResponseLinkSummaryFieldWarnings)
+}
+
+func (c *CheckEmailResponseLinkSummary) UnmarshalJSON(data []byte) error {
+	type unmarshaler CheckEmailResponseLinkSummary
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CheckEmailResponseLinkSummary(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CheckEmailResponseLinkSummary) MarshalJSON() ([]byte, error) {
+	type embed CheckEmailResponseLinkSummary
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CheckEmailResponseLinkSummary) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+// Predicted inbox tab.
+type CheckEmailResponsePlacement string
+
+const (
+	CheckEmailResponsePlacementPrimary    CheckEmailResponsePlacement = "Primary"
+	CheckEmailResponsePlacementPromotions CheckEmailResponsePlacement = "Promotions"
+	CheckEmailResponsePlacementSpam       CheckEmailResponsePlacement = "Spam"
+)
+
+func NewCheckEmailResponsePlacementFromString(s string) (CheckEmailResponsePlacement, error) {
+	switch s {
+	case "Primary":
+		return CheckEmailResponsePlacementPrimary, nil
+	case "Promotions":
+		return CheckEmailResponsePlacementPromotions, nil
+	case "Spam":
+		return CheckEmailResponsePlacementSpam, nil
+	}
+	var t CheckEmailResponsePlacement
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CheckEmailResponsePlacement) Ptr() *CheckEmailResponsePlacement {
+	return &c
+}
+
+var (
+	checkEmailResponseUnresolvedMergeTagsItemFieldReason = big.NewInt(1 << 0)
+	checkEmailResponseUnresolvedMergeTagsItemFieldTag    = big.NewInt(1 << 1)
+)
+
+type CheckEmailResponseUnresolvedMergeTagsItem struct {
+	Reason *CheckEmailResponseUnresolvedMergeTagsItemReason `json:"reason,omitempty" url:"reason,omitempty"`
+	Tag    *string                                          `json:"tag,omitempty" url:"tag,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CheckEmailResponseUnresolvedMergeTagsItem) GetReason() *CheckEmailResponseUnresolvedMergeTagsItemReason {
+	if c == nil {
+		return nil
+	}
+	return c.Reason
+}
+
+func (c *CheckEmailResponseUnresolvedMergeTagsItem) GetTag() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Tag
+}
+
+func (c *CheckEmailResponseUnresolvedMergeTagsItem) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CheckEmailResponseUnresolvedMergeTagsItem) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetReason sets the Reason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckEmailResponseUnresolvedMergeTagsItem) SetReason(reason *CheckEmailResponseUnresolvedMergeTagsItemReason) {
+	c.Reason = reason
+	c.require(checkEmailResponseUnresolvedMergeTagsItemFieldReason)
+}
+
+// SetTag sets the Tag field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckEmailResponseUnresolvedMergeTagsItem) SetTag(tag *string) {
+	c.Tag = tag
+	c.require(checkEmailResponseUnresolvedMergeTagsItemFieldTag)
+}
+
+func (c *CheckEmailResponseUnresolvedMergeTagsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler CheckEmailResponseUnresolvedMergeTagsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CheckEmailResponseUnresolvedMergeTagsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CheckEmailResponseUnresolvedMergeTagsItem) MarshalJSON() ([]byte, error) {
+	type embed CheckEmailResponseUnresolvedMergeTagsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CheckEmailResponseUnresolvedMergeTagsItem) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+type CheckEmailResponseUnresolvedMergeTagsItemReason string
+
+const (
+	CheckEmailResponseUnresolvedMergeTagsItemReasonUnknown CheckEmailResponseUnresolvedMergeTagsItemReason = "unknown"
+	CheckEmailResponseUnresolvedMergeTagsItemReasonNoValue CheckEmailResponseUnresolvedMergeTagsItemReason = "no_value"
+)
+
+func NewCheckEmailResponseUnresolvedMergeTagsItemReasonFromString(s string) (CheckEmailResponseUnresolvedMergeTagsItemReason, error) {
+	switch s {
+	case "unknown":
+		return CheckEmailResponseUnresolvedMergeTagsItemReasonUnknown, nil
+	case "no_value":
+		return CheckEmailResponseUnresolvedMergeTagsItemReasonNoValue, nil
+	}
+	var t CheckEmailResponseUnresolvedMergeTagsItemReason
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CheckEmailResponseUnresolvedMergeTagsItemReason) Ptr() *CheckEmailResponseUnresolvedMergeTagsItemReason {
+	return &c
+}
+
 var (
 	commerceCustomerFieldAttributes = big.NewInt(1 << 0)
 	commerceCustomerFieldEmail      = big.NewInt(1 << 1)
@@ -2258,6 +3514,768 @@ func (e *EmailBodyInput) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", e)
+}
+
+var (
+	emailCheckCategoryScoreFieldMaxScore = big.NewInt(1 << 0)
+	emailCheckCategoryScoreFieldScore    = big.NewInt(1 << 1)
+)
+
+type EmailCheckCategoryScore struct {
+	MaxScore *int `json:"maxScore,omitempty" url:"maxScore,omitempty"`
+	Score    *int `json:"score,omitempty" url:"score,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (e *EmailCheckCategoryScore) GetMaxScore() *int {
+	if e == nil {
+		return nil
+	}
+	return e.MaxScore
+}
+
+func (e *EmailCheckCategoryScore) GetScore() *int {
+	if e == nil {
+		return nil
+	}
+	return e.Score
+}
+
+func (e *EmailCheckCategoryScore) GetExtraProperties() map[string]interface{} {
+	if e == nil {
+		return nil
+	}
+	return e.extraProperties
+}
+
+func (e *EmailCheckCategoryScore) require(field *big.Int) {
+	if e.explicitFields == nil {
+		e.explicitFields = big.NewInt(0)
+	}
+	e.explicitFields.Or(e.explicitFields, field)
+}
+
+// SetMaxScore sets the MaxScore field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailCheckCategoryScore) SetMaxScore(maxScore *int) {
+	e.MaxScore = maxScore
+	e.require(emailCheckCategoryScoreFieldMaxScore)
+}
+
+// SetScore sets the Score field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailCheckCategoryScore) SetScore(score *int) {
+	e.Score = score
+	e.require(emailCheckCategoryScoreFieldScore)
+}
+
+func (e *EmailCheckCategoryScore) UnmarshalJSON(data []byte) error {
+	type unmarshaler EmailCheckCategoryScore
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EmailCheckCategoryScore(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+	e.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EmailCheckCategoryScore) MarshalJSON() ([]byte, error) {
+	type embed EmailCheckCategoryScore
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*e),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (e *EmailCheckCategoryScore) String() string {
+	if e == nil {
+		return "<nil>"
+	}
+	if len(e.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(e.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+var (
+	emailCheckIssueFieldBlockID  = big.NewInt(1 << 0)
+	emailCheckIssueFieldCategory = big.NewInt(1 << 1)
+	emailCheckIssueFieldMessage  = big.NewInt(1 << 2)
+	emailCheckIssueFieldRule     = big.NewInt(1 << 3)
+	emailCheckIssueFieldSeverity = big.NewInt(1 << 4)
+	emailCheckIssueFieldURL      = big.NewInt(1 << 5)
+)
+
+type EmailCheckIssue struct {
+	// Block to edit, when the finding has one location.
+	BlockID *string `json:"blockId,omitempty" url:"blockId,omitempty"`
+	// Score category the finding counts against.
+	Category EmailCheckIssueCategory `json:"category" url:"category"`
+	// Plain-language description of the finding.
+	Message string `json:"message" url:"message"`
+	// Stable rule ID. The prefix groups it: links, images, content, subject, preview, accessibility, or compatibility. Examples: links.broken, links.unreachable, links.missing-scheme, links.local, links.staging, links.example-domain, links.insecure, links.shortener, links.text-mismatch, links.missing-website, images.broken, images.large, images.missing-alt, content.placeholder-text, content.merge-tag-fallback, subject.fake-reply, compatibility.gmail-clip.
+	Rule *string `json:"rule,omitempty" url:"rule,omitempty"`
+	// error - fix before sending. warning - worth reviewing. info - a tip that does not need action.
+	Severity EmailCheckIssueSeverity `json:"severity" url:"severity"`
+	// The URL concerned, for link and image findings.
+	URL *string `json:"url,omitempty" url:"url,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (e *EmailCheckIssue) GetBlockID() *string {
+	if e == nil {
+		return nil
+	}
+	return e.BlockID
+}
+
+func (e *EmailCheckIssue) GetCategory() EmailCheckIssueCategory {
+	if e == nil {
+		return ""
+	}
+	return e.Category
+}
+
+func (e *EmailCheckIssue) GetMessage() string {
+	if e == nil {
+		return ""
+	}
+	return e.Message
+}
+
+func (e *EmailCheckIssue) GetRule() *string {
+	if e == nil {
+		return nil
+	}
+	return e.Rule
+}
+
+func (e *EmailCheckIssue) GetSeverity() EmailCheckIssueSeverity {
+	if e == nil {
+		return ""
+	}
+	return e.Severity
+}
+
+func (e *EmailCheckIssue) GetURL() *string {
+	if e == nil {
+		return nil
+	}
+	return e.URL
+}
+
+func (e *EmailCheckIssue) GetExtraProperties() map[string]interface{} {
+	if e == nil {
+		return nil
+	}
+	return e.extraProperties
+}
+
+func (e *EmailCheckIssue) require(field *big.Int) {
+	if e.explicitFields == nil {
+		e.explicitFields = big.NewInt(0)
+	}
+	e.explicitFields.Or(e.explicitFields, field)
+}
+
+// SetBlockID sets the BlockID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailCheckIssue) SetBlockID(blockID *string) {
+	e.BlockID = blockID
+	e.require(emailCheckIssueFieldBlockID)
+}
+
+// SetCategory sets the Category field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailCheckIssue) SetCategory(category EmailCheckIssueCategory) {
+	e.Category = category
+	e.require(emailCheckIssueFieldCategory)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailCheckIssue) SetMessage(message string) {
+	e.Message = message
+	e.require(emailCheckIssueFieldMessage)
+}
+
+// SetRule sets the Rule field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailCheckIssue) SetRule(rule *string) {
+	e.Rule = rule
+	e.require(emailCheckIssueFieldRule)
+}
+
+// SetSeverity sets the Severity field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailCheckIssue) SetSeverity(severity EmailCheckIssueSeverity) {
+	e.Severity = severity
+	e.require(emailCheckIssueFieldSeverity)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailCheckIssue) SetURL(url *string) {
+	e.URL = url
+	e.require(emailCheckIssueFieldURL)
+}
+
+func (e *EmailCheckIssue) UnmarshalJSON(data []byte) error {
+	type unmarshaler EmailCheckIssue
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EmailCheckIssue(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+	e.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EmailCheckIssue) MarshalJSON() ([]byte, error) {
+	type embed EmailCheckIssue
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*e),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (e *EmailCheckIssue) String() string {
+	if e == nil {
+		return "<nil>"
+	}
+	if len(e.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(e.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+// Score category the finding counts against.
+type EmailCheckIssueCategory string
+
+const (
+	EmailCheckIssueCategorySubject EmailCheckIssueCategory = "subject"
+	EmailCheckIssueCategoryPreview EmailCheckIssueCategory = "preview"
+	EmailCheckIssueCategoryContent EmailCheckIssueCategory = "content"
+)
+
+func NewEmailCheckIssueCategoryFromString(s string) (EmailCheckIssueCategory, error) {
+	switch s {
+	case "subject":
+		return EmailCheckIssueCategorySubject, nil
+	case "preview":
+		return EmailCheckIssueCategoryPreview, nil
+	case "content":
+		return EmailCheckIssueCategoryContent, nil
+	}
+	var t EmailCheckIssueCategory
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (e EmailCheckIssueCategory) Ptr() *EmailCheckIssueCategory {
+	return &e
+}
+
+// error - fix before sending. warning - worth reviewing. info - a tip that does not need action.
+type EmailCheckIssueSeverity string
+
+const (
+	EmailCheckIssueSeverityError   EmailCheckIssueSeverity = "error"
+	EmailCheckIssueSeverityWarning EmailCheckIssueSeverity = "warning"
+	EmailCheckIssueSeverityInfo    EmailCheckIssueSeverity = "info"
+)
+
+func NewEmailCheckIssueSeverityFromString(s string) (EmailCheckIssueSeverity, error) {
+	switch s {
+	case "error":
+		return EmailCheckIssueSeverityError, nil
+	case "warning":
+		return EmailCheckIssueSeverityWarning, nil
+	case "info":
+		return EmailCheckIssueSeverityInfo, nil
+	}
+	var t EmailCheckIssueSeverity
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (e EmailCheckIssueSeverity) Ptr() *EmailCheckIssueSeverity {
+	return &e
+}
+
+var (
+	emailCheckLinkFieldBlockID    = big.NewInt(1 << 0)
+	emailCheckLinkFieldBlockType  = big.NewInt(1 << 1)
+	emailCheckLinkFieldFinalURL   = big.NewInt(1 << 2)
+	emailCheckLinkFieldFindings   = big.NewInt(1 << 3)
+	emailCheckLinkFieldHTTPStatus = big.NewInt(1 << 4)
+	emailCheckLinkFieldKind       = big.NewInt(1 << 5)
+	emailCheckLinkFieldLabel      = big.NewInt(1 << 6)
+	emailCheckLinkFieldMessage    = big.NewInt(1 << 7)
+	emailCheckLinkFieldStatus     = big.NewInt(1 << 8)
+	emailCheckLinkFieldURL        = big.NewInt(1 << 9)
+)
+
+type EmailCheckLink struct {
+	// Block that contains the URL.
+	BlockID   *string `json:"blockId,omitempty" url:"blockId,omitempty"`
+	BlockType *string `json:"blockType,omitempty" url:"blockType,omitempty"`
+	// Where the URL ended up after redirects, when it redirected.
+	FinalURL *string `json:"finalUrl,omitempty" url:"finalUrl,omitempty"`
+	// No-network rule results for this URL.
+	Findings []*EmailCheckLinkFindingsItem `json:"findings,omitempty" url:"findings,omitempty"`
+	// Final HTTP status code, when a response was received.
+	HTTPStatus *int                `json:"httpStatus,omitempty" url:"httpStatus,omitempty"`
+	Kind       *EmailCheckLinkKind `json:"kind,omitempty" url:"kind,omitempty"`
+	// Button text, link text, or image alt text.
+	Label *string `json:"label,omitempty" url:"label,omitempty"`
+	// Plain-language result, such as "Page not found (404)".
+	Message *string `json:"message,omitempty" url:"message,omitempty"`
+	// ok - answered with a success status (after redirects). broken - page or domain not found, certificate problem, redirect loop, or rejected request. invalid - can never work for recipients: a rule already found it unusable (localhost, a private address, a mistyped or missing https://), or the domain points to a private address. server_error - 5xx answer. unreachable - timed out or refused. restricted - the site refused an automated check (for example 401, 403 or 429); it may work in a browser and is not counted as broken. personalized - built from merge tags filled per recipient, so only its syntax is checked. not_checked - mailto and tel links, links not reached before the 25-second limit, or live checks turned off.
+	Status *EmailCheckLinkStatus `json:"status,omitempty" url:"status,omitempty"`
+	// The URL as it will be sent. {{company.url}} is replaced with the company website; other merge tags are left as authored.
+	URL *string `json:"url,omitempty" url:"url,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (e *EmailCheckLink) GetBlockID() *string {
+	if e == nil {
+		return nil
+	}
+	return e.BlockID
+}
+
+func (e *EmailCheckLink) GetBlockType() *string {
+	if e == nil {
+		return nil
+	}
+	return e.BlockType
+}
+
+func (e *EmailCheckLink) GetFinalURL() *string {
+	if e == nil {
+		return nil
+	}
+	return e.FinalURL
+}
+
+func (e *EmailCheckLink) GetFindings() []*EmailCheckLinkFindingsItem {
+	if e == nil {
+		return nil
+	}
+	return e.Findings
+}
+
+func (e *EmailCheckLink) GetHTTPStatus() *int {
+	if e == nil {
+		return nil
+	}
+	return e.HTTPStatus
+}
+
+func (e *EmailCheckLink) GetKind() *EmailCheckLinkKind {
+	if e == nil {
+		return nil
+	}
+	return e.Kind
+}
+
+func (e *EmailCheckLink) GetLabel() *string {
+	if e == nil {
+		return nil
+	}
+	return e.Label
+}
+
+func (e *EmailCheckLink) GetMessage() *string {
+	if e == nil {
+		return nil
+	}
+	return e.Message
+}
+
+func (e *EmailCheckLink) GetStatus() *EmailCheckLinkStatus {
+	if e == nil {
+		return nil
+	}
+	return e.Status
+}
+
+func (e *EmailCheckLink) GetURL() *string {
+	if e == nil {
+		return nil
+	}
+	return e.URL
+}
+
+func (e *EmailCheckLink) GetExtraProperties() map[string]interface{} {
+	if e == nil {
+		return nil
+	}
+	return e.extraProperties
+}
+
+func (e *EmailCheckLink) require(field *big.Int) {
+	if e.explicitFields == nil {
+		e.explicitFields = big.NewInt(0)
+	}
+	e.explicitFields.Or(e.explicitFields, field)
+}
+
+// SetBlockID sets the BlockID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailCheckLink) SetBlockID(blockID *string) {
+	e.BlockID = blockID
+	e.require(emailCheckLinkFieldBlockID)
+}
+
+// SetBlockType sets the BlockType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailCheckLink) SetBlockType(blockType *string) {
+	e.BlockType = blockType
+	e.require(emailCheckLinkFieldBlockType)
+}
+
+// SetFinalURL sets the FinalURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailCheckLink) SetFinalURL(finalURL *string) {
+	e.FinalURL = finalURL
+	e.require(emailCheckLinkFieldFinalURL)
+}
+
+// SetFindings sets the Findings field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailCheckLink) SetFindings(findings []*EmailCheckLinkFindingsItem) {
+	e.Findings = findings
+	e.require(emailCheckLinkFieldFindings)
+}
+
+// SetHTTPStatus sets the HTTPStatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailCheckLink) SetHTTPStatus(httpStatus *int) {
+	e.HTTPStatus = httpStatus
+	e.require(emailCheckLinkFieldHTTPStatus)
+}
+
+// SetKind sets the Kind field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailCheckLink) SetKind(kind *EmailCheckLinkKind) {
+	e.Kind = kind
+	e.require(emailCheckLinkFieldKind)
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailCheckLink) SetLabel(label *string) {
+	e.Label = label
+	e.require(emailCheckLinkFieldLabel)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailCheckLink) SetMessage(message *string) {
+	e.Message = message
+	e.require(emailCheckLinkFieldMessage)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailCheckLink) SetStatus(status *EmailCheckLinkStatus) {
+	e.Status = status
+	e.require(emailCheckLinkFieldStatus)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailCheckLink) SetURL(url *string) {
+	e.URL = url
+	e.require(emailCheckLinkFieldURL)
+}
+
+func (e *EmailCheckLink) UnmarshalJSON(data []byte) error {
+	type unmarshaler EmailCheckLink
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EmailCheckLink(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+	e.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EmailCheckLink) MarshalJSON() ([]byte, error) {
+	type embed EmailCheckLink
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*e),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (e *EmailCheckLink) String() string {
+	if e == nil {
+		return "<nil>"
+	}
+	if len(e.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(e.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+var (
+	emailCheckLinkFindingsItemFieldMessage  = big.NewInt(1 << 0)
+	emailCheckLinkFindingsItemFieldRule     = big.NewInt(1 << 1)
+	emailCheckLinkFindingsItemFieldSeverity = big.NewInt(1 << 2)
+)
+
+type EmailCheckLinkFindingsItem struct {
+	Message  *string                             `json:"message,omitempty" url:"message,omitempty"`
+	Rule     *string                             `json:"rule,omitempty" url:"rule,omitempty"`
+	Severity *EmailCheckLinkFindingsItemSeverity `json:"severity,omitempty" url:"severity,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (e *EmailCheckLinkFindingsItem) GetMessage() *string {
+	if e == nil {
+		return nil
+	}
+	return e.Message
+}
+
+func (e *EmailCheckLinkFindingsItem) GetRule() *string {
+	if e == nil {
+		return nil
+	}
+	return e.Rule
+}
+
+func (e *EmailCheckLinkFindingsItem) GetSeverity() *EmailCheckLinkFindingsItemSeverity {
+	if e == nil {
+		return nil
+	}
+	return e.Severity
+}
+
+func (e *EmailCheckLinkFindingsItem) GetExtraProperties() map[string]interface{} {
+	if e == nil {
+		return nil
+	}
+	return e.extraProperties
+}
+
+func (e *EmailCheckLinkFindingsItem) require(field *big.Int) {
+	if e.explicitFields == nil {
+		e.explicitFields = big.NewInt(0)
+	}
+	e.explicitFields.Or(e.explicitFields, field)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailCheckLinkFindingsItem) SetMessage(message *string) {
+	e.Message = message
+	e.require(emailCheckLinkFindingsItemFieldMessage)
+}
+
+// SetRule sets the Rule field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailCheckLinkFindingsItem) SetRule(rule *string) {
+	e.Rule = rule
+	e.require(emailCheckLinkFindingsItemFieldRule)
+}
+
+// SetSeverity sets the Severity field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailCheckLinkFindingsItem) SetSeverity(severity *EmailCheckLinkFindingsItemSeverity) {
+	e.Severity = severity
+	e.require(emailCheckLinkFindingsItemFieldSeverity)
+}
+
+func (e *EmailCheckLinkFindingsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler EmailCheckLinkFindingsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EmailCheckLinkFindingsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+	e.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EmailCheckLinkFindingsItem) MarshalJSON() ([]byte, error) {
+	type embed EmailCheckLinkFindingsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*e),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (e *EmailCheckLinkFindingsItem) String() string {
+	if e == nil {
+		return "<nil>"
+	}
+	if len(e.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(e.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+type EmailCheckLinkFindingsItemSeverity string
+
+const (
+	EmailCheckLinkFindingsItemSeverityError   EmailCheckLinkFindingsItemSeverity = "error"
+	EmailCheckLinkFindingsItemSeverityWarning EmailCheckLinkFindingsItemSeverity = "warning"
+	EmailCheckLinkFindingsItemSeverityInfo    EmailCheckLinkFindingsItemSeverity = "info"
+)
+
+func NewEmailCheckLinkFindingsItemSeverityFromString(s string) (EmailCheckLinkFindingsItemSeverity, error) {
+	switch s {
+	case "error":
+		return EmailCheckLinkFindingsItemSeverityError, nil
+	case "warning":
+		return EmailCheckLinkFindingsItemSeverityWarning, nil
+	case "info":
+		return EmailCheckLinkFindingsItemSeverityInfo, nil
+	}
+	var t EmailCheckLinkFindingsItemSeverity
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (e EmailCheckLinkFindingsItemSeverity) Ptr() *EmailCheckLinkFindingsItemSeverity {
+	return &e
+}
+
+type EmailCheckLinkKind string
+
+const (
+	EmailCheckLinkKindLink  EmailCheckLinkKind = "link"
+	EmailCheckLinkKindImage EmailCheckLinkKind = "image"
+)
+
+func NewEmailCheckLinkKindFromString(s string) (EmailCheckLinkKind, error) {
+	switch s {
+	case "link":
+		return EmailCheckLinkKindLink, nil
+	case "image":
+		return EmailCheckLinkKindImage, nil
+	}
+	var t EmailCheckLinkKind
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (e EmailCheckLinkKind) Ptr() *EmailCheckLinkKind {
+	return &e
+}
+
+// ok - answered with a success status (after redirects). broken - page or domain not found, certificate problem, redirect loop, or rejected request. invalid - can never work for recipients: a rule already found it unusable (localhost, a private address, a mistyped or missing https://), or the domain points to a private address. server_error - 5xx answer. unreachable - timed out or refused. restricted - the site refused an automated check (for example 401, 403 or 429); it may work in a browser and is not counted as broken. personalized - built from merge tags filled per recipient, so only its syntax is checked. not_checked - mailto and tel links, links not reached before the 25-second limit, or live checks turned off.
+type EmailCheckLinkStatus string
+
+const (
+	EmailCheckLinkStatusOk           EmailCheckLinkStatus = "ok"
+	EmailCheckLinkStatusBroken       EmailCheckLinkStatus = "broken"
+	EmailCheckLinkStatusInvalid      EmailCheckLinkStatus = "invalid"
+	EmailCheckLinkStatusServerError  EmailCheckLinkStatus = "server_error"
+	EmailCheckLinkStatusUnreachable  EmailCheckLinkStatus = "unreachable"
+	EmailCheckLinkStatusRestricted   EmailCheckLinkStatus = "restricted"
+	EmailCheckLinkStatusPersonalized EmailCheckLinkStatus = "personalized"
+	EmailCheckLinkStatusNotChecked   EmailCheckLinkStatus = "not_checked"
+)
+
+func NewEmailCheckLinkStatusFromString(s string) (EmailCheckLinkStatus, error) {
+	switch s {
+	case "ok":
+		return EmailCheckLinkStatusOk, nil
+	case "broken":
+		return EmailCheckLinkStatusBroken, nil
+	case "invalid":
+		return EmailCheckLinkStatusInvalid, nil
+	case "server_error":
+		return EmailCheckLinkStatusServerError, nil
+	case "unreachable":
+		return EmailCheckLinkStatusUnreachable, nil
+	case "restricted":
+		return EmailCheckLinkStatusRestricted, nil
+	case "personalized":
+		return EmailCheckLinkStatusPersonalized, nil
+	case "not_checked":
+		return EmailCheckLinkStatusNotChecked, nil
+	}
+	var t EmailCheckLinkStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (e EmailCheckLinkStatus) Ptr() *EmailCheckLinkStatus {
+	return &e
 }
 
 // Per-email Style > Format, derived from the stored blocks. `branded` renders the company logo and the full footer; `minimal` renders no logo and the simple footer. Null when the entire email is a single raw HTML block, which has no Sequenzy format. Sequence steps, campaigns, transactional templates, and saved templates all report this field, so chrome can be compared across emails without rendering them.

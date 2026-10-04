@@ -844,33 +844,39 @@ func (o OutboundWebhookDeliveryStatus) Ptr() *OutboundWebhookDeliveryStatus {
 }
 
 var (
-	outboundWebhookEndpointFieldCircuitOpenedAt     = big.NewInt(1 << 0)
-	outboundWebhookEndpointFieldCircuitOpenUntil    = big.NewInt(1 << 1)
-	outboundWebhookEndpointFieldConsecutiveFailures = big.NewInt(1 << 2)
-	outboundWebhookEndpointFieldCreatedAt           = big.NewInt(1 << 3)
-	outboundWebhookEndpointFieldEvents              = big.NewInt(1 << 4)
-	outboundWebhookEndpointFieldID                  = big.NewInt(1 << 5)
-	outboundWebhookEndpointFieldLastFailureAt       = big.NewInt(1 << 6)
-	outboundWebhookEndpointFieldLastSuccessAt       = big.NewInt(1 << 7)
-	outboundWebhookEndpointFieldName                = big.NewInt(1 << 8)
-	outboundWebhookEndpointFieldSigningSecret       = big.NewInt(1 << 9)
-	outboundWebhookEndpointFieldSigningSecrets      = big.NewInt(1 << 10)
-	outboundWebhookEndpointFieldStatus              = big.NewInt(1 << 11)
-	outboundWebhookEndpointFieldUpdatedAt           = big.NewInt(1 << 12)
-	outboundWebhookEndpointFieldURL                 = big.NewInt(1 << 13)
+	outboundWebhookEndpointFieldAutoDisabledAt      = big.NewInt(1 << 0)
+	outboundWebhookEndpointFieldCircuitOpenedAt     = big.NewInt(1 << 1)
+	outboundWebhookEndpointFieldCircuitOpenUntil    = big.NewInt(1 << 2)
+	outboundWebhookEndpointFieldConsecutiveFailures = big.NewInt(1 << 3)
+	outboundWebhookEndpointFieldCreatedAt           = big.NewInt(1 << 4)
+	outboundWebhookEndpointFieldEvents              = big.NewInt(1 << 5)
+	outboundWebhookEndpointFieldFailingSince        = big.NewInt(1 << 6)
+	outboundWebhookEndpointFieldID                  = big.NewInt(1 << 7)
+	outboundWebhookEndpointFieldLastFailureAt       = big.NewInt(1 << 8)
+	outboundWebhookEndpointFieldLastSuccessAt       = big.NewInt(1 << 9)
+	outboundWebhookEndpointFieldName                = big.NewInt(1 << 10)
+	outboundWebhookEndpointFieldSigningSecret       = big.NewInt(1 << 11)
+	outboundWebhookEndpointFieldSigningSecrets      = big.NewInt(1 << 12)
+	outboundWebhookEndpointFieldStatus              = big.NewInt(1 << 13)
+	outboundWebhookEndpointFieldUpdatedAt           = big.NewInt(1 << 14)
+	outboundWebhookEndpointFieldURL                 = big.NewInt(1 << 15)
 )
 
 type OutboundWebhookEndpoint struct {
+	// Set when Sequenzy disabled the endpoint automatically because every delivery failed for 7 days. Cleared when the endpoint is enabled again or its URL changes.
+	AutoDisabledAt   *time.Time `json:"autoDisabledAt,omitempty" url:"autoDisabledAt,omitempty"`
 	CircuitOpenedAt  *time.Time `json:"circuitOpenedAt,omitempty" url:"circuitOpenedAt,omitempty"`
 	CircuitOpenUntil *time.Time `json:"circuitOpenUntil,omitempty" url:"circuitOpenUntil,omitempty"`
 	// Consecutive failed delivery attempts used for endpoint backoff.
 	ConsecutiveFailures *int                       `json:"consecutiveFailures,omitempty" url:"consecutiveFailures,omitempty"`
 	CreatedAt           *time.Time                 `json:"createdAt,omitempty" url:"createdAt,omitempty"`
 	Events              []OutboundWebhookEventType `json:"events,omitempty" url:"events,omitempty"`
-	ID                  *string                    `json:"id,omitempty" url:"id,omitempty"`
-	LastFailureAt       *time.Time                 `json:"lastFailureAt,omitempty" url:"lastFailureAt,omitempty"`
-	LastSuccessAt       *time.Time                 `json:"lastSuccessAt,omitempty" url:"lastSuccessAt,omitempty"`
-	Name                *string                    `json:"name,omitempty" url:"name,omitempty"`
+	// When the current unbroken run of failed deliveries started. `null` once a delivery succeeds.
+	FailingSince  *time.Time `json:"failingSince,omitempty" url:"failingSince,omitempty"`
+	ID            *string    `json:"id,omitempty" url:"id,omitempty"`
+	LastFailureAt *time.Time `json:"lastFailureAt,omitempty" url:"lastFailureAt,omitempty"`
+	LastSuccessAt *time.Time `json:"lastSuccessAt,omitempty" url:"lastSuccessAt,omitempty"`
+	Name          *string    `json:"name,omitempty" url:"name,omitempty"`
 	// Returned only when creating a webhook or adding a signing secret.
 	SigningSecret *string `json:"signingSecret,omitempty" url:"signingSecret,omitempty"`
 	// Active signing secret metadata. Secret values are returned only once.
@@ -884,6 +890,13 @@ type OutboundWebhookEndpoint struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (o *OutboundWebhookEndpoint) GetAutoDisabledAt() *time.Time {
+	if o == nil {
+		return nil
+	}
+	return o.AutoDisabledAt
 }
 
 func (o *OutboundWebhookEndpoint) GetCircuitOpenedAt() *time.Time {
@@ -919,6 +932,13 @@ func (o *OutboundWebhookEndpoint) GetEvents() []OutboundWebhookEventType {
 		return nil
 	}
 	return o.Events
+}
+
+func (o *OutboundWebhookEndpoint) GetFailingSince() *time.Time {
+	if o == nil {
+		return nil
+	}
+	return o.FailingSince
 }
 
 func (o *OutboundWebhookEndpoint) GetID() *string {
@@ -998,6 +1018,13 @@ func (o *OutboundWebhookEndpoint) require(field *big.Int) {
 	o.explicitFields.Or(o.explicitFields, field)
 }
 
+// SetAutoDisabledAt sets the AutoDisabledAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OutboundWebhookEndpoint) SetAutoDisabledAt(autoDisabledAt *time.Time) {
+	o.AutoDisabledAt = autoDisabledAt
+	o.require(outboundWebhookEndpointFieldAutoDisabledAt)
+}
+
 // SetCircuitOpenedAt sets the CircuitOpenedAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (o *OutboundWebhookEndpoint) SetCircuitOpenedAt(circuitOpenedAt *time.Time) {
@@ -1031,6 +1058,13 @@ func (o *OutboundWebhookEndpoint) SetCreatedAt(createdAt *time.Time) {
 func (o *OutboundWebhookEndpoint) SetEvents(events []OutboundWebhookEventType) {
 	o.Events = events
 	o.require(outboundWebhookEndpointFieldEvents)
+}
+
+// SetFailingSince sets the FailingSince field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OutboundWebhookEndpoint) SetFailingSince(failingSince *time.Time) {
+	o.FailingSince = failingSince
+	o.require(outboundWebhookEndpointFieldFailingSince)
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1100,9 +1134,11 @@ func (o *OutboundWebhookEndpoint) UnmarshalJSON(data []byte) error {
 	type embed OutboundWebhookEndpoint
 	var unmarshaler = struct {
 		embed
+		AutoDisabledAt   *internal.DateTime `json:"autoDisabledAt,omitempty"`
 		CircuitOpenedAt  *internal.DateTime `json:"circuitOpenedAt,omitempty"`
 		CircuitOpenUntil *internal.DateTime `json:"circuitOpenUntil,omitempty"`
 		CreatedAt        *internal.DateTime `json:"createdAt,omitempty"`
+		FailingSince     *internal.DateTime `json:"failingSince,omitempty"`
 		LastFailureAt    *internal.DateTime `json:"lastFailureAt,omitempty"`
 		LastSuccessAt    *internal.DateTime `json:"lastSuccessAt,omitempty"`
 		UpdatedAt        *internal.DateTime `json:"updatedAt,omitempty"`
@@ -1113,9 +1149,11 @@ func (o *OutboundWebhookEndpoint) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*o = OutboundWebhookEndpoint(unmarshaler.embed)
+	o.AutoDisabledAt = unmarshaler.AutoDisabledAt.TimePtr()
 	o.CircuitOpenedAt = unmarshaler.CircuitOpenedAt.TimePtr()
 	o.CircuitOpenUntil = unmarshaler.CircuitOpenUntil.TimePtr()
 	o.CreatedAt = unmarshaler.CreatedAt.TimePtr()
+	o.FailingSince = unmarshaler.FailingSince.TimePtr()
 	o.LastFailureAt = unmarshaler.LastFailureAt.TimePtr()
 	o.LastSuccessAt = unmarshaler.LastSuccessAt.TimePtr()
 	o.UpdatedAt = unmarshaler.UpdatedAt.TimePtr()
@@ -1132,17 +1170,21 @@ func (o *OutboundWebhookEndpoint) MarshalJSON() ([]byte, error) {
 	type embed OutboundWebhookEndpoint
 	var marshaler = struct {
 		embed
+		AutoDisabledAt   *internal.DateTime `json:"autoDisabledAt,omitempty"`
 		CircuitOpenedAt  *internal.DateTime `json:"circuitOpenedAt,omitempty"`
 		CircuitOpenUntil *internal.DateTime `json:"circuitOpenUntil,omitempty"`
 		CreatedAt        *internal.DateTime `json:"createdAt,omitempty"`
+		FailingSince     *internal.DateTime `json:"failingSince,omitempty"`
 		LastFailureAt    *internal.DateTime `json:"lastFailureAt,omitempty"`
 		LastSuccessAt    *internal.DateTime `json:"lastSuccessAt,omitempty"`
 		UpdatedAt        *internal.DateTime `json:"updatedAt,omitempty"`
 	}{
 		embed:            embed(*o),
+		AutoDisabledAt:   internal.NewOptionalDateTime(o.AutoDisabledAt),
 		CircuitOpenedAt:  internal.NewOptionalDateTime(o.CircuitOpenedAt),
 		CircuitOpenUntil: internal.NewOptionalDateTime(o.CircuitOpenUntil),
 		CreatedAt:        internal.NewOptionalDateTime(o.CreatedAt),
+		FailingSince:     internal.NewOptionalDateTime(o.FailingSince),
 		LastFailureAt:    internal.NewOptionalDateTime(o.LastFailureAt),
 		LastSuccessAt:    internal.NewOptionalDateTime(o.LastSuccessAt),
 		UpdatedAt:        internal.NewOptionalDateTime(o.UpdatedAt),

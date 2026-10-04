@@ -1986,6 +1986,42 @@
       }
     },
     {
+      "id": "108fec5f-c8c2-483e-90e6-1e5845201d1c",
+      "name": "Check campaign before sending - default",
+      "request": {
+        "urlPathTemplate": "/campaigns/{campaignId}/check",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "campaignId": {
+            "equalTo": "campaignId"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"categories\": {\n    \"content\": {\n      \"maxScore\": 100,\n      \"score\": 1\n    },\n    \"preview\": {\n      \"maxScore\": 100,\n      \"score\": 1\n    },\n    \"subject\": {\n      \"maxScore\": 100,\n      \"score\": 1\n    }\n  },\n  \"entity\": {\n    \"id\": \"id\",\n    \"type\": \"campaign\",\n    \"variantId\": \"variantId\"\n  },\n  \"grade\": \"A\",\n  \"issues\": [\n    {\n      \"blockId\": \"blockId\",\n      \"category\": \"subject\",\n      \"message\": \"Broken link: \\\"Shop now\\\" (acme.com/sale) - Page not found (404).\",\n      \"rule\": \"links.broken\",\n      \"severity\": \"error\",\n      \"url\": \"url\"\n    }\n  ],\n  \"links\": [\n    {\n      \"blockId\": \"blockId\",\n      \"blockType\": \"blockType\",\n      \"finalUrl\": \"finalUrl\",\n      \"findings\": [\n        {}\n      ],\n      \"httpStatus\": 1,\n      \"kind\": \"link\",\n      \"label\": \"label\",\n      \"message\": \"message\",\n      \"status\": \"ok\",\n      \"url\": \"url\"\n    }\n  ],\n  \"linksChecked\": true,\n  \"linkSummary\": {\n    \"broken\": 1,\n    \"checked\": 1,\n    \"notChecked\": 1,\n    \"ok\": 1,\n    \"restricted\": 1,\n    \"total\": 1,\n    \"warnings\": 1\n  },\n  \"locale\": \"en\",\n  \"placement\": \"Primary\",\n  \"previewText\": \"previewText\",\n  \"score\": 82,\n  \"subject\": \"subject\",\n  \"success\": true,\n  \"unevaluatedConditions\": [\n    {\n      \"key\": \"value\"\n    }\n  ],\n  \"unresolvedMergeTags\": [\n    {\n      \"reason\": \"unknown\",\n      \"tag\": \"tag\"\n    }\n  ]\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "108fec5f-c8c2-483e-90e6-1e5845201d1c",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "fa379edb-d966-4318-871b-d193d8b69a51",
       "name": "Create campaign - Create from HTML",
       "request": {
@@ -7302,6 +7338,137 @@
       "postServeActions": []
     },
     {
+      "id": "72bf6dda-771f-46f3-aeb9-afac510fc293",
+      "name": "List watched brands - default",
+      "request": {
+        "urlPathTemplate": "/gallery/watchlist",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"limit\": 50,\n  \"success\": true,\n  \"watchlist\": [\n    {\n      \"declineReason\": \"declineReason\",\n      \"domain\": \"linear.app\",\n      \"emailCount\": 1,\n      \"id\": \"id\",\n      \"latestEmailAt\": \"2024-01-15T09:30:00Z\",\n      \"note\": \"note\",\n      \"status\": \"requested\",\n      \"watchedAt\": \"2024-01-15T09:30:00Z\"\n    }\n  ]\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "72bf6dda-771f-46f3-aeb9-afac510fc293",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
+      "id": "e05a99a2-7d97-4246-8274-640df5b70e0e",
+      "name": "List watched brand emails - default",
+      "request": {
+        "urlPathTemplate": "/gallery/watchlist/emails",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"emails\": [\n    {\n      \"collectedAt\": \"2024-01-15T09:30:00Z\",\n      \"id\": \"id\",\n      \"preheader\": \"preheader\",\n      \"sentAt\": \"2024-01-15T09:30:00Z\",\n      \"subject\": \"subject\",\n      \"subtype\": \"subtype\",\n      \"type\": \"type\",\n      \"url\": \"url\"\n    }\n  ],\n  \"nextCursor\": \"nextCursor\",\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "e05a99a2-7d97-4246-8274-640df5b70e0e",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
+      "id": "1668c508-8c6a-403c-bea0-e56a9dfd8b60",
+      "name": "Stop watching a brand - default",
+      "request": {
+        "urlPathTemplate": "/gallery/watchlist/{id}",
+        "method": "DELETE",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"deleted\": true,\n  \"id\": \"id\",\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "1668c508-8c6a-403c-bea0-e56a9dfd8b60",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "01bc4a7b-2923-43fe-a8ba-5dc53c99aec9",
+      "name": "Watch a brand - default",
+      "request": {
+        "urlPathTemplate": "/gallery/watchlist",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"created\": true,\n  \"message\": \"message\",\n  \"success\": true,\n  \"watch\": {\n    \"brand\": {\n      \"name\": \"name\",\n      \"slug\": \"slug\",\n      \"url\": \"url\"\n    },\n    \"declineReason\": \"declineReason\",\n    \"domain\": \"linear.app\",\n    \"emailCount\": 1,\n    \"id\": \"id\",\n    \"latestEmailAt\": \"2024-01-15T09:30:00Z\",\n    \"note\": \"note\",\n    \"status\": \"requested\",\n    \"watchedAt\": \"2024-01-15T09:30:00Z\"\n  }\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "01bc4a7b-2923-43fe-a8ba-5dc53c99aec9",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "6d4f27a7-027c-4f81-b30a-d49a9149a1b1",
       "name": "Create segment - default",
       "request": {
@@ -7775,6 +7942,45 @@
         }
       },
       "uuid": "021166d0-289f-43d4-a754-aa8a5dc43cd7",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "9ec5f298-b899-46c1-83f6-be1e9cb2564b",
+      "name": "Check sequence step email - default",
+      "request": {
+        "urlPathTemplate": "/sequences/{sequenceId}/nodes/{nodeId}/check",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "nodeId": {
+            "equalTo": "nodeId"
+          },
+          "sequenceId": {
+            "equalTo": "sequenceId"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"categories\": {\n    \"content\": {\n      \"maxScore\": 100,\n      \"score\": 1\n    },\n    \"preview\": {\n      \"maxScore\": 100,\n      \"score\": 1\n    },\n    \"subject\": {\n      \"maxScore\": 100,\n      \"score\": 1\n    }\n  },\n  \"entity\": {\n    \"id\": \"id\",\n    \"type\": \"campaign\",\n    \"variantId\": \"variantId\"\n  },\n  \"grade\": \"A\",\n  \"issues\": [\n    {\n      \"blockId\": \"blockId\",\n      \"category\": \"subject\",\n      \"message\": \"Broken link: \\\"Shop now\\\" (acme.com/sale) - Page not found (404).\",\n      \"rule\": \"links.broken\",\n      \"severity\": \"error\",\n      \"url\": \"url\"\n    }\n  ],\n  \"links\": [\n    {\n      \"blockId\": \"blockId\",\n      \"blockType\": \"blockType\",\n      \"finalUrl\": \"finalUrl\",\n      \"findings\": [\n        {}\n      ],\n      \"httpStatus\": 1,\n      \"kind\": \"link\",\n      \"label\": \"label\",\n      \"message\": \"message\",\n      \"status\": \"ok\",\n      \"url\": \"url\"\n    }\n  ],\n  \"linksChecked\": true,\n  \"linkSummary\": {\n    \"broken\": 1,\n    \"checked\": 1,\n    \"notChecked\": 1,\n    \"ok\": 1,\n    \"restricted\": 1,\n    \"total\": 1,\n    \"warnings\": 1\n  },\n  \"locale\": \"en\",\n  \"placement\": \"Primary\",\n  \"previewText\": \"previewText\",\n  \"score\": 82,\n  \"subject\": \"subject\",\n  \"success\": true,\n  \"unevaluatedConditions\": [\n    {\n      \"key\": \"value\"\n    }\n  ],\n  \"unresolvedMergeTags\": [\n    {\n      \"reason\": \"unknown\",\n      \"tag\": \"tag\"\n    }\n  ]\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "9ec5f298-b899-46c1-83f6-be1e9cb2564b",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -10857,6 +11063,42 @@
       "postServeActions": []
     },
     {
+      "id": "fdf2ea46-7b6d-4721-b7a6-b9f09641ef40",
+      "name": "Check template - default",
+      "request": {
+        "urlPathTemplate": "/templates/{templateId}/check",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "templateId": {
+            "equalTo": "templateId"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"categories\": {\n    \"content\": {\n      \"maxScore\": 100,\n      \"score\": 1\n    },\n    \"preview\": {\n      \"maxScore\": 100,\n      \"score\": 1\n    },\n    \"subject\": {\n      \"maxScore\": 100,\n      \"score\": 1\n    }\n  },\n  \"entity\": {\n    \"id\": \"id\",\n    \"type\": \"campaign\",\n    \"variantId\": \"variantId\"\n  },\n  \"grade\": \"A\",\n  \"issues\": [\n    {\n      \"blockId\": \"blockId\",\n      \"category\": \"subject\",\n      \"message\": \"Broken link: \\\"Shop now\\\" (acme.com/sale) - Page not found (404).\",\n      \"rule\": \"links.broken\",\n      \"severity\": \"error\",\n      \"url\": \"url\"\n    }\n  ],\n  \"links\": [\n    {\n      \"blockId\": \"blockId\",\n      \"blockType\": \"blockType\",\n      \"finalUrl\": \"finalUrl\",\n      \"findings\": [\n        {}\n      ],\n      \"httpStatus\": 1,\n      \"kind\": \"link\",\n      \"label\": \"label\",\n      \"message\": \"message\",\n      \"status\": \"ok\",\n      \"url\": \"url\"\n    }\n  ],\n  \"linksChecked\": true,\n  \"linkSummary\": {\n    \"broken\": 1,\n    \"checked\": 1,\n    \"notChecked\": 1,\n    \"ok\": 1,\n    \"restricted\": 1,\n    \"total\": 1,\n    \"warnings\": 1\n  },\n  \"locale\": \"en\",\n  \"placement\": \"Primary\",\n  \"previewText\": \"previewText\",\n  \"score\": 82,\n  \"subject\": \"subject\",\n  \"success\": true,\n  \"unevaluatedConditions\": [\n    {\n      \"key\": \"value\"\n    }\n  ],\n  \"unresolvedMergeTags\": [\n    {\n      \"reason\": \"unknown\",\n      \"tag\": \"tag\"\n    }\n  ]\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "fdf2ea46-7b6d-4721-b7a6-b9f09641ef40",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "88b0864c-5a9b-4ece-87f8-139915ab1aa1",
       "name": "Create template - default",
       "request": {
@@ -12167,7 +12409,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"success\": true,\n  \"webhook\": {\n    \"circuitOpenedAt\": \"2024-01-15T09:30:00Z\",\n    \"circuitOpenUntil\": \"2024-01-15T09:30:00Z\",\n    \"consecutiveFailures\": 1,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"events\": [\n      \"email.sent\"\n    ],\n    \"id\": \"webhook_abc123\",\n    \"lastFailureAt\": \"2024-01-15T09:30:00Z\",\n    \"lastSuccessAt\": \"2024-01-15T09:30:00Z\",\n    \"name\": \"Production webhook\",\n    \"signingSecret\": \"whsec_...\",\n    \"signingSecrets\": [\n      {\n        \"id\": \"sec_abc123\",\n        \"prefix\": \"whsec_abcd12\"\n      }\n    ],\n    \"status\": \"enabled\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"url\": \"https://example.com/sequenzy/webhooks\"\n  }\n}",
+        "body": "{\n  \"success\": true,\n  \"webhook\": {\n    \"autoDisabledAt\": \"2024-01-15T09:30:00Z\",\n    \"circuitOpenedAt\": \"2024-01-15T09:30:00Z\",\n    \"circuitOpenUntil\": \"2024-01-15T09:30:00Z\",\n    \"consecutiveFailures\": 1,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"events\": [\n      \"email.sent\"\n    ],\n    \"failingSince\": \"2024-01-15T09:30:00Z\",\n    \"id\": \"webhook_abc123\",\n    \"lastFailureAt\": \"2024-01-15T09:30:00Z\",\n    \"lastSuccessAt\": \"2024-01-15T09:30:00Z\",\n    \"name\": \"Production webhook\",\n    \"signingSecret\": \"whsec_...\",\n    \"signingSecrets\": [\n      {\n        \"id\": \"sec_abc123\",\n        \"prefix\": \"whsec_abcd12\"\n      }\n    ],\n    \"status\": \"enabled\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"url\": \"https://example.com/sequenzy/webhooks\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -12198,7 +12440,7 @@
       },
       "response": {
         "status": 201,
-        "body": "{\n  \"success\": true,\n  \"webhook\": {\n    \"circuitOpenedAt\": \"2024-01-15T09:30:00Z\",\n    \"circuitOpenUntil\": \"2024-01-15T09:30:00Z\",\n    \"consecutiveFailures\": 1,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"events\": [\n      \"email.sent\"\n    ],\n    \"id\": \"webhook_abc123\",\n    \"lastFailureAt\": \"2024-01-15T09:30:00Z\",\n    \"lastSuccessAt\": \"2024-01-15T09:30:00Z\",\n    \"name\": \"Production webhook\",\n    \"signingSecret\": \"whsec_...\",\n    \"signingSecrets\": [\n      {\n        \"id\": \"sec_abc123\",\n        \"prefix\": \"whsec_abcd12\"\n      }\n    ],\n    \"status\": \"enabled\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"url\": \"https://example.com/sequenzy/webhooks\"\n  }\n}",
+        "body": "{\n  \"success\": true,\n  \"webhook\": {\n    \"autoDisabledAt\": \"2024-01-15T09:30:00Z\",\n    \"circuitOpenedAt\": \"2024-01-15T09:30:00Z\",\n    \"circuitOpenUntil\": \"2024-01-15T09:30:00Z\",\n    \"consecutiveFailures\": 1,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"events\": [\n      \"email.sent\"\n    ],\n    \"failingSince\": \"2024-01-15T09:30:00Z\",\n    \"id\": \"webhook_abc123\",\n    \"lastFailureAt\": \"2024-01-15T09:30:00Z\",\n    \"lastSuccessAt\": \"2024-01-15T09:30:00Z\",\n    \"name\": \"Production webhook\",\n    \"signingSecret\": \"whsec_...\",\n    \"signingSecrets\": [\n      {\n        \"id\": \"sec_abc123\",\n        \"prefix\": \"whsec_abcd12\"\n      }\n    ],\n    \"status\": \"enabled\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"url\": \"https://example.com/sequenzy/webhooks\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -12234,7 +12476,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"success\": true,\n  \"webhook\": {\n    \"circuitOpenedAt\": \"2024-01-15T09:30:00Z\",\n    \"circuitOpenUntil\": \"2024-01-15T09:30:00Z\",\n    \"consecutiveFailures\": 1,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"events\": [\n      \"email.sent\"\n    ],\n    \"id\": \"webhook_abc123\",\n    \"lastFailureAt\": \"2024-01-15T09:30:00Z\",\n    \"lastSuccessAt\": \"2024-01-15T09:30:00Z\",\n    \"name\": \"Production webhook\",\n    \"signingSecret\": \"whsec_...\",\n    \"signingSecrets\": [\n      {\n        \"id\": \"sec_abc123\",\n        \"prefix\": \"whsec_abcd12\"\n      }\n    ],\n    \"status\": \"enabled\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"url\": \"https://example.com/sequenzy/webhooks\"\n  }\n}",
+        "body": "{\n  \"success\": true,\n  \"webhook\": {\n    \"autoDisabledAt\": \"2024-01-15T09:30:00Z\",\n    \"circuitOpenedAt\": \"2024-01-15T09:30:00Z\",\n    \"circuitOpenUntil\": \"2024-01-15T09:30:00Z\",\n    \"consecutiveFailures\": 1,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"events\": [\n      \"email.sent\"\n    ],\n    \"failingSince\": \"2024-01-15T09:30:00Z\",\n    \"id\": \"webhook_abc123\",\n    \"lastFailureAt\": \"2024-01-15T09:30:00Z\",\n    \"lastSuccessAt\": \"2024-01-15T09:30:00Z\",\n    \"name\": \"Production webhook\",\n    \"signingSecret\": \"whsec_...\",\n    \"signingSecrets\": [\n      {\n        \"id\": \"sec_abc123\",\n        \"prefix\": \"whsec_abcd12\"\n      }\n    ],\n    \"status\": \"enabled\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"url\": \"https://example.com/sequenzy/webhooks\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -12265,7 +12507,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"success\": true,\n  \"webhooks\": [\n    {\n      \"circuitOpenedAt\": \"2024-01-15T09:30:00Z\",\n      \"circuitOpenUntil\": \"2024-01-15T09:30:00Z\",\n      \"consecutiveFailures\": 1,\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"events\": [\n        \"email.sent\"\n      ],\n      \"id\": \"webhook_abc123\",\n      \"lastFailureAt\": \"2024-01-15T09:30:00Z\",\n      \"lastSuccessAt\": \"2024-01-15T09:30:00Z\",\n      \"name\": \"Production webhook\",\n      \"signingSecret\": \"whsec_...\",\n      \"signingSecrets\": [\n        {\n          \"id\": \"sec_abc123\",\n          \"prefix\": \"whsec_abcd12\"\n        }\n      ],\n      \"status\": \"enabled\",\n      \"updatedAt\": \"2024-01-15T09:30:00Z\",\n      \"url\": \"https://example.com/sequenzy/webhooks\"\n    }\n  ]\n}",
+        "body": "{\n  \"success\": true,\n  \"webhooks\": [\n    {\n      \"autoDisabledAt\": \"2024-01-15T09:30:00Z\",\n      \"circuitOpenedAt\": \"2024-01-15T09:30:00Z\",\n      \"circuitOpenUntil\": \"2024-01-15T09:30:00Z\",\n      \"consecutiveFailures\": 1,\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"events\": [\n        \"email.sent\"\n      ],\n      \"failingSince\": \"2024-01-15T09:30:00Z\",\n      \"id\": \"webhook_abc123\",\n      \"lastFailureAt\": \"2024-01-15T09:30:00Z\",\n      \"lastSuccessAt\": \"2024-01-15T09:30:00Z\",\n      \"name\": \"Production webhook\",\n      \"signingSecret\": \"whsec_...\",\n      \"signingSecrets\": [\n        {\n          \"id\": \"sec_abc123\",\n          \"prefix\": \"whsec_abcd12\"\n        }\n      ],\n      \"status\": \"enabled\",\n      \"updatedAt\": \"2024-01-15T09:30:00Z\",\n      \"url\": \"https://example.com/sequenzy/webhooks\"\n    }\n  ]\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -12380,7 +12622,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"success\": true,\n  \"webhook\": {\n    \"circuitOpenedAt\": \"2024-01-15T09:30:00Z\",\n    \"circuitOpenUntil\": \"2024-01-15T09:30:00Z\",\n    \"consecutiveFailures\": 1,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"events\": [\n      \"email.sent\"\n    ],\n    \"id\": \"webhook_abc123\",\n    \"lastFailureAt\": \"2024-01-15T09:30:00Z\",\n    \"lastSuccessAt\": \"2024-01-15T09:30:00Z\",\n    \"name\": \"Production webhook\",\n    \"signingSecret\": \"whsec_...\",\n    \"signingSecrets\": [\n      {\n        \"id\": \"sec_abc123\",\n        \"prefix\": \"whsec_abcd12\"\n      }\n    ],\n    \"status\": \"enabled\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"url\": \"https://example.com/sequenzy/webhooks\"\n  }\n}",
+        "body": "{\n  \"success\": true,\n  \"webhook\": {\n    \"autoDisabledAt\": \"2024-01-15T09:30:00Z\",\n    \"circuitOpenedAt\": \"2024-01-15T09:30:00Z\",\n    \"circuitOpenUntil\": \"2024-01-15T09:30:00Z\",\n    \"consecutiveFailures\": 1,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"events\": [\n      \"email.sent\"\n    ],\n    \"failingSince\": \"2024-01-15T09:30:00Z\",\n    \"id\": \"webhook_abc123\",\n    \"lastFailureAt\": \"2024-01-15T09:30:00Z\",\n    \"lastSuccessAt\": \"2024-01-15T09:30:00Z\",\n    \"name\": \"Production webhook\",\n    \"signingSecret\": \"whsec_...\",\n    \"signingSecrets\": [\n      {\n        \"id\": \"sec_abc123\",\n        \"prefix\": \"whsec_abcd12\"\n      }\n    ],\n    \"status\": \"enabled\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"url\": \"https://example.com/sequenzy/webhooks\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -12491,7 +12733,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"success\": true,\n  \"webhook\": {\n    \"circuitOpenedAt\": \"2024-01-15T09:30:00Z\",\n    \"circuitOpenUntil\": \"2024-01-15T09:30:00Z\",\n    \"consecutiveFailures\": 1,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"events\": [\n      \"email.sent\"\n    ],\n    \"id\": \"webhook_abc123\",\n    \"lastFailureAt\": \"2024-01-15T09:30:00Z\",\n    \"lastSuccessAt\": \"2024-01-15T09:30:00Z\",\n    \"name\": \"Production webhook\",\n    \"signingSecret\": \"whsec_...\",\n    \"signingSecrets\": [\n      {\n        \"id\": \"sec_abc123\",\n        \"prefix\": \"whsec_abcd12\"\n      }\n    ],\n    \"status\": \"enabled\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"url\": \"https://example.com/sequenzy/webhooks\"\n  }\n}",
+        "body": "{\n  \"success\": true,\n  \"webhook\": {\n    \"autoDisabledAt\": \"2024-01-15T09:30:00Z\",\n    \"circuitOpenedAt\": \"2024-01-15T09:30:00Z\",\n    \"circuitOpenUntil\": \"2024-01-15T09:30:00Z\",\n    \"consecutiveFailures\": 1,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"events\": [\n      \"email.sent\"\n    ],\n    \"failingSince\": \"2024-01-15T09:30:00Z\",\n    \"id\": \"webhook_abc123\",\n    \"lastFailureAt\": \"2024-01-15T09:30:00Z\",\n    \"lastSuccessAt\": \"2024-01-15T09:30:00Z\",\n    \"name\": \"Production webhook\",\n    \"signingSecret\": \"whsec_...\",\n    \"signingSecrets\": [\n      {\n        \"id\": \"sec_abc123\",\n        \"prefix\": \"whsec_abcd12\"\n      }\n    ],\n    \"status\": \"enabled\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"url\": \"https://example.com/sequenzy/webhooks\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -13563,6 +13805,6 @@
     }
   ],
   "meta": {
-    "total": 394
+    "total": 401
   }
 }

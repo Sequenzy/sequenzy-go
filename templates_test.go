@@ -10,6 +10,51 @@ import (
 	time "time"
 )
 
+func TestSettersCheckTemplatesRequest(t *testing.T) {
+	t.Run("SetTemplateID", func(t *testing.T) {
+		obj := &CheckTemplatesRequest{}
+		var fernTestValueTemplateID string
+		obj.SetTemplateID(fernTestValueTemplateID)
+		assert.Equal(t, fernTestValueTemplateID, obj.TemplateID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestSettersMarkExplicitCheckTemplatesRequest(t *testing.T) {
+	t.Run("SetTemplateID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CheckTemplatesRequest{}
+		var fernTestValueTemplateID string
+
+		// Act
+		obj.SetTemplateID(fernTestValueTemplateID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
 func TestSettersCreateTemplatesRequest(t *testing.T) {
 	t.Run("SetBlocks", func(t *testing.T) {
 		obj := &CreateTemplatesRequest{}

@@ -34,6 +34,34 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
+// Run the pre-send email check on a saved template: the same rules as the editor's email checker, plus live verification of every link and image, including links in every A/B variant and translation unless variantId or locale pins one version. Read-only: this never sends or modifies anything, and uses POST only so personalization input can travel in a request body.
+//
+// Example:
+//
+//	request := &sequenzygo.CheckTemplatesRequest{
+//	    TemplateID: "templateId",
+//	    Body: &sequenzygo.CheckEmailRequest{},
+//	}
+//	client.Templates.Check(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Check(
+	ctx context.Context,
+	request *sequenzygo.CheckTemplatesRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.CheckEmailResponse, error) {
+	response, err := c.WithRawResponse.Check(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Creates a reusable email template from exactly one of prompt, HTML, or Sequenzy blocks. Creating a standalone copy of a saved email or gallery design and AI rewriting within its layout are currently dashboard-only workflows. This endpoint has no source-template copy operation; prompt generates new content without preserving an existing layout. See /concepts/email-templates#availability-across-interfaces for the documented interface exception and supported alternatives.
 //
 // Example:

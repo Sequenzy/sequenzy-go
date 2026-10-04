@@ -165,6 +165,34 @@ func TestSequencesCancelEnrollmentsWithWireMock(
 	VerifyRequestCount(t, "TestSequencesCancelEnrollmentsWithWireMock", "POST", "/sequences/sequenceId/enrollments/cancel", nil, 1)
 }
 
+func TestSequencesCheckStepWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.CheckStepSequencesRequest{
+		SequenceID: "sequenceId",
+		NodeID:     "nodeId",
+		Body:       &sequenzygo.CheckEmailRequest{},
+	}
+	_, invocationErr := client.Sequences.CheckStep(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestSequencesCheckStepWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestSequencesCheckStepWithWireMock", "POST", "/sequences/sequenceId/nodes/nodeId/check", nil, 1)
+}
+
 func TestSequencesConfigureInboundWebhookWithWireMock(
 	t *testing.T,
 ) {

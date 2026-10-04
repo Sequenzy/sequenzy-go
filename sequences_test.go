@@ -457,6 +457,90 @@ func TestSettersMarkExplicitSequenceEnrollmentCancelRequest(t *testing.T) {
 
 }
 
+func TestSettersCheckStepSequencesRequest(t *testing.T) {
+	t.Run("SetSequenceID", func(t *testing.T) {
+		obj := &CheckStepSequencesRequest{}
+		var fernTestValueSequenceID string
+		obj.SetSequenceID(fernTestValueSequenceID)
+		assert.Equal(t, fernTestValueSequenceID, obj.SequenceID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetNodeID", func(t *testing.T) {
+		obj := &CheckStepSequencesRequest{}
+		var fernTestValueNodeID string
+		obj.SetNodeID(fernTestValueNodeID)
+		assert.Equal(t, fernTestValueNodeID, obj.NodeID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestSettersMarkExplicitCheckStepSequencesRequest(t *testing.T) {
+	t.Run("SetSequenceID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CheckStepSequencesRequest{}
+		var fernTestValueSequenceID string
+
+		// Act
+		obj.SetSequenceID(fernTestValueSequenceID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetNodeID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CheckStepSequencesRequest{}
+		var fernTestValueNodeID string
+
+		// Act
+		obj.SetNodeID(fernTestValueNodeID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
 func TestSettersConfigureInboundWebhookSequencesRequest(t *testing.T) {
 	t.Run("SetSequenceID", func(t *testing.T) {
 		obj := &ConfigureInboundWebhookSequencesRequest{}

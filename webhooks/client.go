@@ -275,7 +275,7 @@ func (c *Client) Test(
 	return response.Body, nil
 }
 
-// Updates an outbound webhook endpoint URL, name, status, or subscribed events. Changing the URL or enabling the endpoint resets stored endpoint failure state.
+// Updates an outbound webhook endpoint URL, name, status, or subscribed events. Changing the URL or enabling the endpoint resets stored endpoint failure state, including `failingSince` and `autoDisabledAt`.
 //
 // Example:
 //

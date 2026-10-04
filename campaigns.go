@@ -37,6 +37,46 @@ func (c *CancelCampaignsRequest) SetCampaignID(campaignID string) {
 }
 
 var (
+	checkCampaignsRequestFieldCampaignID = big.NewInt(1 << 0)
+)
+
+type CheckCampaignsRequest struct {
+	// Campaign ID
+	CampaignID string             `json:"-" url:"-"`
+	Body       *CheckEmailRequest `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (c *CheckCampaignsRequest) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetCampaignID sets the CampaignID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckCampaignsRequest) SetCampaignID(campaignID string) {
+	c.CampaignID = campaignID
+	c.require(checkCampaignsRequestFieldCampaignID)
+}
+
+func (c *CheckCampaignsRequest) UnmarshalJSON(data []byte) error {
+	body := new(CheckEmailRequest)
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	c.Body = body
+	return nil
+}
+
+func (c *CheckCampaignsRequest) MarshalJSON() ([]byte, error) {
+	return json.Marshal(c.Body)
+}
+
+var (
 	createCampaignsRequestFieldBlocks          = big.NewInt(1 << 0)
 	createCampaignsRequestFieldCampaignData    = big.NewInt(1 << 1)
 	createCampaignsRequestFieldComputedLists   = big.NewInt(1 << 2)

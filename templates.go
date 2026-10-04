@@ -11,6 +11,46 @@ import (
 )
 
 var (
+	checkTemplatesRequestFieldTemplateID = big.NewInt(1 << 0)
+)
+
+type CheckTemplatesRequest struct {
+	// Template ID, or a transactional email ID or slug
+	TemplateID string             `json:"-" url:"-"`
+	Body       *CheckEmailRequest `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (c *CheckTemplatesRequest) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetTemplateID sets the TemplateID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckTemplatesRequest) SetTemplateID(templateID string) {
+	c.TemplateID = templateID
+	c.require(checkTemplatesRequestFieldTemplateID)
+}
+
+func (c *CheckTemplatesRequest) UnmarshalJSON(data []byte) error {
+	body := new(CheckEmailRequest)
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	c.Body = body
+	return nil
+}
+
+func (c *CheckTemplatesRequest) MarshalJSON() ([]byte, error) {
+	return json.Marshal(c.Body)
+}
+
+var (
 	createTemplatesRequestFieldBlocks      = big.NewInt(1 << 0)
 	createTemplatesRequestFieldHTML        = big.NewInt(1 << 1)
 	createTemplatesRequestFieldIsTemplate  = big.NewInt(1 << 2)

@@ -61,6 +61,34 @@ func (c *Client) Cancel(
 	return response.Body, nil
 }
 
+// Run the pre-send email check on a saved campaign: the same rules as the editor's email checker, plus live verification of every link and image, including links in every A/B variant and translation unless variantId or locale pins one version. Read-only: this never sends or modifies anything, and uses POST only so personalization input can travel in a request body.
+//
+// Example:
+//
+//	request := &sequenzygo.CheckCampaignsRequest{
+//	    CampaignID: "campaignId",
+//	    Body: &sequenzygo.CheckEmailRequest{},
+//	}
+//	client.Campaigns.Check(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Check(
+	ctx context.Context,
+	request *sequenzygo.CheckCampaignsRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.CheckEmailResponse, error) {
+	response, err := c.WithRawResponse.Check(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Creates a campaign and linked email from at most one of prompt, HTML, Sequenzy blocks, or an existing template. Omit all content sources to create an empty draft. Optional From/Reply-To inputs create or select profiles; From addresses require a verified sending domain. Defaults to draft. Use status `sent` only to archive an imported/already-sent campaign. Marketer account keys must choose existing sender and Reply-To profiles; requests requiring new profiles return 400 before creating profiles, labels, or campaign/sequence changes, including nested steps and branches.
 //
 // Example:

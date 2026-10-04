@@ -48,13 +48,13 @@ var ErrorCodes internal.ErrorCodes = internal.ErrorCodes{
 			APIError: apiError,
 		}
 	},
-	413: func(apiError *core.APIError) error {
-		return &ContentTooLargeError{
+	429: func(apiError *core.APIError) error {
+		return &TooManyRequestsError{
 			APIError: apiError,
 		}
 	},
-	429: func(apiError *core.APIError) error {
-		return &TooManyRequestsError{
+	413: func(apiError *core.APIError) error {
+		return &ContentTooLargeError{
 			APIError: apiError,
 		}
 	},

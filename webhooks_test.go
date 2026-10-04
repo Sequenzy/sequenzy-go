@@ -2135,6 +2135,14 @@ func TestSettersMarkExplicitOutboundWebhookDeliveryAttempt(t *testing.T) {
 }
 
 func TestSettersOutboundWebhookEndpoint(t *testing.T) {
+	t.Run("SetAutoDisabledAt", func(t *testing.T) {
+		obj := &OutboundWebhookEndpoint{}
+		var fernTestValueAutoDisabledAt *time.Time
+		obj.SetAutoDisabledAt(fernTestValueAutoDisabledAt)
+		assert.Equal(t, fernTestValueAutoDisabledAt, obj.AutoDisabledAt)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetCircuitOpenedAt", func(t *testing.T) {
 		obj := &OutboundWebhookEndpoint{}
 		var fernTestValueCircuitOpenedAt *time.Time
@@ -2172,6 +2180,14 @@ func TestSettersOutboundWebhookEndpoint(t *testing.T) {
 		var fernTestValueEvents []OutboundWebhookEventType
 		obj.SetEvents(fernTestValueEvents)
 		assert.Equal(t, fernTestValueEvents, obj.Events)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetFailingSince", func(t *testing.T) {
+		obj := &OutboundWebhookEndpoint{}
+		var fernTestValueFailingSince *time.Time
+		obj.SetFailingSince(fernTestValueFailingSince)
+		assert.Equal(t, fernTestValueFailingSince, obj.FailingSince)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -2250,6 +2266,39 @@ func TestSettersOutboundWebhookEndpoint(t *testing.T) {
 }
 
 func TestGettersOutboundWebhookEndpoint(t *testing.T) {
+	t.Run("GetAutoDisabledAt", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &OutboundWebhookEndpoint{}
+		var expected *time.Time
+		obj.AutoDisabledAt = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAutoDisabledAt(), "getter should return the property value")
+	})
+
+	t.Run("GetAutoDisabledAt_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &OutboundWebhookEndpoint{}
+		obj.AutoDisabledAt = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetAutoDisabledAt(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetAutoDisabledAt_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *OutboundWebhookEndpoint
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAutoDisabledAt() // Should return zero value
+	})
+
 	t.Run("GetCircuitOpenedAt", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -2413,6 +2462,39 @@ func TestGettersOutboundWebhookEndpoint(t *testing.T) {
 			}
 		}()
 		_ = obj.GetEvents() // Should return zero value
+	})
+
+	t.Run("GetFailingSince", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &OutboundWebhookEndpoint{}
+		var expected *time.Time
+		obj.FailingSince = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetFailingSince(), "getter should return the property value")
+	})
+
+	t.Run("GetFailingSince_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &OutboundWebhookEndpoint{}
+		obj.FailingSince = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetFailingSince(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetFailingSince_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *OutboundWebhookEndpoint
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetFailingSince() // Should return zero value
 	})
 
 	t.Run("GetID", func(t *testing.T) {
@@ -2715,6 +2797,37 @@ func TestGettersOutboundWebhookEndpoint(t *testing.T) {
 }
 
 func TestSettersMarkExplicitOutboundWebhookEndpoint(t *testing.T) {
+	t.Run("SetAutoDisabledAt_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &OutboundWebhookEndpoint{}
+		var fernTestValueAutoDisabledAt *time.Time
+
+		// Act
+		obj.SetAutoDisabledAt(fernTestValueAutoDisabledAt)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetCircuitOpenedAt_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -2847,6 +2960,37 @@ func TestSettersMarkExplicitOutboundWebhookEndpoint(t *testing.T) {
 
 		// Act
 		obj.SetEvents(fernTestValueEvents)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetFailingSince_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &OutboundWebhookEndpoint{}
+		var fernTestValueFailingSince *time.Time
+
+		// Act
+		obj.SetFailingSince(fernTestValueFailingSince)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)

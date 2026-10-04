@@ -77,6 +77,33 @@ func VerifyRequestCount(
 	require.Equal(t, expected, len(result.Requests))
 }
 
+func TestTemplatesCheckWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.CheckTemplatesRequest{
+		TemplateID: "templateId",
+		Body:       &sequenzygo.CheckEmailRequest{},
+	}
+	_, invocationErr := client.Templates.Check(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestTemplatesCheckWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestTemplatesCheckWithWireMock", "POST", "/templates/templateId/check", nil, 1)
+}
+
 func TestTemplatesCreateWithWireMock(
 	t *testing.T,
 ) {

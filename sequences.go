@@ -189,6 +189,56 @@ func (s *SequenceEnrollmentCancelRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
+	checkStepSequencesRequestFieldSequenceID = big.NewInt(1 << 0)
+	checkStepSequencesRequestFieldNodeID     = big.NewInt(1 << 1)
+)
+
+type CheckStepSequencesRequest struct {
+	// Sequence ID
+	SequenceID string `json:"-" url:"-"`
+	// Email step node ID
+	NodeID string             `json:"-" url:"-"`
+	Body   *CheckEmailRequest `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (c *CheckStepSequencesRequest) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetSequenceID sets the SequenceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckStepSequencesRequest) SetSequenceID(sequenceID string) {
+	c.SequenceID = sequenceID
+	c.require(checkStepSequencesRequestFieldSequenceID)
+}
+
+// SetNodeID sets the NodeID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckStepSequencesRequest) SetNodeID(nodeID string) {
+	c.NodeID = nodeID
+	c.require(checkStepSequencesRequestFieldNodeID)
+}
+
+func (c *CheckStepSequencesRequest) UnmarshalJSON(data []byte) error {
+	body := new(CheckEmailRequest)
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	c.Body = body
+	return nil
+}
+
+func (c *CheckStepSequencesRequest) MarshalJSON() ([]byte, error) {
+	return json.Marshal(c.Body)
+}
+
+var (
 	configureInboundWebhookSequencesRequestFieldSequenceID    = big.NewInt(1 << 0)
 	configureInboundWebhookSequencesRequestFieldFieldMapping  = big.NewInt(1 << 1)
 	configureInboundWebhookSequencesRequestFieldSamplePayload = big.NewInt(1 << 2)

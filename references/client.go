@@ -88,7 +88,7 @@ func (c *Client) DeleteGalleryBrandRequest(
 	return response.Body, nil
 }
 
-// Lists real emails (and, for sequences, whole sequences) from the Sequenzy email gallery to model a new email on, for the kind of email you are creating. By default they come from the gallery brands most like you, ranked by how close their best-matching emails are in meaning to your company description, closest first (rankings are reused for up to 10 minutes; a description change counts at once). Each `url` works with the from-example endpoints. Always empty when the gallery is not available. Requires `templates:read`.
+// Lists real emails (and, for sequences, whole sequences) from the Sequenzy email gallery to model a new email on, for the kind of email you are creating. By default they come from the gallery brands most like you, ranked by how close their businesses (what each sells, and to whom) are in meaning to your company description, closest first (rankings are reused for up to 10 minutes; a description change counts at once). Each `url` works with the from-example endpoints. Always empty when the gallery is not available. Requires `templates:read`.
 //
 // Example:
 //
@@ -128,6 +128,106 @@ func (c *Client) ListGalleryBrandRequests(
 ) (*sequenzygo.ListGalleryBrandRequestsResponse, error) {
 	response, err := c.WithRawResponse.ListGalleryBrandRequests(
 		ctx,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Lists the brands your company watches, usually competitors, newest watch first. This is the dashboard's **Competitors** page. A brand already in the Sequenzy email gallery is `available`, with how many of its emails are in the gallery and when the newest was sent. Read the emails with [List Watched Brand Emails](/api-reference/references/watchlist-emails). A watch is a brand request, so [List Brand Requests](/api-reference/references/brand-requests-list) returns the same rows. Requires `templates:read`.
+//
+// Example:
+//
+//	client.References.ListGalleryWatchlist(
+//	    context.TODO(),
+//	)
+func (c *Client) ListGalleryWatchlist(
+	ctx context.Context,
+	opts ...option.RequestOption,
+) (*sequenzygo.ListGalleryWatchlistResponse, error) {
+	response, err := c.WithRawResponse.ListGalleryWatchlist(
+		ctx,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Lists emails from the brands your company watches, newest sent first, a page at a time. Emails usually arrive a few hours after they are sent. Hidden and removed emails are never included. Requires `templates:read`.
+//
+// Example:
+//
+//	request := &sequenzygo.ListGalleryWatchlistEmailsRequest{}
+//	client.References.ListGalleryWatchlistEmails(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) ListGalleryWatchlistEmails(
+	ctx context.Context,
+	request *sequenzygo.ListGalleryWatchlistEmailsRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.ListGalleryWatchlistEmailsResponse, error) {
+	response, err := c.WithRawResponse.ListGalleryWatchlistEmails(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Stops watching a brand. This also withdraws the brand request with the same ID. The brand stays in the gallery. Requires `templates:write`.
+//
+// Example:
+//
+//	request := &sequenzygo.UnwatchGalleryBrandRequest{
+//	    ID: "id",
+//	}
+//	client.References.UnwatchGalleryBrand(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) UnwatchGalleryBrand(
+	ctx context.Context,
+	request *sequenzygo.UnwatchGalleryBrandRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.UnwatchGalleryBrandResponse, error) {
+	response, err := c.WithRawResponse.UnwatchGalleryBrand(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Watches a brand, usually a competitor, by its website. A brand already in the gallery is watched at once with status `available`. Any other brand is requested, the same as [Request a Brand](/api-reference/references/brand-requests-create), and its emails show up once it is added and they are collected. Watching again keeps the one watch (a new `note` replaces the old) and returns 200 with `created` false, so retries never duplicate. Requires `templates:write`.
+//
+// Example:
+//
+//	request := &sequenzygo.WatchGalleryBrandRequest{
+//	    Website: "website",
+//	}
+//	client.References.WatchGalleryBrand(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) WatchGalleryBrand(
+	ctx context.Context,
+	request *sequenzygo.WatchGalleryBrandRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.GalleryWatchResult, error) {
+	response, err := c.WithRawResponse.WatchGalleryBrand(
+		ctx,
+		request,
 		opts...,
 	)
 	if err != nil {

@@ -103,6 +103,33 @@ func TestCampaignsCancelWithWireMock(
 	VerifyRequestCount(t, "TestCampaignsCancelWithWireMock", "POST", "/campaigns/campaignId/cancel", nil, 1)
 }
 
+func TestCampaignsCheckWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.CheckCampaignsRequest{
+		CampaignID: "campaignId",
+		Body:       &sequenzygo.CheckEmailRequest{},
+	}
+	_, invocationErr := client.Campaigns.Check(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestCampaignsCheckWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestCampaignsCheckWithWireMock", "POST", "/campaigns/campaignId/check", nil, 1)
+}
+
 func TestCampaignsCreateWithWireMock(
 	t *testing.T,
 ) {
