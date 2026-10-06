@@ -9415,7 +9415,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"message\": \"SMS is enabled and ready to send.\",\n  \"sms\": {\n    \"brandPrefix\": \"Acme\",\n    \"creditsBalance\": 4200,\n    \"enabled\": true,\n    \"numbers\": [\n      {\n        \"brandPrefix\": \"Acme Support\",\n        \"e164\": \"+18885550123\",\n        \"id\": \"num_abc123\",\n        \"label\": \"Marketing\",\n        \"status\": \"active\"\n      }\n    ],\n    \"planEligible\": true,\n    \"readyToSend\": true\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"message\": \"SMS is enabled and ready to send.\",\n  \"sms\": {\n    \"brandPrefix\": \"Acme\",\n    \"creditsBalance\": 4200,\n    \"enabled\": true,\n    \"numbers\": [\n      {\n        \"brandPrefix\": \"Acme Support\",\n        \"e164\": \"+18885550123\",\n        \"id\": \"num_abc123\",\n        \"label\": \"Marketing\",\n        \"linkShorteningEnabled\": true,\n        \"status\": \"active\"\n      }\n    ],\n    \"planEligible\": true,\n    \"readyToSend\": true\n  },\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -9551,7 +9551,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"message\": \"SMS number updated.\",\n  \"number\": {\n    \"brandPrefix\": \"Acme Support\",\n    \"id\": \"num_abc123\",\n    \"label\": \"Marketing\"\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"message\": \"SMS number updated.\",\n  \"number\": {\n    \"brandPrefix\": \"Acme Support\",\n    \"id\": \"num_abc123\",\n    \"label\": \"Marketing\",\n    \"linkShorteningEnabled\": false\n  },\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -13644,7 +13644,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"redirectUrl\": \"redirectUrl\",\n  \"success\": true\n}",
+        "body": "{\n  \"redirectUrl\": \"redirectUrl\",\n  \"reward\": {\n    \"code\": \"WELCOME10\",\n    \"value\": \"10% off your first order\"\n  },\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }

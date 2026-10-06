@@ -404,11 +404,12 @@ func (g *GetSettingsSmsResponseSms) String() string {
 }
 
 var (
-	getSettingsSmsResponseSmsNumbersItemFieldBrandPrefix = big.NewInt(1 << 0)
-	getSettingsSmsResponseSmsNumbersItemFieldE164        = big.NewInt(1 << 1)
-	getSettingsSmsResponseSmsNumbersItemFieldID          = big.NewInt(1 << 2)
-	getSettingsSmsResponseSmsNumbersItemFieldLabel       = big.NewInt(1 << 3)
-	getSettingsSmsResponseSmsNumbersItemFieldStatus      = big.NewInt(1 << 4)
+	getSettingsSmsResponseSmsNumbersItemFieldBrandPrefix           = big.NewInt(1 << 0)
+	getSettingsSmsResponseSmsNumbersItemFieldE164                  = big.NewInt(1 << 1)
+	getSettingsSmsResponseSmsNumbersItemFieldID                    = big.NewInt(1 << 2)
+	getSettingsSmsResponseSmsNumbersItemFieldLabel                 = big.NewInt(1 << 3)
+	getSettingsSmsResponseSmsNumbersItemFieldLinkShorteningEnabled = big.NewInt(1 << 4)
+	getSettingsSmsResponseSmsNumbersItemFieldStatus                = big.NewInt(1 << 5)
 )
 
 type GetSettingsSmsResponseSmsNumbersItem struct {
@@ -417,8 +418,10 @@ type GetSettingsSmsResponseSmsNumbersItem struct {
 	E164        *string `json:"e164,omitempty" url:"e164,omitempty"`
 	ID          *string `json:"id,omitempty" url:"id,omitempty"`
 	// User-set tag ("Marketing", "Support") shown in number pickers.
-	Label  *string `json:"label,omitempty" url:"label,omitempty"`
-	Status *string `json:"status,omitempty" url:"status,omitempty"`
+	Label *string `json:"label,omitempty" url:"label,omitempty"`
+	// When true (the default), links in messages from this number are replaced with click-tracked short links. When false, they are sent exactly as written and SMS clicks from this number are not tracked.
+	LinkShorteningEnabled *bool   `json:"linkShorteningEnabled,omitempty" url:"linkShorteningEnabled,omitempty"`
+	Status                *string `json:"status,omitempty" url:"status,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -453,6 +456,13 @@ func (g *GetSettingsSmsResponseSmsNumbersItem) GetLabel() *string {
 		return nil
 	}
 	return g.Label
+}
+
+func (g *GetSettingsSmsResponseSmsNumbersItem) GetLinkShorteningEnabled() *bool {
+	if g == nil {
+		return nil
+	}
+	return g.LinkShorteningEnabled
 }
 
 func (g *GetSettingsSmsResponseSmsNumbersItem) GetStatus() *string {
@@ -502,6 +512,13 @@ func (g *GetSettingsSmsResponseSmsNumbersItem) SetID(id *string) {
 func (g *GetSettingsSmsResponseSmsNumbersItem) SetLabel(label *string) {
 	g.Label = label
 	g.require(getSettingsSmsResponseSmsNumbersItemFieldLabel)
+}
+
+// SetLinkShorteningEnabled sets the LinkShorteningEnabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetSettingsSmsResponseSmsNumbersItem) SetLinkShorteningEnabled(linkShorteningEnabled *bool) {
+	g.LinkShorteningEnabled = linkShorteningEnabled
+	g.require(getSettingsSmsResponseSmsNumbersItemFieldLinkShorteningEnabled)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
@@ -1326,15 +1343,17 @@ func (u *UpdateNumberLabelSmsResponse) String() string {
 }
 
 var (
-	updateNumberLabelSmsResponseNumberFieldBrandPrefix = big.NewInt(1 << 0)
-	updateNumberLabelSmsResponseNumberFieldID          = big.NewInt(1 << 1)
-	updateNumberLabelSmsResponseNumberFieldLabel       = big.NewInt(1 << 2)
+	updateNumberLabelSmsResponseNumberFieldBrandPrefix           = big.NewInt(1 << 0)
+	updateNumberLabelSmsResponseNumberFieldID                    = big.NewInt(1 << 1)
+	updateNumberLabelSmsResponseNumberFieldLabel                 = big.NewInt(1 << 2)
+	updateNumberLabelSmsResponseNumberFieldLinkShorteningEnabled = big.NewInt(1 << 3)
 )
 
 type UpdateNumberLabelSmsResponseNumber struct {
-	BrandPrefix *string `json:"brandPrefix,omitempty" url:"brandPrefix,omitempty"`
-	ID          *string `json:"id,omitempty" url:"id,omitempty"`
-	Label       *string `json:"label,omitempty" url:"label,omitempty"`
+	BrandPrefix           *string `json:"brandPrefix,omitempty" url:"brandPrefix,omitempty"`
+	ID                    *string `json:"id,omitempty" url:"id,omitempty"`
+	Label                 *string `json:"label,omitempty" url:"label,omitempty"`
+	LinkShorteningEnabled *bool   `json:"linkShorteningEnabled,omitempty" url:"linkShorteningEnabled,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1362,6 +1381,13 @@ func (u *UpdateNumberLabelSmsResponseNumber) GetLabel() *string {
 		return nil
 	}
 	return u.Label
+}
+
+func (u *UpdateNumberLabelSmsResponseNumber) GetLinkShorteningEnabled() *bool {
+	if u == nil {
+		return nil
+	}
+	return u.LinkShorteningEnabled
 }
 
 func (u *UpdateNumberLabelSmsResponseNumber) GetExtraProperties() map[string]interface{} {
@@ -1397,6 +1423,13 @@ func (u *UpdateNumberLabelSmsResponseNumber) SetID(id *string) {
 func (u *UpdateNumberLabelSmsResponseNumber) SetLabel(label *string) {
 	u.Label = label
 	u.require(updateNumberLabelSmsResponseNumberFieldLabel)
+}
+
+// SetLinkShorteningEnabled sets the LinkShorteningEnabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateNumberLabelSmsResponseNumber) SetLinkShorteningEnabled(linkShorteningEnabled *bool) {
+	u.LinkShorteningEnabled = linkShorteningEnabled
+	u.require(updateNumberLabelSmsResponseNumberFieldLinkShorteningEnabled)
 }
 
 func (u *UpdateNumberLabelSmsResponseNumber) UnmarshalJSON(data []byte) error {
@@ -1442,9 +1475,10 @@ func (u *UpdateNumberLabelSmsResponseNumber) String() string {
 }
 
 var (
-	updateNumberLabelSmsRequestFieldNumberID    = big.NewInt(1 << 0)
-	updateNumberLabelSmsRequestFieldBrandPrefix = big.NewInt(1 << 1)
-	updateNumberLabelSmsRequestFieldLabel       = big.NewInt(1 << 2)
+	updateNumberLabelSmsRequestFieldNumberID              = big.NewInt(1 << 0)
+	updateNumberLabelSmsRequestFieldBrandPrefix           = big.NewInt(1 << 1)
+	updateNumberLabelSmsRequestFieldLabel                 = big.NewInt(1 << 2)
+	updateNumberLabelSmsRequestFieldLinkShorteningEnabled = big.NewInt(1 << 3)
 )
 
 type UpdateNumberLabelSmsRequest struct {
@@ -1454,6 +1488,8 @@ type UpdateNumberLabelSmsRequest struct {
 	BrandPrefix *string `json:"brandPrefix,omitempty" url:"-"`
 	// Label such as Marketing or Support. Send null to clear it.
 	Label *string `json:"label,omitempty" url:"-"`
+	// true replaces links in messages from this number with click-tracked short links; false sends them exactly as written, so SMS clicks from this number are not tracked.
+	LinkShorteningEnabled *bool `json:"linkShorteningEnabled,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1485,6 +1521,13 @@ func (u *UpdateNumberLabelSmsRequest) SetBrandPrefix(brandPrefix *string) {
 func (u *UpdateNumberLabelSmsRequest) SetLabel(label *string) {
 	u.Label = label
 	u.require(updateNumberLabelSmsRequestFieldLabel)
+}
+
+// SetLinkShorteningEnabled sets the LinkShorteningEnabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateNumberLabelSmsRequest) SetLinkShorteningEnabled(linkShorteningEnabled *bool) {
+	u.LinkShorteningEnabled = linkShorteningEnabled
+	u.require(updateNumberLabelSmsRequestFieldLinkShorteningEnabled)
 }
 
 func (u *UpdateNumberLabelSmsRequest) UnmarshalJSON(data []byte) error {

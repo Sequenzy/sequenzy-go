@@ -179,15 +179,16 @@ var (
 	createSavedPopupRequestFieldPresentation        = big.NewInt(1 << 9)
 	createSavedPopupRequestFieldRedirectURL         = big.NewInt(1 << 10)
 	createSavedPopupRequestFieldResubscribeBehavior = big.NewInt(1 << 11)
-	createSavedPopupRequestFieldSchedule            = big.NewInt(1 << 12)
-	createSavedPopupRequestFieldStatus              = big.NewInt(1 << 13)
-	createSavedPopupRequestFieldSuccessMessage      = big.NewInt(1 << 14)
-	createSavedPopupRequestFieldTagIDs              = big.NewInt(1 << 15)
-	createSavedPopupRequestFieldTargeting           = big.NewInt(1 << 16)
-	createSavedPopupRequestFieldTemplate            = big.NewInt(1 << 17)
-	createSavedPopupRequestFieldTheme               = big.NewInt(1 << 18)
-	createSavedPopupRequestFieldTrigger             = big.NewInt(1 << 19)
-	createSavedPopupRequestFieldVisual              = big.NewInt(1 << 20)
+	createSavedPopupRequestFieldReward              = big.NewInt(1 << 12)
+	createSavedPopupRequestFieldSchedule            = big.NewInt(1 << 13)
+	createSavedPopupRequestFieldStatus              = big.NewInt(1 << 14)
+	createSavedPopupRequestFieldSuccessMessage      = big.NewInt(1 << 15)
+	createSavedPopupRequestFieldTagIDs              = big.NewInt(1 << 16)
+	createSavedPopupRequestFieldTargeting           = big.NewInt(1 << 17)
+	createSavedPopupRequestFieldTemplate            = big.NewInt(1 << 18)
+	createSavedPopupRequestFieldTheme               = big.NewInt(1 << 19)
+	createSavedPopupRequestFieldTrigger             = big.NewInt(1 << 20)
+	createSavedPopupRequestFieldVisual              = big.NewInt(1 << 21)
 )
 
 type CreateSavedPopupRequest struct {
@@ -206,6 +207,7 @@ type CreateSavedPopupRequest struct {
 	RedirectURL  *string                              `json:"redirectUrl,omitempty" url:"-"`
 	// What happens when a contact who unsubscribed from all email submits this popup again. `reactivate` resubscribes them and restores the popup's lists. `double_opt_in` sends the workspace confirmation email first and resubscribes them when they confirm. Turning it on requires a double opt-in confirmation email and a sender profile, otherwise the request returns 400; if either is removed later, returning unsubscribed contacts stay unsubscribed. Workspace double opt-in always requires confirmation. `duplicateStrategy` never changes subscription status.
 	ResubscribeBehavior *CreateSavedPopupRequestResubscribeBehavior `json:"resubscribeBehavior,omitempty" url:"-"`
+	Reward              *SavedPopupReward                           `json:"reward,omitempty" url:"-"`
 	Schedule            *SavedPopupSchedule                         `json:"schedule,omitempty" url:"-"`
 	Status              *CreateSavedPopupRequestStatus              `json:"status,omitempty" url:"-"`
 	SuccessMessage      *string                                     `json:"successMessage,omitempty" url:"-"`
@@ -311,6 +313,13 @@ func (c *CreateSavedPopupRequest) SetRedirectURL(redirectURL *string) {
 func (c *CreateSavedPopupRequest) SetResubscribeBehavior(resubscribeBehavior *CreateSavedPopupRequestResubscribeBehavior) {
 	c.ResubscribeBehavior = resubscribeBehavior
 	c.require(createSavedPopupRequestFieldResubscribeBehavior)
+}
+
+// SetReward sets the Reward field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateSavedPopupRequest) SetReward(reward *SavedPopupReward) {
+	c.Reward = reward
+	c.require(createSavedPopupRequestFieldReward)
 }
 
 // SetSchedule sets the Schedule field and marks it as non-optional;
@@ -7018,7 +7027,7 @@ var (
 )
 
 type SavedPopup struct {
-	// Complete popup content - template, presentation, placement, theme, settings, trigger, targeting, schedule, frequency, visual, and blocks. Present on detail reads; omitted when listing unless `includeContent=true`.
+	// Complete popup content - template, presentation, placement, theme, settings, trigger, targeting, schedule, frequency, visual, reward (see SavedPopupReward), and blocks. Present on detail reads; omitted when listing unless `includeContent=true`.
 	Content map[string]any `json:"content,omitempty" url:"content,omitempty"`
 	// Times a visitor submitted the popup and became a subscriber.
 	ConversionCount *int       `json:"conversionCount,omitempty" url:"conversionCount,omitempty"`
@@ -7540,6 +7549,524 @@ func (s *SavedPopupFrequency) MarshalJSON() ([]byte, error) {
 }
 
 func (s *SavedPopupFrequency) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+// Scratch-to-reveal reward. When enabled the popup opens on a scratch card: the visitor scratches (or taps "Tap to reveal") to see the public teaser, clicks Claim, enters their email, and only then sees `value` and `code`. Neither appears in the embed script; a successful submit returns them and saves them on the subscriber as the `discount` custom attribute (`{ value, code, source: "popup", popupId, claimedAt }`), so emails can use `{{discount.value}}` and `{{discount.code}}`. A `discount` attribute the contact already has from another source is never overwritten. Merged key by key.
+//
+// While enabled, `value` is required, the popup cannot redirect after submission, the presentation cannot be `floating-bar`, and no form field may write a `discount` custom attribute.
+var (
+	savedPopupRewardFieldCardRadius           = big.NewInt(1 << 0)
+	savedPopupRewardFieldClaimText            = big.NewInt(1 << 1)
+	savedPopupRewardFieldCode                 = big.NewInt(1 << 2)
+	savedPopupRewardFieldCoverColor           = big.NewInt(1 << 3)
+	savedPopupRewardFieldCoverImageURL        = big.NewInt(1 << 4)
+	savedPopupRewardFieldCoverPattern         = big.NewInt(1 << 5)
+	savedPopupRewardFieldCoverStyle           = big.NewInt(1 << 6)
+	savedPopupRewardFieldCoverText            = big.NewInt(1 << 7)
+	savedPopupRewardFieldCoverTextColor       = big.NewInt(1 << 8)
+	savedPopupRewardFieldEnabled              = big.NewInt(1 << 9)
+	savedPopupRewardFieldHeading              = big.NewInt(1 << 10)
+	savedPopupRewardFieldPrizeBackgroundColor = big.NewInt(1 << 11)
+	savedPopupRewardFieldPrizeTextColor       = big.NewInt(1 << 12)
+	savedPopupRewardFieldSubheading           = big.NewInt(1 << 13)
+	savedPopupRewardFieldTeaser               = big.NewInt(1 << 14)
+	savedPopupRewardFieldTeaserEyebrow        = big.NewInt(1 << 15)
+	savedPopupRewardFieldValue                = big.NewInt(1 << 16)
+)
+
+type SavedPopupReward struct {
+	CardRadius *int `json:"cardRadius,omitempty" url:"cardRadius,omitempty"`
+	// Claim button label. Required while the reward is enabled.
+	ClaimText *string `json:"claimText,omitempty" url:"claimText,omitempty"`
+	// Optional discount code shown after submit with a copy button. Create it in your store first. Private until submit.
+	Code       *string `json:"code,omitempty" url:"code,omitempty"`
+	CoverColor *string `json:"coverColor,omitempty" url:"coverColor,omitempty"`
+	// Optional https image painted as the cover instead of the foil. The host must allow cross-origin requests (CORS); otherwise visitors see the foil.
+	CoverImageURL *string                       `json:"coverImageUrl,omitempty" url:"coverImageUrl,omitempty"`
+	CoverPattern  *SavedPopupRewardCoverPattern `json:"coverPattern,omitempty" url:"coverPattern,omitempty"`
+	// Foil finish. `accent` follows the theme accent color; `custom` uses `coverColor`.
+	CoverStyle *SavedPopupRewardCoverStyle `json:"coverStyle,omitempty" url:"coverStyle,omitempty"`
+	CoverText  *string                     `json:"coverText,omitempty" url:"coverText,omitempty"`
+	// Cover label color. Null picks a readable color for the finish.
+	CoverTextColor *string `json:"coverTextColor,omitempty" url:"coverTextColor,omitempty"`
+	Enabled        *bool   `json:"enabled,omitempty" url:"enabled,omitempty"`
+	Heading        *string `json:"heading,omitempty" url:"heading,omitempty"`
+	// Revealed card background. Null uses a tint of the accent color.
+	PrizeBackgroundColor *string `json:"prizeBackgroundColor,omitempty" url:"prizeBackgroundColor,omitempty"`
+	// Revealed teaser color. Null uses the accent color.
+	PrizeTextColor *string `json:"prizeTextColor,omitempty" url:"prizeTextColor,omitempty"`
+	Subheading     *string `json:"subheading,omitempty" url:"subheading,omitempty"`
+	// Public text under the scratch cover, repeated above the form after Claim. Required while the reward is enabled.
+	Teaser        *string `json:"teaser,omitempty" url:"teaser,omitempty"`
+	TeaserEyebrow *string `json:"teaserEyebrow,omitempty" url:"teaserEyebrow,omitempty"`
+	// The reward shown after submit, such as "10% off your first order". Private until submit.
+	Value *string `json:"value,omitempty" url:"value,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	ExtraProperties map[string]interface{} `json:"-" url:"-"`
+
+	rawJSON json.RawMessage
+}
+
+func (s *SavedPopupReward) GetCardRadius() *int {
+	if s == nil {
+		return nil
+	}
+	return s.CardRadius
+}
+
+func (s *SavedPopupReward) GetClaimText() *string {
+	if s == nil {
+		return nil
+	}
+	return s.ClaimText
+}
+
+func (s *SavedPopupReward) GetCode() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Code
+}
+
+func (s *SavedPopupReward) GetCoverColor() *string {
+	if s == nil {
+		return nil
+	}
+	return s.CoverColor
+}
+
+func (s *SavedPopupReward) GetCoverImageURL() *string {
+	if s == nil {
+		return nil
+	}
+	return s.CoverImageURL
+}
+
+func (s *SavedPopupReward) GetCoverPattern() *SavedPopupRewardCoverPattern {
+	if s == nil {
+		return nil
+	}
+	return s.CoverPattern
+}
+
+func (s *SavedPopupReward) GetCoverStyle() *SavedPopupRewardCoverStyle {
+	if s == nil {
+		return nil
+	}
+	return s.CoverStyle
+}
+
+func (s *SavedPopupReward) GetCoverText() *string {
+	if s == nil {
+		return nil
+	}
+	return s.CoverText
+}
+
+func (s *SavedPopupReward) GetCoverTextColor() *string {
+	if s == nil {
+		return nil
+	}
+	return s.CoverTextColor
+}
+
+func (s *SavedPopupReward) GetEnabled() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.Enabled
+}
+
+func (s *SavedPopupReward) GetHeading() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Heading
+}
+
+func (s *SavedPopupReward) GetPrizeBackgroundColor() *string {
+	if s == nil {
+		return nil
+	}
+	return s.PrizeBackgroundColor
+}
+
+func (s *SavedPopupReward) GetPrizeTextColor() *string {
+	if s == nil {
+		return nil
+	}
+	return s.PrizeTextColor
+}
+
+func (s *SavedPopupReward) GetSubheading() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Subheading
+}
+
+func (s *SavedPopupReward) GetTeaser() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Teaser
+}
+
+func (s *SavedPopupReward) GetTeaserEyebrow() *string {
+	if s == nil {
+		return nil
+	}
+	return s.TeaserEyebrow
+}
+
+func (s *SavedPopupReward) GetValue() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Value
+}
+
+func (s *SavedPopupReward) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.ExtraProperties
+}
+
+func (s *SavedPopupReward) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetCardRadius sets the CardRadius field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedPopupReward) SetCardRadius(cardRadius *int) {
+	s.CardRadius = cardRadius
+	s.require(savedPopupRewardFieldCardRadius)
+}
+
+// SetClaimText sets the ClaimText field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedPopupReward) SetClaimText(claimText *string) {
+	s.ClaimText = claimText
+	s.require(savedPopupRewardFieldClaimText)
+}
+
+// SetCode sets the Code field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedPopupReward) SetCode(code *string) {
+	s.Code = code
+	s.require(savedPopupRewardFieldCode)
+}
+
+// SetCoverColor sets the CoverColor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedPopupReward) SetCoverColor(coverColor *string) {
+	s.CoverColor = coverColor
+	s.require(savedPopupRewardFieldCoverColor)
+}
+
+// SetCoverImageURL sets the CoverImageURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedPopupReward) SetCoverImageURL(coverImageURL *string) {
+	s.CoverImageURL = coverImageURL
+	s.require(savedPopupRewardFieldCoverImageURL)
+}
+
+// SetCoverPattern sets the CoverPattern field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedPopupReward) SetCoverPattern(coverPattern *SavedPopupRewardCoverPattern) {
+	s.CoverPattern = coverPattern
+	s.require(savedPopupRewardFieldCoverPattern)
+}
+
+// SetCoverStyle sets the CoverStyle field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedPopupReward) SetCoverStyle(coverStyle *SavedPopupRewardCoverStyle) {
+	s.CoverStyle = coverStyle
+	s.require(savedPopupRewardFieldCoverStyle)
+}
+
+// SetCoverText sets the CoverText field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedPopupReward) SetCoverText(coverText *string) {
+	s.CoverText = coverText
+	s.require(savedPopupRewardFieldCoverText)
+}
+
+// SetCoverTextColor sets the CoverTextColor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedPopupReward) SetCoverTextColor(coverTextColor *string) {
+	s.CoverTextColor = coverTextColor
+	s.require(savedPopupRewardFieldCoverTextColor)
+}
+
+// SetEnabled sets the Enabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedPopupReward) SetEnabled(enabled *bool) {
+	s.Enabled = enabled
+	s.require(savedPopupRewardFieldEnabled)
+}
+
+// SetHeading sets the Heading field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedPopupReward) SetHeading(heading *string) {
+	s.Heading = heading
+	s.require(savedPopupRewardFieldHeading)
+}
+
+// SetPrizeBackgroundColor sets the PrizeBackgroundColor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedPopupReward) SetPrizeBackgroundColor(prizeBackgroundColor *string) {
+	s.PrizeBackgroundColor = prizeBackgroundColor
+	s.require(savedPopupRewardFieldPrizeBackgroundColor)
+}
+
+// SetPrizeTextColor sets the PrizeTextColor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedPopupReward) SetPrizeTextColor(prizeTextColor *string) {
+	s.PrizeTextColor = prizeTextColor
+	s.require(savedPopupRewardFieldPrizeTextColor)
+}
+
+// SetSubheading sets the Subheading field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedPopupReward) SetSubheading(subheading *string) {
+	s.Subheading = subheading
+	s.require(savedPopupRewardFieldSubheading)
+}
+
+// SetTeaser sets the Teaser field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedPopupReward) SetTeaser(teaser *string) {
+	s.Teaser = teaser
+	s.require(savedPopupRewardFieldTeaser)
+}
+
+// SetTeaserEyebrow sets the TeaserEyebrow field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedPopupReward) SetTeaserEyebrow(teaserEyebrow *string) {
+	s.TeaserEyebrow = teaserEyebrow
+	s.require(savedPopupRewardFieldTeaserEyebrow)
+}
+
+// SetValue sets the Value field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedPopupReward) SetValue(value *string) {
+	s.Value = value
+	s.require(savedPopupRewardFieldValue)
+}
+
+func (s *SavedPopupReward) UnmarshalJSON(data []byte) error {
+	type embed SavedPopupReward
+	var unmarshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*s = SavedPopupReward(unmarshaler.embed)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.ExtraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SavedPopupReward) MarshalJSON() ([]byte, error) {
+	type embed SavedPopupReward
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return internal.MarshalJSONWithExtraProperties(explicitMarshaler, s.ExtraProperties)
+}
+
+func (s *SavedPopupReward) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+type SavedPopupRewardCoverPattern string
+
+const (
+	SavedPopupRewardCoverPatternSheen   SavedPopupRewardCoverPattern = "sheen"
+	SavedPopupRewardCoverPatternSparkle SavedPopupRewardCoverPattern = "sparkle"
+	SavedPopupRewardCoverPatternPlain   SavedPopupRewardCoverPattern = "plain"
+)
+
+func NewSavedPopupRewardCoverPatternFromString(s string) (SavedPopupRewardCoverPattern, error) {
+	switch s {
+	case "sheen":
+		return SavedPopupRewardCoverPatternSheen, nil
+	case "sparkle":
+		return SavedPopupRewardCoverPatternSparkle, nil
+	case "plain":
+		return SavedPopupRewardCoverPatternPlain, nil
+	}
+	var t SavedPopupRewardCoverPattern
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SavedPopupRewardCoverPattern) Ptr() *SavedPopupRewardCoverPattern {
+	return &s
+}
+
+// Foil finish. `accent` follows the theme accent color; `custom` uses `coverColor`.
+type SavedPopupRewardCoverStyle string
+
+const (
+	SavedPopupRewardCoverStyleGold        SavedPopupRewardCoverStyle = "gold"
+	SavedPopupRewardCoverStyleSilver      SavedPopupRewardCoverStyle = "silver"
+	SavedPopupRewardCoverStyleRoseGold    SavedPopupRewardCoverStyle = "rose-gold"
+	SavedPopupRewardCoverStyleHolographic SavedPopupRewardCoverStyle = "holographic"
+	SavedPopupRewardCoverStyleAccent      SavedPopupRewardCoverStyle = "accent"
+	SavedPopupRewardCoverStyleCustom      SavedPopupRewardCoverStyle = "custom"
+)
+
+func NewSavedPopupRewardCoverStyleFromString(s string) (SavedPopupRewardCoverStyle, error) {
+	switch s {
+	case "gold":
+		return SavedPopupRewardCoverStyleGold, nil
+	case "silver":
+		return SavedPopupRewardCoverStyleSilver, nil
+	case "rose-gold":
+		return SavedPopupRewardCoverStyleRoseGold, nil
+	case "holographic":
+		return SavedPopupRewardCoverStyleHolographic, nil
+	case "accent":
+		return SavedPopupRewardCoverStyleAccent, nil
+	case "custom":
+		return SavedPopupRewardCoverStyleCustom, nil
+	}
+	var t SavedPopupRewardCoverStyle
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SavedPopupRewardCoverStyle) Ptr() *SavedPopupRewardCoverStyle {
+	return &s
+}
+
+// The reward returned by a successful submit of a popup with an enabled reward.
+var (
+	savedPopupRewardResultFieldCode  = big.NewInt(1 << 0)
+	savedPopupRewardResultFieldValue = big.NewInt(1 << 1)
+)
+
+type SavedPopupRewardResult struct {
+	Code  *string `json:"code,omitempty" url:"code,omitempty"`
+	Value *string `json:"value,omitempty" url:"value,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SavedPopupRewardResult) GetCode() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Code
+}
+
+func (s *SavedPopupRewardResult) GetValue() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Value
+}
+
+func (s *SavedPopupRewardResult) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SavedPopupRewardResult) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetCode sets the Code field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedPopupRewardResult) SetCode(code *string) {
+	s.Code = code
+	s.require(savedPopupRewardResultFieldCode)
+}
+
+// SetValue sets the Value field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedPopupRewardResult) SetValue(value *string) {
+	s.Value = value
+	s.require(savedPopupRewardResultFieldValue)
+}
+
+func (s *SavedPopupRewardResult) UnmarshalJSON(data []byte) error {
+	type unmarshaler SavedPopupRewardResult
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SavedPopupRewardResult(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SavedPopupRewardResult) MarshalJSON() ([]byte, error) {
+	type embed SavedPopupRewardResult
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SavedPopupRewardResult) String() string {
 	if s == nil {
 		return "<nil>"
 	}
@@ -8709,6 +9236,7 @@ type CreateSavedPopupRequestTemplate string
 const (
 	CreateSavedPopupRequestTemplateNewsletterModal   CreateSavedPopupRequestTemplate = "newsletter-modal"
 	CreateSavedPopupRequestTemplateDiscountOffer     CreateSavedPopupRequestTemplate = "discount-offer"
+	CreateSavedPopupRequestTemplateScratchToReveal   CreateSavedPopupRequestTemplate = "scratch-to-reveal"
 	CreateSavedPopupRequestTemplateCountdownLaunch   CreateSavedPopupRequestTemplate = "countdown-launch"
 	CreateSavedPopupRequestTemplateMinimalSlideIn    CreateSavedPopupRequestTemplate = "minimal-slide-in"
 	CreateSavedPopupRequestTemplateExitLeadMagnet    CreateSavedPopupRequestTemplate = "exit-lead-magnet"
@@ -8727,6 +9255,8 @@ func NewCreateSavedPopupRequestTemplateFromString(s string) (CreateSavedPopupReq
 		return CreateSavedPopupRequestTemplateNewsletterModal, nil
 	case "discount-offer":
 		return CreateSavedPopupRequestTemplateDiscountOffer, nil
+	case "scratch-to-reveal":
+		return CreateSavedPopupRequestTemplateScratchToReveal, nil
 	case "countdown-launch":
 		return CreateSavedPopupRequestTemplateCountdownLaunch, nil
 	case "minimal-slide-in":
@@ -11851,13 +12381,16 @@ func (s *SubmitCompanyScopedSavedSignupFormResponse) String() string {
 
 var (
 	submitSavedPopupResponseFieldRedirectURL = big.NewInt(1 << 0)
-	submitSavedPopupResponseFieldSuccess     = big.NewInt(1 << 1)
+	submitSavedPopupResponseFieldReward      = big.NewInt(1 << 1)
+	submitSavedPopupResponseFieldSuccess     = big.NewInt(1 << 2)
 )
 
 type SubmitSavedPopupResponse struct {
 	// Present when the popup is configured to redirect after submission
 	RedirectURL *string `json:"redirectUrl,omitempty" url:"redirectUrl,omitempty"`
-	Success     *bool   `json:"success,omitempty" url:"success,omitempty"`
+	// Present when the popup has an enabled scratch-to-reveal reward. Every success response for that popup carries the same reward, including submissions ignored by bot and abuse protection, so the response does not reveal whether the contact was stored. Error responses never include it.
+	Reward  *SavedPopupRewardResult `json:"reward,omitempty" url:"reward,omitempty"`
+	Success *bool                   `json:"success,omitempty" url:"success,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -11871,6 +12404,13 @@ func (s *SubmitSavedPopupResponse) GetRedirectURL() *string {
 		return nil
 	}
 	return s.RedirectURL
+}
+
+func (s *SubmitSavedPopupResponse) GetReward() *SavedPopupRewardResult {
+	if s == nil {
+		return nil
+	}
+	return s.Reward
 }
 
 func (s *SubmitSavedPopupResponse) GetSuccess() *bool {
@@ -11899,6 +12439,13 @@ func (s *SubmitSavedPopupResponse) require(field *big.Int) {
 func (s *SubmitSavedPopupResponse) SetRedirectURL(redirectURL *string) {
 	s.RedirectURL = redirectURL
 	s.require(submitSavedPopupResponseFieldRedirectURL)
+}
+
+// SetReward sets the Reward field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubmitSavedPopupResponse) SetReward(reward *SavedPopupRewardResult) {
+	s.Reward = reward
+	s.require(submitSavedPopupResponseFieldReward)
 }
 
 // SetSuccess sets the Success field and marks it as non-optional;
@@ -12676,14 +13223,15 @@ var (
 	updateSavedPopupRequestFieldPresentation        = big.NewInt(1 << 10)
 	updateSavedPopupRequestFieldRedirectURL         = big.NewInt(1 << 11)
 	updateSavedPopupRequestFieldResubscribeBehavior = big.NewInt(1 << 12)
-	updateSavedPopupRequestFieldSchedule            = big.NewInt(1 << 13)
-	updateSavedPopupRequestFieldStatus              = big.NewInt(1 << 14)
-	updateSavedPopupRequestFieldSuccessMessage      = big.NewInt(1 << 15)
-	updateSavedPopupRequestFieldTagIDs              = big.NewInt(1 << 16)
-	updateSavedPopupRequestFieldTargeting           = big.NewInt(1 << 17)
-	updateSavedPopupRequestFieldTheme               = big.NewInt(1 << 18)
-	updateSavedPopupRequestFieldTrigger             = big.NewInt(1 << 19)
-	updateSavedPopupRequestFieldVisual              = big.NewInt(1 << 20)
+	updateSavedPopupRequestFieldReward              = big.NewInt(1 << 13)
+	updateSavedPopupRequestFieldSchedule            = big.NewInt(1 << 14)
+	updateSavedPopupRequestFieldStatus              = big.NewInt(1 << 15)
+	updateSavedPopupRequestFieldSuccessMessage      = big.NewInt(1 << 16)
+	updateSavedPopupRequestFieldTagIDs              = big.NewInt(1 << 17)
+	updateSavedPopupRequestFieldTargeting           = big.NewInt(1 << 18)
+	updateSavedPopupRequestFieldTheme               = big.NewInt(1 << 19)
+	updateSavedPopupRequestFieldTrigger             = big.NewInt(1 << 20)
+	updateSavedPopupRequestFieldVisual              = big.NewInt(1 << 21)
 )
 
 type UpdateSavedPopupRequest struct {
@@ -12706,6 +13254,7 @@ type UpdateSavedPopupRequest struct {
 	RedirectURL *string `json:"redirectUrl,omitempty" url:"-"`
 	// What happens when a contact who unsubscribed from all email submits this popup again. `reactivate` resubscribes them and restores the popup's lists. `double_opt_in` sends the workspace confirmation email first and resubscribes them when they confirm. Turning it on requires a double opt-in confirmation email and a sender profile, otherwise the request returns 400; if either is removed later, returning unsubscribed contacts stay unsubscribed. Workspace double opt-in always requires confirmation. `duplicateStrategy` never changes subscription status.
 	ResubscribeBehavior *UpdateSavedPopupRequestResubscribeBehavior `json:"resubscribeBehavior,omitempty" url:"-"`
+	Reward              *SavedPopupReward                           `json:"reward,omitempty" url:"-"`
 	Schedule            *SavedPopupSchedule                         `json:"schedule,omitempty" url:"-"`
 	Status              *UpdateSavedPopupRequestStatus              `json:"status,omitempty" url:"-"`
 	SuccessMessage      *string                                     `json:"successMessage,omitempty" url:"-"`
@@ -12817,6 +13366,13 @@ func (u *UpdateSavedPopupRequest) SetRedirectURL(redirectURL *string) {
 func (u *UpdateSavedPopupRequest) SetResubscribeBehavior(resubscribeBehavior *UpdateSavedPopupRequestResubscribeBehavior) {
 	u.ResubscribeBehavior = resubscribeBehavior
 	u.require(updateSavedPopupRequestFieldResubscribeBehavior)
+}
+
+// SetReward sets the Reward field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateSavedPopupRequest) SetReward(reward *SavedPopupReward) {
+	u.Reward = reward
+	u.require(updateSavedPopupRequestFieldReward)
 }
 
 // SetSchedule sets the Schedule field and marks it as non-optional;
