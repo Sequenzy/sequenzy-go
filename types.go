@@ -2433,8 +2433,9 @@ var (
 	emailBlockFieldOverlayPosition = big.NewInt(1 << 9)
 	emailBlockFieldOverlayShade    = big.NewInt(1 << 10)
 	emailBlockFieldPadding         = big.NewInt(1 << 11)
-	emailBlockFieldStyles          = big.NewInt(1 << 12)
-	emailBlockFieldType            = big.NewInt(1 << 13)
+	emailBlockFieldStackOnMobile   = big.NewInt(1 << 12)
+	emailBlockFieldStyles          = big.NewInt(1 << 13)
+	emailBlockFieldType            = big.NewInt(1 << 14)
 )
 
 type EmailBlock struct {
@@ -2461,6 +2462,8 @@ type EmailBlock struct {
 	OverlayShade *int `json:"overlayShade,omitempty" url:"overlayShade,omitempty"`
 	// Uniform group padding in pixels; per-side styles.padding* fields override it.
 	Padding *int `json:"padding,omitempty" url:"padding,omitempty"`
+	// Columns block only. Multi-column rows stack into a single column on screens 480px wide or narrower. Set to false to keep the columns side by side on mobile. Omit or set to true for the default stacking.
+	StackOnMobile *bool `json:"stackOnMobile,omitempty" url:"stackOnMobile,omitempty"`
 	// Per-block visual styles. For compatibility, style fields such as backgroundColor, backgroundOpacity, borderColor, borderWidth, and borderRadius can also be supplied at the block top level and are normalized into this object.
 	Styles *EmailBlockStyles `json:"styles,omitempty" url:"styles,omitempty"`
 	Type   EmailBlockType    `json:"type" url:"type"`
@@ -2555,6 +2558,13 @@ func (e *EmailBlock) GetPadding() *int {
 		return nil
 	}
 	return e.Padding
+}
+
+func (e *EmailBlock) GetStackOnMobile() *bool {
+	if e == nil {
+		return nil
+	}
+	return e.StackOnMobile
 }
 
 func (e *EmailBlock) GetStyles() *EmailBlockStyles {
@@ -2667,6 +2677,13 @@ func (e *EmailBlock) SetOverlayShade(overlayShade *int) {
 func (e *EmailBlock) SetPadding(padding *int) {
 	e.Padding = padding
 	e.require(emailBlockFieldPadding)
+}
+
+// SetStackOnMobile sets the StackOnMobile field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailBlock) SetStackOnMobile(stackOnMobile *bool) {
+	e.StackOnMobile = stackOnMobile
+	e.require(emailBlockFieldStackOnMobile)
 }
 
 // SetStyles sets the Styles field and marks it as non-optional;
