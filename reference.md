@@ -10922,7 +10922,7 @@ client.Integrations.ActivatePixel(
 <dl>
 <dd>
 
-Connects an API-key / webhook-secret integration: polar, paddle, dodo, lemon_squeezy, whop, creem, chargebee, clerk, posthog, segment, affonso, or attio. Credentials are validated, stored encrypted, and never returned. Lemon Squeezy creates a managed signed webhook when webhookSecret is omitted, or uses a caller-managed secret as fallback. Payment providers queue their initial revenue backfill; Affonso queues its affiliate backfill; PostHog and Segment can optionally import event history. Attio is outbound-only. Reconnecting replaces stored credentials. OAuth and app-install providers require the dashboard. Requires the integrations:manage scope.
+Connects an API-key / webhook-secret integration: polar, paddle, dodo, lemon_squeezy, whop, revenuecat, creem, chargebee, clerk, posthog, segment, affonso, or attio. Credentials are validated, stored encrypted, and never returned. Lemon Squeezy creates a managed signed webhook when webhookSecret is omitted, or uses a caller-managed secret as fallback. Payment providers queue their initial revenue backfill, except RevenueCat, which is webhook-only; Affonso queues its affiliate backfill; PostHog and Segment can optionally import event history. Attio is outbound-only. Reconnecting replaces stored credentials. OAuth and app-install providers require the dashboard. Requires the integrations:manage scope.
 </dd>
 </dl>
 </dd>
@@ -10958,7 +10958,7 @@ client.Integrations.Connect(
 <dl>
 <dd>
 
-**apiKey:** `*string` — Provider API key. Required for polar, paddle, dodo, lemon_squeezy, whop, creem, chargebee, affonso, and attio. Attio uses the workspace access token.
+**apiKey:** `*string` — Provider API key. Required for polar, paddle, dodo, lemon_squeezy, whop, revenuecat, creem, chargebee, affonso, and attio. RevenueCat uses a secret REST API v2 key with Projects read and Customers read permissions. Attio uses the workspace access token.
     
 </dd>
 </dl>
@@ -10982,7 +10982,7 @@ client.Integrations.Connect(
 <dl>
 <dd>
 
-**providerAccountID:** `*string` — Provider account id: Paddle seller ID, Dodo business ID, Lemon Squeezy numeric store ID, Whop company ID, Creem store ID, or Chargebee site name. Polar resolves it from the API key.
+**providerAccountID:** `*string` — Provider account id: Paddle seller ID, Dodo business ID, Lemon Squeezy numeric store ID, Whop company ID, Creem store ID, or Chargebee site name. Polar resolves it from the API key. RevenueCat resolves its project ID from the API key; pass it only when the key can access several projects.
     
 </dd>
 </dl>
@@ -10998,7 +10998,7 @@ client.Integrations.Connect(
 <dl>
 <dd>
 
-**webhookSecret:** `*string` — Signing secret of the provider webhook. Optional for lemon_squeezy managed provisioning and outbound-only attio; required for other providers. Lemon Squeezy manual secrets use 16-40 characters. For Chargebee, pass username:password. For Segment, use 16-153 UTF-8 bytes.
+**webhookSecret:** `*string` — Signing secret of the provider webhook. Optional for lemon_squeezy managed provisioning and outbound-only attio; required for other providers. Lemon Squeezy manual secrets use 16-40 characters. For Chargebee, pass username:password. For RevenueCat, pass at least 16 characters: the authorization header value set on the RevenueCat webhook, or its HMAC signing secret. For Segment, use 16-153 UTF-8 bytes.
     
 </dd>
 </dl>

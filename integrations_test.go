@@ -20080,6 +20080,13 @@ func TestEnumConnectIntegrationsRequestProvider(t *testing.T) {
 		assert.Equal(t, ConnectIntegrationsRequestProvider("whop"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_revenuecat", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewConnectIntegrationsRequestProviderFromString("revenuecat")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ConnectIntegrationsRequestProvider("revenuecat"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_creem", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewConnectIntegrationsRequestProviderFromString("creem")

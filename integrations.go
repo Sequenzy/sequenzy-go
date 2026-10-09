@@ -46,17 +46,17 @@ var (
 )
 
 type ConnectIntegrationsRequest struct {
-	// Provider API key. Required for polar, paddle, dodo, lemon_squeezy, whop, creem, chargebee, affonso, and attio. Attio uses the workspace access token.
+	// Provider API key. Required for polar, paddle, dodo, lemon_squeezy, whop, revenuecat, creem, chargebee, affonso, and attio. RevenueCat uses a secret REST API v2 key with Projects read and Customers read permissions. Attio uses the workspace access token.
 	APIKey *string `json:"apiKey,omitempty" url:"-"`
 	// PostHog and Segment only. Imports event history after connecting: PostHog reads the project archive (projectId + personalApiKey); Segment walks your existing contacts' Unify profiles (spaceId + profileApiToken) and covers at most the last 14 days the Profile API serves, because Segment has no bulk event export.
 	HistoryImport *ConnectIntegrationsRequestHistoryImport `json:"historyImport,omitempty" url:"-"`
 	// Provider to connect.
 	Provider ConnectIntegrationsRequestProvider `json:"provider" url:"-"`
-	// Provider account id: Paddle seller ID, Dodo business ID, Lemon Squeezy numeric store ID, Whop company ID, Creem store ID, or Chargebee site name. Polar resolves it from the API key.
+	// Provider account id: Paddle seller ID, Dodo business ID, Lemon Squeezy numeric store ID, Whop company ID, Creem store ID, or Chargebee site name. Polar resolves it from the API key. RevenueCat resolves its project ID from the API key; pass it only when the key can access several projects.
 	ProviderAccountID *string `json:"providerAccountId,omitempty" url:"-"`
 	// PostHog and Segment: event delivery scope. Attio: listMap (Sequenzy list id to Attio list id or slug) and syncCompanyFromDomain.
 	Settings *ConnectIntegrationsRequestSettings `json:"settings,omitempty" url:"-"`
-	// Signing secret of the provider webhook. Optional for lemon_squeezy managed provisioning and outbound-only attio; required for other providers. Lemon Squeezy manual secrets use 16-40 characters. For Chargebee, pass username:password. For Segment, use 16-153 UTF-8 bytes.
+	// Signing secret of the provider webhook. Optional for lemon_squeezy managed provisioning and outbound-only attio; required for other providers. Lemon Squeezy manual secrets use 16-40 characters. For Chargebee, pass username:password. For RevenueCat, pass at least 16 characters: the authorization header value set on the RevenueCat webhook, or its HMAC signing secret. For Segment, use 16-153 UTF-8 bytes.
 	WebhookSecret *string `json:"webhookSecret,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -5729,6 +5729,7 @@ const (
 	ConnectIntegrationsRequestProviderDodo         ConnectIntegrationsRequestProvider = "dodo"
 	ConnectIntegrationsRequestProviderLemonSqueezy ConnectIntegrationsRequestProvider = "lemon_squeezy"
 	ConnectIntegrationsRequestProviderWhop         ConnectIntegrationsRequestProvider = "whop"
+	ConnectIntegrationsRequestProviderRevenuecat   ConnectIntegrationsRequestProvider = "revenuecat"
 	ConnectIntegrationsRequestProviderCreem        ConnectIntegrationsRequestProvider = "creem"
 	ConnectIntegrationsRequestProviderChargebee    ConnectIntegrationsRequestProvider = "chargebee"
 	ConnectIntegrationsRequestProviderClerk        ConnectIntegrationsRequestProvider = "clerk"
@@ -5750,6 +5751,8 @@ func NewConnectIntegrationsRequestProviderFromString(s string) (ConnectIntegrati
 		return ConnectIntegrationsRequestProviderLemonSqueezy, nil
 	case "whop":
 		return ConnectIntegrationsRequestProviderWhop, nil
+	case "revenuecat":
+		return ConnectIntegrationsRequestProviderRevenuecat, nil
 	case "creem":
 		return ConnectIntegrationsRequestProviderCreem, nil
 	case "chargebee":
