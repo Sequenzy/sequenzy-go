@@ -210,6 +210,27 @@ func TestWidgetsGetCompanyScopedSavedSignupFormEmbedScriptWithWireMock(
 	VerifyRequestCount(t, "TestWidgetsGetCompanyScopedSavedSignupFormEmbedScriptWithWireMock", "GET", "/forms/companyIdOrFormId/formId/embed.js", nil, 1)
 }
 
+func TestWidgetsGetFormBotCheckFrameWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+	)
+	_, invocationErr := client.Widgets.GetFormBotCheckFrame(
+		context.TODO(),
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestWidgetsGetFormBotCheckFrameWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestWidgetsGetFormBotCheckFrameWithWireMock", "GET", "/forms/bot-check", nil, 1)
+}
+
 func TestWidgetsGetPopupWidgetRuntimeWithWireMock(
 	t *testing.T,
 ) {

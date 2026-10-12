@@ -11,22 +11,25 @@ import (
 )
 
 var (
-	createSavedFormRequestFieldButtonText          = big.NewInt(1 << 0)
-	createSavedFormRequestFieldDescription         = big.NewInt(1 << 1)
-	createSavedFormRequestFieldDuplicateStrategy   = big.NewInt(1 << 2)
-	createSavedFormRequestFieldHeadline            = big.NewInt(1 << 3)
-	createSavedFormRequestFieldListIDs             = big.NewInt(1 << 4)
-	createSavedFormRequestFieldName                = big.NewInt(1 << 5)
-	createSavedFormRequestFieldRedirectURL         = big.NewInt(1 << 6)
-	createSavedFormRequestFieldResubscribeBehavior = big.NewInt(1 << 7)
-	createSavedFormRequestFieldShowFirstName       = big.NewInt(1 << 8)
-	createSavedFormRequestFieldShowLastName        = big.NewInt(1 << 9)
-	createSavedFormRequestFieldSuccessMessage      = big.NewInt(1 << 10)
-	createSavedFormRequestFieldTagIDs              = big.NewInt(1 << 11)
-	createSavedFormRequestFieldTheme               = big.NewInt(1 << 12)
+	createSavedFormRequestFieldBotProtection       = big.NewInt(1 << 0)
+	createSavedFormRequestFieldButtonText          = big.NewInt(1 << 1)
+	createSavedFormRequestFieldDescription         = big.NewInt(1 << 2)
+	createSavedFormRequestFieldDuplicateStrategy   = big.NewInt(1 << 3)
+	createSavedFormRequestFieldHeadline            = big.NewInt(1 << 4)
+	createSavedFormRequestFieldListIDs             = big.NewInt(1 << 5)
+	createSavedFormRequestFieldName                = big.NewInt(1 << 6)
+	createSavedFormRequestFieldRedirectURL         = big.NewInt(1 << 7)
+	createSavedFormRequestFieldResubscribeBehavior = big.NewInt(1 << 8)
+	createSavedFormRequestFieldShowFirstName       = big.NewInt(1 << 9)
+	createSavedFormRequestFieldShowLastName        = big.NewInt(1 << 10)
+	createSavedFormRequestFieldSuccessMessage      = big.NewInt(1 << 11)
+	createSavedFormRequestFieldTagIDs              = big.NewInt(1 << 12)
+	createSavedFormRequestFieldTheme               = big.NewInt(1 << 13)
 )
 
 type CreateSavedFormRequest struct {
+	// Run a Cloudflare Turnstile bot check before each signup. The hosted JavaScript embed runs it, invisibly for most visitors. Signups that fail it, or come from the plain HTML form snippet, which cannot run it, must confirm by email before they are subscribed. Turning it on requires a double opt-in confirmation email and a sender profile, otherwise the request returns `400`. If either is removed later, those signups get a `400` asking them to try again.
+	BotProtection     *bool                                    `json:"botProtection,omitempty" url:"-"`
 	ButtonText        *string                                  `json:"buttonText,omitempty" url:"-"`
 	Description       *string                                  `json:"description,omitempty" url:"-"`
 	DuplicateStrategy *CreateSavedFormRequestDuplicateStrategy `json:"duplicateStrategy,omitempty" url:"-"`
@@ -52,6 +55,13 @@ func (c *CreateSavedFormRequest) require(field *big.Int) {
 		c.explicitFields = big.NewInt(0)
 	}
 	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetBotProtection sets the BotProtection field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateSavedFormRequest) SetBotProtection(botProtection *bool) {
+	c.BotProtection = botProtection
+	c.require(createSavedFormRequestFieldBotProtection)
 }
 
 // SetButtonText sets the ButtonText field and marks it as non-optional;
@@ -168,32 +178,35 @@ func (c *CreateSavedFormRequest) MarshalJSON() ([]byte, error) {
 
 var (
 	createSavedPopupRequestFieldBlocks              = big.NewInt(1 << 0)
-	createSavedPopupRequestFieldButtonText          = big.NewInt(1 << 1)
-	createSavedPopupRequestFieldDescription         = big.NewInt(1 << 2)
-	createSavedPopupRequestFieldDuplicateStrategy   = big.NewInt(1 << 3)
-	createSavedPopupRequestFieldFrequency           = big.NewInt(1 << 4)
-	createSavedPopupRequestFieldHeadline            = big.NewInt(1 << 5)
-	createSavedPopupRequestFieldListIDs             = big.NewInt(1 << 6)
-	createSavedPopupRequestFieldName                = big.NewInt(1 << 7)
-	createSavedPopupRequestFieldPlacement           = big.NewInt(1 << 8)
-	createSavedPopupRequestFieldPresentation        = big.NewInt(1 << 9)
-	createSavedPopupRequestFieldRedirectURL         = big.NewInt(1 << 10)
-	createSavedPopupRequestFieldResubscribeBehavior = big.NewInt(1 << 11)
-	createSavedPopupRequestFieldReward              = big.NewInt(1 << 12)
-	createSavedPopupRequestFieldSchedule            = big.NewInt(1 << 13)
-	createSavedPopupRequestFieldStatus              = big.NewInt(1 << 14)
-	createSavedPopupRequestFieldSuccessMessage      = big.NewInt(1 << 15)
-	createSavedPopupRequestFieldTagIDs              = big.NewInt(1 << 16)
-	createSavedPopupRequestFieldTargeting           = big.NewInt(1 << 17)
-	createSavedPopupRequestFieldTemplate            = big.NewInt(1 << 18)
-	createSavedPopupRequestFieldTheme               = big.NewInt(1 << 19)
-	createSavedPopupRequestFieldTrigger             = big.NewInt(1 << 20)
-	createSavedPopupRequestFieldVisual              = big.NewInt(1 << 21)
+	createSavedPopupRequestFieldBotProtection       = big.NewInt(1 << 1)
+	createSavedPopupRequestFieldButtonText          = big.NewInt(1 << 2)
+	createSavedPopupRequestFieldDescription         = big.NewInt(1 << 3)
+	createSavedPopupRequestFieldDuplicateStrategy   = big.NewInt(1 << 4)
+	createSavedPopupRequestFieldFrequency           = big.NewInt(1 << 5)
+	createSavedPopupRequestFieldHeadline            = big.NewInt(1 << 6)
+	createSavedPopupRequestFieldListIDs             = big.NewInt(1 << 7)
+	createSavedPopupRequestFieldName                = big.NewInt(1 << 8)
+	createSavedPopupRequestFieldPlacement           = big.NewInt(1 << 9)
+	createSavedPopupRequestFieldPresentation        = big.NewInt(1 << 10)
+	createSavedPopupRequestFieldRedirectURL         = big.NewInt(1 << 11)
+	createSavedPopupRequestFieldResubscribeBehavior = big.NewInt(1 << 12)
+	createSavedPopupRequestFieldReward              = big.NewInt(1 << 13)
+	createSavedPopupRequestFieldSchedule            = big.NewInt(1 << 14)
+	createSavedPopupRequestFieldStatus              = big.NewInt(1 << 15)
+	createSavedPopupRequestFieldSuccessMessage      = big.NewInt(1 << 16)
+	createSavedPopupRequestFieldTagIDs              = big.NewInt(1 << 17)
+	createSavedPopupRequestFieldTargeting           = big.NewInt(1 << 18)
+	createSavedPopupRequestFieldTemplate            = big.NewInt(1 << 19)
+	createSavedPopupRequestFieldTheme               = big.NewInt(1 << 20)
+	createSavedPopupRequestFieldTrigger             = big.NewInt(1 << 21)
+	createSavedPopupRequestFieldVisual              = big.NewInt(1 << 22)
 )
 
 type CreateSavedPopupRequest struct {
 	// Complete replacement for the popup's content blocks. The popup must keep exactly one required email field and one submit button.
-	Blocks            []map[string]any                          `json:"blocks,omitempty" url:"-"`
+	Blocks []map[string]any `json:"blocks,omitempty" url:"-"`
+	// Run a Cloudflare Turnstile bot check before each signup, invisibly for most visitors. Signups that fail it must confirm by email before they are subscribed. Turning it on requires a double opt-in confirmation email and a sender profile, otherwise the request returns `400`. If either is removed later, those signups get a `400` asking them to try again.
+	BotProtection     *bool                                     `json:"botProtection,omitempty" url:"-"`
 	ButtonText        *string                                   `json:"buttonText,omitempty" url:"-"`
 	Description       *string                                   `json:"description,omitempty" url:"-"`
 	DuplicateStrategy *CreateSavedPopupRequestDuplicateStrategy `json:"duplicateStrategy,omitempty" url:"-"`
@@ -236,6 +249,13 @@ func (c *CreateSavedPopupRequest) require(field *big.Int) {
 func (c *CreateSavedPopupRequest) SetBlocks(blocks []map[string]any) {
 	c.Blocks = blocks
 	c.require(createSavedPopupRequestFieldBlocks)
+}
+
+// SetBotProtection sets the BotProtection field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateSavedPopupRequest) SetBotProtection(botProtection *bool) {
+	c.BotProtection = botProtection
+	c.require(createSavedPopupRequestFieldBotProtection)
 }
 
 // SetButtonText sets the ButtonText field and marks it as non-optional;
@@ -820,10 +840,11 @@ var (
 	submitCompanyScopedSavedSignupFormRequestFieldListIDsBracketed       = big.NewInt(1 << 9)
 	submitCompanyScopedSavedSignupFormRequestFieldPhone                  = big.NewInt(1 << 10)
 	submitCompanyScopedSavedSignupFormRequestFieldRedirectURL            = big.NewInt(1 << 11)
-	submitCompanyScopedSavedSignupFormRequestFieldSequenzyToken          = big.NewInt(1 << 12)
-	submitCompanyScopedSavedSignupFormRequestFieldTagIDs                 = big.NewInt(1 << 13)
-	submitCompanyScopedSavedSignupFormRequestFieldTagIDsBracketed        = big.NewInt(1 << 14)
-	submitCompanyScopedSavedSignupFormRequestFieldWebsite                = big.NewInt(1 << 15)
+	submitCompanyScopedSavedSignupFormRequestFieldSequenzyBotCheckToken  = big.NewInt(1 << 12)
+	submitCompanyScopedSavedSignupFormRequestFieldSequenzyToken          = big.NewInt(1 << 13)
+	submitCompanyScopedSavedSignupFormRequestFieldTagIDs                 = big.NewInt(1 << 14)
+	submitCompanyScopedSavedSignupFormRequestFieldTagIDsBracketed        = big.NewInt(1 << 15)
+	submitCompanyScopedSavedSignupFormRequestFieldWebsite                = big.NewInt(1 << 16)
 )
 
 type SubmitCompanyScopedSavedSignupFormRequest struct {
@@ -849,6 +870,8 @@ type SubmitCompanyScopedSavedSignupFormRequest struct {
 	Phone *string `json:"phone,omitempty" url:"-"`
 	// Ignored for saved forms. Stored form settings are used.
 	RedirectURL *string `json:"redirectUrl,omitempty" url:"-"`
+	// Cloudflare Turnstile token that the hosted embed script and popups add automatically when the form or popup has bot protection on. Custom integrations cannot obtain one. When bot protection is on, submissions without a valid token must confirm by email before they are subscribed; if the workspace's confirmation email or sender was removed after bot protection was turned on, they return `400` with a retry message instead. Ignored when bot protection is off.
+	SequenzyBotCheckToken *string `json:"sequenzyBotCheckToken,omitempty" url:"-"`
 	// Signed bot-protection token that Sequenzy's hosted embed script and popups add automatically. Custom integrations can omit it. Submissions without a valid token may be asked to confirm by email. Workspaces with strict protection ignore submissions without a token, or with a token for a different form or popup, and return the normal success response.
 	SequenzyToken *string `json:"sequenzyToken,omitempty" url:"-"`
 	// Ignored for saved forms. Stored form settings are used.
@@ -953,6 +976,13 @@ func (s *SubmitCompanyScopedSavedSignupFormRequest) SetRedirectURL(redirectURL *
 	s.require(submitCompanyScopedSavedSignupFormRequestFieldRedirectURL)
 }
 
+// SetSequenzyBotCheckToken sets the SequenzyBotCheckToken field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubmitCompanyScopedSavedSignupFormRequest) SetSequenzyBotCheckToken(sequenzyBotCheckToken *string) {
+	s.SequenzyBotCheckToken = sequenzyBotCheckToken
+	s.require(submitCompanyScopedSavedSignupFormRequestFieldSequenzyBotCheckToken)
+}
+
 // SetSequenzyToken sets the SequenzyToken field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *SubmitCompanyScopedSavedSignupFormRequest) SetSequenzyToken(sequenzyToken *string) {
@@ -1003,14 +1033,15 @@ func (s *SubmitCompanyScopedSavedSignupFormRequest) MarshalJSON() ([]byte, error
 }
 
 var (
-	submitSavedPopupRequestFieldPopupID          = big.NewInt(1 << 0)
-	submitSavedPopupRequestFieldCustomAttributes = big.NewInt(1 << 1)
-	submitSavedPopupRequestFieldEmail            = big.NewInt(1 << 2)
-	submitSavedPopupRequestFieldFirstName        = big.NewInt(1 << 3)
-	submitSavedPopupRequestFieldLastName         = big.NewInt(1 << 4)
-	submitSavedPopupRequestFieldPhone            = big.NewInt(1 << 5)
-	submitSavedPopupRequestFieldSequenzyToken    = big.NewInt(1 << 6)
-	submitSavedPopupRequestFieldWebsite          = big.NewInt(1 << 7)
+	submitSavedPopupRequestFieldPopupID               = big.NewInt(1 << 0)
+	submitSavedPopupRequestFieldCustomAttributes      = big.NewInt(1 << 1)
+	submitSavedPopupRequestFieldEmail                 = big.NewInt(1 << 2)
+	submitSavedPopupRequestFieldFirstName             = big.NewInt(1 << 3)
+	submitSavedPopupRequestFieldLastName              = big.NewInt(1 << 4)
+	submitSavedPopupRequestFieldPhone                 = big.NewInt(1 << 5)
+	submitSavedPopupRequestFieldSequenzyBotCheckToken = big.NewInt(1 << 6)
+	submitSavedPopupRequestFieldSequenzyToken         = big.NewInt(1 << 7)
+	submitSavedPopupRequestFieldWebsite               = big.NewInt(1 << 8)
 )
 
 type SubmitSavedPopupRequest struct {
@@ -1024,6 +1055,8 @@ type SubmitSavedPopupRequest struct {
 	LastName  *string `json:"lastName,omitempty" url:"-"`
 	// Subscriber phone number in E.164 or US national format, when configured on the popup. Stored on the base subscriber profile and does not grant SMS consent.
 	Phone *string `json:"phone,omitempty" url:"-"`
+	// Cloudflare Turnstile token that the hosted embed script and popups add automatically when the form or popup has bot protection on. Custom integrations cannot obtain one. When bot protection is on, submissions without a valid token must confirm by email before they are subscribed; if the workspace's confirmation email or sender was removed after bot protection was turned on, they return `400` with a retry message instead. Ignored when bot protection is off.
+	SequenzyBotCheckToken *string `json:"sequenzyBotCheckToken,omitempty" url:"-"`
 	// Signed bot-protection token that Sequenzy's hosted embed script and popups add automatically. Custom integrations can omit it. Submissions without a valid token may be asked to confirm by email. Workspaces with strict protection ignore submissions without a token, or with a token for a different form or popup, and return the normal success response.
 	SequenzyToken *string `json:"sequenzyToken,omitempty" url:"-"`
 	// Honeypot field. Leave empty.
@@ -1082,6 +1115,13 @@ func (s *SubmitSavedPopupRequest) SetPhone(phone *string) {
 	s.require(submitSavedPopupRequestFieldPhone)
 }
 
+// SetSequenzyBotCheckToken sets the SequenzyBotCheckToken field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubmitSavedPopupRequest) SetSequenzyBotCheckToken(sequenzyBotCheckToken *string) {
+	s.SequenzyBotCheckToken = sequenzyBotCheckToken
+	s.require(submitSavedPopupRequestFieldSequenzyBotCheckToken)
+}
+
 // SetSequenzyToken sets the SequenzyToken field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *SubmitSavedPopupRequest) SetSequenzyToken(sequenzyToken *string) {
@@ -1132,9 +1172,10 @@ var (
 	submitSignupFormRequestFieldListIDs                    = big.NewInt(1 << 11)
 	submitSignupFormRequestFieldPhone                      = big.NewInt(1 << 12)
 	submitSignupFormRequestFieldRedirectURL                = big.NewInt(1 << 13)
-	submitSignupFormRequestFieldSequenzyToken              = big.NewInt(1 << 14)
-	submitSignupFormRequestFieldTagIDs                     = big.NewInt(1 << 15)
-	submitSignupFormRequestFieldWebsite                    = big.NewInt(1 << 16)
+	submitSignupFormRequestFieldSequenzyBotCheckToken      = big.NewInt(1 << 14)
+	submitSignupFormRequestFieldSequenzyToken              = big.NewInt(1 << 15)
+	submitSignupFormRequestFieldTagIDs                     = big.NewInt(1 << 16)
+	submitSignupFormRequestFieldWebsite                    = big.NewInt(1 << 17)
 )
 
 type SubmitSignupFormRequest struct {
@@ -1163,6 +1204,8 @@ type SubmitSignupFormRequest struct {
 	Phone *string `json:"phone,omitempty" url:"-"`
 	// Http(s) URL or bare domain to redirect to after successful submission
 	RedirectURL *string `json:"redirectUrl,omitempty" url:"-"`
+	// Cloudflare Turnstile token that the hosted embed script and popups add automatically when the form or popup has bot protection on. Custom integrations cannot obtain one. When bot protection is on, submissions without a valid token must confirm by email before they are subscribed; if the workspace's confirmation email or sender was removed after bot protection was turned on, they return `400` with a retry message instead. Ignored when bot protection is off.
+	SequenzyBotCheckToken *string `json:"sequenzyBotCheckToken,omitempty" url:"-"`
 	// Signed bot-protection token that Sequenzy's hosted embed script and popups add automatically. Custom integrations can omit it. Submissions without a valid token may be asked to confirm by email. Workspaces with strict protection ignore submissions without a token, or with a token for a different form or popup, and return the normal success response.
 	SequenzyToken *string `json:"sequenzyToken,omitempty" url:"-"`
 	// Existing tag IDs to apply to the subscriber
@@ -1277,6 +1320,13 @@ func (s *SubmitSignupFormRequest) SetPhone(phone *string) {
 func (s *SubmitSignupFormRequest) SetRedirectURL(redirectURL *string) {
 	s.RedirectURL = redirectURL
 	s.require(submitSignupFormRequestFieldRedirectURL)
+}
+
+// SetSequenzyBotCheckToken sets the SequenzyBotCheckToken field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubmitSignupFormRequest) SetSequenzyBotCheckToken(sequenzyBotCheckToken *string) {
+	s.SequenzyBotCheckToken = sequenzyBotCheckToken
+	s.require(submitSignupFormRequestFieldSequenzyBotCheckToken)
 }
 
 // SetSequenzyToken sets the SequenzyToken field and marks it as non-optional;
@@ -4646,16 +4696,19 @@ func (f *FormCaptureFieldOption) String() string {
 
 var (
 	formCaptureSettingsFieldAfterSubmission     = big.NewInt(1 << 0)
-	formCaptureSettingsFieldDuplicateStrategy   = big.NewInt(1 << 1)
-	formCaptureSettingsFieldListIDs             = big.NewInt(1 << 2)
-	formCaptureSettingsFieldListMode            = big.NewInt(1 << 3)
-	formCaptureSettingsFieldRedirectURL         = big.NewInt(1 << 4)
-	formCaptureSettingsFieldResubscribeBehavior = big.NewInt(1 << 5)
-	formCaptureSettingsFieldTagIDs              = big.NewInt(1 << 6)
+	formCaptureSettingsFieldBotProtection       = big.NewInt(1 << 1)
+	formCaptureSettingsFieldDuplicateStrategy   = big.NewInt(1 << 2)
+	formCaptureSettingsFieldListIDs             = big.NewInt(1 << 3)
+	formCaptureSettingsFieldListMode            = big.NewInt(1 << 4)
+	formCaptureSettingsFieldRedirectURL         = big.NewInt(1 << 5)
+	formCaptureSettingsFieldResubscribeBehavior = big.NewInt(1 << 6)
+	formCaptureSettingsFieldTagIDs              = big.NewInt(1 << 7)
 )
 
 type FormCaptureSettings struct {
-	AfterSubmission   FormCaptureSettingsAfterSubmission   `json:"afterSubmission" url:"afterSubmission"`
+	AfterSubmission FormCaptureSettingsAfterSubmission `json:"afterSubmission" url:"afterSubmission"`
+	// Whether a Cloudflare Turnstile bot check runs before each signup. Signups that fail it confirm by email first.
+	BotProtection     bool                                 `json:"botProtection" url:"botProtection"`
 	DuplicateStrategy FormCaptureSettingsDuplicateStrategy `json:"duplicateStrategy" url:"duplicateStrategy"`
 	ListIDs           []string                             `json:"listIds" url:"listIds"`
 	ListMode          FormCaptureSettingsListMode          `json:"listMode" url:"listMode"`
@@ -4676,6 +4729,13 @@ func (f *FormCaptureSettings) GetAfterSubmission() FormCaptureSettingsAfterSubmi
 		return ""
 	}
 	return f.AfterSubmission
+}
+
+func (f *FormCaptureSettings) GetBotProtection() bool {
+	if f == nil {
+		return false
+	}
+	return f.BotProtection
 }
 
 func (f *FormCaptureSettings) GetDuplicateStrategy() FormCaptureSettingsDuplicateStrategy {
@@ -4739,6 +4799,13 @@ func (f *FormCaptureSettings) require(field *big.Int) {
 func (f *FormCaptureSettings) SetAfterSubmission(afterSubmission FormCaptureSettingsAfterSubmission) {
 	f.AfterSubmission = afterSubmission
 	f.require(formCaptureSettingsFieldAfterSubmission)
+}
+
+// SetBotProtection sets the BotProtection field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FormCaptureSettings) SetBotProtection(botProtection bool) {
+	f.BotProtection = botProtection
+	f.require(formCaptureSettingsFieldBotProtection)
 }
 
 // SetDuplicateStrategy sets the DuplicateStrategy field and marks it as non-optional;
@@ -5972,46 +6039,49 @@ func (s *SavedFormEmbed) String() string {
 var (
 	savedFormSettingsFieldAfterSubmission      = big.NewInt(1 << 0)
 	savedFormSettingsFieldBorderRadius         = big.NewInt(1 << 1)
-	savedFormSettingsFieldButtonColor          = big.NewInt(1 << 2)
-	savedFormSettingsFieldButtonText           = big.NewInt(1 << 3)
-	savedFormSettingsFieldCustomFields         = big.NewInt(1 << 4)
-	savedFormSettingsFieldDescription          = big.NewInt(1 << 5)
-	savedFormSettingsFieldDuplicateStrategy    = big.NewInt(1 << 6)
-	savedFormSettingsFieldErrorMessage         = big.NewInt(1 << 7)
-	savedFormSettingsFieldEyebrowText          = big.NewInt(1 << 8)
-	savedFormSettingsFieldFieldOrder           = big.NewInt(1 << 9)
-	savedFormSettingsFieldFirstNameRequired    = big.NewInt(1 << 10)
-	savedFormSettingsFieldFontColor            = big.NewInt(1 << 11)
-	savedFormSettingsFieldFontFamily           = big.NewInt(1 << 12)
-	savedFormSettingsFieldFontSize             = big.NewInt(1 << 13)
-	savedFormSettingsFieldFormStyle            = big.NewInt(1 << 14)
-	savedFormSettingsFieldHeadline             = big.NewInt(1 << 15)
-	savedFormSettingsFieldImageAlt             = big.NewInt(1 << 16)
-	savedFormSettingsFieldImageURL             = big.NewInt(1 << 17)
-	savedFormSettingsFieldLastNameRequired     = big.NewInt(1 << 18)
-	savedFormSettingsFieldListIDs              = big.NewInt(1 << 19)
-	savedFormSettingsFieldListMode             = big.NewInt(1 << 20)
-	savedFormSettingsFieldOverlayColor         = big.NewInt(1 << 21)
-	savedFormSettingsFieldOverlayOpacity       = big.NewInt(1 << 22)
-	savedFormSettingsFieldPlaceholderEmail     = big.NewInt(1 << 23)
-	savedFormSettingsFieldPlaceholderFirstName = big.NewInt(1 << 24)
-	savedFormSettingsFieldPlaceholderLastName  = big.NewInt(1 << 25)
-	savedFormSettingsFieldRedirectURL          = big.NewInt(1 << 26)
-	savedFormSettingsFieldResubscribeBehavior  = big.NewInt(1 << 27)
-	savedFormSettingsFieldShowFirstName        = big.NewInt(1 << 28)
-	savedFormSettingsFieldShowLastName         = big.NewInt(1 << 29)
-	savedFormSettingsFieldSuccessFontColor     = big.NewInt(1 << 30)
-	savedFormSettingsFieldSuccessFontSize      = big.NewInt(1 << 31)
-	savedFormSettingsFieldSuccessMessage       = big.NewInt(1 << 32)
-	savedFormSettingsFieldTagIDs               = big.NewInt(1 << 33)
-	savedFormSettingsFieldTemplateID           = big.NewInt(1 << 34)
-	savedFormSettingsFieldThemeMode            = big.NewInt(1 << 35)
-	savedFormSettingsFieldVisualPlacement      = big.NewInt(1 << 36)
+	savedFormSettingsFieldBotProtection        = big.NewInt(1 << 2)
+	savedFormSettingsFieldButtonColor          = big.NewInt(1 << 3)
+	savedFormSettingsFieldButtonText           = big.NewInt(1 << 4)
+	savedFormSettingsFieldCustomFields         = big.NewInt(1 << 5)
+	savedFormSettingsFieldDescription          = big.NewInt(1 << 6)
+	savedFormSettingsFieldDuplicateStrategy    = big.NewInt(1 << 7)
+	savedFormSettingsFieldErrorMessage         = big.NewInt(1 << 8)
+	savedFormSettingsFieldEyebrowText          = big.NewInt(1 << 9)
+	savedFormSettingsFieldFieldOrder           = big.NewInt(1 << 10)
+	savedFormSettingsFieldFirstNameRequired    = big.NewInt(1 << 11)
+	savedFormSettingsFieldFontColor            = big.NewInt(1 << 12)
+	savedFormSettingsFieldFontFamily           = big.NewInt(1 << 13)
+	savedFormSettingsFieldFontSize             = big.NewInt(1 << 14)
+	savedFormSettingsFieldFormStyle            = big.NewInt(1 << 15)
+	savedFormSettingsFieldHeadline             = big.NewInt(1 << 16)
+	savedFormSettingsFieldImageAlt             = big.NewInt(1 << 17)
+	savedFormSettingsFieldImageURL             = big.NewInt(1 << 18)
+	savedFormSettingsFieldLastNameRequired     = big.NewInt(1 << 19)
+	savedFormSettingsFieldListIDs              = big.NewInt(1 << 20)
+	savedFormSettingsFieldListMode             = big.NewInt(1 << 21)
+	savedFormSettingsFieldOverlayColor         = big.NewInt(1 << 22)
+	savedFormSettingsFieldOverlayOpacity       = big.NewInt(1 << 23)
+	savedFormSettingsFieldPlaceholderEmail     = big.NewInt(1 << 24)
+	savedFormSettingsFieldPlaceholderFirstName = big.NewInt(1 << 25)
+	savedFormSettingsFieldPlaceholderLastName  = big.NewInt(1 << 26)
+	savedFormSettingsFieldRedirectURL          = big.NewInt(1 << 27)
+	savedFormSettingsFieldResubscribeBehavior  = big.NewInt(1 << 28)
+	savedFormSettingsFieldShowFirstName        = big.NewInt(1 << 29)
+	savedFormSettingsFieldShowLastName         = big.NewInt(1 << 30)
+	savedFormSettingsFieldSuccessFontColor     = big.NewInt(1 << 31)
+	savedFormSettingsFieldSuccessFontSize      = big.NewInt(1 << 32)
+	savedFormSettingsFieldSuccessMessage       = big.NewInt(1 << 33)
+	savedFormSettingsFieldTagIDs               = big.NewInt(1 << 34)
+	savedFormSettingsFieldTemplateID           = big.NewInt(1 << 35)
+	savedFormSettingsFieldThemeMode            = big.NewInt(1 << 36)
+	savedFormSettingsFieldVisualPlacement      = big.NewInt(1 << 37)
 )
 
 type SavedFormSettings struct {
-	AfterSubmission      SavedFormSettingsAfterSubmission     `json:"afterSubmission" url:"afterSubmission"`
-	BorderRadius         *string                              `json:"borderRadius,omitempty" url:"borderRadius,omitempty"`
+	AfterSubmission SavedFormSettingsAfterSubmission `json:"afterSubmission" url:"afterSubmission"`
+	BorderRadius    *string                          `json:"borderRadius,omitempty" url:"borderRadius,omitempty"`
+	// Whether a Cloudflare Turnstile bot check runs before each signup. Signups that fail it confirm by email first.
+	BotProtection        bool                                 `json:"botProtection" url:"botProtection"`
 	ButtonColor          *string                              `json:"buttonColor,omitempty" url:"buttonColor,omitempty"`
 	ButtonText           string                               `json:"buttonText" url:"buttonText"`
 	CustomFields         []*SavedFormSettingsCustomFieldsItem `json:"customFields" url:"customFields"`
@@ -6068,6 +6138,13 @@ func (s *SavedFormSettings) GetBorderRadius() *string {
 		return nil
 	}
 	return s.BorderRadius
+}
+
+func (s *SavedFormSettings) GetBotProtection() bool {
+	if s == nil {
+		return false
+	}
+	return s.BotProtection
 }
 
 func (s *SavedFormSettings) GetButtonColor() *string {
@@ -6341,6 +6418,13 @@ func (s *SavedFormSettings) SetAfterSubmission(afterSubmission SavedFormSettings
 func (s *SavedFormSettings) SetBorderRadius(borderRadius *string) {
 	s.BorderRadius = borderRadius
 	s.require(savedFormSettingsFieldBorderRadius)
+}
+
+// SetBotProtection sets the BotProtection field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormSettings) SetBotProtection(botProtection bool) {
+	s.BotProtection = botProtection
+	s.require(savedFormSettingsFieldBotProtection)
 }
 
 // SetButtonColor sets the ButtonColor field and marks it as non-optional;
@@ -13052,24 +13136,27 @@ func (u *UpdateSavedPopupResponse) String() string {
 var (
 	updateSavedFormRequestFieldCompanyIDOrFormID   = big.NewInt(1 << 0)
 	updateSavedFormRequestFieldBlocks              = big.NewInt(1 << 1)
-	updateSavedFormRequestFieldButtonText          = big.NewInt(1 << 2)
-	updateSavedFormRequestFieldDescription         = big.NewInt(1 << 3)
-	updateSavedFormRequestFieldDuplicateStrategy   = big.NewInt(1 << 4)
-	updateSavedFormRequestFieldHeadline            = big.NewInt(1 << 5)
-	updateSavedFormRequestFieldListIDs             = big.NewInt(1 << 6)
-	updateSavedFormRequestFieldName                = big.NewInt(1 << 7)
-	updateSavedFormRequestFieldRedirectURL         = big.NewInt(1 << 8)
-	updateSavedFormRequestFieldResubscribeBehavior = big.NewInt(1 << 9)
-	updateSavedFormRequestFieldSuccessMessage      = big.NewInt(1 << 10)
-	updateSavedFormRequestFieldTagIDs              = big.NewInt(1 << 11)
-	updateSavedFormRequestFieldTheme               = big.NewInt(1 << 12)
+	updateSavedFormRequestFieldBotProtection       = big.NewInt(1 << 2)
+	updateSavedFormRequestFieldButtonText          = big.NewInt(1 << 3)
+	updateSavedFormRequestFieldDescription         = big.NewInt(1 << 4)
+	updateSavedFormRequestFieldDuplicateStrategy   = big.NewInt(1 << 5)
+	updateSavedFormRequestFieldHeadline            = big.NewInt(1 << 6)
+	updateSavedFormRequestFieldListIDs             = big.NewInt(1 << 7)
+	updateSavedFormRequestFieldName                = big.NewInt(1 << 8)
+	updateSavedFormRequestFieldRedirectURL         = big.NewInt(1 << 9)
+	updateSavedFormRequestFieldResubscribeBehavior = big.NewInt(1 << 10)
+	updateSavedFormRequestFieldSuccessMessage      = big.NewInt(1 << 11)
+	updateSavedFormRequestFieldTagIDs              = big.NewInt(1 << 12)
+	updateSavedFormRequestFieldTheme               = big.NewInt(1 << 13)
 )
 
 type UpdateSavedFormRequest struct {
 	// The saved form ID to update
 	CompanyIDOrFormID string `json:"-" url:"-"`
 	// Full replacement for the form's content blocks.
-	Blocks            []map[string]any                         `json:"blocks,omitempty" url:"-"`
+	Blocks []map[string]any `json:"blocks,omitempty" url:"-"`
+	// Run a Cloudflare Turnstile bot check before each signup. The hosted JavaScript embed runs it, invisibly for most visitors. Signups that fail it, or come from the plain HTML form snippet, which cannot run it, must confirm by email before they are subscribed. Turning it on requires a double opt-in confirmation email and a sender profile, otherwise the request returns `400`. If either is removed later, those signups get a `400` asking them to try again. Omit to keep the current setting.
+	BotProtection     *bool                                    `json:"botProtection,omitempty" url:"-"`
 	ButtonText        *string                                  `json:"buttonText,omitempty" url:"-"`
 	Description       *string                                  `json:"description,omitempty" url:"-"`
 	DuplicateStrategy *UpdateSavedFormRequestDuplicateStrategy `json:"duplicateStrategy,omitempty" url:"-"`
@@ -13109,6 +13196,13 @@ func (u *UpdateSavedFormRequest) SetCompanyIDOrFormID(companyIDOrFormID string) 
 func (u *UpdateSavedFormRequest) SetBlocks(blocks []map[string]any) {
 	u.Blocks = blocks
 	u.require(updateSavedFormRequestFieldBlocks)
+}
+
+// SetBotProtection sets the BotProtection field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateSavedFormRequest) SetBotProtection(botProtection *bool) {
+	u.BotProtection = botProtection
+	u.require(updateSavedFormRequestFieldBotProtection)
 }
 
 // SetButtonText sets the ButtonText field and marks it as non-optional;
@@ -13212,33 +13306,36 @@ func (u *UpdateSavedFormRequest) MarshalJSON() ([]byte, error) {
 var (
 	updateSavedPopupRequestFieldPopupID             = big.NewInt(1 << 0)
 	updateSavedPopupRequestFieldBlocks              = big.NewInt(1 << 1)
-	updateSavedPopupRequestFieldButtonText          = big.NewInt(1 << 2)
-	updateSavedPopupRequestFieldDescription         = big.NewInt(1 << 3)
-	updateSavedPopupRequestFieldDuplicateStrategy   = big.NewInt(1 << 4)
-	updateSavedPopupRequestFieldFrequency           = big.NewInt(1 << 5)
-	updateSavedPopupRequestFieldHeadline            = big.NewInt(1 << 6)
-	updateSavedPopupRequestFieldListIDs             = big.NewInt(1 << 7)
-	updateSavedPopupRequestFieldName                = big.NewInt(1 << 8)
-	updateSavedPopupRequestFieldPlacement           = big.NewInt(1 << 9)
-	updateSavedPopupRequestFieldPresentation        = big.NewInt(1 << 10)
-	updateSavedPopupRequestFieldRedirectURL         = big.NewInt(1 << 11)
-	updateSavedPopupRequestFieldResubscribeBehavior = big.NewInt(1 << 12)
-	updateSavedPopupRequestFieldReward              = big.NewInt(1 << 13)
-	updateSavedPopupRequestFieldSchedule            = big.NewInt(1 << 14)
-	updateSavedPopupRequestFieldStatus              = big.NewInt(1 << 15)
-	updateSavedPopupRequestFieldSuccessMessage      = big.NewInt(1 << 16)
-	updateSavedPopupRequestFieldTagIDs              = big.NewInt(1 << 17)
-	updateSavedPopupRequestFieldTargeting           = big.NewInt(1 << 18)
-	updateSavedPopupRequestFieldTheme               = big.NewInt(1 << 19)
-	updateSavedPopupRequestFieldTrigger             = big.NewInt(1 << 20)
-	updateSavedPopupRequestFieldVisual              = big.NewInt(1 << 21)
+	updateSavedPopupRequestFieldBotProtection       = big.NewInt(1 << 2)
+	updateSavedPopupRequestFieldButtonText          = big.NewInt(1 << 3)
+	updateSavedPopupRequestFieldDescription         = big.NewInt(1 << 4)
+	updateSavedPopupRequestFieldDuplicateStrategy   = big.NewInt(1 << 5)
+	updateSavedPopupRequestFieldFrequency           = big.NewInt(1 << 6)
+	updateSavedPopupRequestFieldHeadline            = big.NewInt(1 << 7)
+	updateSavedPopupRequestFieldListIDs             = big.NewInt(1 << 8)
+	updateSavedPopupRequestFieldName                = big.NewInt(1 << 9)
+	updateSavedPopupRequestFieldPlacement           = big.NewInt(1 << 10)
+	updateSavedPopupRequestFieldPresentation        = big.NewInt(1 << 11)
+	updateSavedPopupRequestFieldRedirectURL         = big.NewInt(1 << 12)
+	updateSavedPopupRequestFieldResubscribeBehavior = big.NewInt(1 << 13)
+	updateSavedPopupRequestFieldReward              = big.NewInt(1 << 14)
+	updateSavedPopupRequestFieldSchedule            = big.NewInt(1 << 15)
+	updateSavedPopupRequestFieldStatus              = big.NewInt(1 << 16)
+	updateSavedPopupRequestFieldSuccessMessage      = big.NewInt(1 << 17)
+	updateSavedPopupRequestFieldTagIDs              = big.NewInt(1 << 18)
+	updateSavedPopupRequestFieldTargeting           = big.NewInt(1 << 19)
+	updateSavedPopupRequestFieldTheme               = big.NewInt(1 << 20)
+	updateSavedPopupRequestFieldTrigger             = big.NewInt(1 << 21)
+	updateSavedPopupRequestFieldVisual              = big.NewInt(1 << 22)
 )
 
 type UpdateSavedPopupRequest struct {
 	PopupID string `json:"-" url:"-"`
 	// Complete replacement for the popup's content blocks. The popup must keep exactly one required email field and one submit button.
-	Blocks     []map[string]any `json:"blocks,omitempty" url:"-"`
-	ButtonText *string          `json:"buttonText,omitempty" url:"-"`
+	Blocks []map[string]any `json:"blocks,omitempty" url:"-"`
+	// Run a Cloudflare Turnstile bot check before each signup, invisibly for most visitors. Signups that fail it must confirm by email before they are subscribed. Turning it on requires a double opt-in confirmation email and a sender profile, otherwise the request returns `400`. If either is removed later, those signups get a `400` asking them to try again. Omit to keep the current setting.
+	BotProtection *bool   `json:"botProtection,omitempty" url:"-"`
+	ButtonText    *string `json:"buttonText,omitempty" url:"-"`
 	// New text for the popup's first paragraph block. Fails when the popup has no paragraph block.
 	Description       *string                                   `json:"description,omitempty" url:"-"`
 	DuplicateStrategy *UpdateSavedPopupRequestDuplicateStrategy `json:"duplicateStrategy,omitempty" url:"-"`
@@ -13289,6 +13386,13 @@ func (u *UpdateSavedPopupRequest) SetPopupID(popupID string) {
 func (u *UpdateSavedPopupRequest) SetBlocks(blocks []map[string]any) {
 	u.Blocks = blocks
 	u.require(updateSavedPopupRequestFieldBlocks)
+}
+
+// SetBotProtection sets the BotProtection field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateSavedPopupRequest) SetBotProtection(botProtection *bool) {
+	u.BotProtection = botProtection
+	u.require(updateSavedPopupRequestFieldBotProtection)
 }
 
 // SetButtonText sets the ButtonText field and marks it as non-optional;

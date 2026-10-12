@@ -23,6 +23,7 @@ import (
 	feedback "github.com/sequenzy/sequenzy-go/feedback"
 	frequencycap "github.com/sequenzy/sequenzy-go/frequencycap"
 	generation "github.com/sequenzy/sequenzy-go/generation"
+	inapp "github.com/sequenzy/sequenzy-go/inapp"
 	integrations "github.com/sequenzy/sequenzy-go/integrations"
 	internal "github.com/sequenzy/sequenzy-go/internal"
 	landingpages "github.com/sequenzy/sequenzy-go/landingpages"
@@ -77,6 +78,7 @@ type Client struct {
 	Feedback                *feedback.Client
 	FrequencyCap            *frequencycap.Client
 	Generation              *generation.Client
+	InApp                   *inapp.Client
 	Integrations            *integrations.Client
 	LandingPages            *landingpages.Client
 	Lists                   *lists.Client
@@ -135,6 +137,7 @@ func NewClient(opts ...option.RequestOption) *Client {
 		Feedback:                feedback.NewClient(options),
 		FrequencyCap:            frequencycap.NewClient(options),
 		Generation:              generation.NewClient(options),
+		InApp:                   inapp.NewClient(options),
 		Integrations:            integrations.NewClient(options),
 		LandingPages:            landingpages.NewClient(options),
 		Lists:                   lists.NewClient(options),

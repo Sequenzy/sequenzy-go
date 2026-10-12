@@ -10849,6 +10849,294 @@ client.Generation.GenerateSubjectLines(
 </dl>
 </details>
 
+## In-app
+<details><summary><code>client.InApp.DeleteInAppMessage(MessageID) -> *sequenzygo.DeleteInAppMessageResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Deletes an item so the contact's app stops showing it the next time it fetches the feed. Its engagement no longer counts in step stats. Requires the subscribers:write scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.DeleteInAppMessageRequest{
+    MessageID: "messageId",
+}
+client.InApp.DeleteInAppMessage(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**messageID:** `string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.InApp.GetInAppStepStats(StepID) -> *sequenzygo.GetInAppStepStatsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Created, displayed, clicked and dismissed counts for one in_app sequence step. Requires the sequences:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.GetInAppStepStatsRequest{
+    StepID: "stepId",
+}
+client.InApp.GetInAppStepStats(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**stepID:** `string` — The step's node ID from Get Sequence.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.InApp.ListInAppMessages() -> *sequenzygo.ListInAppMessagesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists a contact's in-app messages and content cards, created by in_app sequence steps. With status open (default) it returns what the app should show now: messages not yet displayed, clicked or dismissed, and cards not dismissed, excluding expired items, messages first, then pinned cards, then newest. With status all it returns history, newest first. Identify the contact with email, externalId or subscriberId. Requires the subscribers:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.ListInAppMessagesRequest{}
+client.InApp.ListInAppMessages(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**email:** `*string` — Contact email (case-insensitive).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**externalID:** `*string` — Contact external ID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**kind:** `*sequenzygo.ListInAppMessagesRequestKind` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `*int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**status:** `*sequenzygo.ListInAppMessagesRequestStatus` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**subscriberID:** `*string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.InApp.RecordInAppEvent(MessageID, request) -> *sequenzygo.RecordInAppEventResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Records that the app displayed, clicked, dismissed or read an item. The first report of each type sets its timestamp; repeats change nothing except clickCount, and recorded is false. Clicks, dismissals and reads also mark the item displayed. Messages leave the open feed once displayed, clicked or dismissed; cards once dismissed. Requires the subscribers:write scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.RecordInAppEventRequest{
+    MessageID: "messageId",
+    Type: sequenzygo.RecordInAppEventRequestTypeDisplayed,
+}
+client.InApp.RecordInAppEvent(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**messageID:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**type_:** `*sequenzygo.RecordInAppEventRequestType` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Integrations
 <details><summary><code>client.Integrations.ActivatePixel(ID) -> *sequenzygo.ActivatePixelIntegrationsResponse</code></summary>
 <dl>
@@ -30299,6 +30587,14 @@ client.Widgets.CreateSavedForm(
 <dl>
 <dd>
 
+**botProtection:** `*bool` — Run a Cloudflare Turnstile bot check before each signup. The hosted JavaScript embed runs it, invisibly for most visitors. Signups that fail it, or come from the plain HTML form snippet, which cannot run it, must confirm by email before they are subscribed. Turning it on requires a double opt-in confirmation email and a sender profile, otherwise the request returns `400`. If either is removed later, those signups get a `400` asking them to try again.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **buttonText:** `*string` 
     
 </dd>
@@ -30458,6 +30754,14 @@ client.Widgets.CreateSavedPopup(
 <dd>
 
 **blocks:** `[]map[string]any` — Complete replacement for the popup's content blocks. The popup must keep exactly one required email field and one submit button.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**botProtection:** `*bool` — Run a Cloudflare Turnstile bot check before each signup, invisibly for most visitors. Signups that fail it must confirm by email before they are subscribed. Turning it on requires a double opt-in confirmation email and a sender profile, otherwise the request returns `400`. If either is removed later, those signups get a `400` asking them to try again.
     
 </dd>
 </dl>
@@ -30826,6 +31130,49 @@ client.Widgets.GetCompanyScopedSavedSignupFormEmbedScript(
 
 **formID:** `string` — The saved form ID
     
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Widgets.GetFormBotCheckFrame() -> string</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+HTML page that runs the Cloudflare Turnstile check for saved forms and popups with bot protection turned on. No API key is required.
+
+The hosted embed script and popups load it in a small iframe and pass its token with the submission as `sequenzyBotCheckToken`. You do not need to call it yourself.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+client.Widgets.GetFormBotCheckFrame(
+    context.TODO(),
+)
+```
 </dd>
 </dl>
 </dd>
@@ -31575,6 +31922,14 @@ client.Widgets.SubmitCompanyScopedSavedSignupForm(
 <dl>
 <dd>
 
+**sequenzyBotCheckToken:** `*string` — Cloudflare Turnstile token that the hosted embed script and popups add automatically when the form or popup has bot protection on. Custom integrations cannot obtain one. When bot protection is on, submissions without a valid token must confirm by email before they are subscribed; if the workspace's confirmation email or sender was removed after bot protection was turned on, they return `400` with a retry message instead. Ignored when bot protection is off.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **sequenzyToken:** `*string` — Signed bot-protection token that Sequenzy's hosted embed script and popups add automatically. Custom integrations can omit it. Submissions without a valid token may be asked to confirm by email. Workspaces with strict protection ignore submissions without a token, or with a token for a different form or popup, and return the normal success response.
     
 </dd>
@@ -31703,6 +32058,14 @@ client.Widgets.SubmitSavedPopup(
 <dd>
 
 **phone:** `*string` — Subscriber phone number in E.164 or US national format, when configured on the popup. Stored on the base subscriber profile and does not grant SMS consent.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sequenzyBotCheckToken:** `*string` — Cloudflare Turnstile token that the hosted embed script and popups add automatically when the form or popup has bot protection on. Custom integrations cannot obtain one. When bot protection is on, submissions without a valid token must confirm by email before they are subscribed; if the workspace's confirmation email or sender was removed after bot protection was turned on, they return `400` with a retry message instead. Ignored when bot protection is off.
     
 </dd>
 </dl>
@@ -31903,6 +32266,14 @@ client.Widgets.SubmitSignupForm(
 <dl>
 <dd>
 
+**sequenzyBotCheckToken:** `*string` — Cloudflare Turnstile token that the hosted embed script and popups add automatically when the form or popup has bot protection on. Custom integrations cannot obtain one. When bot protection is on, submissions without a valid token must confirm by email before they are subscribed; if the workspace's confirmation email or sender was removed after bot protection was turned on, they return `400` with a retry message instead. Ignored when bot protection is off.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **sequenzyToken:** `*string` — Signed bot-protection token that Sequenzy's hosted embed script and popups add automatically. Custom integrations can omit it. Submissions without a valid token may be asked to confirm by email. Workspaces with strict protection ignore submissions without a token, or with a token for a different form or popup, and return the normal success response.
     
 </dd>
@@ -31992,6 +32363,14 @@ client.Widgets.UpdateSavedForm(
 <dd>
 
 **blocks:** `[]map[string]any` — Full replacement for the form's content blocks.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**botProtection:** `*bool` — Run a Cloudflare Turnstile bot check before each signup. The hosted JavaScript embed runs it, invisibly for most visitors. Signups that fail it, or come from the plain HTML form snippet, which cannot run it, must confirm by email before they are subscribed. Turning it on requires a double opt-in confirmation email and a sender profile, otherwise the request returns `400`. If either is removed later, those signups get a `400` asking them to try again. Omit to keep the current setting.
     
 </dd>
 </dl>
@@ -32150,6 +32529,14 @@ client.Widgets.UpdateSavedPopup(
 <dd>
 
 **blocks:** `[]map[string]any` — Complete replacement for the popup's content blocks. The popup must keep exactly one required email field and one submit button.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**botProtection:** `*bool` — Run a Cloudflare Turnstile bot check before each signup, invisibly for most visitors. Signups that fail it must confirm by email before they are subscribed. Turning it on requires a double opt-in confirmation email and a sender profile, otherwise the request returns `400`. If either is removed later, those signups get a `400` asking them to try again. Omit to keep the current setting.
     
 </dd>
 </dl>

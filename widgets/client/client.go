@@ -180,6 +180,29 @@ func (c *Client) GetCompanyScopedSavedSignupFormEmbedScript(
 	return nil
 }
 
+// HTML page that runs the Cloudflare Turnstile check for saved forms and popups with bot protection turned on. No API key is required.
+//
+// The hosted embed script and popups load it in a small iframe and pass its token with the submission as `sequenzyBotCheckToken`. You do not need to call it yourself.
+//
+// Example:
+//
+//	client.Widgets.GetFormBotCheckFrame(
+//	    context.TODO(),
+//	)
+func (c *Client) GetFormBotCheckFrame(
+	ctx context.Context,
+	opts ...option.RequestOption,
+) (string, error) {
+	response, err := c.WithRawResponse.GetFormBotCheckFrame(
+		ctx,
+		opts...,
+	)
+	if err != nil {
+		return "", err
+	}
+	return response.Body, nil
+}
+
 // Load the hosted JavaScript runtime for popup signup widgets. No API key is required.
 //
 // Example:

@@ -4558,6 +4558,146 @@
       }
     },
     {
+      "id": "07a8d76d-d940-46b3-a2f7-010bef7a268a",
+      "name": "Delete an in-app message - default",
+      "request": {
+        "urlPathTemplate": "/in-app/messages/{messageId}",
+        "method": "DELETE",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "messageId": {
+            "equalTo": "messageId"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"message\": \"message\",\n  \"messageId\": \"messageId\",\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "07a8d76d-d940-46b3-a2f7-010bef7a268a",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "e34ca490-31e3-4136-86c0-2ecde8ed4e3d",
+      "name": "Get in-app step stats - default",
+      "request": {
+        "urlPathTemplate": "/in-app/steps/{stepId}/stats",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "stepId": {
+            "equalTo": "stepId"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"sequenceId\": \"sequenceId\",\n  \"stats\": {\n    \"clicked\": 1,\n    \"created\": 1,\n    \"dismissed\": 1,\n    \"displayed\": 1\n  },\n  \"stepId\": \"stepId\",\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "e34ca490-31e3-4136-86c0-2ecde8ed4e3d",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "baaadc33-3555-4a3a-9468-804c6fe247dd",
+      "name": "List a contact's in-app messages - default",
+      "request": {
+        "urlPathTemplate": "/in-app/messages",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"messages\": [\n    {\n      \"body\": \"body\",\n      \"buttons\": [\n        {}\n      ],\n      \"clickCount\": 1,\n      \"clickedAt\": \"2024-01-15T09:30:00Z\",\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"data\": {\n        \"key\": \"value\"\n      },\n      \"dismissedAt\": \"2024-01-15T09:30:00Z\",\n      \"displayedAt\": \"2024-01-15T09:30:00Z\",\n      \"expiresAt\": \"2024-01-15T09:30:00Z\",\n      \"format\": \"modal\",\n      \"id\": \"id\",\n      \"imageUrl\": \"imageUrl\",\n      \"kind\": \"message\",\n      \"pinned\": true,\n      \"position\": \"top\",\n      \"readAt\": \"2024-01-15T09:30:00Z\",\n      \"sequenceId\": \"sequenceId\",\n      \"stepId\": \"stepId\",\n      \"title\": \"title\"\n    }\n  ],\n  \"status\": \"open\",\n  \"subscriberId\": \"subscriberId\",\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "baaadc33-3555-4a3a-9468-804c6fe247dd",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
+      "id": "991db36e-cbd9-4799-bf7b-45e9a6867704",
+      "name": "Record an in-app event - default",
+      "request": {
+        "urlPathTemplate": "/in-app/messages/{messageId}/events",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "messageId": {
+            "equalTo": "messageId"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"message\": {\n    \"body\": \"body\",\n    \"buttons\": [\n      {}\n    ],\n    \"clickCount\": 1,\n    \"clickedAt\": \"2024-01-15T09:30:00Z\",\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"data\": {\n      \"key\": \"value\"\n    },\n    \"dismissedAt\": \"2024-01-15T09:30:00Z\",\n    \"displayedAt\": \"2024-01-15T09:30:00Z\",\n    \"expiresAt\": \"2024-01-15T09:30:00Z\",\n    \"format\": \"modal\",\n    \"id\": \"id\",\n    \"imageUrl\": \"imageUrl\",\n    \"kind\": \"message\",\n    \"pinned\": true,\n    \"position\": \"top\",\n    \"readAt\": \"2024-01-15T09:30:00Z\",\n    \"sequenceId\": \"sequenceId\",\n    \"stepId\": \"stepId\",\n    \"style\": {\n      \"backgroundColor\": \"backgroundColor\",\n      \"buttonColor\": \"buttonColor\",\n      \"buttonRadius\": 1,\n      \"buttonTextColor\": \"buttonTextColor\",\n      \"cornerRadius\": 1,\n      \"fontFamily\": \"fontFamily\",\n      \"mutedTextColor\": \"mutedTextColor\",\n      \"preset\": \"brand\",\n      \"textColor\": \"textColor\"\n    },\n    \"title\": \"title\"\n  },\n  \"recorded\": true,\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "991db36e-cbd9-4799-bf7b-45e9a6867704",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "798cc725-adb8-42a6-bbf0-03608a059d97",
       "name": "Activate storefront pixel - default",
       "request": {
@@ -13137,7 +13277,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"embed\": {\n    \"actionUrl\": \"actionUrl\",\n    \"fetch\": \"fetch\",\n    \"javascript\": \"javascript\",\n    \"nativeForm\": \"nativeForm\",\n    \"scriptUrl\": \"scriptUrl\",\n    \"supportedPlatforms\": [\n      \"supportedPlatforms\"\n    ]\n  },\n  \"form\": {\n    \"actionUrl\": \"actionUrl\",\n    \"content\": {\n      \"blocks\": [\n        {\n          \"children\": [],\n          \"columns\": 1,\n          \"gap\": 1,\n          \"id\": \"id\",\n          \"kind\": \"group\",\n          \"label\": \"label\",\n          \"layout\": \"stack\",\n          \"overlayColor\": \"overlayColor\",\n          \"overlayPosition\": \"top\",\n          \"overlayShade\": 1,\n          \"padding\": 1\n        }\n      ],\n      \"settings\": {\n        \"afterSubmission\": \"message\",\n        \"duplicateStrategy\": \"skip\",\n        \"listIds\": [\n          \"listIds\"\n        ],\n        \"listMode\": \"all\",\n        \"redirectUrl\": \"redirectUrl\",\n        \"resubscribeBehavior\": \"reactivate\",\n        \"tagIds\": [\n          \"tagIds\"\n        ]\n      },\n      \"surface\": \"form\",\n      \"template\": \"template\",\n      \"theme\": {\n        \"accentColor\": \"accentColor\",\n        \"backgroundColor\": \"backgroundColor\",\n        \"bodyFontFamily\": \"bodyFontFamily\",\n        \"borderColor\": \"borderColor\",\n        \"borderRadius\": 1,\n        \"cardColor\": \"cardColor\",\n        \"density\": \"compact\",\n        \"headingFontFamily\": \"headingFontFamily\",\n        \"mutedTextColor\": \"mutedTextColor\",\n        \"textColor\": \"textColor\"\n      },\n      \"version\": 1.1\n    },\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"id\": \"id\",\n    \"name\": \"name\",\n    \"publishedAt\": \"2024-01-15T09:30:00Z\",\n    \"settings\": {\n      \"afterSubmission\": \"message\",\n      \"borderRadius\": \"borderRadius\",\n      \"buttonColor\": \"buttonColor\",\n      \"buttonText\": \"buttonText\",\n      \"customFields\": [\n        {\n          \"id\": \"id\",\n          \"label\": \"label\",\n          \"name\": \"name\"\n        }\n      ],\n      \"description\": \"description\",\n      \"duplicateStrategy\": \"skip\",\n      \"errorMessage\": \"errorMessage\",\n      \"eyebrowText\": \"eyebrowText\",\n      \"fieldOrder\": [\n        \"fieldOrder\"\n      ],\n      \"firstNameRequired\": true,\n      \"fontColor\": \"fontColor\",\n      \"fontFamily\": \"fontFamily\",\n      \"fontSize\": \"fontSize\",\n      \"formStyle\": \"button-below\",\n      \"headline\": \"headline\",\n      \"imageAlt\": \"imageAlt\",\n      \"imageUrl\": \"imageUrl\",\n      \"lastNameRequired\": true,\n      \"listIds\": [\n        \"listIds\"\n      ],\n      \"listMode\": \"all\",\n      \"overlayColor\": \"overlayColor\",\n      \"overlayOpacity\": 1.1,\n      \"placeholderEmail\": \"placeholderEmail\",\n      \"placeholderFirstName\": \"placeholderFirstName\",\n      \"placeholderLastName\": \"placeholderLastName\",\n      \"redirectUrl\": \"redirectUrl\",\n      \"resubscribeBehavior\": \"reactivate\",\n      \"showFirstName\": true,\n      \"showLastName\": true,\n      \"successFontColor\": \"successFontColor\",\n      \"successFontSize\": \"successFontSize\",\n      \"successMessage\": \"successMessage\",\n      \"tagIds\": [\n        \"tagIds\"\n      ],\n      \"templateId\": \"minimal\",\n      \"themeMode\": \"design-system\",\n      \"visualPlacement\": \"none\"\n    },\n    \"status\": \"draft\",\n    \"submissionCount\": 1,\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"url\": \"url\"\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"embed\": {\n    \"actionUrl\": \"actionUrl\",\n    \"fetch\": \"fetch\",\n    \"javascript\": \"javascript\",\n    \"nativeForm\": \"nativeForm\",\n    \"scriptUrl\": \"scriptUrl\",\n    \"supportedPlatforms\": [\n      \"supportedPlatforms\"\n    ]\n  },\n  \"form\": {\n    \"actionUrl\": \"actionUrl\",\n    \"content\": {\n      \"blocks\": [\n        {\n          \"children\": [],\n          \"columns\": 1,\n          \"gap\": 1,\n          \"id\": \"id\",\n          \"kind\": \"group\",\n          \"label\": \"label\",\n          \"layout\": \"stack\",\n          \"overlayColor\": \"overlayColor\",\n          \"overlayPosition\": \"top\",\n          \"overlayShade\": 1,\n          \"padding\": 1\n        }\n      ],\n      \"settings\": {\n        \"afterSubmission\": \"message\",\n        \"botProtection\": true,\n        \"duplicateStrategy\": \"skip\",\n        \"listIds\": [\n          \"listIds\"\n        ],\n        \"listMode\": \"all\",\n        \"redirectUrl\": \"redirectUrl\",\n        \"resubscribeBehavior\": \"reactivate\",\n        \"tagIds\": [\n          \"tagIds\"\n        ]\n      },\n      \"surface\": \"form\",\n      \"template\": \"template\",\n      \"theme\": {\n        \"accentColor\": \"accentColor\",\n        \"backgroundColor\": \"backgroundColor\",\n        \"bodyFontFamily\": \"bodyFontFamily\",\n        \"borderColor\": \"borderColor\",\n        \"borderRadius\": 1,\n        \"cardColor\": \"cardColor\",\n        \"density\": \"compact\",\n        \"headingFontFamily\": \"headingFontFamily\",\n        \"mutedTextColor\": \"mutedTextColor\",\n        \"textColor\": \"textColor\"\n      },\n      \"version\": 1.1\n    },\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"id\": \"id\",\n    \"name\": \"name\",\n    \"publishedAt\": \"2024-01-15T09:30:00Z\",\n    \"settings\": {\n      \"afterSubmission\": \"message\",\n      \"borderRadius\": \"borderRadius\",\n      \"botProtection\": true,\n      \"buttonColor\": \"buttonColor\",\n      \"buttonText\": \"buttonText\",\n      \"customFields\": [\n        {\n          \"id\": \"id\",\n          \"label\": \"label\",\n          \"name\": \"name\"\n        }\n      ],\n      \"description\": \"description\",\n      \"duplicateStrategy\": \"skip\",\n      \"errorMessage\": \"errorMessage\",\n      \"eyebrowText\": \"eyebrowText\",\n      \"fieldOrder\": [\n        \"fieldOrder\"\n      ],\n      \"firstNameRequired\": true,\n      \"fontColor\": \"fontColor\",\n      \"fontFamily\": \"fontFamily\",\n      \"fontSize\": \"fontSize\",\n      \"formStyle\": \"button-below\",\n      \"headline\": \"headline\",\n      \"imageAlt\": \"imageAlt\",\n      \"imageUrl\": \"imageUrl\",\n      \"lastNameRequired\": true,\n      \"listIds\": [\n        \"listIds\"\n      ],\n      \"listMode\": \"all\",\n      \"overlayColor\": \"overlayColor\",\n      \"overlayOpacity\": 1.1,\n      \"placeholderEmail\": \"placeholderEmail\",\n      \"placeholderFirstName\": \"placeholderFirstName\",\n      \"placeholderLastName\": \"placeholderLastName\",\n      \"redirectUrl\": \"redirectUrl\",\n      \"resubscribeBehavior\": \"reactivate\",\n      \"showFirstName\": true,\n      \"showLastName\": true,\n      \"successFontColor\": \"successFontColor\",\n      \"successFontSize\": \"successFontSize\",\n      \"successMessage\": \"successMessage\",\n      \"tagIds\": [\n        \"tagIds\"\n      ],\n      \"templateId\": \"minimal\",\n      \"themeMode\": \"design-system\",\n      \"visualPlacement\": \"none\"\n    },\n    \"status\": \"draft\",\n    \"submissionCount\": 1,\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"url\": \"url\"\n  },\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -13292,6 +13432,33 @@
       }
     },
     {
+      "id": "394e25a1-ba10-4df6-9d49-09046d93f320",
+      "name": "Get bot protection frame - default",
+      "request": {
+        "urlPathTemplate": "/forms/bot-check",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "body": "\"string\"",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "394e25a1-ba10-4df6-9d49-09046d93f320",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
       "id": "3e581bc0-6a5e-4543-b2d0-69b89ea4934c",
       "name": "Get popup widget runtime - default",
       "request": {
@@ -13337,7 +13504,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"embed\": {\n    \"actionUrl\": \"actionUrl\",\n    \"fetch\": \"fetch\",\n    \"javascript\": \"javascript\",\n    \"nativeForm\": \"nativeForm\",\n    \"scriptUrl\": \"scriptUrl\",\n    \"supportedPlatforms\": [\n      \"supportedPlatforms\"\n    ]\n  },\n  \"form\": {\n    \"actionUrl\": \"actionUrl\",\n    \"content\": {\n      \"blocks\": [\n        {\n          \"children\": [],\n          \"columns\": 1,\n          \"gap\": 1,\n          \"id\": \"id\",\n          \"kind\": \"group\",\n          \"label\": \"label\",\n          \"layout\": \"stack\",\n          \"overlayColor\": \"overlayColor\",\n          \"overlayPosition\": \"top\",\n          \"overlayShade\": 1,\n          \"padding\": 1\n        }\n      ],\n      \"settings\": {\n        \"afterSubmission\": \"message\",\n        \"duplicateStrategy\": \"skip\",\n        \"listIds\": [\n          \"listIds\"\n        ],\n        \"listMode\": \"all\",\n        \"redirectUrl\": \"redirectUrl\",\n        \"resubscribeBehavior\": \"reactivate\",\n        \"tagIds\": [\n          \"tagIds\"\n        ]\n      },\n      \"surface\": \"form\",\n      \"template\": \"template\",\n      \"theme\": {\n        \"accentColor\": \"accentColor\",\n        \"backgroundColor\": \"backgroundColor\",\n        \"bodyFontFamily\": \"bodyFontFamily\",\n        \"borderColor\": \"borderColor\",\n        \"borderRadius\": 1,\n        \"cardColor\": \"cardColor\",\n        \"density\": \"compact\",\n        \"headingFontFamily\": \"headingFontFamily\",\n        \"mutedTextColor\": \"mutedTextColor\",\n        \"textColor\": \"textColor\"\n      },\n      \"version\": 1.1\n    },\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"id\": \"id\",\n    \"name\": \"name\",\n    \"publishedAt\": \"2024-01-15T09:30:00Z\",\n    \"settings\": {\n      \"afterSubmission\": \"message\",\n      \"borderRadius\": \"borderRadius\",\n      \"buttonColor\": \"buttonColor\",\n      \"buttonText\": \"buttonText\",\n      \"customFields\": [\n        {\n          \"id\": \"id\",\n          \"label\": \"label\",\n          \"name\": \"name\"\n        }\n      ],\n      \"description\": \"description\",\n      \"duplicateStrategy\": \"skip\",\n      \"errorMessage\": \"errorMessage\",\n      \"eyebrowText\": \"eyebrowText\",\n      \"fieldOrder\": [\n        \"fieldOrder\"\n      ],\n      \"firstNameRequired\": true,\n      \"fontColor\": \"fontColor\",\n      \"fontFamily\": \"fontFamily\",\n      \"fontSize\": \"fontSize\",\n      \"formStyle\": \"button-below\",\n      \"headline\": \"headline\",\n      \"imageAlt\": \"imageAlt\",\n      \"imageUrl\": \"imageUrl\",\n      \"lastNameRequired\": true,\n      \"listIds\": [\n        \"listIds\"\n      ],\n      \"listMode\": \"all\",\n      \"overlayColor\": \"overlayColor\",\n      \"overlayOpacity\": 1.1,\n      \"placeholderEmail\": \"placeholderEmail\",\n      \"placeholderFirstName\": \"placeholderFirstName\",\n      \"placeholderLastName\": \"placeholderLastName\",\n      \"redirectUrl\": \"redirectUrl\",\n      \"resubscribeBehavior\": \"reactivate\",\n      \"showFirstName\": true,\n      \"showLastName\": true,\n      \"successFontColor\": \"successFontColor\",\n      \"successFontSize\": \"successFontSize\",\n      \"successMessage\": \"successMessage\",\n      \"tagIds\": [\n        \"tagIds\"\n      ],\n      \"templateId\": \"minimal\",\n      \"themeMode\": \"design-system\",\n      \"visualPlacement\": \"none\"\n    },\n    \"status\": \"draft\",\n    \"submissionCount\": 1,\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"url\": \"url\"\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"embed\": {\n    \"actionUrl\": \"actionUrl\",\n    \"fetch\": \"fetch\",\n    \"javascript\": \"javascript\",\n    \"nativeForm\": \"nativeForm\",\n    \"scriptUrl\": \"scriptUrl\",\n    \"supportedPlatforms\": [\n      \"supportedPlatforms\"\n    ]\n  },\n  \"form\": {\n    \"actionUrl\": \"actionUrl\",\n    \"content\": {\n      \"blocks\": [\n        {\n          \"children\": [],\n          \"columns\": 1,\n          \"gap\": 1,\n          \"id\": \"id\",\n          \"kind\": \"group\",\n          \"label\": \"label\",\n          \"layout\": \"stack\",\n          \"overlayColor\": \"overlayColor\",\n          \"overlayPosition\": \"top\",\n          \"overlayShade\": 1,\n          \"padding\": 1\n        }\n      ],\n      \"settings\": {\n        \"afterSubmission\": \"message\",\n        \"botProtection\": true,\n        \"duplicateStrategy\": \"skip\",\n        \"listIds\": [\n          \"listIds\"\n        ],\n        \"listMode\": \"all\",\n        \"redirectUrl\": \"redirectUrl\",\n        \"resubscribeBehavior\": \"reactivate\",\n        \"tagIds\": [\n          \"tagIds\"\n        ]\n      },\n      \"surface\": \"form\",\n      \"template\": \"template\",\n      \"theme\": {\n        \"accentColor\": \"accentColor\",\n        \"backgroundColor\": \"backgroundColor\",\n        \"bodyFontFamily\": \"bodyFontFamily\",\n        \"borderColor\": \"borderColor\",\n        \"borderRadius\": 1,\n        \"cardColor\": \"cardColor\",\n        \"density\": \"compact\",\n        \"headingFontFamily\": \"headingFontFamily\",\n        \"mutedTextColor\": \"mutedTextColor\",\n        \"textColor\": \"textColor\"\n      },\n      \"version\": 1.1\n    },\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"id\": \"id\",\n    \"name\": \"name\",\n    \"publishedAt\": \"2024-01-15T09:30:00Z\",\n    \"settings\": {\n      \"afterSubmission\": \"message\",\n      \"borderRadius\": \"borderRadius\",\n      \"botProtection\": true,\n      \"buttonColor\": \"buttonColor\",\n      \"buttonText\": \"buttonText\",\n      \"customFields\": [\n        {\n          \"id\": \"id\",\n          \"label\": \"label\",\n          \"name\": \"name\"\n        }\n      ],\n      \"description\": \"description\",\n      \"duplicateStrategy\": \"skip\",\n      \"errorMessage\": \"errorMessage\",\n      \"eyebrowText\": \"eyebrowText\",\n      \"fieldOrder\": [\n        \"fieldOrder\"\n      ],\n      \"firstNameRequired\": true,\n      \"fontColor\": \"fontColor\",\n      \"fontFamily\": \"fontFamily\",\n      \"fontSize\": \"fontSize\",\n      \"formStyle\": \"button-below\",\n      \"headline\": \"headline\",\n      \"imageAlt\": \"imageAlt\",\n      \"imageUrl\": \"imageUrl\",\n      \"lastNameRequired\": true,\n      \"listIds\": [\n        \"listIds\"\n      ],\n      \"listMode\": \"all\",\n      \"overlayColor\": \"overlayColor\",\n      \"overlayOpacity\": 1.1,\n      \"placeholderEmail\": \"placeholderEmail\",\n      \"placeholderFirstName\": \"placeholderFirstName\",\n      \"placeholderLastName\": \"placeholderLastName\",\n      \"redirectUrl\": \"redirectUrl\",\n      \"resubscribeBehavior\": \"reactivate\",\n      \"showFirstName\": true,\n      \"showLastName\": true,\n      \"successFontColor\": \"successFontColor\",\n      \"successFontSize\": \"successFontSize\",\n      \"successMessage\": \"successMessage\",\n      \"tagIds\": [\n        \"tagIds\"\n      ],\n      \"templateId\": \"minimal\",\n      \"themeMode\": \"design-system\",\n      \"visualPlacement\": \"none\"\n    },\n    \"status\": \"draft\",\n    \"submissionCount\": 1,\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"url\": \"url\"\n  },\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -13546,7 +13713,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"companyId\": \"companyId\",\n  \"forms\": [\n    {\n      \"actionUrl\": \"actionUrl\",\n      \"content\": {\n        \"blocks\": [\n          {\n            \"children\": [],\n            \"columns\": 1,\n            \"gap\": 1,\n            \"id\": \"id\",\n            \"kind\": \"group\",\n            \"label\": \"label\",\n            \"layout\": \"stack\",\n            \"overlayColor\": \"overlayColor\",\n            \"overlayPosition\": \"top\",\n            \"overlayShade\": 1,\n            \"padding\": 1\n          }\n        ],\n        \"settings\": {\n          \"afterSubmission\": \"message\",\n          \"duplicateStrategy\": \"skip\",\n          \"listIds\": [\n            \"listIds\"\n          ],\n          \"listMode\": \"all\",\n          \"redirectUrl\": \"redirectUrl\",\n          \"resubscribeBehavior\": \"reactivate\",\n          \"tagIds\": [\n            \"tagIds\"\n          ]\n        },\n        \"surface\": \"form\",\n        \"template\": \"template\",\n        \"theme\": {\n          \"accentColor\": \"accentColor\",\n          \"backgroundColor\": \"backgroundColor\",\n          \"bodyFontFamily\": \"bodyFontFamily\",\n          \"borderColor\": \"borderColor\",\n          \"borderRadius\": 1,\n          \"cardColor\": \"cardColor\",\n          \"density\": \"compact\",\n          \"headingFontFamily\": \"headingFontFamily\",\n          \"mutedTextColor\": \"mutedTextColor\",\n          \"textColor\": \"textColor\"\n        },\n        \"version\": 1.1\n      },\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"id\": \"id\",\n      \"name\": \"name\",\n      \"publishedAt\": \"2024-01-15T09:30:00Z\",\n      \"settings\": {\n        \"afterSubmission\": \"message\",\n        \"borderRadius\": null,\n        \"buttonColor\": null,\n        \"buttonText\": \"buttonText\",\n        \"customFields\": [\n          {\n            \"id\": \"id\",\n            \"label\": \"label\",\n            \"name\": \"name\"\n          }\n        ],\n        \"description\": \"description\",\n        \"duplicateStrategy\": \"skip\",\n        \"errorMessage\": \"errorMessage\",\n        \"eyebrowText\": \"eyebrowText\",\n        \"fieldOrder\": [\n          \"fieldOrder\"\n        ],\n        \"firstNameRequired\": true,\n        \"fontColor\": null,\n        \"fontFamily\": null,\n        \"fontSize\": null,\n        \"formStyle\": \"button-below\",\n        \"headline\": \"headline\",\n        \"imageAlt\": \"imageAlt\",\n        \"imageUrl\": null,\n        \"lastNameRequired\": true,\n        \"listIds\": [\n          \"listIds\"\n        ],\n        \"listMode\": \"all\",\n        \"overlayColor\": null,\n        \"overlayOpacity\": 1.1,\n        \"placeholderEmail\": \"placeholderEmail\",\n        \"placeholderFirstName\": \"placeholderFirstName\",\n        \"placeholderLastName\": \"placeholderLastName\",\n        \"redirectUrl\": \"redirectUrl\",\n        \"resubscribeBehavior\": \"reactivate\",\n        \"showFirstName\": true,\n        \"showLastName\": true,\n        \"successFontColor\": null,\n        \"successFontSize\": \"successFontSize\",\n        \"successMessage\": \"successMessage\",\n        \"tagIds\": [\n          \"tagIds\"\n        ],\n        \"templateId\": \"minimal\",\n        \"themeMode\": \"design-system\",\n        \"visualPlacement\": \"none\"\n      },\n      \"status\": \"draft\",\n      \"submissionCount\": 1,\n      \"updatedAt\": \"2024-01-15T09:30:00Z\",\n      \"url\": \"url\"\n    }\n  ],\n  \"success\": true,\n  \"url\": \"url\"\n}",
+        "body": "{\n  \"companyId\": \"companyId\",\n  \"forms\": [\n    {\n      \"actionUrl\": \"actionUrl\",\n      \"content\": {\n        \"blocks\": [\n          {\n            \"children\": [],\n            \"columns\": 1,\n            \"gap\": 1,\n            \"id\": \"id\",\n            \"kind\": \"group\",\n            \"label\": \"label\",\n            \"layout\": \"stack\",\n            \"overlayColor\": \"overlayColor\",\n            \"overlayPosition\": \"top\",\n            \"overlayShade\": 1,\n            \"padding\": 1\n          }\n        ],\n        \"settings\": {\n          \"afterSubmission\": \"message\",\n          \"botProtection\": true,\n          \"duplicateStrategy\": \"skip\",\n          \"listIds\": [\n            \"listIds\"\n          ],\n          \"listMode\": \"all\",\n          \"redirectUrl\": \"redirectUrl\",\n          \"resubscribeBehavior\": \"reactivate\",\n          \"tagIds\": [\n            \"tagIds\"\n          ]\n        },\n        \"surface\": \"form\",\n        \"template\": \"template\",\n        \"theme\": {\n          \"accentColor\": \"accentColor\",\n          \"backgroundColor\": \"backgroundColor\",\n          \"bodyFontFamily\": \"bodyFontFamily\",\n          \"borderColor\": \"borderColor\",\n          \"borderRadius\": 1,\n          \"cardColor\": \"cardColor\",\n          \"density\": \"compact\",\n          \"headingFontFamily\": \"headingFontFamily\",\n          \"mutedTextColor\": \"mutedTextColor\",\n          \"textColor\": \"textColor\"\n        },\n        \"version\": 1.1\n      },\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"id\": \"id\",\n      \"name\": \"name\",\n      \"publishedAt\": \"2024-01-15T09:30:00Z\",\n      \"settings\": {\n        \"afterSubmission\": \"message\",\n        \"borderRadius\": null,\n        \"botProtection\": true,\n        \"buttonColor\": null,\n        \"buttonText\": \"buttonText\",\n        \"customFields\": [\n          {\n            \"id\": \"id\",\n            \"label\": \"label\",\n            \"name\": \"name\"\n          }\n        ],\n        \"description\": \"description\",\n        \"duplicateStrategy\": \"skip\",\n        \"errorMessage\": \"errorMessage\",\n        \"eyebrowText\": \"eyebrowText\",\n        \"fieldOrder\": [\n          \"fieldOrder\"\n        ],\n        \"firstNameRequired\": true,\n        \"fontColor\": null,\n        \"fontFamily\": null,\n        \"fontSize\": null,\n        \"formStyle\": \"button-below\",\n        \"headline\": \"headline\",\n        \"imageAlt\": \"imageAlt\",\n        \"imageUrl\": null,\n        \"lastNameRequired\": true,\n        \"listIds\": [\n          \"listIds\"\n        ],\n        \"listMode\": \"all\",\n        \"overlayColor\": null,\n        \"overlayOpacity\": 1.1,\n        \"placeholderEmail\": \"placeholderEmail\",\n        \"placeholderFirstName\": \"placeholderFirstName\",\n        \"placeholderLastName\": \"placeholderLastName\",\n        \"redirectUrl\": \"redirectUrl\",\n        \"resubscribeBehavior\": \"reactivate\",\n        \"showFirstName\": true,\n        \"showLastName\": true,\n        \"successFontColor\": null,\n        \"successFontSize\": \"successFontSize\",\n        \"successMessage\": \"successMessage\",\n        \"tagIds\": [\n          \"tagIds\"\n        ],\n        \"templateId\": \"minimal\",\n        \"themeMode\": \"design-system\",\n        \"visualPlacement\": \"none\"\n      },\n      \"status\": \"draft\",\n      \"submissionCount\": 1,\n      \"updatedAt\": \"2024-01-15T09:30:00Z\",\n      \"url\": \"url\"\n    }\n  ],\n  \"success\": true,\n  \"url\": \"url\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -13719,7 +13886,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"embed\": {\n    \"actionUrl\": \"actionUrl\",\n    \"fetch\": \"fetch\",\n    \"javascript\": \"javascript\",\n    \"nativeForm\": \"nativeForm\",\n    \"scriptUrl\": \"scriptUrl\",\n    \"supportedPlatforms\": [\n      \"supportedPlatforms\"\n    ]\n  },\n  \"form\": {\n    \"actionUrl\": \"actionUrl\",\n    \"content\": {\n      \"blocks\": [\n        {\n          \"children\": [],\n          \"columns\": 1,\n          \"gap\": 1,\n          \"id\": \"id\",\n          \"kind\": \"group\",\n          \"label\": \"label\",\n          \"layout\": \"stack\",\n          \"overlayColor\": \"overlayColor\",\n          \"overlayPosition\": \"top\",\n          \"overlayShade\": 1,\n          \"padding\": 1\n        }\n      ],\n      \"settings\": {\n        \"afterSubmission\": \"message\",\n        \"duplicateStrategy\": \"skip\",\n        \"listIds\": [\n          \"listIds\"\n        ],\n        \"listMode\": \"all\",\n        \"redirectUrl\": \"redirectUrl\",\n        \"resubscribeBehavior\": \"reactivate\",\n        \"tagIds\": [\n          \"tagIds\"\n        ]\n      },\n      \"surface\": \"form\",\n      \"template\": \"template\",\n      \"theme\": {\n        \"accentColor\": \"accentColor\",\n        \"backgroundColor\": \"backgroundColor\",\n        \"bodyFontFamily\": \"bodyFontFamily\",\n        \"borderColor\": \"borderColor\",\n        \"borderRadius\": 1,\n        \"cardColor\": \"cardColor\",\n        \"density\": \"compact\",\n        \"headingFontFamily\": \"headingFontFamily\",\n        \"mutedTextColor\": \"mutedTextColor\",\n        \"textColor\": \"textColor\"\n      },\n      \"version\": 1.1\n    },\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"id\": \"id\",\n    \"name\": \"name\",\n    \"publishedAt\": \"2024-01-15T09:30:00Z\",\n    \"settings\": {\n      \"afterSubmission\": \"message\",\n      \"borderRadius\": \"borderRadius\",\n      \"buttonColor\": \"buttonColor\",\n      \"buttonText\": \"buttonText\",\n      \"customFields\": [\n        {\n          \"id\": \"id\",\n          \"label\": \"label\",\n          \"name\": \"name\"\n        }\n      ],\n      \"description\": \"description\",\n      \"duplicateStrategy\": \"skip\",\n      \"errorMessage\": \"errorMessage\",\n      \"eyebrowText\": \"eyebrowText\",\n      \"fieldOrder\": [\n        \"fieldOrder\"\n      ],\n      \"firstNameRequired\": true,\n      \"fontColor\": \"fontColor\",\n      \"fontFamily\": \"fontFamily\",\n      \"fontSize\": \"fontSize\",\n      \"formStyle\": \"button-below\",\n      \"headline\": \"headline\",\n      \"imageAlt\": \"imageAlt\",\n      \"imageUrl\": \"imageUrl\",\n      \"lastNameRequired\": true,\n      \"listIds\": [\n        \"listIds\"\n      ],\n      \"listMode\": \"all\",\n      \"overlayColor\": \"overlayColor\",\n      \"overlayOpacity\": 1.1,\n      \"placeholderEmail\": \"placeholderEmail\",\n      \"placeholderFirstName\": \"placeholderFirstName\",\n      \"placeholderLastName\": \"placeholderLastName\",\n      \"redirectUrl\": \"redirectUrl\",\n      \"resubscribeBehavior\": \"reactivate\",\n      \"showFirstName\": true,\n      \"showLastName\": true,\n      \"successFontColor\": \"successFontColor\",\n      \"successFontSize\": \"successFontSize\",\n      \"successMessage\": \"successMessage\",\n      \"tagIds\": [\n        \"tagIds\"\n      ],\n      \"templateId\": \"minimal\",\n      \"themeMode\": \"design-system\",\n      \"visualPlacement\": \"none\"\n    },\n    \"status\": \"draft\",\n    \"submissionCount\": 1,\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"url\": \"url\"\n  },\n  \"message\": \"message\",\n  \"success\": true\n}",
+        "body": "{\n  \"embed\": {\n    \"actionUrl\": \"actionUrl\",\n    \"fetch\": \"fetch\",\n    \"javascript\": \"javascript\",\n    \"nativeForm\": \"nativeForm\",\n    \"scriptUrl\": \"scriptUrl\",\n    \"supportedPlatforms\": [\n      \"supportedPlatforms\"\n    ]\n  },\n  \"form\": {\n    \"actionUrl\": \"actionUrl\",\n    \"content\": {\n      \"blocks\": [\n        {\n          \"children\": [],\n          \"columns\": 1,\n          \"gap\": 1,\n          \"id\": \"id\",\n          \"kind\": \"group\",\n          \"label\": \"label\",\n          \"layout\": \"stack\",\n          \"overlayColor\": \"overlayColor\",\n          \"overlayPosition\": \"top\",\n          \"overlayShade\": 1,\n          \"padding\": 1\n        }\n      ],\n      \"settings\": {\n        \"afterSubmission\": \"message\",\n        \"botProtection\": true,\n        \"duplicateStrategy\": \"skip\",\n        \"listIds\": [\n          \"listIds\"\n        ],\n        \"listMode\": \"all\",\n        \"redirectUrl\": \"redirectUrl\",\n        \"resubscribeBehavior\": \"reactivate\",\n        \"tagIds\": [\n          \"tagIds\"\n        ]\n      },\n      \"surface\": \"form\",\n      \"template\": \"template\",\n      \"theme\": {\n        \"accentColor\": \"accentColor\",\n        \"backgroundColor\": \"backgroundColor\",\n        \"bodyFontFamily\": \"bodyFontFamily\",\n        \"borderColor\": \"borderColor\",\n        \"borderRadius\": 1,\n        \"cardColor\": \"cardColor\",\n        \"density\": \"compact\",\n        \"headingFontFamily\": \"headingFontFamily\",\n        \"mutedTextColor\": \"mutedTextColor\",\n        \"textColor\": \"textColor\"\n      },\n      \"version\": 1.1\n    },\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"id\": \"id\",\n    \"name\": \"name\",\n    \"publishedAt\": \"2024-01-15T09:30:00Z\",\n    \"settings\": {\n      \"afterSubmission\": \"message\",\n      \"borderRadius\": \"borderRadius\",\n      \"botProtection\": true,\n      \"buttonColor\": \"buttonColor\",\n      \"buttonText\": \"buttonText\",\n      \"customFields\": [\n        {\n          \"id\": \"id\",\n          \"label\": \"label\",\n          \"name\": \"name\"\n        }\n      ],\n      \"description\": \"description\",\n      \"duplicateStrategy\": \"skip\",\n      \"errorMessage\": \"errorMessage\",\n      \"eyebrowText\": \"eyebrowText\",\n      \"fieldOrder\": [\n        \"fieldOrder\"\n      ],\n      \"firstNameRequired\": true,\n      \"fontColor\": \"fontColor\",\n      \"fontFamily\": \"fontFamily\",\n      \"fontSize\": \"fontSize\",\n      \"formStyle\": \"button-below\",\n      \"headline\": \"headline\",\n      \"imageAlt\": \"imageAlt\",\n      \"imageUrl\": \"imageUrl\",\n      \"lastNameRequired\": true,\n      \"listIds\": [\n        \"listIds\"\n      ],\n      \"listMode\": \"all\",\n      \"overlayColor\": \"overlayColor\",\n      \"overlayOpacity\": 1.1,\n      \"placeholderEmail\": \"placeholderEmail\",\n      \"placeholderFirstName\": \"placeholderFirstName\",\n      \"placeholderLastName\": \"placeholderLastName\",\n      \"redirectUrl\": \"redirectUrl\",\n      \"resubscribeBehavior\": \"reactivate\",\n      \"showFirstName\": true,\n      \"showLastName\": true,\n      \"successFontColor\": \"successFontColor\",\n      \"successFontSize\": \"successFontSize\",\n      \"successMessage\": \"successMessage\",\n      \"tagIds\": [\n        \"tagIds\"\n      ],\n      \"templateId\": \"minimal\",\n      \"themeMode\": \"design-system\",\n      \"visualPlacement\": \"none\"\n    },\n    \"status\": \"draft\",\n    \"submissionCount\": 1,\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"url\": \"url\"\n  },\n  \"message\": \"message\",\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -13805,6 +13972,6 @@
     }
   ],
   "meta": {
-    "total": 401
+    "total": 406
   }
 }

@@ -3,6 +3,7 @@
 package client
 
 import (
+	bytes "bytes"
 	context "context"
 	http "net/http"
 
@@ -253,6 +254,46 @@ func (r *RawClient) GetCompanyScopedSavedSignupFormEmbedScript(
 		StatusCode: raw.StatusCode,
 		Header:     raw.Header,
 		Body:       nil,
+	}, nil
+}
+
+func (r *RawClient) GetFormBotCheckFrame(
+	ctx context.Context,
+	opts ...option.RequestOption,
+) (*core.Response[string], error) {
+	options := core.NewRequestOptions(opts...)
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		r.baseURL,
+		"https://api.sequenzy.com/api/v1",
+	)
+	endpointURL := baseURL + "/forms/bot-check"
+	headers := internal.MergeHeaders(
+		r.options.ToHeader(),
+		options.ToHeader(),
+	)
+	response := bytes.NewBuffer(nil)
+	raw, err := r.caller.Call(
+		ctx,
+		&internal.CallParams{
+			URL:             endpointURL,
+			Method:          http.MethodGet,
+			Headers:         headers,
+			MaxAttempts:     options.MaxAttempts,
+			DisableRetries:  options.DisableRetries,
+			BodyProperties:  options.BodyProperties,
+			QueryParameters: options.QueryParameters,
+			Client:          options.HTTPClient,
+			Response:        response,
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &core.Response[string]{
+		StatusCode: raw.StatusCode,
+		Header:     raw.Header,
+		Body:       response.String(),
 	}, nil
 }
 
