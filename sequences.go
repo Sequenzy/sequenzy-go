@@ -7355,6 +7355,7 @@ var (
 	sequenceDelayInputFieldUntilPastAction      = big.NewInt(1 << 17)
 	sequenceDelayInputFieldUntilStartTime       = big.NewInt(1 << 18)
 	sequenceDelayInputFieldUntilTimezone        = big.NewInt(1 << 19)
+	sequenceDelayInputFieldUntilTimezoneSource  = big.NewInt(1 << 20)
 )
 
 type SequenceDelayInput struct {
@@ -7393,8 +7394,10 @@ type SequenceDelayInput struct {
 	UntilPastAction *SequenceDelayInputUntilPastAction `json:"untilPastAction,omitempty" url:"untilPastAction,omitempty"`
 	// Window start in 24-hour HH:mm local time when mode is until_weekday.
 	UntilStartTime *string `json:"untilStartTime,omitempty" url:"untilStartTime,omitempty"`
-	// IANA timezone used to evaluate the window when mode is until_weekday.
+	// IANA timezone used to evaluate the window when mode is until_weekday. The fallback when untilTimezoneSource is subscriber.
 	UntilTimezone *string `json:"untilTimezone,omitempty" url:"untilTimezone,omitempty"`
+	// When mode is until_weekday, fixed uses untilTimezone for every contact and subscriber uses each contact's own timezone with untilTimezone as the fallback.
+	UntilTimezoneSource *SequenceDelayInputUntilTimezoneSource `json:"untilTimezoneSource,omitempty" url:"untilTimezoneSource,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -7541,6 +7544,13 @@ func (s *SequenceDelayInput) GetUntilTimezone() *string {
 		return nil
 	}
 	return s.UntilTimezone
+}
+
+func (s *SequenceDelayInput) GetUntilTimezoneSource() *SequenceDelayInputUntilTimezoneSource {
+	if s == nil {
+		return nil
+	}
+	return s.UntilTimezoneSource
 }
 
 func (s *SequenceDelayInput) GetExtraProperties() map[string]interface{} {
@@ -7695,6 +7705,13 @@ func (s *SequenceDelayInput) SetUntilStartTime(untilStartTime *string) {
 func (s *SequenceDelayInput) SetUntilTimezone(untilTimezone *string) {
 	s.UntilTimezone = untilTimezone
 	s.require(sequenceDelayInputFieldUntilTimezone)
+}
+
+// SetUntilTimezoneSource sets the UntilTimezoneSource field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDelayInput) SetUntilTimezoneSource(untilTimezoneSource *SequenceDelayInputUntilTimezoneSource) {
+	s.UntilTimezoneSource = untilTimezoneSource
+	s.require(sequenceDelayInputFieldUntilTimezoneSource)
 }
 
 func (s *SequenceDelayInput) UnmarshalJSON(data []byte) error {
@@ -7955,6 +7972,29 @@ func NewSequenceDelayInputUntilPastActionFromString(s string) (SequenceDelayInpu
 }
 
 func (s SequenceDelayInputUntilPastAction) Ptr() *SequenceDelayInputUntilPastAction {
+	return &s
+}
+
+// When mode is until_weekday, fixed uses untilTimezone for every contact and subscriber uses each contact's own timezone with untilTimezone as the fallback.
+type SequenceDelayInputUntilTimezoneSource string
+
+const (
+	SequenceDelayInputUntilTimezoneSourceFixed      SequenceDelayInputUntilTimezoneSource = "fixed"
+	SequenceDelayInputUntilTimezoneSourceSubscriber SequenceDelayInputUntilTimezoneSource = "subscriber"
+)
+
+func NewSequenceDelayInputUntilTimezoneSourceFromString(s string) (SequenceDelayInputUntilTimezoneSource, error) {
+	switch s {
+	case "fixed":
+		return SequenceDelayInputUntilTimezoneSourceFixed, nil
+	case "subscriber":
+		return SequenceDelayInputUntilTimezoneSourceSubscriber, nil
+	}
+	var t SequenceDelayInputUntilTimezoneSource
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SequenceDelayInputUntilTimezoneSource) Ptr() *SequenceDelayInputUntilTimezoneSource {
 	return &s
 }
 
@@ -17342,7 +17382,7 @@ var (
 )
 
 type SequenceNodeUpdateInput struct {
-	// Type-aware node patch. Use the editableFields and notes from the node's updateHints. Omitted fields are preserved. For action_email nodes, a blocks patch that omits emailPreset never changes the step's format - see blocks on SequenceEmailUpdateInput.
+	// Type-aware node patch. Use the editableFields and notes from the node's updateHints. Omitted fields are preserved. For action_email nodes, a blocks patch that omits emailPreset never changes the step's format - see blocks on SequenceEmailUpdateInput. For logic_delay, waitUntilWeekday replaces the whole wait, so resend timezoneSource to keep a contact-timezone step.
 	Changes *SequenceNodeUpdateInputChanges `json:"changes" url:"changes"`
 	// Optional optimistic-concurrency token from the node's latest updatedAt or updateHints.expectedUpdatedAt value. MCP clients require this field.
 	ExpectedUpdatedAt *time.Time `json:"expectedUpdatedAt,omitempty" url:"expectedUpdatedAt,omitempty"`
@@ -17462,7 +17502,7 @@ func (s *SequenceNodeUpdateInput) String() string {
 	return fmt.Sprintf("%#v", s)
 }
 
-// Type-aware node patch. Use the editableFields and notes from the node's updateHints. Omitted fields are preserved. For action_email nodes, a blocks patch that omits emailPreset never changes the step's format - see blocks on SequenceEmailUpdateInput.
+// Type-aware node patch. Use the editableFields and notes from the node's updateHints. Omitted fields are preserved. For action_email nodes, a blocks patch that omits emailPreset never changes the step's format - see blocks on SequenceEmailUpdateInput. For logic_delay, waitUntilWeekday replaces the whole wait, so resend timezoneSource to keep a contact-timezone step.
 var (
 	sequenceNodeUpdateInputChangesFieldEmailPreset = big.NewInt(1 << 0)
 	sequenceNodeUpdateInputChangesFieldEmailTheme  = big.NewInt(1 << 1)
@@ -23682,14 +23722,16 @@ func (s SequenceWaitUntilKeyDateInputUntilPastAction) Ptr() *SequenceWaitUntilKe
 
 // Hold until the next occurrence of a weekday inside a local-time window. Contacts already inside the window continue immediately.
 var (
-	sequenceWaitUntilWeekdayInputFieldDay            = big.NewInt(1 << 0)
-	sequenceWaitUntilWeekdayInputFieldDays           = big.NewInt(1 << 1)
-	sequenceWaitUntilWeekdayInputFieldEndTime        = big.NewInt(1 << 2)
-	sequenceWaitUntilWeekdayInputFieldStartTime      = big.NewInt(1 << 3)
-	sequenceWaitUntilWeekdayInputFieldTimezone       = big.NewInt(1 << 4)
-	sequenceWaitUntilWeekdayInputFieldUntilEndTime   = big.NewInt(1 << 5)
-	sequenceWaitUntilWeekdayInputFieldUntilStartTime = big.NewInt(1 << 6)
-	sequenceWaitUntilWeekdayInputFieldUntilTimezone  = big.NewInt(1 << 7)
+	sequenceWaitUntilWeekdayInputFieldDay                 = big.NewInt(1 << 0)
+	sequenceWaitUntilWeekdayInputFieldDays                = big.NewInt(1 << 1)
+	sequenceWaitUntilWeekdayInputFieldEndTime             = big.NewInt(1 << 2)
+	sequenceWaitUntilWeekdayInputFieldStartTime           = big.NewInt(1 << 3)
+	sequenceWaitUntilWeekdayInputFieldTimezone            = big.NewInt(1 << 4)
+	sequenceWaitUntilWeekdayInputFieldTimezoneSource      = big.NewInt(1 << 5)
+	sequenceWaitUntilWeekdayInputFieldUntilEndTime        = big.NewInt(1 << 6)
+	sequenceWaitUntilWeekdayInputFieldUntilStartTime      = big.NewInt(1 << 7)
+	sequenceWaitUntilWeekdayInputFieldUntilTimezone       = big.NewInt(1 << 8)
+	sequenceWaitUntilWeekdayInputFieldUntilTimezoneSource = big.NewInt(1 << 9)
 )
 
 type SequenceWaitUntilWeekdayInput struct {
@@ -23701,14 +23743,18 @@ type SequenceWaitUntilWeekdayInput struct {
 	EndTime *string `json:"endTime,omitempty" url:"endTime,omitempty"`
 	// Window start in 24-hour HH:mm local time.
 	StartTime *string `json:"startTime,omitempty" url:"startTime,omitempty"`
-	// IANA timezone used to evaluate the window.
+	// IANA timezone used to evaluate the window. Required. When timezoneSource is subscriber, this is the fallback for contacts without a valid timezone.
 	Timezone *string `json:"timezone,omitempty" url:"timezone,omitempty"`
+	// fixed evaluates the window in timezone for every contact. subscriber evaluates it in each contact's own timezone (the subscriber timezone field) and falls back to timezone. The contact's timezone is read each time the step is evaluated. Sequence reads always return this field.
+	TimezoneSource *SequenceWaitUntilWeekdayInputTimezoneSource `json:"timezoneSource,omitempty" url:"timezoneSource,omitempty"`
 	// Alias for endTime.
 	UntilEndTime *string `json:"untilEndTime,omitempty" url:"untilEndTime,omitempty"`
 	// Alias for startTime.
 	UntilStartTime *string `json:"untilStartTime,omitempty" url:"untilStartTime,omitempty"`
 	// Alias for timezone.
 	UntilTimezone *string `json:"untilTimezone,omitempty" url:"untilTimezone,omitempty"`
+	// Alias for timezoneSource.
+	UntilTimezoneSource *SequenceWaitUntilWeekdayInputUntilTimezoneSource `json:"untilTimezoneSource,omitempty" url:"untilTimezoneSource,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -23752,6 +23798,13 @@ func (s *SequenceWaitUntilWeekdayInput) GetTimezone() *string {
 	return s.Timezone
 }
 
+func (s *SequenceWaitUntilWeekdayInput) GetTimezoneSource() *SequenceWaitUntilWeekdayInputTimezoneSource {
+	if s == nil {
+		return nil
+	}
+	return s.TimezoneSource
+}
+
 func (s *SequenceWaitUntilWeekdayInput) GetUntilEndTime() *string {
 	if s == nil {
 		return nil
@@ -23771,6 +23824,13 @@ func (s *SequenceWaitUntilWeekdayInput) GetUntilTimezone() *string {
 		return nil
 	}
 	return s.UntilTimezone
+}
+
+func (s *SequenceWaitUntilWeekdayInput) GetUntilTimezoneSource() *SequenceWaitUntilWeekdayInputUntilTimezoneSource {
+	if s == nil {
+		return nil
+	}
+	return s.UntilTimezoneSource
 }
 
 func (s *SequenceWaitUntilWeekdayInput) GetExtraProperties() map[string]interface{} {
@@ -23822,6 +23882,13 @@ func (s *SequenceWaitUntilWeekdayInput) SetTimezone(timezone *string) {
 	s.require(sequenceWaitUntilWeekdayInputFieldTimezone)
 }
 
+// SetTimezoneSource sets the TimezoneSource field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceWaitUntilWeekdayInput) SetTimezoneSource(timezoneSource *SequenceWaitUntilWeekdayInputTimezoneSource) {
+	s.TimezoneSource = timezoneSource
+	s.require(sequenceWaitUntilWeekdayInputFieldTimezoneSource)
+}
+
 // SetUntilEndTime sets the UntilEndTime field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *SequenceWaitUntilWeekdayInput) SetUntilEndTime(untilEndTime *string) {
@@ -23841,6 +23908,13 @@ func (s *SequenceWaitUntilWeekdayInput) SetUntilStartTime(untilStartTime *string
 func (s *SequenceWaitUntilWeekdayInput) SetUntilTimezone(untilTimezone *string) {
 	s.UntilTimezone = untilTimezone
 	s.require(sequenceWaitUntilWeekdayInputFieldUntilTimezone)
+}
+
+// SetUntilTimezoneSource sets the UntilTimezoneSource field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceWaitUntilWeekdayInput) SetUntilTimezoneSource(untilTimezoneSource *SequenceWaitUntilWeekdayInputUntilTimezoneSource) {
+	s.UntilTimezoneSource = untilTimezoneSource
+	s.require(sequenceWaitUntilWeekdayInputFieldUntilTimezoneSource)
 }
 
 func (s *SequenceWaitUntilWeekdayInput) UnmarshalJSON(data []byte) error {
@@ -23883,6 +23957,52 @@ func (s *SequenceWaitUntilWeekdayInput) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", s)
+}
+
+// fixed evaluates the window in timezone for every contact. subscriber evaluates it in each contact's own timezone (the subscriber timezone field) and falls back to timezone. The contact's timezone is read each time the step is evaluated. Sequence reads always return this field.
+type SequenceWaitUntilWeekdayInputTimezoneSource string
+
+const (
+	SequenceWaitUntilWeekdayInputTimezoneSourceFixed      SequenceWaitUntilWeekdayInputTimezoneSource = "fixed"
+	SequenceWaitUntilWeekdayInputTimezoneSourceSubscriber SequenceWaitUntilWeekdayInputTimezoneSource = "subscriber"
+)
+
+func NewSequenceWaitUntilWeekdayInputTimezoneSourceFromString(s string) (SequenceWaitUntilWeekdayInputTimezoneSource, error) {
+	switch s {
+	case "fixed":
+		return SequenceWaitUntilWeekdayInputTimezoneSourceFixed, nil
+	case "subscriber":
+		return SequenceWaitUntilWeekdayInputTimezoneSourceSubscriber, nil
+	}
+	var t SequenceWaitUntilWeekdayInputTimezoneSource
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SequenceWaitUntilWeekdayInputTimezoneSource) Ptr() *SequenceWaitUntilWeekdayInputTimezoneSource {
+	return &s
+}
+
+// Alias for timezoneSource.
+type SequenceWaitUntilWeekdayInputUntilTimezoneSource string
+
+const (
+	SequenceWaitUntilWeekdayInputUntilTimezoneSourceFixed      SequenceWaitUntilWeekdayInputUntilTimezoneSource = "fixed"
+	SequenceWaitUntilWeekdayInputUntilTimezoneSourceSubscriber SequenceWaitUntilWeekdayInputUntilTimezoneSource = "subscriber"
+)
+
+func NewSequenceWaitUntilWeekdayInputUntilTimezoneSourceFromString(s string) (SequenceWaitUntilWeekdayInputUntilTimezoneSource, error) {
+	switch s {
+	case "fixed":
+		return SequenceWaitUntilWeekdayInputUntilTimezoneSourceFixed, nil
+	case "subscriber":
+		return SequenceWaitUntilWeekdayInputUntilTimezoneSourceSubscriber, nil
+	}
+	var t SequenceWaitUntilWeekdayInputUntilTimezoneSource
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SequenceWaitUntilWeekdayInputUntilTimezoneSource) Ptr() *SequenceWaitUntilWeekdayInputUntilTimezoneSource {
+	return &s
 }
 
 // Update Subscriber config. String values may use standalone trigger-event merge tags such as {{event.plan}}, {{event.amount}}, or {{event.active}}. Number and boolean values are coerced after resolution.

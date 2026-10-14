@@ -41,9 +41,9 @@ var (
 )
 
 type NotificationPreference struct {
-	// Which notification to configure. weekly_report is the Monday summary of last week's sends, engagement, new subscribers, revenue, goals, and sequence trends; it is on by default for the workspace owner, off by default for invited members, and only sent for weeks with more than 10 emails sent.
+	// Which notification to configure. weekly_report is the Monday summary of last week's sends, engagement, new subscribers, revenue, goals, and sequence trends; it is on by default for the workspace owner, off by default for invited members, and only sent for weeks with more than 10 emails sent. account_health is the findings of the scheduled account health check, carried inside the Monday report when the person gets it and sent as their own email otherwise; on by default for the workspace owner, off for invited members.
 	Event NotificationPreferenceEvent `json:"event" url:"event"`
-	// How to receive it. "instant" sends one email per occurrence, "daily" one summary per day, "weekly" one report per week. Instant form_submitted notifications stop after 50 per workspace per UTC day. "daily" is not supported for form_submitted or campaign_completed; weekly_report accepts only "off" or "weekly".
+	// How to receive it. "instant" sends one email per occurrence, "daily" one summary per day, "weekly" one report per week. Instant form_submitted notifications stop after 50 per workspace per UTC day. "daily" is not supported for form_submitted or campaign_completed; weekly_report accepts only "off" or "weekly"; account_health accepts only "off" or "instant".
 	Mode NotificationPreferenceMode `json:"mode" url:"mode"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -137,7 +137,7 @@ func (n *NotificationPreference) String() string {
 	return fmt.Sprintf("%#v", n)
 }
 
-// Which notification to configure. weekly_report is the Monday summary of last week's sends, engagement, new subscribers, revenue, goals, and sequence trends; it is on by default for the workspace owner, off by default for invited members, and only sent for weeks with more than 10 emails sent.
+// Which notification to configure. weekly_report is the Monday summary of last week's sends, engagement, new subscribers, revenue, goals, and sequence trends; it is on by default for the workspace owner, off by default for invited members, and only sent for weeks with more than 10 emails sent. account_health is the findings of the scheduled account health check, carried inside the Monday report when the person gets it and sent as their own email otherwise; on by default for the workspace owner, off for invited members.
 type NotificationPreferenceEvent string
 
 const (
@@ -145,6 +145,7 @@ const (
 	NotificationPreferenceEventFormSubmitted     NotificationPreferenceEvent = "form_submitted"
 	NotificationPreferenceEventCampaignCompleted NotificationPreferenceEvent = "campaign_completed"
 	NotificationPreferenceEventWeeklyReport      NotificationPreferenceEvent = "weekly_report"
+	NotificationPreferenceEventAccountHealth     NotificationPreferenceEvent = "account_health"
 )
 
 func NewNotificationPreferenceEventFromString(s string) (NotificationPreferenceEvent, error) {
@@ -157,6 +158,8 @@ func NewNotificationPreferenceEventFromString(s string) (NotificationPreferenceE
 		return NotificationPreferenceEventCampaignCompleted, nil
 	case "weekly_report":
 		return NotificationPreferenceEventWeeklyReport, nil
+	case "account_health":
+		return NotificationPreferenceEventAccountHealth, nil
 	}
 	var t NotificationPreferenceEvent
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -166,7 +169,7 @@ func (n NotificationPreferenceEvent) Ptr() *NotificationPreferenceEvent {
 	return &n
 }
 
-// How to receive it. "instant" sends one email per occurrence, "daily" one summary per day, "weekly" one report per week. Instant form_submitted notifications stop after 50 per workspace per UTC day. "daily" is not supported for form_submitted or campaign_completed; weekly_report accepts only "off" or "weekly".
+// How to receive it. "instant" sends one email per occurrence, "daily" one summary per day, "weekly" one report per week. Instant form_submitted notifications stop after 50 per workspace per UTC day. "daily" is not supported for form_submitted or campaign_completed; weekly_report accepts only "off" or "weekly"; account_health accepts only "off" or "instant".
 type NotificationPreferenceMode string
 
 const (
@@ -203,9 +206,9 @@ var (
 )
 
 type NotificationPreferences struct {
-	// Mode each event uses when the user has never configured it, resolved for the API key's user. The workspace owner defaults to weekly_report "weekly"; invited members default to "off".
+	// Mode each event uses when the user has never configured it, resolved for the API key's user. The workspace owner defaults to weekly_report "weekly" and account_health "instant"; invited members default to "off".
 	Defaults map[string]string `json:"defaults,omitempty" url:"defaults,omitempty"`
-	// Every notification event available to this client with its current mode, defaults included. Node and Undici clients that omit x-sequenzy-client receive the three legacy events for compatibility.
+	// Every notification event available to this client with its current mode, defaults included. Node and Undici clients that omit x-sequenzy-client receive the three legacy events for compatibility, and Sequenzy CLI releases up to 0.0.174 (x-sequenzy-client cli/0.0.174 or earlier) do not receive account_health.
 	NotificationPreferences []*NotificationPreference `json:"notificationPreferences,omitempty" url:"notificationPreferences,omitempty"`
 	Success                 *bool                     `json:"success,omitempty" url:"success,omitempty"`
 	// Modes each event accepts, keyed by event.

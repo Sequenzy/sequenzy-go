@@ -5,6 +5,7 @@ package client
 import (
 	abtests "github.com/sequenzy/sequenzy-go/abtests"
 	account "github.com/sequenzy/sequenzy-go/account"
+	accounthealth "github.com/sequenzy/sequenzy-go/accounthealth"
 	accounts "github.com/sequenzy/sequenzy-go/accounts"
 	analytics "github.com/sequenzy/sequenzy-go/analytics"
 	audiencesyncs "github.com/sequenzy/sequenzy-go/audiencesyncs"
@@ -13,6 +14,7 @@ import (
 	conversations "github.com/sequenzy/sequenzy-go/conversations"
 	core "github.com/sequenzy/sequenzy-go/core"
 	dataexports "github.com/sequenzy/sequenzy-go/dataexports"
+	designmd "github.com/sequenzy/sequenzy-go/designmd"
 	emailaistyle "github.com/sequenzy/sequenzy-go/emailaistyle"
 	emailblocks "github.com/sequenzy/sequenzy-go/emailblocks"
 	emailcomponents "github.com/sequenzy/sequenzy-go/emailcomponents"
@@ -61,6 +63,7 @@ import (
 type Client struct {
 	AbTests                 *abtests.Client
 	Account                 *account.Client
+	AccountHealth           *accounthealth.Client
 	Accounts                *accounts.Client
 	Analytics               *analytics.Client
 	AudienceSyncs           *audiencesyncs.Client
@@ -68,6 +71,7 @@ type Client struct {
 	Companies               *companies.Client
 	Conversations           *conversations.Client
 	DataExports             *dataexports.Client
+	DesignMd                *designmd.Client
 	EmailAiStyle            *emailaistyle.Client
 	EmailBlocks             *emailblocks.Client
 	EmailComponents         *emailcomponents.Client
@@ -120,6 +124,7 @@ func NewClient(opts ...option.RequestOption) *Client {
 	return &Client{
 		AbTests:                 abtests.NewClient(options),
 		Account:                 account.NewClient(options),
+		AccountHealth:           accounthealth.NewClient(options),
 		Accounts:                accounts.NewClient(options),
 		Analytics:               analytics.NewClient(options),
 		AudienceSyncs:           audiencesyncs.NewClient(options),
@@ -127,6 +132,7 @@ func NewClient(opts ...option.RequestOption) *Client {
 		Companies:               companies.NewClient(options),
 		Conversations:           conversations.NewClient(options),
 		DataExports:             dataexports.NewClient(options),
+		DesignMd:                designmd.NewClient(options),
 		EmailAiStyle:            emailaistyle.NewClient(options),
 		EmailBlocks:             emailblocks.NewClient(options),
 		EmailComponents:         emailcomponents.NewClient(options),

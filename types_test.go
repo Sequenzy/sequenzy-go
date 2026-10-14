@@ -793,11 +793,27 @@ func TestSettersMarkExplicitAgentFriendlyError(t *testing.T) {
 }
 
 func TestSettersBadRequestErrorBody(t *testing.T) {
+	t.Run("SetCode", func(t *testing.T) {
+		obj := &BadRequestErrorBody{}
+		var fernTestValueCode *string
+		obj.SetCode(fernTestValueCode)
+		assert.Equal(t, fernTestValueCode, obj.Code)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetError", func(t *testing.T) {
 		obj := &BadRequestErrorBody{}
-		var fernTestValueError *BadRequestErrorBodyError
+		var fernTestValueError *string
 		obj.SetError(fernTestValueError)
 		assert.Equal(t, fernTestValueError, obj.Error)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetIssues", func(t *testing.T) {
+		obj := &BadRequestErrorBody{}
+		var fernTestValueIssues []*DesignMdIssue
+		obj.SetIssues(fernTestValueIssues)
+		assert.Equal(t, fernTestValueIssues, obj.Issues)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -812,11 +828,44 @@ func TestSettersBadRequestErrorBody(t *testing.T) {
 }
 
 func TestGettersBadRequestErrorBody(t *testing.T) {
+	t.Run("GetCode", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &BadRequestErrorBody{}
+		var expected *string
+		obj.Code = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCode(), "getter should return the property value")
+	})
+
+	t.Run("GetCode_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &BadRequestErrorBody{}
+		obj.Code = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetCode(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetCode_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *BadRequestErrorBody
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCode() // Should return zero value
+	})
+
 	t.Run("GetError", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &BadRequestErrorBody{}
-		var expected *BadRequestErrorBodyError
+		var expected *string
 		obj.Error = expected
 
 		// Act & Assert
@@ -843,6 +892,39 @@ func TestGettersBadRequestErrorBody(t *testing.T) {
 			}
 		}()
 		_ = obj.GetError() // Should return zero value
+	})
+
+	t.Run("GetIssues", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &BadRequestErrorBody{}
+		var expected []*DesignMdIssue
+		obj.Issues = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetIssues(), "getter should return the property value")
+	})
+
+	t.Run("GetIssues_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &BadRequestErrorBody{}
+		obj.Issues = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetIssues(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetIssues_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *BadRequestErrorBody
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetIssues() // Should return zero value
 	})
 
 	t.Run("GetSuccess", func(t *testing.T) {
@@ -881,14 +963,76 @@ func TestGettersBadRequestErrorBody(t *testing.T) {
 }
 
 func TestSettersMarkExplicitBadRequestErrorBody(t *testing.T) {
+	t.Run("SetCode_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &BadRequestErrorBody{}
+		var fernTestValueCode *string
+
+		// Act
+		obj.SetCode(fernTestValueCode)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetError_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &BadRequestErrorBody{}
-		var fernTestValueError *BadRequestErrorBodyError
+		var fernTestValueError *string
 
 		// Act
 		obj.SetError(fernTestValueError)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetIssues_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &BadRequestErrorBody{}
+		var fernTestValueIssues []*DesignMdIssue
+
+		// Act
+		obj.SetIssues(fernTestValueIssues)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -9340,6 +9484,726 @@ func TestSettersMarkExplicitEmailCheckLinkFindingsItem(t *testing.T) {
 
 		// Act
 		obj.SetSeverity(fernTestValueSeverity)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersEmailDesignSystem(t *testing.T) {
+	t.Run("SetCompositionSpine", func(t *testing.T) {
+		obj := &EmailDesignSystem{}
+		var fernTestValueCompositionSpine EmailDesignSystemCompositionSpine
+		obj.SetCompositionSpine(fernTestValueCompositionSpine)
+		assert.Equal(t, fernTestValueCompositionSpine, obj.CompositionSpine)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetDesignCode", func(t *testing.T) {
+		obj := &EmailDesignSystem{}
+		var fernTestValueDesignCode *EmailDesignSystemDesignCode
+		obj.SetDesignCode(fernTestValueDesignCode)
+		assert.Equal(t, fernTestValueDesignCode, obj.DesignCode)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetSource", func(t *testing.T) {
+		obj := &EmailDesignSystem{}
+		var fernTestValueSource EmailDesignSystemSource
+		obj.SetSource(fernTestValueSource)
+		assert.Equal(t, fernTestValueSource, obj.Source)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetVersion", func(t *testing.T) {
+		obj := &EmailDesignSystem{}
+		var fernTestValueVersion int
+		obj.SetVersion(fernTestValueVersion)
+		assert.Equal(t, fernTestValueVersion, obj.Version)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersEmailDesignSystem(t *testing.T) {
+	t.Run("GetCompositionSpine", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &EmailDesignSystem{}
+		var expected EmailDesignSystemCompositionSpine
+		obj.CompositionSpine = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCompositionSpine(), "getter should return the property value")
+	})
+
+	t.Run("GetCompositionSpine_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *EmailDesignSystem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCompositionSpine() // Should return zero value
+	})
+
+	t.Run("GetDesignCode", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &EmailDesignSystem{}
+		var expected *EmailDesignSystemDesignCode
+		obj.DesignCode = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDesignCode(), "getter should return the property value")
+	})
+
+	t.Run("GetDesignCode_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &EmailDesignSystem{}
+		obj.DesignCode = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetDesignCode(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetDesignCode_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *EmailDesignSystem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDesignCode() // Should return zero value
+	})
+
+	t.Run("GetSource", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &EmailDesignSystem{}
+		var expected EmailDesignSystemSource
+		obj.Source = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSource(), "getter should return the property value")
+	})
+
+	t.Run("GetSource_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *EmailDesignSystem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSource() // Should return zero value
+	})
+
+	t.Run("GetVersion", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &EmailDesignSystem{}
+		var expected int
+		obj.Version = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetVersion(), "getter should return the property value")
+	})
+
+	t.Run("GetVersion_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *EmailDesignSystem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetVersion() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitEmailDesignSystem(t *testing.T) {
+	t.Run("SetCompositionSpine_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &EmailDesignSystem{}
+		var fernTestValueCompositionSpine EmailDesignSystemCompositionSpine
+
+		// Act
+		obj.SetCompositionSpine(fernTestValueCompositionSpine)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetDesignCode_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &EmailDesignSystem{}
+		var fernTestValueDesignCode *EmailDesignSystemDesignCode
+
+		// Act
+		obj.SetDesignCode(fernTestValueDesignCode)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSource_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &EmailDesignSystem{}
+		var fernTestValueSource EmailDesignSystemSource
+
+		// Act
+		obj.SetSource(fernTestValueSource)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetVersion_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &EmailDesignSystem{}
+		var fernTestValueVersion int
+
+		// Act
+		obj.SetVersion(fernTestValueVersion)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersEmailDesignSystemDesignCode(t *testing.T) {
+	t.Run("SetButtonShape", func(t *testing.T) {
+		obj := &EmailDesignSystemDesignCode{}
+		var fernTestValueButtonShape EmailDesignSystemDesignCodeButtonShape
+		obj.SetButtonShape(fernTestValueButtonShape)
+		assert.Equal(t, fernTestValueButtonShape, obj.ButtonShape)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetDensity", func(t *testing.T) {
+		obj := &EmailDesignSystemDesignCode{}
+		var fernTestValueDensity EmailDesignSystemDesignCodeDensity
+		obj.SetDensity(fernTestValueDensity)
+		assert.Equal(t, fernTestValueDensity, obj.Density)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetDividerStyle", func(t *testing.T) {
+		obj := &EmailDesignSystemDesignCode{}
+		var fernTestValueDividerStyle EmailDesignSystemDesignCodeDividerStyle
+		obj.SetDividerStyle(fernTestValueDividerStyle)
+		assert.Equal(t, fernTestValueDividerStyle, obj.DividerStyle)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetKickerStyle", func(t *testing.T) {
+		obj := &EmailDesignSystemDesignCode{}
+		var fernTestValueKickerStyle EmailDesignSystemDesignCodeKickerStyle
+		obj.SetKickerStyle(fernTestValueKickerStyle)
+		assert.Equal(t, fernTestValueKickerStyle, obj.KickerStyle)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetOpenerTreatments", func(t *testing.T) {
+		obj := &EmailDesignSystemDesignCode{}
+		var fernTestValueOpenerTreatments []EmailDesignSystemDesignCodeOpenerTreatmentsItem
+		obj.SetOpenerTreatments(fernTestValueOpenerTreatments)
+		assert.Equal(t, fernTestValueOpenerTreatments, obj.OpenerTreatments)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetTitleAlignment", func(t *testing.T) {
+		obj := &EmailDesignSystemDesignCode{}
+		var fernTestValueTitleAlignment EmailDesignSystemDesignCodeTitleAlignment
+		obj.SetTitleAlignment(fernTestValueTitleAlignment)
+		assert.Equal(t, fernTestValueTitleAlignment, obj.TitleAlignment)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetVersion", func(t *testing.T) {
+		obj := &EmailDesignSystemDesignCode{}
+		var fernTestValueVersion int
+		obj.SetVersion(fernTestValueVersion)
+		assert.Equal(t, fernTestValueVersion, obj.Version)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersEmailDesignSystemDesignCode(t *testing.T) {
+	t.Run("GetButtonShape", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &EmailDesignSystemDesignCode{}
+		var expected EmailDesignSystemDesignCodeButtonShape
+		obj.ButtonShape = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetButtonShape(), "getter should return the property value")
+	})
+
+	t.Run("GetButtonShape_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *EmailDesignSystemDesignCode
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetButtonShape() // Should return zero value
+	})
+
+	t.Run("GetDensity", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &EmailDesignSystemDesignCode{}
+		var expected EmailDesignSystemDesignCodeDensity
+		obj.Density = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDensity(), "getter should return the property value")
+	})
+
+	t.Run("GetDensity_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *EmailDesignSystemDesignCode
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDensity() // Should return zero value
+	})
+
+	t.Run("GetDividerStyle", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &EmailDesignSystemDesignCode{}
+		var expected EmailDesignSystemDesignCodeDividerStyle
+		obj.DividerStyle = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDividerStyle(), "getter should return the property value")
+	})
+
+	t.Run("GetDividerStyle_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *EmailDesignSystemDesignCode
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDividerStyle() // Should return zero value
+	})
+
+	t.Run("GetKickerStyle", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &EmailDesignSystemDesignCode{}
+		var expected EmailDesignSystemDesignCodeKickerStyle
+		obj.KickerStyle = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetKickerStyle(), "getter should return the property value")
+	})
+
+	t.Run("GetKickerStyle_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *EmailDesignSystemDesignCode
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetKickerStyle() // Should return zero value
+	})
+
+	t.Run("GetOpenerTreatments", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &EmailDesignSystemDesignCode{}
+		var expected []EmailDesignSystemDesignCodeOpenerTreatmentsItem
+		obj.OpenerTreatments = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetOpenerTreatments(), "getter should return the property value")
+	})
+
+	t.Run("GetOpenerTreatments_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &EmailDesignSystemDesignCode{}
+		obj.OpenerTreatments = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetOpenerTreatments(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetOpenerTreatments_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *EmailDesignSystemDesignCode
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetOpenerTreatments() // Should return zero value
+	})
+
+	t.Run("GetTitleAlignment", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &EmailDesignSystemDesignCode{}
+		var expected EmailDesignSystemDesignCodeTitleAlignment
+		obj.TitleAlignment = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetTitleAlignment(), "getter should return the property value")
+	})
+
+	t.Run("GetTitleAlignment_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *EmailDesignSystemDesignCode
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetTitleAlignment() // Should return zero value
+	})
+
+	t.Run("GetVersion", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &EmailDesignSystemDesignCode{}
+		var expected int
+		obj.Version = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetVersion(), "getter should return the property value")
+	})
+
+	t.Run("GetVersion_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *EmailDesignSystemDesignCode
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetVersion() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitEmailDesignSystemDesignCode(t *testing.T) {
+	t.Run("SetButtonShape_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &EmailDesignSystemDesignCode{}
+		var fernTestValueButtonShape EmailDesignSystemDesignCodeButtonShape
+
+		// Act
+		obj.SetButtonShape(fernTestValueButtonShape)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetDensity_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &EmailDesignSystemDesignCode{}
+		var fernTestValueDensity EmailDesignSystemDesignCodeDensity
+
+		// Act
+		obj.SetDensity(fernTestValueDensity)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetDividerStyle_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &EmailDesignSystemDesignCode{}
+		var fernTestValueDividerStyle EmailDesignSystemDesignCodeDividerStyle
+
+		// Act
+		obj.SetDividerStyle(fernTestValueDividerStyle)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetKickerStyle_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &EmailDesignSystemDesignCode{}
+		var fernTestValueKickerStyle EmailDesignSystemDesignCodeKickerStyle
+
+		// Act
+		obj.SetKickerStyle(fernTestValueKickerStyle)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetOpenerTreatments_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &EmailDesignSystemDesignCode{}
+		var fernTestValueOpenerTreatments []EmailDesignSystemDesignCodeOpenerTreatmentsItem
+
+		// Act
+		obj.SetOpenerTreatments(fernTestValueOpenerTreatments)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetTitleAlignment_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &EmailDesignSystemDesignCode{}
+		var fernTestValueTitleAlignment EmailDesignSystemDesignCodeTitleAlignment
+
+		// Act
+		obj.SetTitleAlignment(fernTestValueTitleAlignment)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetVersion_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &EmailDesignSystemDesignCode{}
+		var fernTestValueVersion int
+
+		// Act
+		obj.SetVersion(fernTestValueVersion)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -20094,6 +20958,72 @@ func TestJSONMarshalingEmailCheckLinkFindingsItem(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingEmailDesignSystem(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &EmailDesignSystem{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled EmailDesignSystem
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj EmailDesignSystem
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj EmailDesignSystem
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestJSONMarshalingEmailDesignSystemDesignCode(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &EmailDesignSystemDesignCode{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled EmailDesignSystemDesignCode
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj EmailDesignSystemDesignCode
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj EmailDesignSystemDesignCode
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingEngagementStats(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -21398,6 +22328,38 @@ func TestStringEmailCheckLinkFindingsItem(t *testing.T) {
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *EmailCheckLinkFindingsItem
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringEmailDesignSystem(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &EmailDesignSystem{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *EmailDesignSystem
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringEmailDesignSystemDesignCode(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &EmailDesignSystemDesignCode{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *EmailDesignSystemDesignCode
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -22815,6 +23777,273 @@ func TestEnumEmailCheckLinkStatus(t *testing.T) {
 	})
 }
 
+func TestEnumEmailDesignSystemCompositionSpine(t *testing.T) {
+	t.Run("NewFromString_hero_led", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewEmailDesignSystemCompositionSpineFromString("hero-led")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, EmailDesignSystemCompositionSpine("hero-led"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_editorial", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewEmailDesignSystemCompositionSpineFromString("editorial")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, EmailDesignSystemCompositionSpine("editorial"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_product_spec", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewEmailDesignSystemCompositionSpineFromString("product-spec")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, EmailDesignSystemCompositionSpine("product-spec"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewEmailDesignSystemCompositionSpineFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewEmailDesignSystemCompositionSpineFromString("hero-led")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumEmailDesignSystemDesignCodeButtonShape(t *testing.T) {
+	t.Run("NewFromString_rounded", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewEmailDesignSystemDesignCodeButtonShapeFromString("rounded")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, EmailDesignSystemDesignCodeButtonShape("rounded"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_pill", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewEmailDesignSystemDesignCodeButtonShapeFromString("pill")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, EmailDesignSystemDesignCodeButtonShape("pill"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewEmailDesignSystemDesignCodeButtonShapeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewEmailDesignSystemDesignCodeButtonShapeFromString("rounded")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumEmailDesignSystemDesignCodeDensity(t *testing.T) {
+	t.Run("NewFromString_airy", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewEmailDesignSystemDesignCodeDensityFromString("airy")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, EmailDesignSystemDesignCodeDensity("airy"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_compact", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewEmailDesignSystemDesignCodeDensityFromString("compact")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, EmailDesignSystemDesignCodeDensity("compact"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewEmailDesignSystemDesignCodeDensityFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewEmailDesignSystemDesignCodeDensityFromString("airy")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumEmailDesignSystemDesignCodeDividerStyle(t *testing.T) {
+	t.Run("NewFromString_line", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewEmailDesignSystemDesignCodeDividerStyleFromString("line")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, EmailDesignSystemDesignCodeDividerStyle("line"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_space", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewEmailDesignSystemDesignCodeDividerStyleFromString("space")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, EmailDesignSystemDesignCodeDividerStyle("space"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewEmailDesignSystemDesignCodeDividerStyleFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewEmailDesignSystemDesignCodeDividerStyleFromString("line")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumEmailDesignSystemDesignCodeKickerStyle(t *testing.T) {
+	t.Run("NewFromString_chip", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewEmailDesignSystemDesignCodeKickerStyleFromString("chip")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, EmailDesignSystemDesignCodeKickerStyle("chip"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_letterspaced", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewEmailDesignSystemDesignCodeKickerStyleFromString("letterspaced")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, EmailDesignSystemDesignCodeKickerStyle("letterspaced"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_none", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewEmailDesignSystemDesignCodeKickerStyleFromString("none")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, EmailDesignSystemDesignCodeKickerStyle("none"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewEmailDesignSystemDesignCodeKickerStyleFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewEmailDesignSystemDesignCodeKickerStyleFromString("chip")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumEmailDesignSystemDesignCodeOpenerTreatmentsItem(t *testing.T) {
+	t.Run("NewFromString_hero_image", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewEmailDesignSystemDesignCodeOpenerTreatmentsItemFromString("hero-image")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, EmailDesignSystemDesignCodeOpenerTreatmentsItem("hero-image"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_hero_color", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewEmailDesignSystemDesignCodeOpenerTreatmentsItemFromString("hero-color")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, EmailDesignSystemDesignCodeOpenerTreatmentsItem("hero-color"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_header_hero", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewEmailDesignSystemDesignCodeOpenerTreatmentsItemFromString("header-hero")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, EmailDesignSystemDesignCodeOpenerTreatmentsItem("header-hero"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_editorial_masthead", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewEmailDesignSystemDesignCodeOpenerTreatmentsItemFromString("editorial-masthead")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, EmailDesignSystemDesignCodeOpenerTreatmentsItem("editorial-masthead"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_title_led", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewEmailDesignSystemDesignCodeOpenerTreatmentsItemFromString("title-led")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, EmailDesignSystemDesignCodeOpenerTreatmentsItem("title-led"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewEmailDesignSystemDesignCodeOpenerTreatmentsItemFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewEmailDesignSystemDesignCodeOpenerTreatmentsItemFromString("hero-image")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumEmailDesignSystemDesignCodeTitleAlignment(t *testing.T) {
+	t.Run("NewFromString_left", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewEmailDesignSystemDesignCodeTitleAlignmentFromString("left")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, EmailDesignSystemDesignCodeTitleAlignment("left"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_center", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewEmailDesignSystemDesignCodeTitleAlignmentFromString("center")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, EmailDesignSystemDesignCodeTitleAlignment("center"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewEmailDesignSystemDesignCodeTitleAlignmentFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewEmailDesignSystemDesignCodeTitleAlignmentFromString("left")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumEmailDesignSystemSource(t *testing.T) {
+	t.Run("NewFromString_derived", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewEmailDesignSystemSourceFromString("derived")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, EmailDesignSystemSource("derived"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_custom", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewEmailDesignSystemSourceFromString("custom")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, EmailDesignSystemSource("custom"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewEmailDesignSystemSourceFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewEmailDesignSystemSourceFromString("derived")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumEmailPreset(t *testing.T) {
 	t.Run("NewFromString_branded", func(t *testing.T) {
 		t.Parallel()
@@ -23915,6 +25144,52 @@ func TestExtraPropertiesEmailCheckLinkFindingsItem(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *EmailCheckLinkFindingsItem
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesEmailDesignSystem(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &EmailDesignSystem{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *EmailDesignSystem
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesEmailDesignSystemDesignCode(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &EmailDesignSystemDesignCode{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *EmailDesignSystemDesignCode
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})

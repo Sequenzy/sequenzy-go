@@ -393,6 +393,22 @@ func TestSettersCompany(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetEmailPreset", func(t *testing.T) {
+		obj := &Company{}
+		var fernTestValueEmailPreset *CompanyEmailPreset
+		obj.SetEmailPreset(fernTestValueEmailPreset)
+		assert.Equal(t, fernTestValueEmailPreset, obj.EmailPreset)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetEmailStylePreference", func(t *testing.T) {
+		obj := &Company{}
+		var fernTestValueEmailStylePreference *CompanyEmailStylePreference
+		obj.SetEmailStylePreference(fernTestValueEmailStylePreference)
+		assert.Equal(t, fernTestValueEmailStylePreference, obj.EmailStylePreference)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetEmailTheme", func(t *testing.T) {
 		obj := &Company{}
 		var fernTestValueEmailTheme map[string]any
@@ -1139,6 +1155,72 @@ func TestGettersCompany(t *testing.T) {
 			}
 		}()
 		_ = obj.GetEmailLocalizationConfig() // Should return zero value
+	})
+
+	t.Run("GetEmailPreset", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Company{}
+		var expected *CompanyEmailPreset
+		obj.EmailPreset = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetEmailPreset(), "getter should return the property value")
+	})
+
+	t.Run("GetEmailPreset_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Company{}
+		obj.EmailPreset = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetEmailPreset(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetEmailPreset_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Company
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetEmailPreset() // Should return zero value
+	})
+
+	t.Run("GetEmailStylePreference", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Company{}
+		var expected *CompanyEmailStylePreference
+		obj.EmailStylePreference = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetEmailStylePreference(), "getter should return the property value")
+	})
+
+	t.Run("GetEmailStylePreference_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Company{}
+		obj.EmailStylePreference = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetEmailStylePreference(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetEmailStylePreference_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Company
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetEmailStylePreference() // Should return zero value
 	})
 
 	t.Run("GetEmailTheme", func(t *testing.T) {
@@ -2407,6 +2489,68 @@ func TestSettersMarkExplicitCompany(t *testing.T) {
 
 		// Act
 		obj.SetEmailLocalizationConfig(fernTestValueEmailLocalizationConfig)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetEmailPreset_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Company{}
+		var fernTestValueEmailPreset *CompanyEmailPreset
+
+		// Act
+		obj.SetEmailPreset(fernTestValueEmailPreset)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetEmailStylePreference_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Company{}
+		var fernTestValueEmailStylePreference *CompanyEmailStylePreference
+
+		// Act
+		obj.SetEmailStylePreference(fernTestValueEmailStylePreference)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -7496,6 +7640,22 @@ func TestSettersUpdateCompaniesRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetEmailPreset", func(t *testing.T) {
+		obj := &UpdateCompaniesRequest{}
+		var fernTestValueEmailPreset *UpdateCompaniesRequestEmailPreset
+		obj.SetEmailPreset(fernTestValueEmailPreset)
+		assert.Equal(t, fernTestValueEmailPreset, obj.EmailPreset)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetEmailStylePreference", func(t *testing.T) {
+		obj := &UpdateCompaniesRequest{}
+		var fernTestValueEmailStylePreference *UpdateCompaniesRequestEmailStylePreference
+		obj.SetEmailStylePreference(fernTestValueEmailStylePreference)
+		assert.Equal(t, fernTestValueEmailStylePreference, obj.EmailStylePreference)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetEmailTheme", func(t *testing.T) {
 		obj := &UpdateCompaniesRequest{}
 		var fernTestValueEmailTheme *UpdateCompaniesRequestEmailTheme
@@ -7955,6 +8115,68 @@ func TestSettersMarkExplicitUpdateCompaniesRequest(t *testing.T) {
 
 		// Act
 		obj.SetEmailLengthPreference(fernTestValueEmailLengthPreference)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetEmailPreset_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateCompaniesRequest{}
+		var fernTestValueEmailPreset *UpdateCompaniesRequestEmailPreset
+
+		// Act
+		obj.SetEmailPreset(fernTestValueEmailPreset)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetEmailStylePreference_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateCompaniesRequest{}
+		var fernTestValueEmailStylePreference *UpdateCompaniesRequestEmailStylePreference
+
+		// Act
+		obj.SetEmailStylePreference(fernTestValueEmailStylePreference)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -9601,6 +9823,64 @@ func TestEnumCompanyEmailLengthPreference(t *testing.T) {
 	})
 }
 
+func TestEnumCompanyEmailPreset(t *testing.T) {
+	t.Run("NewFromString_branded", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyEmailPresetFromString("branded")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyEmailPreset("branded"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_minimal", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyEmailPresetFromString("minimal")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyEmailPreset("minimal"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewCompanyEmailPresetFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewCompanyEmailPresetFromString("branded")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumCompanyEmailStylePreference(t *testing.T) {
+	t.Run("NewFromString_visual", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyEmailStylePreferenceFromString("visual")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyEmailStylePreference("visual"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_plain", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyEmailStylePreferenceFromString("plain")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyEmailStylePreference("plain"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewCompanyEmailStylePreferenceFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewCompanyEmailStylePreferenceFromString("visual")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumCompanyReplyTrackingDomainMode(t *testing.T) {
 	t.Run("NewFromString_sequenzy", func(t *testing.T) {
 		t.Parallel()
@@ -9688,6 +9968,64 @@ func TestEnumUpdateCompaniesRequestEmailLengthPreference(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewUpdateCompaniesRequestEmailLengthPreferenceFromString("concise")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumUpdateCompaniesRequestEmailPreset(t *testing.T) {
+	t.Run("NewFromString_branded", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateCompaniesRequestEmailPresetFromString("branded")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateCompaniesRequestEmailPreset("branded"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_minimal", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateCompaniesRequestEmailPresetFromString("minimal")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateCompaniesRequestEmailPreset("minimal"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewUpdateCompaniesRequestEmailPresetFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewUpdateCompaniesRequestEmailPresetFromString("branded")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumUpdateCompaniesRequestEmailStylePreference(t *testing.T) {
+	t.Run("NewFromString_visual", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateCompaniesRequestEmailStylePreferenceFromString("visual")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateCompaniesRequestEmailStylePreference("visual"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_plain", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateCompaniesRequestEmailStylePreferenceFromString("plain")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateCompaniesRequestEmailStylePreference("plain"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewUpdateCompaniesRequestEmailStylePreferenceFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewUpdateCompaniesRequestEmailStylePreferenceFromString("visual")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)

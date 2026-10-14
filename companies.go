@@ -141,29 +141,31 @@ var (
 	companyFieldEmailDirection           = big.NewInt(1 << 14)
 	companyFieldEmailLengthPreference    = big.NewInt(1 << 15)
 	companyFieldEmailLocalizationConfig  = big.NewInt(1 << 16)
-	companyFieldEmailTheme               = big.NewInt(1 << 17)
-	companyFieldFontFamily               = big.NewInt(1 << 18)
-	companyFieldForwardReplies           = big.NewInt(1 << 19)
-	companyFieldFounderName              = big.NewInt(1 << 20)
-	companyFieldID                       = big.NewInt(1 << 21)
-	companyFieldLanguage                 = big.NewInt(1 << 22)
-	companyFieldLogoURL                  = big.NewInt(1 << 23)
-	companyFieldName                     = big.NewInt(1 << 24)
-	companyFieldPreviewURL               = big.NewInt(1 << 25)
-	companyFieldPricing                  = big.NewInt(1 << 26)
-	companyFieldPrimaryColor             = big.NewInt(1 << 27)
-	companyFieldPrivacyPolicyURL         = big.NewInt(1 << 28)
-	companyFieldReplyRetentionDays       = big.NewInt(1 << 29)
-	companyFieldReplyTrackingDomainMode  = big.NewInt(1 << 30)
-	companyFieldReplyTrackingEnabled     = big.NewInt(1 << 31)
-	companyFieldSocialLinks              = big.NewInt(1 << 32)
-	companyFieldStatus                   = big.NewInt(1 << 33)
-	companyFieldTermsURL                 = big.NewInt(1 << 34)
-	companyFieldTestimonials             = big.NewInt(1 << 35)
-	companyFieldToneVoice                = big.NewInt(1 << 36)
-	companyFieldURL                      = big.NewInt(1 << 37)
-	companyFieldValueProps               = big.NewInt(1 << 38)
-	companyFieldWebsiteURL               = big.NewInt(1 << 39)
+	companyFieldEmailPreset              = big.NewInt(1 << 17)
+	companyFieldEmailStylePreference     = big.NewInt(1 << 18)
+	companyFieldEmailTheme               = big.NewInt(1 << 19)
+	companyFieldFontFamily               = big.NewInt(1 << 20)
+	companyFieldForwardReplies           = big.NewInt(1 << 21)
+	companyFieldFounderName              = big.NewInt(1 << 22)
+	companyFieldID                       = big.NewInt(1 << 23)
+	companyFieldLanguage                 = big.NewInt(1 << 24)
+	companyFieldLogoURL                  = big.NewInt(1 << 25)
+	companyFieldName                     = big.NewInt(1 << 26)
+	companyFieldPreviewURL               = big.NewInt(1 << 27)
+	companyFieldPricing                  = big.NewInt(1 << 28)
+	companyFieldPrimaryColor             = big.NewInt(1 << 29)
+	companyFieldPrivacyPolicyURL         = big.NewInt(1 << 30)
+	companyFieldReplyRetentionDays       = big.NewInt(1 << 31)
+	companyFieldReplyTrackingDomainMode  = big.NewInt(1 << 32)
+	companyFieldReplyTrackingEnabled     = big.NewInt(1 << 33)
+	companyFieldSocialLinks              = big.NewInt(1 << 34)
+	companyFieldStatus                   = big.NewInt(1 << 35)
+	companyFieldTermsURL                 = big.NewInt(1 << 36)
+	companyFieldTestimonials             = big.NewInt(1 << 37)
+	companyFieldToneVoice                = big.NewInt(1 << 38)
+	companyFieldURL                      = big.NewInt(1 << 39)
+	companyFieldValueProps               = big.NewInt(1 << 40)
+	companyFieldWebsiteURL               = big.NewInt(1 << 41)
 )
 
 type Company struct {
@@ -188,8 +190,12 @@ type Company struct {
 	// How long AI-written email copy should be. New workspaces default to `concise`.
 	EmailLengthPreference   *CompanyEmailLengthPreference `json:"emailLengthPreference,omitempty" url:"emailLengthPreference,omitempty"`
 	EmailLocalizationConfig map[string]any                `json:"emailLocalizationConfig,omitempty" url:"emailLocalizationConfig,omitempty"`
-	EmailTheme              map[string]any                `json:"emailTheme,omitempty" url:"emailTheme,omitempty"`
-	FontFamily              *string                       `json:"fontFamily,omitempty" url:"fontFamily,omitempty"`
+	// Default header and footer for new emails. `branded` adds the logo header and the full footer with social links; `minimal` uses no logo and a compact footer. While a saved reference email exists, AI-generated emails use its header and footer instead until it is cleared.
+	EmailPreset *CompanyEmailPreset `json:"emailPreset,omitempty" url:"emailPreset,omitempty"`
+	// How AI writes emails by default. `visual` designs emails with sections and imagery; `plain` writes simple text-focused emails with one button. Both use the company theme, header and footer. `null` means not chosen yet: generation designs emails until a choice is made. A saved reference email keeps generated emails designed until it is cleared.
+	EmailStylePreference *CompanyEmailStylePreference `json:"emailStylePreference,omitempty" url:"emailStylePreference,omitempty"`
+	EmailTheme           map[string]any               `json:"emailTheme,omitempty" url:"emailTheme,omitempty"`
+	FontFamily           *string                      `json:"fontFamily,omitempty" url:"fontFamily,omitempty"`
 	// Whether captured replies are forwarded to the configured mailbox.
 	ForwardReplies *bool   `json:"forwardReplies,omitempty" url:"forwardReplies,omitempty"`
 	FounderName    *string `json:"founderName,omitempty" url:"founderName,omitempty"`
@@ -342,6 +348,20 @@ func (c *Company) GetEmailLocalizationConfig() map[string]any {
 		return nil
 	}
 	return c.EmailLocalizationConfig
+}
+
+func (c *Company) GetEmailPreset() *CompanyEmailPreset {
+	if c == nil {
+		return nil
+	}
+	return c.EmailPreset
+}
+
+func (c *Company) GetEmailStylePreference() *CompanyEmailStylePreference {
+	if c == nil {
+		return nil
+	}
+	return c.EmailStylePreference
 }
 
 func (c *Company) GetEmailTheme() map[string]any {
@@ -636,6 +656,20 @@ func (c *Company) SetEmailLengthPreference(emailLengthPreference *CompanyEmailLe
 func (c *Company) SetEmailLocalizationConfig(emailLocalizationConfig map[string]any) {
 	c.EmailLocalizationConfig = emailLocalizationConfig
 	c.require(companyFieldEmailLocalizationConfig)
+}
+
+// SetEmailPreset sets the EmailPreset field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *Company) SetEmailPreset(emailPreset *CompanyEmailPreset) {
+	c.EmailPreset = emailPreset
+	c.require(companyFieldEmailPreset)
+}
+
+// SetEmailStylePreference sets the EmailStylePreference field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *Company) SetEmailStylePreference(emailStylePreference *CompanyEmailStylePreference) {
+	c.EmailStylePreference = emailStylePreference
+	c.require(companyFieldEmailStylePreference)
 }
 
 // SetEmailTheme sets the EmailTheme field and marks it as non-optional;
@@ -1239,6 +1273,52 @@ func (c CompanyEmailLengthPreference) Ptr() *CompanyEmailLengthPreference {
 	return &c
 }
 
+// Default header and footer for new emails. `branded` adds the logo header and the full footer with social links; `minimal` uses no logo and a compact footer. While a saved reference email exists, AI-generated emails use its header and footer instead until it is cleared.
+type CompanyEmailPreset string
+
+const (
+	CompanyEmailPresetBranded CompanyEmailPreset = "branded"
+	CompanyEmailPresetMinimal CompanyEmailPreset = "minimal"
+)
+
+func NewCompanyEmailPresetFromString(s string) (CompanyEmailPreset, error) {
+	switch s {
+	case "branded":
+		return CompanyEmailPresetBranded, nil
+	case "minimal":
+		return CompanyEmailPresetMinimal, nil
+	}
+	var t CompanyEmailPreset
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CompanyEmailPreset) Ptr() *CompanyEmailPreset {
+	return &c
+}
+
+// How AI writes emails by default. `visual` designs emails with sections and imagery; `plain` writes simple text-focused emails with one button. Both use the company theme, header and footer. `null` means not chosen yet: generation designs emails until a choice is made. A saved reference email keeps generated emails designed until it is cleared.
+type CompanyEmailStylePreference string
+
+const (
+	CompanyEmailStylePreferenceVisual CompanyEmailStylePreference = "visual"
+	CompanyEmailStylePreferencePlain  CompanyEmailStylePreference = "plain"
+)
+
+func NewCompanyEmailStylePreferenceFromString(s string) (CompanyEmailStylePreference, error) {
+	switch s {
+	case "visual":
+		return CompanyEmailStylePreferenceVisual, nil
+	case "plain":
+		return CompanyEmailStylePreferencePlain, nil
+	}
+	var t CompanyEmailStylePreference
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CompanyEmailStylePreference) Ptr() *CompanyEmailStylePreference {
+	return &c
+}
+
 // Whether reply capture uses Sequenzy's managed inbound domain or a configured custom domain.
 type CompanyReplyTrackingDomainMode string
 
@@ -1803,6 +1883,52 @@ func NewUpdateCompaniesRequestEmailLengthPreferenceFromString(s string) (UpdateC
 }
 
 func (u UpdateCompaniesRequestEmailLengthPreference) Ptr() *UpdateCompaniesRequestEmailLengthPreference {
+	return &u
+}
+
+// Default header and footer for new emails: `branded` (logo header and full footer) or `minimal` (compact footer, no logo). Existing emails keep their own setting. While a saved reference email exists, AI-generated emails use its header and footer instead until it is cleared. Other strings return 400; values that are not a string return 422.
+type UpdateCompaniesRequestEmailPreset string
+
+const (
+	UpdateCompaniesRequestEmailPresetBranded UpdateCompaniesRequestEmailPreset = "branded"
+	UpdateCompaniesRequestEmailPresetMinimal UpdateCompaniesRequestEmailPreset = "minimal"
+)
+
+func NewUpdateCompaniesRequestEmailPresetFromString(s string) (UpdateCompaniesRequestEmailPreset, error) {
+	switch s {
+	case "branded":
+		return UpdateCompaniesRequestEmailPresetBranded, nil
+	case "minimal":
+		return UpdateCompaniesRequestEmailPresetMinimal, nil
+	}
+	var t UpdateCompaniesRequestEmailPreset
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateCompaniesRequestEmailPreset) Ptr() *UpdateCompaniesRequestEmailPreset {
+	return &u
+}
+
+// How AI writes emails by default: `visual` for designed emails, `plain` for simple text-focused emails. `null` clears the choice, so generation designs emails and the dashboard asks again. Other strings return 400; values that are not a string or `null` return 422.
+type UpdateCompaniesRequestEmailStylePreference string
+
+const (
+	UpdateCompaniesRequestEmailStylePreferenceVisual UpdateCompaniesRequestEmailStylePreference = "visual"
+	UpdateCompaniesRequestEmailStylePreferencePlain  UpdateCompaniesRequestEmailStylePreference = "plain"
+)
+
+func NewUpdateCompaniesRequestEmailStylePreferenceFromString(s string) (UpdateCompaniesRequestEmailStylePreference, error) {
+	switch s {
+	case "visual":
+		return UpdateCompaniesRequestEmailStylePreferenceVisual, nil
+	case "plain":
+		return UpdateCompaniesRequestEmailStylePreferencePlain, nil
+	}
+	var t UpdateCompaniesRequestEmailStylePreference
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateCompaniesRequestEmailStylePreference) Ptr() *UpdateCompaniesRequestEmailStylePreference {
 	return &u
 }
 
@@ -2838,31 +2964,33 @@ var (
 	updateCompaniesRequestFieldEmailDesignPrompt        = big.NewInt(1 << 6)
 	updateCompaniesRequestFieldEmailDirection           = big.NewInt(1 << 7)
 	updateCompaniesRequestFieldEmailLengthPreference    = big.NewInt(1 << 8)
-	updateCompaniesRequestFieldEmailTheme               = big.NewInt(1 << 9)
-	updateCompaniesRequestFieldFontFamily               = big.NewInt(1 << 10)
-	updateCompaniesRequestFieldForwardReplies           = big.NewInt(1 << 11)
-	updateCompaniesRequestFieldFounderName              = big.NewInt(1 << 12)
-	updateCompaniesRequestFieldFromEmail                = big.NewInt(1 << 13)
-	updateCompaniesRequestFieldFromName                 = big.NewInt(1 << 14)
-	updateCompaniesRequestFieldLanguage                 = big.NewInt(1 << 15)
-	updateCompaniesRequestFieldLogoURL                  = big.NewInt(1 << 16)
-	updateCompaniesRequestFieldName                     = big.NewInt(1 << 17)
-	updateCompaniesRequestFieldPreviousCompanyName      = big.NewInt(1 << 18)
-	updateCompaniesRequestFieldPricing                  = big.NewInt(1 << 19)
-	updateCompaniesRequestFieldPrimaryColor             = big.NewInt(1 << 20)
-	updateCompaniesRequestFieldPrivacyPolicyURL         = big.NewInt(1 << 21)
-	updateCompaniesRequestFieldRenameMatchingFooters    = big.NewInt(1 << 22)
-	updateCompaniesRequestFieldReplyProfileID           = big.NewInt(1 << 23)
-	updateCompaniesRequestFieldReplyTo                  = big.NewInt(1 << 24)
-	updateCompaniesRequestFieldReplyToName              = big.NewInt(1 << 25)
-	updateCompaniesRequestFieldReplyTrackingDomainMode  = big.NewInt(1 << 26)
-	updateCompaniesRequestFieldReplyTrackingEnabled     = big.NewInt(1 << 27)
-	updateCompaniesRequestFieldSenderProfileID          = big.NewInt(1 << 28)
-	updateCompaniesRequestFieldSocialLinks              = big.NewInt(1 << 29)
-	updateCompaniesRequestFieldTermsURL                 = big.NewInt(1 << 30)
-	updateCompaniesRequestFieldTestimonials             = big.NewInt(1 << 31)
-	updateCompaniesRequestFieldToneVoice                = big.NewInt(1 << 32)
-	updateCompaniesRequestFieldValueProps               = big.NewInt(1 << 33)
+	updateCompaniesRequestFieldEmailPreset              = big.NewInt(1 << 9)
+	updateCompaniesRequestFieldEmailStylePreference     = big.NewInt(1 << 10)
+	updateCompaniesRequestFieldEmailTheme               = big.NewInt(1 << 11)
+	updateCompaniesRequestFieldFontFamily               = big.NewInt(1 << 12)
+	updateCompaniesRequestFieldForwardReplies           = big.NewInt(1 << 13)
+	updateCompaniesRequestFieldFounderName              = big.NewInt(1 << 14)
+	updateCompaniesRequestFieldFromEmail                = big.NewInt(1 << 15)
+	updateCompaniesRequestFieldFromName                 = big.NewInt(1 << 16)
+	updateCompaniesRequestFieldLanguage                 = big.NewInt(1 << 17)
+	updateCompaniesRequestFieldLogoURL                  = big.NewInt(1 << 18)
+	updateCompaniesRequestFieldName                     = big.NewInt(1 << 19)
+	updateCompaniesRequestFieldPreviousCompanyName      = big.NewInt(1 << 20)
+	updateCompaniesRequestFieldPricing                  = big.NewInt(1 << 21)
+	updateCompaniesRequestFieldPrimaryColor             = big.NewInt(1 << 22)
+	updateCompaniesRequestFieldPrivacyPolicyURL         = big.NewInt(1 << 23)
+	updateCompaniesRequestFieldRenameMatchingFooters    = big.NewInt(1 << 24)
+	updateCompaniesRequestFieldReplyProfileID           = big.NewInt(1 << 25)
+	updateCompaniesRequestFieldReplyTo                  = big.NewInt(1 << 26)
+	updateCompaniesRequestFieldReplyToName              = big.NewInt(1 << 27)
+	updateCompaniesRequestFieldReplyTrackingDomainMode  = big.NewInt(1 << 28)
+	updateCompaniesRequestFieldReplyTrackingEnabled     = big.NewInt(1 << 29)
+	updateCompaniesRequestFieldSenderProfileID          = big.NewInt(1 << 30)
+	updateCompaniesRequestFieldSocialLinks              = big.NewInt(1 << 31)
+	updateCompaniesRequestFieldTermsURL                 = big.NewInt(1 << 32)
+	updateCompaniesRequestFieldTestimonials             = big.NewInt(1 << 33)
+	updateCompaniesRequestFieldToneVoice                = big.NewInt(1 << 34)
+	updateCompaniesRequestFieldValueProps               = big.NewInt(1 << 35)
 )
 
 type UpdateCompaniesRequest struct {
@@ -2879,6 +3007,10 @@ type UpdateCompaniesRequest struct {
 	EmailDirection    *UpdateCompaniesRequestEmailDirection `json:"emailDirection,omitempty" url:"-"`
 	// How long AI-written email copy should be. New workspaces default to `concise`.
 	EmailLengthPreference *UpdateCompaniesRequestEmailLengthPreference `json:"emailLengthPreference,omitempty" url:"-"`
+	// Default header and footer for new emails: `branded` (logo header and full footer) or `minimal` (compact footer, no logo). Existing emails keep their own setting. While a saved reference email exists, AI-generated emails use its header and footer instead until it is cleared. Other strings return 400; values that are not a string return 422.
+	EmailPreset *UpdateCompaniesRequestEmailPreset `json:"emailPreset,omitempty" url:"-"`
+	// How AI writes emails by default: `visual` for designed emails, `plain` for simple text-focused emails. `null` clears the choice, so generation designs emails and the dashboard asks again. Other strings return 400; values that are not a string or `null` return 422.
+	EmailStylePreference *UpdateCompaniesRequestEmailStylePreference `json:"emailStylePreference,omitempty" url:"-"`
 	// Default email theme. Partial update - omitted fields keep their current value (or the preset default) and numeric values are clamped to supported ranges. Pass null to reset to the platform default theme.
 	EmailTheme *UpdateCompaniesRequestEmailTheme `json:"emailTheme,omitempty" url:"-"`
 	FontFamily *string                           `json:"fontFamily,omitempty" url:"-"`
@@ -2990,6 +3122,20 @@ func (u *UpdateCompaniesRequest) SetEmailDirection(emailDirection *UpdateCompani
 func (u *UpdateCompaniesRequest) SetEmailLengthPreference(emailLengthPreference *UpdateCompaniesRequestEmailLengthPreference) {
 	u.EmailLengthPreference = emailLengthPreference
 	u.require(updateCompaniesRequestFieldEmailLengthPreference)
+}
+
+// SetEmailPreset sets the EmailPreset field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateCompaniesRequest) SetEmailPreset(emailPreset *UpdateCompaniesRequestEmailPreset) {
+	u.EmailPreset = emailPreset
+	u.require(updateCompaniesRequestFieldEmailPreset)
+}
+
+// SetEmailStylePreference sets the EmailStylePreference field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateCompaniesRequest) SetEmailStylePreference(emailStylePreference *UpdateCompaniesRequestEmailStylePreference) {
+	u.EmailStylePreference = emailStylePreference
+	u.require(updateCompaniesRequestFieldEmailStylePreference)
 }
 
 // SetEmailTheme sets the EmailTheme field and marks it as non-optional;

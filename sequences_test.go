@@ -20266,6 +20266,14 @@ func TestSettersSequenceDelayInput(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetUntilTimezoneSource", func(t *testing.T) {
+		obj := &SequenceDelayInput{}
+		var fernTestValueUntilTimezoneSource *SequenceDelayInputUntilTimezoneSource
+		obj.SetUntilTimezoneSource(fernTestValueUntilTimezoneSource)
+		assert.Equal(t, fernTestValueUntilTimezoneSource, obj.UntilTimezoneSource)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 }
 
 func TestGettersSequenceDelayInput(t *testing.T) {
@@ -20929,6 +20937,39 @@ func TestGettersSequenceDelayInput(t *testing.T) {
 		_ = obj.GetUntilTimezone() // Should return zero value
 	})
 
+	t.Run("GetUntilTimezoneSource", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceDelayInput{}
+		var expected *SequenceDelayInputUntilTimezoneSource
+		obj.UntilTimezoneSource = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetUntilTimezoneSource(), "getter should return the property value")
+	})
+
+	t.Run("GetUntilTimezoneSource_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceDelayInput{}
+		obj.UntilTimezoneSource = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetUntilTimezoneSource(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetUntilTimezoneSource_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequenceDelayInput
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetUntilTimezoneSource() // Should return zero value
+	})
+
 }
 
 func TestSettersMarkExplicitSequenceDelayInput(t *testing.T) {
@@ -21529,6 +21570,37 @@ func TestSettersMarkExplicitSequenceDelayInput(t *testing.T) {
 
 		// Act
 		obj.SetUntilTimezone(fernTestValueUntilTimezone)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetUntilTimezoneSource_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceDelayInput{}
+		var fernTestValueUntilTimezoneSource *SequenceDelayInputUntilTimezoneSource
+
+		// Act
+		obj.SetUntilTimezoneSource(fernTestValueUntilTimezoneSource)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -63066,6 +63138,14 @@ func TestSettersSequenceWaitUntilWeekdayInput(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetTimezoneSource", func(t *testing.T) {
+		obj := &SequenceWaitUntilWeekdayInput{}
+		var fernTestValueTimezoneSource *SequenceWaitUntilWeekdayInputTimezoneSource
+		obj.SetTimezoneSource(fernTestValueTimezoneSource)
+		assert.Equal(t, fernTestValueTimezoneSource, obj.TimezoneSource)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetUntilEndTime", func(t *testing.T) {
 		obj := &SequenceWaitUntilWeekdayInput{}
 		var fernTestValueUntilEndTime *string
@@ -63087,6 +63167,14 @@ func TestSettersSequenceWaitUntilWeekdayInput(t *testing.T) {
 		var fernTestValueUntilTimezone *string
 		obj.SetUntilTimezone(fernTestValueUntilTimezone)
 		assert.Equal(t, fernTestValueUntilTimezone, obj.UntilTimezone)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetUntilTimezoneSource", func(t *testing.T) {
+		obj := &SequenceWaitUntilWeekdayInput{}
+		var fernTestValueUntilTimezoneSource *SequenceWaitUntilWeekdayInputUntilTimezoneSource
+		obj.SetUntilTimezoneSource(fernTestValueUntilTimezoneSource)
+		assert.Equal(t, fernTestValueUntilTimezoneSource, obj.UntilTimezoneSource)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -63258,6 +63346,39 @@ func TestGettersSequenceWaitUntilWeekdayInput(t *testing.T) {
 		_ = obj.GetTimezone() // Should return zero value
 	})
 
+	t.Run("GetTimezoneSource", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceWaitUntilWeekdayInput{}
+		var expected *SequenceWaitUntilWeekdayInputTimezoneSource
+		obj.TimezoneSource = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetTimezoneSource(), "getter should return the property value")
+	})
+
+	t.Run("GetTimezoneSource_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceWaitUntilWeekdayInput{}
+		obj.TimezoneSource = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetTimezoneSource(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetTimezoneSource_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequenceWaitUntilWeekdayInput
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetTimezoneSource() // Should return zero value
+	})
+
 	t.Run("GetUntilEndTime", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -63355,6 +63476,39 @@ func TestGettersSequenceWaitUntilWeekdayInput(t *testing.T) {
 			}
 		}()
 		_ = obj.GetUntilTimezone() // Should return zero value
+	})
+
+	t.Run("GetUntilTimezoneSource", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceWaitUntilWeekdayInput{}
+		var expected *SequenceWaitUntilWeekdayInputUntilTimezoneSource
+		obj.UntilTimezoneSource = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetUntilTimezoneSource(), "getter should return the property value")
+	})
+
+	t.Run("GetUntilTimezoneSource_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceWaitUntilWeekdayInput{}
+		obj.UntilTimezoneSource = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetUntilTimezoneSource(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetUntilTimezoneSource_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequenceWaitUntilWeekdayInput
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetUntilTimezoneSource() // Should return zero value
 	})
 
 }
@@ -63515,6 +63669,37 @@ func TestSettersMarkExplicitSequenceWaitUntilWeekdayInput(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetTimezoneSource_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceWaitUntilWeekdayInput{}
+		var fernTestValueTimezoneSource *SequenceWaitUntilWeekdayInputTimezoneSource
+
+		// Act
+		obj.SetTimezoneSource(fernTestValueTimezoneSource)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetUntilEndTime_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -63585,6 +63770,37 @@ func TestSettersMarkExplicitSequenceWaitUntilWeekdayInput(t *testing.T) {
 
 		// Act
 		obj.SetUntilTimezone(fernTestValueUntilTimezone)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetUntilTimezoneSource_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceWaitUntilWeekdayInput{}
+		var fernTestValueUntilTimezoneSource *SequenceWaitUntilWeekdayInputUntilTimezoneSource
+
+		// Act
+		obj.SetUntilTimezoneSource(fernTestValueUntilTimezoneSource)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -86370,6 +86586,35 @@ func TestEnumSequenceDelayInputUntilPastAction(t *testing.T) {
 	})
 }
 
+func TestEnumSequenceDelayInputUntilTimezoneSource(t *testing.T) {
+	t.Run("NewFromString_fixed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSequenceDelayInputUntilTimezoneSourceFromString("fixed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SequenceDelayInputUntilTimezoneSource("fixed"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_subscriber", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSequenceDelayInputUntilTimezoneSourceFromString("subscriber")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SequenceDelayInputUntilTimezoneSource("subscriber"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewSequenceDelayInputUntilTimezoneSourceFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewSequenceDelayInputUntilTimezoneSourceFromString("fixed")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumSequenceDetailsEnrichmentStatus(t *testing.T) {
 	t.Run("NewFromString_pending", func(t *testing.T) {
 		t.Parallel()
@@ -89097,6 +89342,64 @@ func TestEnumSequenceWaitUntilKeyDateInputUntilPastAction(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewSequenceWaitUntilKeyDateInputUntilPastActionFromString("continue")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumSequenceWaitUntilWeekdayInputTimezoneSource(t *testing.T) {
+	t.Run("NewFromString_fixed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSequenceWaitUntilWeekdayInputTimezoneSourceFromString("fixed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SequenceWaitUntilWeekdayInputTimezoneSource("fixed"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_subscriber", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSequenceWaitUntilWeekdayInputTimezoneSourceFromString("subscriber")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SequenceWaitUntilWeekdayInputTimezoneSource("subscriber"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewSequenceWaitUntilWeekdayInputTimezoneSourceFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewSequenceWaitUntilWeekdayInputTimezoneSourceFromString("fixed")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumSequenceWaitUntilWeekdayInputUntilTimezoneSource(t *testing.T) {
+	t.Run("NewFromString_fixed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSequenceWaitUntilWeekdayInputUntilTimezoneSourceFromString("fixed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SequenceWaitUntilWeekdayInputUntilTimezoneSource("fixed"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_subscriber", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSequenceWaitUntilWeekdayInputUntilTimezoneSourceFromString("subscriber")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SequenceWaitUntilWeekdayInputUntilTimezoneSource("subscriber"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewSequenceWaitUntilWeekdayInputUntilTimezoneSourceFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewSequenceWaitUntilWeekdayInputUntilTimezoneSourceFromString("fixed")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)

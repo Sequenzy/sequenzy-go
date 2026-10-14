@@ -346,13 +346,17 @@ func (a *AgentFriendlyError) String() string {
 }
 
 var (
-	badRequestErrorBodyFieldError   = big.NewInt(1 << 0)
-	badRequestErrorBodyFieldSuccess = big.NewInt(1 << 1)
+	badRequestErrorBodyFieldCode    = big.NewInt(1 << 0)
+	badRequestErrorBodyFieldError   = big.NewInt(1 << 1)
+	badRequestErrorBodyFieldIssues  = big.NewInt(1 << 2)
+	badRequestErrorBodyFieldSuccess = big.NewInt(1 << 3)
 )
 
 type BadRequestErrorBody struct {
-	Error   *BadRequestErrorBodyError `json:"error,omitempty" url:"error,omitempty"`
-	Success *bool                     `json:"success,omitempty" url:"success,omitempty"`
+	Code    *string          `json:"code,omitempty" url:"code,omitempty"`
+	Error   *string          `json:"error,omitempty" url:"error,omitempty"`
+	Issues  []*DesignMdIssue `json:"issues,omitempty" url:"issues,omitempty"`
+	Success *bool            `json:"success,omitempty" url:"success,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -361,11 +365,25 @@ type BadRequestErrorBody struct {
 	rawJSON         json.RawMessage
 }
 
-func (b *BadRequestErrorBody) GetError() *BadRequestErrorBodyError {
+func (b *BadRequestErrorBody) GetCode() *string {
+	if b == nil {
+		return nil
+	}
+	return b.Code
+}
+
+func (b *BadRequestErrorBody) GetError() *string {
 	if b == nil {
 		return nil
 	}
 	return b.Error
+}
+
+func (b *BadRequestErrorBody) GetIssues() []*DesignMdIssue {
+	if b == nil {
+		return nil
+	}
+	return b.Issues
 }
 
 func (b *BadRequestErrorBody) GetSuccess() *bool {
@@ -389,11 +407,25 @@ func (b *BadRequestErrorBody) require(field *big.Int) {
 	b.explicitFields.Or(b.explicitFields, field)
 }
 
+// SetCode sets the Code field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *BadRequestErrorBody) SetCode(code *string) {
+	b.Code = code
+	b.require(badRequestErrorBodyFieldCode)
+}
+
 // SetError sets the Error field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (b *BadRequestErrorBody) SetError(error_ *BadRequestErrorBodyError) {
+func (b *BadRequestErrorBody) SetError(error_ *string) {
 	b.Error = error_
 	b.require(badRequestErrorBodyFieldError)
+}
+
+// SetIssues sets the Issues field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *BadRequestErrorBody) SetIssues(issues []*DesignMdIssue) {
+	b.Issues = issues
+	b.require(badRequestErrorBodyFieldIssues)
 }
 
 // SetSuccess sets the Success field and marks it as non-optional;
@@ -4292,6 +4324,516 @@ func NewEmailCheckLinkStatusFromString(s string) (EmailCheckLinkStatus, error) {
 }
 
 func (e EmailCheckLinkStatus) Ptr() *EmailCheckLinkStatus {
+	return &e
+}
+
+// The visual identity every AI-generated email renders inside, parsed from the company's design direction text.
+var (
+	emailDesignSystemFieldCompositionSpine = big.NewInt(1 << 0)
+	emailDesignSystemFieldDesignCode       = big.NewInt(1 << 1)
+	emailDesignSystemFieldSource           = big.NewInt(1 << 2)
+	emailDesignSystemFieldVersion          = big.NewInt(1 << 3)
+)
+
+type EmailDesignSystem struct {
+	// Which worked-example skeleton anchors email composition.
+	CompositionSpine EmailDesignSystemCompositionSpine `json:"compositionSpine" url:"compositionSpine"`
+	// The locked visual grammar applied to every generated email.
+	DesignCode *EmailDesignSystemDesignCode `json:"designCode" url:"designCode"`
+	// derived when every token comes from brand derivation; custom when the direction text carries the identity.
+	Source  EmailDesignSystemSource `json:"source" url:"source"`
+	Version int                     `json:"version" url:"version"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (e *EmailDesignSystem) GetCompositionSpine() EmailDesignSystemCompositionSpine {
+	if e == nil {
+		return ""
+	}
+	return e.CompositionSpine
+}
+
+func (e *EmailDesignSystem) GetDesignCode() *EmailDesignSystemDesignCode {
+	if e == nil {
+		return nil
+	}
+	return e.DesignCode
+}
+
+func (e *EmailDesignSystem) GetSource() EmailDesignSystemSource {
+	if e == nil {
+		return ""
+	}
+	return e.Source
+}
+
+func (e *EmailDesignSystem) GetVersion() int {
+	if e == nil {
+		return 0
+	}
+	return e.Version
+}
+
+func (e *EmailDesignSystem) GetExtraProperties() map[string]interface{} {
+	if e == nil {
+		return nil
+	}
+	return e.extraProperties
+}
+
+func (e *EmailDesignSystem) require(field *big.Int) {
+	if e.explicitFields == nil {
+		e.explicitFields = big.NewInt(0)
+	}
+	e.explicitFields.Or(e.explicitFields, field)
+}
+
+// SetCompositionSpine sets the CompositionSpine field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailDesignSystem) SetCompositionSpine(compositionSpine EmailDesignSystemCompositionSpine) {
+	e.CompositionSpine = compositionSpine
+	e.require(emailDesignSystemFieldCompositionSpine)
+}
+
+// SetDesignCode sets the DesignCode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailDesignSystem) SetDesignCode(designCode *EmailDesignSystemDesignCode) {
+	e.DesignCode = designCode
+	e.require(emailDesignSystemFieldDesignCode)
+}
+
+// SetSource sets the Source field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailDesignSystem) SetSource(source EmailDesignSystemSource) {
+	e.Source = source
+	e.require(emailDesignSystemFieldSource)
+}
+
+// SetVersion sets the Version field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailDesignSystem) SetVersion(version int) {
+	e.Version = version
+	e.require(emailDesignSystemFieldVersion)
+}
+
+func (e *EmailDesignSystem) UnmarshalJSON(data []byte) error {
+	type unmarshaler EmailDesignSystem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EmailDesignSystem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+	e.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EmailDesignSystem) MarshalJSON() ([]byte, error) {
+	type embed EmailDesignSystem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*e),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (e *EmailDesignSystem) String() string {
+	if e == nil {
+		return "<nil>"
+	}
+	if len(e.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(e.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+// Which worked-example skeleton anchors email composition.
+type EmailDesignSystemCompositionSpine string
+
+const (
+	EmailDesignSystemCompositionSpineHeroLed     EmailDesignSystemCompositionSpine = "hero-led"
+	EmailDesignSystemCompositionSpineEditorial   EmailDesignSystemCompositionSpine = "editorial"
+	EmailDesignSystemCompositionSpineProductSpec EmailDesignSystemCompositionSpine = "product-spec"
+)
+
+func NewEmailDesignSystemCompositionSpineFromString(s string) (EmailDesignSystemCompositionSpine, error) {
+	switch s {
+	case "hero-led":
+		return EmailDesignSystemCompositionSpineHeroLed, nil
+	case "editorial":
+		return EmailDesignSystemCompositionSpineEditorial, nil
+	case "product-spec":
+		return EmailDesignSystemCompositionSpineProductSpec, nil
+	}
+	var t EmailDesignSystemCompositionSpine
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (e EmailDesignSystemCompositionSpine) Ptr() *EmailDesignSystemCompositionSpine {
+	return &e
+}
+
+// The locked visual grammar applied to every generated email.
+var (
+	emailDesignSystemDesignCodeFieldButtonShape      = big.NewInt(1 << 0)
+	emailDesignSystemDesignCodeFieldDensity          = big.NewInt(1 << 1)
+	emailDesignSystemDesignCodeFieldDividerStyle     = big.NewInt(1 << 2)
+	emailDesignSystemDesignCodeFieldKickerStyle      = big.NewInt(1 << 3)
+	emailDesignSystemDesignCodeFieldOpenerTreatments = big.NewInt(1 << 4)
+	emailDesignSystemDesignCodeFieldTitleAlignment   = big.NewInt(1 << 5)
+	emailDesignSystemDesignCodeFieldVersion          = big.NewInt(1 << 6)
+)
+
+type EmailDesignSystemDesignCode struct {
+	ButtonShape      EmailDesignSystemDesignCodeButtonShape            `json:"buttonShape" url:"buttonShape"`
+	Density          EmailDesignSystemDesignCodeDensity                `json:"density" url:"density"`
+	DividerStyle     EmailDesignSystemDesignCodeDividerStyle           `json:"dividerStyle" url:"dividerStyle"`
+	KickerStyle      EmailDesignSystemDesignCodeKickerStyle            `json:"kickerStyle" url:"kickerStyle"`
+	OpenerTreatments []EmailDesignSystemDesignCodeOpenerTreatmentsItem `json:"openerTreatments" url:"openerTreatments"`
+	TitleAlignment   EmailDesignSystemDesignCodeTitleAlignment         `json:"titleAlignment" url:"titleAlignment"`
+	Version          int                                               `json:"version" url:"version"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (e *EmailDesignSystemDesignCode) GetButtonShape() EmailDesignSystemDesignCodeButtonShape {
+	if e == nil {
+		return ""
+	}
+	return e.ButtonShape
+}
+
+func (e *EmailDesignSystemDesignCode) GetDensity() EmailDesignSystemDesignCodeDensity {
+	if e == nil {
+		return ""
+	}
+	return e.Density
+}
+
+func (e *EmailDesignSystemDesignCode) GetDividerStyle() EmailDesignSystemDesignCodeDividerStyle {
+	if e == nil {
+		return ""
+	}
+	return e.DividerStyle
+}
+
+func (e *EmailDesignSystemDesignCode) GetKickerStyle() EmailDesignSystemDesignCodeKickerStyle {
+	if e == nil {
+		return ""
+	}
+	return e.KickerStyle
+}
+
+func (e *EmailDesignSystemDesignCode) GetOpenerTreatments() []EmailDesignSystemDesignCodeOpenerTreatmentsItem {
+	if e == nil {
+		return nil
+	}
+	return e.OpenerTreatments
+}
+
+func (e *EmailDesignSystemDesignCode) GetTitleAlignment() EmailDesignSystemDesignCodeTitleAlignment {
+	if e == nil {
+		return ""
+	}
+	return e.TitleAlignment
+}
+
+func (e *EmailDesignSystemDesignCode) GetVersion() int {
+	if e == nil {
+		return 0
+	}
+	return e.Version
+}
+
+func (e *EmailDesignSystemDesignCode) GetExtraProperties() map[string]interface{} {
+	if e == nil {
+		return nil
+	}
+	return e.extraProperties
+}
+
+func (e *EmailDesignSystemDesignCode) require(field *big.Int) {
+	if e.explicitFields == nil {
+		e.explicitFields = big.NewInt(0)
+	}
+	e.explicitFields.Or(e.explicitFields, field)
+}
+
+// SetButtonShape sets the ButtonShape field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailDesignSystemDesignCode) SetButtonShape(buttonShape EmailDesignSystemDesignCodeButtonShape) {
+	e.ButtonShape = buttonShape
+	e.require(emailDesignSystemDesignCodeFieldButtonShape)
+}
+
+// SetDensity sets the Density field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailDesignSystemDesignCode) SetDensity(density EmailDesignSystemDesignCodeDensity) {
+	e.Density = density
+	e.require(emailDesignSystemDesignCodeFieldDensity)
+}
+
+// SetDividerStyle sets the DividerStyle field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailDesignSystemDesignCode) SetDividerStyle(dividerStyle EmailDesignSystemDesignCodeDividerStyle) {
+	e.DividerStyle = dividerStyle
+	e.require(emailDesignSystemDesignCodeFieldDividerStyle)
+}
+
+// SetKickerStyle sets the KickerStyle field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailDesignSystemDesignCode) SetKickerStyle(kickerStyle EmailDesignSystemDesignCodeKickerStyle) {
+	e.KickerStyle = kickerStyle
+	e.require(emailDesignSystemDesignCodeFieldKickerStyle)
+}
+
+// SetOpenerTreatments sets the OpenerTreatments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailDesignSystemDesignCode) SetOpenerTreatments(openerTreatments []EmailDesignSystemDesignCodeOpenerTreatmentsItem) {
+	e.OpenerTreatments = openerTreatments
+	e.require(emailDesignSystemDesignCodeFieldOpenerTreatments)
+}
+
+// SetTitleAlignment sets the TitleAlignment field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailDesignSystemDesignCode) SetTitleAlignment(titleAlignment EmailDesignSystemDesignCodeTitleAlignment) {
+	e.TitleAlignment = titleAlignment
+	e.require(emailDesignSystemDesignCodeFieldTitleAlignment)
+}
+
+// SetVersion sets the Version field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailDesignSystemDesignCode) SetVersion(version int) {
+	e.Version = version
+	e.require(emailDesignSystemDesignCodeFieldVersion)
+}
+
+func (e *EmailDesignSystemDesignCode) UnmarshalJSON(data []byte) error {
+	type unmarshaler EmailDesignSystemDesignCode
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EmailDesignSystemDesignCode(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+	e.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EmailDesignSystemDesignCode) MarshalJSON() ([]byte, error) {
+	type embed EmailDesignSystemDesignCode
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*e),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (e *EmailDesignSystemDesignCode) String() string {
+	if e == nil {
+		return "<nil>"
+	}
+	if len(e.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(e.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+type EmailDesignSystemDesignCodeButtonShape string
+
+const (
+	EmailDesignSystemDesignCodeButtonShapeRounded EmailDesignSystemDesignCodeButtonShape = "rounded"
+	EmailDesignSystemDesignCodeButtonShapePill    EmailDesignSystemDesignCodeButtonShape = "pill"
+)
+
+func NewEmailDesignSystemDesignCodeButtonShapeFromString(s string) (EmailDesignSystemDesignCodeButtonShape, error) {
+	switch s {
+	case "rounded":
+		return EmailDesignSystemDesignCodeButtonShapeRounded, nil
+	case "pill":
+		return EmailDesignSystemDesignCodeButtonShapePill, nil
+	}
+	var t EmailDesignSystemDesignCodeButtonShape
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (e EmailDesignSystemDesignCodeButtonShape) Ptr() *EmailDesignSystemDesignCodeButtonShape {
+	return &e
+}
+
+type EmailDesignSystemDesignCodeDensity string
+
+const (
+	EmailDesignSystemDesignCodeDensityAiry    EmailDesignSystemDesignCodeDensity = "airy"
+	EmailDesignSystemDesignCodeDensityCompact EmailDesignSystemDesignCodeDensity = "compact"
+)
+
+func NewEmailDesignSystemDesignCodeDensityFromString(s string) (EmailDesignSystemDesignCodeDensity, error) {
+	switch s {
+	case "airy":
+		return EmailDesignSystemDesignCodeDensityAiry, nil
+	case "compact":
+		return EmailDesignSystemDesignCodeDensityCompact, nil
+	}
+	var t EmailDesignSystemDesignCodeDensity
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (e EmailDesignSystemDesignCodeDensity) Ptr() *EmailDesignSystemDesignCodeDensity {
+	return &e
+}
+
+type EmailDesignSystemDesignCodeDividerStyle string
+
+const (
+	EmailDesignSystemDesignCodeDividerStyleLine  EmailDesignSystemDesignCodeDividerStyle = "line"
+	EmailDesignSystemDesignCodeDividerStyleSpace EmailDesignSystemDesignCodeDividerStyle = "space"
+)
+
+func NewEmailDesignSystemDesignCodeDividerStyleFromString(s string) (EmailDesignSystemDesignCodeDividerStyle, error) {
+	switch s {
+	case "line":
+		return EmailDesignSystemDesignCodeDividerStyleLine, nil
+	case "space":
+		return EmailDesignSystemDesignCodeDividerStyleSpace, nil
+	}
+	var t EmailDesignSystemDesignCodeDividerStyle
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (e EmailDesignSystemDesignCodeDividerStyle) Ptr() *EmailDesignSystemDesignCodeDividerStyle {
+	return &e
+}
+
+type EmailDesignSystemDesignCodeKickerStyle string
+
+const (
+	EmailDesignSystemDesignCodeKickerStyleChip         EmailDesignSystemDesignCodeKickerStyle = "chip"
+	EmailDesignSystemDesignCodeKickerStyleLetterspaced EmailDesignSystemDesignCodeKickerStyle = "letterspaced"
+	EmailDesignSystemDesignCodeKickerStyleNone         EmailDesignSystemDesignCodeKickerStyle = "none"
+)
+
+func NewEmailDesignSystemDesignCodeKickerStyleFromString(s string) (EmailDesignSystemDesignCodeKickerStyle, error) {
+	switch s {
+	case "chip":
+		return EmailDesignSystemDesignCodeKickerStyleChip, nil
+	case "letterspaced":
+		return EmailDesignSystemDesignCodeKickerStyleLetterspaced, nil
+	case "none":
+		return EmailDesignSystemDesignCodeKickerStyleNone, nil
+	}
+	var t EmailDesignSystemDesignCodeKickerStyle
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (e EmailDesignSystemDesignCodeKickerStyle) Ptr() *EmailDesignSystemDesignCodeKickerStyle {
+	return &e
+}
+
+type EmailDesignSystemDesignCodeOpenerTreatmentsItem string
+
+const (
+	EmailDesignSystemDesignCodeOpenerTreatmentsItemHeroImage         EmailDesignSystemDesignCodeOpenerTreatmentsItem = "hero-image"
+	EmailDesignSystemDesignCodeOpenerTreatmentsItemHeroColor         EmailDesignSystemDesignCodeOpenerTreatmentsItem = "hero-color"
+	EmailDesignSystemDesignCodeOpenerTreatmentsItemHeaderHero        EmailDesignSystemDesignCodeOpenerTreatmentsItem = "header-hero"
+	EmailDesignSystemDesignCodeOpenerTreatmentsItemEditorialMasthead EmailDesignSystemDesignCodeOpenerTreatmentsItem = "editorial-masthead"
+	EmailDesignSystemDesignCodeOpenerTreatmentsItemTitleLed          EmailDesignSystemDesignCodeOpenerTreatmentsItem = "title-led"
+)
+
+func NewEmailDesignSystemDesignCodeOpenerTreatmentsItemFromString(s string) (EmailDesignSystemDesignCodeOpenerTreatmentsItem, error) {
+	switch s {
+	case "hero-image":
+		return EmailDesignSystemDesignCodeOpenerTreatmentsItemHeroImage, nil
+	case "hero-color":
+		return EmailDesignSystemDesignCodeOpenerTreatmentsItemHeroColor, nil
+	case "header-hero":
+		return EmailDesignSystemDesignCodeOpenerTreatmentsItemHeaderHero, nil
+	case "editorial-masthead":
+		return EmailDesignSystemDesignCodeOpenerTreatmentsItemEditorialMasthead, nil
+	case "title-led":
+		return EmailDesignSystemDesignCodeOpenerTreatmentsItemTitleLed, nil
+	}
+	var t EmailDesignSystemDesignCodeOpenerTreatmentsItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (e EmailDesignSystemDesignCodeOpenerTreatmentsItem) Ptr() *EmailDesignSystemDesignCodeOpenerTreatmentsItem {
+	return &e
+}
+
+type EmailDesignSystemDesignCodeTitleAlignment string
+
+const (
+	EmailDesignSystemDesignCodeTitleAlignmentLeft   EmailDesignSystemDesignCodeTitleAlignment = "left"
+	EmailDesignSystemDesignCodeTitleAlignmentCenter EmailDesignSystemDesignCodeTitleAlignment = "center"
+)
+
+func NewEmailDesignSystemDesignCodeTitleAlignmentFromString(s string) (EmailDesignSystemDesignCodeTitleAlignment, error) {
+	switch s {
+	case "left":
+		return EmailDesignSystemDesignCodeTitleAlignmentLeft, nil
+	case "center":
+		return EmailDesignSystemDesignCodeTitleAlignmentCenter, nil
+	}
+	var t EmailDesignSystemDesignCodeTitleAlignment
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (e EmailDesignSystemDesignCodeTitleAlignment) Ptr() *EmailDesignSystemDesignCodeTitleAlignment {
+	return &e
+}
+
+// derived when every token comes from brand derivation; custom when the direction text carries the identity.
+type EmailDesignSystemSource string
+
+const (
+	EmailDesignSystemSourceDerived EmailDesignSystemSource = "derived"
+	EmailDesignSystemSourceCustom  EmailDesignSystemSource = "custom"
+)
+
+func NewEmailDesignSystemSourceFromString(s string) (EmailDesignSystemSource, error) {
+	switch s {
+	case "derived":
+		return EmailDesignSystemSourceDerived, nil
+	case "custom":
+		return EmailDesignSystemSourceCustom, nil
+	}
+	var t EmailDesignSystemSource
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (e EmailDesignSystemSource) Ptr() *EmailDesignSystemSource {
 	return &e
 }
 
