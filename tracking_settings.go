@@ -403,9 +403,10 @@ var (
 )
 
 type TrackingSettingsReplyTracking struct {
-	ForwardReplies         *bool   `json:"forwardReplies,omitempty" url:"forwardReplies,omitempty"`
-	InboundEmailEnabled    *bool   `json:"inboundEmailEnabled,omitempty" url:"inboundEmailEnabled,omitempty"`
-	InboundReplyDomainMode *string `json:"inboundReplyDomainMode,omitempty" url:"inboundReplyDomainMode,omitempty"`
+	ForwardReplies      *bool `json:"forwardReplies,omitempty" url:"forwardReplies,omitempty"`
+	InboundEmailEnabled *bool `json:"inboundEmailEnabled,omitempty" url:"inboundEmailEnabled,omitempty"`
+	// Where reply addresses in your emails point. custom uses your verified receiving domain for emails from every sending domain, and inbound.sequenzy.com until one is verified; sequenzy always uses inbound.sequenzy.com. Adding your first receiving domain sets it to custom.
+	InboundReplyDomainMode *TrackingSettingsReplyTrackingInboundReplyDomainMode `json:"inboundReplyDomainMode,omitempty" url:"inboundReplyDomainMode,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -428,7 +429,7 @@ func (t *TrackingSettingsReplyTracking) GetInboundEmailEnabled() *bool {
 	return t.InboundEmailEnabled
 }
 
-func (t *TrackingSettingsReplyTracking) GetInboundReplyDomainMode() *string {
+func (t *TrackingSettingsReplyTracking) GetInboundReplyDomainMode() *TrackingSettingsReplyTrackingInboundReplyDomainMode {
 	if t == nil {
 		return nil
 	}
@@ -465,7 +466,7 @@ func (t *TrackingSettingsReplyTracking) SetInboundEmailEnabled(inboundEmailEnabl
 
 // SetInboundReplyDomainMode sets the InboundReplyDomainMode field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (t *TrackingSettingsReplyTracking) SetInboundReplyDomainMode(inboundReplyDomainMode *string) {
+func (t *TrackingSettingsReplyTracking) SetInboundReplyDomainMode(inboundReplyDomainMode *TrackingSettingsReplyTrackingInboundReplyDomainMode) {
 	t.InboundReplyDomainMode = inboundReplyDomainMode
 	t.require(trackingSettingsReplyTrackingFieldInboundReplyDomainMode)
 }
@@ -510,6 +511,29 @@ func (t *TrackingSettingsReplyTracking) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", t)
+}
+
+// Where reply addresses in your emails point. custom uses your verified receiving domain for emails from every sending domain, and inbound.sequenzy.com until one is verified; sequenzy always uses inbound.sequenzy.com. Adding your first receiving domain sets it to custom.
+type TrackingSettingsReplyTrackingInboundReplyDomainMode string
+
+const (
+	TrackingSettingsReplyTrackingInboundReplyDomainModeSequenzy TrackingSettingsReplyTrackingInboundReplyDomainMode = "sequenzy"
+	TrackingSettingsReplyTrackingInboundReplyDomainModeCustom   TrackingSettingsReplyTrackingInboundReplyDomainMode = "custom"
+)
+
+func NewTrackingSettingsReplyTrackingInboundReplyDomainModeFromString(s string) (TrackingSettingsReplyTrackingInboundReplyDomainMode, error) {
+	switch s {
+	case "sequenzy":
+		return TrackingSettingsReplyTrackingInboundReplyDomainModeSequenzy, nil
+	case "custom":
+		return TrackingSettingsReplyTrackingInboundReplyDomainModeCustom, nil
+	}
+	var t TrackingSettingsReplyTrackingInboundReplyDomainMode
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (t TrackingSettingsReplyTrackingInboundReplyDomainMode) Ptr() *TrackingSettingsReplyTrackingInboundReplyDomainMode {
+	return &t
 }
 
 var (

@@ -210,7 +210,7 @@ type Company struct {
 	PrivacyPolicyURL *string        `json:"privacyPolicyUrl,omitempty" url:"privacyPolicyUrl,omitempty"`
 	// Current reply retention period in days.
 	ReplyRetentionDays *int `json:"replyRetentionDays,omitempty" url:"replyRetentionDays,omitempty"`
-	// Whether reply capture uses Sequenzy's managed inbound domain or a configured custom domain.
+	// Where reply addresses in your emails point. custom uses your verified receiving domain for emails from every sending domain, and inbound.sequenzy.com until one is verified; sequenzy always uses inbound.sequenzy.com. Adding your first receiving domain sets it to custom.
 	ReplyTrackingDomainMode *CompanyReplyTrackingDomainMode `json:"replyTrackingDomainMode,omitempty" url:"replyTrackingDomainMode,omitempty"`
 	// Whether inbound reply capture is enabled for this company.
 	ReplyTrackingEnabled *bool              `json:"replyTrackingEnabled,omitempty" url:"replyTrackingEnabled,omitempty"`
@@ -1319,7 +1319,7 @@ func (c CompanyEmailStylePreference) Ptr() *CompanyEmailStylePreference {
 	return &c
 }
 
-// Whether reply capture uses Sequenzy's managed inbound domain or a configured custom domain.
+// Where reply addresses in your emails point. custom uses your verified receiving domain for emails from every sending domain, and inbound.sequenzy.com until one is verified; sequenzy always uses inbound.sequenzy.com. Adding your first receiving domain sets it to custom.
 type CompanyReplyTrackingDomainMode string
 
 const (
@@ -2831,7 +2831,7 @@ func (u *UpdateCompaniesRequestEmailThemeTypography) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// Use Sequenzy's managed inbound domain or a configured custom domain.
+// custom points reply addresses at your verified receiving domain for emails from every sending domain, falling back to inbound.sequenzy.com until one is verified; sequenzy always uses inbound.sequenzy.com.
 type UpdateCompaniesRequestReplyTrackingDomainMode string
 
 const (
@@ -3038,9 +3038,9 @@ type UpdateCompaniesRequest struct {
 	ReplyTo *string `json:"replyTo,omitempty" url:"-"`
 	// Display name of the default Reply-To profile. Sent on its own it renames the current default profile; with replyProfileId it renames that profile; with replyTo it names the profile for that address.
 	ReplyToName *string `json:"replyToName,omitempty" url:"-"`
-	// Use Sequenzy's managed inbound domain or a configured custom domain.
+	// custom points reply addresses at your verified receiving domain for emails from every sending domain, falling back to inbound.sequenzy.com until one is verified; sequenzy always uses inbound.sequenzy.com.
 	ReplyTrackingDomainMode *UpdateCompaniesRequestReplyTrackingDomainMode `json:"replyTrackingDomainMode,omitempty" url:"-"`
-	// Enable or disable inbound reply capture.
+	// Enable or disable inbound reply capture (Inbox). Turning it on needs a verified receiving domain unless the workspace has received conversations before; otherwise the request fails with 409 receiving_domain_required. The first verification of a receiving domain you added turns it on automatically.
 	ReplyTrackingEnabled *bool `json:"replyTrackingEnabled,omitempty" url:"-"`
 	// Existing sender profile to make the account-wide default, and the profile fromName renames. List IDs with GET /v1/sender-profiles. Mutually exclusive with fromEmail.
 	SenderProfileID *string            `json:"senderProfileId,omitempty" url:"-"`

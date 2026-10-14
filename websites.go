@@ -185,7 +185,7 @@ type Website struct {
 	CreatedAt     *time.Time            `json:"createdAt,omitempty" url:"createdAt,omitempty"`
 	// Normalized DKIM type, status, and diagnostics.
 	Dkim map[string]any `json:"dkim,omitempty" url:"dkim,omitempty"`
-	// The DNS records and their per-record verification status. Publish the DKIM record, DMARC when present, and the bounce records described by bounceRecords (returnPathCnameRecord when bounceRecords.style is cname, otherwise spfRecord and mxRecord; never both at the same name). Custom reply routing is independent of sending readiness. GET returns stored results; POST verify performs a fresh check.
+	// The DNS records and their per-record verification status. Publish the DKIM record, DMARC when present, and the bounce records described by bounceRecords (returnPathCnameRecord when bounceRecords.style is cname, otherwise spfRecord and mxRecord; never both at the same name). Receiving mail is set up separately with receiving domains (/receiving-domains); the inbound* fields some older domains still return are deprecated. GET returns stored results; POST verify performs a fresh check.
 	DNSRecords *WebsiteDNSRecords `json:"dnsRecords,omitempty" url:"dnsRecords,omitempty"`
 	// Whether the customer DNS records are verified.
 	DNSVerified    *bool      `json:"dnsVerified,omitempty" url:"dnsVerified,omitempty"`
@@ -796,28 +796,31 @@ func (w WebsiteBounceRecordsStyle) Ptr() *WebsiteBounceRecordsStyle {
 	return &w
 }
 
-// The DNS records and their per-record verification status. Publish the DKIM record, DMARC when present, and the bounce records described by bounceRecords (returnPathCnameRecord when bounceRecords.style is cname, otherwise spfRecord and mxRecord; never both at the same name). Custom reply routing is independent of sending readiness. GET returns stored results; POST verify performs a fresh check.
+// The DNS records and their per-record verification status. Publish the DKIM record, DMARC when present, and the bounce records described by bounceRecords (returnPathCnameRecord when bounceRecords.style is cname, otherwise spfRecord and mxRecord; never both at the same name). Receiving mail is set up separately with receiving domains (/receiving-domains); the inbound* fields some older domains still return are deprecated. GET returns stored results; POST verify performs a fresh check.
 var (
 	websiteDNSRecordsFieldInboundRoutingError       = big.NewInt(1 << 0)
 	websiteDNSRecordsFieldInboundRoutingStatus      = big.NewInt(1 << 1)
 	websiteDNSRecordsFieldInboundVerificationRecord = big.NewInt(1 << 2)
 	websiteDNSRecordsFieldInboundVerificationStatus = big.NewInt(1 << 3)
-	websiteDNSRecordsFieldReturnPathCnameDiagnostic = big.NewInt(1 << 4)
-	websiteDNSRecordsFieldReturnPathCnameRecord     = big.NewInt(1 << 5)
-	websiteDNSRecordsFieldReturnPathCnameStatus     = big.NewInt(1 << 6)
-	websiteDNSRecordsFieldTrackingRecord            = big.NewInt(1 << 7)
-	websiteDNSRecordsFieldTrackingStatus            = big.NewInt(1 << 8)
+	websiteDNSRecordsFieldPlatformDNSRecords        = big.NewInt(1 << 4)
+	websiteDNSRecordsFieldReturnPathCnameDiagnostic = big.NewInt(1 << 5)
+	websiteDNSRecordsFieldReturnPathCnameRecord     = big.NewInt(1 << 6)
+	websiteDNSRecordsFieldReturnPathCnameStatus     = big.NewInt(1 << 7)
+	websiteDNSRecordsFieldTrackingRecord            = big.NewInt(1 << 8)
+	websiteDNSRecordsFieldTrackingStatus            = big.NewInt(1 << 9)
 )
 
 type WebsiteDNSRecords struct {
-	// Last reply-routing error and recovery instruction. Null when there is no stored error; omitted when no inbound MX record exists. Retry verification after correcting DNS or a temporary provider failure.
+	// Deprecated. Receiving is now set up with receiving domains (/receiving-domains). This field reflects a reply setup from before receiving domains, is only present on domains that had one, and is no longer used to route mail. Null when no error was stored; omitted when the domain has no stored inbound MX record. Read the receiving domain's error instead.
 	InboundRoutingError *string `json:"inboundRoutingError,omitempty" url:"inboundRoutingError,omitempty"`
-	// Customer-facing reply readiness from stored checks, returned when an inbound MX record exists. SES routes require verified MX, receiving ownership, and an active receiving rule. Unchecked legacy SES routes display pending; retained MTA reply routes keep their existing status. Inconclusive ownership checks preserve the underlying route and previously confirmed ownership, with an error for retry.
+	// Deprecated. Receiving is now set up with receiving domains (/receiving-domains). This field reflects a reply setup from before receiving domains, is only present on domains that had one, and is no longer used to route mail. Returned when the domain has a stored inbound MX record. Read the receiving domain's status instead.
 	InboundRoutingStatus *WebsiteDNSRecordsInboundRoutingStatus `json:"inboundRoutingStatus,omitempty" url:"inboundRoutingStatus,omitempty"`
-	// Optional public TXT record for an existing reply hostname outside its verified sending domain. Verification prepares this after the inbound MX verifies. Publish the exact value at the fully qualified name, then verify again. Absence can mean verification is already covered, preparation has not run, or preparation failed; inspect inboundRoutingStatus/error. This generated field cannot be set or cleared through the website API.
+	// Deprecated. Receiving is now set up with receiving domains (/receiving-domains). This field reflects a reply setup from before receiving domains, is only present on domains that had one, and is no longer used to route mail. It held the TXT record an older inbound reply host needed for Amazon SES ownership; a migrated host's records now appear on its receiving domain.
 	InboundVerificationRecord *WebsiteDNSRecordsInboundVerificationRecord `json:"inboundVerificationRecord,omitempty" url:"inboundVerificationRecord,omitempty"`
-	// Stored receiving-domain ownership status, absent before it has been checked. Pending is not active routing. Existing sending-domain verification can satisfy ownership without an additional TXT record.
+	// Deprecated. Receiving is now set up with receiving domains (/receiving-domains). This field reflects a reply setup from before receiving domains, is only present on domains that had one, and is no longer used to route mail. It held the stored ownership status of the older inbound reply host.
 	InboundVerificationStatus *WebsiteDNSRecordsInboundVerificationStatus `json:"inboundVerificationStatus,omitempty" url:"inboundVerificationStatus,omitempty"`
+	// Present on domains added with the per-domain CNAME record set. Publish these CNAMEs instead of the DKIM TXT record in byodkimRecord (a TXT published there still verifies, but a key change then needs a DNS change). Branch on whether this field is present. Only entries with required true block verification. dkim_spare lets Sequenzy change the DKIM key without a DNS change from you; ses_return_path, once it resolves, aligns SPF with your domain on every email.
+	PlatformDNSRecords []*WebsiteDNSRecordsPlatformDNSRecordsItem `json:"platformDnsRecords,omitempty" url:"platformDnsRecords,omitempty"`
 	// Why the bounce CNAME is not verified yet, when known.
 	ReturnPathCnameDiagnostic map[string]any `json:"returnPathCnameDiagnostic,omitempty" url:"returnPathCnameDiagnostic,omitempty"`
 	// The single bounce CNAME, present when bounceRecords.style is cname. It replaces spfRecord and mxRecord, which stay listed because verification checks them through the CNAME. Never publish it alongside them.
@@ -862,6 +865,13 @@ func (w *WebsiteDNSRecords) GetInboundVerificationStatus() *WebsiteDNSRecordsInb
 		return nil
 	}
 	return w.InboundVerificationStatus
+}
+
+func (w *WebsiteDNSRecords) GetPlatformDNSRecords() []*WebsiteDNSRecordsPlatformDNSRecordsItem {
+	if w == nil {
+		return nil
+	}
+	return w.PlatformDNSRecords
 }
 
 func (w *WebsiteDNSRecords) GetReturnPathCnameDiagnostic() map[string]any {
@@ -939,6 +949,13 @@ func (w *WebsiteDNSRecords) SetInboundVerificationRecord(inboundVerificationReco
 func (w *WebsiteDNSRecords) SetInboundVerificationStatus(inboundVerificationStatus *WebsiteDNSRecordsInboundVerificationStatus) {
 	w.InboundVerificationStatus = inboundVerificationStatus
 	w.require(websiteDNSRecordsFieldInboundVerificationStatus)
+}
+
+// SetPlatformDNSRecords sets the PlatformDNSRecords field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSRecords) SetPlatformDNSRecords(platformDNSRecords []*WebsiteDNSRecordsPlatformDNSRecordsItem) {
+	w.PlatformDNSRecords = platformDNSRecords
+	w.require(websiteDNSRecordsFieldPlatformDNSRecords)
 }
 
 // SetReturnPathCnameDiagnostic sets the ReturnPathCnameDiagnostic field and marks it as non-optional;
@@ -1022,7 +1039,7 @@ func (w *WebsiteDNSRecords) String() string {
 	return fmt.Sprintf("%#v", w)
 }
 
-// Customer-facing reply readiness from stored checks, returned when an inbound MX record exists. SES routes require verified MX, receiving ownership, and an active receiving rule. Unchecked legacy SES routes display pending; retained MTA reply routes keep their existing status. Inconclusive ownership checks preserve the underlying route and previously confirmed ownership, with an error for retry.
+// Deprecated. Receiving is now set up with receiving domains (/receiving-domains). This field reflects a reply setup from before receiving domains, is only present on domains that had one, and is no longer used to route mail. Returned when the domain has a stored inbound MX record. Read the receiving domain's status instead.
 type WebsiteDNSRecordsInboundRoutingStatus string
 
 const (
@@ -1048,7 +1065,7 @@ func (w WebsiteDNSRecordsInboundRoutingStatus) Ptr() *WebsiteDNSRecordsInboundRo
 	return &w
 }
 
-// Optional public TXT record for an existing reply hostname outside its verified sending domain. Verification prepares this after the inbound MX verifies. Publish the exact value at the fully qualified name, then verify again. Absence can mean verification is already covered, preparation has not run, or preparation failed; inspect inboundRoutingStatus/error. This generated field cannot be set or cleared through the website API.
+// Deprecated. Receiving is now set up with receiving domains (/receiving-domains). This field reflects a reply setup from before receiving domains, is only present on domains that had one, and is no longer used to route mail. It held the TXT record an older inbound reply host needed for Amazon SES ownership; a migrated host's records now appear on its receiving domain.
 var (
 	websiteDNSRecordsInboundVerificationRecordFieldName  = big.NewInt(1 << 0)
 	websiteDNSRecordsInboundVerificationRecordFieldValue = big.NewInt(1 << 1)
@@ -1150,7 +1167,7 @@ func (w *WebsiteDNSRecordsInboundVerificationRecord) String() string {
 	return fmt.Sprintf("%#v", w)
 }
 
-// Stored receiving-domain ownership status, absent before it has been checked. Pending is not active routing. Existing sending-domain verification can satisfy ownership without an additional TXT record.
+// Deprecated. Receiving is now set up with receiving domains (/receiving-domains). This field reflects a reply setup from before receiving domains, is only present on domains that had one, and is no longer used to route mail. It held the stored ownership status of the older inbound reply host.
 type WebsiteDNSRecordsInboundVerificationStatus string
 
 const (
@@ -1173,6 +1190,256 @@ func NewWebsiteDNSRecordsInboundVerificationStatusFromString(s string) (WebsiteD
 }
 
 func (w WebsiteDNSRecordsInboundVerificationStatus) Ptr() *WebsiteDNSRecordsInboundVerificationStatus {
+	return &w
+}
+
+var (
+	websiteDNSRecordsPlatformDNSRecordsItemFieldDiagnostic = big.NewInt(1 << 0)
+	websiteDNSRecordsPlatformDNSRecordsItemFieldName       = big.NewInt(1 << 1)
+	websiteDNSRecordsPlatformDNSRecordsItemFieldPurpose    = big.NewInt(1 << 2)
+	websiteDNSRecordsPlatformDNSRecordsItemFieldRequired   = big.NewInt(1 << 3)
+	websiteDNSRecordsPlatformDNSRecordsItemFieldStatus     = big.NewInt(1 << 4)
+	websiteDNSRecordsPlatformDNSRecordsItemFieldType       = big.NewInt(1 << 5)
+	websiteDNSRecordsPlatformDNSRecordsItemFieldValue      = big.NewInt(1 << 6)
+)
+
+type WebsiteDNSRecordsPlatformDNSRecordsItem struct {
+	// Why the record is not verified yet, when known.
+	Diagnostic map[string]any                                 `json:"diagnostic,omitempty" url:"diagnostic,omitempty"`
+	Name       string                                         `json:"name" url:"name"`
+	Purpose    WebsiteDNSRecordsPlatformDNSRecordsItemPurpose `json:"purpose" url:"purpose"`
+	Required   bool                                           `json:"required" url:"required"`
+	Status     WebsiteDNSRecordsPlatformDNSRecordsItemStatus  `json:"status" url:"status"`
+	Type       WebsiteDNSRecordsPlatformDNSRecordsItemType    `json:"type" url:"type"`
+	Value      string                                         `json:"value" url:"value"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (w *WebsiteDNSRecordsPlatformDNSRecordsItem) GetDiagnostic() map[string]any {
+	if w == nil {
+		return nil
+	}
+	return w.Diagnostic
+}
+
+func (w *WebsiteDNSRecordsPlatformDNSRecordsItem) GetName() string {
+	if w == nil {
+		return ""
+	}
+	return w.Name
+}
+
+func (w *WebsiteDNSRecordsPlatformDNSRecordsItem) GetPurpose() WebsiteDNSRecordsPlatformDNSRecordsItemPurpose {
+	if w == nil {
+		return ""
+	}
+	return w.Purpose
+}
+
+func (w *WebsiteDNSRecordsPlatformDNSRecordsItem) GetRequired() bool {
+	if w == nil {
+		return false
+	}
+	return w.Required
+}
+
+func (w *WebsiteDNSRecordsPlatformDNSRecordsItem) GetStatus() WebsiteDNSRecordsPlatformDNSRecordsItemStatus {
+	if w == nil {
+		return ""
+	}
+	return w.Status
+}
+
+func (w *WebsiteDNSRecordsPlatformDNSRecordsItem) GetType() WebsiteDNSRecordsPlatformDNSRecordsItemType {
+	if w == nil {
+		return ""
+	}
+	return w.Type
+}
+
+func (w *WebsiteDNSRecordsPlatformDNSRecordsItem) GetValue() string {
+	if w == nil {
+		return ""
+	}
+	return w.Value
+}
+
+func (w *WebsiteDNSRecordsPlatformDNSRecordsItem) GetExtraProperties() map[string]interface{} {
+	if w == nil {
+		return nil
+	}
+	return w.extraProperties
+}
+
+func (w *WebsiteDNSRecordsPlatformDNSRecordsItem) require(field *big.Int) {
+	if w.explicitFields == nil {
+		w.explicitFields = big.NewInt(0)
+	}
+	w.explicitFields.Or(w.explicitFields, field)
+}
+
+// SetDiagnostic sets the Diagnostic field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSRecordsPlatformDNSRecordsItem) SetDiagnostic(diagnostic map[string]any) {
+	w.Diagnostic = diagnostic
+	w.require(websiteDNSRecordsPlatformDNSRecordsItemFieldDiagnostic)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSRecordsPlatformDNSRecordsItem) SetName(name string) {
+	w.Name = name
+	w.require(websiteDNSRecordsPlatformDNSRecordsItemFieldName)
+}
+
+// SetPurpose sets the Purpose field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSRecordsPlatformDNSRecordsItem) SetPurpose(purpose WebsiteDNSRecordsPlatformDNSRecordsItemPurpose) {
+	w.Purpose = purpose
+	w.require(websiteDNSRecordsPlatformDNSRecordsItemFieldPurpose)
+}
+
+// SetRequired sets the Required field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSRecordsPlatformDNSRecordsItem) SetRequired(required bool) {
+	w.Required = required
+	w.require(websiteDNSRecordsPlatformDNSRecordsItemFieldRequired)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSRecordsPlatformDNSRecordsItem) SetStatus(status WebsiteDNSRecordsPlatformDNSRecordsItemStatus) {
+	w.Status = status
+	w.require(websiteDNSRecordsPlatformDNSRecordsItemFieldStatus)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSRecordsPlatformDNSRecordsItem) SetType(type_ WebsiteDNSRecordsPlatformDNSRecordsItemType) {
+	w.Type = type_
+	w.require(websiteDNSRecordsPlatformDNSRecordsItemFieldType)
+}
+
+// SetValue sets the Value field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSRecordsPlatformDNSRecordsItem) SetValue(value string) {
+	w.Value = value
+	w.require(websiteDNSRecordsPlatformDNSRecordsItemFieldValue)
+}
+
+func (w *WebsiteDNSRecordsPlatformDNSRecordsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler WebsiteDNSRecordsPlatformDNSRecordsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*w = WebsiteDNSRecordsPlatformDNSRecordsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *w)
+	if err != nil {
+		return err
+	}
+	w.extraProperties = extraProperties
+	w.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (w *WebsiteDNSRecordsPlatformDNSRecordsItem) MarshalJSON() ([]byte, error) {
+	type embed WebsiteDNSRecordsPlatformDNSRecordsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*w),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, w.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (w *WebsiteDNSRecordsPlatformDNSRecordsItem) String() string {
+	if w == nil {
+		return "<nil>"
+	}
+	if len(w.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(w.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(w); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", w)
+}
+
+type WebsiteDNSRecordsPlatformDNSRecordsItemPurpose string
+
+const (
+	WebsiteDNSRecordsPlatformDNSRecordsItemPurposeDkim          WebsiteDNSRecordsPlatformDNSRecordsItemPurpose = "dkim"
+	WebsiteDNSRecordsPlatformDNSRecordsItemPurposeDkimSpare     WebsiteDNSRecordsPlatformDNSRecordsItemPurpose = "dkim_spare"
+	WebsiteDNSRecordsPlatformDNSRecordsItemPurposeSesReturnPath WebsiteDNSRecordsPlatformDNSRecordsItemPurpose = "ses_return_path"
+)
+
+func NewWebsiteDNSRecordsPlatformDNSRecordsItemPurposeFromString(s string) (WebsiteDNSRecordsPlatformDNSRecordsItemPurpose, error) {
+	switch s {
+	case "dkim":
+		return WebsiteDNSRecordsPlatformDNSRecordsItemPurposeDkim, nil
+	case "dkim_spare":
+		return WebsiteDNSRecordsPlatformDNSRecordsItemPurposeDkimSpare, nil
+	case "ses_return_path":
+		return WebsiteDNSRecordsPlatformDNSRecordsItemPurposeSesReturnPath, nil
+	}
+	var t WebsiteDNSRecordsPlatformDNSRecordsItemPurpose
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (w WebsiteDNSRecordsPlatformDNSRecordsItemPurpose) Ptr() *WebsiteDNSRecordsPlatformDNSRecordsItemPurpose {
+	return &w
+}
+
+type WebsiteDNSRecordsPlatformDNSRecordsItemStatus string
+
+const (
+	WebsiteDNSRecordsPlatformDNSRecordsItemStatusPending       WebsiteDNSRecordsPlatformDNSRecordsItemStatus = "pending"
+	WebsiteDNSRecordsPlatformDNSRecordsItemStatusVerified      WebsiteDNSRecordsPlatformDNSRecordsItemStatus = "verified"
+	WebsiteDNSRecordsPlatformDNSRecordsItemStatusMisconfigured WebsiteDNSRecordsPlatformDNSRecordsItemStatus = "misconfigured"
+)
+
+func NewWebsiteDNSRecordsPlatformDNSRecordsItemStatusFromString(s string) (WebsiteDNSRecordsPlatformDNSRecordsItemStatus, error) {
+	switch s {
+	case "pending":
+		return WebsiteDNSRecordsPlatformDNSRecordsItemStatusPending, nil
+	case "verified":
+		return WebsiteDNSRecordsPlatformDNSRecordsItemStatusVerified, nil
+	case "misconfigured":
+		return WebsiteDNSRecordsPlatformDNSRecordsItemStatusMisconfigured, nil
+	}
+	var t WebsiteDNSRecordsPlatformDNSRecordsItemStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (w WebsiteDNSRecordsPlatformDNSRecordsItemStatus) Ptr() *WebsiteDNSRecordsPlatformDNSRecordsItemStatus {
+	return &w
+}
+
+type WebsiteDNSRecordsPlatformDNSRecordsItemType string
+
+const (
+	WebsiteDNSRecordsPlatformDNSRecordsItemTypeCname WebsiteDNSRecordsPlatformDNSRecordsItemType = "CNAME"
+)
+
+func NewWebsiteDNSRecordsPlatformDNSRecordsItemTypeFromString(s string) (WebsiteDNSRecordsPlatformDNSRecordsItemType, error) {
+	switch s {
+	case "CNAME":
+		return WebsiteDNSRecordsPlatformDNSRecordsItemTypeCname, nil
+	}
+	var t WebsiteDNSRecordsPlatformDNSRecordsItemType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (w WebsiteDNSRecordsPlatformDNSRecordsItemType) Ptr() *WebsiteDNSRecordsPlatformDNSRecordsItemType {
 	return &w
 }
 

@@ -42,7 +42,7 @@ var (
 )
 
 type CreateWebhooksRequest struct {
-	// Omit to subscribe to default email and SMS lifecycle events plus subscriber.invalid, subscriber.created, and subscriber.unsubscribed. Add campaign.sent, email.opened, email.clicked, email.replied, subscriber.updated, subscriber.list_subscribed, subscriber.list_unsubscribed, sequence.finished, and sequence.failed explicitly for aggregate campaign completion, engagement, inbound reply, profile sync, per-list consent sync, or sequence lifecycle events. SMS events (sms.sent, sms.delivered, sms.failed, sms.opted_out) are included in the defaults.
+	// Omit to subscribe to default email and SMS lifecycle events plus subscriber.invalid, subscriber.created, and subscriber.unsubscribed. Add campaign.sent, email.opened, email.clicked, email.replied, email.received, subscriber.updated, subscriber.list_subscribed, subscriber.list_unsubscribed, sequence.finished, and sequence.failed explicitly for aggregate campaign completion, engagement, inbound reply, new inbox mail, profile sync, per-list consent sync, or sequence lifecycle events. SMS events (sms.sent, sms.delivered, sms.failed, sms.opted_out) are included in the defaults.
 	Events []OutboundWebhookEventType `json:"events,omitempty" url:"-"`
 	Name   string                     `json:"name" url:"-"`
 	URL    string                     `json:"url" url:"-"`
@@ -1366,6 +1366,7 @@ const (
 	OutboundWebhookEventTypeEmailOpened                OutboundWebhookEventType = "email.opened"
 	OutboundWebhookEventTypeEmailClicked               OutboundWebhookEventType = "email.clicked"
 	OutboundWebhookEventTypeEmailReplied               OutboundWebhookEventType = "email.replied"
+	OutboundWebhookEventTypeEmailReceived              OutboundWebhookEventType = "email.received"
 	OutboundWebhookEventTypeEmailUnsubscribed          OutboundWebhookEventType = "email.unsubscribed"
 	OutboundWebhookEventTypeCampaignSent               OutboundWebhookEventType = "campaign.sent"
 	OutboundWebhookEventTypeSmsSent                    OutboundWebhookEventType = "sms.sent"
@@ -1404,6 +1405,8 @@ func NewOutboundWebhookEventTypeFromString(s string) (OutboundWebhookEventType, 
 		return OutboundWebhookEventTypeEmailClicked, nil
 	case "email.replied":
 		return OutboundWebhookEventTypeEmailReplied, nil
+	case "email.received":
+		return OutboundWebhookEventTypeEmailReceived, nil
 	case "email.unsubscribed":
 		return OutboundWebhookEventTypeEmailUnsubscribed, nil
 	case "campaign.sent":

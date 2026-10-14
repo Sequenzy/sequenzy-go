@@ -6253,6 +6253,13 @@ func TestEnumOutboundWebhookEventType(t *testing.T) {
 		assert.Equal(t, OutboundWebhookEventType("email.replied"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_email_received", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewOutboundWebhookEventTypeFromString("email.received")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, OutboundWebhookEventType("email.received"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_email_unsubscribed", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewOutboundWebhookEventTypeFromString("email.unsubscribed")

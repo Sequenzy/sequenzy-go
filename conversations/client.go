@@ -34,6 +34,36 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
+// Moves up to 100 conversations into the Spam folder (spam true) or back to the inbox (spam false). Only conversations that move are updated, so retries are safe. IDs that do not exist in the company are reported in `notFoundIds` and do not fail the request.
+//
+// Example:
+//
+//	request := &sequenzygo.BulkUpdateSpamConversationsRequest{
+//	    ConversationIDs: []string{
+//	        "conversationIds",
+//	    },
+//	    Spam: true,
+//	}
+//	client.Conversations.BulkUpdateSpam(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) BulkUpdateSpam(
+	ctx context.Context,
+	request *sequenzygo.BulkUpdateSpamConversationsRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.BulkUpdateSpamConversationsResponse, error) {
+	response, err := c.WithRawResponse.BulkUpdateSpam(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Opens or closes up to 100 conversations in one request. Only conversations whose status changes are updated, so retries are safe. IDs that do not exist in the company are reported in `notFoundIds` and do not fail the request.
 //
 // Example:
@@ -120,7 +150,7 @@ func (c *Client) Get(
 	return response.Body, nil
 }
 
-// Returns the address anyone can email to reach this company's inbox, the same address on verified custom inbound domains, whether receiving is on, whether attachments are stored, and how long received email is kept.
+// Returns the address anyone can email to reach this company's inbox, the same inbox+ address on each verified receiving domain, whether receiving is on, whether attachments are stored, and how long received email is kept. Every other address on a receiving domain reaches the inbox too.
 //
 // Example:
 //
@@ -141,7 +171,7 @@ func (c *Client) GetInboxAddress(
 	return response.Body, nil
 }
 
-// Lists inbox conversations: replies to your campaigns, sequences, and transactional email, plus email sent to your inbox address. Filter by status, unread flag, or search term.
+// Lists inbox conversations: replies to your campaigns, sequences, and transactional email, plus email sent to your inbox address. Filter by status, unread flag, search term, inbox address, or the Spam folder. Conversations in the Spam folder are only listed with spam=true.
 //
 // Example:
 //
@@ -158,6 +188,27 @@ func (c *Client) List(
 	response, err := c.WithRawResponse.List(
 		ctx,
 		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Lists the inbox addresses conversations started at, such as admin@acme.com and team@acme.com, most recently used first (up to 100). Addresses that only received spam are left out. Use one as the recipient filter of List conversations.
+//
+// Example:
+//
+//	client.Conversations.ListRecipients(
+//	    context.TODO(),
+//	)
+func (c *Client) ListRecipients(
+	ctx context.Context,
+	opts ...option.RequestOption,
+) (*sequenzygo.ListRecipientsConversationsResponse, error) {
+	response, err := c.WithRawResponse.ListRecipients(
+		ctx,
 		opts...,
 	)
 	if err != nil {
@@ -247,7 +298,7 @@ func (c *Client) SendMessage(
 	return response.Body, nil
 }
 
-// Sets a branded inbox address `{localPart}@inbound.{domain}` on one of your verified sending domains, or clears it when both fields are null. The address starts receiving once the domain's inbound MX record is verified; the default address keeps working. Returns the same body as Get Inbox Address.
+// Sets a branded inbox address `{localPart}@{domain}` on one of your receiving domains, or clears it when both fields are null. The address is active once the receiving domain is verified; the default address keeps working. Every other address on the domain reaches the inbox too; the branded one is the address to share. Returns the same body as Get Inbox Address.
 //
 // Example:
 //

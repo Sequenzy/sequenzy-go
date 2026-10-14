@@ -3107,6 +3107,37 @@
       }
     },
     {
+      "id": "decf35b4-fcb4-4031-90fe-dd6d880440bf",
+      "name": "Move conversations to or from Spam - default",
+      "request": {
+        "urlPathTemplate": "/conversations/bulk/spam",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"notFound\": 1,\n  \"notFoundIds\": [\n    \"notFoundIds\"\n  ],\n  \"requested\": 1,\n  \"spam\": true,\n  \"success\": true,\n  \"unchanged\": 1,\n  \"unchangedIds\": [\n    \"unchangedIds\"\n  ],\n  \"updated\": 1,\n  \"updatedIds\": [\n    \"updatedIds\"\n  ]\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "decf35b4-fcb4-4031-90fe-dd6d880440bf",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "fbc318df-d45b-4f14-882d-74675c30857e",
       "name": "Update conversation statuses - default",
       "request": {
@@ -3258,12 +3289,44 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"conversations\": [\n    {\n      \"context\": {\n        \"type\": \"campaign\"\n      },\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"hasUnread\": true,\n      \"id\": \"conv_abc123\",\n      \"lastMessageAt\": \"2024-01-15T09:30:00Z\",\n      \"lastMessageBy\": \"subscriber\",\n      \"lastMessagePreview\": {\n        \"text\": \"Thanks, Thursday works for me.\",\n        \"type\": \"inbound\"\n      },\n      \"messageCount\": 1,\n      \"status\": \"open\",\n      \"subject\": \"subject\",\n      \"subscriberEmail\": \"subscriberEmail\",\n      \"subscriberId\": \"subscriberId\",\n      \"subscriberName\": \"subscriberName\"\n    }\n  ],\n  \"pagination\": {\n    \"limit\": 20,\n    \"page\": 1,\n    \"total\": 100,\n    \"totalPages\": 5\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"conversations\": [\n    {\n      \"context\": {\n        \"type\": \"campaign\"\n      },\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"hasUnread\": true,\n      \"id\": \"conv_abc123\",\n      \"lastMessageAt\": \"2024-01-15T09:30:00Z\",\n      \"lastMessageBy\": \"subscriber\",\n      \"lastMessagePreview\": {\n        \"text\": \"Thanks, Thursday works for me.\",\n        \"type\": \"inbound\"\n      },\n      \"messageCount\": 1,\n      \"recipientAddress\": \"recipientAddress\",\n      \"spam\": true,\n      \"status\": \"open\",\n      \"subject\": \"subject\",\n      \"subscriberEmail\": \"subscriberEmail\",\n      \"subscriberId\": \"subscriberId\",\n      \"subscriberName\": \"subscriberName\"\n    }\n  ],\n  \"pagination\": {\n    \"limit\": 20,\n    \"page\": 1,\n    \"total\": 100,\n    \"totalPages\": 5\n  },\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
       },
       "uuid": "d33104ab-2ac4-466d-bfc7-e9a26810a1da",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
+      "id": "fce17417-903b-4c2a-96aa-be960f805c4d",
+      "name": "List conversation recipients - default",
+      "request": {
+        "urlPathTemplate": "/conversations/recipients",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"addresses\": [\n    \"admin@acme.com\",\n    \"team@acme.com\"\n  ],\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "fce17417-903b-4c2a-96aa-be960f805c4d",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -7559,6 +7622,177 @@
         }
       },
       "uuid": "b106f1c5-ce5e-4d6a-9567-ecb5afd2f125",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "37fa21ed-d256-45a1-b29a-f2a0c3516e61",
+      "name": "Add receiving domain - Receive on a subdomain",
+      "request": {
+        "urlPathTemplate": "/receiving-domains",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"created\": true,\n  \"receivingDomain\": {\n    \"claimExpiresAt\": \"2024-01-15T09:30:00Z\",\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"domain\": \"support.acme.com\",\n    \"error\": \"Add the TXT record so Amazon SES can confirm you own support.acme.com.\",\n    \"id\": \"rd_abc123\",\n    \"lastCheckedAt\": \"2024-01-15T09:30:00Z\",\n    \"records\": [\n      {\n        \"name\": \"support.acme.com\",\n        \"priority\": 10,\n        \"status\": \"pending\",\n        \"type\": \"MX\",\n        \"value\": \"inbound-smtp.us-east-1.amazonaws.com\"\n      }\n    ],\n    \"status\": \"pending\",\n    \"verifiedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "37fa21ed-d256-45a1-b29a-f2a0c3516e61",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "c9d1b00b-61be-4fba-9b0c-eae27a84f370",
+      "name": "Get receiving domain - default",
+      "request": {
+        "urlPathTemplate": "/receiving-domains/{domain}",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "domain": {
+            "equalTo": "support.acme.com"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"receivingDomain\": {\n    \"claimExpiresAt\": \"2024-01-15T09:30:00Z\",\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"domain\": \"support.acme.com\",\n    \"error\": \"Add the TXT record so Amazon SES can confirm you own support.acme.com.\",\n    \"id\": \"rd_abc123\",\n    \"lastCheckedAt\": \"2024-01-15T09:30:00Z\",\n    \"records\": [\n      {\n        \"name\": \"support.acme.com\",\n        \"priority\": 10,\n        \"status\": \"pending\",\n        \"type\": \"MX\",\n        \"value\": \"inbound-smtp.us-east-1.amazonaws.com\"\n      }\n    ],\n    \"status\": \"pending\",\n    \"verifiedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "c9d1b00b-61be-4fba-9b0c-eae27a84f370",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "93d0c6d3-14a9-43ac-8649-158d4877995f",
+      "name": "List receiving domains - default",
+      "request": {
+        "urlPathTemplate": "/receiving-domains",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"receivingDomains\": [\n    {\n      \"claimExpiresAt\": \"2024-01-15T09:30:00Z\",\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"domain\": \"support.acme.com\",\n      \"error\": \"Add the TXT record so Amazon SES can confirm you own support.acme.com.\",\n      \"id\": \"rd_abc123\",\n      \"lastCheckedAt\": \"2024-01-15T09:30:00Z\",\n      \"records\": [\n        {\n          \"name\": \"support.acme.com\",\n          \"priority\": 10,\n          \"status\": \"pending\",\n          \"type\": \"MX\",\n          \"value\": \"inbound-smtp.us-east-1.amazonaws.com\"\n        }\n      ],\n      \"status\": \"pending\",\n      \"verifiedAt\": \"2024-01-15T09:30:00Z\"\n    }\n  ],\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "93d0c6d3-14a9-43ac-8649-158d4877995f",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
+      "id": "51add9ab-5db4-4b0c-bfd8-0bb8dc2b47d3",
+      "name": "Remove receiving domain - default",
+      "request": {
+        "urlPathTemplate": "/receiving-domains/{domain}",
+        "method": "DELETE",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "domain": {
+            "equalTo": "support.acme.com"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"receivingDomain\": {\n    \"claimExpiresAt\": \"2024-01-15T09:30:00Z\",\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"domain\": \"support.acme.com\",\n    \"error\": \"Add the TXT record so Amazon SES can confirm you own support.acme.com.\",\n    \"id\": \"rd_abc123\",\n    \"lastCheckedAt\": \"2024-01-15T09:30:00Z\",\n    \"records\": [\n      {\n        \"name\": \"support.acme.com\",\n        \"priority\": 10,\n        \"status\": \"pending\",\n        \"type\": \"MX\",\n        \"value\": \"inbound-smtp.us-east-1.amazonaws.com\"\n      }\n    ],\n    \"status\": \"pending\",\n    \"verifiedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "51add9ab-5db4-4b0c-bfd8-0bb8dc2b47d3",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "e7558354-92ef-4820-89ff-a1ee0af6773a",
+      "name": "Verify receiving domain - default",
+      "request": {
+        "urlPathTemplate": "/receiving-domains/{domain}/verify",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "domain": {
+            "equalTo": "support.acme.com"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"receivingDomain\": {\n    \"claimExpiresAt\": \"2024-01-15T09:30:00Z\",\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"domain\": \"support.acme.com\",\n    \"error\": \"Add the TXT record so Amazon SES can confirm you own support.acme.com.\",\n    \"id\": \"rd_abc123\",\n    \"lastCheckedAt\": \"2024-01-15T09:30:00Z\",\n    \"records\": [\n      {\n        \"name\": \"support.acme.com\",\n        \"priority\": 10,\n        \"status\": \"pending\",\n        \"type\": \"MX\",\n        \"value\": \"inbound-smtp.us-east-1.amazonaws.com\"\n      }\n    ],\n    \"status\": \"pending\",\n    \"verifiedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "e7558354-92ef-4820-89ff-a1ee0af6773a",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -12022,7 +12256,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"autoUtm\": {\n    \"enabled\": true,\n    \"settings\": {\n      \"key\": \"value\"\n    }\n  },\n  \"consent\": {\n    \"doubleOptInEmailId\": \"doubleOptInEmailId\",\n    \"doubleOptInEnabled\": true,\n    \"doubleOptInRedirectUrl\": \"doubleOptInRedirectUrl\"\n  },\n  \"replyTracking\": {\n    \"forwardReplies\": true,\n    \"inboundEmailEnabled\": true,\n    \"inboundReplyDomainMode\": \"inboundReplyDomainMode\"\n  },\n  \"success\": true,\n  \"tracking\": {\n    \"clickTrackingEnabled\": true,\n    \"defaultAttributionWindowHours\": 1,\n    \"openTrackingEnabled\": true,\n    \"strictBotFilteringEnabled\": true,\n    \"transactionalClickTrackingEnabled\": true,\n    \"transactionalOpenTrackingEnabled\": true,\n    \"unsubscribeTrackingEnabled\": true\n  },\n  \"trackingDomain\": {\n    \"domain\": \"domain\",\n    \"error\": \"error\",\n    \"lastCheckedAt\": \"2024-01-15T09:30:00Z\",\n    \"sslStatus\": \"sslStatus\",\n    \"status\": \"status\",\n    \"verifiedAt\": \"2024-01-15T09:30:00Z\"\n  }\n}",
+        "body": "{\n  \"autoUtm\": {\n    \"enabled\": true,\n    \"settings\": {\n      \"key\": \"value\"\n    }\n  },\n  \"consent\": {\n    \"doubleOptInEmailId\": \"doubleOptInEmailId\",\n    \"doubleOptInEnabled\": true,\n    \"doubleOptInRedirectUrl\": \"doubleOptInRedirectUrl\"\n  },\n  \"replyTracking\": {\n    \"forwardReplies\": true,\n    \"inboundEmailEnabled\": true,\n    \"inboundReplyDomainMode\": \"sequenzy\"\n  },\n  \"success\": true,\n  \"tracking\": {\n    \"clickTrackingEnabled\": true,\n    \"defaultAttributionWindowHours\": 1,\n    \"openTrackingEnabled\": true,\n    \"strictBotFilteringEnabled\": true,\n    \"transactionalClickTrackingEnabled\": true,\n    \"transactionalOpenTrackingEnabled\": true,\n    \"unsubscribeTrackingEnabled\": true\n  },\n  \"trackingDomain\": {\n    \"domain\": \"domain\",\n    \"error\": \"error\",\n    \"lastCheckedAt\": \"2024-01-15T09:30:00Z\",\n    \"sslStatus\": \"sslStatus\",\n    \"status\": \"status\",\n    \"verifiedAt\": \"2024-01-15T09:30:00Z\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -12054,7 +12288,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"autoUtm\": {\n    \"enabled\": true,\n    \"settings\": {\n      \"key\": \"value\"\n    }\n  },\n  \"consent\": {\n    \"doubleOptInEmailId\": \"doubleOptInEmailId\",\n    \"doubleOptInEnabled\": true,\n    \"doubleOptInRedirectUrl\": \"doubleOptInRedirectUrl\"\n  },\n  \"message\": \"message\",\n  \"replyTracking\": {\n    \"forwardReplies\": true,\n    \"inboundEmailEnabled\": true,\n    \"inboundReplyDomainMode\": \"inboundReplyDomainMode\"\n  },\n  \"success\": true,\n  \"tracking\": {\n    \"clickTrackingEnabled\": true,\n    \"defaultAttributionWindowHours\": 1,\n    \"openTrackingEnabled\": true,\n    \"strictBotFilteringEnabled\": true,\n    \"transactionalClickTrackingEnabled\": true,\n    \"transactionalOpenTrackingEnabled\": true,\n    \"unsubscribeTrackingEnabled\": true\n  },\n  \"trackingDomain\": {\n    \"domain\": \"domain\",\n    \"error\": \"error\",\n    \"lastCheckedAt\": \"2024-01-15T09:30:00Z\",\n    \"sslStatus\": \"sslStatus\",\n    \"status\": \"status\",\n    \"verifiedAt\": \"2024-01-15T09:30:00Z\"\n  }\n}",
+        "body": "{\n  \"autoUtm\": {\n    \"enabled\": true,\n    \"settings\": {\n      \"key\": \"value\"\n    }\n  },\n  \"consent\": {\n    \"doubleOptInEmailId\": \"doubleOptInEmailId\",\n    \"doubleOptInEnabled\": true,\n    \"doubleOptInRedirectUrl\": \"doubleOptInRedirectUrl\"\n  },\n  \"message\": \"message\",\n  \"replyTracking\": {\n    \"forwardReplies\": true,\n    \"inboundEmailEnabled\": true,\n    \"inboundReplyDomainMode\": \"sequenzy\"\n  },\n  \"success\": true,\n  \"tracking\": {\n    \"clickTrackingEnabled\": true,\n    \"defaultAttributionWindowHours\": 1,\n    \"openTrackingEnabled\": true,\n    \"strictBotFilteringEnabled\": true,\n    \"transactionalClickTrackingEnabled\": true,\n    \"transactionalOpenTrackingEnabled\": true,\n    \"unsubscribeTrackingEnabled\": true\n  },\n  \"trackingDomain\": {\n    \"domain\": \"domain\",\n    \"error\": \"error\",\n    \"lastCheckedAt\": \"2024-01-15T09:30:00Z\",\n    \"sslStatus\": \"sslStatus\",\n    \"status\": \"status\",\n    \"verifiedAt\": \"2024-01-15T09:30:00Z\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -13133,7 +13367,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"success\": true,\n  \"website\": {\n    \"bounceRecords\": {\n      \"cnameRecord\": {\n        \"name\": \"send.mail.example.com\",\n        \"value\": \"send.sequenzydns.com\"\n      },\n      \"diagnostic\": {\n        \"key\": \"value\"\n      },\n      \"status\": \"pending\",\n      \"style\": \"cname\"\n    },\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"dkim\": {\n      \"key\": \"value\"\n    },\n    \"dnsRecords\": {\n      \"inboundRoutingError\": \"inboundRoutingError\",\n      \"inboundRoutingStatus\": \"pending\",\n      \"inboundVerificationRecord\": {\n        \"name\": \"_amazonses.inbound.example.com\",\n        \"value\": \"value\"\n      },\n      \"inboundVerificationStatus\": \"pending\",\n      \"returnPathCnameDiagnostic\": {\n        \"key\": \"value\"\n      },\n      \"returnPathCnameRecord\": {\n        \"name\": \"send.mail.example.com\",\n        \"value\": \"send.sequenzydns.com\"\n      },\n      \"returnPathCnameStatus\": \"pending\",\n      \"trackingRecord\": {\n        \"name\": \"links.example.com\",\n        \"value\": \"links1.sequenzydns.com\"\n      },\n      \"trackingStatus\": \"not_started\"\n    },\n    \"dnsVerified\": true,\n    \"domain\": \"mail.example.com\",\n    \"id\": \"id\",\n    \"lastVerifiedAt\": \"2024-01-15T09:30:00Z\",\n    \"mailFrom\": {\n      \"key\": \"value\"\n    },\n    \"message\": \"message\",\n    \"nextVerificationAt\": \"2024-01-15T09:30:00Z\",\n    \"readiness\": {\n      \"reason\": \"dns_not_started\",\n      \"status\": \"setup_required\"\n    },\n    \"readyToSend\": true,\n    \"spf\": {\n      \"key\": \"value\"\n    },\n    \"status\": \"not_started\",\n    \"tracking\": {\n      \"cnameRecord\": {\n        \"name\": \"links.example.com\",\n        \"value\": \"links1.sequenzydns.com\"\n      },\n      \"error\": \"error\",\n      \"hostname\": \"links.example.com\",\n      \"ready\": true,\n      \"status\": \"not_started\"\n    }\n  }\n}",
+        "body": "{\n  \"success\": true,\n  \"website\": {\n    \"bounceRecords\": {\n      \"cnameRecord\": {\n        \"name\": \"send.mail.example.com\",\n        \"value\": \"send.sequenzydns.com\"\n      },\n      \"diagnostic\": {\n        \"key\": \"value\"\n      },\n      \"status\": \"pending\",\n      \"style\": \"cname\"\n    },\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"dkim\": {\n      \"key\": \"value\"\n    },\n    \"dnsRecords\": {\n      \"platformDnsRecords\": [\n        {\n          \"name\": \"sq1._domainkey.mail.example.com\",\n          \"purpose\": \"dkim\",\n          \"required\": true,\n          \"status\": \"pending\",\n          \"type\": \"CNAME\",\n          \"value\": \"sq1.k7f3q2ab.d.sequenzydns.com\"\n        }\n      ],\n      \"returnPathCnameDiagnostic\": {\n        \"key\": \"value\"\n      },\n      \"returnPathCnameRecord\": {\n        \"name\": \"send.mail.example.com\",\n        \"value\": \"send.sequenzydns.com\"\n      },\n      \"returnPathCnameStatus\": \"pending\",\n      \"trackingRecord\": {\n        \"name\": \"links.example.com\",\n        \"value\": \"links1.sequenzydns.com\"\n      },\n      \"trackingStatus\": \"not_started\"\n    },\n    \"dnsVerified\": true,\n    \"domain\": \"mail.example.com\",\n    \"id\": \"id\",\n    \"lastVerifiedAt\": \"2024-01-15T09:30:00Z\",\n    \"mailFrom\": {\n      \"key\": \"value\"\n    },\n    \"message\": \"message\",\n    \"nextVerificationAt\": \"2024-01-15T09:30:00Z\",\n    \"readiness\": {\n      \"reason\": \"dns_not_started\",\n      \"status\": \"setup_required\"\n    },\n    \"readyToSend\": true,\n    \"spf\": {\n      \"key\": \"value\"\n    },\n    \"status\": \"not_started\",\n    \"tracking\": {\n      \"cnameRecord\": {\n        \"name\": \"links.example.com\",\n        \"value\": \"links1.sequenzydns.com\"\n      },\n      \"error\": \"error\",\n      \"hostname\": \"links.example.com\",\n      \"ready\": true,\n      \"status\": \"not_started\"\n    }\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -13169,7 +13403,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"message\": \"message\",\n  \"success\": true,\n  \"website\": {\n    \"bounceRecords\": {\n      \"cnameRecord\": {\n        \"name\": \"send.mail.example.com\",\n        \"value\": \"send.sequenzydns.com\"\n      },\n      \"diagnostic\": {\n        \"key\": \"value\"\n      },\n      \"status\": \"pending\",\n      \"style\": \"cname\"\n    },\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"dkim\": {\n      \"key\": \"value\"\n    },\n    \"dnsRecords\": {\n      \"inboundRoutingError\": \"inboundRoutingError\",\n      \"inboundRoutingStatus\": \"pending\",\n      \"inboundVerificationRecord\": {\n        \"name\": \"_amazonses.inbound.example.com\",\n        \"value\": \"value\"\n      },\n      \"inboundVerificationStatus\": \"pending\",\n      \"returnPathCnameDiagnostic\": {\n        \"key\": \"value\"\n      },\n      \"returnPathCnameRecord\": {\n        \"name\": \"send.mail.example.com\",\n        \"value\": \"send.sequenzydns.com\"\n      },\n      \"returnPathCnameStatus\": \"pending\",\n      \"trackingRecord\": {\n        \"name\": \"links.example.com\",\n        \"value\": \"links1.sequenzydns.com\"\n      },\n      \"trackingStatus\": \"not_started\"\n    },\n    \"dnsVerified\": true,\n    \"domain\": \"mail.example.com\",\n    \"id\": \"id\",\n    \"lastVerifiedAt\": \"2024-01-15T09:30:00Z\",\n    \"mailFrom\": {\n      \"key\": \"value\"\n    },\n    \"message\": \"message\",\n    \"nextVerificationAt\": \"2024-01-15T09:30:00Z\",\n    \"readiness\": {\n      \"reason\": \"dns_not_started\",\n      \"status\": \"setup_required\"\n    },\n    \"readyToSend\": true,\n    \"spf\": {\n      \"key\": \"value\"\n    },\n    \"status\": \"not_started\",\n    \"tracking\": {\n      \"cnameRecord\": {\n        \"name\": \"links.example.com\",\n        \"value\": \"links1.sequenzydns.com\"\n      },\n      \"error\": \"error\",\n      \"hostname\": \"links.example.com\",\n      \"ready\": true,\n      \"status\": \"not_started\"\n    }\n  }\n}",
+        "body": "{\n  \"message\": \"message\",\n  \"success\": true,\n  \"website\": {\n    \"bounceRecords\": {\n      \"cnameRecord\": {\n        \"name\": \"send.mail.example.com\",\n        \"value\": \"send.sequenzydns.com\"\n      },\n      \"diagnostic\": {\n        \"key\": \"value\"\n      },\n      \"status\": \"pending\",\n      \"style\": \"cname\"\n    },\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"dkim\": {\n      \"key\": \"value\"\n    },\n    \"dnsRecords\": {\n      \"platformDnsRecords\": [\n        {\n          \"name\": \"sq1._domainkey.mail.example.com\",\n          \"purpose\": \"dkim\",\n          \"required\": true,\n          \"status\": \"pending\",\n          \"type\": \"CNAME\",\n          \"value\": \"sq1.k7f3q2ab.d.sequenzydns.com\"\n        }\n      ],\n      \"returnPathCnameDiagnostic\": {\n        \"key\": \"value\"\n      },\n      \"returnPathCnameRecord\": {\n        \"name\": \"send.mail.example.com\",\n        \"value\": \"send.sequenzydns.com\"\n      },\n      \"returnPathCnameStatus\": \"pending\",\n      \"trackingRecord\": {\n        \"name\": \"links.example.com\",\n        \"value\": \"links1.sequenzydns.com\"\n      },\n      \"trackingStatus\": \"not_started\"\n    },\n    \"dnsVerified\": true,\n    \"domain\": \"mail.example.com\",\n    \"id\": \"id\",\n    \"lastVerifiedAt\": \"2024-01-15T09:30:00Z\",\n    \"mailFrom\": {\n      \"key\": \"value\"\n    },\n    \"message\": \"message\",\n    \"nextVerificationAt\": \"2024-01-15T09:30:00Z\",\n    \"readiness\": {\n      \"reason\": \"dns_not_started\",\n      \"status\": \"setup_required\"\n    },\n    \"readyToSend\": true,\n    \"spf\": {\n      \"key\": \"value\"\n    },\n    \"status\": \"not_started\",\n    \"tracking\": {\n      \"cnameRecord\": {\n        \"name\": \"links.example.com\",\n        \"value\": \"links1.sequenzydns.com\"\n      },\n      \"error\": \"error\",\n      \"hostname\": \"links.example.com\",\n      \"ready\": true,\n      \"status\": \"not_started\"\n    }\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -13205,7 +13439,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"success\": true,\n  \"website\": {\n    \"bounceRecords\": {\n      \"cnameRecord\": {\n        \"name\": \"send.mail.example.com\",\n        \"value\": \"send.sequenzydns.com\"\n      },\n      \"diagnostic\": {\n        \"key\": \"value\"\n      },\n      \"status\": \"pending\",\n      \"style\": \"cname\"\n    },\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"dkim\": {\n      \"key\": \"value\"\n    },\n    \"dnsRecords\": {\n      \"inboundRoutingError\": \"inboundRoutingError\",\n      \"inboundRoutingStatus\": \"pending\",\n      \"inboundVerificationRecord\": {\n        \"name\": \"_amazonses.inbound.example.com\",\n        \"value\": \"value\"\n      },\n      \"inboundVerificationStatus\": \"pending\",\n      \"returnPathCnameDiagnostic\": {\n        \"key\": \"value\"\n      },\n      \"returnPathCnameRecord\": {\n        \"name\": \"send.mail.example.com\",\n        \"value\": \"send.sequenzydns.com\"\n      },\n      \"returnPathCnameStatus\": \"pending\",\n      \"trackingRecord\": {\n        \"name\": \"links.example.com\",\n        \"value\": \"links1.sequenzydns.com\"\n      },\n      \"trackingStatus\": \"not_started\"\n    },\n    \"dnsVerified\": true,\n    \"domain\": \"mail.example.com\",\n    \"id\": \"id\",\n    \"lastVerifiedAt\": \"2024-01-15T09:30:00Z\",\n    \"mailFrom\": {\n      \"key\": \"value\"\n    },\n    \"message\": \"message\",\n    \"nextVerificationAt\": \"2024-01-15T09:30:00Z\",\n    \"readiness\": {\n      \"reason\": \"dns_not_started\",\n      \"status\": \"setup_required\"\n    },\n    \"readyToSend\": true,\n    \"spf\": {\n      \"key\": \"value\"\n    },\n    \"status\": \"not_started\",\n    \"tracking\": {\n      \"cnameRecord\": {\n        \"name\": \"links.example.com\",\n        \"value\": \"links1.sequenzydns.com\"\n      },\n      \"error\": \"error\",\n      \"hostname\": \"links.example.com\",\n      \"ready\": true,\n      \"status\": \"not_started\"\n    }\n  }\n}",
+        "body": "{\n  \"success\": true,\n  \"website\": {\n    \"bounceRecords\": {\n      \"cnameRecord\": {\n        \"name\": \"send.mail.example.com\",\n        \"value\": \"send.sequenzydns.com\"\n      },\n      \"diagnostic\": {\n        \"key\": \"value\"\n      },\n      \"status\": \"pending\",\n      \"style\": \"cname\"\n    },\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"dkim\": {\n      \"key\": \"value\"\n    },\n    \"dnsRecords\": {\n      \"platformDnsRecords\": [\n        {\n          \"name\": \"sq1._domainkey.mail.example.com\",\n          \"purpose\": \"dkim\",\n          \"required\": true,\n          \"status\": \"pending\",\n          \"type\": \"CNAME\",\n          \"value\": \"sq1.k7f3q2ab.d.sequenzydns.com\"\n        }\n      ],\n      \"returnPathCnameDiagnostic\": {\n        \"key\": \"value\"\n      },\n      \"returnPathCnameRecord\": {\n        \"name\": \"send.mail.example.com\",\n        \"value\": \"send.sequenzydns.com\"\n      },\n      \"returnPathCnameStatus\": \"pending\",\n      \"trackingRecord\": {\n        \"name\": \"links.example.com\",\n        \"value\": \"links1.sequenzydns.com\"\n      },\n      \"trackingStatus\": \"not_started\"\n    },\n    \"dnsVerified\": true,\n    \"domain\": \"mail.example.com\",\n    \"id\": \"id\",\n    \"lastVerifiedAt\": \"2024-01-15T09:30:00Z\",\n    \"mailFrom\": {\n      \"key\": \"value\"\n    },\n    \"message\": \"message\",\n    \"nextVerificationAt\": \"2024-01-15T09:30:00Z\",\n    \"readiness\": {\n      \"reason\": \"dns_not_started\",\n      \"status\": \"setup_required\"\n    },\n    \"readyToSend\": true,\n    \"spf\": {\n      \"key\": \"value\"\n    },\n    \"status\": \"not_started\",\n    \"tracking\": {\n      \"cnameRecord\": {\n        \"name\": \"links.example.com\",\n        \"value\": \"links1.sequenzydns.com\"\n      },\n      \"error\": \"error\",\n      \"hostname\": \"links.example.com\",\n      \"ready\": true,\n      \"status\": \"not_started\"\n    }\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -13236,7 +13470,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"success\": true,\n  \"websites\": [\n    {\n      \"bounceRecords\": {\n        \"cnameRecord\": {\n          \"name\": \"send.mail.example.com\",\n          \"value\": \"send.sequenzydns.com\"\n        },\n        \"diagnostic\": null,\n        \"status\": \"pending\",\n        \"style\": \"cname\"\n      },\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"dkim\": {\n        \"key\": \"value\"\n      },\n      \"dnsRecords\": {\n        \"inboundVerificationRecord\": {\n          \"name\": \"_amazonses.inbound.example.com\",\n          \"value\": \"value\"\n        },\n        \"returnPathCnameRecord\": {\n          \"name\": \"send.mail.example.com\",\n          \"value\": \"send.sequenzydns.com\"\n        },\n        \"trackingRecord\": {\n          \"name\": \"links.example.com\",\n          \"value\": \"links1.sequenzydns.com\"\n        }\n      },\n      \"dnsVerified\": true,\n      \"domain\": \"mail.example.com\",\n      \"id\": \"id\",\n      \"lastVerifiedAt\": \"2024-01-15T09:30:00Z\",\n      \"mailFrom\": {\n        \"key\": \"value\"\n      },\n      \"message\": \"message\",\n      \"nextVerificationAt\": \"2024-01-15T09:30:00Z\",\n      \"readyToSend\": true,\n      \"spf\": {\n        \"key\": \"value\"\n      },\n      \"status\": \"not_started\",\n      \"tracking\": {\n        \"cnameRecord\": {\n          \"name\": \"links.example.com\",\n          \"value\": \"links1.sequenzydns.com\"\n        },\n        \"hostname\": \"links.example.com\"\n      }\n    }\n  ]\n}",
+        "body": "{\n  \"success\": true,\n  \"websites\": [\n    {\n      \"bounceRecords\": {\n        \"cnameRecord\": {\n          \"name\": \"send.mail.example.com\",\n          \"value\": \"send.sequenzydns.com\"\n        },\n        \"diagnostic\": null,\n        \"status\": \"pending\",\n        \"style\": \"cname\"\n      },\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"dkim\": {\n        \"key\": \"value\"\n      },\n      \"dnsRecords\": {\n        \"platformDnsRecords\": [\n          {\n            \"name\": \"sq1._domainkey.mail.example.com\",\n            \"purpose\": \"dkim\",\n            \"required\": true,\n            \"status\": \"pending\",\n            \"type\": \"CNAME\",\n            \"value\": \"sq1.k7f3q2ab.d.sequenzydns.com\"\n          }\n        ],\n        \"returnPathCnameRecord\": {\n          \"name\": \"send.mail.example.com\",\n          \"value\": \"send.sequenzydns.com\"\n        },\n        \"trackingRecord\": {\n          \"name\": \"links.example.com\",\n          \"value\": \"links1.sequenzydns.com\"\n        }\n      },\n      \"dnsVerified\": true,\n      \"domain\": \"mail.example.com\",\n      \"id\": \"id\",\n      \"lastVerifiedAt\": \"2024-01-15T09:30:00Z\",\n      \"mailFrom\": {\n        \"key\": \"value\"\n      },\n      \"message\": \"message\",\n      \"nextVerificationAt\": \"2024-01-15T09:30:00Z\",\n      \"readyToSend\": true,\n      \"spf\": {\n        \"key\": \"value\"\n      },\n      \"status\": \"not_started\",\n      \"tracking\": {\n        \"cnameRecord\": {\n          \"name\": \"links.example.com\",\n          \"value\": \"links1.sequenzydns.com\"\n        },\n        \"hostname\": \"links.example.com\"\n      }\n    }\n  ]\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -13273,7 +13507,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"discarded\": true,\n  \"message\": \"message\",\n  \"readyToSend\": true,\n  \"success\": true,\n  \"verified\": true,\n  \"website\": {\n    \"bounceRecords\": {\n      \"cnameRecord\": {\n        \"name\": \"send.mail.example.com\",\n        \"value\": \"send.sequenzydns.com\"\n      },\n      \"diagnostic\": {\n        \"key\": \"value\"\n      },\n      \"status\": \"pending\",\n      \"style\": \"cname\"\n    },\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"dkim\": {\n      \"key\": \"value\"\n    },\n    \"dnsRecords\": {\n      \"inboundRoutingError\": \"inboundRoutingError\",\n      \"inboundRoutingStatus\": \"pending\",\n      \"inboundVerificationRecord\": {\n        \"name\": \"_amazonses.inbound.example.com\",\n        \"value\": \"value\"\n      },\n      \"inboundVerificationStatus\": \"pending\",\n      \"returnPathCnameDiagnostic\": {\n        \"key\": \"value\"\n      },\n      \"returnPathCnameRecord\": {\n        \"name\": \"send.mail.example.com\",\n        \"value\": \"send.sequenzydns.com\"\n      },\n      \"returnPathCnameStatus\": \"pending\",\n      \"trackingRecord\": {\n        \"name\": \"links.example.com\",\n        \"value\": \"links1.sequenzydns.com\"\n      },\n      \"trackingStatus\": \"not_started\"\n    },\n    \"dnsVerified\": true,\n    \"domain\": \"mail.example.com\",\n    \"id\": \"id\",\n    \"lastVerifiedAt\": \"2024-01-15T09:30:00Z\",\n    \"mailFrom\": {\n      \"key\": \"value\"\n    },\n    \"message\": \"message\",\n    \"nextVerificationAt\": \"2024-01-15T09:30:00Z\",\n    \"readiness\": {\n      \"reason\": \"dns_not_started\",\n      \"status\": \"setup_required\"\n    },\n    \"readyToSend\": true,\n    \"spf\": {\n      \"key\": \"value\"\n    },\n    \"status\": \"not_started\",\n    \"tracking\": {\n      \"cnameRecord\": {\n        \"name\": \"links.example.com\",\n        \"value\": \"links1.sequenzydns.com\"\n      },\n      \"error\": \"error\",\n      \"hostname\": \"links.example.com\",\n      \"ready\": true,\n      \"status\": \"not_started\"\n    }\n  }\n}",
+        "body": "{\n  \"discarded\": true,\n  \"message\": \"message\",\n  \"readyToSend\": true,\n  \"success\": true,\n  \"verified\": true,\n  \"website\": {\n    \"bounceRecords\": {\n      \"cnameRecord\": {\n        \"name\": \"send.mail.example.com\",\n        \"value\": \"send.sequenzydns.com\"\n      },\n      \"diagnostic\": {\n        \"key\": \"value\"\n      },\n      \"status\": \"pending\",\n      \"style\": \"cname\"\n    },\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"dkim\": {\n      \"key\": \"value\"\n    },\n    \"dnsRecords\": {\n      \"platformDnsRecords\": [\n        {\n          \"name\": \"sq1._domainkey.mail.example.com\",\n          \"purpose\": \"dkim\",\n          \"required\": true,\n          \"status\": \"pending\",\n          \"type\": \"CNAME\",\n          \"value\": \"sq1.k7f3q2ab.d.sequenzydns.com\"\n        }\n      ],\n      \"returnPathCnameDiagnostic\": {\n        \"key\": \"value\"\n      },\n      \"returnPathCnameRecord\": {\n        \"name\": \"send.mail.example.com\",\n        \"value\": \"send.sequenzydns.com\"\n      },\n      \"returnPathCnameStatus\": \"pending\",\n      \"trackingRecord\": {\n        \"name\": \"links.example.com\",\n        \"value\": \"links1.sequenzydns.com\"\n      },\n      \"trackingStatus\": \"not_started\"\n    },\n    \"dnsVerified\": true,\n    \"domain\": \"mail.example.com\",\n    \"id\": \"id\",\n    \"lastVerifiedAt\": \"2024-01-15T09:30:00Z\",\n    \"mailFrom\": {\n      \"key\": \"value\"\n    },\n    \"message\": \"message\",\n    \"nextVerificationAt\": \"2024-01-15T09:30:00Z\",\n    \"readiness\": {\n      \"reason\": \"dns_not_started\",\n      \"status\": \"setup_required\"\n    },\n    \"readyToSend\": true,\n    \"spf\": {\n      \"key\": \"value\"\n    },\n    \"status\": \"not_started\",\n    \"tracking\": {\n      \"cnameRecord\": {\n        \"name\": \"links.example.com\",\n        \"value\": \"links1.sequenzydns.com\"\n      },\n      \"error\": \"error\",\n      \"hostname\": \"links.example.com\",\n      \"ready\": true,\n      \"status\": \"not_started\"\n    }\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -14201,6 +14435,6 @@
     }
   ],
   "meta": {
-    "total": 413
+    "total": 420
   }
 }

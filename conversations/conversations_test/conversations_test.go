@@ -77,6 +77,35 @@ func VerifyRequestCount(
 	require.Equal(t, expected, len(result.Requests))
 }
 
+func TestConversationsBulkUpdateSpamWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.BulkUpdateSpamConversationsRequest{
+		ConversationIDs: []string{
+			"conversationIds",
+		},
+		Spam: true,
+	}
+	_, invocationErr := client.Conversations.BulkUpdateSpam(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestConversationsBulkUpdateSpamWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestConversationsBulkUpdateSpamWithWireMock", "POST", "/conversations/bulk/spam", nil, 1)
+}
+
 func TestConversationsBulkUpdateStatusWithWireMock(
 	t *testing.T,
 ) {
@@ -204,6 +233,28 @@ func TestConversationsListWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestConversationsListWithWireMock", "GET", "/conversations", nil, 1)
+}
+
+func TestConversationsListRecipientsWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	_, invocationErr := client.Conversations.ListRecipients(
+		context.TODO(),
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestConversationsListRecipientsWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestConversationsListRecipientsWithWireMock", "GET", "/conversations/recipients", nil, 1)
 }
 
 func TestConversationsMarkReadWithWireMock(

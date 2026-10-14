@@ -32,6 +32,50 @@ func NewRawClient(options *core.RequestOptions) *RawClient {
 	}
 }
 
+func (r *RawClient) BulkUpdateSpam(
+	ctx context.Context,
+	request *sequenzygo.BulkUpdateSpamConversationsRequest,
+	opts ...option.RequestOption,
+) (*core.Response[*sequenzygo.BulkUpdateSpamConversationsResponse], error) {
+	options := core.NewRequestOptions(opts...)
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		r.baseURL,
+		"https://api.sequenzy.com/api/v1",
+	)
+	endpointURL := baseURL + "/conversations/bulk/spam"
+	headers := internal.MergeHeaders(
+		r.options.ToHeader(),
+		options.ToHeader(),
+	)
+	headers.Add("Content-Type", "application/json")
+	var response *sequenzygo.BulkUpdateSpamConversationsResponse
+	raw, err := r.caller.Call(
+		ctx,
+		&internal.CallParams{
+			URL:             endpointURL,
+			Method:          http.MethodPost,
+			Headers:         headers,
+			MaxAttempts:     options.MaxAttempts,
+			DisableRetries:  options.DisableRetries,
+			BodyProperties:  options.BodyProperties,
+			QueryParameters: options.QueryParameters,
+			Client:          options.HTTPClient,
+			Request:         request,
+			Response:        &response,
+			ErrorDecoder:    internal.NewErrorDecoder(sequenzygo.ErrorCodes),
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &core.Response[*sequenzygo.BulkUpdateSpamConversationsResponse]{
+		StatusCode: raw.StatusCode,
+		Header:     raw.Header,
+		Body:       response,
+	}, nil
+}
+
 func (r *RawClient) BulkUpdateStatus(
 	ctx context.Context,
 	request *sequenzygo.BulkUpdateStatusConversationsRequest,
@@ -253,6 +297,47 @@ func (r *RawClient) List(
 		return nil, err
 	}
 	return &core.Response[*sequenzygo.ListConversationsResponse]{
+		StatusCode: raw.StatusCode,
+		Header:     raw.Header,
+		Body:       response,
+	}, nil
+}
+
+func (r *RawClient) ListRecipients(
+	ctx context.Context,
+	opts ...option.RequestOption,
+) (*core.Response[*sequenzygo.ListRecipientsConversationsResponse], error) {
+	options := core.NewRequestOptions(opts...)
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		r.baseURL,
+		"https://api.sequenzy.com/api/v1",
+	)
+	endpointURL := baseURL + "/conversations/recipients"
+	headers := internal.MergeHeaders(
+		r.options.ToHeader(),
+		options.ToHeader(),
+	)
+	var response *sequenzygo.ListRecipientsConversationsResponse
+	raw, err := r.caller.Call(
+		ctx,
+		&internal.CallParams{
+			URL:             endpointURL,
+			Method:          http.MethodGet,
+			Headers:         headers,
+			MaxAttempts:     options.MaxAttempts,
+			DisableRetries:  options.DisableRetries,
+			BodyProperties:  options.BodyProperties,
+			QueryParameters: options.QueryParameters,
+			Client:          options.HTTPClient,
+			Response:        &response,
+			ErrorDecoder:    internal.NewErrorDecoder(sequenzygo.ErrorCodes),
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &core.Response[*sequenzygo.ListRecipientsConversationsResponse]{
 		StatusCode: raw.StatusCode,
 		Header:     raw.Header,
 		Body:       response,

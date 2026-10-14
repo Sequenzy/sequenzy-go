@@ -37,6 +37,7 @@ import (
 	orders "github.com/sequenzy/sequenzy-go/orders"
 	products "github.com/sequenzy/sequenzy-go/products"
 	push "github.com/sequenzy/sequenzy-go/push"
+	receivingdomains "github.com/sequenzy/sequenzy-go/receivingdomains"
 	references "github.com/sequenzy/sequenzy-go/references"
 	segments "github.com/sequenzy/sequenzy-go/segments"
 	senderprofiles "github.com/sequenzy/sequenzy-go/senderprofiles"
@@ -92,6 +93,7 @@ type Client struct {
 	Orders                  *orders.Client
 	Products                *products.Client
 	Push                    *push.Client
+	ReceivingDomains        *receivingdomains.Client
 	References              *references.Client
 	Segments                *segments.Client
 	SenderProfiles          *senderprofiles.Client
@@ -153,6 +155,7 @@ func NewClient(opts ...option.RequestOption) *Client {
 		Orders:                  orders.NewClient(options),
 		Products:                products.NewClient(options),
 		Push:                    push.NewClient(options),
+		ReceivingDomains:        receivingdomains.NewClient(options),
 		References:              references.NewClient(options),
 		Segments:                segments.NewClient(options),
 		SenderProfiles:          senderprofiles.NewClient(options),

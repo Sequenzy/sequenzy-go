@@ -11,6 +11,63 @@ import (
 )
 
 var (
+	bulkUpdateSpamConversationsRequestFieldConversationIDs = big.NewInt(1 << 0)
+	bulkUpdateSpamConversationsRequestFieldSpam            = big.NewInt(1 << 1)
+)
+
+type BulkUpdateSpamConversationsRequest struct {
+	// Conversation IDs to move, up to 100. Whitespace is trimmed and blank or repeated IDs are ignored; at least one non-blank ID is required.
+	ConversationIDs []string `json:"conversationIds" url:"-"`
+	// True moves them to Spam; false moves them back.
+	Spam bool `json:"spam" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (b *BulkUpdateSpamConversationsRequest) require(field *big.Int) {
+	if b.explicitFields == nil {
+		b.explicitFields = big.NewInt(0)
+	}
+	b.explicitFields.Or(b.explicitFields, field)
+}
+
+// SetConversationIDs sets the ConversationIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *BulkUpdateSpamConversationsRequest) SetConversationIDs(conversationIDs []string) {
+	b.ConversationIDs = conversationIDs
+	b.require(bulkUpdateSpamConversationsRequestFieldConversationIDs)
+}
+
+// SetSpam sets the Spam field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *BulkUpdateSpamConversationsRequest) SetSpam(spam bool) {
+	b.Spam = spam
+	b.require(bulkUpdateSpamConversationsRequestFieldSpam)
+}
+
+func (b *BulkUpdateSpamConversationsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler BulkUpdateSpamConversationsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*b = BulkUpdateSpamConversationsRequest(body)
+	return nil
+}
+
+func (b *BulkUpdateSpamConversationsRequest) MarshalJSON() ([]byte, error) {
+	type embed BulkUpdateSpamConversationsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*b),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, b.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
 	bulkUpdateStatusConversationsRequestFieldConversationIDs = big.NewInt(1 << 0)
 	bulkUpdateStatusConversationsRequestFieldStatus          = big.NewInt(1 << 1)
 )
@@ -171,11 +228,13 @@ func (g *GetConversationsRequest) SetConversationID(conversationID string) {
 }
 
 var (
-	listConversationsRequestFieldLimit  = big.NewInt(1 << 0)
-	listConversationsRequestFieldPage   = big.NewInt(1 << 1)
-	listConversationsRequestFieldSearch = big.NewInt(1 << 2)
-	listConversationsRequestFieldStatus = big.NewInt(1 << 3)
-	listConversationsRequestFieldUnread = big.NewInt(1 << 4)
+	listConversationsRequestFieldLimit     = big.NewInt(1 << 0)
+	listConversationsRequestFieldPage      = big.NewInt(1 << 1)
+	listConversationsRequestFieldRecipient = big.NewInt(1 << 2)
+	listConversationsRequestFieldSearch    = big.NewInt(1 << 3)
+	listConversationsRequestFieldSpam      = big.NewInt(1 << 4)
+	listConversationsRequestFieldStatus    = big.NewInt(1 << 5)
+	listConversationsRequestFieldUnread    = big.NewInt(1 << 6)
 )
 
 type ListConversationsRequest struct {
@@ -183,8 +242,12 @@ type ListConversationsRequest struct {
 	Limit *int `json:"-" url:"limit,omitempty"`
 	// Page number.
 	Page *int `json:"-" url:"page,omitempty"`
+	// Only conversations that started at this inbox address. Case does not matter. See List conversation recipients.
+	Recipient *string `json:"-" url:"recipient,omitempty"`
 	// Search in subject, subscriber email, or subscriber name.
 	Search *string `json:"-" url:"search,omitempty"`
+	// Pass "true" to list the Spam folder instead. Other lists leave spam out.
+	Spam *ListConversationsRequestSpam `json:"-" url:"spam,omitempty"`
 	// Filter by conversation status.
 	Status *ListConversationsRequestStatus `json:"-" url:"status,omitempty"`
 	// Pass "true" to only return conversations with unread messages.
@@ -215,11 +278,25 @@ func (l *ListConversationsRequest) SetPage(page *int) {
 	l.require(listConversationsRequestFieldPage)
 }
 
+// SetRecipient sets the Recipient field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListConversationsRequest) SetRecipient(recipient *string) {
+	l.Recipient = recipient
+	l.require(listConversationsRequestFieldRecipient)
+}
+
 // SetSearch sets the Search field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *ListConversationsRequest) SetSearch(search *string) {
 	l.Search = search
 	l.require(listConversationsRequestFieldSearch)
+}
+
+// SetSpam sets the Spam field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListConversationsRequest) SetSpam(spam *ListConversationsRequestSpam) {
+	l.Spam = spam
+	l.require(listConversationsRequestFieldSpam)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
@@ -870,11 +947,13 @@ var (
 	conversationSummaryFieldLastMessageBy      = big.NewInt(1 << 5)
 	conversationSummaryFieldLastMessagePreview = big.NewInt(1 << 6)
 	conversationSummaryFieldMessageCount       = big.NewInt(1 << 7)
-	conversationSummaryFieldStatus             = big.NewInt(1 << 8)
-	conversationSummaryFieldSubject            = big.NewInt(1 << 9)
-	conversationSummaryFieldSubscriberEmail    = big.NewInt(1 << 10)
-	conversationSummaryFieldSubscriberID       = big.NewInt(1 << 11)
-	conversationSummaryFieldSubscriberName     = big.NewInt(1 << 12)
+	conversationSummaryFieldRecipientAddress   = big.NewInt(1 << 8)
+	conversationSummaryFieldSpam               = big.NewInt(1 << 9)
+	conversationSummaryFieldStatus             = big.NewInt(1 << 10)
+	conversationSummaryFieldSubject            = big.NewInt(1 << 11)
+	conversationSummaryFieldSubscriberEmail    = big.NewInt(1 << 12)
+	conversationSummaryFieldSubscriberID       = big.NewInt(1 << 13)
+	conversationSummaryFieldSubscriberName     = big.NewInt(1 << 14)
 )
 
 type ConversationSummary struct {
@@ -887,11 +966,15 @@ type ConversationSummary struct {
 	// Plain-text preview of the latest subscriber or team reply, with quoted history, signatures and markup removed and truncated to 200 characters. Internal notes are not included. Null when no reply has readable text.
 	LastMessagePreview *ConversationSummaryLastMessagePreview `json:"lastMessagePreview,omitempty" url:"lastMessagePreview,omitempty"`
 	MessageCount       *int                                   `json:"messageCount,omitempty" url:"messageCount,omitempty"`
-	Status             *ConversationSummaryStatus             `json:"status,omitempty" url:"status,omitempty"`
-	Subject            *string                                `json:"subject,omitempty" url:"subject,omitempty"`
-	SubscriberEmail    *string                                `json:"subscriberEmail,omitempty" url:"subscriberEmail,omitempty"`
-	SubscriberID       *string                                `json:"subscriberId,omitempty" url:"subscriberId,omitempty"`
-	SubscriberName     *string                                `json:"subscriberName,omitempty" url:"subscriberName,omitempty"`
+	// Inbox address the conversation started at, such as admin@acme.com. Null for replies to your emails.
+	RecipientAddress *string `json:"recipientAddress,omitempty" url:"recipientAddress,omitempty"`
+	// True when the conversation is in the Spam folder: mail the inbound spam or virus scan flagged, or a conversation moved there.
+	Spam            *bool                      `json:"spam,omitempty" url:"spam,omitempty"`
+	Status          *ConversationSummaryStatus `json:"status,omitempty" url:"status,omitempty"`
+	Subject         *string                    `json:"subject,omitempty" url:"subject,omitempty"`
+	SubscriberEmail *string                    `json:"subscriberEmail,omitempty" url:"subscriberEmail,omitempty"`
+	SubscriberID    *string                    `json:"subscriberId,omitempty" url:"subscriberId,omitempty"`
+	SubscriberName  *string                    `json:"subscriberName,omitempty" url:"subscriberName,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -954,6 +1037,20 @@ func (c *ConversationSummary) GetMessageCount() *int {
 		return nil
 	}
 	return c.MessageCount
+}
+
+func (c *ConversationSummary) GetRecipientAddress() *string {
+	if c == nil {
+		return nil
+	}
+	return c.RecipientAddress
+}
+
+func (c *ConversationSummary) GetSpam() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.Spam
 }
 
 func (c *ConversationSummary) GetStatus() *ConversationSummaryStatus {
@@ -1059,6 +1156,20 @@ func (c *ConversationSummary) SetLastMessagePreview(lastMessagePreview *Conversa
 func (c *ConversationSummary) SetMessageCount(messageCount *int) {
 	c.MessageCount = messageCount
 	c.require(conversationSummaryFieldMessageCount)
+}
+
+// SetRecipientAddress sets the RecipientAddress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ConversationSummary) SetRecipientAddress(recipientAddress *string) {
+	c.RecipientAddress = recipientAddress
+	c.require(conversationSummaryFieldRecipientAddress)
+}
+
+// SetSpam sets the Spam field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ConversationSummary) SetSpam(spam *bool) {
+	c.Spam = spam
+	c.require(conversationSummaryFieldSpam)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
@@ -1408,12 +1519,12 @@ var (
 )
 
 type InboxCustomAddress struct {
-	// The full address, such as support@inbound.acme.com. Null until the domain's inbound host is known.
+	// The full address, localPart@domain, such as support@acme.com.
 	Address *string `json:"address,omitempty" url:"address,omitempty"`
-	// The verified sending domain.
+	// The receiving domain the address is on.
 	Domain    string `json:"domain" url:"domain"`
 	LocalPart string `json:"localPart" url:"localPart"`
-	// `active` once the inbound MX record is verified; `pending` until then.
+	// `active` once the receiving domain is verified; `pending` until then.
 	Status InboxCustomAddressStatus `json:"status" url:"status"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -1535,7 +1646,7 @@ func (i *InboxCustomAddress) String() string {
 	return fmt.Sprintf("%#v", i)
 }
 
-// `active` once the inbound MX record is verified; `pending` until then.
+// `active` once the receiving domain is verified; `pending` until then.
 type InboxCustomAddressStatus string
 
 const (
@@ -1556,6 +1667,225 @@ func NewInboxCustomAddressStatusFromString(s string) (InboxCustomAddressStatus, 
 
 func (i InboxCustomAddressStatus) Ptr() *InboxCustomAddressStatus {
 	return &i
+}
+
+var (
+	bulkUpdateSpamConversationsResponseFieldNotFound     = big.NewInt(1 << 0)
+	bulkUpdateSpamConversationsResponseFieldNotFoundIDs  = big.NewInt(1 << 1)
+	bulkUpdateSpamConversationsResponseFieldRequested    = big.NewInt(1 << 2)
+	bulkUpdateSpamConversationsResponseFieldSpam         = big.NewInt(1 << 3)
+	bulkUpdateSpamConversationsResponseFieldSuccess      = big.NewInt(1 << 4)
+	bulkUpdateSpamConversationsResponseFieldUnchanged    = big.NewInt(1 << 5)
+	bulkUpdateSpamConversationsResponseFieldUnchangedIDs = big.NewInt(1 << 6)
+	bulkUpdateSpamConversationsResponseFieldUpdated      = big.NewInt(1 << 7)
+	bulkUpdateSpamConversationsResponseFieldUpdatedIDs   = big.NewInt(1 << 8)
+)
+
+type BulkUpdateSpamConversationsResponse struct {
+	// IDs that do not exist in the company.
+	NotFound *int `json:"notFound,omitempty" url:"notFound,omitempty"`
+	// IDs that do not exist in the company, in request order.
+	NotFoundIDs []string `json:"notFoundIds,omitempty" url:"notFoundIds,omitempty"`
+	// Distinct conversation IDs in the request.
+	Requested *int  `json:"requested,omitempty" url:"requested,omitempty"`
+	Spam      *bool `json:"spam,omitempty" url:"spam,omitempty"`
+	Success   *bool `json:"success,omitempty" url:"success,omitempty"`
+	// Conversations that were already there.
+	Unchanged *int `json:"unchanged,omitempty" url:"unchanged,omitempty"`
+	// IDs that were already there, in request order.
+	UnchangedIDs []string `json:"unchangedIds,omitempty" url:"unchangedIds,omitempty"`
+	// Conversations that moved.
+	Updated *int `json:"updated,omitempty" url:"updated,omitempty"`
+	// IDs that moved, in request order.
+	UpdatedIDs []string `json:"updatedIds,omitempty" url:"updatedIds,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (b *BulkUpdateSpamConversationsResponse) GetNotFound() *int {
+	if b == nil {
+		return nil
+	}
+	return b.NotFound
+}
+
+func (b *BulkUpdateSpamConversationsResponse) GetNotFoundIDs() []string {
+	if b == nil {
+		return nil
+	}
+	return b.NotFoundIDs
+}
+
+func (b *BulkUpdateSpamConversationsResponse) GetRequested() *int {
+	if b == nil {
+		return nil
+	}
+	return b.Requested
+}
+
+func (b *BulkUpdateSpamConversationsResponse) GetSpam() *bool {
+	if b == nil {
+		return nil
+	}
+	return b.Spam
+}
+
+func (b *BulkUpdateSpamConversationsResponse) GetSuccess() *bool {
+	if b == nil {
+		return nil
+	}
+	return b.Success
+}
+
+func (b *BulkUpdateSpamConversationsResponse) GetUnchanged() *int {
+	if b == nil {
+		return nil
+	}
+	return b.Unchanged
+}
+
+func (b *BulkUpdateSpamConversationsResponse) GetUnchangedIDs() []string {
+	if b == nil {
+		return nil
+	}
+	return b.UnchangedIDs
+}
+
+func (b *BulkUpdateSpamConversationsResponse) GetUpdated() *int {
+	if b == nil {
+		return nil
+	}
+	return b.Updated
+}
+
+func (b *BulkUpdateSpamConversationsResponse) GetUpdatedIDs() []string {
+	if b == nil {
+		return nil
+	}
+	return b.UpdatedIDs
+}
+
+func (b *BulkUpdateSpamConversationsResponse) GetExtraProperties() map[string]interface{} {
+	if b == nil {
+		return nil
+	}
+	return b.extraProperties
+}
+
+func (b *BulkUpdateSpamConversationsResponse) require(field *big.Int) {
+	if b.explicitFields == nil {
+		b.explicitFields = big.NewInt(0)
+	}
+	b.explicitFields.Or(b.explicitFields, field)
+}
+
+// SetNotFound sets the NotFound field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *BulkUpdateSpamConversationsResponse) SetNotFound(notFound *int) {
+	b.NotFound = notFound
+	b.require(bulkUpdateSpamConversationsResponseFieldNotFound)
+}
+
+// SetNotFoundIDs sets the NotFoundIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *BulkUpdateSpamConversationsResponse) SetNotFoundIDs(notFoundIDs []string) {
+	b.NotFoundIDs = notFoundIDs
+	b.require(bulkUpdateSpamConversationsResponseFieldNotFoundIDs)
+}
+
+// SetRequested sets the Requested field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *BulkUpdateSpamConversationsResponse) SetRequested(requested *int) {
+	b.Requested = requested
+	b.require(bulkUpdateSpamConversationsResponseFieldRequested)
+}
+
+// SetSpam sets the Spam field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *BulkUpdateSpamConversationsResponse) SetSpam(spam *bool) {
+	b.Spam = spam
+	b.require(bulkUpdateSpamConversationsResponseFieldSpam)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *BulkUpdateSpamConversationsResponse) SetSuccess(success *bool) {
+	b.Success = success
+	b.require(bulkUpdateSpamConversationsResponseFieldSuccess)
+}
+
+// SetUnchanged sets the Unchanged field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *BulkUpdateSpamConversationsResponse) SetUnchanged(unchanged *int) {
+	b.Unchanged = unchanged
+	b.require(bulkUpdateSpamConversationsResponseFieldUnchanged)
+}
+
+// SetUnchangedIDs sets the UnchangedIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *BulkUpdateSpamConversationsResponse) SetUnchangedIDs(unchangedIDs []string) {
+	b.UnchangedIDs = unchangedIDs
+	b.require(bulkUpdateSpamConversationsResponseFieldUnchangedIDs)
+}
+
+// SetUpdated sets the Updated field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *BulkUpdateSpamConversationsResponse) SetUpdated(updated *int) {
+	b.Updated = updated
+	b.require(bulkUpdateSpamConversationsResponseFieldUpdated)
+}
+
+// SetUpdatedIDs sets the UpdatedIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *BulkUpdateSpamConversationsResponse) SetUpdatedIDs(updatedIDs []string) {
+	b.UpdatedIDs = updatedIDs
+	b.require(bulkUpdateSpamConversationsResponseFieldUpdatedIDs)
+}
+
+func (b *BulkUpdateSpamConversationsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler BulkUpdateSpamConversationsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*b = BulkUpdateSpamConversationsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *b)
+	if err != nil {
+		return err
+	}
+	b.extraProperties = extraProperties
+	b.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (b *BulkUpdateSpamConversationsResponse) MarshalJSON() ([]byte, error) {
+	type embed BulkUpdateSpamConversationsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*b),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, b.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (b *BulkUpdateSpamConversationsResponse) String() string {
+	if b == nil {
+		return "<nil>"
+	}
+	if len(b.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(b.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(b); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", b)
 }
 
 // New status for every listed conversation.
@@ -2483,6 +2813,28 @@ func (g *GetInboxAddressResponseInbox) String() string {
 	return fmt.Sprintf("%#v", g)
 }
 
+type ListConversationsRequestSpam string
+
+const (
+	ListConversationsRequestSpamTrue  ListConversationsRequestSpam = "true"
+	ListConversationsRequestSpamFalse ListConversationsRequestSpam = "false"
+)
+
+func NewListConversationsRequestSpamFromString(s string) (ListConversationsRequestSpam, error) {
+	switch s {
+	case "true":
+		return ListConversationsRequestSpamTrue, nil
+	case "false":
+		return ListConversationsRequestSpamFalse, nil
+	}
+	var t ListConversationsRequestSpam
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListConversationsRequestSpam) Ptr() *ListConversationsRequestSpam {
+	return &l
+}
+
 type ListConversationsRequestStatus string
 
 const (
@@ -2629,6 +2981,106 @@ func (l *ListConversationsResponse) MarshalJSON() ([]byte, error) {
 }
 
 func (l *ListConversationsResponse) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	listRecipientsConversationsResponseFieldAddresses = big.NewInt(1 << 0)
+	listRecipientsConversationsResponseFieldSuccess   = big.NewInt(1 << 1)
+)
+
+type ListRecipientsConversationsResponse struct {
+	Addresses []string `json:"addresses,omitempty" url:"addresses,omitempty"`
+	Success   *bool    `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListRecipientsConversationsResponse) GetAddresses() []string {
+	if l == nil {
+		return nil
+	}
+	return l.Addresses
+}
+
+func (l *ListRecipientsConversationsResponse) GetSuccess() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.Success
+}
+
+func (l *ListRecipientsConversationsResponse) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListRecipientsConversationsResponse) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetAddresses sets the Addresses field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListRecipientsConversationsResponse) SetAddresses(addresses []string) {
+	l.Addresses = addresses
+	l.require(listRecipientsConversationsResponseFieldAddresses)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListRecipientsConversationsResponse) SetSuccess(success *bool) {
+	l.Success = success
+	l.require(listRecipientsConversationsResponseFieldSuccess)
+}
+
+func (l *ListRecipientsConversationsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListRecipientsConversationsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListRecipientsConversationsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListRecipientsConversationsResponse) MarshalJSON() ([]byte, error) {
+	type embed ListRecipientsConversationsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListRecipientsConversationsResponse) String() string {
 	if l == nil {
 		return "<nil>"
 	}
@@ -3537,7 +3989,7 @@ var (
 )
 
 type UpdateInboxAddressRequest struct {
-	// A verified sending domain of the company, such as `acme.com`. Null to clear.
+	// One of your receiving domains, by name, such as `acme.com`. For compatibility, the name of a sending domain whose earlier reply setup moved to a receiving domain is also accepted and uses that receiving domain. A verified sending domain with no earlier setup gets its inbound host (usually `inbound.{root}`) added as the workspace's one receiving domain, or fails with 409 `limit_reached` when the workspace already has a different one. Null to clear.
 	Domain *string `json:"domain,omitempty" url:"-"`
 	// Name before the @, such as `support`. Letters, numbers, dots, dashes and underscores, starting and ending with a letter or number. Stored in lowercase. Null to clear.
 	LocalPart *string `json:"localPart,omitempty" url:"-"`

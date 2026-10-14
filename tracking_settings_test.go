@@ -848,7 +848,7 @@ func TestSettersTrackingSettingsReplyTracking(t *testing.T) {
 
 	t.Run("SetInboundReplyDomainMode", func(t *testing.T) {
 		obj := &TrackingSettingsReplyTracking{}
-		var fernTestValueInboundReplyDomainMode *string
+		var fernTestValueInboundReplyDomainMode *TrackingSettingsReplyTrackingInboundReplyDomainMode
 		obj.SetInboundReplyDomainMode(fernTestValueInboundReplyDomainMode)
 		assert.Equal(t, fernTestValueInboundReplyDomainMode, obj.InboundReplyDomainMode)
 		assert.NotNil(t, obj.explicitFields)
@@ -927,7 +927,7 @@ func TestGettersTrackingSettingsReplyTracking(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &TrackingSettingsReplyTracking{}
-		var expected *string
+		var expected *TrackingSettingsReplyTrackingInboundReplyDomainMode
 		obj.InboundReplyDomainMode = expected
 
 		// Act & Assert
@@ -1025,7 +1025,7 @@ func TestSettersMarkExplicitTrackingSettingsReplyTracking(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &TrackingSettingsReplyTracking{}
-		var fernTestValueInboundReplyDomainMode *string
+		var fernTestValueInboundReplyDomainMode *TrackingSettingsReplyTrackingInboundReplyDomainMode
 
 		// Act
 		obj.SetInboundReplyDomainMode(fernTestValueInboundReplyDomainMode)
@@ -3714,6 +3714,35 @@ func TestStringUpdateTrackingSettingsResponse(t *testing.T) {
 		var obj *UpdateTrackingSettingsResponse
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestEnumTrackingSettingsReplyTrackingInboundReplyDomainMode(t *testing.T) {
+	t.Run("NewFromString_sequenzy", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewTrackingSettingsReplyTrackingInboundReplyDomainModeFromString("sequenzy")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, TrackingSettingsReplyTrackingInboundReplyDomainMode("sequenzy"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_custom", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewTrackingSettingsReplyTrackingInboundReplyDomainModeFromString("custom")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, TrackingSettingsReplyTrackingInboundReplyDomainMode("custom"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewTrackingSettingsReplyTrackingInboundReplyDomainModeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewTrackingSettingsReplyTrackingInboundReplyDomainModeFromString("sequenzy")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
 	})
 }
 
