@@ -544,7 +544,7 @@ var (
 type AccountHealthFixResult struct {
 	// False when an existing draft was returned.
 	Created *bool `json:"created,omitempty" url:"created,omitempty"`
-	// Only when created is true. `processing` while AI writes the emails; poll Get Sequence for progress. `not_queued` means the draft exists but writing could not start: open it in the dashboard to write the emails, and do not build it again.
+	// When created is true, or when an existing draft still had email steps without an email (absent once every email exists). `processing` while AI writes the emails; poll Get Sequence for progress. `not_queued` means the draft exists but writing could not start: open it in the dashboard to write the emails, and do not build it again.
 	EnrichmentStatus *AccountHealthFixResultEnrichmentStatus `json:"enrichmentStatus,omitempty" url:"enrichmentStatus,omitempty"`
 	SequenceID       *string                                 `json:"sequenceId,omitempty" url:"sequenceId,omitempty"`
 	Success          *bool                                   `json:"success,omitempty" url:"success,omitempty"`
@@ -668,7 +668,7 @@ func (a *AccountHealthFixResult) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-// Only when created is true. `processing` while AI writes the emails; poll Get Sequence for progress. `not_queued` means the draft exists but writing could not start: open it in the dashboard to write the emails, and do not build it again.
+// When created is true, or when an existing draft still had email steps without an email (absent once every email exists). `processing` while AI writes the emails; poll Get Sequence for progress. `not_queued` means the draft exists but writing could not start: open it in the dashboard to write the emails, and do not build it again.
 type AccountHealthFixResultEnrichmentStatus string
 
 const (
@@ -2350,7 +2350,7 @@ var (
 )
 
 type AccountHealthSettings struct {
-	// draft_fixes lets the agent lay out up to 2 inactive draft sequences per check (trigger, timing and empty email steps; no email is written); report_only only reports.
+	// draft_fixes lets the agent lay out up to 2 inactive draft sequences per check (named for the business, with trigger, timing and titled email steps; the check writes no email, they are written when the draft is opened in the dashboard or its fix is requested); report_only only reports.
 	Autonomy *AccountHealthSettingsAutonomy `json:"autonomy,omitempty" url:"autonomy,omitempty"`
 	// Whether weekly checks run. Manual checks work either way.
 	Enabled *bool `json:"enabled,omitempty" url:"enabled,omitempty"`
@@ -2446,7 +2446,7 @@ func (a *AccountHealthSettings) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-// draft_fixes lets the agent lay out up to 2 inactive draft sequences per check (trigger, timing and empty email steps; no email is written); report_only only reports.
+// draft_fixes lets the agent lay out up to 2 inactive draft sequences per check (named for the business, with trigger, timing and titled email steps; the check writes no email, they are written when the draft is opened in the dashboard or its fix is requested); report_only only reports.
 type AccountHealthSettingsAutonomy string
 
 const (
