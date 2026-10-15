@@ -179,6 +179,30 @@ func TestAnalyticsGetEmailClientMetricsWithWireMock(
 	VerifyRequestCount(t, "TestAnalyticsGetEmailClientMetricsWithWireMock", "GET", "/metrics/clients", nil, 1)
 }
 
+func TestAnalyticsGetLinkClickMetricsWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.GetLinkClickMetricsRequest{}
+	_, invocationErr := client.Analytics.GetLinkClickMetrics(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestAnalyticsGetLinkClickMetricsWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestAnalyticsGetLinkClickMetricsWithWireMock", "GET", "/metrics/links", nil, 1)
+}
+
 func TestAnalyticsGetMetricsWithWireMock(
 	t *testing.T,
 ) {

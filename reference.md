@@ -1502,7 +1502,7 @@ client.Account.UpdateAPIKey(
 <dl>
 <dd>
 
-Builds the draft sequence an "event without a sequence" finding asks for, triggered by that event, with its timing and titled email steps, then writes the emails with AI like a sequence from a template. It stays inactive until you enable it. Calling it again returns the existing draft with created false and never rewrites its emails. Requires the sequences:write scope.
+Builds the draft sequence an "event without a sequence" (unhandled_event) or "missing sequence" (missing_sequence) finding asks for, with its trigger, timing and titled email steps, then writes the emails with AI like a sequence from a template. An unhandled_event draft is triggered by its event; a missing_sequence draft uses the trigger and steps in the finding's evidence (new contacts, an event, or manual enrollment). It stays inactive until you enable it. Calling it again returns the existing draft with created false and never rewrites its emails. Requires the sequences:write scope.
 </dd>
 </dl>
 </dd>
@@ -3328,6 +3328,112 @@ client.Analytics.GetEmailClientMetrics(
 <dd>
 
 **period:** `*sequenzygo.GetEmailClientMetricsRequestPeriod` — Sliding window over open times. Ignored when start/end are provided.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**start:** `*time.Time` — Start of custom time range (ISO 8601). Must be used with `end`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Analytics.GetLinkClickMetrics() -> *sequenzygo.GetLinkClickMetricsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns clicks per link destination across every email in the time range, ranked by unique clicks, which count each subscriber once per link however often they clicked. Destinations ignore query strings, fragments and trailing slashes, so the same page linked with different UTM tags counts as one link, and links that differ only by query parameters, such as video or product IDs, are combined. Test sends are excluded. Defaults to the last 90 days. For one campaign's links with exact URLs, read `clickedLinks` from the campaign metrics endpoint.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.GetLinkClickMetricsRequest{}
+client.Analytics.GetLinkClickMetrics(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**emailType:** `*sequenzygo.GetLinkClickMetricsRequestEmailType` — Structural email type filter. Marketer-role personal keys see links from the campaigns and sequence emails their role can open, and cannot request transactional.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**end:** `*time.Time` — End of custom time range (ISO 8601). Must be used with `start`. Max range: 90 days.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**includeMachineEngagement:** `*bool` — Include detected scanner and link-preview clicks.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `*int` — Number of destinations to return.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**mailboxProvider:** `*string` — Recipient mailbox provider filter (e.g. gmail, microsoft, yahoo, icloud).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**period:** `*sequenzygo.GetLinkClickMetricsRequestPeriod` — Sliding window over click times. Ignored when start/end are provided.
     
 </dd>
 </dl>
@@ -5466,6 +5572,139 @@ client.Campaigns.CreateShareLink(
 </dl>
 </details>
 
+<details><summary><code>client.Campaigns.CreateVariation(CampaignID, request) -> *sequenzygo.EmailVariationResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Saves a version of the email as a new ready variation, for example a copy you want to take in another direction. Provide blocks or html (not both). Footerless blocks get the company's default footer, as on Update campaign. Labels are assigned in order (V1, V2, ...); a variation with parentVariationId is labeled as its branch (V2.1, V2.2, ...). Labels are never reused, even after a discard.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.CreateVariationCampaignsRequest{
+    CampaignID: "campaignId",
+    Name: "name",
+}
+client.Campaigns.CreateVariation(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**campaignID:** `string` — Campaign ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**blocks:** `[]*sequenzygo.EmailBlock` — Email blocks. Validated like campaign content.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**emailTheme:** `map[string]any` — The variation's own email theme (presetId, colors, typography, layout). A partial theme is completed with defaults. Null uses the email's theme. Using the variation puts its theme on the email.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**fontFamily:** `*string` — The variation's own body font stack. Null uses the email's font.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**html:** `*string` — HTML converted to blocks. Use instead of blocks.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**name:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**parentVariationID:** `*string` — The variation this one is derived from.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**previewText:** `*string` — Preview text this variation uses. Null keeps the email's preview text.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**subject:** `*string` — Subject this variation uses. Null keeps the email's subject.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**summary:** `*string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Campaigns.Delete(CampaignID) -> *sequenzygo.DeleteCampaignsResponse</code></summary>
 <dl>
 <dd>
@@ -5595,6 +5834,75 @@ client.Campaigns.DeleteGoal(
 </dl>
 </details>
 
+<details><summary><code>client.Campaigns.DiscardVariation(CampaignID, VariationID) -> *sequenzygo.DiscardVariationCampaignsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Discards a variation. It leaves the list and its branches move up to its parent; Restore variation undoes this. Needs the campaigns:write scope, not campaigns:delete.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.DiscardVariationCampaignsRequest{
+    CampaignID: "campaignId",
+    VariationID: "variationId",
+}
+client.Campaigns.DiscardVariation(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**campaignID:** `string` — Campaign ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**variationID:** `string` — Variation ID
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Campaigns.Duplicate(CampaignID, request) -> *sequenzygo.DuplicateCampaignsResponse</code></summary>
 <dl>
 <dd>
@@ -5660,6 +5968,289 @@ client.Campaigns.Duplicate(
 <dd>
 
 **variantID:** `*string` — Variant ID to copy. Required when mode is variant.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Campaigns.EditVariation(CampaignID, VariationID, request) -> *sequenzygo.EditVariationCampaignsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Changes one ready variation with AI and saves the result over it, like an edit in the editor. The prompt says what to change, in any language. With sectionIds, only those top-level blocks change; a whole-variation edit may also give the variation its own emailTheme and fontFamily. Runs synchronously and can take up to a minute. The campaign email does not change; use Use variation for that.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.EditVariationCampaignsRequest{
+    CampaignID: "campaignId",
+    VariationID: "variationId",
+    Prompt: "Make the hero dark and the headline punchier",
+}
+client.Campaigns.EditVariation(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**campaignID:** `string` — Campaign ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**variationID:** `string` — Variation ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**prompt:** `string` — What should change, in any language.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sectionIDs:** `[]string` — Only change these top-level blocks. Omit to change the whole variation.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Campaigns.GenerateVariations(CampaignID, request) -> *sequenzygo.GenerateVariationsCampaignsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Starts generating 1 to 4 variations with AI and returns them at once with status generating. Each one takes its own direction planned from your prompt, so they differ from each other; style sets how far they move. Generation runs in the background; poll List variations or Get variation until each is ready or failed (a variation still generating after 10 minutes is reported as failed). An email can have up to 8 variations generating at once. The source is the email's saved content, or the variation in parentVariationId, which must be ready. The campaign email itself does not change.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.GenerateVariationsCampaignsRequest{
+    CampaignID: "campaignId",
+    Prompt: "Three versions that are shorter and warmer",
+}
+client.Campaigns.GenerateVariations(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**campaignID:** `string` — Campaign ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**count:** `*int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**parentVariationID:** `*string` — Derive from this variation instead of the email. New variations are its branches.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**prompt:** `string` — The direction for the new versions, in any language.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**style:** `*sequenzygo.GenerateVariationsCampaignsRequestStyle` — How far the new versions move from the source. close edits it, keeping its style and structure; fresh writes each version anew with its own structure in the brand's colors and fonts; bold also gives each its own look (a theme of its own). Defaults to close for branches of a variation and fresh otherwise.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Campaigns.GenerateVariationSectionOptions(CampaignID, request) -> *sequenzygo.GenerateVariationSectionOptionsCampaignsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Generates 1 to 4 alternative versions of selected sections (top-level blocks) of the email or of one variation, and returns them without saving anything. Each option holds replacement blocks that keep the selected blocks' ids; apply one by swapping those blocks into the variation's blocks and calling Update variation. Changes the AI makes outside the selected sections are dropped. Runs synchronously and can take up to a minute.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.GenerateVariationSectionOptionsCampaignsRequest{
+    CampaignID: "campaignId",
+    Prompt: "prompt",
+    SectionIDs: []string{
+        "sectionIds",
+    },
+}
+client.Campaigns.GenerateVariationSectionOptions(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**campaignID:** `string` — Campaign ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**count:** `*int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**prompt:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sectionIDs:** `[]string` — Ids of top-level blocks to vary.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**style:** `*sequenzygo.GenerateVariationSectionOptionsCampaignsRequestStyle` — How far the options move from the selected sections. close stays near them; fresh and bold try clearly different takes. Defaults to fresh.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**variationID:** `*string` — Vary this variation's sections. Omit to vary the email's saved content.
     
 </dd>
 </dl>
@@ -5780,6 +6371,75 @@ client.Campaigns.GetAudience(
 <dd>
 
 **campaignID:** `string` — Campaign ID
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Campaigns.GetVariation(CampaignID, VariationID) -> *sequenzygo.EmailVariationResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns one variation, including its status while it generates. Discarded variations are not found.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.GetVariationCampaignsRequest{
+    CampaignID: "campaignId",
+    VariationID: "variationId",
+}
+client.Campaigns.GetVariation(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**campaignID:** `string` — Campaign ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**variationID:** `string` — Variation ID
     
 </dd>
 </dl>
@@ -5922,6 +6582,66 @@ client.Campaigns.ListGoals(
 <dd>
 
 **campaignID:** `string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Campaigns.ListVariations(CampaignID) -> *sequenzygo.ListVariationsCampaignsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists the campaign email's variations, oldest first. Variations are alternative versions of the email that you compare side by side on the editor canvas; the campaign keeps sending its email until you use one. Discarded variations are not listed. Each variation's parentId points at the nearest variation it descends from that has not been discarded. Email campaigns only.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.ListVariationsCampaignsRequest{
+    CampaignID: "campaignId",
+}
+client.Campaigns.ListVariations(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**campaignID:** `string` — Campaign ID
     
 </dd>
 </dl>
@@ -6197,6 +6917,75 @@ client.Campaigns.ResendToNonOpeners(
 <dd>
 
 **campaignID:** `string` — Campaign ID
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Campaigns.RestoreVariation(CampaignID, VariationID) -> *sequenzygo.EmailVariationResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Brings back a discarded variation with its label, and moves its branches back under it. Restoring a variation that is not discarded returns it unchanged.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.RestoreVariationCampaignsRequest{
+    CampaignID: "campaignId",
+    VariationID: "variationId",
+}
+client.Campaigns.RestoreVariation(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**campaignID:** `string` — Campaign ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**variationID:** `string` — Variation ID
     
 </dd>
 </dl>
@@ -6949,6 +7738,216 @@ client.Campaigns.UpdateGoal(
 <dd>
 
 **request:** `*sequenzygo.CampaignGoalInput` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Campaigns.UpdateVariation(CampaignID, VariationID, request) -> *sequenzygo.EmailVariationResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Renames a variation or replaces its content. Content (blocks, html, subject, previewText) can only change once the variation is ready. Provide at least one field.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.UpdateVariationCampaignsRequest{
+    CampaignID: "campaignId",
+    VariationID: "variationId",
+}
+client.Campaigns.UpdateVariation(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**campaignID:** `string` — Campaign ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**variationID:** `string` — Variation ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**blocks:** `[]*sequenzygo.EmailBlock` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**emailTheme:** `map[string]any` — The variation's own email theme (presetId, colors, typography, layout). A partial theme is completed with defaults. Null uses the email's theme. Using the variation puts its theme on the email.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**fontFamily:** `*string` — The variation's own body font stack. Null uses the email's font.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**html:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**name:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**position:** `*sequenzygo.UpdateVariationCampaignsRequestPosition` — Where the variation sits on the editor canvas, in canvas pixels. Null lets the canvas place it automatically. Moving a variation does not change updatedAt.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**previewText:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**subject:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**summary:** `*string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Campaigns.UseVariation(CampaignID, VariationID) -> *sequenzygo.UseVariationCampaignsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Copies a ready variation into the campaign email (blocks, and the subject, preview text, theme and font when the variation has its own). If the email's current content is not already a variation, it is saved first as a new variation named "Before {label}" and returned as savedPrevious, so nothing is lost. When the variation has its own look, the other variations that follow the email's look keep the one it had. Draft campaigns only. Translations are re-derived from the new content.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.UseVariationCampaignsRequest{
+    CampaignID: "campaignId",
+    VariationID: "variationId",
+}
+client.Campaigns.UseVariation(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**campaignID:** `string` — Campaign ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**variationID:** `string` — Variation ID
     
 </dd>
 </dl>
@@ -25633,7 +26632,7 @@ client.Subscribers.Events.Trigger(
 <dl>
 <dd>
 
-**occurredAt:** `*time.Time` — When the event actually happened. Defaults to now. More than an hour in the past records it as history - stored with the real timestamp and counted by segments, but running no sequences, sync rules, waiting steps, goal conversions or webhooks, and the response carries historical=true. Older than the 5-year event retention window is rejected with 400.
+**occurredAt:** `*time.Time` — When the event actually happened. Defaults to now. More than an hour in the past records it as history - stored with the real timestamp and counted by segments, but running no sequences, sync rules, waiting steps, goal conversions or webhooks, and the response carries historical=true. Older than the 5-year historical import window is rejected with 400.
     
 </dd>
 </dl>
@@ -28147,6 +29146,14 @@ client.TrackingSettings.Update(
 <dd>
 
 **doubleOptInRedirectURL:** `*string` — Where the hosted confirmation page sends subscribers after they confirm. Must be an http(s) URL of at most 500 characters after normalization; a bare domain is normalized to https. Null (or an empty string) clears it, keeping subscribers on the confirmation page branded with the company's name, logo, and colors.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**emailContentStorageEnabled:** `*bool` — Whether to keep each sent email's rendered content and subject, and the IP address, user agent and country of opens and clicks. When false, sent-email records keep no body once the email is sent and store the email's name (campaign, template or sequence) in place of its subject, opens and clicks store no IP address, user agent or country, and view-in-browser links stop working. Body and subject rules apply to emails sent afterwards; IP address, user agent and country follow the setting at each open or click.
     
 </dd>
 </dl>
@@ -30722,7 +31729,7 @@ client.Websites.Add(
 <dl>
 <dd>
 
-**mailFromPrefix:** `*string` — Bounce (MAIL FROM) subdomain label. Defaults to send. One DNS label of 1 to 63 letters, numbers or hyphens; inbound is reserved. Applies only when the domain is created; re-adding an existing domain returns its stored records.
+**mailFromPrefix:** `*string` — Return-path (MAIL FROM) subdomain label. Defaults to rp. New domains also get a second return path, usually s<label> (srp by default); publish the returned names. One DNS label of 1 to 63 letters, numbers or hyphens; inbound is reserved. Applies only when the domain is created; re-adding an existing domain returns its stored records.
     
 </dd>
 </dl>

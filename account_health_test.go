@@ -7714,6 +7714,13 @@ func TestEnumAccountHealthInsightDetector(t *testing.T) {
 		assert.Equal(t, AccountHealthInsightDetector("sending_domain_failing"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_missing_sequence", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountHealthInsightDetectorFromString("missing_sequence")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountHealthInsightDetector("missing_sequence"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewAccountHealthInsightDetectorFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)

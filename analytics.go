@@ -285,6 +285,92 @@ func (g *GetEmailClientMetricsRequest) SetStart(start *time.Time) {
 }
 
 var (
+	getLinkClickMetricsRequestFieldEmailType                = big.NewInt(1 << 0)
+	getLinkClickMetricsRequestFieldEnd                      = big.NewInt(1 << 1)
+	getLinkClickMetricsRequestFieldIncludeMachineEngagement = big.NewInt(1 << 2)
+	getLinkClickMetricsRequestFieldLimit                    = big.NewInt(1 << 3)
+	getLinkClickMetricsRequestFieldMailboxProvider          = big.NewInt(1 << 4)
+	getLinkClickMetricsRequestFieldPeriod                   = big.NewInt(1 << 5)
+	getLinkClickMetricsRequestFieldStart                    = big.NewInt(1 << 6)
+)
+
+type GetLinkClickMetricsRequest struct {
+	// Structural email type filter. Marketer-role personal keys see links from the campaigns and sequence emails their role can open, and cannot request transactional.
+	EmailType *GetLinkClickMetricsRequestEmailType `json:"-" url:"emailType,omitempty"`
+	// End of custom time range (ISO 8601). Must be used with `start`. Max range: 90 days.
+	End *time.Time `json:"-" url:"end,omitempty"`
+	// Include detected scanner and link-preview clicks.
+	IncludeMachineEngagement *bool `json:"-" url:"includeMachineEngagement,omitempty"`
+	// Number of destinations to return.
+	Limit *int `json:"-" url:"limit,omitempty"`
+	// Recipient mailbox provider filter (e.g. gmail, microsoft, yahoo, icloud).
+	MailboxProvider *string `json:"-" url:"mailboxProvider,omitempty"`
+	// Sliding window over click times. Ignored when start/end are provided.
+	Period *GetLinkClickMetricsRequestPeriod `json:"-" url:"period,omitempty"`
+	// Start of custom time range (ISO 8601). Must be used with `end`.
+	Start *time.Time `json:"-" url:"start,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (g *GetLinkClickMetricsRequest) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetEmailType sets the EmailType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetLinkClickMetricsRequest) SetEmailType(emailType *GetLinkClickMetricsRequestEmailType) {
+	g.EmailType = emailType
+	g.require(getLinkClickMetricsRequestFieldEmailType)
+}
+
+// SetEnd sets the End field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetLinkClickMetricsRequest) SetEnd(end *time.Time) {
+	g.End = end
+	g.require(getLinkClickMetricsRequestFieldEnd)
+}
+
+// SetIncludeMachineEngagement sets the IncludeMachineEngagement field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetLinkClickMetricsRequest) SetIncludeMachineEngagement(includeMachineEngagement *bool) {
+	g.IncludeMachineEngagement = includeMachineEngagement
+	g.require(getLinkClickMetricsRequestFieldIncludeMachineEngagement)
+}
+
+// SetLimit sets the Limit field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetLinkClickMetricsRequest) SetLimit(limit *int) {
+	g.Limit = limit
+	g.require(getLinkClickMetricsRequestFieldLimit)
+}
+
+// SetMailboxProvider sets the MailboxProvider field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetLinkClickMetricsRequest) SetMailboxProvider(mailboxProvider *string) {
+	g.MailboxProvider = mailboxProvider
+	g.require(getLinkClickMetricsRequestFieldMailboxProvider)
+}
+
+// SetPeriod sets the Period field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetLinkClickMetricsRequest) SetPeriod(period *GetLinkClickMetricsRequestPeriod) {
+	g.Period = period
+	g.require(getLinkClickMetricsRequestFieldPeriod)
+}
+
+// SetStart sets the Start field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetLinkClickMetricsRequest) SetStart(start *time.Time) {
+	g.Start = start
+	g.require(getLinkClickMetricsRequestFieldStart)
+}
+
+var (
 	getMetricsRequestFieldEmailType                = big.NewInt(1 << 0)
 	getMetricsRequestFieldEnd                      = big.NewInt(1 << 1)
 	getMetricsRequestFieldIncludeMachineEngagement = big.NewInt(1 << 2)
@@ -3470,6 +3556,279 @@ func NewEmailEventEventTypeFromString(s string) (EmailEventEventType, error) {
 
 func (e EmailEventEventType) Ptr() *EmailEventEventType {
 	return &e
+}
+
+// Clicks per link destination. Destinations ignore query strings, fragments and trailing slashes, so the same page linked with different UTM tags counts as one link.
+var (
+	linkClickBreakdownFieldLinks             = big.NewInt(1 << 0)
+	linkClickBreakdownFieldTotalClicks       = big.NewInt(1 << 1)
+	linkClickBreakdownFieldTotalLinks        = big.NewInt(1 << 2)
+	linkClickBreakdownFieldTotalUniqueClicks = big.NewInt(1 << 3)
+)
+
+type LinkClickBreakdown struct {
+	// Destinations ranked by unique clicks, then total clicks.
+	Links []*LinkClickBreakdownLinksItem `json:"links" url:"links"`
+	// Click events across every destination in scope, repeats included, before `limit` is applied. `0` when nothing was clicked, in which case `links` is empty.
+	TotalClicks int `json:"totalClicks" url:"totalClicks"`
+	// Distinct destinations in scope, before `limit` is applied.
+	TotalLinks int `json:"totalLinks" url:"totalLinks"`
+	// Sum of every destination's `uniqueClicks` in scope, before `limit` is applied.
+	TotalUniqueClicks int `json:"totalUniqueClicks" url:"totalUniqueClicks"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LinkClickBreakdown) GetLinks() []*LinkClickBreakdownLinksItem {
+	if l == nil {
+		return nil
+	}
+	return l.Links
+}
+
+func (l *LinkClickBreakdown) GetTotalClicks() int {
+	if l == nil {
+		return 0
+	}
+	return l.TotalClicks
+}
+
+func (l *LinkClickBreakdown) GetTotalLinks() int {
+	if l == nil {
+		return 0
+	}
+	return l.TotalLinks
+}
+
+func (l *LinkClickBreakdown) GetTotalUniqueClicks() int {
+	if l == nil {
+		return 0
+	}
+	return l.TotalUniqueClicks
+}
+
+func (l *LinkClickBreakdown) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LinkClickBreakdown) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetLinks sets the Links field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LinkClickBreakdown) SetLinks(links []*LinkClickBreakdownLinksItem) {
+	l.Links = links
+	l.require(linkClickBreakdownFieldLinks)
+}
+
+// SetTotalClicks sets the TotalClicks field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LinkClickBreakdown) SetTotalClicks(totalClicks int) {
+	l.TotalClicks = totalClicks
+	l.require(linkClickBreakdownFieldTotalClicks)
+}
+
+// SetTotalLinks sets the TotalLinks field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LinkClickBreakdown) SetTotalLinks(totalLinks int) {
+	l.TotalLinks = totalLinks
+	l.require(linkClickBreakdownFieldTotalLinks)
+}
+
+// SetTotalUniqueClicks sets the TotalUniqueClicks field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LinkClickBreakdown) SetTotalUniqueClicks(totalUniqueClicks int) {
+	l.TotalUniqueClicks = totalUniqueClicks
+	l.require(linkClickBreakdownFieldTotalUniqueClicks)
+}
+
+func (l *LinkClickBreakdown) UnmarshalJSON(data []byte) error {
+	type unmarshaler LinkClickBreakdown
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LinkClickBreakdown(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LinkClickBreakdown) MarshalJSON() ([]byte, error) {
+	type embed LinkClickBreakdown
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LinkClickBreakdown) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	linkClickBreakdownLinksItemFieldClicks       = big.NewInt(1 << 0)
+	linkClickBreakdownLinksItemFieldShare        = big.NewInt(1 << 1)
+	linkClickBreakdownLinksItemFieldUniqueClicks = big.NewInt(1 << 2)
+	linkClickBreakdownLinksItemFieldURL          = big.NewInt(1 << 3)
+)
+
+type LinkClickBreakdownLinksItem struct {
+	// Every recorded click on the destination, repeats included.
+	Clicks int `json:"clicks" url:"clicks"`
+	// Percentage of `totalUniqueClicks`, rounded to two decimals.
+	Share float64 `json:"share" url:"share"`
+	// Subscribers who clicked the destination, each counted once however often they clicked. Recipients without a subscriber record count once per email.
+	UniqueClicks int `json:"uniqueClicks" url:"uniqueClicks"`
+	// Destination URL without query string, fragment or trailing slash.
+	URL string `json:"url" url:"url"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LinkClickBreakdownLinksItem) GetClicks() int {
+	if l == nil {
+		return 0
+	}
+	return l.Clicks
+}
+
+func (l *LinkClickBreakdownLinksItem) GetShare() float64 {
+	if l == nil {
+		return 0
+	}
+	return l.Share
+}
+
+func (l *LinkClickBreakdownLinksItem) GetUniqueClicks() int {
+	if l == nil {
+		return 0
+	}
+	return l.UniqueClicks
+}
+
+func (l *LinkClickBreakdownLinksItem) GetURL() string {
+	if l == nil {
+		return ""
+	}
+	return l.URL
+}
+
+func (l *LinkClickBreakdownLinksItem) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LinkClickBreakdownLinksItem) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetClicks sets the Clicks field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LinkClickBreakdownLinksItem) SetClicks(clicks int) {
+	l.Clicks = clicks
+	l.require(linkClickBreakdownLinksItemFieldClicks)
+}
+
+// SetShare sets the Share field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LinkClickBreakdownLinksItem) SetShare(share float64) {
+	l.Share = share
+	l.require(linkClickBreakdownLinksItemFieldShare)
+}
+
+// SetUniqueClicks sets the UniqueClicks field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LinkClickBreakdownLinksItem) SetUniqueClicks(uniqueClicks int) {
+	l.UniqueClicks = uniqueClicks
+	l.require(linkClickBreakdownLinksItemFieldUniqueClicks)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LinkClickBreakdownLinksItem) SetURL(url string) {
+	l.URL = url
+	l.require(linkClickBreakdownLinksItemFieldURL)
+}
+
+func (l *LinkClickBreakdownLinksItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler LinkClickBreakdownLinksItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LinkClickBreakdownLinksItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LinkClickBreakdownLinksItem) MarshalJSON() ([]byte, error) {
+	type embed LinkClickBreakdownLinksItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LinkClickBreakdownLinksItem) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
 }
 
 // One respondent's latest answer to one Poll or NPS block.
@@ -6831,6 +7190,333 @@ func NewGetEmailClientMetricsResponseEmailTypeFromString(s string) (GetEmailClie
 }
 
 func (g GetEmailClientMetricsResponseEmailType) Ptr() *GetEmailClientMetricsResponseEmailType {
+	return &g
+}
+
+type GetLinkClickMetricsRequestEmailType string
+
+const (
+	GetLinkClickMetricsRequestEmailTypeCampaign      GetLinkClickMetricsRequestEmailType = "campaign"
+	GetLinkClickMetricsRequestEmailTypeTransactional GetLinkClickMetricsRequestEmailType = "transactional"
+	GetLinkClickMetricsRequestEmailTypeSequence      GetLinkClickMetricsRequestEmailType = "sequence"
+)
+
+func NewGetLinkClickMetricsRequestEmailTypeFromString(s string) (GetLinkClickMetricsRequestEmailType, error) {
+	switch s {
+	case "campaign":
+		return GetLinkClickMetricsRequestEmailTypeCampaign, nil
+	case "transactional":
+		return GetLinkClickMetricsRequestEmailTypeTransactional, nil
+	case "sequence":
+		return GetLinkClickMetricsRequestEmailTypeSequence, nil
+	}
+	var t GetLinkClickMetricsRequestEmailType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (g GetLinkClickMetricsRequestEmailType) Ptr() *GetLinkClickMetricsRequestEmailType {
+	return &g
+}
+
+type GetLinkClickMetricsRequestPeriod string
+
+const (
+	GetLinkClickMetricsRequestPeriodOneH        GetLinkClickMetricsRequestPeriod = "1h"
+	GetLinkClickMetricsRequestPeriodTwentyFourH GetLinkClickMetricsRequestPeriod = "24h"
+	GetLinkClickMetricsRequestPeriodSevenD      GetLinkClickMetricsRequestPeriod = "7d"
+	GetLinkClickMetricsRequestPeriodThirtyD     GetLinkClickMetricsRequestPeriod = "30d"
+	GetLinkClickMetricsRequestPeriodNinetyD     GetLinkClickMetricsRequestPeriod = "90d"
+)
+
+func NewGetLinkClickMetricsRequestPeriodFromString(s string) (GetLinkClickMetricsRequestPeriod, error) {
+	switch s {
+	case "1h":
+		return GetLinkClickMetricsRequestPeriodOneH, nil
+	case "24h":
+		return GetLinkClickMetricsRequestPeriodTwentyFourH, nil
+	case "7d":
+		return GetLinkClickMetricsRequestPeriodSevenD, nil
+	case "30d":
+		return GetLinkClickMetricsRequestPeriodThirtyD, nil
+	case "90d":
+		return GetLinkClickMetricsRequestPeriodNinetyD, nil
+	}
+	var t GetLinkClickMetricsRequestPeriod
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (g GetLinkClickMetricsRequestPeriod) Ptr() *GetLinkClickMetricsRequestPeriod {
+	return &g
+}
+
+var (
+	getLinkClickMetricsResponseFieldLinks             = big.NewInt(1 << 0)
+	getLinkClickMetricsResponseFieldTotalClicks       = big.NewInt(1 << 1)
+	getLinkClickMetricsResponseFieldTotalLinks        = big.NewInt(1 << 2)
+	getLinkClickMetricsResponseFieldTotalUniqueClicks = big.NewInt(1 << 3)
+	getLinkClickMetricsResponseFieldEmailType         = big.NewInt(1 << 4)
+	getLinkClickMetricsResponseFieldEnd               = big.NewInt(1 << 5)
+	getLinkClickMetricsResponseFieldMailboxProvider   = big.NewInt(1 << 6)
+	getLinkClickMetricsResponseFieldPeriod            = big.NewInt(1 << 7)
+	getLinkClickMetricsResponseFieldStart             = big.NewInt(1 << 8)
+	getLinkClickMetricsResponseFieldSuccess           = big.NewInt(1 << 9)
+)
+
+type GetLinkClickMetricsResponse struct {
+	// Destinations ranked by unique clicks, then total clicks.
+	Links []*LinkClickBreakdownLinksItem `json:"links" url:"links"`
+	// Click events across every destination in scope, repeats included, before `limit` is applied. `0` when nothing was clicked, in which case `links` is empty.
+	TotalClicks int `json:"totalClicks" url:"totalClicks"`
+	// Distinct destinations in scope, before `limit` is applied.
+	TotalLinks int `json:"totalLinks" url:"totalLinks"`
+	// Sum of every destination's `uniqueClicks` in scope, before `limit` is applied.
+	TotalUniqueClicks int                                   `json:"totalUniqueClicks" url:"totalUniqueClicks"`
+	EmailType         *GetLinkClickMetricsResponseEmailType `json:"emailType,omitempty" url:"emailType,omitempty"`
+	End               *time.Time                            `json:"end,omitempty" url:"end,omitempty"`
+	// Echoed back when `mailboxProvider` is provided.
+	MailboxProvider *string `json:"mailboxProvider,omitempty" url:"mailboxProvider,omitempty"`
+	// Applied period, or `custom` when start/end were provided.
+	Period  string     `json:"period" url:"period"`
+	Start   *time.Time `json:"start,omitempty" url:"start,omitempty"`
+	Success bool       `json:"success" url:"success"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (g *GetLinkClickMetricsResponse) GetLinks() []*LinkClickBreakdownLinksItem {
+	if g == nil {
+		return nil
+	}
+	return g.Links
+}
+
+func (g *GetLinkClickMetricsResponse) GetTotalClicks() int {
+	if g == nil {
+		return 0
+	}
+	return g.TotalClicks
+}
+
+func (g *GetLinkClickMetricsResponse) GetTotalLinks() int {
+	if g == nil {
+		return 0
+	}
+	return g.TotalLinks
+}
+
+func (g *GetLinkClickMetricsResponse) GetTotalUniqueClicks() int {
+	if g == nil {
+		return 0
+	}
+	return g.TotalUniqueClicks
+}
+
+func (g *GetLinkClickMetricsResponse) GetEmailType() *GetLinkClickMetricsResponseEmailType {
+	if g == nil {
+		return nil
+	}
+	return g.EmailType
+}
+
+func (g *GetLinkClickMetricsResponse) GetEnd() *time.Time {
+	if g == nil {
+		return nil
+	}
+	return g.End
+}
+
+func (g *GetLinkClickMetricsResponse) GetMailboxProvider() *string {
+	if g == nil {
+		return nil
+	}
+	return g.MailboxProvider
+}
+
+func (g *GetLinkClickMetricsResponse) GetPeriod() string {
+	if g == nil {
+		return ""
+	}
+	return g.Period
+}
+
+func (g *GetLinkClickMetricsResponse) GetStart() *time.Time {
+	if g == nil {
+		return nil
+	}
+	return g.Start
+}
+
+func (g *GetLinkClickMetricsResponse) GetSuccess() bool {
+	if g == nil {
+		return false
+	}
+	return g.Success
+}
+
+func (g *GetLinkClickMetricsResponse) GetExtraProperties() map[string]interface{} {
+	if g == nil {
+		return nil
+	}
+	return g.extraProperties
+}
+
+func (g *GetLinkClickMetricsResponse) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetLinks sets the Links field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetLinkClickMetricsResponse) SetLinks(links []*LinkClickBreakdownLinksItem) {
+	g.Links = links
+	g.require(getLinkClickMetricsResponseFieldLinks)
+}
+
+// SetTotalClicks sets the TotalClicks field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetLinkClickMetricsResponse) SetTotalClicks(totalClicks int) {
+	g.TotalClicks = totalClicks
+	g.require(getLinkClickMetricsResponseFieldTotalClicks)
+}
+
+// SetTotalLinks sets the TotalLinks field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetLinkClickMetricsResponse) SetTotalLinks(totalLinks int) {
+	g.TotalLinks = totalLinks
+	g.require(getLinkClickMetricsResponseFieldTotalLinks)
+}
+
+// SetTotalUniqueClicks sets the TotalUniqueClicks field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetLinkClickMetricsResponse) SetTotalUniqueClicks(totalUniqueClicks int) {
+	g.TotalUniqueClicks = totalUniqueClicks
+	g.require(getLinkClickMetricsResponseFieldTotalUniqueClicks)
+}
+
+// SetEmailType sets the EmailType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetLinkClickMetricsResponse) SetEmailType(emailType *GetLinkClickMetricsResponseEmailType) {
+	g.EmailType = emailType
+	g.require(getLinkClickMetricsResponseFieldEmailType)
+}
+
+// SetEnd sets the End field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetLinkClickMetricsResponse) SetEnd(end *time.Time) {
+	g.End = end
+	g.require(getLinkClickMetricsResponseFieldEnd)
+}
+
+// SetMailboxProvider sets the MailboxProvider field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetLinkClickMetricsResponse) SetMailboxProvider(mailboxProvider *string) {
+	g.MailboxProvider = mailboxProvider
+	g.require(getLinkClickMetricsResponseFieldMailboxProvider)
+}
+
+// SetPeriod sets the Period field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetLinkClickMetricsResponse) SetPeriod(period string) {
+	g.Period = period
+	g.require(getLinkClickMetricsResponseFieldPeriod)
+}
+
+// SetStart sets the Start field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetLinkClickMetricsResponse) SetStart(start *time.Time) {
+	g.Start = start
+	g.require(getLinkClickMetricsResponseFieldStart)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetLinkClickMetricsResponse) SetSuccess(success bool) {
+	g.Success = success
+	g.require(getLinkClickMetricsResponseFieldSuccess)
+}
+
+func (g *GetLinkClickMetricsResponse) UnmarshalJSON(data []byte) error {
+	type embed GetLinkClickMetricsResponse
+	var unmarshaler = struct {
+		embed
+		End   *internal.DateTime `json:"end,omitempty"`
+		Start *internal.DateTime `json:"start,omitempty"`
+	}{
+		embed: embed(*g),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*g = GetLinkClickMetricsResponse(unmarshaler.embed)
+	g.End = unmarshaler.End.TimePtr()
+	g.Start = unmarshaler.Start.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *g)
+	if err != nil {
+		return err
+	}
+	g.extraProperties = extraProperties
+	g.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (g *GetLinkClickMetricsResponse) MarshalJSON() ([]byte, error) {
+	type embed GetLinkClickMetricsResponse
+	var marshaler = struct {
+		embed
+		End   *internal.DateTime `json:"end,omitempty"`
+		Start *internal.DateTime `json:"start,omitempty"`
+	}{
+		embed: embed(*g),
+		End:   internal.NewOptionalDateTime(g.End),
+		Start: internal.NewOptionalDateTime(g.Start),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (g *GetLinkClickMetricsResponse) String() string {
+	if g == nil {
+		return "<nil>"
+	}
+	if len(g.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(g.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(g); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", g)
+}
+
+type GetLinkClickMetricsResponseEmailType string
+
+const (
+	GetLinkClickMetricsResponseEmailTypeCampaign      GetLinkClickMetricsResponseEmailType = "campaign"
+	GetLinkClickMetricsResponseEmailTypeTransactional GetLinkClickMetricsResponseEmailType = "transactional"
+	GetLinkClickMetricsResponseEmailTypeSequence      GetLinkClickMetricsResponseEmailType = "sequence"
+)
+
+func NewGetLinkClickMetricsResponseEmailTypeFromString(s string) (GetLinkClickMetricsResponseEmailType, error) {
+	switch s {
+	case "campaign":
+		return GetLinkClickMetricsResponseEmailTypeCampaign, nil
+	case "transactional":
+		return GetLinkClickMetricsResponseEmailTypeTransactional, nil
+	case "sequence":
+		return GetLinkClickMetricsResponseEmailTypeSequence, nil
+	}
+	var t GetLinkClickMetricsResponseEmailType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (g GetLinkClickMetricsResponseEmailType) Ptr() *GetLinkClickMetricsResponseEmailType {
 	return &g
 }
 

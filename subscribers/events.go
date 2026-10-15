@@ -39,7 +39,7 @@ type TriggerEventsRequest struct {
 	FirstName *string `json:"firstName,omitempty" url:"-"`
 	// Last name to set if creating the subscriber.
 	LastName *string `json:"lastName,omitempty" url:"-"`
-	// When the event actually happened. Defaults to now. More than an hour in the past records it as history - stored with the real timestamp and counted by segments, but running no sequences, sync rules, waiting steps, goal conversions or webhooks, and the response carries historical=true. Older than the 5-year event retention window is rejected with 400.
+	// When the event actually happened. Defaults to now. More than an hour in the past records it as history - stored with the real timestamp and counted by segments, but running no sequences, sync rules, waiting steps, goal conversions or webhooks, and the response carries historical=true. Older than the 5-year historical import window is rejected with 400.
 	OccurredAt *time.Time `json:"occurredAt,omitempty" url:"-"`
 	// Event properties/metadata
 	Properties map[string]any `json:"properties,omitempty" url:"-"`

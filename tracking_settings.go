@@ -539,17 +539,20 @@ func (t TrackingSettingsReplyTrackingInboundReplyDomainMode) Ptr() *TrackingSett
 var (
 	trackingSettingsTrackingFieldClickTrackingEnabled              = big.NewInt(1 << 0)
 	trackingSettingsTrackingFieldDefaultAttributionWindowHours     = big.NewInt(1 << 1)
-	trackingSettingsTrackingFieldOpenTrackingEnabled               = big.NewInt(1 << 2)
-	trackingSettingsTrackingFieldStrictBotFilteringEnabled         = big.NewInt(1 << 3)
-	trackingSettingsTrackingFieldTransactionalClickTrackingEnabled = big.NewInt(1 << 4)
-	trackingSettingsTrackingFieldTransactionalOpenTrackingEnabled  = big.NewInt(1 << 5)
-	trackingSettingsTrackingFieldUnsubscribeTrackingEnabled        = big.NewInt(1 << 6)
+	trackingSettingsTrackingFieldEmailContentStorageEnabled        = big.NewInt(1 << 2)
+	trackingSettingsTrackingFieldOpenTrackingEnabled               = big.NewInt(1 << 3)
+	trackingSettingsTrackingFieldStrictBotFilteringEnabled         = big.NewInt(1 << 4)
+	trackingSettingsTrackingFieldTransactionalClickTrackingEnabled = big.NewInt(1 << 5)
+	trackingSettingsTrackingFieldTransactionalOpenTrackingEnabled  = big.NewInt(1 << 6)
+	trackingSettingsTrackingFieldUnsubscribeTrackingEnabled        = big.NewInt(1 << 7)
 )
 
 type TrackingSettingsTracking struct {
 	ClickTrackingEnabled          *bool `json:"clickTrackingEnabled,omitempty" url:"clickTrackingEnabled,omitempty"`
 	DefaultAttributionWindowHours *int  `json:"defaultAttributionWindowHours,omitempty" url:"defaultAttributionWindowHours,omitempty"`
-	OpenTrackingEnabled           *bool `json:"openTrackingEnabled,omitempty" url:"openTrackingEnabled,omitempty"`
+	// Whether to keep each sent email's rendered content and subject, and the IP address, user agent and country of opens and clicks. When false, sent-email records keep no body once the email is sent and store the email's name (campaign, template or sequence) in place of its subject, opens and clicks store no IP address, user agent or country, and view-in-browser links stop working. Body and subject rules apply to emails sent afterwards; IP address, user agent and country follow the setting at each open or click.
+	EmailContentStorageEnabled *bool `json:"emailContentStorageEnabled,omitempty" url:"emailContentStorageEnabled,omitempty"`
+	OpenTrackingEnabled        *bool `json:"openTrackingEnabled,omitempty" url:"openTrackingEnabled,omitempty"`
 	// Opt-in aggressive bot detection (strict user-agent patterns, datacenter and Microsoft Azure IPs, fast campaign and sequence clicks from IPs clicking other recipients' emails, cross-send IP sweeps). Off by default; enabling it can lower reported open and click rates.
 	StrictBotFilteringEnabled *bool `json:"strictBotFilteringEnabled,omitempty" url:"strictBotFilteringEnabled,omitempty"`
 	// Click tracking default for sends through the Send Email API. Account-wide click tracking must also be enabled; per-send trackingSettings can only opt out.
@@ -578,6 +581,13 @@ func (t *TrackingSettingsTracking) GetDefaultAttributionWindowHours() *int {
 		return nil
 	}
 	return t.DefaultAttributionWindowHours
+}
+
+func (t *TrackingSettingsTracking) GetEmailContentStorageEnabled() *bool {
+	if t == nil {
+		return nil
+	}
+	return t.EmailContentStorageEnabled
 }
 
 func (t *TrackingSettingsTracking) GetOpenTrackingEnabled() *bool {
@@ -641,6 +651,13 @@ func (t *TrackingSettingsTracking) SetClickTrackingEnabled(clickTrackingEnabled 
 func (t *TrackingSettingsTracking) SetDefaultAttributionWindowHours(defaultAttributionWindowHours *int) {
 	t.DefaultAttributionWindowHours = defaultAttributionWindowHours
 	t.require(trackingSettingsTrackingFieldDefaultAttributionWindowHours)
+}
+
+// SetEmailContentStorageEnabled sets the EmailContentStorageEnabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TrackingSettingsTracking) SetEmailContentStorageEnabled(emailContentStorageEnabled *bool) {
+	t.EmailContentStorageEnabled = emailContentStorageEnabled
+	t.require(trackingSettingsTrackingFieldEmailContentStorageEnabled)
 }
 
 // SetOpenTrackingEnabled sets the OpenTrackingEnabled field and marks it as non-optional;
@@ -1235,11 +1252,12 @@ var (
 	updateTrackingSettingsRequestFieldDefaultAttributionWindowHours     = big.NewInt(1 << 3)
 	updateTrackingSettingsRequestFieldDoubleOptInEnabled                = big.NewInt(1 << 4)
 	updateTrackingSettingsRequestFieldDoubleOptInRedirectURL            = big.NewInt(1 << 5)
-	updateTrackingSettingsRequestFieldOpenTrackingEnabled               = big.NewInt(1 << 6)
-	updateTrackingSettingsRequestFieldStrictBotFilteringEnabled         = big.NewInt(1 << 7)
-	updateTrackingSettingsRequestFieldTransactionalClickTrackingEnabled = big.NewInt(1 << 8)
-	updateTrackingSettingsRequestFieldTransactionalOpenTrackingEnabled  = big.NewInt(1 << 9)
-	updateTrackingSettingsRequestFieldUnsubscribeTrackingEnabled        = big.NewInt(1 << 10)
+	updateTrackingSettingsRequestFieldEmailContentStorageEnabled        = big.NewInt(1 << 6)
+	updateTrackingSettingsRequestFieldOpenTrackingEnabled               = big.NewInt(1 << 7)
+	updateTrackingSettingsRequestFieldStrictBotFilteringEnabled         = big.NewInt(1 << 8)
+	updateTrackingSettingsRequestFieldTransactionalClickTrackingEnabled = big.NewInt(1 << 9)
+	updateTrackingSettingsRequestFieldTransactionalOpenTrackingEnabled  = big.NewInt(1 << 10)
+	updateTrackingSettingsRequestFieldUnsubscribeTrackingEnabled        = big.NewInt(1 << 11)
 )
 
 type UpdateTrackingSettingsRequest struct {
@@ -1255,6 +1273,8 @@ type UpdateTrackingSettingsRequest struct {
 	DoubleOptInEnabled *bool `json:"doubleOptInEnabled,omitempty" url:"-"`
 	// Where the hosted confirmation page sends subscribers after they confirm. Must be an http(s) URL of at most 500 characters after normalization; a bare domain is normalized to https. Null (or an empty string) clears it, keeping subscribers on the confirmation page branded with the company's name, logo, and colors.
 	DoubleOptInRedirectURL *string `json:"doubleOptInRedirectUrl,omitempty" url:"-"`
+	// Whether to keep each sent email's rendered content and subject, and the IP address, user agent and country of opens and clicks. When false, sent-email records keep no body once the email is sent and store the email's name (campaign, template or sequence) in place of its subject, opens and clicks store no IP address, user agent or country, and view-in-browser links stop working. Body and subject rules apply to emails sent afterwards; IP address, user agent and country follow the setting at each open or click.
+	EmailContentStorageEnabled *bool `json:"emailContentStorageEnabled,omitempty" url:"-"`
 	// Whether to embed the open-tracking pixel.
 	OpenTrackingEnabled *bool `json:"openTrackingEnabled,omitempty" url:"-"`
 	// Opt-in aggressive bot detection (strict user-agent patterns, datacenter and Microsoft Azure IPs, fast campaign and sequence clicks from IPs clicking other recipients' emails, cross-send IP sweeps). Off by default; enabling it can lower reported open and click rates.
@@ -1317,6 +1337,13 @@ func (u *UpdateTrackingSettingsRequest) SetDoubleOptInEnabled(doubleOptInEnabled
 func (u *UpdateTrackingSettingsRequest) SetDoubleOptInRedirectURL(doubleOptInRedirectURL *string) {
 	u.DoubleOptInRedirectURL = doubleOptInRedirectURL
 	u.require(updateTrackingSettingsRequestFieldDoubleOptInRedirectURL)
+}
+
+// SetEmailContentStorageEnabled sets the EmailContentStorageEnabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateTrackingSettingsRequest) SetEmailContentStorageEnabled(emailContentStorageEnabled *bool) {
+	u.EmailContentStorageEnabled = emailContentStorageEnabled
+	u.require(updateTrackingSettingsRequestFieldEmailContentStorageEnabled)
 }
 
 // SetOpenTrackingEnabled sets the OpenTrackingEnabled field and marks it as non-optional;

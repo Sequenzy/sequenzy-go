@@ -249,6 +249,33 @@ func TestCampaignsCreateShareLinkWithWireMock(
 	VerifyRequestCount(t, "TestCampaignsCreateShareLinkWithWireMock", "POST", "/campaigns/campaignId/share-link", nil, 1)
 }
 
+func TestCampaignsCreateVariationWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.CreateVariationCampaignsRequest{
+		CampaignID: "campaignId",
+		Name:       "name",
+	}
+	_, invocationErr := client.Campaigns.CreateVariation(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestCampaignsCreateVariationWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestCampaignsCreateVariationWithWireMock", "POST", "/campaigns/campaignId/variations", nil, 1)
+}
+
 func TestCampaignsDeleteWithWireMock(
 	t *testing.T,
 ) {
@@ -302,6 +329,33 @@ func TestCampaignsDeleteGoalWithWireMock(
 	VerifyRequestCount(t, "TestCampaignsDeleteGoalWithWireMock", "DELETE", "/campaigns/campaignId/goals/goalId", nil, 1)
 }
 
+func TestCampaignsDiscardVariationWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.DiscardVariationCampaignsRequest{
+		CampaignID:  "campaignId",
+		VariationID: "variationId",
+	}
+	_, invocationErr := client.Campaigns.DiscardVariation(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestCampaignsDiscardVariationWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestCampaignsDiscardVariationWithWireMock", "DELETE", "/campaigns/campaignId/variations/variationId", nil, 1)
+}
+
 func TestCampaignsDuplicateWithWireMock(
 	t *testing.T,
 ) {
@@ -326,6 +380,91 @@ func TestCampaignsDuplicateWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestCampaignsDuplicateWithWireMock", "POST", "/campaigns/campaignId/duplicate", nil, 1)
+}
+
+func TestCampaignsEditVariationWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.EditVariationCampaignsRequest{
+		CampaignID:  "campaignId",
+		VariationID: "variationId",
+		Prompt:      "Make the hero dark and the headline punchier",
+	}
+	_, invocationErr := client.Campaigns.EditVariation(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestCampaignsEditVariationWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestCampaignsEditVariationWithWireMock", "POST", "/campaigns/campaignId/variations/variationId/edit", nil, 1)
+}
+
+func TestCampaignsGenerateVariationsWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.GenerateVariationsCampaignsRequest{
+		CampaignID: "campaignId",
+		Prompt:     "Three versions that are shorter and warmer",
+	}
+	_, invocationErr := client.Campaigns.GenerateVariations(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestCampaignsGenerateVariationsWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestCampaignsGenerateVariationsWithWireMock", "POST", "/campaigns/campaignId/variations/generate", nil, 1)
+}
+
+func TestCampaignsGenerateVariationSectionOptionsWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.GenerateVariationSectionOptionsCampaignsRequest{
+		CampaignID: "campaignId",
+		Prompt:     "prompt",
+		SectionIDs: []string{
+			"sectionIds",
+		},
+	}
+	_, invocationErr := client.Campaigns.GenerateVariationSectionOptions(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestCampaignsGenerateVariationSectionOptionsWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestCampaignsGenerateVariationSectionOptionsWithWireMock", "POST", "/campaigns/campaignId/variations/section-options", nil, 1)
 }
 
 func TestCampaignsGetWithWireMock(
@@ -380,6 +519,33 @@ func TestCampaignsGetAudienceWithWireMock(
 	VerifyRequestCount(t, "TestCampaignsGetAudienceWithWireMock", "GET", "/campaigns/campaignId/audience", nil, 1)
 }
 
+func TestCampaignsGetVariationWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.GetVariationCampaignsRequest{
+		CampaignID:  "campaignId",
+		VariationID: "variationId",
+	}
+	_, invocationErr := client.Campaigns.GetVariation(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestCampaignsGetVariationWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestCampaignsGetVariationWithWireMock", "GET", "/campaigns/campaignId/variations/variationId", nil, 1)
+}
+
 func TestCampaignsListWithWireMock(
 	t *testing.T,
 ) {
@@ -428,6 +594,32 @@ func TestCampaignsListGoalsWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestCampaignsListGoalsWithWireMock", "GET", "/campaigns/campaignId/goals", nil, 1)
+}
+
+func TestCampaignsListVariationsWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.ListVariationsCampaignsRequest{
+		CampaignID: "campaignId",
+	}
+	_, invocationErr := client.Campaigns.ListVariations(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestCampaignsListVariationsWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestCampaignsListVariationsWithWireMock", "GET", "/campaigns/campaignId/variations", nil, 1)
 }
 
 func TestCampaignsPauseWithWireMock(
@@ -543,6 +735,33 @@ func TestCampaignsResendToNonOpenersWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestCampaignsResendToNonOpenersWithWireMock", "POST", "/campaigns/campaignId/resend-to-non-openers", nil, 1)
+}
+
+func TestCampaignsRestoreVariationWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.RestoreVariationCampaignsRequest{
+		CampaignID:  "campaignId",
+		VariationID: "variationId",
+	}
+	_, invocationErr := client.Campaigns.RestoreVariation(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestCampaignsRestoreVariationWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestCampaignsRestoreVariationWithWireMock", "POST", "/campaigns/campaignId/variations/variationId/restore", nil, 1)
 }
 
 func TestCampaignsResumeWithWireMock(
@@ -737,4 +956,58 @@ func TestCampaignsUpdateGoalWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestCampaignsUpdateGoalWithWireMock", "PATCH", "/campaigns/campaignId/goals/goalId", nil, 1)
+}
+
+func TestCampaignsUpdateVariationWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.UpdateVariationCampaignsRequest{
+		CampaignID:  "campaignId",
+		VariationID: "variationId",
+	}
+	_, invocationErr := client.Campaigns.UpdateVariation(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestCampaignsUpdateVariationWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestCampaignsUpdateVariationWithWireMock", "PATCH", "/campaigns/campaignId/variations/variationId", nil, 1)
+}
+
+func TestCampaignsUseVariationWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.UseVariationCampaignsRequest{
+		CampaignID:  "campaignId",
+		VariationID: "variationId",
+	}
+	_, invocationErr := client.Campaigns.UseVariation(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestCampaignsUseVariationWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestCampaignsUseVariationWithWireMock", "POST", "/campaigns/campaignId/variations/variationId/use", nil, 1)
 }

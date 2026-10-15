@@ -63122,6 +63122,14 @@ func TestSettersSequenceWaitUntilWeekdayInput(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetMinimumWait", func(t *testing.T) {
+		obj := &SequenceWaitUntilWeekdayInput{}
+		var fernTestValueMinimumWait *SequenceWaitUntilWeekdayInputMinimumWait
+		obj.SetMinimumWait(fernTestValueMinimumWait)
+		assert.Equal(t, fernTestValueMinimumWait, obj.MinimumWait)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetStartTime", func(t *testing.T) {
 		obj := &SequenceWaitUntilWeekdayInput{}
 		var fernTestValueStartTime *string
@@ -63278,6 +63286,39 @@ func TestGettersSequenceWaitUntilWeekdayInput(t *testing.T) {
 			}
 		}()
 		_ = obj.GetEndTime() // Should return zero value
+	})
+
+	t.Run("GetMinimumWait", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceWaitUntilWeekdayInput{}
+		var expected *SequenceWaitUntilWeekdayInputMinimumWait
+		obj.MinimumWait = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetMinimumWait(), "getter should return the property value")
+	})
+
+	t.Run("GetMinimumWait_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceWaitUntilWeekdayInput{}
+		obj.MinimumWait = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetMinimumWait(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetMinimumWait_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequenceWaitUntilWeekdayInput
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetMinimumWait() // Should return zero value
 	})
 
 	t.Run("GetStartTime", func(t *testing.T) {
@@ -63607,6 +63648,37 @@ func TestSettersMarkExplicitSequenceWaitUntilWeekdayInput(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetMinimumWait_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceWaitUntilWeekdayInput{}
+		var fernTestValueMinimumWait *SequenceWaitUntilWeekdayInputMinimumWait
+
+		// Act
+		obj.SetMinimumWait(fernTestValueMinimumWait)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetStartTime_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -63801,6 +63873,231 @@ func TestSettersMarkExplicitSequenceWaitUntilWeekdayInput(t *testing.T) {
 
 		// Act
 		obj.SetUntilTimezoneSource(fernTestValueUntilTimezoneSource)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersSequenceWaitUntilWeekdayInputMinimumWait(t *testing.T) {
+	t.Run("SetDays", func(t *testing.T) {
+		obj := &SequenceWaitUntilWeekdayInputMinimumWait{}
+		var fernTestValueDays *float64
+		obj.SetDays(fernTestValueDays)
+		assert.Equal(t, fernTestValueDays, obj.Days)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetHours", func(t *testing.T) {
+		obj := &SequenceWaitUntilWeekdayInputMinimumWait{}
+		var fernTestValueHours *float64
+		obj.SetHours(fernTestValueHours)
+		assert.Equal(t, fernTestValueHours, obj.Hours)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetMinutes", func(t *testing.T) {
+		obj := &SequenceWaitUntilWeekdayInputMinimumWait{}
+		var fernTestValueMinutes *float64
+		obj.SetMinutes(fernTestValueMinutes)
+		assert.Equal(t, fernTestValueMinutes, obj.Minutes)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersSequenceWaitUntilWeekdayInputMinimumWait(t *testing.T) {
+	t.Run("GetDays", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceWaitUntilWeekdayInputMinimumWait{}
+		var expected *float64
+		obj.Days = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDays(), "getter should return the property value")
+	})
+
+	t.Run("GetDays_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceWaitUntilWeekdayInputMinimumWait{}
+		obj.Days = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetDays(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetDays_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequenceWaitUntilWeekdayInputMinimumWait
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDays() // Should return zero value
+	})
+
+	t.Run("GetHours", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceWaitUntilWeekdayInputMinimumWait{}
+		var expected *float64
+		obj.Hours = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetHours(), "getter should return the property value")
+	})
+
+	t.Run("GetHours_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceWaitUntilWeekdayInputMinimumWait{}
+		obj.Hours = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetHours(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetHours_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequenceWaitUntilWeekdayInputMinimumWait
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetHours() // Should return zero value
+	})
+
+	t.Run("GetMinutes", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceWaitUntilWeekdayInputMinimumWait{}
+		var expected *float64
+		obj.Minutes = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetMinutes(), "getter should return the property value")
+	})
+
+	t.Run("GetMinutes_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceWaitUntilWeekdayInputMinimumWait{}
+		obj.Minutes = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetMinutes(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetMinutes_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequenceWaitUntilWeekdayInputMinimumWait
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetMinutes() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitSequenceWaitUntilWeekdayInputMinimumWait(t *testing.T) {
+	t.Run("SetDays_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceWaitUntilWeekdayInputMinimumWait{}
+		var fernTestValueDays *float64
+
+		// Act
+		obj.SetDays(fernTestValueDays)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetHours_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceWaitUntilWeekdayInputMinimumWait{}
+		var fernTestValueHours *float64
+
+		// Act
+		obj.SetHours(fernTestValueHours)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetMinutes_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceWaitUntilWeekdayInputMinimumWait{}
+		var fernTestValueMinutes *float64
+
+		// Act
+		obj.SetMinutes(fernTestValueMinutes)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -83140,6 +83437,39 @@ func TestJSONMarshalingSequenceWaitUntilWeekdayInput(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingSequenceWaitUntilWeekdayInputMinimumWait(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceWaitUntilWeekdayInputMinimumWait{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled SequenceWaitUntilWeekdayInputMinimumWait
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj SequenceWaitUntilWeekdayInputMinimumWait
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj SequenceWaitUntilWeekdayInputMinimumWait
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingSimulateSequencesResponse(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -85224,6 +85554,22 @@ func TestStringSequenceWaitUntilWeekdayInput(t *testing.T) {
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *SequenceWaitUntilWeekdayInput
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringSequenceWaitUntilWeekdayInputMinimumWait(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &SequenceWaitUntilWeekdayInputMinimumWait{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequenceWaitUntilWeekdayInputMinimumWait
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -92093,6 +92439,29 @@ func TestExtraPropertiesSequenceWaitUntilWeekdayInput(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *SequenceWaitUntilWeekdayInput
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesSequenceWaitUntilWeekdayInputMinimumWait(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &SequenceWaitUntilWeekdayInputMinimumWait{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequenceWaitUntilWeekdayInputMinimumWait
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})

@@ -717,7 +717,7 @@ type AccountHealthInsight struct {
 	Actions  []*AccountHealthAction        `json:"actions,omitempty" url:"actions,omitempty"`
 	Detail   *string                       `json:"detail,omitempty" url:"detail,omitempty"`
 	Detector *AccountHealthInsightDetector `json:"detector,omitempty" url:"detector,omitempty"`
-	// Detector-specific numbers behind the finding. Event findings carry `monthlyRevenue` (USD a month the people behind the event pay) when a payment integration syncs revenue to contacts.
+	// Detector-specific numbers behind the finding. Event findings carry `monthlyRevenue` (USD a month the people behind the event pay) when a payment integration syncs revenue to contacts. A missing_sequence finding carries the suggested `playbook`, `name`, `goal`, `trigger` and `steps`.
 	Evidence    map[string]any `json:"evidence,omitempty" url:"evidence,omitempty"`
 	FirstSeenAt *time.Time     `json:"firstSeenAt,omitempty" url:"firstSeenAt,omitempty"`
 	// Inactive draft sequence the agent created to fix this, if any.
@@ -1065,6 +1065,7 @@ const (
 	AccountHealthInsightDetectorUnderperformingSequenceEmail AccountHealthInsightDetector = "underperforming_sequence_email"
 	AccountHealthInsightDetectorDeliverabilitySpike          AccountHealthInsightDetector = "deliverability_spike"
 	AccountHealthInsightDetectorSendingDomainFailing         AccountHealthInsightDetector = "sending_domain_failing"
+	AccountHealthInsightDetectorMissingSequence              AccountHealthInsightDetector = "missing_sequence"
 )
 
 func NewAccountHealthInsightDetectorFromString(s string) (AccountHealthInsightDetector, error) {
@@ -1083,6 +1084,8 @@ func NewAccountHealthInsightDetectorFromString(s string) (AccountHealthInsightDe
 		return AccountHealthInsightDetectorDeliverabilitySpike, nil
 	case "sending_domain_failing":
 		return AccountHealthInsightDetectorSendingDomainFailing, nil
+	case "missing_sequence":
+		return AccountHealthInsightDetectorMissingSequence, nil
 	}
 	var t AccountHealthInsightDetector
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

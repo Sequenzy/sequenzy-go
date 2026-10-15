@@ -140,6 +140,31 @@ func (c *Client) GetEmailClientMetrics(
 	return response.Body, nil
 }
 
+// Returns clicks per link destination across every email in the time range, ranked by unique clicks, which count each subscriber once per link however often they clicked. Destinations ignore query strings, fragments and trailing slashes, so the same page linked with different UTM tags counts as one link, and links that differ only by query parameters, such as video or product IDs, are combined. Test sends are excluded. Defaults to the last 90 days. For one campaign's links with exact URLs, read `clickedLinks` from the campaign metrics endpoint.
+//
+// Example:
+//
+//	request := &sequenzygo.GetLinkClickMetricsRequest{}
+//	client.Analytics.GetLinkClickMetrics(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) GetLinkClickMetrics(
+	ctx context.Context,
+	request *sequenzygo.GetLinkClickMetricsRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.GetLinkClickMetricsResponse, error) {
+	response, err := c.WithRawResponse.GetLinkClickMetrics(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Returns aggregated email engagement metrics for the specified time period, plus live subscriberCount (every stored contact) and activeSubscriberCount (status=active) as an audience snapshot independent of period. Set emailType=transactional for Send API and transactional SMTP traffic.
 //
 // Example:

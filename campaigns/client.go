@@ -212,6 +212,34 @@ func (c *Client) CreateShareLink(
 	return response.Body, nil
 }
 
+// Saves a version of the email as a new ready variation, for example a copy you want to take in another direction. Provide blocks or html (not both). Footerless blocks get the company's default footer, as on Update campaign. Labels are assigned in order (V1, V2, ...); a variation with parentVariationId is labeled as its branch (V2.1, V2.2, ...). Labels are never reused, even after a discard.
+//
+// Example:
+//
+//	request := &sequenzygo.CreateVariationCampaignsRequest{
+//	    CampaignID: "campaignId",
+//	    Name: "name",
+//	}
+//	client.Campaigns.CreateVariation(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) CreateVariation(
+	ctx context.Context,
+	request *sequenzygo.CreateVariationCampaignsRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.EmailVariationResponse, error) {
+	response, err := c.WithRawResponse.CreateVariation(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Permanently deletes a campaign. Active campaigns (sending, scheduled, or paused) must be cancelled first.
 //
 // Example:
@@ -267,6 +295,34 @@ func (c *Client) DeleteGoal(
 	return response.Body, nil
 }
 
+// Discards a variation. It leaves the list and its branches move up to its parent; Restore variation undoes this. Needs the campaigns:write scope, not campaigns:delete.
+//
+// Example:
+//
+//	request := &sequenzygo.DiscardVariationCampaignsRequest{
+//	    CampaignID: "campaignId",
+//	    VariationID: "variationId",
+//	}
+//	client.Campaigns.DiscardVariation(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) DiscardVariation(
+	ctx context.Context,
+	request *sequenzygo.DiscardVariationCampaignsRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.DiscardVariationCampaignsResponse, error) {
+	response, err := c.WithRawResponse.DiscardVariation(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Creates a draft copy of a campaign. Optionally copies the campaign's A/B test or duplicates a single variant as a plain campaign.
 //
 // Example:
@@ -284,6 +340,94 @@ func (c *Client) Duplicate(
 	opts ...option.RequestOption,
 ) (*sequenzygo.DuplicateCampaignsResponse, error) {
 	response, err := c.WithRawResponse.Duplicate(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Changes one ready variation with AI and saves the result over it, like an edit in the editor. The prompt says what to change, in any language. With sectionIds, only those top-level blocks change; a whole-variation edit may also give the variation its own emailTheme and fontFamily. Runs synchronously and can take up to a minute. The campaign email does not change; use Use variation for that.
+//
+// Example:
+//
+//	request := &sequenzygo.EditVariationCampaignsRequest{
+//	    CampaignID: "campaignId",
+//	    VariationID: "variationId",
+//	    Prompt: "Make the hero dark and the headline punchier",
+//	}
+//	client.Campaigns.EditVariation(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) EditVariation(
+	ctx context.Context,
+	request *sequenzygo.EditVariationCampaignsRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.EditVariationCampaignsResponse, error) {
+	response, err := c.WithRawResponse.EditVariation(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Starts generating 1 to 4 variations with AI and returns them at once with status generating. Each one takes its own direction planned from your prompt, so they differ from each other; style sets how far they move. Generation runs in the background; poll List variations or Get variation until each is ready or failed (a variation still generating after 10 minutes is reported as failed). An email can have up to 8 variations generating at once. The source is the email's saved content, or the variation in parentVariationId, which must be ready. The campaign email itself does not change.
+//
+// Example:
+//
+//	request := &sequenzygo.GenerateVariationsCampaignsRequest{
+//	    CampaignID: "campaignId",
+//	    Prompt: "Three versions that are shorter and warmer",
+//	}
+//	client.Campaigns.GenerateVariations(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) GenerateVariations(
+	ctx context.Context,
+	request *sequenzygo.GenerateVariationsCampaignsRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.GenerateVariationsCampaignsResponse, error) {
+	response, err := c.WithRawResponse.GenerateVariations(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Generates 1 to 4 alternative versions of selected sections (top-level blocks) of the email or of one variation, and returns them without saving anything. Each option holds replacement blocks that keep the selected blocks' ids; apply one by swapping those blocks into the variation's blocks and calling Update variation. Changes the AI makes outside the selected sections are dropped. Runs synchronously and can take up to a minute.
+//
+// Example:
+//
+//	request := &sequenzygo.GenerateVariationSectionOptionsCampaignsRequest{
+//	    CampaignID: "campaignId",
+//	    Prompt: "prompt",
+//	    SectionIDs: []string{
+//	        "sectionIds",
+//	    },
+//	}
+//	client.Campaigns.GenerateVariationSectionOptions(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) GenerateVariationSectionOptions(
+	ctx context.Context,
+	request *sequenzygo.GenerateVariationSectionOptionsCampaignsRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.GenerateVariationSectionOptionsCampaignsResponse, error) {
+	response, err := c.WithRawResponse.GenerateVariationSectionOptions(
 		ctx,
 		request,
 		opts...,
@@ -348,6 +492,34 @@ func (c *Client) GetAudience(
 	return response.Body, nil
 }
 
+// Returns one variation, including its status while it generates. Discarded variations are not found.
+//
+// Example:
+//
+//	request := &sequenzygo.GetVariationCampaignsRequest{
+//	    CampaignID: "campaignId",
+//	    VariationID: "variationId",
+//	}
+//	client.Campaigns.GetVariation(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) GetVariation(
+	ctx context.Context,
+	request *sequenzygo.GetVariationCampaignsRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.EmailVariationResponse, error) {
+	response, err := c.WithRawResponse.GetVariation(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Lists campaigns for the authenticated company, optionally filtered by status or label. Each item includes delivery pacing (sendTimeOptimization, sendTimeWindowHours, spreadOverHours, sendInRecipientTimezone, scheduledTimezone) and the recipient cap (maxRecipients) so a company-wide STO audit does not need one getCampaign call each. STO is campaign-only; sequences use sendingWindow.
 //
 // Example:
@@ -390,6 +562,33 @@ func (c *Client) ListGoals(
 	opts ...option.RequestOption,
 ) (*sequenzygo.ListGoalsCampaignsResponse, error) {
 	response, err := c.WithRawResponse.ListGoals(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Lists the campaign email's variations, oldest first. Variations are alternative versions of the email that you compare side by side on the editor canvas; the campaign keeps sending its email until you use one. Discarded variations are not listed. Each variation's parentId points at the nearest variation it descends from that has not been discarded. Email campaigns only.
+//
+// Example:
+//
+//	request := &sequenzygo.ListVariationsCampaignsRequest{
+//	    CampaignID: "campaignId",
+//	}
+//	client.Campaigns.ListVariations(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) ListVariations(
+	ctx context.Context,
+	request *sequenzygo.ListVariationsCampaignsRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.ListVariationsCampaignsResponse, error) {
+	response, err := c.WithRawResponse.ListVariations(
 		ctx,
 		request,
 		opts...,
@@ -509,6 +708,34 @@ func (c *Client) ResendToNonOpeners(
 	opts ...option.RequestOption,
 ) (*sequenzygo.ResendToNonOpenersCampaignsResponse, error) {
 	response, err := c.WithRawResponse.ResendToNonOpeners(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Brings back a discarded variation with its label, and moves its branches back under it. Restoring a variation that is not discarded returns it unchanged.
+//
+// Example:
+//
+//	request := &sequenzygo.RestoreVariationCampaignsRequest{
+//	    CampaignID: "campaignId",
+//	    VariationID: "variationId",
+//	}
+//	client.Campaigns.RestoreVariation(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) RestoreVariation(
+	ctx context.Context,
+	request *sequenzygo.RestoreVariationCampaignsRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.EmailVariationResponse, error) {
+	response, err := c.WithRawResponse.RestoreVariation(
 		ctx,
 		request,
 		opts...,
@@ -710,6 +937,62 @@ func (c *Client) UpdateGoal(
 	opts ...option.RequestOption,
 ) (*sequenzygo.UpdateGoalCampaignsResponse, error) {
 	response, err := c.WithRawResponse.UpdateGoal(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Renames a variation or replaces its content. Content (blocks, html, subject, previewText) can only change once the variation is ready. Provide at least one field.
+//
+// Example:
+//
+//	request := &sequenzygo.UpdateVariationCampaignsRequest{
+//	    CampaignID: "campaignId",
+//	    VariationID: "variationId",
+//	}
+//	client.Campaigns.UpdateVariation(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) UpdateVariation(
+	ctx context.Context,
+	request *sequenzygo.UpdateVariationCampaignsRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.EmailVariationResponse, error) {
+	response, err := c.WithRawResponse.UpdateVariation(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Copies a ready variation into the campaign email (blocks, and the subject, preview text, theme and font when the variation has its own). If the email's current content is not already a variation, it is saved first as a new variation named "Before {label}" and returned as savedPrevious, so nothing is lost. When the variation has its own look, the other variations that follow the email's look keep the one it had. Draft campaigns only. Translations are re-derived from the new content.
+//
+// Example:
+//
+//	request := &sequenzygo.UseVariationCampaignsRequest{
+//	    CampaignID: "campaignId",
+//	    VariationID: "variationId",
+//	}
+//	client.Campaigns.UseVariation(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) UseVariation(
+	ctx context.Context,
+	request *sequenzygo.UseVariationCampaignsRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.UseVariationCampaignsResponse, error) {
+	response, err := c.WithRawResponse.UseVariation(
 		ctx,
 		request,
 		opts...,

@@ -523,6 +523,141 @@ func (c *CreateShareLinkCampaignsRequest) SetCampaignID(campaignID string) {
 }
 
 var (
+	createVariationCampaignsRequestFieldCampaignID        = big.NewInt(1 << 0)
+	createVariationCampaignsRequestFieldBlocks            = big.NewInt(1 << 1)
+	createVariationCampaignsRequestFieldEmailTheme        = big.NewInt(1 << 2)
+	createVariationCampaignsRequestFieldFontFamily        = big.NewInt(1 << 3)
+	createVariationCampaignsRequestFieldHTML              = big.NewInt(1 << 4)
+	createVariationCampaignsRequestFieldName              = big.NewInt(1 << 5)
+	createVariationCampaignsRequestFieldParentVariationID = big.NewInt(1 << 6)
+	createVariationCampaignsRequestFieldPreviewText       = big.NewInt(1 << 7)
+	createVariationCampaignsRequestFieldSubject           = big.NewInt(1 << 8)
+	createVariationCampaignsRequestFieldSummary           = big.NewInt(1 << 9)
+)
+
+type CreateVariationCampaignsRequest struct {
+	// Campaign ID
+	CampaignID string `json:"-" url:"-"`
+	// Email blocks. Validated like campaign content.
+	Blocks []*EmailBlock `json:"blocks,omitempty" url:"-"`
+	// The variation's own email theme (presetId, colors, typography, layout). A partial theme is completed with defaults. Null uses the email's theme. Using the variation puts its theme on the email.
+	EmailTheme map[string]any `json:"emailTheme,omitempty" url:"-"`
+	// The variation's own body font stack. Null uses the email's font.
+	FontFamily *string `json:"fontFamily,omitempty" url:"-"`
+	// HTML converted to blocks. Use instead of blocks.
+	HTML *string `json:"html,omitempty" url:"-"`
+	Name string  `json:"name" url:"-"`
+	// The variation this one is derived from.
+	ParentVariationID *string `json:"parentVariationId,omitempty" url:"-"`
+	// Preview text this variation uses. Null keeps the email's preview text.
+	PreviewText *string `json:"previewText,omitempty" url:"-"`
+	// Subject this variation uses. Null keeps the email's subject.
+	Subject *string `json:"subject,omitempty" url:"-"`
+	Summary *string `json:"summary,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (c *CreateVariationCampaignsRequest) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetCampaignID sets the CampaignID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVariationCampaignsRequest) SetCampaignID(campaignID string) {
+	c.CampaignID = campaignID
+	c.require(createVariationCampaignsRequestFieldCampaignID)
+}
+
+// SetBlocks sets the Blocks field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVariationCampaignsRequest) SetBlocks(blocks []*EmailBlock) {
+	c.Blocks = blocks
+	c.require(createVariationCampaignsRequestFieldBlocks)
+}
+
+// SetEmailTheme sets the EmailTheme field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVariationCampaignsRequest) SetEmailTheme(emailTheme map[string]any) {
+	c.EmailTheme = emailTheme
+	c.require(createVariationCampaignsRequestFieldEmailTheme)
+}
+
+// SetFontFamily sets the FontFamily field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVariationCampaignsRequest) SetFontFamily(fontFamily *string) {
+	c.FontFamily = fontFamily
+	c.require(createVariationCampaignsRequestFieldFontFamily)
+}
+
+// SetHTML sets the HTML field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVariationCampaignsRequest) SetHTML(html *string) {
+	c.HTML = html
+	c.require(createVariationCampaignsRequestFieldHTML)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVariationCampaignsRequest) SetName(name string) {
+	c.Name = name
+	c.require(createVariationCampaignsRequestFieldName)
+}
+
+// SetParentVariationID sets the ParentVariationID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVariationCampaignsRequest) SetParentVariationID(parentVariationID *string) {
+	c.ParentVariationID = parentVariationID
+	c.require(createVariationCampaignsRequestFieldParentVariationID)
+}
+
+// SetPreviewText sets the PreviewText field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVariationCampaignsRequest) SetPreviewText(previewText *string) {
+	c.PreviewText = previewText
+	c.require(createVariationCampaignsRequestFieldPreviewText)
+}
+
+// SetSubject sets the Subject field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVariationCampaignsRequest) SetSubject(subject *string) {
+	c.Subject = subject
+	c.require(createVariationCampaignsRequestFieldSubject)
+}
+
+// SetSummary sets the Summary field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVariationCampaignsRequest) SetSummary(summary *string) {
+	c.Summary = summary
+	c.require(createVariationCampaignsRequestFieldSummary)
+}
+
+func (c *CreateVariationCampaignsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateVariationCampaignsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*c = CreateVariationCampaignsRequest(body)
+	return nil
+}
+
+func (c *CreateVariationCampaignsRequest) MarshalJSON() ([]byte, error) {
+	type embed CreateVariationCampaignsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
 	deleteCampaignsRequestFieldCampaignID = big.NewInt(1 << 0)
 )
 
@@ -580,6 +715,42 @@ func (d *DeleteGoalCampaignsRequest) SetCampaignID(campaignID string) {
 func (d *DeleteGoalCampaignsRequest) SetGoalID(goalID string) {
 	d.GoalID = goalID
 	d.require(deleteGoalCampaignsRequestFieldGoalID)
+}
+
+var (
+	discardVariationCampaignsRequestFieldCampaignID  = big.NewInt(1 << 0)
+	discardVariationCampaignsRequestFieldVariationID = big.NewInt(1 << 1)
+)
+
+type DiscardVariationCampaignsRequest struct {
+	// Campaign ID
+	CampaignID string `json:"-" url:"-"`
+	// Variation ID
+	VariationID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (d *DiscardVariationCampaignsRequest) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetCampaignID sets the CampaignID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DiscardVariationCampaignsRequest) SetCampaignID(campaignID string) {
+	d.CampaignID = campaignID
+	d.require(discardVariationCampaignsRequestFieldCampaignID)
+}
+
+// SetVariationID sets the VariationID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DiscardVariationCampaignsRequest) SetVariationID(variationID string) {
+	d.VariationID = variationID
+	d.require(discardVariationCampaignsRequestFieldVariationID)
 }
 
 var (
@@ -650,6 +821,264 @@ func (d *DuplicateCampaignsRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
+	editVariationCampaignsRequestFieldCampaignID  = big.NewInt(1 << 0)
+	editVariationCampaignsRequestFieldVariationID = big.NewInt(1 << 1)
+	editVariationCampaignsRequestFieldPrompt      = big.NewInt(1 << 2)
+	editVariationCampaignsRequestFieldSectionIDs  = big.NewInt(1 << 3)
+)
+
+type EditVariationCampaignsRequest struct {
+	// Campaign ID
+	CampaignID string `json:"-" url:"-"`
+	// Variation ID
+	VariationID string `json:"-" url:"-"`
+	// What should change, in any language.
+	Prompt string `json:"prompt" url:"-"`
+	// Only change these top-level blocks. Omit to change the whole variation.
+	SectionIDs []string `json:"sectionIds,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (e *EditVariationCampaignsRequest) require(field *big.Int) {
+	if e.explicitFields == nil {
+		e.explicitFields = big.NewInt(0)
+	}
+	e.explicitFields.Or(e.explicitFields, field)
+}
+
+// SetCampaignID sets the CampaignID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EditVariationCampaignsRequest) SetCampaignID(campaignID string) {
+	e.CampaignID = campaignID
+	e.require(editVariationCampaignsRequestFieldCampaignID)
+}
+
+// SetVariationID sets the VariationID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EditVariationCampaignsRequest) SetVariationID(variationID string) {
+	e.VariationID = variationID
+	e.require(editVariationCampaignsRequestFieldVariationID)
+}
+
+// SetPrompt sets the Prompt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EditVariationCampaignsRequest) SetPrompt(prompt string) {
+	e.Prompt = prompt
+	e.require(editVariationCampaignsRequestFieldPrompt)
+}
+
+// SetSectionIDs sets the SectionIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EditVariationCampaignsRequest) SetSectionIDs(sectionIDs []string) {
+	e.SectionIDs = sectionIDs
+	e.require(editVariationCampaignsRequestFieldSectionIDs)
+}
+
+func (e *EditVariationCampaignsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler EditVariationCampaignsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*e = EditVariationCampaignsRequest(body)
+	return nil
+}
+
+func (e *EditVariationCampaignsRequest) MarshalJSON() ([]byte, error) {
+	type embed EditVariationCampaignsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*e),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
+	generateVariationSectionOptionsCampaignsRequestFieldCampaignID  = big.NewInt(1 << 0)
+	generateVariationSectionOptionsCampaignsRequestFieldCount       = big.NewInt(1 << 1)
+	generateVariationSectionOptionsCampaignsRequestFieldPrompt      = big.NewInt(1 << 2)
+	generateVariationSectionOptionsCampaignsRequestFieldSectionIDs  = big.NewInt(1 << 3)
+	generateVariationSectionOptionsCampaignsRequestFieldStyle       = big.NewInt(1 << 4)
+	generateVariationSectionOptionsCampaignsRequestFieldVariationID = big.NewInt(1 << 5)
+)
+
+type GenerateVariationSectionOptionsCampaignsRequest struct {
+	// Campaign ID
+	CampaignID string `json:"-" url:"-"`
+	Count      *int   `json:"count,omitempty" url:"-"`
+	Prompt     string `json:"prompt" url:"-"`
+	// Ids of top-level blocks to vary.
+	SectionIDs []string `json:"sectionIds" url:"-"`
+	// How far the options move from the selected sections. close stays near them; fresh and bold try clearly different takes. Defaults to fresh.
+	Style *GenerateVariationSectionOptionsCampaignsRequestStyle `json:"style,omitempty" url:"-"`
+	// Vary this variation's sections. Omit to vary the email's saved content.
+	VariationID *string `json:"variationId,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (g *GenerateVariationSectionOptionsCampaignsRequest) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetCampaignID sets the CampaignID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GenerateVariationSectionOptionsCampaignsRequest) SetCampaignID(campaignID string) {
+	g.CampaignID = campaignID
+	g.require(generateVariationSectionOptionsCampaignsRequestFieldCampaignID)
+}
+
+// SetCount sets the Count field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GenerateVariationSectionOptionsCampaignsRequest) SetCount(count *int) {
+	g.Count = count
+	g.require(generateVariationSectionOptionsCampaignsRequestFieldCount)
+}
+
+// SetPrompt sets the Prompt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GenerateVariationSectionOptionsCampaignsRequest) SetPrompt(prompt string) {
+	g.Prompt = prompt
+	g.require(generateVariationSectionOptionsCampaignsRequestFieldPrompt)
+}
+
+// SetSectionIDs sets the SectionIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GenerateVariationSectionOptionsCampaignsRequest) SetSectionIDs(sectionIDs []string) {
+	g.SectionIDs = sectionIDs
+	g.require(generateVariationSectionOptionsCampaignsRequestFieldSectionIDs)
+}
+
+// SetStyle sets the Style field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GenerateVariationSectionOptionsCampaignsRequest) SetStyle(style *GenerateVariationSectionOptionsCampaignsRequestStyle) {
+	g.Style = style
+	g.require(generateVariationSectionOptionsCampaignsRequestFieldStyle)
+}
+
+// SetVariationID sets the VariationID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GenerateVariationSectionOptionsCampaignsRequest) SetVariationID(variationID *string) {
+	g.VariationID = variationID
+	g.require(generateVariationSectionOptionsCampaignsRequestFieldVariationID)
+}
+
+func (g *GenerateVariationSectionOptionsCampaignsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler GenerateVariationSectionOptionsCampaignsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*g = GenerateVariationSectionOptionsCampaignsRequest(body)
+	return nil
+}
+
+func (g *GenerateVariationSectionOptionsCampaignsRequest) MarshalJSON() ([]byte, error) {
+	type embed GenerateVariationSectionOptionsCampaignsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*g),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
+	generateVariationsCampaignsRequestFieldCampaignID        = big.NewInt(1 << 0)
+	generateVariationsCampaignsRequestFieldCount             = big.NewInt(1 << 1)
+	generateVariationsCampaignsRequestFieldParentVariationID = big.NewInt(1 << 2)
+	generateVariationsCampaignsRequestFieldPrompt            = big.NewInt(1 << 3)
+	generateVariationsCampaignsRequestFieldStyle             = big.NewInt(1 << 4)
+)
+
+type GenerateVariationsCampaignsRequest struct {
+	// Campaign ID
+	CampaignID string `json:"-" url:"-"`
+	Count      *int   `json:"count,omitempty" url:"-"`
+	// Derive from this variation instead of the email. New variations are its branches.
+	ParentVariationID *string `json:"parentVariationId,omitempty" url:"-"`
+	// The direction for the new versions, in any language.
+	Prompt string `json:"prompt" url:"-"`
+	// How far the new versions move from the source. close edits it, keeping its style and structure; fresh writes each version anew with its own structure in the brand's colors and fonts; bold also gives each its own look (a theme of its own). Defaults to close for branches of a variation and fresh otherwise.
+	Style *GenerateVariationsCampaignsRequestStyle `json:"style,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (g *GenerateVariationsCampaignsRequest) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetCampaignID sets the CampaignID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GenerateVariationsCampaignsRequest) SetCampaignID(campaignID string) {
+	g.CampaignID = campaignID
+	g.require(generateVariationsCampaignsRequestFieldCampaignID)
+}
+
+// SetCount sets the Count field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GenerateVariationsCampaignsRequest) SetCount(count *int) {
+	g.Count = count
+	g.require(generateVariationsCampaignsRequestFieldCount)
+}
+
+// SetParentVariationID sets the ParentVariationID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GenerateVariationsCampaignsRequest) SetParentVariationID(parentVariationID *string) {
+	g.ParentVariationID = parentVariationID
+	g.require(generateVariationsCampaignsRequestFieldParentVariationID)
+}
+
+// SetPrompt sets the Prompt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GenerateVariationsCampaignsRequest) SetPrompt(prompt string) {
+	g.Prompt = prompt
+	g.require(generateVariationsCampaignsRequestFieldPrompt)
+}
+
+// SetStyle sets the Style field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GenerateVariationsCampaignsRequest) SetStyle(style *GenerateVariationsCampaignsRequestStyle) {
+	g.Style = style
+	g.require(generateVariationsCampaignsRequestFieldStyle)
+}
+
+func (g *GenerateVariationsCampaignsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler GenerateVariationsCampaignsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*g = GenerateVariationsCampaignsRequest(body)
+	return nil
+}
+
+func (g *GenerateVariationsCampaignsRequest) MarshalJSON() ([]byte, error) {
+	type embed GenerateVariationsCampaignsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*g),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
 	getCampaignsRequestFieldCampaignID = big.NewInt(1 << 0)
 )
 
@@ -699,6 +1128,42 @@ func (g *GetAudienceCampaignsRequest) require(field *big.Int) {
 func (g *GetAudienceCampaignsRequest) SetCampaignID(campaignID string) {
 	g.CampaignID = campaignID
 	g.require(getAudienceCampaignsRequestFieldCampaignID)
+}
+
+var (
+	getVariationCampaignsRequestFieldCampaignID  = big.NewInt(1 << 0)
+	getVariationCampaignsRequestFieldVariationID = big.NewInt(1 << 1)
+)
+
+type GetVariationCampaignsRequest struct {
+	// Campaign ID
+	CampaignID string `json:"-" url:"-"`
+	// Variation ID
+	VariationID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (g *GetVariationCampaignsRequest) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetCampaignID sets the CampaignID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetVariationCampaignsRequest) SetCampaignID(campaignID string) {
+	g.CampaignID = campaignID
+	g.require(getVariationCampaignsRequestFieldCampaignID)
+}
+
+// SetVariationID sets the VariationID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetVariationCampaignsRequest) SetVariationID(variationID string) {
+	g.VariationID = variationID
+	g.require(getVariationCampaignsRequestFieldVariationID)
 }
 
 var (
@@ -780,6 +1245,32 @@ func (l *ListGoalsCampaignsRequest) require(field *big.Int) {
 func (l *ListGoalsCampaignsRequest) SetCampaignID(campaignID string) {
 	l.CampaignID = campaignID
 	l.require(listGoalsCampaignsRequestFieldCampaignID)
+}
+
+var (
+	listVariationsCampaignsRequestFieldCampaignID = big.NewInt(1 << 0)
+)
+
+type ListVariationsCampaignsRequest struct {
+	// Campaign ID
+	CampaignID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (l *ListVariationsCampaignsRequest) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetCampaignID sets the CampaignID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVariationsCampaignsRequest) SetCampaignID(campaignID string) {
+	l.CampaignID = campaignID
+	l.require(listVariationsCampaignsRequestFieldCampaignID)
 }
 
 var (
@@ -939,6 +1430,42 @@ func (r *ResendToNonOpenersCampaignsRequest) require(field *big.Int) {
 func (r *ResendToNonOpenersCampaignsRequest) SetCampaignID(campaignID string) {
 	r.CampaignID = campaignID
 	r.require(resendToNonOpenersCampaignsRequestFieldCampaignID)
+}
+
+var (
+	restoreVariationCampaignsRequestFieldCampaignID  = big.NewInt(1 << 0)
+	restoreVariationCampaignsRequestFieldVariationID = big.NewInt(1 << 1)
+)
+
+type RestoreVariationCampaignsRequest struct {
+	// Campaign ID
+	CampaignID string `json:"-" url:"-"`
+	// Variation ID
+	VariationID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (r *RestoreVariationCampaignsRequest) require(field *big.Int) {
+	if r.explicitFields == nil {
+		r.explicitFields = big.NewInt(0)
+	}
+	r.explicitFields.Or(r.explicitFields, field)
+}
+
+// SetCampaignID sets the CampaignID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RestoreVariationCampaignsRequest) SetCampaignID(campaignID string) {
+	r.CampaignID = campaignID
+	r.require(restoreVariationCampaignsRequestFieldCampaignID)
+}
+
+// SetVariationID sets the VariationID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RestoreVariationCampaignsRequest) SetVariationID(variationID string) {
+	r.VariationID = variationID
+	r.require(restoreVariationCampaignsRequestFieldVariationID)
 }
 
 var (
@@ -3486,6 +4013,810 @@ func NewCompanyGoalTriggerTypeFromString(s string) (CompanyGoalTriggerType, erro
 
 func (c CompanyGoalTriggerType) Ptr() *CompanyGoalTriggerType {
 	return &c
+}
+
+var (
+	emailSectionOptionFieldName         = big.NewInt(1 << 0)
+	emailSectionOptionFieldReplacements = big.NewInt(1 << 1)
+	emailSectionOptionFieldSummary      = big.NewInt(1 << 2)
+)
+
+type EmailSectionOption struct {
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// New versions of the selected blocks, keeping their ids.
+	Replacements []*EmailBlock `json:"replacements,omitempty" url:"replacements,omitempty"`
+	Summary      *string       `json:"summary,omitempty" url:"summary,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (e *EmailSectionOption) GetName() *string {
+	if e == nil {
+		return nil
+	}
+	return e.Name
+}
+
+func (e *EmailSectionOption) GetReplacements() []*EmailBlock {
+	if e == nil {
+		return nil
+	}
+	return e.Replacements
+}
+
+func (e *EmailSectionOption) GetSummary() *string {
+	if e == nil {
+		return nil
+	}
+	return e.Summary
+}
+
+func (e *EmailSectionOption) GetExtraProperties() map[string]interface{} {
+	if e == nil {
+		return nil
+	}
+	return e.extraProperties
+}
+
+func (e *EmailSectionOption) require(field *big.Int) {
+	if e.explicitFields == nil {
+		e.explicitFields = big.NewInt(0)
+	}
+	e.explicitFields.Or(e.explicitFields, field)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailSectionOption) SetName(name *string) {
+	e.Name = name
+	e.require(emailSectionOptionFieldName)
+}
+
+// SetReplacements sets the Replacements field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailSectionOption) SetReplacements(replacements []*EmailBlock) {
+	e.Replacements = replacements
+	e.require(emailSectionOptionFieldReplacements)
+}
+
+// SetSummary sets the Summary field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailSectionOption) SetSummary(summary *string) {
+	e.Summary = summary
+	e.require(emailSectionOptionFieldSummary)
+}
+
+func (e *EmailSectionOption) UnmarshalJSON(data []byte) error {
+	type unmarshaler EmailSectionOption
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EmailSectionOption(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+	e.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EmailSectionOption) MarshalJSON() ([]byte, error) {
+	type embed EmailSectionOption
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*e),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (e *EmailSectionOption) String() string {
+	if e == nil {
+		return "<nil>"
+	}
+	if len(e.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(e.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+// An alternative version of a campaign email, compared side by side on the editor canvas.
+var (
+	emailVariationFieldBlocks      = big.NewInt(1 << 0)
+	emailVariationFieldCreatedAt   = big.NewInt(1 << 1)
+	emailVariationFieldEmailID     = big.NewInt(1 << 2)
+	emailVariationFieldEmailTheme  = big.NewInt(1 << 3)
+	emailVariationFieldError       = big.NewInt(1 << 4)
+	emailVariationFieldFontFamily  = big.NewInt(1 << 5)
+	emailVariationFieldID          = big.NewInt(1 << 6)
+	emailVariationFieldInUse       = big.NewInt(1 << 7)
+	emailVariationFieldLabel       = big.NewInt(1 << 8)
+	emailVariationFieldName        = big.NewInt(1 << 9)
+	emailVariationFieldParentID    = big.NewInt(1 << 10)
+	emailVariationFieldPosition    = big.NewInt(1 << 11)
+	emailVariationFieldPreviewText = big.NewInt(1 << 12)
+	emailVariationFieldPrompt      = big.NewInt(1 << 13)
+	emailVariationFieldStatus      = big.NewInt(1 << 14)
+	emailVariationFieldStyle       = big.NewInt(1 << 15)
+	emailVariationFieldSubject     = big.NewInt(1 << 16)
+	emailVariationFieldSummary     = big.NewInt(1 << 17)
+	emailVariationFieldUpdatedAt   = big.NewInt(1 << 18)
+	emailVariationFieldUsedAt      = big.NewInt(1 << 19)
+)
+
+type EmailVariation struct {
+	// Null while generating or after a failure.
+	Blocks    []*EmailBlock `json:"blocks,omitempty" url:"blocks,omitempty"`
+	CreatedAt *time.Time    `json:"createdAt,omitempty" url:"createdAt,omitempty"`
+	EmailID   *string       `json:"emailId,omitempty" url:"emailId,omitempty"`
+	// The variation's own email theme. Null means it uses the email's theme.
+	EmailTheme map[string]any `json:"emailTheme,omitempty" url:"emailTheme,omitempty"`
+	// Why generation failed.
+	Error *string `json:"error,omitempty" url:"error,omitempty"`
+	// The variation's own body font stack. Null means it uses the email's font.
+	FontFamily *string `json:"fontFamily,omitempty" url:"fontFamily,omitempty"`
+	ID         *string `json:"id,omitempty" url:"id,omitempty"`
+	// Whether using this variation would leave the campaign email unchanged (same blocks, and its own subject, preview text, theme and font when it has them). When several match, only the one used most recently is in use.
+	InUse *bool `json:"inUse,omitempty" url:"inUse,omitempty"`
+	// Canvas label. V1, V2, ... for versions of the email; V2.1, V2.2, ... for branches of V2.
+	Label *string `json:"label,omitempty" url:"label,omitempty"`
+	Name  *string `json:"name,omitempty" url:"name,omitempty"`
+	// The nearest variation this one descends from that has not been discarded. Null when derived from the email.
+	ParentID *string `json:"parentId,omitempty" url:"parentId,omitempty"`
+	// Where the user placed it on the editor canvas, in canvas pixels. Null means the canvas places it automatically.
+	Position    *EmailVariationPosition `json:"position,omitempty" url:"position,omitempty"`
+	PreviewText *string                 `json:"previewText,omitempty" url:"previewText,omitempty"`
+	// The request that generated this variation.
+	Prompt *string               `json:"prompt,omitempty" url:"prompt,omitempty"`
+	Status *EmailVariationStatus `json:"status,omitempty" url:"status,omitempty"`
+	// How far it was asked to move from its source, when AI generated it.
+	Style *EmailVariationStyle `json:"style,omitempty" url:"style,omitempty"`
+	// Subject this variation uses. Null keeps the email's subject.
+	Subject *string `json:"subject,omitempty" url:"subject,omitempty"`
+	// What changed, in a sentence.
+	Summary   *string    `json:"summary,omitempty" url:"summary,omitempty"`
+	UpdatedAt *time.Time `json:"updatedAt,omitempty" url:"updatedAt,omitempty"`
+	// When this variation was last put in the campaign email.
+	UsedAt *time.Time `json:"usedAt,omitempty" url:"usedAt,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (e *EmailVariation) GetBlocks() []*EmailBlock {
+	if e == nil {
+		return nil
+	}
+	return e.Blocks
+}
+
+func (e *EmailVariation) GetCreatedAt() *time.Time {
+	if e == nil {
+		return nil
+	}
+	return e.CreatedAt
+}
+
+func (e *EmailVariation) GetEmailID() *string {
+	if e == nil {
+		return nil
+	}
+	return e.EmailID
+}
+
+func (e *EmailVariation) GetEmailTheme() map[string]any {
+	if e == nil {
+		return nil
+	}
+	return e.EmailTheme
+}
+
+func (e *EmailVariation) GetError() *string {
+	if e == nil {
+		return nil
+	}
+	return e.Error
+}
+
+func (e *EmailVariation) GetFontFamily() *string {
+	if e == nil {
+		return nil
+	}
+	return e.FontFamily
+}
+
+func (e *EmailVariation) GetID() *string {
+	if e == nil {
+		return nil
+	}
+	return e.ID
+}
+
+func (e *EmailVariation) GetInUse() *bool {
+	if e == nil {
+		return nil
+	}
+	return e.InUse
+}
+
+func (e *EmailVariation) GetLabel() *string {
+	if e == nil {
+		return nil
+	}
+	return e.Label
+}
+
+func (e *EmailVariation) GetName() *string {
+	if e == nil {
+		return nil
+	}
+	return e.Name
+}
+
+func (e *EmailVariation) GetParentID() *string {
+	if e == nil {
+		return nil
+	}
+	return e.ParentID
+}
+
+func (e *EmailVariation) GetPosition() *EmailVariationPosition {
+	if e == nil {
+		return nil
+	}
+	return e.Position
+}
+
+func (e *EmailVariation) GetPreviewText() *string {
+	if e == nil {
+		return nil
+	}
+	return e.PreviewText
+}
+
+func (e *EmailVariation) GetPrompt() *string {
+	if e == nil {
+		return nil
+	}
+	return e.Prompt
+}
+
+func (e *EmailVariation) GetStatus() *EmailVariationStatus {
+	if e == nil {
+		return nil
+	}
+	return e.Status
+}
+
+func (e *EmailVariation) GetStyle() *EmailVariationStyle {
+	if e == nil {
+		return nil
+	}
+	return e.Style
+}
+
+func (e *EmailVariation) GetSubject() *string {
+	if e == nil {
+		return nil
+	}
+	return e.Subject
+}
+
+func (e *EmailVariation) GetSummary() *string {
+	if e == nil {
+		return nil
+	}
+	return e.Summary
+}
+
+func (e *EmailVariation) GetUpdatedAt() *time.Time {
+	if e == nil {
+		return nil
+	}
+	return e.UpdatedAt
+}
+
+func (e *EmailVariation) GetUsedAt() *time.Time {
+	if e == nil {
+		return nil
+	}
+	return e.UsedAt
+}
+
+func (e *EmailVariation) GetExtraProperties() map[string]interface{} {
+	if e == nil {
+		return nil
+	}
+	return e.extraProperties
+}
+
+func (e *EmailVariation) require(field *big.Int) {
+	if e.explicitFields == nil {
+		e.explicitFields = big.NewInt(0)
+	}
+	e.explicitFields.Or(e.explicitFields, field)
+}
+
+// SetBlocks sets the Blocks field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariation) SetBlocks(blocks []*EmailBlock) {
+	e.Blocks = blocks
+	e.require(emailVariationFieldBlocks)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariation) SetCreatedAt(createdAt *time.Time) {
+	e.CreatedAt = createdAt
+	e.require(emailVariationFieldCreatedAt)
+}
+
+// SetEmailID sets the EmailID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariation) SetEmailID(emailID *string) {
+	e.EmailID = emailID
+	e.require(emailVariationFieldEmailID)
+}
+
+// SetEmailTheme sets the EmailTheme field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariation) SetEmailTheme(emailTheme map[string]any) {
+	e.EmailTheme = emailTheme
+	e.require(emailVariationFieldEmailTheme)
+}
+
+// SetError sets the Error field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariation) SetError(error_ *string) {
+	e.Error = error_
+	e.require(emailVariationFieldError)
+}
+
+// SetFontFamily sets the FontFamily field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariation) SetFontFamily(fontFamily *string) {
+	e.FontFamily = fontFamily
+	e.require(emailVariationFieldFontFamily)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariation) SetID(id *string) {
+	e.ID = id
+	e.require(emailVariationFieldID)
+}
+
+// SetInUse sets the InUse field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariation) SetInUse(inUse *bool) {
+	e.InUse = inUse
+	e.require(emailVariationFieldInUse)
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariation) SetLabel(label *string) {
+	e.Label = label
+	e.require(emailVariationFieldLabel)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariation) SetName(name *string) {
+	e.Name = name
+	e.require(emailVariationFieldName)
+}
+
+// SetParentID sets the ParentID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariation) SetParentID(parentID *string) {
+	e.ParentID = parentID
+	e.require(emailVariationFieldParentID)
+}
+
+// SetPosition sets the Position field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariation) SetPosition(position *EmailVariationPosition) {
+	e.Position = position
+	e.require(emailVariationFieldPosition)
+}
+
+// SetPreviewText sets the PreviewText field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariation) SetPreviewText(previewText *string) {
+	e.PreviewText = previewText
+	e.require(emailVariationFieldPreviewText)
+}
+
+// SetPrompt sets the Prompt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariation) SetPrompt(prompt *string) {
+	e.Prompt = prompt
+	e.require(emailVariationFieldPrompt)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariation) SetStatus(status *EmailVariationStatus) {
+	e.Status = status
+	e.require(emailVariationFieldStatus)
+}
+
+// SetStyle sets the Style field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariation) SetStyle(style *EmailVariationStyle) {
+	e.Style = style
+	e.require(emailVariationFieldStyle)
+}
+
+// SetSubject sets the Subject field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariation) SetSubject(subject *string) {
+	e.Subject = subject
+	e.require(emailVariationFieldSubject)
+}
+
+// SetSummary sets the Summary field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariation) SetSummary(summary *string) {
+	e.Summary = summary
+	e.require(emailVariationFieldSummary)
+}
+
+// SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariation) SetUpdatedAt(updatedAt *time.Time) {
+	e.UpdatedAt = updatedAt
+	e.require(emailVariationFieldUpdatedAt)
+}
+
+// SetUsedAt sets the UsedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariation) SetUsedAt(usedAt *time.Time) {
+	e.UsedAt = usedAt
+	e.require(emailVariationFieldUsedAt)
+}
+
+func (e *EmailVariation) UnmarshalJSON(data []byte) error {
+	type embed EmailVariation
+	var unmarshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"createdAt,omitempty"`
+		UpdatedAt *internal.DateTime `json:"updatedAt,omitempty"`
+		UsedAt    *internal.DateTime `json:"usedAt,omitempty"`
+	}{
+		embed: embed(*e),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*e = EmailVariation(unmarshaler.embed)
+	e.CreatedAt = unmarshaler.CreatedAt.TimePtr()
+	e.UpdatedAt = unmarshaler.UpdatedAt.TimePtr()
+	e.UsedAt = unmarshaler.UsedAt.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+	e.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EmailVariation) MarshalJSON() ([]byte, error) {
+	type embed EmailVariation
+	var marshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"createdAt,omitempty"`
+		UpdatedAt *internal.DateTime `json:"updatedAt,omitempty"`
+		UsedAt    *internal.DateTime `json:"usedAt,omitempty"`
+	}{
+		embed:     embed(*e),
+		CreatedAt: internal.NewOptionalDateTime(e.CreatedAt),
+		UpdatedAt: internal.NewOptionalDateTime(e.UpdatedAt),
+		UsedAt:    internal.NewOptionalDateTime(e.UsedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (e *EmailVariation) String() string {
+	if e == nil {
+		return "<nil>"
+	}
+	if len(e.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(e.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+// Where the user placed it on the editor canvas, in canvas pixels. Null means the canvas places it automatically.
+var (
+	emailVariationPositionFieldX = big.NewInt(1 << 0)
+	emailVariationPositionFieldY = big.NewInt(1 << 1)
+)
+
+type EmailVariationPosition struct {
+	X *int `json:"x,omitempty" url:"x,omitempty"`
+	Y *int `json:"y,omitempty" url:"y,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (e *EmailVariationPosition) GetX() *int {
+	if e == nil {
+		return nil
+	}
+	return e.X
+}
+
+func (e *EmailVariationPosition) GetY() *int {
+	if e == nil {
+		return nil
+	}
+	return e.Y
+}
+
+func (e *EmailVariationPosition) GetExtraProperties() map[string]interface{} {
+	if e == nil {
+		return nil
+	}
+	return e.extraProperties
+}
+
+func (e *EmailVariationPosition) require(field *big.Int) {
+	if e.explicitFields == nil {
+		e.explicitFields = big.NewInt(0)
+	}
+	e.explicitFields.Or(e.explicitFields, field)
+}
+
+// SetX sets the X field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariationPosition) SetX(x *int) {
+	e.X = x
+	e.require(emailVariationPositionFieldX)
+}
+
+// SetY sets the Y field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariationPosition) SetY(y *int) {
+	e.Y = y
+	e.require(emailVariationPositionFieldY)
+}
+
+func (e *EmailVariationPosition) UnmarshalJSON(data []byte) error {
+	type unmarshaler EmailVariationPosition
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EmailVariationPosition(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+	e.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EmailVariationPosition) MarshalJSON() ([]byte, error) {
+	type embed EmailVariationPosition
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*e),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (e *EmailVariationPosition) String() string {
+	if e == nil {
+		return "<nil>"
+	}
+	if len(e.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(e.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+var (
+	emailVariationResponseFieldSuccess   = big.NewInt(1 << 0)
+	emailVariationResponseFieldVariation = big.NewInt(1 << 1)
+	emailVariationResponseFieldWarnings  = big.NewInt(1 << 2)
+)
+
+type EmailVariationResponse struct {
+	Success   *bool           `json:"success,omitempty" url:"success,omitempty"`
+	Variation *EmailVariation `json:"variation,omitempty" url:"variation,omitempty"`
+	// Block fields that were accepted but had no effect.
+	Warnings []string `json:"warnings,omitempty" url:"warnings,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (e *EmailVariationResponse) GetSuccess() *bool {
+	if e == nil {
+		return nil
+	}
+	return e.Success
+}
+
+func (e *EmailVariationResponse) GetVariation() *EmailVariation {
+	if e == nil {
+		return nil
+	}
+	return e.Variation
+}
+
+func (e *EmailVariationResponse) GetWarnings() []string {
+	if e == nil {
+		return nil
+	}
+	return e.Warnings
+}
+
+func (e *EmailVariationResponse) GetExtraProperties() map[string]interface{} {
+	if e == nil {
+		return nil
+	}
+	return e.extraProperties
+}
+
+func (e *EmailVariationResponse) require(field *big.Int) {
+	if e.explicitFields == nil {
+		e.explicitFields = big.NewInt(0)
+	}
+	e.explicitFields.Or(e.explicitFields, field)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariationResponse) SetSuccess(success *bool) {
+	e.Success = success
+	e.require(emailVariationResponseFieldSuccess)
+}
+
+// SetVariation sets the Variation field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariationResponse) SetVariation(variation *EmailVariation) {
+	e.Variation = variation
+	e.require(emailVariationResponseFieldVariation)
+}
+
+// SetWarnings sets the Warnings field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariationResponse) SetWarnings(warnings []string) {
+	e.Warnings = warnings
+	e.require(emailVariationResponseFieldWarnings)
+}
+
+func (e *EmailVariationResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler EmailVariationResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EmailVariationResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+	e.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EmailVariationResponse) MarshalJSON() ([]byte, error) {
+	type embed EmailVariationResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*e),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (e *EmailVariationResponse) String() string {
+	if e == nil {
+		return "<nil>"
+	}
+	if len(e.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(e.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+type EmailVariationStatus string
+
+const (
+	EmailVariationStatusGenerating EmailVariationStatus = "generating"
+	EmailVariationStatusReady      EmailVariationStatus = "ready"
+	EmailVariationStatusFailed     EmailVariationStatus = "failed"
+)
+
+func NewEmailVariationStatusFromString(s string) (EmailVariationStatus, error) {
+	switch s {
+	case "generating":
+		return EmailVariationStatusGenerating, nil
+	case "ready":
+		return EmailVariationStatusReady, nil
+	case "failed":
+		return EmailVariationStatusFailed, nil
+	}
+	var t EmailVariationStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (e EmailVariationStatus) Ptr() *EmailVariationStatus {
+	return &e
+}
+
+// How far it was asked to move from its source, when AI generated it.
+type EmailVariationStyle string
+
+const (
+	EmailVariationStyleClose EmailVariationStyle = "close"
+	EmailVariationStyleFresh EmailVariationStyle = "fresh"
+	EmailVariationStyleBold  EmailVariationStyle = "bold"
+)
+
+func NewEmailVariationStyleFromString(s string) (EmailVariationStyle, error) {
+	switch s {
+	case "close":
+		return EmailVariationStyleClose, nil
+	case "fresh":
+		return EmailVariationStyleFresh, nil
+	case "bold":
+		return EmailVariationStyleBold, nil
+	}
+	var t EmailVariationStyle
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (e EmailVariationStyle) Ptr() *EmailVariationStyle {
+	return &e
 }
 
 var (
@@ -6891,6 +8222,106 @@ func (d *DeleteGoalCampaignsResponse) String() string {
 	return fmt.Sprintf("%#v", d)
 }
 
+var (
+	discardVariationCampaignsResponseFieldDiscarded = big.NewInt(1 << 0)
+	discardVariationCampaignsResponseFieldSuccess   = big.NewInt(1 << 1)
+)
+
+type DiscardVariationCampaignsResponse struct {
+	Discarded *bool `json:"discarded,omitempty" url:"discarded,omitempty"`
+	Success   *bool `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DiscardVariationCampaignsResponse) GetDiscarded() *bool {
+	if d == nil {
+		return nil
+	}
+	return d.Discarded
+}
+
+func (d *DiscardVariationCampaignsResponse) GetSuccess() *bool {
+	if d == nil {
+		return nil
+	}
+	return d.Success
+}
+
+func (d *DiscardVariationCampaignsResponse) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DiscardVariationCampaignsResponse) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetDiscarded sets the Discarded field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DiscardVariationCampaignsResponse) SetDiscarded(discarded *bool) {
+	d.Discarded = discarded
+	d.require(discardVariationCampaignsResponseFieldDiscarded)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DiscardVariationCampaignsResponse) SetSuccess(success *bool) {
+	d.Success = success
+	d.require(discardVariationCampaignsResponseFieldSuccess)
+}
+
+func (d *DiscardVariationCampaignsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler DiscardVariationCampaignsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DiscardVariationCampaignsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DiscardVariationCampaignsResponse) MarshalJSON() ([]byte, error) {
+	type embed DiscardVariationCampaignsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DiscardVariationCampaignsResponse) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
 // campaign copies the campaign email, ab_test also copies the linked A/B test and variants, variant copies one variant's content as a plain campaign.
 type DuplicateCampaignsRequestMode string
 
@@ -7680,6 +9111,375 @@ func (d *DuplicateCampaignsResponseCampaign) String() string {
 }
 
 var (
+	editVariationCampaignsResponseFieldSuccess   = big.NewInt(1 << 0)
+	editVariationCampaignsResponseFieldSummary   = big.NewInt(1 << 1)
+	editVariationCampaignsResponseFieldVariation = big.NewInt(1 << 2)
+)
+
+type EditVariationCampaignsResponse struct {
+	Success *bool `json:"success,omitempty" url:"success,omitempty"`
+	// What the edit changed, in a sentence.
+	Summary   *string         `json:"summary,omitempty" url:"summary,omitempty"`
+	Variation *EmailVariation `json:"variation,omitempty" url:"variation,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (e *EditVariationCampaignsResponse) GetSuccess() *bool {
+	if e == nil {
+		return nil
+	}
+	return e.Success
+}
+
+func (e *EditVariationCampaignsResponse) GetSummary() *string {
+	if e == nil {
+		return nil
+	}
+	return e.Summary
+}
+
+func (e *EditVariationCampaignsResponse) GetVariation() *EmailVariation {
+	if e == nil {
+		return nil
+	}
+	return e.Variation
+}
+
+func (e *EditVariationCampaignsResponse) GetExtraProperties() map[string]interface{} {
+	if e == nil {
+		return nil
+	}
+	return e.extraProperties
+}
+
+func (e *EditVariationCampaignsResponse) require(field *big.Int) {
+	if e.explicitFields == nil {
+		e.explicitFields = big.NewInt(0)
+	}
+	e.explicitFields.Or(e.explicitFields, field)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EditVariationCampaignsResponse) SetSuccess(success *bool) {
+	e.Success = success
+	e.require(editVariationCampaignsResponseFieldSuccess)
+}
+
+// SetSummary sets the Summary field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EditVariationCampaignsResponse) SetSummary(summary *string) {
+	e.Summary = summary
+	e.require(editVariationCampaignsResponseFieldSummary)
+}
+
+// SetVariation sets the Variation field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EditVariationCampaignsResponse) SetVariation(variation *EmailVariation) {
+	e.Variation = variation
+	e.require(editVariationCampaignsResponseFieldVariation)
+}
+
+func (e *EditVariationCampaignsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler EditVariationCampaignsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EditVariationCampaignsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+	e.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EditVariationCampaignsResponse) MarshalJSON() ([]byte, error) {
+	type embed EditVariationCampaignsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*e),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (e *EditVariationCampaignsResponse) String() string {
+	if e == nil {
+		return "<nil>"
+	}
+	if len(e.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(e.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+// How far the options move from the selected sections. close stays near them; fresh and bold try clearly different takes. Defaults to fresh.
+type GenerateVariationSectionOptionsCampaignsRequestStyle string
+
+const (
+	GenerateVariationSectionOptionsCampaignsRequestStyleClose GenerateVariationSectionOptionsCampaignsRequestStyle = "close"
+	GenerateVariationSectionOptionsCampaignsRequestStyleFresh GenerateVariationSectionOptionsCampaignsRequestStyle = "fresh"
+	GenerateVariationSectionOptionsCampaignsRequestStyleBold  GenerateVariationSectionOptionsCampaignsRequestStyle = "bold"
+)
+
+func NewGenerateVariationSectionOptionsCampaignsRequestStyleFromString(s string) (GenerateVariationSectionOptionsCampaignsRequestStyle, error) {
+	switch s {
+	case "close":
+		return GenerateVariationSectionOptionsCampaignsRequestStyleClose, nil
+	case "fresh":
+		return GenerateVariationSectionOptionsCampaignsRequestStyleFresh, nil
+	case "bold":
+		return GenerateVariationSectionOptionsCampaignsRequestStyleBold, nil
+	}
+	var t GenerateVariationSectionOptionsCampaignsRequestStyle
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (g GenerateVariationSectionOptionsCampaignsRequestStyle) Ptr() *GenerateVariationSectionOptionsCampaignsRequestStyle {
+	return &g
+}
+
+var (
+	generateVariationSectionOptionsCampaignsResponseFieldOptions = big.NewInt(1 << 0)
+	generateVariationSectionOptionsCampaignsResponseFieldSuccess = big.NewInt(1 << 1)
+)
+
+type GenerateVariationSectionOptionsCampaignsResponse struct {
+	Options []*EmailSectionOption `json:"options,omitempty" url:"options,omitempty"`
+	Success *bool                 `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (g *GenerateVariationSectionOptionsCampaignsResponse) GetOptions() []*EmailSectionOption {
+	if g == nil {
+		return nil
+	}
+	return g.Options
+}
+
+func (g *GenerateVariationSectionOptionsCampaignsResponse) GetSuccess() *bool {
+	if g == nil {
+		return nil
+	}
+	return g.Success
+}
+
+func (g *GenerateVariationSectionOptionsCampaignsResponse) GetExtraProperties() map[string]interface{} {
+	if g == nil {
+		return nil
+	}
+	return g.extraProperties
+}
+
+func (g *GenerateVariationSectionOptionsCampaignsResponse) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetOptions sets the Options field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GenerateVariationSectionOptionsCampaignsResponse) SetOptions(options []*EmailSectionOption) {
+	g.Options = options
+	g.require(generateVariationSectionOptionsCampaignsResponseFieldOptions)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GenerateVariationSectionOptionsCampaignsResponse) SetSuccess(success *bool) {
+	g.Success = success
+	g.require(generateVariationSectionOptionsCampaignsResponseFieldSuccess)
+}
+
+func (g *GenerateVariationSectionOptionsCampaignsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler GenerateVariationSectionOptionsCampaignsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*g = GenerateVariationSectionOptionsCampaignsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *g)
+	if err != nil {
+		return err
+	}
+	g.extraProperties = extraProperties
+	g.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (g *GenerateVariationSectionOptionsCampaignsResponse) MarshalJSON() ([]byte, error) {
+	type embed GenerateVariationSectionOptionsCampaignsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*g),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (g *GenerateVariationSectionOptionsCampaignsResponse) String() string {
+	if g == nil {
+		return "<nil>"
+	}
+	if len(g.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(g.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(g); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", g)
+}
+
+// How far the new versions move from the source. close edits it, keeping its style and structure; fresh writes each version anew with its own structure in the brand's colors and fonts; bold also gives each its own look (a theme of its own). Defaults to close for branches of a variation and fresh otherwise.
+type GenerateVariationsCampaignsRequestStyle string
+
+const (
+	GenerateVariationsCampaignsRequestStyleClose GenerateVariationsCampaignsRequestStyle = "close"
+	GenerateVariationsCampaignsRequestStyleFresh GenerateVariationsCampaignsRequestStyle = "fresh"
+	GenerateVariationsCampaignsRequestStyleBold  GenerateVariationsCampaignsRequestStyle = "bold"
+)
+
+func NewGenerateVariationsCampaignsRequestStyleFromString(s string) (GenerateVariationsCampaignsRequestStyle, error) {
+	switch s {
+	case "close":
+		return GenerateVariationsCampaignsRequestStyleClose, nil
+	case "fresh":
+		return GenerateVariationsCampaignsRequestStyleFresh, nil
+	case "bold":
+		return GenerateVariationsCampaignsRequestStyleBold, nil
+	}
+	var t GenerateVariationsCampaignsRequestStyle
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (g GenerateVariationsCampaignsRequestStyle) Ptr() *GenerateVariationsCampaignsRequestStyle {
+	return &g
+}
+
+var (
+	generateVariationsCampaignsResponseFieldSuccess    = big.NewInt(1 << 0)
+	generateVariationsCampaignsResponseFieldVariations = big.NewInt(1 << 1)
+)
+
+type GenerateVariationsCampaignsResponse struct {
+	Success    *bool             `json:"success,omitempty" url:"success,omitempty"`
+	Variations []*EmailVariation `json:"variations,omitempty" url:"variations,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (g *GenerateVariationsCampaignsResponse) GetSuccess() *bool {
+	if g == nil {
+		return nil
+	}
+	return g.Success
+}
+
+func (g *GenerateVariationsCampaignsResponse) GetVariations() []*EmailVariation {
+	if g == nil {
+		return nil
+	}
+	return g.Variations
+}
+
+func (g *GenerateVariationsCampaignsResponse) GetExtraProperties() map[string]interface{} {
+	if g == nil {
+		return nil
+	}
+	return g.extraProperties
+}
+
+func (g *GenerateVariationsCampaignsResponse) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GenerateVariationsCampaignsResponse) SetSuccess(success *bool) {
+	g.Success = success
+	g.require(generateVariationsCampaignsResponseFieldSuccess)
+}
+
+// SetVariations sets the Variations field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GenerateVariationsCampaignsResponse) SetVariations(variations []*EmailVariation) {
+	g.Variations = variations
+	g.require(generateVariationsCampaignsResponseFieldVariations)
+}
+
+func (g *GenerateVariationsCampaignsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler GenerateVariationsCampaignsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*g = GenerateVariationsCampaignsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *g)
+	if err != nil {
+		return err
+	}
+	g.extraProperties = extraProperties
+	g.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (g *GenerateVariationsCampaignsResponse) MarshalJSON() ([]byte, error) {
+	type embed GenerateVariationsCampaignsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*g),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (g *GenerateVariationsCampaignsResponse) String() string {
+	if g == nil {
+		return "<nil>"
+	}
+	if len(g.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(g.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(g); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", g)
+}
+
+var (
 	getAudienceCampaignsResponseFieldAudience       = big.NewInt(1 << 0)
 	getAudienceCampaignsResponseFieldCampaignID     = big.NewInt(1 << 1)
 	getAudienceCampaignsResponseFieldCampaignName   = big.NewInt(1 << 2)
@@ -8392,6 +10192,106 @@ func (l *ListGoalsCampaignsResponse) MarshalJSON() ([]byte, error) {
 }
 
 func (l *ListGoalsCampaignsResponse) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	listVariationsCampaignsResponseFieldSuccess    = big.NewInt(1 << 0)
+	listVariationsCampaignsResponseFieldVariations = big.NewInt(1 << 1)
+)
+
+type ListVariationsCampaignsResponse struct {
+	Success    *bool             `json:"success,omitempty" url:"success,omitempty"`
+	Variations []*EmailVariation `json:"variations,omitempty" url:"variations,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListVariationsCampaignsResponse) GetSuccess() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.Success
+}
+
+func (l *ListVariationsCampaignsResponse) GetVariations() []*EmailVariation {
+	if l == nil {
+		return nil
+	}
+	return l.Variations
+}
+
+func (l *ListVariationsCampaignsResponse) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListVariationsCampaignsResponse) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVariationsCampaignsResponse) SetSuccess(success *bool) {
+	l.Success = success
+	l.require(listVariationsCampaignsResponseFieldSuccess)
+}
+
+// SetVariations sets the Variations field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVariationsCampaignsResponse) SetVariations(variations []*EmailVariation) {
+	l.Variations = variations
+	l.require(listVariationsCampaignsResponseFieldVariations)
+}
+
+func (l *ListVariationsCampaignsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListVariationsCampaignsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListVariationsCampaignsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListVariationsCampaignsResponse) MarshalJSON() ([]byte, error) {
+	type embed ListVariationsCampaignsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListVariationsCampaignsResponse) String() string {
 	if l == nil {
 		return "<nil>"
 	}
@@ -11175,6 +13075,224 @@ func (u *UpdateGoalCampaignsResponse) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
+// Where the variation sits on the editor canvas, in canvas pixels. Null lets the canvas place it automatically. Moving a variation does not change updatedAt.
+var (
+	updateVariationCampaignsRequestPositionFieldX = big.NewInt(1 << 0)
+	updateVariationCampaignsRequestPositionFieldY = big.NewInt(1 << 1)
+)
+
+type UpdateVariationCampaignsRequestPosition struct {
+	X *float64 `json:"x,omitempty" url:"x,omitempty"`
+	Y *float64 `json:"y,omitempty" url:"y,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateVariationCampaignsRequestPosition) GetX() *float64 {
+	if u == nil {
+		return nil
+	}
+	return u.X
+}
+
+func (u *UpdateVariationCampaignsRequestPosition) GetY() *float64 {
+	if u == nil {
+		return nil
+	}
+	return u.Y
+}
+
+func (u *UpdateVariationCampaignsRequestPosition) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateVariationCampaignsRequestPosition) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetX sets the X field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVariationCampaignsRequestPosition) SetX(x *float64) {
+	u.X = x
+	u.require(updateVariationCampaignsRequestPositionFieldX)
+}
+
+// SetY sets the Y field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVariationCampaignsRequestPosition) SetY(y *float64) {
+	u.Y = y
+	u.require(updateVariationCampaignsRequestPositionFieldY)
+}
+
+func (u *UpdateVariationCampaignsRequestPosition) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateVariationCampaignsRequestPosition
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateVariationCampaignsRequestPosition(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateVariationCampaignsRequestPosition) MarshalJSON() ([]byte, error) {
+	type embed UpdateVariationCampaignsRequestPosition
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateVariationCampaignsRequestPosition) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	useVariationCampaignsResponseFieldSavedPrevious = big.NewInt(1 << 0)
+	useVariationCampaignsResponseFieldSuccess       = big.NewInt(1 << 1)
+	useVariationCampaignsResponseFieldVariation     = big.NewInt(1 << 2)
+)
+
+type UseVariationCampaignsResponse struct {
+	// The email's previous content, saved as a variation. Null when it already was one.
+	SavedPrevious *EmailVariation `json:"savedPrevious,omitempty" url:"savedPrevious,omitempty"`
+	Success       *bool           `json:"success,omitempty" url:"success,omitempty"`
+	Variation     *EmailVariation `json:"variation,omitempty" url:"variation,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UseVariationCampaignsResponse) GetSavedPrevious() *EmailVariation {
+	if u == nil {
+		return nil
+	}
+	return u.SavedPrevious
+}
+
+func (u *UseVariationCampaignsResponse) GetSuccess() *bool {
+	if u == nil {
+		return nil
+	}
+	return u.Success
+}
+
+func (u *UseVariationCampaignsResponse) GetVariation() *EmailVariation {
+	if u == nil {
+		return nil
+	}
+	return u.Variation
+}
+
+func (u *UseVariationCampaignsResponse) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UseVariationCampaignsResponse) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetSavedPrevious sets the SavedPrevious field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UseVariationCampaignsResponse) SetSavedPrevious(savedPrevious *EmailVariation) {
+	u.SavedPrevious = savedPrevious
+	u.require(useVariationCampaignsResponseFieldSavedPrevious)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UseVariationCampaignsResponse) SetSuccess(success *bool) {
+	u.Success = success
+	u.require(useVariationCampaignsResponseFieldSuccess)
+}
+
+// SetVariation sets the Variation field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UseVariationCampaignsResponse) SetVariation(variation *EmailVariation) {
+	u.Variation = variation
+	u.require(useVariationCampaignsResponseFieldVariation)
+}
+
+func (u *UseVariationCampaignsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler UseVariationCampaignsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UseVariationCampaignsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UseVariationCampaignsResponse) MarshalJSON() ([]byte, error) {
+	type embed UseVariationCampaignsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UseVariationCampaignsResponse) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
 var (
 	unscheduleCampaignsRequestFieldCampaignID = big.NewInt(1 << 0)
 )
@@ -11554,4 +13672,181 @@ func (u *UpdateGoalCampaignsRequest) UnmarshalJSON(data []byte) error {
 
 func (u *UpdateGoalCampaignsRequest) MarshalJSON() ([]byte, error) {
 	return json.Marshal(u.Body)
+}
+
+var (
+	updateVariationCampaignsRequestFieldCampaignID  = big.NewInt(1 << 0)
+	updateVariationCampaignsRequestFieldVariationID = big.NewInt(1 << 1)
+	updateVariationCampaignsRequestFieldBlocks      = big.NewInt(1 << 2)
+	updateVariationCampaignsRequestFieldEmailTheme  = big.NewInt(1 << 3)
+	updateVariationCampaignsRequestFieldFontFamily  = big.NewInt(1 << 4)
+	updateVariationCampaignsRequestFieldHTML        = big.NewInt(1 << 5)
+	updateVariationCampaignsRequestFieldName        = big.NewInt(1 << 6)
+	updateVariationCampaignsRequestFieldPosition    = big.NewInt(1 << 7)
+	updateVariationCampaignsRequestFieldPreviewText = big.NewInt(1 << 8)
+	updateVariationCampaignsRequestFieldSubject     = big.NewInt(1 << 9)
+	updateVariationCampaignsRequestFieldSummary     = big.NewInt(1 << 10)
+)
+
+type UpdateVariationCampaignsRequest struct {
+	// Campaign ID
+	CampaignID string `json:"-" url:"-"`
+	// Variation ID
+	VariationID string        `json:"-" url:"-"`
+	Blocks      []*EmailBlock `json:"blocks,omitempty" url:"-"`
+	// The variation's own email theme (presetId, colors, typography, layout). A partial theme is completed with defaults. Null uses the email's theme. Using the variation puts its theme on the email.
+	EmailTheme map[string]any `json:"emailTheme,omitempty" url:"-"`
+	// The variation's own body font stack. Null uses the email's font.
+	FontFamily *string `json:"fontFamily,omitempty" url:"-"`
+	HTML       *string `json:"html,omitempty" url:"-"`
+	Name       *string `json:"name,omitempty" url:"-"`
+	// Where the variation sits on the editor canvas, in canvas pixels. Null lets the canvas place it automatically. Moving a variation does not change updatedAt.
+	Position    *UpdateVariationCampaignsRequestPosition `json:"position,omitempty" url:"-"`
+	PreviewText *string                                  `json:"previewText,omitempty" url:"-"`
+	Subject     *string                                  `json:"subject,omitempty" url:"-"`
+	Summary     *string                                  `json:"summary,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (u *UpdateVariationCampaignsRequest) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetCampaignID sets the CampaignID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVariationCampaignsRequest) SetCampaignID(campaignID string) {
+	u.CampaignID = campaignID
+	u.require(updateVariationCampaignsRequestFieldCampaignID)
+}
+
+// SetVariationID sets the VariationID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVariationCampaignsRequest) SetVariationID(variationID string) {
+	u.VariationID = variationID
+	u.require(updateVariationCampaignsRequestFieldVariationID)
+}
+
+// SetBlocks sets the Blocks field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVariationCampaignsRequest) SetBlocks(blocks []*EmailBlock) {
+	u.Blocks = blocks
+	u.require(updateVariationCampaignsRequestFieldBlocks)
+}
+
+// SetEmailTheme sets the EmailTheme field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVariationCampaignsRequest) SetEmailTheme(emailTheme map[string]any) {
+	u.EmailTheme = emailTheme
+	u.require(updateVariationCampaignsRequestFieldEmailTheme)
+}
+
+// SetFontFamily sets the FontFamily field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVariationCampaignsRequest) SetFontFamily(fontFamily *string) {
+	u.FontFamily = fontFamily
+	u.require(updateVariationCampaignsRequestFieldFontFamily)
+}
+
+// SetHTML sets the HTML field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVariationCampaignsRequest) SetHTML(html *string) {
+	u.HTML = html
+	u.require(updateVariationCampaignsRequestFieldHTML)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVariationCampaignsRequest) SetName(name *string) {
+	u.Name = name
+	u.require(updateVariationCampaignsRequestFieldName)
+}
+
+// SetPosition sets the Position field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVariationCampaignsRequest) SetPosition(position *UpdateVariationCampaignsRequestPosition) {
+	u.Position = position
+	u.require(updateVariationCampaignsRequestFieldPosition)
+}
+
+// SetPreviewText sets the PreviewText field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVariationCampaignsRequest) SetPreviewText(previewText *string) {
+	u.PreviewText = previewText
+	u.require(updateVariationCampaignsRequestFieldPreviewText)
+}
+
+// SetSubject sets the Subject field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVariationCampaignsRequest) SetSubject(subject *string) {
+	u.Subject = subject
+	u.require(updateVariationCampaignsRequestFieldSubject)
+}
+
+// SetSummary sets the Summary field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVariationCampaignsRequest) SetSummary(summary *string) {
+	u.Summary = summary
+	u.require(updateVariationCampaignsRequestFieldSummary)
+}
+
+func (u *UpdateVariationCampaignsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateVariationCampaignsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*u = UpdateVariationCampaignsRequest(body)
+	return nil
+}
+
+func (u *UpdateVariationCampaignsRequest) MarshalJSON() ([]byte, error) {
+	type embed UpdateVariationCampaignsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
+	useVariationCampaignsRequestFieldCampaignID  = big.NewInt(1 << 0)
+	useVariationCampaignsRequestFieldVariationID = big.NewInt(1 << 1)
+)
+
+type UseVariationCampaignsRequest struct {
+	// Campaign ID
+	CampaignID string `json:"-" url:"-"`
+	// Variation ID
+	VariationID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (u *UseVariationCampaignsRequest) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetCampaignID sets the CampaignID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UseVariationCampaignsRequest) SetCampaignID(campaignID string) {
+	u.CampaignID = campaignID
+	u.require(useVariationCampaignsRequestFieldCampaignID)
+}
+
+// SetVariationID sets the VariationID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UseVariationCampaignsRequest) SetVariationID(variationID string) {
+	u.VariationID = variationID
+	u.require(useVariationCampaignsRequestFieldVariationID)
 }

@@ -17382,7 +17382,7 @@ var (
 )
 
 type SequenceNodeUpdateInput struct {
-	// Type-aware node patch. Use the editableFields and notes from the node's updateHints. Omitted fields are preserved. For action_email nodes, a blocks patch that omits emailPreset never changes the step's format - see blocks on SequenceEmailUpdateInput. For logic_delay, waitUntilWeekday replaces the whole wait, so resend timezoneSource to keep a contact-timezone step.
+	// Type-aware node patch. Use the editableFields and notes from the node's updateHints. Omitted fields are preserved. For action_email nodes, a blocks patch that omits emailPreset never changes the step's format - see blocks on SequenceEmailUpdateInput. For logic_delay, waitUntilWeekday replaces the whole wait, so resend timezoneSource to keep a contact-timezone step and minimumWait to keep a minimum wait.
 	Changes *SequenceNodeUpdateInputChanges `json:"changes" url:"changes"`
 	// Optional optimistic-concurrency token from the node's latest updatedAt or updateHints.expectedUpdatedAt value. MCP clients require this field.
 	ExpectedUpdatedAt *time.Time `json:"expectedUpdatedAt,omitempty" url:"expectedUpdatedAt,omitempty"`
@@ -17502,7 +17502,7 @@ func (s *SequenceNodeUpdateInput) String() string {
 	return fmt.Sprintf("%#v", s)
 }
 
-// Type-aware node patch. Use the editableFields and notes from the node's updateHints. Omitted fields are preserved. For action_email nodes, a blocks patch that omits emailPreset never changes the step's format - see blocks on SequenceEmailUpdateInput. For logic_delay, waitUntilWeekday replaces the whole wait, so resend timezoneSource to keep a contact-timezone step.
+// Type-aware node patch. Use the editableFields and notes from the node's updateHints. Omitted fields are preserved. For action_email nodes, a blocks patch that omits emailPreset never changes the step's format - see blocks on SequenceEmailUpdateInput. For logic_delay, waitUntilWeekday replaces the whole wait, so resend timezoneSource to keep a contact-timezone step and minimumWait to keep a minimum wait.
 var (
 	sequenceNodeUpdateInputChangesFieldEmailPreset = big.NewInt(1 << 0)
 	sequenceNodeUpdateInputChangesFieldEmailTheme  = big.NewInt(1 << 1)
@@ -23720,18 +23720,19 @@ func (s SequenceWaitUntilKeyDateInputUntilPastAction) Ptr() *SequenceWaitUntilKe
 	return &s
 }
 
-// Hold until the next occurrence of a weekday inside a local-time window. Contacts already inside the window continue immediately.
+// Hold until the next occurrence of a weekday inside a local-time window. Contacts already inside the window continue immediately, unless minimumWait is set.
 var (
 	sequenceWaitUntilWeekdayInputFieldDay                 = big.NewInt(1 << 0)
 	sequenceWaitUntilWeekdayInputFieldDays                = big.NewInt(1 << 1)
 	sequenceWaitUntilWeekdayInputFieldEndTime             = big.NewInt(1 << 2)
-	sequenceWaitUntilWeekdayInputFieldStartTime           = big.NewInt(1 << 3)
-	sequenceWaitUntilWeekdayInputFieldTimezone            = big.NewInt(1 << 4)
-	sequenceWaitUntilWeekdayInputFieldTimezoneSource      = big.NewInt(1 << 5)
-	sequenceWaitUntilWeekdayInputFieldUntilEndTime        = big.NewInt(1 << 6)
-	sequenceWaitUntilWeekdayInputFieldUntilStartTime      = big.NewInt(1 << 7)
-	sequenceWaitUntilWeekdayInputFieldUntilTimezone       = big.NewInt(1 << 8)
-	sequenceWaitUntilWeekdayInputFieldUntilTimezoneSource = big.NewInt(1 << 9)
+	sequenceWaitUntilWeekdayInputFieldMinimumWait         = big.NewInt(1 << 3)
+	sequenceWaitUntilWeekdayInputFieldStartTime           = big.NewInt(1 << 4)
+	sequenceWaitUntilWeekdayInputFieldTimezone            = big.NewInt(1 << 5)
+	sequenceWaitUntilWeekdayInputFieldTimezoneSource      = big.NewInt(1 << 6)
+	sequenceWaitUntilWeekdayInputFieldUntilEndTime        = big.NewInt(1 << 7)
+	sequenceWaitUntilWeekdayInputFieldUntilStartTime      = big.NewInt(1 << 8)
+	sequenceWaitUntilWeekdayInputFieldUntilTimezone       = big.NewInt(1 << 9)
+	sequenceWaitUntilWeekdayInputFieldUntilTimezoneSource = big.NewInt(1 << 10)
 )
 
 type SequenceWaitUntilWeekdayInput struct {
@@ -23741,6 +23742,8 @@ type SequenceWaitUntilWeekdayInput struct {
 	Days []string `json:"days,omitempty" url:"days,omitempty"`
 	// Window end in 24-hour HH:mm local time. Defaults to the end-of-day boundary 24:00.
 	EndTime *string `json:"endTime,omitempty" url:"endTime,omitempty"`
+	// Wait at least this long before looking for the window. Once it ends, the contact continues at that moment if it falls inside the window, otherwise at the next window opening, so a fixed wait and a time-of-day wait fit in one step. Omit for no minimum. Values are stored as whole days, hours and minutes, so 36 hours reads back as 1 day and 12 hours. Negative values are rejected. On create, unknown keys and non-object values are ignored and reported in warnings; node updates, inserted steps and branch paths reject them. Sequence reads always return this field, with zeros when the step has no minimum.
+	MinimumWait *SequenceWaitUntilWeekdayInputMinimumWait `json:"minimumWait,omitempty" url:"minimumWait,omitempty"`
 	// Window start in 24-hour HH:mm local time.
 	StartTime *string `json:"startTime,omitempty" url:"startTime,omitempty"`
 	// IANA timezone used to evaluate the window. Required. When timezoneSource is subscriber, this is the fallback for contacts without a valid timezone.
@@ -23782,6 +23785,13 @@ func (s *SequenceWaitUntilWeekdayInput) GetEndTime() *string {
 		return nil
 	}
 	return s.EndTime
+}
+
+func (s *SequenceWaitUntilWeekdayInput) GetMinimumWait() *SequenceWaitUntilWeekdayInputMinimumWait {
+	if s == nil {
+		return nil
+	}
+	return s.MinimumWait
 }
 
 func (s *SequenceWaitUntilWeekdayInput) GetStartTime() *string {
@@ -23868,6 +23878,13 @@ func (s *SequenceWaitUntilWeekdayInput) SetEndTime(endTime *string) {
 	s.require(sequenceWaitUntilWeekdayInputFieldEndTime)
 }
 
+// SetMinimumWait sets the MinimumWait field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceWaitUntilWeekdayInput) SetMinimumWait(minimumWait *SequenceWaitUntilWeekdayInputMinimumWait) {
+	s.MinimumWait = minimumWait
+	s.require(sequenceWaitUntilWeekdayInputFieldMinimumWait)
+}
+
 // SetStartTime sets the StartTime field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *SequenceWaitUntilWeekdayInput) SetStartTime(startTime *string) {
@@ -23945,6 +23962,123 @@ func (s *SequenceWaitUntilWeekdayInput) MarshalJSON() ([]byte, error) {
 }
 
 func (s *SequenceWaitUntilWeekdayInput) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+// Wait at least this long before looking for the window. Once it ends, the contact continues at that moment if it falls inside the window, otherwise at the next window opening, so a fixed wait and a time-of-day wait fit in one step. Omit for no minimum. Values are stored as whole days, hours and minutes, so 36 hours reads back as 1 day and 12 hours. Negative values are rejected. On create, unknown keys and non-object values are ignored and reported in warnings; node updates, inserted steps and branch paths reject them. Sequence reads always return this field, with zeros when the step has no minimum.
+var (
+	sequenceWaitUntilWeekdayInputMinimumWaitFieldDays    = big.NewInt(1 << 0)
+	sequenceWaitUntilWeekdayInputMinimumWaitFieldHours   = big.NewInt(1 << 1)
+	sequenceWaitUntilWeekdayInputMinimumWaitFieldMinutes = big.NewInt(1 << 2)
+)
+
+type SequenceWaitUntilWeekdayInputMinimumWait struct {
+	Days    *float64 `json:"days,omitempty" url:"days,omitempty"`
+	Hours   *float64 `json:"hours,omitempty" url:"hours,omitempty"`
+	Minutes *float64 `json:"minutes,omitempty" url:"minutes,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequenceWaitUntilWeekdayInputMinimumWait) GetDays() *float64 {
+	if s == nil {
+		return nil
+	}
+	return s.Days
+}
+
+func (s *SequenceWaitUntilWeekdayInputMinimumWait) GetHours() *float64 {
+	if s == nil {
+		return nil
+	}
+	return s.Hours
+}
+
+func (s *SequenceWaitUntilWeekdayInputMinimumWait) GetMinutes() *float64 {
+	if s == nil {
+		return nil
+	}
+	return s.Minutes
+}
+
+func (s *SequenceWaitUntilWeekdayInputMinimumWait) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequenceWaitUntilWeekdayInputMinimumWait) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetDays sets the Days field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceWaitUntilWeekdayInputMinimumWait) SetDays(days *float64) {
+	s.Days = days
+	s.require(sequenceWaitUntilWeekdayInputMinimumWaitFieldDays)
+}
+
+// SetHours sets the Hours field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceWaitUntilWeekdayInputMinimumWait) SetHours(hours *float64) {
+	s.Hours = hours
+	s.require(sequenceWaitUntilWeekdayInputMinimumWaitFieldHours)
+}
+
+// SetMinutes sets the Minutes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceWaitUntilWeekdayInputMinimumWait) SetMinutes(minutes *float64) {
+	s.Minutes = minutes
+	s.require(sequenceWaitUntilWeekdayInputMinimumWaitFieldMinutes)
+}
+
+func (s *SequenceWaitUntilWeekdayInputMinimumWait) UnmarshalJSON(data []byte) error {
+	type unmarshaler SequenceWaitUntilWeekdayInputMinimumWait
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SequenceWaitUntilWeekdayInputMinimumWait(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceWaitUntilWeekdayInputMinimumWait) MarshalJSON() ([]byte, error) {
+	type embed SequenceWaitUntilWeekdayInputMinimumWait
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequenceWaitUntilWeekdayInputMinimumWait) String() string {
 	if s == nil {
 		return "<nil>"
 	}
