@@ -159,6 +159,53 @@ func (r *RawClient) RunAccountHealthCheck(
 	}, nil
 }
 
+func (r *RawClient) SubmitAccountHealthFeedback(
+	ctx context.Context,
+	request *sequenzygo.SubmitAccountHealthFeedbackRequest,
+	opts ...option.RequestOption,
+) (*core.Response[*sequenzygo.SubmitAccountHealthFeedbackResponse], error) {
+	options := core.NewRequestOptions(opts...)
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		r.baseURL,
+		"https://api.sequenzy.com/api/v1",
+	)
+	endpointURL := internal.EncodeURL(
+		baseURL+"/account-health/insights/%v/feedback",
+		request.InsightID,
+	)
+	headers := internal.MergeHeaders(
+		r.options.ToHeader(),
+		options.ToHeader(),
+	)
+	headers.Add("Content-Type", "application/json")
+	var response *sequenzygo.SubmitAccountHealthFeedbackResponse
+	raw, err := r.caller.Call(
+		ctx,
+		&internal.CallParams{
+			URL:             endpointURL,
+			Method:          http.MethodPost,
+			Headers:         headers,
+			MaxAttempts:     options.MaxAttempts,
+			DisableRetries:  options.DisableRetries,
+			BodyProperties:  options.BodyProperties,
+			QueryParameters: options.QueryParameters,
+			Client:          options.HTTPClient,
+			Request:         request,
+			Response:        &response,
+			ErrorDecoder:    internal.NewErrorDecoder(sequenzygo.ErrorCodes),
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &core.Response[*sequenzygo.SubmitAccountHealthFeedbackResponse]{
+		StatusCode: raw.StatusCode,
+		Header:     raw.Header,
+		Body:       response,
+	}, nil
+}
+
 func (r *RawClient) UpdateAccountHealthInsight(
 	ctx context.Context,
 	request *sequenzygo.UpdateAccountHealthInsightRequest,

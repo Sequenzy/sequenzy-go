@@ -978,6 +978,52 @@ func (d *DisableSequencesRequest) SetSequenceID(sequenceID string) {
 }
 
 var (
+	discardEmailVariationSequencesRequestFieldSequenceID  = big.NewInt(1 << 0)
+	discardEmailVariationSequencesRequestFieldEmailID     = big.NewInt(1 << 1)
+	discardEmailVariationSequencesRequestFieldVariationID = big.NewInt(1 << 2)
+)
+
+type DiscardEmailVariationSequencesRequest struct {
+	// Sequence ID
+	SequenceID string `json:"-" url:"-"`
+	// The email's ID, the emailId of its step from Get Sequence
+	EmailID string `json:"-" url:"-"`
+	// Variation ID
+	VariationID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (d *DiscardEmailVariationSequencesRequest) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetSequenceID sets the SequenceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DiscardEmailVariationSequencesRequest) SetSequenceID(sequenceID string) {
+	d.SequenceID = sequenceID
+	d.require(discardEmailVariationSequencesRequestFieldSequenceID)
+}
+
+// SetEmailID sets the EmailID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DiscardEmailVariationSequencesRequest) SetEmailID(emailID string) {
+	d.EmailID = emailID
+	d.require(discardEmailVariationSequencesRequestFieldEmailID)
+}
+
+// SetVariationID sets the VariationID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DiscardEmailVariationSequencesRequest) SetVariationID(variationID string) {
+	d.VariationID = variationID
+	d.require(discardEmailVariationSequencesRequestFieldVariationID)
+}
+
+var (
 	duplicateSequencesRequestFieldSequenceID = big.NewInt(1 << 0)
 	duplicateSequencesRequestFieldName       = big.NewInt(1 << 1)
 )
@@ -1030,6 +1076,93 @@ func (d *DuplicateSequencesRequest) MarshalJSON() ([]byte, error) {
 		embed: embed(*d),
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
+	editEmailsSequencesRequestFieldSequenceID = big.NewInt(1 << 0)
+	editEmailsSequencesRequestFieldDryRun     = big.NewInt(1 << 1)
+	editEmailsSequencesRequestFieldEmailIDs   = big.NewInt(1 << 2)
+	editEmailsSequencesRequestFieldPrompt     = big.NewInt(1 << 3)
+	editEmailsSequencesRequestFieldSectionIDs = big.NewInt(1 << 4)
+)
+
+type EditEmailsSequencesRequest struct {
+	// Sequence ID
+	SequenceID string `json:"-" url:"-"`
+	// Return the new content without saving it.
+	DryRun *bool `json:"dryRun,omitempty" url:"-"`
+	// Only change these emails (emailId from Get Sequence). Omit to let the prompt decide.
+	EmailIDs []string `json:"emailIds,omitempty" url:"-"`
+	// What should change, in any language.
+	Prompt string `json:"prompt" url:"-"`
+	// Only change these top-level blocks. Needs exactly one emailIds entry.
+	SectionIDs []string `json:"sectionIds,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (e *EditEmailsSequencesRequest) require(field *big.Int) {
+	if e.explicitFields == nil {
+		e.explicitFields = big.NewInt(0)
+	}
+	e.explicitFields.Or(e.explicitFields, field)
+}
+
+// SetSequenceID sets the SequenceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EditEmailsSequencesRequest) SetSequenceID(sequenceID string) {
+	e.SequenceID = sequenceID
+	e.require(editEmailsSequencesRequestFieldSequenceID)
+}
+
+// SetDryRun sets the DryRun field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EditEmailsSequencesRequest) SetDryRun(dryRun *bool) {
+	e.DryRun = dryRun
+	e.require(editEmailsSequencesRequestFieldDryRun)
+}
+
+// SetEmailIDs sets the EmailIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EditEmailsSequencesRequest) SetEmailIDs(emailIDs []string) {
+	e.EmailIDs = emailIDs
+	e.require(editEmailsSequencesRequestFieldEmailIDs)
+}
+
+// SetPrompt sets the Prompt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EditEmailsSequencesRequest) SetPrompt(prompt string) {
+	e.Prompt = prompt
+	e.require(editEmailsSequencesRequestFieldPrompt)
+}
+
+// SetSectionIDs sets the SectionIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EditEmailsSequencesRequest) SetSectionIDs(sectionIDs []string) {
+	e.SectionIDs = sectionIDs
+	e.require(editEmailsSequencesRequestFieldSectionIDs)
+}
+
+func (e *EditEmailsSequencesRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler EditEmailsSequencesRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*e = EditEmailsSequencesRequest(body)
+	return nil
+}
+
+func (e *EditEmailsSequencesRequest) MarshalJSON() ([]byte, error) {
+	type embed EditEmailsSequencesRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*e),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
 	return json.Marshal(explicitMarshaler)
 }
 
@@ -1358,6 +1491,92 @@ func (g *GenerateSequencesRequest) UnmarshalJSON(data []byte) error {
 
 func (g *GenerateSequencesRequest) MarshalJSON() ([]byte, error) {
 	type embed GenerateSequencesRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*g),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
+	generateEmailVariationsSequencesRequestFieldSequenceID = big.NewInt(1 << 0)
+	generateEmailVariationsSequencesRequestFieldEmailID    = big.NewInt(1 << 1)
+	generateEmailVariationsSequencesRequestFieldCount      = big.NewInt(1 << 2)
+	generateEmailVariationsSequencesRequestFieldPrompt     = big.NewInt(1 << 3)
+	generateEmailVariationsSequencesRequestFieldStyle      = big.NewInt(1 << 4)
+)
+
+type GenerateEmailVariationsSequencesRequest struct {
+	// Sequence ID
+	SequenceID string `json:"-" url:"-"`
+	// The email's ID, the emailId of its step from Get Sequence
+	EmailID string `json:"-" url:"-"`
+	Count   *int   `json:"count,omitempty" url:"-"`
+	// The direction for the new versions, in any language.
+	Prompt string `json:"prompt" url:"-"`
+	// How far the new versions move from the email. close edits it, keeping its style and structure; fresh writes each version anew with its own structure in the brand's colors and fonts; bold also gives each its own look. Defaults to fresh.
+	Style *GenerateEmailVariationsSequencesRequestStyle `json:"style,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (g *GenerateEmailVariationsSequencesRequest) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetSequenceID sets the SequenceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GenerateEmailVariationsSequencesRequest) SetSequenceID(sequenceID string) {
+	g.SequenceID = sequenceID
+	g.require(generateEmailVariationsSequencesRequestFieldSequenceID)
+}
+
+// SetEmailID sets the EmailID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GenerateEmailVariationsSequencesRequest) SetEmailID(emailID string) {
+	g.EmailID = emailID
+	g.require(generateEmailVariationsSequencesRequestFieldEmailID)
+}
+
+// SetCount sets the Count field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GenerateEmailVariationsSequencesRequest) SetCount(count *int) {
+	g.Count = count
+	g.require(generateEmailVariationsSequencesRequestFieldCount)
+}
+
+// SetPrompt sets the Prompt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GenerateEmailVariationsSequencesRequest) SetPrompt(prompt string) {
+	g.Prompt = prompt
+	g.require(generateEmailVariationsSequencesRequestFieldPrompt)
+}
+
+// SetStyle sets the Style field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GenerateEmailVariationsSequencesRequest) SetStyle(style *GenerateEmailVariationsSequencesRequestStyle) {
+	g.Style = style
+	g.require(generateEmailVariationsSequencesRequestFieldStyle)
+}
+
+func (g *GenerateEmailVariationsSequencesRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler GenerateEmailVariationsSequencesRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*g = GenerateEmailVariationsSequencesRequest(body)
+	return nil
+}
+
+func (g *GenerateEmailVariationsSequencesRequest) MarshalJSON() ([]byte, error) {
+	type embed GenerateEmailVariationsSequencesRequest
 	var marshaler = struct {
 		embed
 	}{
@@ -1732,6 +1951,42 @@ func (l *ListAudienceEnrollmentsSequencesRequest) SetSequenceID(sequenceID strin
 func (l *ListAudienceEnrollmentsSequencesRequest) SetLimit(limit *int) {
 	l.Limit = limit
 	l.require(listAudienceEnrollmentsSequencesRequestFieldLimit)
+}
+
+var (
+	listEmailVariationsSequencesRequestFieldSequenceID = big.NewInt(1 << 0)
+	listEmailVariationsSequencesRequestFieldEmailID    = big.NewInt(1 << 1)
+)
+
+type ListEmailVariationsSequencesRequest struct {
+	// Sequence ID
+	SequenceID string `json:"-" url:"-"`
+	// The email's ID, the emailId of its step from Get Sequence
+	EmailID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (l *ListEmailVariationsSequencesRequest) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetSequenceID sets the SequenceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEmailVariationsSequencesRequest) SetSequenceID(sequenceID string) {
+	l.SequenceID = sequenceID
+	l.require(listEmailVariationsSequencesRequestFieldSequenceID)
+}
+
+// SetEmailID sets the EmailID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEmailVariationsSequencesRequest) SetEmailID(emailID string) {
+	l.EmailID = emailID
+	l.require(listEmailVariationsSequencesRequestFieldEmailID)
 }
 
 var (
@@ -26008,6 +26263,106 @@ func (d *DeleteGoalSequencesResponse) String() string {
 }
 
 var (
+	discardEmailVariationSequencesResponseFieldDiscarded = big.NewInt(1 << 0)
+	discardEmailVariationSequencesResponseFieldSuccess   = big.NewInt(1 << 1)
+)
+
+type DiscardEmailVariationSequencesResponse struct {
+	Discarded *bool `json:"discarded,omitempty" url:"discarded,omitempty"`
+	Success   *bool `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DiscardEmailVariationSequencesResponse) GetDiscarded() *bool {
+	if d == nil {
+		return nil
+	}
+	return d.Discarded
+}
+
+func (d *DiscardEmailVariationSequencesResponse) GetSuccess() *bool {
+	if d == nil {
+		return nil
+	}
+	return d.Success
+}
+
+func (d *DiscardEmailVariationSequencesResponse) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DiscardEmailVariationSequencesResponse) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetDiscarded sets the Discarded field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DiscardEmailVariationSequencesResponse) SetDiscarded(discarded *bool) {
+	d.Discarded = discarded
+	d.require(discardEmailVariationSequencesResponseFieldDiscarded)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DiscardEmailVariationSequencesResponse) SetSuccess(success *bool) {
+	d.Success = success
+	d.require(discardEmailVariationSequencesResponseFieldSuccess)
+}
+
+func (d *DiscardEmailVariationSequencesResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler DiscardEmailVariationSequencesResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DiscardEmailVariationSequencesResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DiscardEmailVariationSequencesResponse) MarshalJSON() ([]byte, error) {
+	type embed DiscardEmailVariationSequencesResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DiscardEmailVariationSequencesResponse) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
+var (
 	duplicateSequencesResponseFieldEdges    = big.NewInt(1 << 0)
 	duplicateSequencesResponseFieldNodes    = big.NewInt(1 << 1)
 	duplicateSequencesResponseFieldSequence = big.NewInt(1 << 2)
@@ -26137,6 +26492,587 @@ func (d *DuplicateSequencesResponse) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", d)
+}
+
+var (
+	editEmailsSequencesResponseFieldDryRun  = big.NewInt(1 << 0)
+	editEmailsSequencesResponseFieldEmails  = big.NewInt(1 << 1)
+	editEmailsSequencesResponseFieldSkipped = big.NewInt(1 << 2)
+	editEmailsSequencesResponseFieldSuccess = big.NewInt(1 << 3)
+)
+
+type EditEmailsSequencesResponse struct {
+	// Whether the changes were only returned, not saved.
+	DryRun *bool                                    `json:"dryRun,omitempty" url:"dryRun,omitempty"`
+	Emails []*EditEmailsSequencesResponseEmailsItem `json:"emails,omitempty" url:"emails,omitempty"`
+	// Email steps the AI can't edit here.
+	Skipped []*EditEmailsSequencesResponseSkippedItem `json:"skipped,omitempty" url:"skipped,omitempty"`
+	Success *bool                                     `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (e *EditEmailsSequencesResponse) GetDryRun() *bool {
+	if e == nil {
+		return nil
+	}
+	return e.DryRun
+}
+
+func (e *EditEmailsSequencesResponse) GetEmails() []*EditEmailsSequencesResponseEmailsItem {
+	if e == nil {
+		return nil
+	}
+	return e.Emails
+}
+
+func (e *EditEmailsSequencesResponse) GetSkipped() []*EditEmailsSequencesResponseSkippedItem {
+	if e == nil {
+		return nil
+	}
+	return e.Skipped
+}
+
+func (e *EditEmailsSequencesResponse) GetSuccess() *bool {
+	if e == nil {
+		return nil
+	}
+	return e.Success
+}
+
+func (e *EditEmailsSequencesResponse) GetExtraProperties() map[string]interface{} {
+	if e == nil {
+		return nil
+	}
+	return e.extraProperties
+}
+
+func (e *EditEmailsSequencesResponse) require(field *big.Int) {
+	if e.explicitFields == nil {
+		e.explicitFields = big.NewInt(0)
+	}
+	e.explicitFields.Or(e.explicitFields, field)
+}
+
+// SetDryRun sets the DryRun field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EditEmailsSequencesResponse) SetDryRun(dryRun *bool) {
+	e.DryRun = dryRun
+	e.require(editEmailsSequencesResponseFieldDryRun)
+}
+
+// SetEmails sets the Emails field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EditEmailsSequencesResponse) SetEmails(emails []*EditEmailsSequencesResponseEmailsItem) {
+	e.Emails = emails
+	e.require(editEmailsSequencesResponseFieldEmails)
+}
+
+// SetSkipped sets the Skipped field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EditEmailsSequencesResponse) SetSkipped(skipped []*EditEmailsSequencesResponseSkippedItem) {
+	e.Skipped = skipped
+	e.require(editEmailsSequencesResponseFieldSkipped)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EditEmailsSequencesResponse) SetSuccess(success *bool) {
+	e.Success = success
+	e.require(editEmailsSequencesResponseFieldSuccess)
+}
+
+func (e *EditEmailsSequencesResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler EditEmailsSequencesResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EditEmailsSequencesResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+	e.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EditEmailsSequencesResponse) MarshalJSON() ([]byte, error) {
+	type embed EditEmailsSequencesResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*e),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (e *EditEmailsSequencesResponse) String() string {
+	if e == nil {
+		return "<nil>"
+	}
+	if len(e.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(e.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+var (
+	editEmailsSequencesResponseEmailsItemFieldBlocks      = big.NewInt(1 << 0)
+	editEmailsSequencesResponseEmailsItemFieldEmailID     = big.NewInt(1 << 1)
+	editEmailsSequencesResponseEmailsItemFieldEmailTheme  = big.NewInt(1 << 2)
+	editEmailsSequencesResponseEmailsItemFieldError       = big.NewInt(1 << 3)
+	editEmailsSequencesResponseEmailsItemFieldFontFamily  = big.NewInt(1 << 4)
+	editEmailsSequencesResponseEmailsItemFieldLabel       = big.NewInt(1 << 5)
+	editEmailsSequencesResponseEmailsItemFieldNodeID      = big.NewInt(1 << 6)
+	editEmailsSequencesResponseEmailsItemFieldPreviewText = big.NewInt(1 << 7)
+	editEmailsSequencesResponseEmailsItemFieldSaved       = big.NewInt(1 << 8)
+	editEmailsSequencesResponseEmailsItemFieldStatus      = big.NewInt(1 << 9)
+	editEmailsSequencesResponseEmailsItemFieldSubject     = big.NewInt(1 << 10)
+	editEmailsSequencesResponseEmailsItemFieldSummary     = big.NewInt(1 << 11)
+)
+
+type EditEmailsSequencesResponseEmailsItem struct {
+	Blocks  []map[string]any `json:"blocks,omitempty" url:"blocks,omitempty"`
+	EmailID *string          `json:"emailId,omitempty" url:"emailId,omitempty"`
+	// The email's theme after the change; null when it uses the company's.
+	EmailTheme map[string]any `json:"emailTheme,omitempty" url:"emailTheme,omitempty"`
+	// Why the email failed, or why a change couldn't be saved.
+	Error      *string `json:"error,omitempty" url:"error,omitempty"`
+	FontFamily *string `json:"fontFamily,omitempty" url:"fontFamily,omitempty"`
+	// How the editor names the step, e.g. Email 2 or Email 3a.
+	Label       *string `json:"label,omitempty" url:"label,omitempty"`
+	NodeID      *string `json:"nodeId,omitempty" url:"nodeId,omitempty"`
+	PreviewText *string `json:"previewText,omitempty" url:"previewText,omitempty"`
+	// Whether the change was saved. False on a dry run and for unchanged or failed emails.
+	Saved   *bool                                        `json:"saved,omitempty" url:"saved,omitempty"`
+	Status  *EditEmailsSequencesResponseEmailsItemStatus `json:"status,omitempty" url:"status,omitempty"`
+	Subject *string                                      `json:"subject,omitempty" url:"subject,omitempty"`
+	// What changed, or why nothing did.
+	Summary *string `json:"summary,omitempty" url:"summary,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (e *EditEmailsSequencesResponseEmailsItem) GetBlocks() []map[string]any {
+	if e == nil {
+		return nil
+	}
+	return e.Blocks
+}
+
+func (e *EditEmailsSequencesResponseEmailsItem) GetEmailID() *string {
+	if e == nil {
+		return nil
+	}
+	return e.EmailID
+}
+
+func (e *EditEmailsSequencesResponseEmailsItem) GetEmailTheme() map[string]any {
+	if e == nil {
+		return nil
+	}
+	return e.EmailTheme
+}
+
+func (e *EditEmailsSequencesResponseEmailsItem) GetError() *string {
+	if e == nil {
+		return nil
+	}
+	return e.Error
+}
+
+func (e *EditEmailsSequencesResponseEmailsItem) GetFontFamily() *string {
+	if e == nil {
+		return nil
+	}
+	return e.FontFamily
+}
+
+func (e *EditEmailsSequencesResponseEmailsItem) GetLabel() *string {
+	if e == nil {
+		return nil
+	}
+	return e.Label
+}
+
+func (e *EditEmailsSequencesResponseEmailsItem) GetNodeID() *string {
+	if e == nil {
+		return nil
+	}
+	return e.NodeID
+}
+
+func (e *EditEmailsSequencesResponseEmailsItem) GetPreviewText() *string {
+	if e == nil {
+		return nil
+	}
+	return e.PreviewText
+}
+
+func (e *EditEmailsSequencesResponseEmailsItem) GetSaved() *bool {
+	if e == nil {
+		return nil
+	}
+	return e.Saved
+}
+
+func (e *EditEmailsSequencesResponseEmailsItem) GetStatus() *EditEmailsSequencesResponseEmailsItemStatus {
+	if e == nil {
+		return nil
+	}
+	return e.Status
+}
+
+func (e *EditEmailsSequencesResponseEmailsItem) GetSubject() *string {
+	if e == nil {
+		return nil
+	}
+	return e.Subject
+}
+
+func (e *EditEmailsSequencesResponseEmailsItem) GetSummary() *string {
+	if e == nil {
+		return nil
+	}
+	return e.Summary
+}
+
+func (e *EditEmailsSequencesResponseEmailsItem) GetExtraProperties() map[string]interface{} {
+	if e == nil {
+		return nil
+	}
+	return e.extraProperties
+}
+
+func (e *EditEmailsSequencesResponseEmailsItem) require(field *big.Int) {
+	if e.explicitFields == nil {
+		e.explicitFields = big.NewInt(0)
+	}
+	e.explicitFields.Or(e.explicitFields, field)
+}
+
+// SetBlocks sets the Blocks field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EditEmailsSequencesResponseEmailsItem) SetBlocks(blocks []map[string]any) {
+	e.Blocks = blocks
+	e.require(editEmailsSequencesResponseEmailsItemFieldBlocks)
+}
+
+// SetEmailID sets the EmailID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EditEmailsSequencesResponseEmailsItem) SetEmailID(emailID *string) {
+	e.EmailID = emailID
+	e.require(editEmailsSequencesResponseEmailsItemFieldEmailID)
+}
+
+// SetEmailTheme sets the EmailTheme field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EditEmailsSequencesResponseEmailsItem) SetEmailTheme(emailTheme map[string]any) {
+	e.EmailTheme = emailTheme
+	e.require(editEmailsSequencesResponseEmailsItemFieldEmailTheme)
+}
+
+// SetError sets the Error field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EditEmailsSequencesResponseEmailsItem) SetError(error_ *string) {
+	e.Error = error_
+	e.require(editEmailsSequencesResponseEmailsItemFieldError)
+}
+
+// SetFontFamily sets the FontFamily field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EditEmailsSequencesResponseEmailsItem) SetFontFamily(fontFamily *string) {
+	e.FontFamily = fontFamily
+	e.require(editEmailsSequencesResponseEmailsItemFieldFontFamily)
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EditEmailsSequencesResponseEmailsItem) SetLabel(label *string) {
+	e.Label = label
+	e.require(editEmailsSequencesResponseEmailsItemFieldLabel)
+}
+
+// SetNodeID sets the NodeID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EditEmailsSequencesResponseEmailsItem) SetNodeID(nodeID *string) {
+	e.NodeID = nodeID
+	e.require(editEmailsSequencesResponseEmailsItemFieldNodeID)
+}
+
+// SetPreviewText sets the PreviewText field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EditEmailsSequencesResponseEmailsItem) SetPreviewText(previewText *string) {
+	e.PreviewText = previewText
+	e.require(editEmailsSequencesResponseEmailsItemFieldPreviewText)
+}
+
+// SetSaved sets the Saved field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EditEmailsSequencesResponseEmailsItem) SetSaved(saved *bool) {
+	e.Saved = saved
+	e.require(editEmailsSequencesResponseEmailsItemFieldSaved)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EditEmailsSequencesResponseEmailsItem) SetStatus(status *EditEmailsSequencesResponseEmailsItemStatus) {
+	e.Status = status
+	e.require(editEmailsSequencesResponseEmailsItemFieldStatus)
+}
+
+// SetSubject sets the Subject field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EditEmailsSequencesResponseEmailsItem) SetSubject(subject *string) {
+	e.Subject = subject
+	e.require(editEmailsSequencesResponseEmailsItemFieldSubject)
+}
+
+// SetSummary sets the Summary field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EditEmailsSequencesResponseEmailsItem) SetSummary(summary *string) {
+	e.Summary = summary
+	e.require(editEmailsSequencesResponseEmailsItemFieldSummary)
+}
+
+func (e *EditEmailsSequencesResponseEmailsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler EditEmailsSequencesResponseEmailsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EditEmailsSequencesResponseEmailsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+	e.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EditEmailsSequencesResponseEmailsItem) MarshalJSON() ([]byte, error) {
+	type embed EditEmailsSequencesResponseEmailsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*e),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (e *EditEmailsSequencesResponseEmailsItem) String() string {
+	if e == nil {
+		return "<nil>"
+	}
+	if len(e.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(e.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+type EditEmailsSequencesResponseEmailsItemStatus string
+
+const (
+	EditEmailsSequencesResponseEmailsItemStatusChanged   EditEmailsSequencesResponseEmailsItemStatus = "changed"
+	EditEmailsSequencesResponseEmailsItemStatusUnchanged EditEmailsSequencesResponseEmailsItemStatus = "unchanged"
+	EditEmailsSequencesResponseEmailsItemStatusFailed    EditEmailsSequencesResponseEmailsItemStatus = "failed"
+)
+
+func NewEditEmailsSequencesResponseEmailsItemStatusFromString(s string) (EditEmailsSequencesResponseEmailsItemStatus, error) {
+	switch s {
+	case "changed":
+		return EditEmailsSequencesResponseEmailsItemStatusChanged, nil
+	case "unchanged":
+		return EditEmailsSequencesResponseEmailsItemStatusUnchanged, nil
+	case "failed":
+		return EditEmailsSequencesResponseEmailsItemStatusFailed, nil
+	}
+	var t EditEmailsSequencesResponseEmailsItemStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (e EditEmailsSequencesResponseEmailsItemStatus) Ptr() *EditEmailsSequencesResponseEmailsItemStatus {
+	return &e
+}
+
+var (
+	editEmailsSequencesResponseSkippedItemFieldEmailID = big.NewInt(1 << 0)
+	editEmailsSequencesResponseSkippedItemFieldLabel   = big.NewInt(1 << 1)
+	editEmailsSequencesResponseSkippedItemFieldNodeID  = big.NewInt(1 << 2)
+	editEmailsSequencesResponseSkippedItemFieldReason  = big.NewInt(1 << 3)
+)
+
+type EditEmailsSequencesResponseSkippedItem struct {
+	EmailID *string                                       `json:"emailId,omitempty" url:"emailId,omitempty"`
+	Label   *string                                       `json:"label,omitempty" url:"label,omitempty"`
+	NodeID  *string                                       `json:"nodeId,omitempty" url:"nodeId,omitempty"`
+	Reason  *EditEmailsSequencesResponseSkippedItemReason `json:"reason,omitempty" url:"reason,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (e *EditEmailsSequencesResponseSkippedItem) GetEmailID() *string {
+	if e == nil {
+		return nil
+	}
+	return e.EmailID
+}
+
+func (e *EditEmailsSequencesResponseSkippedItem) GetLabel() *string {
+	if e == nil {
+		return nil
+	}
+	return e.Label
+}
+
+func (e *EditEmailsSequencesResponseSkippedItem) GetNodeID() *string {
+	if e == nil {
+		return nil
+	}
+	return e.NodeID
+}
+
+func (e *EditEmailsSequencesResponseSkippedItem) GetReason() *EditEmailsSequencesResponseSkippedItemReason {
+	if e == nil {
+		return nil
+	}
+	return e.Reason
+}
+
+func (e *EditEmailsSequencesResponseSkippedItem) GetExtraProperties() map[string]interface{} {
+	if e == nil {
+		return nil
+	}
+	return e.extraProperties
+}
+
+func (e *EditEmailsSequencesResponseSkippedItem) require(field *big.Int) {
+	if e.explicitFields == nil {
+		e.explicitFields = big.NewInt(0)
+	}
+	e.explicitFields.Or(e.explicitFields, field)
+}
+
+// SetEmailID sets the EmailID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EditEmailsSequencesResponseSkippedItem) SetEmailID(emailID *string) {
+	e.EmailID = emailID
+	e.require(editEmailsSequencesResponseSkippedItemFieldEmailID)
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EditEmailsSequencesResponseSkippedItem) SetLabel(label *string) {
+	e.Label = label
+	e.require(editEmailsSequencesResponseSkippedItemFieldLabel)
+}
+
+// SetNodeID sets the NodeID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EditEmailsSequencesResponseSkippedItem) SetNodeID(nodeID *string) {
+	e.NodeID = nodeID
+	e.require(editEmailsSequencesResponseSkippedItemFieldNodeID)
+}
+
+// SetReason sets the Reason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EditEmailsSequencesResponseSkippedItem) SetReason(reason *EditEmailsSequencesResponseSkippedItemReason) {
+	e.Reason = reason
+	e.require(editEmailsSequencesResponseSkippedItemFieldReason)
+}
+
+func (e *EditEmailsSequencesResponseSkippedItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler EditEmailsSequencesResponseSkippedItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EditEmailsSequencesResponseSkippedItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+	e.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EditEmailsSequencesResponseSkippedItem) MarshalJSON() ([]byte, error) {
+	type embed EditEmailsSequencesResponseSkippedItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*e),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (e *EditEmailsSequencesResponseSkippedItem) String() string {
+	if e == nil {
+		return "<nil>"
+	}
+	if len(e.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(e.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+type EditEmailsSequencesResponseSkippedItemReason string
+
+const (
+	EditEmailsSequencesResponseSkippedItemReasonAbTest      EditEmailsSequencesResponseSkippedItemReason = "ab_test"
+	EditEmailsSequencesResponseSkippedItemReasonNoEmail     EditEmailsSequencesResponseSkippedItemReason = "no_email"
+	EditEmailsSequencesResponseSkippedItemReasonSharedEmail EditEmailsSequencesResponseSkippedItemReason = "shared_email"
+)
+
+func NewEditEmailsSequencesResponseSkippedItemReasonFromString(s string) (EditEmailsSequencesResponseSkippedItemReason, error) {
+	switch s {
+	case "ab_test":
+		return EditEmailsSequencesResponseSkippedItemReasonAbTest, nil
+	case "no_email":
+		return EditEmailsSequencesResponseSkippedItemReasonNoEmail, nil
+	case "shared_email":
+		return EditEmailsSequencesResponseSkippedItemReasonSharedEmail, nil
+	}
+	var t EditEmailsSequencesResponseSkippedItemReason
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (e EditEmailsSequencesResponseSkippedItemReason) Ptr() *EditEmailsSequencesResponseSkippedItemReason {
+	return &e
 }
 
 var (
@@ -26564,6 +27500,267 @@ func (e *EstimateAudienceEnrollmentSequencesResponse) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", e)
+}
+
+// How far the new versions move from the email. close edits it, keeping its style and structure; fresh writes each version anew with its own structure in the brand's colors and fonts; bold also gives each its own look. Defaults to fresh.
+type GenerateEmailVariationsSequencesRequestStyle string
+
+const (
+	GenerateEmailVariationsSequencesRequestStyleClose GenerateEmailVariationsSequencesRequestStyle = "close"
+	GenerateEmailVariationsSequencesRequestStyleFresh GenerateEmailVariationsSequencesRequestStyle = "fresh"
+	GenerateEmailVariationsSequencesRequestStyleBold  GenerateEmailVariationsSequencesRequestStyle = "bold"
+)
+
+func NewGenerateEmailVariationsSequencesRequestStyleFromString(s string) (GenerateEmailVariationsSequencesRequestStyle, error) {
+	switch s {
+	case "close":
+		return GenerateEmailVariationsSequencesRequestStyleClose, nil
+	case "fresh":
+		return GenerateEmailVariationsSequencesRequestStyleFresh, nil
+	case "bold":
+		return GenerateEmailVariationsSequencesRequestStyleBold, nil
+	}
+	var t GenerateEmailVariationsSequencesRequestStyle
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (g GenerateEmailVariationsSequencesRequestStyle) Ptr() *GenerateEmailVariationsSequencesRequestStyle {
+	return &g
+}
+
+var (
+	generateEmailVariationsSequencesResponseFieldEmail      = big.NewInt(1 << 0)
+	generateEmailVariationsSequencesResponseFieldSuccess    = big.NewInt(1 << 1)
+	generateEmailVariationsSequencesResponseFieldVariations = big.NewInt(1 << 2)
+)
+
+type GenerateEmailVariationsSequencesResponse struct {
+	// The email the variations are of.
+	Email      *GenerateEmailVariationsSequencesResponseEmail `json:"email,omitempty" url:"email,omitempty"`
+	Success    *bool                                          `json:"success,omitempty" url:"success,omitempty"`
+	Variations []*EmailVariation                              `json:"variations,omitempty" url:"variations,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (g *GenerateEmailVariationsSequencesResponse) GetEmail() *GenerateEmailVariationsSequencesResponseEmail {
+	if g == nil {
+		return nil
+	}
+	return g.Email
+}
+
+func (g *GenerateEmailVariationsSequencesResponse) GetSuccess() *bool {
+	if g == nil {
+		return nil
+	}
+	return g.Success
+}
+
+func (g *GenerateEmailVariationsSequencesResponse) GetVariations() []*EmailVariation {
+	if g == nil {
+		return nil
+	}
+	return g.Variations
+}
+
+func (g *GenerateEmailVariationsSequencesResponse) GetExtraProperties() map[string]interface{} {
+	if g == nil {
+		return nil
+	}
+	return g.extraProperties
+}
+
+func (g *GenerateEmailVariationsSequencesResponse) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GenerateEmailVariationsSequencesResponse) SetEmail(email *GenerateEmailVariationsSequencesResponseEmail) {
+	g.Email = email
+	g.require(generateEmailVariationsSequencesResponseFieldEmail)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GenerateEmailVariationsSequencesResponse) SetSuccess(success *bool) {
+	g.Success = success
+	g.require(generateEmailVariationsSequencesResponseFieldSuccess)
+}
+
+// SetVariations sets the Variations field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GenerateEmailVariationsSequencesResponse) SetVariations(variations []*EmailVariation) {
+	g.Variations = variations
+	g.require(generateEmailVariationsSequencesResponseFieldVariations)
+}
+
+func (g *GenerateEmailVariationsSequencesResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler GenerateEmailVariationsSequencesResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*g = GenerateEmailVariationsSequencesResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *g)
+	if err != nil {
+		return err
+	}
+	g.extraProperties = extraProperties
+	g.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (g *GenerateEmailVariationsSequencesResponse) MarshalJSON() ([]byte, error) {
+	type embed GenerateEmailVariationsSequencesResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*g),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (g *GenerateEmailVariationsSequencesResponse) String() string {
+	if g == nil {
+		return "<nil>"
+	}
+	if len(g.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(g.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(g); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", g)
+}
+
+// The email the variations are of.
+var (
+	generateEmailVariationsSequencesResponseEmailFieldEmailID = big.NewInt(1 << 0)
+	generateEmailVariationsSequencesResponseEmailFieldLabel   = big.NewInt(1 << 1)
+	generateEmailVariationsSequencesResponseEmailFieldNodeID  = big.NewInt(1 << 2)
+)
+
+type GenerateEmailVariationsSequencesResponseEmail struct {
+	EmailID *string `json:"emailId,omitempty" url:"emailId,omitempty"`
+	Label   *string `json:"label,omitempty" url:"label,omitempty"`
+	// Its step, for rendering a variation with Render Sequence Step.
+	NodeID *string `json:"nodeId,omitempty" url:"nodeId,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (g *GenerateEmailVariationsSequencesResponseEmail) GetEmailID() *string {
+	if g == nil {
+		return nil
+	}
+	return g.EmailID
+}
+
+func (g *GenerateEmailVariationsSequencesResponseEmail) GetLabel() *string {
+	if g == nil {
+		return nil
+	}
+	return g.Label
+}
+
+func (g *GenerateEmailVariationsSequencesResponseEmail) GetNodeID() *string {
+	if g == nil {
+		return nil
+	}
+	return g.NodeID
+}
+
+func (g *GenerateEmailVariationsSequencesResponseEmail) GetExtraProperties() map[string]interface{} {
+	if g == nil {
+		return nil
+	}
+	return g.extraProperties
+}
+
+func (g *GenerateEmailVariationsSequencesResponseEmail) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetEmailID sets the EmailID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GenerateEmailVariationsSequencesResponseEmail) SetEmailID(emailID *string) {
+	g.EmailID = emailID
+	g.require(generateEmailVariationsSequencesResponseEmailFieldEmailID)
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GenerateEmailVariationsSequencesResponseEmail) SetLabel(label *string) {
+	g.Label = label
+	g.require(generateEmailVariationsSequencesResponseEmailFieldLabel)
+}
+
+// SetNodeID sets the NodeID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GenerateEmailVariationsSequencesResponseEmail) SetNodeID(nodeID *string) {
+	g.NodeID = nodeID
+	g.require(generateEmailVariationsSequencesResponseEmailFieldNodeID)
+}
+
+func (g *GenerateEmailVariationsSequencesResponseEmail) UnmarshalJSON(data []byte) error {
+	type unmarshaler GenerateEmailVariationsSequencesResponseEmail
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*g = GenerateEmailVariationsSequencesResponseEmail(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *g)
+	if err != nil {
+		return err
+	}
+	g.extraProperties = extraProperties
+	g.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (g *GenerateEmailVariationsSequencesResponseEmail) MarshalJSON() ([]byte, error) {
+	type embed GenerateEmailVariationsSequencesResponseEmail
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*g),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (g *GenerateEmailVariationsSequencesResponseEmail) String() string {
+	if g == nil {
+		return "<nil>"
+	}
+	if len(g.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(g.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(g); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", g)
 }
 
 var (
@@ -27809,6 +29006,241 @@ func (l *ListAudienceEnrollmentsSequencesResponse) MarshalJSON() ([]byte, error)
 }
 
 func (l *ListAudienceEnrollmentsSequencesResponse) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	listEmailVariationsSequencesResponseFieldEmail      = big.NewInt(1 << 0)
+	listEmailVariationsSequencesResponseFieldSuccess    = big.NewInt(1 << 1)
+	listEmailVariationsSequencesResponseFieldVariations = big.NewInt(1 << 2)
+)
+
+type ListEmailVariationsSequencesResponse struct {
+	// The email the variations are of.
+	Email      *ListEmailVariationsSequencesResponseEmail `json:"email,omitempty" url:"email,omitempty"`
+	Success    *bool                                      `json:"success,omitempty" url:"success,omitempty"`
+	Variations []*EmailVariation                          `json:"variations,omitempty" url:"variations,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListEmailVariationsSequencesResponse) GetEmail() *ListEmailVariationsSequencesResponseEmail {
+	if l == nil {
+		return nil
+	}
+	return l.Email
+}
+
+func (l *ListEmailVariationsSequencesResponse) GetSuccess() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.Success
+}
+
+func (l *ListEmailVariationsSequencesResponse) GetVariations() []*EmailVariation {
+	if l == nil {
+		return nil
+	}
+	return l.Variations
+}
+
+func (l *ListEmailVariationsSequencesResponse) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListEmailVariationsSequencesResponse) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEmailVariationsSequencesResponse) SetEmail(email *ListEmailVariationsSequencesResponseEmail) {
+	l.Email = email
+	l.require(listEmailVariationsSequencesResponseFieldEmail)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEmailVariationsSequencesResponse) SetSuccess(success *bool) {
+	l.Success = success
+	l.require(listEmailVariationsSequencesResponseFieldSuccess)
+}
+
+// SetVariations sets the Variations field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEmailVariationsSequencesResponse) SetVariations(variations []*EmailVariation) {
+	l.Variations = variations
+	l.require(listEmailVariationsSequencesResponseFieldVariations)
+}
+
+func (l *ListEmailVariationsSequencesResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListEmailVariationsSequencesResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListEmailVariationsSequencesResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListEmailVariationsSequencesResponse) MarshalJSON() ([]byte, error) {
+	type embed ListEmailVariationsSequencesResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListEmailVariationsSequencesResponse) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+// The email the variations are of.
+var (
+	listEmailVariationsSequencesResponseEmailFieldEmailID = big.NewInt(1 << 0)
+	listEmailVariationsSequencesResponseEmailFieldLabel   = big.NewInt(1 << 1)
+	listEmailVariationsSequencesResponseEmailFieldNodeID  = big.NewInt(1 << 2)
+)
+
+type ListEmailVariationsSequencesResponseEmail struct {
+	EmailID *string `json:"emailId,omitempty" url:"emailId,omitempty"`
+	Label   *string `json:"label,omitempty" url:"label,omitempty"`
+	// Its step, for rendering a variation with Render Sequence Step.
+	NodeID *string `json:"nodeId,omitempty" url:"nodeId,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListEmailVariationsSequencesResponseEmail) GetEmailID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.EmailID
+}
+
+func (l *ListEmailVariationsSequencesResponseEmail) GetLabel() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Label
+}
+
+func (l *ListEmailVariationsSequencesResponseEmail) GetNodeID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.NodeID
+}
+
+func (l *ListEmailVariationsSequencesResponseEmail) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListEmailVariationsSequencesResponseEmail) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetEmailID sets the EmailID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEmailVariationsSequencesResponseEmail) SetEmailID(emailID *string) {
+	l.EmailID = emailID
+	l.require(listEmailVariationsSequencesResponseEmailFieldEmailID)
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEmailVariationsSequencesResponseEmail) SetLabel(label *string) {
+	l.Label = label
+	l.require(listEmailVariationsSequencesResponseEmailFieldLabel)
+}
+
+// SetNodeID sets the NodeID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEmailVariationsSequencesResponseEmail) SetNodeID(nodeID *string) {
+	l.NodeID = nodeID
+	l.require(listEmailVariationsSequencesResponseEmailFieldNodeID)
+}
+
+func (l *ListEmailVariationsSequencesResponseEmail) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListEmailVariationsSequencesResponseEmail
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListEmailVariationsSequencesResponseEmail(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListEmailVariationsSequencesResponseEmail) MarshalJSON() ([]byte, error) {
+	type embed ListEmailVariationsSequencesResponseEmail
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListEmailVariationsSequencesResponseEmail) String() string {
 	if l == nil {
 		return "<nil>"
 	}
@@ -30450,6 +31882,352 @@ func (u UpdateSequencesResponseSequenceGraphEditAction) Ptr() *UpdateSequencesRe
 	return &u
 }
 
+// email changes only this email; all also gives every other email of the sequence its style.
+type UseEmailVariationSequencesRequestScope string
+
+const (
+	UseEmailVariationSequencesRequestScopeEmail UseEmailVariationSequencesRequestScope = "email"
+	UseEmailVariationSequencesRequestScopeAll   UseEmailVariationSequencesRequestScope = "all"
+)
+
+func NewUseEmailVariationSequencesRequestScopeFromString(s string) (UseEmailVariationSequencesRequestScope, error) {
+	switch s {
+	case "email":
+		return UseEmailVariationSequencesRequestScopeEmail, nil
+	case "all":
+		return UseEmailVariationSequencesRequestScopeAll, nil
+	}
+	var t UseEmailVariationSequencesRequestScope
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UseEmailVariationSequencesRequestScope) Ptr() *UseEmailVariationSequencesRequestScope {
+	return &u
+}
+
+var (
+	useEmailVariationSequencesResponseFieldDryRun  = big.NewInt(1 << 0)
+	useEmailVariationSequencesResponseFieldEmails  = big.NewInt(1 << 1)
+	useEmailVariationSequencesResponseFieldSuccess = big.NewInt(1 << 2)
+)
+
+type UseEmailVariationSequencesResponse struct {
+	DryRun *bool `json:"dryRun,omitempty" url:"dryRun,omitempty"`
+	// This email first, then, with scope all, every other editable email in sending order.
+	Emails  []*UseEmailVariationSequencesResponseEmailsItem `json:"emails,omitempty" url:"emails,omitempty"`
+	Success *bool                                           `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UseEmailVariationSequencesResponse) GetDryRun() *bool {
+	if u == nil {
+		return nil
+	}
+	return u.DryRun
+}
+
+func (u *UseEmailVariationSequencesResponse) GetEmails() []*UseEmailVariationSequencesResponseEmailsItem {
+	if u == nil {
+		return nil
+	}
+	return u.Emails
+}
+
+func (u *UseEmailVariationSequencesResponse) GetSuccess() *bool {
+	if u == nil {
+		return nil
+	}
+	return u.Success
+}
+
+func (u *UseEmailVariationSequencesResponse) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UseEmailVariationSequencesResponse) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetDryRun sets the DryRun field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UseEmailVariationSequencesResponse) SetDryRun(dryRun *bool) {
+	u.DryRun = dryRun
+	u.require(useEmailVariationSequencesResponseFieldDryRun)
+}
+
+// SetEmails sets the Emails field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UseEmailVariationSequencesResponse) SetEmails(emails []*UseEmailVariationSequencesResponseEmailsItem) {
+	u.Emails = emails
+	u.require(useEmailVariationSequencesResponseFieldEmails)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UseEmailVariationSequencesResponse) SetSuccess(success *bool) {
+	u.Success = success
+	u.require(useEmailVariationSequencesResponseFieldSuccess)
+}
+
+func (u *UseEmailVariationSequencesResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler UseEmailVariationSequencesResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UseEmailVariationSequencesResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UseEmailVariationSequencesResponse) MarshalJSON() ([]byte, error) {
+	type embed UseEmailVariationSequencesResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UseEmailVariationSequencesResponse) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	useEmailVariationSequencesResponseEmailsItemFieldEmailID = big.NewInt(1 << 0)
+	useEmailVariationSequencesResponseEmailsItemFieldError   = big.NewInt(1 << 1)
+	useEmailVariationSequencesResponseEmailsItemFieldLabel   = big.NewInt(1 << 2)
+	useEmailVariationSequencesResponseEmailsItemFieldNodeID  = big.NewInt(1 << 3)
+	useEmailVariationSequencesResponseEmailsItemFieldSaved   = big.NewInt(1 << 4)
+	useEmailVariationSequencesResponseEmailsItemFieldStatus  = big.NewInt(1 << 5)
+	useEmailVariationSequencesResponseEmailsItemFieldSummary = big.NewInt(1 << 6)
+)
+
+type UseEmailVariationSequencesResponseEmailsItem struct {
+	EmailID *string `json:"emailId,omitempty" url:"emailId,omitempty"`
+	// Why a changed email wasn't saved, or a warning when only its translations or A/B copy couldn't be updated.
+	Error   *string                                             `json:"error,omitempty" url:"error,omitempty"`
+	Label   *string                                             `json:"label,omitempty" url:"label,omitempty"`
+	NodeID  *string                                             `json:"nodeId,omitempty" url:"nodeId,omitempty"`
+	Saved   *bool                                               `json:"saved,omitempty" url:"saved,omitempty"`
+	Status  *UseEmailVariationSequencesResponseEmailsItemStatus `json:"status,omitempty" url:"status,omitempty"`
+	Summary *string                                             `json:"summary,omitempty" url:"summary,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UseEmailVariationSequencesResponseEmailsItem) GetEmailID() *string {
+	if u == nil {
+		return nil
+	}
+	return u.EmailID
+}
+
+func (u *UseEmailVariationSequencesResponseEmailsItem) GetError() *string {
+	if u == nil {
+		return nil
+	}
+	return u.Error
+}
+
+func (u *UseEmailVariationSequencesResponseEmailsItem) GetLabel() *string {
+	if u == nil {
+		return nil
+	}
+	return u.Label
+}
+
+func (u *UseEmailVariationSequencesResponseEmailsItem) GetNodeID() *string {
+	if u == nil {
+		return nil
+	}
+	return u.NodeID
+}
+
+func (u *UseEmailVariationSequencesResponseEmailsItem) GetSaved() *bool {
+	if u == nil {
+		return nil
+	}
+	return u.Saved
+}
+
+func (u *UseEmailVariationSequencesResponseEmailsItem) GetStatus() *UseEmailVariationSequencesResponseEmailsItemStatus {
+	if u == nil {
+		return nil
+	}
+	return u.Status
+}
+
+func (u *UseEmailVariationSequencesResponseEmailsItem) GetSummary() *string {
+	if u == nil {
+		return nil
+	}
+	return u.Summary
+}
+
+func (u *UseEmailVariationSequencesResponseEmailsItem) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UseEmailVariationSequencesResponseEmailsItem) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetEmailID sets the EmailID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UseEmailVariationSequencesResponseEmailsItem) SetEmailID(emailID *string) {
+	u.EmailID = emailID
+	u.require(useEmailVariationSequencesResponseEmailsItemFieldEmailID)
+}
+
+// SetError sets the Error field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UseEmailVariationSequencesResponseEmailsItem) SetError(error_ *string) {
+	u.Error = error_
+	u.require(useEmailVariationSequencesResponseEmailsItemFieldError)
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UseEmailVariationSequencesResponseEmailsItem) SetLabel(label *string) {
+	u.Label = label
+	u.require(useEmailVariationSequencesResponseEmailsItemFieldLabel)
+}
+
+// SetNodeID sets the NodeID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UseEmailVariationSequencesResponseEmailsItem) SetNodeID(nodeID *string) {
+	u.NodeID = nodeID
+	u.require(useEmailVariationSequencesResponseEmailsItemFieldNodeID)
+}
+
+// SetSaved sets the Saved field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UseEmailVariationSequencesResponseEmailsItem) SetSaved(saved *bool) {
+	u.Saved = saved
+	u.require(useEmailVariationSequencesResponseEmailsItemFieldSaved)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UseEmailVariationSequencesResponseEmailsItem) SetStatus(status *UseEmailVariationSequencesResponseEmailsItemStatus) {
+	u.Status = status
+	u.require(useEmailVariationSequencesResponseEmailsItemFieldStatus)
+}
+
+// SetSummary sets the Summary field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UseEmailVariationSequencesResponseEmailsItem) SetSummary(summary *string) {
+	u.Summary = summary
+	u.require(useEmailVariationSequencesResponseEmailsItemFieldSummary)
+}
+
+func (u *UseEmailVariationSequencesResponseEmailsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler UseEmailVariationSequencesResponseEmailsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UseEmailVariationSequencesResponseEmailsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UseEmailVariationSequencesResponseEmailsItem) MarshalJSON() ([]byte, error) {
+	type embed UseEmailVariationSequencesResponseEmailsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UseEmailVariationSequencesResponseEmailsItem) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+type UseEmailVariationSequencesResponseEmailsItemStatus string
+
+const (
+	UseEmailVariationSequencesResponseEmailsItemStatusChanged   UseEmailVariationSequencesResponseEmailsItemStatus = "changed"
+	UseEmailVariationSequencesResponseEmailsItemStatusUnchanged UseEmailVariationSequencesResponseEmailsItemStatus = "unchanged"
+	UseEmailVariationSequencesResponseEmailsItemStatusFailed    UseEmailVariationSequencesResponseEmailsItemStatus = "failed"
+)
+
+func NewUseEmailVariationSequencesResponseEmailsItemStatusFromString(s string) (UseEmailVariationSequencesResponseEmailsItemStatus, error) {
+	switch s {
+	case "changed":
+		return UseEmailVariationSequencesResponseEmailsItemStatusChanged, nil
+	case "unchanged":
+		return UseEmailVariationSequencesResponseEmailsItemStatusUnchanged, nil
+	case "failed":
+		return UseEmailVariationSequencesResponseEmailsItemStatusFailed, nil
+	}
+	var t UseEmailVariationSequencesResponseEmailsItemStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UseEmailVariationSequencesResponseEmailsItemStatus) Ptr() *UseEmailVariationSequencesResponseEmailsItemStatus {
+	return &u
+}
+
 var (
 	unarchiveSequencesRequestFieldSequenceID = big.NewInt(1 << 0)
 )
@@ -31017,4 +32795,91 @@ func (u *UpdateGoalSequencesRequest) UnmarshalJSON(data []byte) error {
 
 func (u *UpdateGoalSequencesRequest) MarshalJSON() ([]byte, error) {
 	return json.Marshal(u.Body)
+}
+
+var (
+	useEmailVariationSequencesRequestFieldSequenceID  = big.NewInt(1 << 0)
+	useEmailVariationSequencesRequestFieldEmailID     = big.NewInt(1 << 1)
+	useEmailVariationSequencesRequestFieldVariationID = big.NewInt(1 << 2)
+	useEmailVariationSequencesRequestFieldDryRun      = big.NewInt(1 << 3)
+	useEmailVariationSequencesRequestFieldScope       = big.NewInt(1 << 4)
+)
+
+type UseEmailVariationSequencesRequest struct {
+	// Sequence ID
+	SequenceID string `json:"-" url:"-"`
+	// The email's ID, the emailId of its step from Get Sequence
+	EmailID string `json:"-" url:"-"`
+	// Variation ID
+	VariationID string `json:"-" url:"-"`
+	// Return what would change without saving.
+	DryRun *bool `json:"dryRun,omitempty" url:"-"`
+	// email changes only this email; all also gives every other email of the sequence its style.
+	Scope *UseEmailVariationSequencesRequestScope `json:"scope,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (u *UseEmailVariationSequencesRequest) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetSequenceID sets the SequenceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UseEmailVariationSequencesRequest) SetSequenceID(sequenceID string) {
+	u.SequenceID = sequenceID
+	u.require(useEmailVariationSequencesRequestFieldSequenceID)
+}
+
+// SetEmailID sets the EmailID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UseEmailVariationSequencesRequest) SetEmailID(emailID string) {
+	u.EmailID = emailID
+	u.require(useEmailVariationSequencesRequestFieldEmailID)
+}
+
+// SetVariationID sets the VariationID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UseEmailVariationSequencesRequest) SetVariationID(variationID string) {
+	u.VariationID = variationID
+	u.require(useEmailVariationSequencesRequestFieldVariationID)
+}
+
+// SetDryRun sets the DryRun field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UseEmailVariationSequencesRequest) SetDryRun(dryRun *bool) {
+	u.DryRun = dryRun
+	u.require(useEmailVariationSequencesRequestFieldDryRun)
+}
+
+// SetScope sets the Scope field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UseEmailVariationSequencesRequest) SetScope(scope *UseEmailVariationSequencesRequestScope) {
+	u.Scope = scope
+	u.require(useEmailVariationSequencesRequestFieldScope)
+}
+
+func (u *UseEmailVariationSequencesRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler UseEmailVariationSequencesRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*u = UseEmailVariationSequencesRequest(body)
+	return nil
+}
+
+func (u *UseEmailVariationSequencesRequest) MarshalJSON() ([]byte, error) {
+	type embed UseEmailVariationSequencesRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
 }

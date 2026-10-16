@@ -147,6 +147,33 @@ func TestAccountHealthRunAccountHealthCheckWithWireMock(
 	VerifyRequestCount(t, "TestAccountHealthRunAccountHealthCheckWithWireMock", "POST", "/account-health/runs", nil, 1)
 }
 
+func TestAccountHealthSubmitAccountHealthFeedbackWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.SubmitAccountHealthFeedbackRequest{
+		InsightID: "insightId",
+		Rating:    sequenzygo.SubmitAccountHealthFeedbackRequestRatingUseful,
+	}
+	_, invocationErr := client.AccountHealth.SubmitAccountHealthFeedback(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestAccountHealthSubmitAccountHealthFeedbackWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestAccountHealthSubmitAccountHealthFeedbackWithWireMock", "POST", "/account-health/insights/insightId/feedback", nil, 1)
+}
+
 func TestAccountHealthUpdateAccountHealthInsightWithWireMock(
 	t *testing.T,
 ) {

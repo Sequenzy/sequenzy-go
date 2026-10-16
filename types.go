@@ -783,6 +783,7 @@ var (
 	checkEmailRequestFieldSubscriberID = big.NewInt(1 << 3)
 	checkEmailRequestFieldVariables    = big.NewInt(1 << 4)
 	checkEmailRequestFieldVariantID    = big.NewInt(1 << 5)
+	checkEmailRequestFieldVariationID  = big.NewInt(1 << 6)
 )
 
 type CheckEmailRequest struct {
@@ -798,6 +799,8 @@ type CheckEmailRequest struct {
 	Variables map[string]any `json:"variables,omitempty" url:"variables,omitempty"`
 	// Check a specific A/B test variant. Required for sequence steps whose nodeType is action_ab_test. Sequence variants also need the ab_tests:read scope. Ignored for templates.
 	VariantID *string `json:"variantId,omitempty" url:"variantId,omitempty"`
+	// Check a design variation of the campaign's or step's email instead of its saved content. It must be ready; it can't be combined with variantId. Ignored for templates.
+	VariationID *string `json:"variationId,omitempty" url:"variationId,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -846,6 +849,13 @@ func (c *CheckEmailRequest) GetVariantID() *string {
 		return nil
 	}
 	return c.VariantID
+}
+
+func (c *CheckEmailRequest) GetVariationID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.VariationID
 }
 
 func (c *CheckEmailRequest) GetExtraProperties() map[string]interface{} {
@@ -902,6 +912,13 @@ func (c *CheckEmailRequest) SetVariables(variables map[string]any) {
 func (c *CheckEmailRequest) SetVariantID(variantID *string) {
 	c.VariantID = variantID
 	c.require(checkEmailRequestFieldVariantID)
+}
+
+// SetVariationID sets the VariationID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CheckEmailRequest) SetVariationID(variationID *string) {
+	c.VariationID = variationID
+	c.require(checkEmailRequestFieldVariationID)
 }
 
 func (c *CheckEmailRequest) UnmarshalJSON(data []byte) error {
@@ -4860,6 +4877,576 @@ func (e EmailPreset) Ptr() *EmailPreset {
 	return &e
 }
 
+// An alternative version of a campaign email, compared side by side on the editor canvas.
+var (
+	emailVariationFieldBlocks      = big.NewInt(1 << 0)
+	emailVariationFieldCreatedAt   = big.NewInt(1 << 1)
+	emailVariationFieldEmailID     = big.NewInt(1 << 2)
+	emailVariationFieldEmailTheme  = big.NewInt(1 << 3)
+	emailVariationFieldError       = big.NewInt(1 << 4)
+	emailVariationFieldFontFamily  = big.NewInt(1 << 5)
+	emailVariationFieldID          = big.NewInt(1 << 6)
+	emailVariationFieldInUse       = big.NewInt(1 << 7)
+	emailVariationFieldLabel       = big.NewInt(1 << 8)
+	emailVariationFieldName        = big.NewInt(1 << 9)
+	emailVariationFieldParentID    = big.NewInt(1 << 10)
+	emailVariationFieldPosition    = big.NewInt(1 << 11)
+	emailVariationFieldPreviewText = big.NewInt(1 << 12)
+	emailVariationFieldPrompt      = big.NewInt(1 << 13)
+	emailVariationFieldStatus      = big.NewInt(1 << 14)
+	emailVariationFieldStyle       = big.NewInt(1 << 15)
+	emailVariationFieldSubject     = big.NewInt(1 << 16)
+	emailVariationFieldSummary     = big.NewInt(1 << 17)
+	emailVariationFieldUpdatedAt   = big.NewInt(1 << 18)
+	emailVariationFieldUsedAt      = big.NewInt(1 << 19)
+)
+
+type EmailVariation struct {
+	// Null while generating or after a failure.
+	Blocks    []*EmailBlock `json:"blocks,omitempty" url:"blocks,omitempty"`
+	CreatedAt *time.Time    `json:"createdAt,omitempty" url:"createdAt,omitempty"`
+	EmailID   *string       `json:"emailId,omitempty" url:"emailId,omitempty"`
+	// The variation's own email theme. Null means it uses the email's theme.
+	EmailTheme map[string]any `json:"emailTheme,omitempty" url:"emailTheme,omitempty"`
+	// Why generation failed.
+	Error *string `json:"error,omitempty" url:"error,omitempty"`
+	// The variation's own body font stack. Null means it uses the email's font.
+	FontFamily *string `json:"fontFamily,omitempty" url:"fontFamily,omitempty"`
+	ID         *string `json:"id,omitempty" url:"id,omitempty"`
+	// Whether using this variation would leave the campaign email unchanged (same blocks, and its own subject, preview text, theme and font when it has them). When several match, only the one used most recently is in use.
+	InUse *bool `json:"inUse,omitempty" url:"inUse,omitempty"`
+	// Canvas label. V1, V2, ... for versions of the email; V2.1, V2.2, ... for branches of V2.
+	Label *string `json:"label,omitempty" url:"label,omitempty"`
+	Name  *string `json:"name,omitempty" url:"name,omitempty"`
+	// The nearest variation this one descends from that has not been discarded. Null when derived from the email.
+	ParentID *string `json:"parentId,omitempty" url:"parentId,omitempty"`
+	// Where the user placed it on the editor canvas, in canvas pixels. Null means the canvas places it automatically.
+	Position    *EmailVariationPosition `json:"position,omitempty" url:"position,omitempty"`
+	PreviewText *string                 `json:"previewText,omitempty" url:"previewText,omitempty"`
+	// The request that generated this variation.
+	Prompt *string               `json:"prompt,omitempty" url:"prompt,omitempty"`
+	Status *EmailVariationStatus `json:"status,omitempty" url:"status,omitempty"`
+	// How far it was asked to move from its source, when AI generated it.
+	Style *EmailVariationStyle `json:"style,omitempty" url:"style,omitempty"`
+	// Subject this variation uses. Null keeps the email's subject.
+	Subject *string `json:"subject,omitempty" url:"subject,omitempty"`
+	// What changed, in a sentence.
+	Summary   *string    `json:"summary,omitempty" url:"summary,omitempty"`
+	UpdatedAt *time.Time `json:"updatedAt,omitempty" url:"updatedAt,omitempty"`
+	// When this variation was last put in the campaign email.
+	UsedAt *time.Time `json:"usedAt,omitempty" url:"usedAt,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (e *EmailVariation) GetBlocks() []*EmailBlock {
+	if e == nil {
+		return nil
+	}
+	return e.Blocks
+}
+
+func (e *EmailVariation) GetCreatedAt() *time.Time {
+	if e == nil {
+		return nil
+	}
+	return e.CreatedAt
+}
+
+func (e *EmailVariation) GetEmailID() *string {
+	if e == nil {
+		return nil
+	}
+	return e.EmailID
+}
+
+func (e *EmailVariation) GetEmailTheme() map[string]any {
+	if e == nil {
+		return nil
+	}
+	return e.EmailTheme
+}
+
+func (e *EmailVariation) GetError() *string {
+	if e == nil {
+		return nil
+	}
+	return e.Error
+}
+
+func (e *EmailVariation) GetFontFamily() *string {
+	if e == nil {
+		return nil
+	}
+	return e.FontFamily
+}
+
+func (e *EmailVariation) GetID() *string {
+	if e == nil {
+		return nil
+	}
+	return e.ID
+}
+
+func (e *EmailVariation) GetInUse() *bool {
+	if e == nil {
+		return nil
+	}
+	return e.InUse
+}
+
+func (e *EmailVariation) GetLabel() *string {
+	if e == nil {
+		return nil
+	}
+	return e.Label
+}
+
+func (e *EmailVariation) GetName() *string {
+	if e == nil {
+		return nil
+	}
+	return e.Name
+}
+
+func (e *EmailVariation) GetParentID() *string {
+	if e == nil {
+		return nil
+	}
+	return e.ParentID
+}
+
+func (e *EmailVariation) GetPosition() *EmailVariationPosition {
+	if e == nil {
+		return nil
+	}
+	return e.Position
+}
+
+func (e *EmailVariation) GetPreviewText() *string {
+	if e == nil {
+		return nil
+	}
+	return e.PreviewText
+}
+
+func (e *EmailVariation) GetPrompt() *string {
+	if e == nil {
+		return nil
+	}
+	return e.Prompt
+}
+
+func (e *EmailVariation) GetStatus() *EmailVariationStatus {
+	if e == nil {
+		return nil
+	}
+	return e.Status
+}
+
+func (e *EmailVariation) GetStyle() *EmailVariationStyle {
+	if e == nil {
+		return nil
+	}
+	return e.Style
+}
+
+func (e *EmailVariation) GetSubject() *string {
+	if e == nil {
+		return nil
+	}
+	return e.Subject
+}
+
+func (e *EmailVariation) GetSummary() *string {
+	if e == nil {
+		return nil
+	}
+	return e.Summary
+}
+
+func (e *EmailVariation) GetUpdatedAt() *time.Time {
+	if e == nil {
+		return nil
+	}
+	return e.UpdatedAt
+}
+
+func (e *EmailVariation) GetUsedAt() *time.Time {
+	if e == nil {
+		return nil
+	}
+	return e.UsedAt
+}
+
+func (e *EmailVariation) GetExtraProperties() map[string]interface{} {
+	if e == nil {
+		return nil
+	}
+	return e.extraProperties
+}
+
+func (e *EmailVariation) require(field *big.Int) {
+	if e.explicitFields == nil {
+		e.explicitFields = big.NewInt(0)
+	}
+	e.explicitFields.Or(e.explicitFields, field)
+}
+
+// SetBlocks sets the Blocks field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariation) SetBlocks(blocks []*EmailBlock) {
+	e.Blocks = blocks
+	e.require(emailVariationFieldBlocks)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariation) SetCreatedAt(createdAt *time.Time) {
+	e.CreatedAt = createdAt
+	e.require(emailVariationFieldCreatedAt)
+}
+
+// SetEmailID sets the EmailID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariation) SetEmailID(emailID *string) {
+	e.EmailID = emailID
+	e.require(emailVariationFieldEmailID)
+}
+
+// SetEmailTheme sets the EmailTheme field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariation) SetEmailTheme(emailTheme map[string]any) {
+	e.EmailTheme = emailTheme
+	e.require(emailVariationFieldEmailTheme)
+}
+
+// SetError sets the Error field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariation) SetError(error_ *string) {
+	e.Error = error_
+	e.require(emailVariationFieldError)
+}
+
+// SetFontFamily sets the FontFamily field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariation) SetFontFamily(fontFamily *string) {
+	e.FontFamily = fontFamily
+	e.require(emailVariationFieldFontFamily)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariation) SetID(id *string) {
+	e.ID = id
+	e.require(emailVariationFieldID)
+}
+
+// SetInUse sets the InUse field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariation) SetInUse(inUse *bool) {
+	e.InUse = inUse
+	e.require(emailVariationFieldInUse)
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariation) SetLabel(label *string) {
+	e.Label = label
+	e.require(emailVariationFieldLabel)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariation) SetName(name *string) {
+	e.Name = name
+	e.require(emailVariationFieldName)
+}
+
+// SetParentID sets the ParentID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariation) SetParentID(parentID *string) {
+	e.ParentID = parentID
+	e.require(emailVariationFieldParentID)
+}
+
+// SetPosition sets the Position field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariation) SetPosition(position *EmailVariationPosition) {
+	e.Position = position
+	e.require(emailVariationFieldPosition)
+}
+
+// SetPreviewText sets the PreviewText field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariation) SetPreviewText(previewText *string) {
+	e.PreviewText = previewText
+	e.require(emailVariationFieldPreviewText)
+}
+
+// SetPrompt sets the Prompt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariation) SetPrompt(prompt *string) {
+	e.Prompt = prompt
+	e.require(emailVariationFieldPrompt)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariation) SetStatus(status *EmailVariationStatus) {
+	e.Status = status
+	e.require(emailVariationFieldStatus)
+}
+
+// SetStyle sets the Style field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariation) SetStyle(style *EmailVariationStyle) {
+	e.Style = style
+	e.require(emailVariationFieldStyle)
+}
+
+// SetSubject sets the Subject field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariation) SetSubject(subject *string) {
+	e.Subject = subject
+	e.require(emailVariationFieldSubject)
+}
+
+// SetSummary sets the Summary field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariation) SetSummary(summary *string) {
+	e.Summary = summary
+	e.require(emailVariationFieldSummary)
+}
+
+// SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariation) SetUpdatedAt(updatedAt *time.Time) {
+	e.UpdatedAt = updatedAt
+	e.require(emailVariationFieldUpdatedAt)
+}
+
+// SetUsedAt sets the UsedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariation) SetUsedAt(usedAt *time.Time) {
+	e.UsedAt = usedAt
+	e.require(emailVariationFieldUsedAt)
+}
+
+func (e *EmailVariation) UnmarshalJSON(data []byte) error {
+	type embed EmailVariation
+	var unmarshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"createdAt,omitempty"`
+		UpdatedAt *internal.DateTime `json:"updatedAt,omitempty"`
+		UsedAt    *internal.DateTime `json:"usedAt,omitempty"`
+	}{
+		embed: embed(*e),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*e = EmailVariation(unmarshaler.embed)
+	e.CreatedAt = unmarshaler.CreatedAt.TimePtr()
+	e.UpdatedAt = unmarshaler.UpdatedAt.TimePtr()
+	e.UsedAt = unmarshaler.UsedAt.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+	e.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EmailVariation) MarshalJSON() ([]byte, error) {
+	type embed EmailVariation
+	var marshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"createdAt,omitempty"`
+		UpdatedAt *internal.DateTime `json:"updatedAt,omitempty"`
+		UsedAt    *internal.DateTime `json:"usedAt,omitempty"`
+	}{
+		embed:     embed(*e),
+		CreatedAt: internal.NewOptionalDateTime(e.CreatedAt),
+		UpdatedAt: internal.NewOptionalDateTime(e.UpdatedAt),
+		UsedAt:    internal.NewOptionalDateTime(e.UsedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (e *EmailVariation) String() string {
+	if e == nil {
+		return "<nil>"
+	}
+	if len(e.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(e.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+// Where the user placed it on the editor canvas, in canvas pixels. Null means the canvas places it automatically.
+var (
+	emailVariationPositionFieldX = big.NewInt(1 << 0)
+	emailVariationPositionFieldY = big.NewInt(1 << 1)
+)
+
+type EmailVariationPosition struct {
+	X *int `json:"x,omitempty" url:"x,omitempty"`
+	Y *int `json:"y,omitempty" url:"y,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (e *EmailVariationPosition) GetX() *int {
+	if e == nil {
+		return nil
+	}
+	return e.X
+}
+
+func (e *EmailVariationPosition) GetY() *int {
+	if e == nil {
+		return nil
+	}
+	return e.Y
+}
+
+func (e *EmailVariationPosition) GetExtraProperties() map[string]interface{} {
+	if e == nil {
+		return nil
+	}
+	return e.extraProperties
+}
+
+func (e *EmailVariationPosition) require(field *big.Int) {
+	if e.explicitFields == nil {
+		e.explicitFields = big.NewInt(0)
+	}
+	e.explicitFields.Or(e.explicitFields, field)
+}
+
+// SetX sets the X field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariationPosition) SetX(x *int) {
+	e.X = x
+	e.require(emailVariationPositionFieldX)
+}
+
+// SetY sets the Y field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailVariationPosition) SetY(y *int) {
+	e.Y = y
+	e.require(emailVariationPositionFieldY)
+}
+
+func (e *EmailVariationPosition) UnmarshalJSON(data []byte) error {
+	type unmarshaler EmailVariationPosition
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EmailVariationPosition(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+	e.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EmailVariationPosition) MarshalJSON() ([]byte, error) {
+	type embed EmailVariationPosition
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*e),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (e *EmailVariationPosition) String() string {
+	if e == nil {
+		return "<nil>"
+	}
+	if len(e.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(e.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+type EmailVariationStatus string
+
+const (
+	EmailVariationStatusGenerating EmailVariationStatus = "generating"
+	EmailVariationStatusReady      EmailVariationStatus = "ready"
+	EmailVariationStatusFailed     EmailVariationStatus = "failed"
+)
+
+func NewEmailVariationStatusFromString(s string) (EmailVariationStatus, error) {
+	switch s {
+	case "generating":
+		return EmailVariationStatusGenerating, nil
+	case "ready":
+		return EmailVariationStatusReady, nil
+	case "failed":
+		return EmailVariationStatusFailed, nil
+	}
+	var t EmailVariationStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (e EmailVariationStatus) Ptr() *EmailVariationStatus {
+	return &e
+}
+
+// How far it was asked to move from its source, when AI generated it.
+type EmailVariationStyle string
+
+const (
+	EmailVariationStyleClose EmailVariationStyle = "close"
+	EmailVariationStyleFresh EmailVariationStyle = "fresh"
+	EmailVariationStyleBold  EmailVariationStyle = "bold"
+)
+
+func NewEmailVariationStyleFromString(s string) (EmailVariationStyle, error) {
+	switch s {
+	case "close":
+		return EmailVariationStyleClose, nil
+	case "fresh":
+		return EmailVariationStyleFresh, nil
+	case "bold":
+		return EmailVariationStyleBold, nil
+	}
+	var t EmailVariationStyle
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (e EmailVariationStyle) Ptr() *EmailVariationStyle {
+	return &e
+}
+
 // Unified engagement metrics returned by analytics endpoints. When a period or start/end filter is applied these are a funnel over the sends made inside that window, not a log of events inside it: every delivery, engagement, and reply count is attributed to one of those sends, including activity that arrives after the window closes, so opened <= delivered <= sent always holds and no rate can exceed 100%. conversions and revenueCents are the exception and use the goal's own last-touch attribution window. Open and click metrics exclude detected scanner, preview, and tracked asset events unless includeMachineEngagement is true.
 var (
 	engagementStatsFieldBounced              = big.NewInt(1 << 0)
@@ -7030,6 +7617,7 @@ var (
 	renderEmailRequestFieldTracking     = big.NewInt(1 << 3)
 	renderEmailRequestFieldVariables    = big.NewInt(1 << 4)
 	renderEmailRequestFieldVariantID    = big.NewInt(1 << 5)
+	renderEmailRequestFieldVariationID  = big.NewInt(1 << 6)
 )
 
 type RenderEmailRequest struct {
@@ -7045,6 +7633,8 @@ type RenderEmailRequest struct {
 	Variables map[string]any `json:"variables,omitempty" url:"variables,omitempty"`
 	// Render a specific A/B test variant. Required for sequence steps whose nodeType is action_ab_test; those steps have no email of their own. Sequence variants also need the ab_tests:read scope. Ignored for templates.
 	VariantID *string `json:"variantId,omitempty" url:"variantId,omitempty"`
+	// Render a design variation of the campaign's or step's email in place of its saved content, from List Campaign Variations or List Sequence Email Variations. It must be ready; it can't be combined with variantId. Ignored for templates.
+	VariationID *string `json:"variationId,omitempty" url:"variationId,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -7093,6 +7683,13 @@ func (r *RenderEmailRequest) GetVariantID() *string {
 		return nil
 	}
 	return r.VariantID
+}
+
+func (r *RenderEmailRequest) GetVariationID() *string {
+	if r == nil {
+		return nil
+	}
+	return r.VariationID
 }
 
 func (r *RenderEmailRequest) GetExtraProperties() map[string]interface{} {
@@ -7149,6 +7746,13 @@ func (r *RenderEmailRequest) SetVariables(variables map[string]any) {
 func (r *RenderEmailRequest) SetVariantID(variantID *string) {
 	r.VariantID = variantID
 	r.require(renderEmailRequestFieldVariantID)
+}
+
+// SetVariationID sets the VariationID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RenderEmailRequest) SetVariationID(variationID *string) {
+	r.VariationID = variationID
+	r.require(renderEmailRequestFieldVariationID)
 }
 
 func (r *RenderEmailRequest) UnmarshalJSON(data []byte) error {

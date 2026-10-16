@@ -55,6 +55,129 @@ func TestSettersMarkExplicitCreateAccountHealthFixRequest(t *testing.T) {
 
 }
 
+func TestSettersSubmitAccountHealthFeedbackRequest(t *testing.T) {
+	t.Run("SetInsightID", func(t *testing.T) {
+		obj := &SubmitAccountHealthFeedbackRequest{}
+		var fernTestValueInsightID string
+		obj.SetInsightID(fernTestValueInsightID)
+		assert.Equal(t, fernTestValueInsightID, obj.InsightID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetComment", func(t *testing.T) {
+		obj := &SubmitAccountHealthFeedbackRequest{}
+		var fernTestValueComment *string
+		obj.SetComment(fernTestValueComment)
+		assert.Equal(t, fernTestValueComment, obj.Comment)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetRating", func(t *testing.T) {
+		obj := &SubmitAccountHealthFeedbackRequest{}
+		var fernTestValueRating SubmitAccountHealthFeedbackRequestRating
+		obj.SetRating(fernTestValueRating)
+		assert.Equal(t, fernTestValueRating, obj.Rating)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestSettersMarkExplicitSubmitAccountHealthFeedbackRequest(t *testing.T) {
+	t.Run("SetInsightID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SubmitAccountHealthFeedbackRequest{}
+		var fernTestValueInsightID string
+
+		// Act
+		obj.SetInsightID(fernTestValueInsightID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetComment_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SubmitAccountHealthFeedbackRequest{}
+		var fernTestValueComment *string
+
+		// Act
+		obj.SetComment(fernTestValueComment)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetRating_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SubmitAccountHealthFeedbackRequest{}
+		var fernTestValueRating SubmitAccountHealthFeedbackRequestRating
+
+		// Act
+		obj.SetRating(fernTestValueRating)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
 func TestSettersAccountHealthAction(t *testing.T) {
 	t.Run("SetAPI", func(t *testing.T) {
 		obj := &AccountHealthAction{}
@@ -1420,6 +1543,14 @@ func TestSettersAccountHealthInsight(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetFeedback", func(t *testing.T) {
+		obj := &AccountHealthInsight{}
+		var fernTestValueFeedback *AccountHealthInsightFeedback
+		obj.SetFeedback(fernTestValueFeedback)
+		assert.Equal(t, fernTestValueFeedback, obj.Feedback)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetFirstSeenAt", func(t *testing.T) {
 		obj := &AccountHealthInsight{}
 		var fernTestValueFirstSeenAt *time.Time
@@ -1657,6 +1788,39 @@ func TestGettersAccountHealthInsight(t *testing.T) {
 			}
 		}()
 		_ = obj.GetEvidence() // Should return zero value
+	})
+
+	t.Run("GetFeedback", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountHealthInsight{}
+		var expected *AccountHealthInsightFeedback
+		obj.Feedback = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetFeedback(), "getter should return the property value")
+	})
+
+	t.Run("GetFeedback_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountHealthInsight{}
+		obj.Feedback = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetFeedback(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetFeedback_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountHealthInsight
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetFeedback() // Should return zero value
 	})
 
 	t.Run("GetFirstSeenAt", func(t *testing.T) {
@@ -2215,6 +2379,37 @@ func TestSettersMarkExplicitAccountHealthInsight(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetFeedback_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountHealthInsight{}
+		var fernTestValueFeedback *AccountHealthInsightFeedback
+
+		// Act
+		obj.SetFeedback(fernTestValueFeedback)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetFirstSeenAt_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -2595,6 +2790,231 @@ func TestSettersMarkExplicitAccountHealthInsight(t *testing.T) {
 
 		// Act
 		obj.SetTitle(fernTestValueTitle)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersAccountHealthInsightFeedback(t *testing.T) {
+	t.Run("SetComment", func(t *testing.T) {
+		obj := &AccountHealthInsightFeedback{}
+		var fernTestValueComment *string
+		obj.SetComment(fernTestValueComment)
+		assert.Equal(t, fernTestValueComment, obj.Comment)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetRating", func(t *testing.T) {
+		obj := &AccountHealthInsightFeedback{}
+		var fernTestValueRating *AccountHealthInsightFeedbackRating
+		obj.SetRating(fernTestValueRating)
+		assert.Equal(t, fernTestValueRating, obj.Rating)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetUpdatedAt", func(t *testing.T) {
+		obj := &AccountHealthInsightFeedback{}
+		var fernTestValueUpdatedAt *time.Time
+		obj.SetUpdatedAt(fernTestValueUpdatedAt)
+		assert.Equal(t, fernTestValueUpdatedAt, obj.UpdatedAt)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersAccountHealthInsightFeedback(t *testing.T) {
+	t.Run("GetComment", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountHealthInsightFeedback{}
+		var expected *string
+		obj.Comment = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetComment(), "getter should return the property value")
+	})
+
+	t.Run("GetComment_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountHealthInsightFeedback{}
+		obj.Comment = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetComment(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetComment_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountHealthInsightFeedback
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetComment() // Should return zero value
+	})
+
+	t.Run("GetRating", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountHealthInsightFeedback{}
+		var expected *AccountHealthInsightFeedbackRating
+		obj.Rating = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetRating(), "getter should return the property value")
+	})
+
+	t.Run("GetRating_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountHealthInsightFeedback{}
+		obj.Rating = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetRating(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetRating_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountHealthInsightFeedback
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetRating() // Should return zero value
+	})
+
+	t.Run("GetUpdatedAt", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountHealthInsightFeedback{}
+		var expected *time.Time
+		obj.UpdatedAt = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetUpdatedAt(), "getter should return the property value")
+	})
+
+	t.Run("GetUpdatedAt_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountHealthInsightFeedback{}
+		obj.UpdatedAt = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetUpdatedAt(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetUpdatedAt_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountHealthInsightFeedback
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetUpdatedAt() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitAccountHealthInsightFeedback(t *testing.T) {
+	t.Run("SetComment_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountHealthInsightFeedback{}
+		var fernTestValueComment *string
+
+		// Act
+		obj.SetComment(fernTestValueComment)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetRating_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountHealthInsightFeedback{}
+		var fernTestValueRating *AccountHealthInsightFeedbackRating
+
+		// Act
+		obj.SetRating(fernTestValueRating)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetUpdatedAt_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountHealthInsightFeedback{}
+		var fernTestValueUpdatedAt *time.Time
+
+		// Act
+		obj.SetUpdatedAt(fernTestValueUpdatedAt)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -6292,6 +6712,231 @@ func TestSettersMarkExplicitRunAccountHealthCheckResponse(t *testing.T) {
 
 }
 
+func TestSettersSubmitAccountHealthFeedbackResponse(t *testing.T) {
+	t.Run("SetFeedback", func(t *testing.T) {
+		obj := &SubmitAccountHealthFeedbackResponse{}
+		var fernTestValueFeedback *AccountHealthInsightFeedback
+		obj.SetFeedback(fernTestValueFeedback)
+		assert.Equal(t, fernTestValueFeedback, obj.Feedback)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetInsightID", func(t *testing.T) {
+		obj := &SubmitAccountHealthFeedbackResponse{}
+		var fernTestValueInsightID *string
+		obj.SetInsightID(fernTestValueInsightID)
+		assert.Equal(t, fernTestValueInsightID, obj.InsightID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetSuccess", func(t *testing.T) {
+		obj := &SubmitAccountHealthFeedbackResponse{}
+		var fernTestValueSuccess *bool
+		obj.SetSuccess(fernTestValueSuccess)
+		assert.Equal(t, fernTestValueSuccess, obj.Success)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersSubmitAccountHealthFeedbackResponse(t *testing.T) {
+	t.Run("GetFeedback", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SubmitAccountHealthFeedbackResponse{}
+		var expected *AccountHealthInsightFeedback
+		obj.Feedback = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetFeedback(), "getter should return the property value")
+	})
+
+	t.Run("GetFeedback_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SubmitAccountHealthFeedbackResponse{}
+		obj.Feedback = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetFeedback(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetFeedback_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SubmitAccountHealthFeedbackResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetFeedback() // Should return zero value
+	})
+
+	t.Run("GetInsightID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SubmitAccountHealthFeedbackResponse{}
+		var expected *string
+		obj.InsightID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetInsightID(), "getter should return the property value")
+	})
+
+	t.Run("GetInsightID_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SubmitAccountHealthFeedbackResponse{}
+		obj.InsightID = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetInsightID(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetInsightID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SubmitAccountHealthFeedbackResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetInsightID() // Should return zero value
+	})
+
+	t.Run("GetSuccess", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SubmitAccountHealthFeedbackResponse{}
+		var expected *bool
+		obj.Success = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSuccess(), "getter should return the property value")
+	})
+
+	t.Run("GetSuccess_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SubmitAccountHealthFeedbackResponse{}
+		obj.Success = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSuccess(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSuccess_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SubmitAccountHealthFeedbackResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSuccess() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitSubmitAccountHealthFeedbackResponse(t *testing.T) {
+	t.Run("SetFeedback_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SubmitAccountHealthFeedbackResponse{}
+		var fernTestValueFeedback *AccountHealthInsightFeedback
+
+		// Act
+		obj.SetFeedback(fernTestValueFeedback)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetInsightID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SubmitAccountHealthFeedbackResponse{}
+		var fernTestValueInsightID *string
+
+		// Act
+		obj.SetInsightID(fernTestValueInsightID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSuccess_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SubmitAccountHealthFeedbackResponse{}
+		var fernTestValueSuccess *bool
+
+		// Act
+		obj.SetSuccess(fernTestValueSuccess)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
 func TestSettersUpdateAccountHealthInsightResponse(t *testing.T) {
 	t.Run("SetInsight", func(t *testing.T) {
 		obj := &UpdateAccountHealthInsightResponse{}
@@ -6958,6 +7603,39 @@ func TestJSONMarshalingAccountHealthInsight(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingAccountHealthInsightFeedback(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountHealthInsightFeedback{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled AccountHealthInsightFeedback
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj AccountHealthInsightFeedback
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj AccountHealthInsightFeedback
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingAccountHealthOverview(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -7222,6 +7900,39 @@ func TestJSONMarshalingRunAccountHealthCheckResponse(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingSubmitAccountHealthFeedbackResponse(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SubmitAccountHealthFeedbackResponse{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled SubmitAccountHealthFeedbackResponse
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj SubmitAccountHealthFeedbackResponse
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj SubmitAccountHealthFeedbackResponse
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingUpdateAccountHealthInsightResponse(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -7368,6 +8079,22 @@ func TestStringAccountHealthInsight(t *testing.T) {
 	})
 }
 
+func TestStringAccountHealthInsightFeedback(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &AccountHealthInsightFeedback{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountHealthInsightFeedback
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
 func TestStringAccountHealthOverview(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
@@ -7491,6 +8218,22 @@ func TestStringRunAccountHealthCheckResponse(t *testing.T) {
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *RunAccountHealthCheckResponse
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringSubmitAccountHealthFeedbackResponse(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &SubmitAccountHealthFeedbackResponse{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SubmitAccountHealthFeedbackResponse
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -7621,6 +8364,20 @@ func TestEnumAccountHealthActionKind(t *testing.T) {
 		assert.Equal(t, AccountHealthActionKind("review_deliverability"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_open_frequency_cap_settings", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountHealthActionKindFromString("open_frequency_cap_settings")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountHealthActionKind("open_frequency_cap_settings"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_apply_frequency_cap", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountHealthActionKindFromString("apply_frequency_cap")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountHealthActionKind("apply_frequency_cap"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewAccountHealthActionKindFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -7721,6 +8478,20 @@ func TestEnumAccountHealthInsightDetector(t *testing.T) {
 		assert.Equal(t, AccountHealthInsightDetector("missing_sequence"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_over_emailing", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountHealthInsightDetectorFromString("over_emailing")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountHealthInsightDetector("over_emailing"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_neglected_subscribers", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountHealthInsightDetectorFromString("neglected_subscribers")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountHealthInsightDetector("neglected_subscribers"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewAccountHealthInsightDetectorFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -7728,6 +8499,35 @@ func TestEnumAccountHealthInsightDetector(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewAccountHealthInsightDetectorFromString("unhandled_event")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumAccountHealthInsightFeedbackRating(t *testing.T) {
+	t.Run("NewFromString_useful", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountHealthInsightFeedbackRatingFromString("useful")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountHealthInsightFeedbackRating("useful"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_not_useful", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountHealthInsightFeedbackRatingFromString("not_useful")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountHealthInsightFeedbackRating("not_useful"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewAccountHealthInsightFeedbackRatingFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewAccountHealthInsightFeedbackRatingFromString("useful")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -8008,6 +8808,35 @@ func TestEnumAccountHealthSettingsAutonomy(t *testing.T) {
 	})
 }
 
+func TestEnumSubmitAccountHealthFeedbackRequestRating(t *testing.T) {
+	t.Run("NewFromString_useful", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSubmitAccountHealthFeedbackRequestRatingFromString("useful")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SubmitAccountHealthFeedbackRequestRating("useful"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_not_useful", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSubmitAccountHealthFeedbackRequestRatingFromString("not_useful")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SubmitAccountHealthFeedbackRequestRating("not_useful"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewSubmitAccountHealthFeedbackRequestRatingFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewSubmitAccountHealthFeedbackRequestRatingFromString("useful")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumUpdateAccountHealthInsightRequestAction(t *testing.T) {
 	t.Run("NewFromString_dismiss", func(t *testing.T) {
 		t.Parallel()
@@ -8161,6 +8990,29 @@ func TestExtraPropertiesAccountHealthInsight(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *AccountHealthInsight
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesAccountHealthInsightFeedback(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &AccountHealthInsightFeedback{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountHealthInsightFeedback
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})
@@ -8345,6 +9197,29 @@ func TestExtraPropertiesRunAccountHealthCheckResponse(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *RunAccountHealthCheckResponse
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesSubmitAccountHealthFeedbackResponse(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &SubmitAccountHealthFeedbackResponse{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SubmitAccountHealthFeedbackResponse
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})

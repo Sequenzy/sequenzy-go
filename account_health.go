@@ -36,6 +36,71 @@ func (c *CreateAccountHealthFixRequest) SetInsightID(insightID string) {
 }
 
 var (
+	submitAccountHealthFeedbackRequestFieldInsightID = big.NewInt(1 << 0)
+	submitAccountHealthFeedbackRequestFieldComment   = big.NewInt(1 << 1)
+	submitAccountHealthFeedbackRequestFieldRating    = big.NewInt(1 << 2)
+)
+
+type SubmitAccountHealthFeedbackRequest struct {
+	InsightID string `json:"-" url:"-"`
+	// What made it useful or not. Leading and trailing spaces are trimmed. Omit to keep an earlier comment; null or an empty string clears it.
+	Comment *string                                  `json:"comment,omitempty" url:"-"`
+	Rating  SubmitAccountHealthFeedbackRequestRating `json:"rating" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (s *SubmitAccountHealthFeedbackRequest) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetInsightID sets the InsightID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubmitAccountHealthFeedbackRequest) SetInsightID(insightID string) {
+	s.InsightID = insightID
+	s.require(submitAccountHealthFeedbackRequestFieldInsightID)
+}
+
+// SetComment sets the Comment field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubmitAccountHealthFeedbackRequest) SetComment(comment *string) {
+	s.Comment = comment
+	s.require(submitAccountHealthFeedbackRequestFieldComment)
+}
+
+// SetRating sets the Rating field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubmitAccountHealthFeedbackRequest) SetRating(rating SubmitAccountHealthFeedbackRequestRating) {
+	s.Rating = rating
+	s.require(submitAccountHealthFeedbackRequestFieldRating)
+}
+
+func (s *SubmitAccountHealthFeedbackRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler SubmitAccountHealthFeedbackRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*s = SubmitAccountHealthFeedbackRequest(body)
+	return nil
+}
+
+func (s *SubmitAccountHealthFeedbackRequest) MarshalJSON() ([]byte, error) {
+	type embed SubmitAccountHealthFeedbackRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
 	accountHealthActionFieldAPI           = big.NewInt(1 << 0)
 	accountHealthActionFieldConfirm       = big.NewInt(1 << 1)
 	accountHealthActionFieldKind          = big.NewInt(1 << 2)
@@ -491,16 +556,18 @@ func (a *AccountHealthActionConfirm) String() string {
 type AccountHealthActionKind string
 
 const (
-	AccountHealthActionKindCreateSequence       AccountHealthActionKind = "create_sequence"
-	AccountHealthActionKindOpenSequence         AccountHealthActionKind = "open_sequence"
-	AccountHealthActionKindActivateSequence     AccountHealthActionKind = "activate_sequence"
-	AccountHealthActionKindPauseSequence        AccountHealthActionKind = "pause_sequence"
-	AccountHealthActionKindCreateCampaign       AccountHealthActionKind = "create_campaign"
-	AccountHealthActionKindReviewCampaignDrafts AccountHealthActionKind = "review_campaign_drafts"
-	AccountHealthActionKindOpenCampaign         AccountHealthActionKind = "open_campaign"
-	AccountHealthActionKindVerifySendingDomain  AccountHealthActionKind = "verify_sending_domain"
-	AccountHealthActionKindOpenDomainSettings   AccountHealthActionKind = "open_domain_settings"
-	AccountHealthActionKindReviewDeliverability AccountHealthActionKind = "review_deliverability"
+	AccountHealthActionKindCreateSequence           AccountHealthActionKind = "create_sequence"
+	AccountHealthActionKindOpenSequence             AccountHealthActionKind = "open_sequence"
+	AccountHealthActionKindActivateSequence         AccountHealthActionKind = "activate_sequence"
+	AccountHealthActionKindPauseSequence            AccountHealthActionKind = "pause_sequence"
+	AccountHealthActionKindCreateCampaign           AccountHealthActionKind = "create_campaign"
+	AccountHealthActionKindReviewCampaignDrafts     AccountHealthActionKind = "review_campaign_drafts"
+	AccountHealthActionKindOpenCampaign             AccountHealthActionKind = "open_campaign"
+	AccountHealthActionKindVerifySendingDomain      AccountHealthActionKind = "verify_sending_domain"
+	AccountHealthActionKindOpenDomainSettings       AccountHealthActionKind = "open_domain_settings"
+	AccountHealthActionKindReviewDeliverability     AccountHealthActionKind = "review_deliverability"
+	AccountHealthActionKindOpenFrequencyCapSettings AccountHealthActionKind = "open_frequency_cap_settings"
+	AccountHealthActionKindApplyFrequencyCap        AccountHealthActionKind = "apply_frequency_cap"
 )
 
 func NewAccountHealthActionKindFromString(s string) (AccountHealthActionKind, error) {
@@ -525,6 +592,10 @@ func NewAccountHealthActionKindFromString(s string) (AccountHealthActionKind, er
 		return AccountHealthActionKindOpenDomainSettings, nil
 	case "review_deliverability":
 		return AccountHealthActionKindReviewDeliverability, nil
+	case "open_frequency_cap_settings":
+		return AccountHealthActionKindOpenFrequencyCapSettings, nil
+	case "apply_frequency_cap":
+		return AccountHealthActionKindApplyFrequencyCap, nil
 	}
 	var t AccountHealthActionKind
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -697,19 +768,20 @@ var (
 	accountHealthInsightFieldDetail          = big.NewInt(1 << 1)
 	accountHealthInsightFieldDetector        = big.NewInt(1 << 2)
 	accountHealthInsightFieldEvidence        = big.NewInt(1 << 3)
-	accountHealthInsightFieldFirstSeenAt     = big.NewInt(1 << 4)
-	accountHealthInsightFieldFixAutomationID = big.NewInt(1 << 5)
-	accountHealthInsightFieldID              = big.NewInt(1 << 6)
-	accountHealthInsightFieldLastSeenAt      = big.NewInt(1 << 7)
-	accountHealthInsightFieldRecommendation  = big.NewInt(1 << 8)
-	accountHealthInsightFieldResolvedAt      = big.NewInt(1 << 9)
-	accountHealthInsightFieldSeverity        = big.NewInt(1 << 10)
-	accountHealthInsightFieldSnoozedUntil    = big.NewInt(1 << 11)
-	accountHealthInsightFieldStatus          = big.NewInt(1 << 12)
-	accountHealthInsightFieldSubjectID       = big.NewInt(1 << 13)
-	accountHealthInsightFieldSubjectName     = big.NewInt(1 << 14)
-	accountHealthInsightFieldSubjectType     = big.NewInt(1 << 15)
-	accountHealthInsightFieldTitle           = big.NewInt(1 << 16)
+	accountHealthInsightFieldFeedback        = big.NewInt(1 << 4)
+	accountHealthInsightFieldFirstSeenAt     = big.NewInt(1 << 5)
+	accountHealthInsightFieldFixAutomationID = big.NewInt(1 << 6)
+	accountHealthInsightFieldID              = big.NewInt(1 << 7)
+	accountHealthInsightFieldLastSeenAt      = big.NewInt(1 << 8)
+	accountHealthInsightFieldRecommendation  = big.NewInt(1 << 9)
+	accountHealthInsightFieldResolvedAt      = big.NewInt(1 << 10)
+	accountHealthInsightFieldSeverity        = big.NewInt(1 << 11)
+	accountHealthInsightFieldSnoozedUntil    = big.NewInt(1 << 12)
+	accountHealthInsightFieldStatus          = big.NewInt(1 << 13)
+	accountHealthInsightFieldSubjectID       = big.NewInt(1 << 14)
+	accountHealthInsightFieldSubjectName     = big.NewInt(1 << 15)
+	accountHealthInsightFieldSubjectType     = big.NewInt(1 << 16)
+	accountHealthInsightFieldTitle           = big.NewInt(1 << 17)
 )
 
 type AccountHealthInsight struct {
@@ -717,9 +789,11 @@ type AccountHealthInsight struct {
 	Actions  []*AccountHealthAction        `json:"actions,omitempty" url:"actions,omitempty"`
 	Detail   *string                       `json:"detail,omitempty" url:"detail,omitempty"`
 	Detector *AccountHealthInsightDetector `json:"detector,omitempty" url:"detector,omitempty"`
-	// Detector-specific numbers behind the finding. Event findings carry `monthlyRevenue` (USD a month the people behind the event pay) when a payment integration syncs revenue to contacts. A missing_sequence finding carries the suggested `playbook`, `name`, `goal`, `trigger` and `steps`.
-	Evidence    map[string]any `json:"evidence,omitempty" url:"evidence,omitempty"`
-	FirstSeenAt *time.Time     `json:"firstSeenAt,omitempty" url:"firstSeenAt,omitempty"`
+	// Detector-specific numbers behind the finding. Event findings carry `monthlyRevenue` (USD a month the people behind the event pay) when a payment integration syncs revenue to contacts. A missing_sequence finding carries the suggested `playbook`, `name`, `goal`, `trigger` and `steps`. An over_emailing finding carries `overloadedSubscribers`, `recipients`, `peakPerDay`, `dailyThreshold`, `windowDays`, `frequencyCap` (null when off) and `sources` (type campaign, sequence or api, id, name, sends, and respectsFrequencyCap for sequences; the api source has an empty id and stands for marketing Send API email, which the frequency cap does not limit). A neglected_subscribers finding carries `neglectedSubscribers`, `eligibleSubscribers`, `days`, `estimated` and `sampled`.
+	Evidence map[string]any `json:"evidence,omitempty" url:"evidence,omitempty"`
+	// Included in Get Account Health only. Your own answer to "was this useful?" for this finding (the API key owner's), or null when you have not answered. Other responses that return an insight leave it out.
+	Feedback    *AccountHealthInsightFeedback `json:"feedback,omitempty" url:"feedback,omitempty"`
+	FirstSeenAt *time.Time                    `json:"firstSeenAt,omitempty" url:"firstSeenAt,omitempty"`
 	// Inactive draft sequence the agent created to fix this, if any.
 	FixAutomationID *string                          `json:"fixAutomationId,omitempty" url:"fixAutomationId,omitempty"`
 	ID              *string                          `json:"id,omitempty" url:"id,omitempty"`
@@ -767,6 +841,13 @@ func (a *AccountHealthInsight) GetEvidence() map[string]any {
 		return nil
 	}
 	return a.Evidence
+}
+
+func (a *AccountHealthInsight) GetFeedback() *AccountHealthInsightFeedback {
+	if a == nil {
+		return nil
+	}
+	return a.Feedback
 }
 
 func (a *AccountHealthInsight) GetFirstSeenAt() *time.Time {
@@ -900,6 +981,13 @@ func (a *AccountHealthInsight) SetDetector(detector *AccountHealthInsightDetecto
 func (a *AccountHealthInsight) SetEvidence(evidence map[string]any) {
 	a.Evidence = evidence
 	a.require(accountHealthInsightFieldEvidence)
+}
+
+// SetFeedback sets the Feedback field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountHealthInsight) SetFeedback(feedback *AccountHealthInsightFeedback) {
+	a.Feedback = feedback
+	a.require(accountHealthInsightFieldFeedback)
 }
 
 // SetFirstSeenAt sets the FirstSeenAt field and marks it as non-optional;
@@ -1066,6 +1154,8 @@ const (
 	AccountHealthInsightDetectorDeliverabilitySpike          AccountHealthInsightDetector = "deliverability_spike"
 	AccountHealthInsightDetectorSendingDomainFailing         AccountHealthInsightDetector = "sending_domain_failing"
 	AccountHealthInsightDetectorMissingSequence              AccountHealthInsightDetector = "missing_sequence"
+	AccountHealthInsightDetectorOverEmailing                 AccountHealthInsightDetector = "over_emailing"
+	AccountHealthInsightDetectorNeglectedSubscribers         AccountHealthInsightDetector = "neglected_subscribers"
 )
 
 func NewAccountHealthInsightDetectorFromString(s string) (AccountHealthInsightDetector, error) {
@@ -1086,12 +1176,164 @@ func NewAccountHealthInsightDetectorFromString(s string) (AccountHealthInsightDe
 		return AccountHealthInsightDetectorSendingDomainFailing, nil
 	case "missing_sequence":
 		return AccountHealthInsightDetectorMissingSequence, nil
+	case "over_emailing":
+		return AccountHealthInsightDetectorOverEmailing, nil
+	case "neglected_subscribers":
+		return AccountHealthInsightDetectorNeglectedSubscribers, nil
 	}
 	var t AccountHealthInsightDetector
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
 func (a AccountHealthInsightDetector) Ptr() *AccountHealthInsightDetector {
+	return &a
+}
+
+// One person's answer to "was this useful?" for one finding.
+var (
+	accountHealthInsightFeedbackFieldComment   = big.NewInt(1 << 0)
+	accountHealthInsightFeedbackFieldRating    = big.NewInt(1 << 1)
+	accountHealthInsightFeedbackFieldUpdatedAt = big.NewInt(1 << 2)
+)
+
+type AccountHealthInsightFeedback struct {
+	// What made it useful or not, or null.
+	Comment   *string                             `json:"comment,omitempty" url:"comment,omitempty"`
+	Rating    *AccountHealthInsightFeedbackRating `json:"rating,omitempty" url:"rating,omitempty"`
+	UpdatedAt *time.Time                          `json:"updatedAt,omitempty" url:"updatedAt,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AccountHealthInsightFeedback) GetComment() *string {
+	if a == nil {
+		return nil
+	}
+	return a.Comment
+}
+
+func (a *AccountHealthInsightFeedback) GetRating() *AccountHealthInsightFeedbackRating {
+	if a == nil {
+		return nil
+	}
+	return a.Rating
+}
+
+func (a *AccountHealthInsightFeedback) GetUpdatedAt() *time.Time {
+	if a == nil {
+		return nil
+	}
+	return a.UpdatedAt
+}
+
+func (a *AccountHealthInsightFeedback) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AccountHealthInsightFeedback) require(field *big.Int) {
+	if a.explicitFields == nil {
+		a.explicitFields = big.NewInt(0)
+	}
+	a.explicitFields.Or(a.explicitFields, field)
+}
+
+// SetComment sets the Comment field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountHealthInsightFeedback) SetComment(comment *string) {
+	a.Comment = comment
+	a.require(accountHealthInsightFeedbackFieldComment)
+}
+
+// SetRating sets the Rating field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountHealthInsightFeedback) SetRating(rating *AccountHealthInsightFeedbackRating) {
+	a.Rating = rating
+	a.require(accountHealthInsightFeedbackFieldRating)
+}
+
+// SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountHealthInsightFeedback) SetUpdatedAt(updatedAt *time.Time) {
+	a.UpdatedAt = updatedAt
+	a.require(accountHealthInsightFeedbackFieldUpdatedAt)
+}
+
+func (a *AccountHealthInsightFeedback) UnmarshalJSON(data []byte) error {
+	type embed AccountHealthInsightFeedback
+	var unmarshaler = struct {
+		embed
+		UpdatedAt *internal.DateTime `json:"updatedAt,omitempty"`
+	}{
+		embed: embed(*a),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*a = AccountHealthInsightFeedback(unmarshaler.embed)
+	a.UpdatedAt = unmarshaler.UpdatedAt.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AccountHealthInsightFeedback) MarshalJSON() ([]byte, error) {
+	type embed AccountHealthInsightFeedback
+	var marshaler = struct {
+		embed
+		UpdatedAt *internal.DateTime `json:"updatedAt,omitempty"`
+	}{
+		embed:     embed(*a),
+		UpdatedAt: internal.NewOptionalDateTime(a.UpdatedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AccountHealthInsightFeedback) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+type AccountHealthInsightFeedbackRating string
+
+const (
+	AccountHealthInsightFeedbackRatingUseful    AccountHealthInsightFeedbackRating = "useful"
+	AccountHealthInsightFeedbackRatingNotUseful AccountHealthInsightFeedbackRating = "not_useful"
+)
+
+func NewAccountHealthInsightFeedbackRatingFromString(s string) (AccountHealthInsightFeedbackRating, error) {
+	switch s {
+	case "useful":
+		return AccountHealthInsightFeedbackRatingUseful, nil
+	case "not_useful":
+		return AccountHealthInsightFeedbackRatingNotUseful, nil
+	}
+	var t AccountHealthInsightFeedbackRating
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AccountHealthInsightFeedbackRating) Ptr() *AccountHealthInsightFeedbackRating {
 	return &a
 }
 
@@ -2683,6 +2925,144 @@ func (r *RunAccountHealthCheckResponse) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", r)
+}
+
+type SubmitAccountHealthFeedbackRequestRating string
+
+const (
+	SubmitAccountHealthFeedbackRequestRatingUseful    SubmitAccountHealthFeedbackRequestRating = "useful"
+	SubmitAccountHealthFeedbackRequestRatingNotUseful SubmitAccountHealthFeedbackRequestRating = "not_useful"
+)
+
+func NewSubmitAccountHealthFeedbackRequestRatingFromString(s string) (SubmitAccountHealthFeedbackRequestRating, error) {
+	switch s {
+	case "useful":
+		return SubmitAccountHealthFeedbackRequestRatingUseful, nil
+	case "not_useful":
+		return SubmitAccountHealthFeedbackRequestRatingNotUseful, nil
+	}
+	var t SubmitAccountHealthFeedbackRequestRating
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SubmitAccountHealthFeedbackRequestRating) Ptr() *SubmitAccountHealthFeedbackRequestRating {
+	return &s
+}
+
+var (
+	submitAccountHealthFeedbackResponseFieldFeedback  = big.NewInt(1 << 0)
+	submitAccountHealthFeedbackResponseFieldInsightID = big.NewInt(1 << 1)
+	submitAccountHealthFeedbackResponseFieldSuccess   = big.NewInt(1 << 2)
+)
+
+type SubmitAccountHealthFeedbackResponse struct {
+	Feedback  *AccountHealthInsightFeedback `json:"feedback,omitempty" url:"feedback,omitempty"`
+	InsightID *string                       `json:"insightId,omitempty" url:"insightId,omitempty"`
+	Success   *bool                         `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SubmitAccountHealthFeedbackResponse) GetFeedback() *AccountHealthInsightFeedback {
+	if s == nil {
+		return nil
+	}
+	return s.Feedback
+}
+
+func (s *SubmitAccountHealthFeedbackResponse) GetInsightID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.InsightID
+}
+
+func (s *SubmitAccountHealthFeedbackResponse) GetSuccess() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.Success
+}
+
+func (s *SubmitAccountHealthFeedbackResponse) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SubmitAccountHealthFeedbackResponse) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetFeedback sets the Feedback field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubmitAccountHealthFeedbackResponse) SetFeedback(feedback *AccountHealthInsightFeedback) {
+	s.Feedback = feedback
+	s.require(submitAccountHealthFeedbackResponseFieldFeedback)
+}
+
+// SetInsightID sets the InsightID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubmitAccountHealthFeedbackResponse) SetInsightID(insightID *string) {
+	s.InsightID = insightID
+	s.require(submitAccountHealthFeedbackResponseFieldInsightID)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubmitAccountHealthFeedbackResponse) SetSuccess(success *bool) {
+	s.Success = success
+	s.require(submitAccountHealthFeedbackResponseFieldSuccess)
+}
+
+func (s *SubmitAccountHealthFeedbackResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler SubmitAccountHealthFeedbackResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SubmitAccountHealthFeedbackResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SubmitAccountHealthFeedbackResponse) MarshalJSON() ([]byte, error) {
+	type embed SubmitAccountHealthFeedbackResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SubmitAccountHealthFeedbackResponse) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
 }
 
 type UpdateAccountHealthInsightRequestAction string

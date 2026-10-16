@@ -342,6 +342,35 @@ func (c *Client) Disable(
 	return response.Body, nil
 }
 
+// Discards a variation. It is no longer listed; the email does not change.
+//
+// Example:
+//
+//	request := &sequenzygo.DiscardEmailVariationSequencesRequest{
+//	    SequenceID: "sequenceId",
+//	    EmailID: "emailId",
+//	    VariationID: "variationId",
+//	}
+//	client.Sequences.DiscardEmailVariation(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) DiscardEmailVariation(
+	ctx context.Context,
+	request *sequenzygo.DiscardEmailVariationSequencesRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.DiscardEmailVariationSequencesResponse, error) {
+	response, err := c.WithRawResponse.DiscardEmailVariation(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Creates an independent draft copy of the sequence graph, email templates, and sequence A/B tests.
 //
 // Example:
@@ -359,6 +388,34 @@ func (c *Client) Duplicate(
 	opts ...option.RequestOption,
 ) (*sequenzygo.DuplicateSequencesResponse, error) {
 	response, err := c.WithRawResponse.Duplicate(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Changes a sequence's emails with AI in one request, like the Emails view in the sequence editor. The prompt says what to change, in any language. Without emailIds the prompt decides which emails change, every email unless it names some. A look change is made identical across the emails it restyles, down to each kind of block's style. A prompt asking to make emails look like one of them copies that email's style exactly, without AI. A request for design variations ("make a few variations of email 1") returns 400; use Generate Sequence Email Variations instead. Each email succeeds or fails on its own; changed emails are saved unless dryRun is true. An email written in HTML is edited as HTML. A/B test steps and steps without an email are skipped. Runs synchronously; one request edits up to 12 emails. An email saved elsewhere while the AI worked is not overwritten (saved false with an error).
+//
+// Example:
+//
+//	request := &sequenzygo.EditEmailsSequencesRequest{
+//	    SequenceID: "sequenceId",
+//	    Prompt: "Make the background cream and remove the header",
+//	}
+//	client.Sequences.EditEmails(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) EditEmails(
+	ctx context.Context,
+	request *sequenzygo.EditEmailsSequencesRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.EditEmailsSequencesResponse, error) {
+	response, err := c.WithRawResponse.EditEmails(
 		ctx,
 		request,
 		opts...,
@@ -500,6 +557,35 @@ func (c *Client) Generate(
 	opts ...option.RequestOption,
 ) (*sequenzygo.GenerateSequencesResponse, error) {
 	response, err := c.WithRawResponse.Generate(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Starts designing 1 to 4 variations of one email of a sequence with AI, like "I like email 1, make a few variations" in the sequence editor's Emails view, and returns them at once with status generating. The source is the email's saved content. Generation runs in the background, usually under a minute; poll List Sequence Email Variations until each is ready or failed. The email does not change until you use one. An email can have up to 8 variations generating at once.
+//
+// Example:
+//
+//	request := &sequenzygo.GenerateEmailVariationsSequencesRequest{
+//	    SequenceID: "sequenceId",
+//	    EmailID: "emailId",
+//	    Prompt: "A few bolder versions",
+//	}
+//	client.Sequences.GenerateEmailVariations(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) GenerateEmailVariations(
+	ctx context.Context,
+	request *sequenzygo.GenerateEmailVariationsSequencesRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.GenerateEmailVariationsSequencesResponse, error) {
+	response, err := c.WithRawResponse.GenerateEmailVariations(
 		ctx,
 		request,
 		opts...,
@@ -745,6 +831,34 @@ func (c *Client) ListAudienceEnrollments(
 	opts ...option.RequestOption,
 ) (*sequenzygo.ListAudienceEnrollmentsSequencesResponse, error) {
 	response, err := c.WithRawResponse.ListAudienceEnrollments(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Lists the design variations of one email of a sequence, oldest first, with status (generating, ready, failed) and inUse (the email has exactly this content). Discarded variations are not listed. Poll this after Generate Sequence Email Variations until none is generating.
+//
+// Example:
+//
+//	request := &sequenzygo.ListEmailVariationsSequencesRequest{
+//	    SequenceID: "sequenceId",
+//	    EmailID: "emailId",
+//	}
+//	client.Sequences.ListEmailVariations(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) ListEmailVariations(
+	ctx context.Context,
+	request *sequenzygo.ListEmailVariationsSequencesRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.ListEmailVariationsSequencesResponse, error) {
+	response, err := c.WithRawResponse.ListEmailVariations(
 		ctx,
 		request,
 		opts...,
@@ -1176,6 +1290,35 @@ func (c *Client) UpdateGoal(
 	opts ...option.RequestOption,
 ) (*sequenzygo.UpdateGoalSequencesResponse, error) {
 	response, err := c.WithRawResponse.UpdateGoal(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Saves a ready variation's design (blocks, theme and font) into the email, which keeps its own subject and preview text. With scope all, every other editable email of the sequence also takes its style exactly, without AI, keeping its own words. Each email saves on its own; one saved elsewhere since it was read is not overwritten (saved false with an error). Translations and A/B copy are re-derived. With dryRun nothing is saved.
+//
+// Example:
+//
+//	request := &sequenzygo.UseEmailVariationSequencesRequest{
+//	    SequenceID: "sequenceId",
+//	    EmailID: "emailId",
+//	    VariationID: "variationId",
+//	}
+//	client.Sequences.UseEmailVariation(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) UseEmailVariation(
+	ctx context.Context,
+	request *sequenzygo.UseEmailVariationSequencesRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.UseEmailVariationSequencesResponse, error) {
+	response, err := c.WithRawResponse.UseEmailVariation(
 		ctx,
 		request,
 		opts...,

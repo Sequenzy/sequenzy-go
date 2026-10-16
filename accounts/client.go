@@ -219,7 +219,7 @@ func (c *Client) GetOrganizationIDJob(
 	return response.Body, nil
 }
 
-// Lists the B2B accounts (organizations) in the workspace. Search matches name, external ID and domain. Sort with `sort` (updatedAt, createdAt, name, memberCount, lastEventAt) and `order` (asc, desc).
+// Lists the B2B accounts (organizations) in the workspace. Search matches name, external ID and domain. Sort with `sort` (updatedAt, createdAt, name, memberCount, lastEventAt) and `order` (asc, desc). `withoutEventRecipients=true` keeps accounts with members but no owner or admin.
 //
 // Example:
 //

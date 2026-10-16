@@ -374,6 +374,34 @@ func TestSequencesDisableWithWireMock(
 	VerifyRequestCount(t, "TestSequencesDisableWithWireMock", "POST", "/sequences/sequenceId/disable", nil, 1)
 }
 
+func TestSequencesDiscardEmailVariationWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.DiscardEmailVariationSequencesRequest{
+		SequenceID:  "sequenceId",
+		EmailID:     "emailId",
+		VariationID: "variationId",
+	}
+	_, invocationErr := client.Sequences.DiscardEmailVariation(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestSequencesDiscardEmailVariationWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestSequencesDiscardEmailVariationWithWireMock", "DELETE", "/sequences/sequenceId/emails/emailId/variations/variationId", nil, 1)
+}
+
 func TestSequencesDuplicateWithWireMock(
 	t *testing.T,
 ) {
@@ -398,6 +426,33 @@ func TestSequencesDuplicateWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestSequencesDuplicateWithWireMock", "POST", "/sequences/sequenceId/duplicate", nil, 1)
+}
+
+func TestSequencesEditEmailsWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.EditEmailsSequencesRequest{
+		SequenceID: "sequenceId",
+		Prompt:     "Make the background cream and remove the header",
+	}
+	_, invocationErr := client.Sequences.EditEmails(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestSequencesEditEmailsWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestSequencesEditEmailsWithWireMock", "POST", "/sequences/sequenceId/emails/edit", nil, 1)
 }
 
 func TestSequencesEnableWithWireMock(
@@ -534,6 +589,34 @@ func TestSequencesGenerateWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestSequencesGenerateWithWireMock", "POST", "/generate/sequence", nil, 1)
+}
+
+func TestSequencesGenerateEmailVariationsWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.GenerateEmailVariationsSequencesRequest{
+		SequenceID: "sequenceId",
+		EmailID:    "emailId",
+		Prompt:     "A few bolder versions",
+	}
+	_, invocationErr := client.Sequences.GenerateEmailVariations(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestSequencesGenerateEmailVariationsWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestSequencesGenerateEmailVariationsWithWireMock", "POST", "/sequences/sequenceId/emails/emailId/variations/generate", nil, 1)
 }
 
 func TestSequencesGetWithWireMock(
@@ -770,6 +853,33 @@ func TestSequencesListAudienceEnrollmentsWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestSequencesListAudienceEnrollmentsWithWireMock", "GET", "/sequences/sequenceId/audience-enrollments", nil, 1)
+}
+
+func TestSequencesListEmailVariationsWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.ListEmailVariationsSequencesRequest{
+		SequenceID: "sequenceId",
+		EmailID:    "emailId",
+	}
+	_, invocationErr := client.Sequences.ListEmailVariations(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestSequencesListEmailVariationsWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestSequencesListEmailVariationsWithWireMock", "GET", "/sequences/sequenceId/emails/emailId/variations", nil, 1)
 }
 
 func TestSequencesListEnrollmentsWithWireMock(
@@ -1186,4 +1296,32 @@ func TestSequencesUpdateGoalWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestSequencesUpdateGoalWithWireMock", "PATCH", "/sequences/sequenceId/goals/goalId", nil, 1)
+}
+
+func TestSequencesUseEmailVariationWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.UseEmailVariationSequencesRequest{
+		SequenceID:  "sequenceId",
+		EmailID:     "emailId",
+		VariationID: "variationId",
+	}
+	_, invocationErr := client.Sequences.UseEmailVariation(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestSequencesUseEmailVariationWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestSequencesUseEmailVariationWithWireMock", "POST", "/sequences/sequenceId/emails/emailId/variations/variationId/use", nil, 1)
 }

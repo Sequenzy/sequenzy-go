@@ -295,11 +295,12 @@ func (g *GetOrganizationIDJobAccountsRequest) SetJobID(jobID string) {
 }
 
 var (
-	listAccountsRequestFieldLimit  = big.NewInt(1 << 0)
-	listAccountsRequestFieldOrder  = big.NewInt(1 << 1)
-	listAccountsRequestFieldPage   = big.NewInt(1 << 2)
-	listAccountsRequestFieldSearch = big.NewInt(1 << 3)
-	listAccountsRequestFieldSort   = big.NewInt(1 << 4)
+	listAccountsRequestFieldLimit                  = big.NewInt(1 << 0)
+	listAccountsRequestFieldOrder                  = big.NewInt(1 << 1)
+	listAccountsRequestFieldPage                   = big.NewInt(1 << 2)
+	listAccountsRequestFieldSearch                 = big.NewInt(1 << 3)
+	listAccountsRequestFieldSort                   = big.NewInt(1 << 4)
+	listAccountsRequestFieldWithoutEventRecipients = big.NewInt(1 << 5)
 )
 
 type ListAccountsRequest struct {
@@ -308,6 +309,8 @@ type ListAccountsRequest struct {
 	Page   *int                      `json:"-" url:"page,omitempty"`
 	Search *string                   `json:"-" url:"search,omitempty"`
 	Sort   *ListAccountsRequestSort  `json:"-" url:"sort,omitempty"`
+	// When `true`, only accounts that have members but no owner or admin. Account events sent to owners or admins reach nobody in these accounts.
+	WithoutEventRecipients *ListAccountsRequestWithoutEventRecipients `json:"-" url:"withoutEventRecipients,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -353,6 +356,13 @@ func (l *ListAccountsRequest) SetSearch(search *string) {
 func (l *ListAccountsRequest) SetSort(sort *ListAccountsRequestSort) {
 	l.Sort = sort
 	l.require(listAccountsRequestFieldSort)
+}
+
+// SetWithoutEventRecipients sets the WithoutEventRecipients field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListAccountsRequest) SetWithoutEventRecipients(withoutEventRecipients *ListAccountsRequestWithoutEventRecipients) {
+	l.WithoutEventRecipients = withoutEventRecipients
+	l.require(listAccountsRequestFieldWithoutEventRecipients)
 }
 
 var (
@@ -4174,6 +4184,28 @@ func NewListAccountsRequestSortFromString(s string) (ListAccountsRequestSort, er
 }
 
 func (l ListAccountsRequestSort) Ptr() *ListAccountsRequestSort {
+	return &l
+}
+
+type ListAccountsRequestWithoutEventRecipients string
+
+const (
+	ListAccountsRequestWithoutEventRecipientsTrue  ListAccountsRequestWithoutEventRecipients = "true"
+	ListAccountsRequestWithoutEventRecipientsFalse ListAccountsRequestWithoutEventRecipients = "false"
+)
+
+func NewListAccountsRequestWithoutEventRecipientsFromString(s string) (ListAccountsRequestWithoutEventRecipients, error) {
+	switch s {
+	case "true":
+		return ListAccountsRequestWithoutEventRecipientsTrue, nil
+	case "false":
+		return ListAccountsRequestWithoutEventRecipientsFalse, nil
+	}
+	var t ListAccountsRequestWithoutEventRecipients
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListAccountsRequestWithoutEventRecipients) Ptr() *ListAccountsRequestWithoutEventRecipients {
 	return &l
 }
 

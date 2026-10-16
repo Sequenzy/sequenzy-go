@@ -103,6 +103,34 @@ func (c *Client) RunAccountHealthCheck(
 	return response.Body, nil
 }
 
+// Records whether a finding was useful to the API key owner, with an optional comment, and passes it to the Sequenzy team to improve the suggestions. It changes nothing in the workspace. Each person has one answer per finding, for findings of any status; sending again replaces the rating and keeps the earlier comment unless comment is given (null or an empty string clears it). Requires the analytics:read scope, so viewers can answer too.
+//
+// Example:
+//
+//	request := &sequenzygo.SubmitAccountHealthFeedbackRequest{
+//	    InsightID: "insightId",
+//	    Rating: sequenzygo.SubmitAccountHealthFeedbackRequestRatingUseful,
+//	}
+//	client.AccountHealth.SubmitAccountHealthFeedback(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) SubmitAccountHealthFeedback(
+	ctx context.Context,
+	request *sequenzygo.SubmitAccountHealthFeedbackRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.SubmitAccountHealthFeedbackResponse, error) {
+	response, err := c.WithRawResponse.SubmitAccountHealthFeedback(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Dismisses, snoozes, resolves or reopens one insight. A resolved insight reopens if the next check still finds it; a dismissed one stays hidden. Requires the sequences:write scope.
 //
 // Example:

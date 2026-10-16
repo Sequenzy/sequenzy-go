@@ -758,6 +758,42 @@
       }
     },
     {
+      "id": "ca04e288-46f3-47bd-a42f-ed2337d76d31",
+      "name": "Send account health feedback - default",
+      "request": {
+        "urlPathTemplate": "/account-health/insights/{insightId}/feedback",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "insightId": {
+            "equalTo": "insightId"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"feedback\": {\n    \"comment\": \"comment\",\n    \"rating\": \"useful\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"insightId\": \"insightId\",\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "ca04e288-46f3-47bd-a42f-ed2337d76d31",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "37fb1a0f-7a15-4617-af69-b940ac28036f",
       "name": "Update account health insight - default",
       "request": {
@@ -776,7 +812,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"insight\": {\n    \"actions\": [\n      {\n        \"api\": {\n          \"path\": \"/sequences/seq_123/disable\"\n        },\n        \"label\": \"Build this sequence\",\n        \"path\": \"/campaign?action=new\"\n      }\n    ],\n    \"detail\": \"detail\",\n    \"detector\": \"unhandled_event\",\n    \"evidence\": {\n      \"key\": \"value\"\n    },\n    \"firstSeenAt\": \"2024-01-15T09:30:00Z\",\n    \"fixAutomationId\": \"fixAutomationId\",\n    \"id\": \"id\",\n    \"lastSeenAt\": \"2024-01-15T09:30:00Z\",\n    \"recommendation\": \"recommendation\",\n    \"resolvedAt\": \"2024-01-15T09:30:00Z\",\n    \"severity\": \"high\",\n    \"snoozedUntil\": \"2024-01-15T09:30:00Z\",\n    \"status\": \"open\",\n    \"subjectId\": \"subjectId\",\n    \"subjectName\": \"subjectName\",\n    \"subjectType\": \"event\",\n    \"title\": \"Nothing happens after \\\"trial_ended\\\"\"\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"insight\": {\n    \"actions\": [\n      {\n        \"api\": {\n          \"path\": \"/sequences/seq_123/disable\"\n        },\n        \"label\": \"Build this sequence\",\n        \"path\": \"/campaign?action=new\"\n      }\n    ],\n    \"detail\": \"detail\",\n    \"detector\": \"unhandled_event\",\n    \"evidence\": {\n      \"key\": \"value\"\n    },\n    \"feedback\": {\n      \"comment\": \"comment\",\n      \"rating\": \"useful\",\n      \"updatedAt\": \"2024-01-15T09:30:00Z\"\n    },\n    \"firstSeenAt\": \"2024-01-15T09:30:00Z\",\n    \"fixAutomationId\": \"fixAutomationId\",\n    \"id\": \"id\",\n    \"lastSeenAt\": \"2024-01-15T09:30:00Z\",\n    \"recommendation\": \"recommendation\",\n    \"resolvedAt\": \"2024-01-15T09:30:00Z\",\n    \"severity\": \"high\",\n    \"snoozedUntil\": \"2024-01-15T09:30:00Z\",\n    \"status\": \"open\",\n    \"subjectId\": \"subjectId\",\n    \"subjectName\": \"subjectName\",\n    \"subjectType\": \"event\",\n    \"title\": \"Nothing happens after \\\"trial_ended\\\"\"\n  },\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -9251,6 +9287,48 @@
       }
     },
     {
+      "id": "575d4a09-b6c2-4e82-9b00-002dee99dcaf",
+      "name": "Discard sequence email variation - default",
+      "request": {
+        "urlPathTemplate": "/sequences/{sequenceId}/emails/{emailId}/variations/{variationId}",
+        "method": "DELETE",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "emailId": {
+            "equalTo": "emailId"
+          },
+          "sequenceId": {
+            "equalTo": "sequenceId"
+          },
+          "variationId": {
+            "equalTo": "variationId"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"discarded\": true,\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "575d4a09-b6c2-4e82-9b00-002dee99dcaf",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "ea762d0d-0cac-41a6-9fb1-e62fe55505f5",
       "name": "Duplicate sequence - default",
       "request": {
@@ -9275,6 +9353,42 @@
         }
       },
       "uuid": "ea762d0d-0cac-41a6-9fb1-e62fe55505f5",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "9190a466-8969-4759-a032-3486258f084a",
+      "name": "Edit sequence emails with AI - default",
+      "request": {
+        "urlPathTemplate": "/sequences/{sequenceId}/emails/edit",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "sequenceId": {
+            "equalTo": "sequenceId"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"dryRun\": true,\n  \"emails\": [\n    {\n      \"blocks\": [\n        {\n          \"key\": \"value\"\n        }\n      ],\n      \"emailId\": \"emailId\",\n      \"emailTheme\": {\n        \"key\": \"value\"\n      },\n      \"error\": \"error\",\n      \"fontFamily\": \"fontFamily\",\n      \"label\": \"Email 2\",\n      \"nodeId\": \"nodeId\",\n      \"previewText\": \"previewText\",\n      \"saved\": true,\n      \"status\": \"changed\",\n      \"subject\": \"subject\",\n      \"summary\": \"summary\"\n    }\n  ],\n  \"skipped\": [\n    {\n      \"emailId\": \"emailId\",\n      \"label\": \"label\",\n      \"nodeId\": \"nodeId\",\n      \"reason\": \"ab_test\"\n    }\n  ],\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "9190a466-8969-4759-a032-3486258f084a",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -9450,6 +9564,45 @@
         }
       },
       "uuid": "ba9ccdfe-2bc3-4bad-9de7-48d705fbebd5",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "688e7ca9-b04f-47dd-b441-f31e3e720020",
+      "name": "Generate sequence email variations - default",
+      "request": {
+        "urlPathTemplate": "/sequences/{sequenceId}/emails/{emailId}/variations/generate",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "emailId": {
+            "equalTo": "emailId"
+          },
+          "sequenceId": {
+            "equalTo": "sequenceId"
+          }
+        }
+      },
+      "response": {
+        "status": 202,
+        "body": "{\n  \"email\": {\n    \"emailId\": \"emailId\",\n    \"label\": \"Email 1\",\n    \"nodeId\": \"nodeId\"\n  },\n  \"success\": true,\n  \"variations\": [\n    {\n      \"blocks\": [\n        {\n          \"conditions\": [\n            {\n              \"field\": \"variable\",\n              \"id\": \"c1\",\n              \"operator\": \"is\",\n              \"value\": \"plan:pro\"\n            }\n          ],\n          \"content\": \"<h1>Hello</h1>\",\n          \"id\": \"block_123\",\n          \"styles\": {\n            \"backgroundColor\": \"#f8fafc\",\n            \"backgroundOpacity\": 80,\n            \"borderColor\": \"#cbd5e1\",\n            \"borderRadius\": 12,\n            \"borderWidth\": 1,\n            \"textColor\": \"#111827\"\n          },\n          \"type\": \"text\"\n        }\n      ],\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"emailId\": \"emailId\",\n      \"emailTheme\": {\n        \"key\": \"value\"\n      },\n      \"error\": \"error\",\n      \"fontFamily\": \"fontFamily\",\n      \"id\": \"id\",\n      \"inUse\": true,\n      \"label\": \"V2.1\",\n      \"name\": \"Warm and personal\",\n      \"parentId\": \"parentId\",\n      \"previewText\": \"previewText\",\n      \"prompt\": \"prompt\",\n      \"status\": \"generating\",\n      \"style\": \"close\",\n      \"subject\": \"subject\",\n      \"summary\": \"summary\",\n      \"updatedAt\": \"2024-01-15T09:30:00Z\",\n      \"usedAt\": \"2024-01-15T09:30:00Z\"\n    }\n  ]\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "688e7ca9-b04f-47dd-b441-f31e3e720020",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -9782,6 +9935,45 @@
         }
       },
       "uuid": "b9b6a5be-a648-47eb-a34e-94ee2507a69c",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "fdbe08f9-4935-4233-8cf5-4eb408a59752",
+      "name": "List sequence email variations - default",
+      "request": {
+        "urlPathTemplate": "/sequences/{sequenceId}/emails/{emailId}/variations",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "emailId": {
+            "equalTo": "emailId"
+          },
+          "sequenceId": {
+            "equalTo": "sequenceId"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"email\": {\n    \"emailId\": \"emailId\",\n    \"label\": \"Email 1\",\n    \"nodeId\": \"nodeId\"\n  },\n  \"success\": true,\n  \"variations\": [\n    {\n      \"blocks\": [\n        {\n          \"conditions\": [\n            {\n              \"field\": \"variable\",\n              \"id\": \"c1\",\n              \"operator\": \"is\",\n              \"value\": \"plan:pro\"\n            }\n          ],\n          \"content\": \"<h1>Hello</h1>\",\n          \"id\": \"block_123\",\n          \"styles\": {\n            \"backgroundColor\": \"#f8fafc\",\n            \"backgroundOpacity\": 80,\n            \"borderColor\": \"#cbd5e1\",\n            \"borderRadius\": 12,\n            \"borderWidth\": 1,\n            \"textColor\": \"#111827\"\n          },\n          \"type\": \"text\"\n        }\n      ],\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"emailId\": \"emailId\",\n      \"emailTheme\": {\n        \"key\": \"value\"\n      },\n      \"error\": \"error\",\n      \"fontFamily\": \"fontFamily\",\n      \"id\": \"id\",\n      \"inUse\": true,\n      \"label\": \"V2.1\",\n      \"name\": \"Warm and personal\",\n      \"parentId\": \"parentId\",\n      \"previewText\": \"previewText\",\n      \"prompt\": \"prompt\",\n      \"status\": \"generating\",\n      \"style\": \"close\",\n      \"subject\": \"subject\",\n      \"summary\": \"summary\",\n      \"updatedAt\": \"2024-01-15T09:30:00Z\",\n      \"usedAt\": \"2024-01-15T09:30:00Z\"\n    }\n  ]\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "fdbe08f9-4935-4233-8cf5-4eb408a59752",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -10340,6 +10532,48 @@
         }
       },
       "uuid": "b6471281-d5e1-4362-93ea-eeb70f3e94f5",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "f2531f42-9ef8-43f6-83c8-0244c7e3ed0d",
+      "name": "Use sequence email variation - default",
+      "request": {
+        "urlPathTemplate": "/sequences/{sequenceId}/emails/{emailId}/variations/{variationId}/use",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "emailId": {
+            "equalTo": "emailId"
+          },
+          "sequenceId": {
+            "equalTo": "sequenceId"
+          },
+          "variationId": {
+            "equalTo": "variationId"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"dryRun\": true,\n  \"emails\": [\n    {\n      \"emailId\": \"emailId\",\n      \"error\": \"error\",\n      \"label\": \"Email 1\",\n      \"nodeId\": \"nodeId\",\n      \"saved\": true,\n      \"status\": \"changed\",\n      \"summary\": \"Now uses V2.\"\n    }\n  ],\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "f2531f42-9ef8-43f6-83c8-0244c7e3ed0d",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -14845,6 +15079,6 @@
     }
   ],
   "meta": {
-    "total": 431
+    "total": 437
   }
 }
