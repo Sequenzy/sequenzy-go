@@ -178,6 +178,32 @@ func TestWebsitesListWithWireMock(
 	VerifyRequestCount(t, "TestWebsitesListWithWireMock", "GET", "/websites", nil, 1)
 }
 
+func TestWebsitesStartSendingDomainDNSUpgradeWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.StartSendingDomainDNSUpgradeRequest{
+		Domain: "domain",
+	}
+	_, invocationErr := client.Websites.StartSendingDomainDNSUpgrade(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestWebsitesStartSendingDomainDNSUpgradeWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestWebsitesStartSendingDomainDNSUpgradeWithWireMock", "POST", "/websites/domain/dns-upgrade", nil, 1)
+}
+
 func TestWebsitesVerifySendingDomainWithWireMock(
 	t *testing.T,
 ) {

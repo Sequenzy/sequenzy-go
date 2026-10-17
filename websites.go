@@ -161,22 +161,80 @@ func (g *GetWebsitesRequest) SetDomain(domain string) {
 }
 
 var (
+	startSendingDomainDNSUpgradeRequestFieldDomain         = big.NewInt(1 << 0)
+	startSendingDomainDNSUpgradeRequestFieldMailFromPrefix = big.NewInt(1 << 1)
+)
+
+type StartSendingDomainDNSUpgradeRequest struct {
+	// Configured sending domain
+	Domain string `json:"-" url:"-"`
+	// Return-path subdomain label for the new records. Defaults to rp; if rp is taken or already has DNS records, rp1, then sqrp. The SES return path is this label followed by 2 (rp2 by default), moving to bounces or sesbounces if that name is in use; publish the returned names. One DNS label of letters, numbers or hyphens; inbound is not allowed, and a label that already has DNS records, or is the current return path or the tracking domain label, is rejected with 400.
+	MailFromPrefix *string `json:"mailFromPrefix,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (s *StartSendingDomainDNSUpgradeRequest) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetDomain sets the Domain field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *StartSendingDomainDNSUpgradeRequest) SetDomain(domain string) {
+	s.Domain = domain
+	s.require(startSendingDomainDNSUpgradeRequestFieldDomain)
+}
+
+// SetMailFromPrefix sets the MailFromPrefix field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *StartSendingDomainDNSUpgradeRequest) SetMailFromPrefix(mailFromPrefix *string) {
+	s.MailFromPrefix = mailFromPrefix
+	s.require(startSendingDomainDNSUpgradeRequestFieldMailFromPrefix)
+}
+
+func (s *StartSendingDomainDNSUpgradeRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler StartSendingDomainDNSUpgradeRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*s = StartSendingDomainDNSUpgradeRequest(body)
+	return nil
+}
+
+func (s *StartSendingDomainDNSUpgradeRequest) MarshalJSON() ([]byte, error) {
+	type embed StartSendingDomainDNSUpgradeRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
 	websiteFieldBounceRecords      = big.NewInt(1 << 0)
 	websiteFieldCreatedAt          = big.NewInt(1 << 1)
 	websiteFieldDkim               = big.NewInt(1 << 2)
 	websiteFieldDNSRecords         = big.NewInt(1 << 3)
-	websiteFieldDNSVerified        = big.NewInt(1 << 4)
-	websiteFieldDomain             = big.NewInt(1 << 5)
-	websiteFieldID                 = big.NewInt(1 << 6)
-	websiteFieldLastVerifiedAt     = big.NewInt(1 << 7)
-	websiteFieldMailFrom           = big.NewInt(1 << 8)
-	websiteFieldMessage            = big.NewInt(1 << 9)
-	websiteFieldNextVerificationAt = big.NewInt(1 << 10)
-	websiteFieldReadiness          = big.NewInt(1 << 11)
-	websiteFieldReadyToSend        = big.NewInt(1 << 12)
-	websiteFieldSpf                = big.NewInt(1 << 13)
-	websiteFieldStatus             = big.NewInt(1 << 14)
-	websiteFieldTracking           = big.NewInt(1 << 15)
+	websiteFieldDNSUpgrade         = big.NewInt(1 << 4)
+	websiteFieldDNSVerified        = big.NewInt(1 << 5)
+	websiteFieldDomain             = big.NewInt(1 << 6)
+	websiteFieldID                 = big.NewInt(1 << 7)
+	websiteFieldLastVerifiedAt     = big.NewInt(1 << 8)
+	websiteFieldMailFrom           = big.NewInt(1 << 9)
+	websiteFieldMessage            = big.NewInt(1 << 10)
+	websiteFieldNextVerificationAt = big.NewInt(1 << 11)
+	websiteFieldReadiness          = big.NewInt(1 << 12)
+	websiteFieldReadyToSend        = big.NewInt(1 << 13)
+	websiteFieldSpf                = big.NewInt(1 << 14)
+	websiteFieldStatus             = big.NewInt(1 << 15)
+	websiteFieldTracking           = big.NewInt(1 << 16)
 )
 
 type Website struct {
@@ -187,6 +245,8 @@ type Website struct {
 	Dkim map[string]any `json:"dkim,omitempty" url:"dkim,omitempty"`
 	// The DNS records and their per-record verification status. Publish the DKIM record, DMARC when present, and the bounce records described by bounceRecords (returnPathCnameRecord when bounceRecords.style is cname, otherwise spfRecord and mxRecord; never both at the same name). Receiving mail is set up separately with receiving domains (/receiving-domains); the inbound* fields some older domains still return are deprecated. GET returns stored results; POST verify performs a fresh check.
 	DNSRecords *WebsiteDNSRecords `json:"dnsRecords,omitempty" url:"dnsRecords,omitempty"`
+	// Upgrade of this domain to the current per-domain CNAME record set, without removing the domain. available: a verified domain on the previous record set, including an older SES-only domain that has a working DMARC record; start it with POST /websites/{domain}/dns-upgrade. in_progress: publish records next to your current records, which keep working until the switch; about an hour after every required record is visible on public DNS, the domain switches by itself. completed: shown for 30 days after the switch; delete oldRecords after deleteOldRecordsAfter. unavailable: everything else (already on the current records, not verified, verification paused, an older SES-only domain without a working DMARC record, a domain on Amazon's three-CNAME DKIM records or in the middle of an earlier records migration, a Sequenzy-managed domain, or a domain the upgrade has not been offered to yet).
+	DNSUpgrade *WebsiteDNSUpgrade `json:"dnsUpgrade,omitempty" url:"dnsUpgrade,omitempty"`
 	// Whether the customer DNS records are verified.
 	DNSVerified    *bool      `json:"dnsVerified,omitempty" url:"dnsVerified,omitempty"`
 	Domain         *string    `json:"domain,omitempty" url:"domain,omitempty"`
@@ -241,6 +301,13 @@ func (w *Website) GetDNSRecords() *WebsiteDNSRecords {
 		return nil
 	}
 	return w.DNSRecords
+}
+
+func (w *Website) GetDNSUpgrade() *WebsiteDNSUpgrade {
+	if w == nil {
+		return nil
+	}
+	return w.DNSUpgrade
 }
 
 func (w *Website) GetDNSVerified() *bool {
@@ -367,6 +434,13 @@ func (w *Website) SetDkim(dkim map[string]any) {
 func (w *Website) SetDNSRecords(dnsRecords *WebsiteDNSRecords) {
 	w.DNSRecords = dnsRecords
 	w.require(websiteFieldDNSRecords)
+}
+
+// SetDNSUpgrade sets the DNSUpgrade field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *Website) SetDNSUpgrade(dnsUpgrade *WebsiteDNSUpgrade) {
+	w.DNSUpgrade = dnsUpgrade
+	w.require(websiteFieldDNSUpgrade)
 }
 
 // SetDNSVerified sets the DNSVerified field and marks it as non-optional;
@@ -1699,6 +1773,777 @@ func (w WebsiteDNSRecordsTrackingStatus) Ptr() *WebsiteDNSRecordsTrackingStatus 
 	return &w
 }
 
+// Upgrade of this domain to the current per-domain CNAME record set, without removing the domain. available: a verified domain on the previous record set, including an older SES-only domain that has a working DMARC record; start it with POST /websites/{domain}/dns-upgrade. in_progress: publish records next to your current records, which keep working until the switch; about an hour after every required record is visible on public DNS, the domain switches by itself. completed: shown for 30 days after the switch; delete oldRecords after deleteOldRecordsAfter. unavailable: everything else (already on the current records, not verified, verification paused, an older SES-only domain without a working DMARC record, a domain on Amazon's three-CNAME DKIM records or in the middle of an earlier records migration, a Sequenzy-managed domain, or a domain the upgrade has not been offered to yet).
+var (
+	websiteDNSUpgradeFieldCompletedAt           = big.NewInt(1 << 0)
+	websiteDNSUpgradeFieldDeleteOldRecordsAfter = big.NewInt(1 << 1)
+	websiteDNSUpgradeFieldOldRecords            = big.NewInt(1 << 2)
+	websiteDNSUpgradeFieldRecords               = big.NewInt(1 << 3)
+	websiteDNSUpgradeFieldReplacedRecords       = big.NewInt(1 << 4)
+	websiteDNSUpgradeFieldStartedAt             = big.NewInt(1 << 5)
+	websiteDNSUpgradeFieldStatus                = big.NewInt(1 << 6)
+)
+
+type WebsiteDNSUpgrade struct {
+	// When the domain switched to the new records. Set when completed.
+	CompletedAt *time.Time `json:"completedAt,omitempty" url:"completedAt,omitempty"`
+	// The old records can be deleted from this time, 8 days after the switch; deleting them is optional. Set when completed.
+	DeleteOldRecordsAfter *time.Time `json:"deleteOldRecordsAfter,omitempty" url:"deleteOldRecordsAfter,omitempty"`
+	// Records the domain no longer uses (the DKIM TXT at sequenzy._domainkey and the previous return path records). Set when completed. Keep them until deleteOldRecordsAfter so receivers can still check signatures and return bounces for email sent before the switch. removed turns true once a record is gone from public DNS (checked on each verification).
+	OldRecords []*WebsiteDNSUpgradeOldRecordsItem `json:"oldRecords,omitempty" url:"oldRecords,omitempty"`
+	// The CNAMEs to add next to your current records. Set while in_progress, otherwise null. Only entries with required true hold back the switch; publish all of them.
+	Records []*WebsiteDNSUpgradeRecordsItem `json:"records,omitempty" url:"records,omitempty"`
+	// Your current records that the upgrade replaces, which you can optionally remove about a week after the switch (the DKIM TXT at sequenzy._domainkey and the current return path records). Set while available or in_progress, otherwise null. Keep them until then.
+	ReplacedRecords []*WebsiteDNSUpgradeReplacedRecordsItem `json:"replacedRecords,omitempty" url:"replacedRecords,omitempty"`
+	// When the upgrade started. Set while in_progress.
+	StartedAt *time.Time              `json:"startedAt,omitempty" url:"startedAt,omitempty"`
+	Status    WebsiteDNSUpgradeStatus `json:"status" url:"status"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (w *WebsiteDNSUpgrade) GetCompletedAt() *time.Time {
+	if w == nil {
+		return nil
+	}
+	return w.CompletedAt
+}
+
+func (w *WebsiteDNSUpgrade) GetDeleteOldRecordsAfter() *time.Time {
+	if w == nil {
+		return nil
+	}
+	return w.DeleteOldRecordsAfter
+}
+
+func (w *WebsiteDNSUpgrade) GetOldRecords() []*WebsiteDNSUpgradeOldRecordsItem {
+	if w == nil {
+		return nil
+	}
+	return w.OldRecords
+}
+
+func (w *WebsiteDNSUpgrade) GetRecords() []*WebsiteDNSUpgradeRecordsItem {
+	if w == nil {
+		return nil
+	}
+	return w.Records
+}
+
+func (w *WebsiteDNSUpgrade) GetReplacedRecords() []*WebsiteDNSUpgradeReplacedRecordsItem {
+	if w == nil {
+		return nil
+	}
+	return w.ReplacedRecords
+}
+
+func (w *WebsiteDNSUpgrade) GetStartedAt() *time.Time {
+	if w == nil {
+		return nil
+	}
+	return w.StartedAt
+}
+
+func (w *WebsiteDNSUpgrade) GetStatus() WebsiteDNSUpgradeStatus {
+	if w == nil {
+		return ""
+	}
+	return w.Status
+}
+
+func (w *WebsiteDNSUpgrade) GetExtraProperties() map[string]interface{} {
+	if w == nil {
+		return nil
+	}
+	return w.extraProperties
+}
+
+func (w *WebsiteDNSUpgrade) require(field *big.Int) {
+	if w.explicitFields == nil {
+		w.explicitFields = big.NewInt(0)
+	}
+	w.explicitFields.Or(w.explicitFields, field)
+}
+
+// SetCompletedAt sets the CompletedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSUpgrade) SetCompletedAt(completedAt *time.Time) {
+	w.CompletedAt = completedAt
+	w.require(websiteDNSUpgradeFieldCompletedAt)
+}
+
+// SetDeleteOldRecordsAfter sets the DeleteOldRecordsAfter field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSUpgrade) SetDeleteOldRecordsAfter(deleteOldRecordsAfter *time.Time) {
+	w.DeleteOldRecordsAfter = deleteOldRecordsAfter
+	w.require(websiteDNSUpgradeFieldDeleteOldRecordsAfter)
+}
+
+// SetOldRecords sets the OldRecords field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSUpgrade) SetOldRecords(oldRecords []*WebsiteDNSUpgradeOldRecordsItem) {
+	w.OldRecords = oldRecords
+	w.require(websiteDNSUpgradeFieldOldRecords)
+}
+
+// SetRecords sets the Records field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSUpgrade) SetRecords(records []*WebsiteDNSUpgradeRecordsItem) {
+	w.Records = records
+	w.require(websiteDNSUpgradeFieldRecords)
+}
+
+// SetReplacedRecords sets the ReplacedRecords field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSUpgrade) SetReplacedRecords(replacedRecords []*WebsiteDNSUpgradeReplacedRecordsItem) {
+	w.ReplacedRecords = replacedRecords
+	w.require(websiteDNSUpgradeFieldReplacedRecords)
+}
+
+// SetStartedAt sets the StartedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSUpgrade) SetStartedAt(startedAt *time.Time) {
+	w.StartedAt = startedAt
+	w.require(websiteDNSUpgradeFieldStartedAt)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSUpgrade) SetStatus(status WebsiteDNSUpgradeStatus) {
+	w.Status = status
+	w.require(websiteDNSUpgradeFieldStatus)
+}
+
+func (w *WebsiteDNSUpgrade) UnmarshalJSON(data []byte) error {
+	type embed WebsiteDNSUpgrade
+	var unmarshaler = struct {
+		embed
+		CompletedAt           *internal.DateTime `json:"completedAt,omitempty"`
+		DeleteOldRecordsAfter *internal.DateTime `json:"deleteOldRecordsAfter,omitempty"`
+		StartedAt             *internal.DateTime `json:"startedAt,omitempty"`
+	}{
+		embed: embed(*w),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*w = WebsiteDNSUpgrade(unmarshaler.embed)
+	w.CompletedAt = unmarshaler.CompletedAt.TimePtr()
+	w.DeleteOldRecordsAfter = unmarshaler.DeleteOldRecordsAfter.TimePtr()
+	w.StartedAt = unmarshaler.StartedAt.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *w)
+	if err != nil {
+		return err
+	}
+	w.extraProperties = extraProperties
+	w.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (w *WebsiteDNSUpgrade) MarshalJSON() ([]byte, error) {
+	type embed WebsiteDNSUpgrade
+	var marshaler = struct {
+		embed
+		CompletedAt           *internal.DateTime `json:"completedAt,omitempty"`
+		DeleteOldRecordsAfter *internal.DateTime `json:"deleteOldRecordsAfter,omitempty"`
+		StartedAt             *internal.DateTime `json:"startedAt,omitempty"`
+	}{
+		embed:                 embed(*w),
+		CompletedAt:           internal.NewOptionalDateTime(w.CompletedAt),
+		DeleteOldRecordsAfter: internal.NewOptionalDateTime(w.DeleteOldRecordsAfter),
+		StartedAt:             internal.NewOptionalDateTime(w.StartedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, w.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (w *WebsiteDNSUpgrade) String() string {
+	if w == nil {
+		return "<nil>"
+	}
+	if len(w.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(w.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(w); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", w)
+}
+
+var (
+	websiteDNSUpgradeOldRecordsItemFieldName    = big.NewInt(1 << 0)
+	websiteDNSUpgradeOldRecordsItemFieldRemoved = big.NewInt(1 << 1)
+	websiteDNSUpgradeOldRecordsItemFieldType    = big.NewInt(1 << 2)
+)
+
+type WebsiteDNSUpgradeOldRecordsItem struct {
+	Name string `json:"name" url:"name"`
+	// True once the record is gone from public DNS.
+	Removed bool                                `json:"removed" url:"removed"`
+	Type    WebsiteDNSUpgradeOldRecordsItemType `json:"type" url:"type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (w *WebsiteDNSUpgradeOldRecordsItem) GetName() string {
+	if w == nil {
+		return ""
+	}
+	return w.Name
+}
+
+func (w *WebsiteDNSUpgradeOldRecordsItem) GetRemoved() bool {
+	if w == nil {
+		return false
+	}
+	return w.Removed
+}
+
+func (w *WebsiteDNSUpgradeOldRecordsItem) GetType() WebsiteDNSUpgradeOldRecordsItemType {
+	if w == nil {
+		return ""
+	}
+	return w.Type
+}
+
+func (w *WebsiteDNSUpgradeOldRecordsItem) GetExtraProperties() map[string]interface{} {
+	if w == nil {
+		return nil
+	}
+	return w.extraProperties
+}
+
+func (w *WebsiteDNSUpgradeOldRecordsItem) require(field *big.Int) {
+	if w.explicitFields == nil {
+		w.explicitFields = big.NewInt(0)
+	}
+	w.explicitFields.Or(w.explicitFields, field)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSUpgradeOldRecordsItem) SetName(name string) {
+	w.Name = name
+	w.require(websiteDNSUpgradeOldRecordsItemFieldName)
+}
+
+// SetRemoved sets the Removed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSUpgradeOldRecordsItem) SetRemoved(removed bool) {
+	w.Removed = removed
+	w.require(websiteDNSUpgradeOldRecordsItemFieldRemoved)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSUpgradeOldRecordsItem) SetType(type_ WebsiteDNSUpgradeOldRecordsItemType) {
+	w.Type = type_
+	w.require(websiteDNSUpgradeOldRecordsItemFieldType)
+}
+
+func (w *WebsiteDNSUpgradeOldRecordsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler WebsiteDNSUpgradeOldRecordsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*w = WebsiteDNSUpgradeOldRecordsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *w)
+	if err != nil {
+		return err
+	}
+	w.extraProperties = extraProperties
+	w.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (w *WebsiteDNSUpgradeOldRecordsItem) MarshalJSON() ([]byte, error) {
+	type embed WebsiteDNSUpgradeOldRecordsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*w),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, w.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (w *WebsiteDNSUpgradeOldRecordsItem) String() string {
+	if w == nil {
+		return "<nil>"
+	}
+	if len(w.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(w.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(w); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", w)
+}
+
+type WebsiteDNSUpgradeOldRecordsItemType string
+
+const (
+	WebsiteDNSUpgradeOldRecordsItemTypeTxt   WebsiteDNSUpgradeOldRecordsItemType = "TXT"
+	WebsiteDNSUpgradeOldRecordsItemTypeMx    WebsiteDNSUpgradeOldRecordsItemType = "MX"
+	WebsiteDNSUpgradeOldRecordsItemTypeCname WebsiteDNSUpgradeOldRecordsItemType = "CNAME"
+)
+
+func NewWebsiteDNSUpgradeOldRecordsItemTypeFromString(s string) (WebsiteDNSUpgradeOldRecordsItemType, error) {
+	switch s {
+	case "TXT":
+		return WebsiteDNSUpgradeOldRecordsItemTypeTxt, nil
+	case "MX":
+		return WebsiteDNSUpgradeOldRecordsItemTypeMx, nil
+	case "CNAME":
+		return WebsiteDNSUpgradeOldRecordsItemTypeCname, nil
+	}
+	var t WebsiteDNSUpgradeOldRecordsItemType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (w WebsiteDNSUpgradeOldRecordsItemType) Ptr() *WebsiteDNSUpgradeOldRecordsItemType {
+	return &w
+}
+
+var (
+	websiteDNSUpgradeRecordsItemFieldDiagnostic = big.NewInt(1 << 0)
+	websiteDNSUpgradeRecordsItemFieldName       = big.NewInt(1 << 1)
+	websiteDNSUpgradeRecordsItemFieldPurpose    = big.NewInt(1 << 2)
+	websiteDNSUpgradeRecordsItemFieldRequired   = big.NewInt(1 << 3)
+	websiteDNSUpgradeRecordsItemFieldStatus     = big.NewInt(1 << 4)
+	websiteDNSUpgradeRecordsItemFieldType       = big.NewInt(1 << 5)
+	websiteDNSUpgradeRecordsItemFieldValue      = big.NewInt(1 << 6)
+)
+
+type WebsiteDNSUpgradeRecordsItem struct {
+	// Why the record is not verified yet, when known.
+	Diagnostic map[string]any `json:"diagnostic,omitempty" url:"diagnostic,omitempty"`
+	Name       string         `json:"name" url:"name"`
+	// dkim is the DKIM selector the domain switches to; dkim_spare lets Sequenzy change the key later without a DNS change; return_path and ses_return_path are the two return paths (rp and rp2 by default).
+	Purpose WebsiteDNSUpgradeRecordsItemPurpose `json:"purpose" url:"purpose"`
+	// True for dkim and return_path.
+	Required bool                               `json:"required" url:"required"`
+	Status   WebsiteDNSUpgradeRecordsItemStatus `json:"status" url:"status"`
+	Type     WebsiteDNSUpgradeRecordsItemType   `json:"type" url:"type"`
+	Value    string                             `json:"value" url:"value"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (w *WebsiteDNSUpgradeRecordsItem) GetDiagnostic() map[string]any {
+	if w == nil {
+		return nil
+	}
+	return w.Diagnostic
+}
+
+func (w *WebsiteDNSUpgradeRecordsItem) GetName() string {
+	if w == nil {
+		return ""
+	}
+	return w.Name
+}
+
+func (w *WebsiteDNSUpgradeRecordsItem) GetPurpose() WebsiteDNSUpgradeRecordsItemPurpose {
+	if w == nil {
+		return ""
+	}
+	return w.Purpose
+}
+
+func (w *WebsiteDNSUpgradeRecordsItem) GetRequired() bool {
+	if w == nil {
+		return false
+	}
+	return w.Required
+}
+
+func (w *WebsiteDNSUpgradeRecordsItem) GetStatus() WebsiteDNSUpgradeRecordsItemStatus {
+	if w == nil {
+		return ""
+	}
+	return w.Status
+}
+
+func (w *WebsiteDNSUpgradeRecordsItem) GetType() WebsiteDNSUpgradeRecordsItemType {
+	if w == nil {
+		return ""
+	}
+	return w.Type
+}
+
+func (w *WebsiteDNSUpgradeRecordsItem) GetValue() string {
+	if w == nil {
+		return ""
+	}
+	return w.Value
+}
+
+func (w *WebsiteDNSUpgradeRecordsItem) GetExtraProperties() map[string]interface{} {
+	if w == nil {
+		return nil
+	}
+	return w.extraProperties
+}
+
+func (w *WebsiteDNSUpgradeRecordsItem) require(field *big.Int) {
+	if w.explicitFields == nil {
+		w.explicitFields = big.NewInt(0)
+	}
+	w.explicitFields.Or(w.explicitFields, field)
+}
+
+// SetDiagnostic sets the Diagnostic field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSUpgradeRecordsItem) SetDiagnostic(diagnostic map[string]any) {
+	w.Diagnostic = diagnostic
+	w.require(websiteDNSUpgradeRecordsItemFieldDiagnostic)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSUpgradeRecordsItem) SetName(name string) {
+	w.Name = name
+	w.require(websiteDNSUpgradeRecordsItemFieldName)
+}
+
+// SetPurpose sets the Purpose field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSUpgradeRecordsItem) SetPurpose(purpose WebsiteDNSUpgradeRecordsItemPurpose) {
+	w.Purpose = purpose
+	w.require(websiteDNSUpgradeRecordsItemFieldPurpose)
+}
+
+// SetRequired sets the Required field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSUpgradeRecordsItem) SetRequired(required bool) {
+	w.Required = required
+	w.require(websiteDNSUpgradeRecordsItemFieldRequired)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSUpgradeRecordsItem) SetStatus(status WebsiteDNSUpgradeRecordsItemStatus) {
+	w.Status = status
+	w.require(websiteDNSUpgradeRecordsItemFieldStatus)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSUpgradeRecordsItem) SetType(type_ WebsiteDNSUpgradeRecordsItemType) {
+	w.Type = type_
+	w.require(websiteDNSUpgradeRecordsItemFieldType)
+}
+
+// SetValue sets the Value field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSUpgradeRecordsItem) SetValue(value string) {
+	w.Value = value
+	w.require(websiteDNSUpgradeRecordsItemFieldValue)
+}
+
+func (w *WebsiteDNSUpgradeRecordsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler WebsiteDNSUpgradeRecordsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*w = WebsiteDNSUpgradeRecordsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *w)
+	if err != nil {
+		return err
+	}
+	w.extraProperties = extraProperties
+	w.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (w *WebsiteDNSUpgradeRecordsItem) MarshalJSON() ([]byte, error) {
+	type embed WebsiteDNSUpgradeRecordsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*w),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, w.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (w *WebsiteDNSUpgradeRecordsItem) String() string {
+	if w == nil {
+		return "<nil>"
+	}
+	if len(w.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(w.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(w); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", w)
+}
+
+// dkim is the DKIM selector the domain switches to; dkim_spare lets Sequenzy change the key later without a DNS change; return_path and ses_return_path are the two return paths (rp and rp2 by default).
+type WebsiteDNSUpgradeRecordsItemPurpose string
+
+const (
+	WebsiteDNSUpgradeRecordsItemPurposeDkim          WebsiteDNSUpgradeRecordsItemPurpose = "dkim"
+	WebsiteDNSUpgradeRecordsItemPurposeDkimSpare     WebsiteDNSUpgradeRecordsItemPurpose = "dkim_spare"
+	WebsiteDNSUpgradeRecordsItemPurposeReturnPath    WebsiteDNSUpgradeRecordsItemPurpose = "return_path"
+	WebsiteDNSUpgradeRecordsItemPurposeSesReturnPath WebsiteDNSUpgradeRecordsItemPurpose = "ses_return_path"
+)
+
+func NewWebsiteDNSUpgradeRecordsItemPurposeFromString(s string) (WebsiteDNSUpgradeRecordsItemPurpose, error) {
+	switch s {
+	case "dkim":
+		return WebsiteDNSUpgradeRecordsItemPurposeDkim, nil
+	case "dkim_spare":
+		return WebsiteDNSUpgradeRecordsItemPurposeDkimSpare, nil
+	case "return_path":
+		return WebsiteDNSUpgradeRecordsItemPurposeReturnPath, nil
+	case "ses_return_path":
+		return WebsiteDNSUpgradeRecordsItemPurposeSesReturnPath, nil
+	}
+	var t WebsiteDNSUpgradeRecordsItemPurpose
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (w WebsiteDNSUpgradeRecordsItemPurpose) Ptr() *WebsiteDNSUpgradeRecordsItemPurpose {
+	return &w
+}
+
+type WebsiteDNSUpgradeRecordsItemStatus string
+
+const (
+	WebsiteDNSUpgradeRecordsItemStatusPending       WebsiteDNSUpgradeRecordsItemStatus = "pending"
+	WebsiteDNSUpgradeRecordsItemStatusVerified      WebsiteDNSUpgradeRecordsItemStatus = "verified"
+	WebsiteDNSUpgradeRecordsItemStatusMisconfigured WebsiteDNSUpgradeRecordsItemStatus = "misconfigured"
+)
+
+func NewWebsiteDNSUpgradeRecordsItemStatusFromString(s string) (WebsiteDNSUpgradeRecordsItemStatus, error) {
+	switch s {
+	case "pending":
+		return WebsiteDNSUpgradeRecordsItemStatusPending, nil
+	case "verified":
+		return WebsiteDNSUpgradeRecordsItemStatusVerified, nil
+	case "misconfigured":
+		return WebsiteDNSUpgradeRecordsItemStatusMisconfigured, nil
+	}
+	var t WebsiteDNSUpgradeRecordsItemStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (w WebsiteDNSUpgradeRecordsItemStatus) Ptr() *WebsiteDNSUpgradeRecordsItemStatus {
+	return &w
+}
+
+type WebsiteDNSUpgradeRecordsItemType string
+
+const (
+	WebsiteDNSUpgradeRecordsItemTypeCname WebsiteDNSUpgradeRecordsItemType = "CNAME"
+)
+
+func NewWebsiteDNSUpgradeRecordsItemTypeFromString(s string) (WebsiteDNSUpgradeRecordsItemType, error) {
+	switch s {
+	case "CNAME":
+		return WebsiteDNSUpgradeRecordsItemTypeCname, nil
+	}
+	var t WebsiteDNSUpgradeRecordsItemType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (w WebsiteDNSUpgradeRecordsItemType) Ptr() *WebsiteDNSUpgradeRecordsItemType {
+	return &w
+}
+
+var (
+	websiteDNSUpgradeReplacedRecordsItemFieldName    = big.NewInt(1 << 0)
+	websiteDNSUpgradeReplacedRecordsItemFieldRemoved = big.NewInt(1 << 1)
+	websiteDNSUpgradeReplacedRecordsItemFieldType    = big.NewInt(1 << 2)
+)
+
+type WebsiteDNSUpgradeReplacedRecordsItem struct {
+	Name string `json:"name" url:"name"`
+	// True once the record is gone from public DNS.
+	Removed bool                                     `json:"removed" url:"removed"`
+	Type    WebsiteDNSUpgradeReplacedRecordsItemType `json:"type" url:"type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (w *WebsiteDNSUpgradeReplacedRecordsItem) GetName() string {
+	if w == nil {
+		return ""
+	}
+	return w.Name
+}
+
+func (w *WebsiteDNSUpgradeReplacedRecordsItem) GetRemoved() bool {
+	if w == nil {
+		return false
+	}
+	return w.Removed
+}
+
+func (w *WebsiteDNSUpgradeReplacedRecordsItem) GetType() WebsiteDNSUpgradeReplacedRecordsItemType {
+	if w == nil {
+		return ""
+	}
+	return w.Type
+}
+
+func (w *WebsiteDNSUpgradeReplacedRecordsItem) GetExtraProperties() map[string]interface{} {
+	if w == nil {
+		return nil
+	}
+	return w.extraProperties
+}
+
+func (w *WebsiteDNSUpgradeReplacedRecordsItem) require(field *big.Int) {
+	if w.explicitFields == nil {
+		w.explicitFields = big.NewInt(0)
+	}
+	w.explicitFields.Or(w.explicitFields, field)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSUpgradeReplacedRecordsItem) SetName(name string) {
+	w.Name = name
+	w.require(websiteDNSUpgradeReplacedRecordsItemFieldName)
+}
+
+// SetRemoved sets the Removed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSUpgradeReplacedRecordsItem) SetRemoved(removed bool) {
+	w.Removed = removed
+	w.require(websiteDNSUpgradeReplacedRecordsItemFieldRemoved)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSUpgradeReplacedRecordsItem) SetType(type_ WebsiteDNSUpgradeReplacedRecordsItemType) {
+	w.Type = type_
+	w.require(websiteDNSUpgradeReplacedRecordsItemFieldType)
+}
+
+func (w *WebsiteDNSUpgradeReplacedRecordsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler WebsiteDNSUpgradeReplacedRecordsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*w = WebsiteDNSUpgradeReplacedRecordsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *w)
+	if err != nil {
+		return err
+	}
+	w.extraProperties = extraProperties
+	w.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (w *WebsiteDNSUpgradeReplacedRecordsItem) MarshalJSON() ([]byte, error) {
+	type embed WebsiteDNSUpgradeReplacedRecordsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*w),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, w.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (w *WebsiteDNSUpgradeReplacedRecordsItem) String() string {
+	if w == nil {
+		return "<nil>"
+	}
+	if len(w.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(w.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(w); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", w)
+}
+
+type WebsiteDNSUpgradeReplacedRecordsItemType string
+
+const (
+	WebsiteDNSUpgradeReplacedRecordsItemTypeTxt   WebsiteDNSUpgradeReplacedRecordsItemType = "TXT"
+	WebsiteDNSUpgradeReplacedRecordsItemTypeMx    WebsiteDNSUpgradeReplacedRecordsItemType = "MX"
+	WebsiteDNSUpgradeReplacedRecordsItemTypeCname WebsiteDNSUpgradeReplacedRecordsItemType = "CNAME"
+)
+
+func NewWebsiteDNSUpgradeReplacedRecordsItemTypeFromString(s string) (WebsiteDNSUpgradeReplacedRecordsItemType, error) {
+	switch s {
+	case "TXT":
+		return WebsiteDNSUpgradeReplacedRecordsItemTypeTxt, nil
+	case "MX":
+		return WebsiteDNSUpgradeReplacedRecordsItemTypeMx, nil
+	case "CNAME":
+		return WebsiteDNSUpgradeReplacedRecordsItemTypeCname, nil
+	}
+	var t WebsiteDNSUpgradeReplacedRecordsItemType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (w WebsiteDNSUpgradeReplacedRecordsItemType) Ptr() *WebsiteDNSUpgradeReplacedRecordsItemType {
+	return &w
+}
+
+type WebsiteDNSUpgradeStatus string
+
+const (
+	WebsiteDNSUpgradeStatusAvailable   WebsiteDNSUpgradeStatus = "available"
+	WebsiteDNSUpgradeStatusInProgress  WebsiteDNSUpgradeStatus = "in_progress"
+	WebsiteDNSUpgradeStatusCompleted   WebsiteDNSUpgradeStatus = "completed"
+	WebsiteDNSUpgradeStatusUnavailable WebsiteDNSUpgradeStatus = "unavailable"
+)
+
+func NewWebsiteDNSUpgradeStatusFromString(s string) (WebsiteDNSUpgradeStatus, error) {
+	switch s {
+	case "available":
+		return WebsiteDNSUpgradeStatusAvailable, nil
+	case "in_progress":
+		return WebsiteDNSUpgradeStatusInProgress, nil
+	case "completed":
+		return WebsiteDNSUpgradeStatusCompleted, nil
+	case "unavailable":
+		return WebsiteDNSUpgradeStatusUnavailable, nil
+	}
+	var t WebsiteDNSUpgradeStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (w WebsiteDNSUpgradeStatus) Ptr() *WebsiteDNSUpgradeStatus {
+	return &w
+}
+
 // Customer-facing sending readiness. When readyToSend is false, reason says why; dns_* reasons describe your DNS records, while activation reasons resolve on Sequenzy's side.
 var (
 	websiteReadinessFieldReason = big.NewInt(1 << 0)
@@ -2688,6 +3533,106 @@ func (l *ListWebsitesResponse) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	startSendingDomainDNSUpgradeResponseFieldSuccess = big.NewInt(1 << 0)
+	startSendingDomainDNSUpgradeResponseFieldWebsite = big.NewInt(1 << 1)
+)
+
+type StartSendingDomainDNSUpgradeResponse struct {
+	Success *bool    `json:"success,omitempty" url:"success,omitempty"`
+	Website *Website `json:"website,omitempty" url:"website,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *StartSendingDomainDNSUpgradeResponse) GetSuccess() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.Success
+}
+
+func (s *StartSendingDomainDNSUpgradeResponse) GetWebsite() *Website {
+	if s == nil {
+		return nil
+	}
+	return s.Website
+}
+
+func (s *StartSendingDomainDNSUpgradeResponse) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *StartSendingDomainDNSUpgradeResponse) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *StartSendingDomainDNSUpgradeResponse) SetSuccess(success *bool) {
+	s.Success = success
+	s.require(startSendingDomainDNSUpgradeResponseFieldSuccess)
+}
+
+// SetWebsite sets the Website field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *StartSendingDomainDNSUpgradeResponse) SetWebsite(website *Website) {
+	s.Website = website
+	s.require(startSendingDomainDNSUpgradeResponseFieldWebsite)
+}
+
+func (s *StartSendingDomainDNSUpgradeResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler StartSendingDomainDNSUpgradeResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = StartSendingDomainDNSUpgradeResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *StartSendingDomainDNSUpgradeResponse) MarshalJSON() ([]byte, error) {
+	type embed StartSendingDomainDNSUpgradeResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *StartSendingDomainDNSUpgradeResponse) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
 }
 
 var (
