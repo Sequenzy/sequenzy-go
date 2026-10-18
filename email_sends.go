@@ -44,16 +44,18 @@ var (
 	listEmailSendsRequestFieldDays                 = big.NewInt(1 << 4)
 	listEmailSendsRequestFieldEmailType            = big.NewInt(1 << 5)
 	listEmailSendsRequestFieldLimit                = big.NewInt(1 << 6)
-	listEmailSendsRequestFieldPage                 = big.NewInt(1 << 7)
-	listEmailSendsRequestFieldQ                    = big.NewInt(1 << 8)
-	listEmailSendsRequestFieldRecipient            = big.NewInt(1 << 9)
-	listEmailSendsRequestFieldSearch               = big.NewInt(1 << 10)
-	listEmailSendsRequestFieldSortField            = big.NewInt(1 << 11)
-	listEmailSendsRequestFieldSortOrder            = big.NewInt(1 << 12)
-	listEmailSendsRequestFieldStatus               = big.NewInt(1 << 13)
-	listEmailSendsRequestFieldSubject              = big.NewInt(1 << 14)
-	listEmailSendsRequestFieldTitle                = big.NewInt(1 << 15)
-	listEmailSendsRequestFieldTransactionalEmailID = big.NewInt(1 << 16)
+	listEmailSendsRequestFieldListID               = big.NewInt(1 << 7)
+	listEmailSendsRequestFieldMailboxProvider      = big.NewInt(1 << 8)
+	listEmailSendsRequestFieldPage                 = big.NewInt(1 << 9)
+	listEmailSendsRequestFieldQ                    = big.NewInt(1 << 10)
+	listEmailSendsRequestFieldRecipient            = big.NewInt(1 << 11)
+	listEmailSendsRequestFieldSearch               = big.NewInt(1 << 12)
+	listEmailSendsRequestFieldSortField            = big.NewInt(1 << 13)
+	listEmailSendsRequestFieldSortOrder            = big.NewInt(1 << 14)
+	listEmailSendsRequestFieldStatus               = big.NewInt(1 << 15)
+	listEmailSendsRequestFieldSubject              = big.NewInt(1 << 16)
+	listEmailSendsRequestFieldTitle                = big.NewInt(1 << 17)
+	listEmailSendsRequestFieldTransactionalEmailID = big.NewInt(1 << 18)
 )
 
 type ListEmailSendsRequest struct {
@@ -65,7 +67,11 @@ type ListEmailSendsRequest struct {
 	Days             *int                             `json:"-" url:"days,omitempty"`
 	EmailType        *ListEmailSendsRequestEmailType  `json:"-" url:"emailType,omitempty"`
 	Limit            *int                             `json:"-" url:"limit,omitempty"`
-	Page             *int                             `json:"-" url:"page,omitempty"`
+	// Only sends to active subscribers currently on this list, the same audience the analytics list filter uses. A list ID from another company matches no rows.
+	ListID *string `json:"-" url:"listId,omitempty"`
+	// Recipient mailbox provider, with the same values and domain classification as the analytics `mailboxProvider` filter (e.g. gmail, microsoft, yahoo, icloud, orange). `other` matches every recipient domain outside the named providers. Case-insensitive; an unknown value returns 400.
+	MailboxProvider *string `json:"-" url:"mailboxProvider,omitempty"`
+	Page            *int    `json:"-" url:"page,omitempty"`
 	// Compatibility alias for `search`.
 	Q *string `json:"-" url:"q,omitempty"`
 	// Case-insensitive recipient email filter.
@@ -140,6 +146,20 @@ func (l *ListEmailSendsRequest) SetEmailType(emailType *ListEmailSendsRequestEma
 func (l *ListEmailSendsRequest) SetLimit(limit *int) {
 	l.Limit = limit
 	l.require(listEmailSendsRequestFieldLimit)
+}
+
+// SetListID sets the ListID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEmailSendsRequest) SetListID(listID *string) {
+	l.ListID = listID
+	l.require(listEmailSendsRequestFieldListID)
+}
+
+// SetMailboxProvider sets the MailboxProvider field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEmailSendsRequest) SetMailboxProvider(mailboxProvider *string) {
+	l.MailboxProvider = mailboxProvider
+	l.require(listEmailSendsRequestFieldMailboxProvider)
 }
 
 // SetPage sets the Page field and marks it as non-optional;

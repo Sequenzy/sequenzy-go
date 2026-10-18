@@ -52,11 +52,11 @@ type ConnectIntegrationsRequest struct {
 	HistoryImport *ConnectIntegrationsRequestHistoryImport `json:"historyImport,omitempty" url:"-"`
 	// Provider to connect.
 	Provider ConnectIntegrationsRequestProvider `json:"provider" url:"-"`
-	// Provider account id: Paddle seller ID, Dodo business ID, Lemon Squeezy numeric store ID, Whop company ID, Creem store ID, or Chargebee site name. Polar resolves it from the API key. RevenueCat resolves its project ID from the API key; pass it only when the key can access several projects.
+	// Provider account id: Paddle seller ID, Dodo business ID, Lemon Squeezy numeric store ID, Whop company ID, Creem store ID, or Chargebee site name. Polar resolves it from the API key. RevenueCat resolves its project ID from the API key; pass it only when the key can access several projects. Superwall does not use one.
 	ProviderAccountID *string `json:"providerAccountId,omitempty" url:"-"`
 	// PostHog and Segment: event delivery scope. Attio: listMap (Sequenzy list id to Attio list id or slug) and syncCompanyFromDomain.
 	Settings *ConnectIntegrationsRequestSettings `json:"settings,omitempty" url:"-"`
-	// Signing secret of the provider webhook. Optional for lemon_squeezy managed provisioning and outbound-only attio; required for other providers. Lemon Squeezy manual secrets use 16-40 characters. For Chargebee, pass username:password. For RevenueCat, pass at least 16 characters: the authorization header value set on the RevenueCat webhook, or its HMAC signing secret. For Segment, use 16-153 UTF-8 bytes.
+	// Signing secret of the provider webhook. Optional for lemon_squeezy managed provisioning and outbound-only attio; required for other providers. Lemon Squeezy manual secrets use 16-40 characters. For Chargebee, pass username:password. For RevenueCat, pass at least 16 characters: the authorization header value set on the RevenueCat webhook, or its HMAC signing secret. For Superwall, pass the webhook's whsec_ signing secret, the only credential it needs. For Segment, use 16-153 UTF-8 bytes.
 	WebhookSecret *string `json:"webhookSecret,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -5730,6 +5730,7 @@ const (
 	ConnectIntegrationsRequestProviderLemonSqueezy ConnectIntegrationsRequestProvider = "lemon_squeezy"
 	ConnectIntegrationsRequestProviderWhop         ConnectIntegrationsRequestProvider = "whop"
 	ConnectIntegrationsRequestProviderRevenuecat   ConnectIntegrationsRequestProvider = "revenuecat"
+	ConnectIntegrationsRequestProviderSuperwall    ConnectIntegrationsRequestProvider = "superwall"
 	ConnectIntegrationsRequestProviderCreem        ConnectIntegrationsRequestProvider = "creem"
 	ConnectIntegrationsRequestProviderChargebee    ConnectIntegrationsRequestProvider = "chargebee"
 	ConnectIntegrationsRequestProviderClerk        ConnectIntegrationsRequestProvider = "clerk"
@@ -5753,6 +5754,8 @@ func NewConnectIntegrationsRequestProviderFromString(s string) (ConnectIntegrati
 		return ConnectIntegrationsRequestProviderWhop, nil
 	case "revenuecat":
 		return ConnectIntegrationsRequestProviderRevenuecat, nil
+	case "superwall":
+		return ConnectIntegrationsRequestProviderSuperwall, nil
 	case "creem":
 		return ConnectIntegrationsRequestProviderCreem, nil
 	case "chargebee":
