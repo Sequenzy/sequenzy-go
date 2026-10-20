@@ -5381,12 +5381,44 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"messages\": [\n    {\n      \"body\": \"body\",\n      \"buttons\": [\n        {}\n      ],\n      \"clickCount\": 1,\n      \"clickedAt\": \"2024-01-15T09:30:00Z\",\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"data\": {\n        \"key\": \"value\"\n      },\n      \"dismissedAt\": \"2024-01-15T09:30:00Z\",\n      \"displayedAt\": \"2024-01-15T09:30:00Z\",\n      \"expiresAt\": \"2024-01-15T09:30:00Z\",\n      \"format\": \"modal\",\n      \"id\": \"id\",\n      \"imageUrl\": \"imageUrl\",\n      \"kind\": \"message\",\n      \"pinned\": true,\n      \"position\": \"top\",\n      \"readAt\": \"2024-01-15T09:30:00Z\",\n      \"sequenceId\": \"sequenceId\",\n      \"stepId\": \"stepId\",\n      \"title\": \"title\"\n    }\n  ],\n  \"status\": \"open\",\n  \"subscriberId\": \"subscriberId\",\n  \"success\": true\n}",
+        "body": "{\n  \"messages\": [\n    {\n      \"body\": \"body\",\n      \"buttons\": [\n        {}\n      ],\n      \"clickCount\": 1,\n      \"clickedAt\": \"2024-01-15T09:30:00Z\",\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"data\": {\n        \"key\": \"value\"\n      },\n      \"dismissedAt\": \"2024-01-15T09:30:00Z\",\n      \"displayedAt\": \"2024-01-15T09:30:00Z\",\n      \"expiresAt\": \"2024-01-15T09:30:00Z\",\n      \"eyebrow\": \"eyebrow\",\n      \"format\": \"modal\",\n      \"id\": \"id\",\n      \"imagePlacement\": \"top\",\n      \"imageUrl\": \"imageUrl\",\n      \"kind\": \"message\",\n      \"pinned\": true,\n      \"position\": \"top\",\n      \"readAt\": \"2024-01-15T09:30:00Z\",\n      \"sequenceId\": \"sequenceId\",\n      \"stepId\": \"stepId\",\n      \"title\": \"title\"\n    }\n  ],\n  \"status\": \"open\",\n  \"subscriberId\": \"subscriberId\",\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
       },
       "uuid": "baaadc33-3555-4a3a-9468-804c6fe247dd",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
+      "id": "74faf659-90e6-457c-bb98-96b2121d50b6",
+      "name": "List in-app templates - default",
+      "request": {
+        "urlPathTemplate": "/in-app/templates",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"success\": true,\n  \"templates\": [\n    {\n      \"category\": \"Conversion\",\n      \"config\": {\n        \"key\": \"value\"\n      },\n      \"description\": \"description\",\n      \"id\": \"trial-ending\",\n      \"name\": \"name\"\n    }\n  ]\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "74faf659-90e6-457c-bb98-96b2121d50b6",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -5418,12 +5450,43 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"message\": {\n    \"body\": \"body\",\n    \"buttons\": [\n      {}\n    ],\n    \"clickCount\": 1,\n    \"clickedAt\": \"2024-01-15T09:30:00Z\",\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"data\": {\n      \"key\": \"value\"\n    },\n    \"dismissedAt\": \"2024-01-15T09:30:00Z\",\n    \"displayedAt\": \"2024-01-15T09:30:00Z\",\n    \"expiresAt\": \"2024-01-15T09:30:00Z\",\n    \"format\": \"modal\",\n    \"id\": \"id\",\n    \"imageUrl\": \"imageUrl\",\n    \"kind\": \"message\",\n    \"pinned\": true,\n    \"position\": \"top\",\n    \"readAt\": \"2024-01-15T09:30:00Z\",\n    \"sequenceId\": \"sequenceId\",\n    \"stepId\": \"stepId\",\n    \"style\": {\n      \"backgroundColor\": \"backgroundColor\",\n      \"buttonColor\": \"buttonColor\",\n      \"buttonRadius\": 1,\n      \"buttonTextColor\": \"buttonTextColor\",\n      \"cornerRadius\": 1,\n      \"fontFamily\": \"fontFamily\",\n      \"mutedTextColor\": \"mutedTextColor\",\n      \"preset\": \"brand\",\n      \"textColor\": \"textColor\"\n    },\n    \"title\": \"title\"\n  },\n  \"recorded\": true,\n  \"success\": true\n}",
+        "body": "{\n  \"message\": {\n    \"body\": \"body\",\n    \"buttons\": [\n      {}\n    ],\n    \"clickCount\": 1,\n    \"clickedAt\": \"2024-01-15T09:30:00Z\",\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"data\": {\n      \"key\": \"value\"\n    },\n    \"dismissedAt\": \"2024-01-15T09:30:00Z\",\n    \"displayedAt\": \"2024-01-15T09:30:00Z\",\n    \"expiresAt\": \"2024-01-15T09:30:00Z\",\n    \"eyebrow\": \"eyebrow\",\n    \"format\": \"modal\",\n    \"id\": \"id\",\n    \"imagePlacement\": \"top\",\n    \"imageUrl\": \"imageUrl\",\n    \"kind\": \"message\",\n    \"pinned\": true,\n    \"position\": \"top\",\n    \"readAt\": \"2024-01-15T09:30:00Z\",\n    \"sequenceId\": \"sequenceId\",\n    \"stepId\": \"stepId\",\n    \"style\": {\n      \"backgroundColor\": \"backgroundColor\",\n      \"buttonColor\": \"buttonColor\",\n      \"buttonRadius\": 1,\n      \"buttonTextColor\": \"buttonTextColor\",\n      \"cornerRadius\": 1,\n      \"fontFamily\": \"fontFamily\",\n      \"mutedTextColor\": \"mutedTextColor\",\n      \"preset\": \"brand\",\n      \"textColor\": \"textColor\"\n    },\n    \"title\": \"title\"\n  },\n  \"recorded\": true,\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
       },
       "uuid": "991db36e-cbd9-4799-bf7b-45e9a6867704",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "33186f5a-47b0-4949-8d8e-00cf7c0a8ccf",
+      "name": "Write in-app copy - default",
+      "request": {
+        "urlPathTemplate": "/in-app/copy",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"copy\": {\n    \"body\": \"body\",\n    \"buttons\": [\n      {}\n    ],\n    \"eyebrow\": \"eyebrow\",\n    \"title\": \"title\"\n  },\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "33186f5a-47b0-4949-8d8e-00cf7c0a8ccf",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -14218,7 +14281,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"key\": {\n    \"allowedOrigins\": [\n      \"allowedOrigins\"\n    ],\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"endpoint\": \"endpoint\",\n    \"id\": \"id\",\n    \"installSnippet\": \"installSnippet\",\n    \"isActive\": true,\n    \"lastUsedAt\": \"2024-01-15T09:30:00Z\",\n    \"name\": \"name\",\n    \"publicKey\": \"publicKey\",\n    \"unrestricted\": true,\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"warning\": \"warning\"\n  },\n  \"message\": \"message\",\n  \"success\": true\n}",
+        "body": "{\n  \"key\": {\n    \"allowedAppIds\": [\n      \"allowedAppIds\"\n    ],\n    \"allowedOrigins\": [\n      \"allowedOrigins\"\n    ],\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"endpoint\": \"endpoint\",\n    \"id\": \"id\",\n    \"installSnippet\": \"installSnippet\",\n    \"isActive\": true,\n    \"lastUsedAt\": \"2024-01-15T09:30:00Z\",\n    \"name\": \"name\",\n    \"publicKey\": \"publicKey\",\n    \"unrestricted\": true,\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"warning\": \"warning\"\n  },\n  \"message\": \"message\",\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -14290,7 +14353,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"key\": {\n    \"allowedOrigins\": [\n      \"allowedOrigins\"\n    ],\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"endpoint\": \"endpoint\",\n    \"id\": \"id\",\n    \"installSnippet\": \"installSnippet\",\n    \"isActive\": true,\n    \"lastUsedAt\": \"2024-01-15T09:30:00Z\",\n    \"name\": \"name\",\n    \"publicKey\": \"publicKey\",\n    \"unrestricted\": true,\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"warning\": \"warning\"\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"key\": {\n    \"allowedAppIds\": [\n      \"allowedAppIds\"\n    ],\n    \"allowedOrigins\": [\n      \"allowedOrigins\"\n    ],\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"endpoint\": \"endpoint\",\n    \"id\": \"id\",\n    \"installSnippet\": \"installSnippet\",\n    \"isActive\": true,\n    \"lastUsedAt\": \"2024-01-15T09:30:00Z\",\n    \"name\": \"name\",\n    \"publicKey\": \"publicKey\",\n    \"unrestricted\": true,\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"warning\": \"warning\"\n  },\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -14321,7 +14384,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"keys\": [\n    {\n      \"allowedOrigins\": [\n        \"allowedOrigins\"\n      ],\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"endpoint\": \"endpoint\",\n      \"id\": \"id\",\n      \"installSnippet\": \"installSnippet\",\n      \"isActive\": true,\n      \"lastUsedAt\": \"2024-01-15T09:30:00Z\",\n      \"name\": \"name\",\n      \"publicKey\": \"publicKey\",\n      \"unrestricted\": true,\n      \"updatedAt\": \"2024-01-15T09:30:00Z\",\n      \"warning\": \"warning\"\n    }\n  ],\n  \"success\": true\n}",
+        "body": "{\n  \"keys\": [\n    {\n      \"allowedAppIds\": [\n        \"allowedAppIds\"\n      ],\n      \"allowedOrigins\": [\n        \"allowedOrigins\"\n      ],\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"endpoint\": \"endpoint\",\n      \"id\": \"id\",\n      \"installSnippet\": \"installSnippet\",\n      \"isActive\": true,\n      \"lastUsedAt\": \"2024-01-15T09:30:00Z\",\n      \"name\": \"name\",\n      \"publicKey\": \"publicKey\",\n      \"unrestricted\": true,\n      \"updatedAt\": \"2024-01-15T09:30:00Z\",\n      \"warning\": \"warning\"\n    }\n  ],\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -14389,7 +14452,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"key\": {\n    \"allowedOrigins\": [\n      \"allowedOrigins\"\n    ],\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"endpoint\": \"endpoint\",\n    \"id\": \"id\",\n    \"installSnippet\": \"installSnippet\",\n    \"isActive\": true,\n    \"lastUsedAt\": \"2024-01-15T09:30:00Z\",\n    \"name\": \"name\",\n    \"publicKey\": \"publicKey\",\n    \"unrestricted\": true,\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"warning\": \"warning\"\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"key\": {\n    \"allowedAppIds\": [\n      \"allowedAppIds\"\n    ],\n    \"allowedOrigins\": [\n      \"allowedOrigins\"\n    ],\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"endpoint\": \"endpoint\",\n    \"id\": \"id\",\n    \"installSnippet\": \"installSnippet\",\n    \"isActive\": true,\n    \"lastUsedAt\": \"2024-01-15T09:30:00Z\",\n    \"name\": \"name\",\n    \"publicKey\": \"publicKey\",\n    \"unrestricted\": true,\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"warning\": \"warning\"\n  },\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -15115,6 +15178,6 @@
     }
   ],
   "meta": {
-    "total": 438
+    "total": 440
   }
 }

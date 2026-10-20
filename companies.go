@@ -213,12 +213,13 @@ type Company struct {
 	// Where reply addresses in your emails point. custom uses your verified receiving domain for emails from every sending domain, and inbound.sequenzy.com until one is verified; sequenzy always uses inbound.sequenzy.com. Adding your first receiving domain sets it to custom.
 	ReplyTrackingDomainMode *CompanyReplyTrackingDomainMode `json:"replyTrackingDomainMode,omitempty" url:"replyTrackingDomainMode,omitempty"`
 	// Whether inbound reply capture is enabled for this company.
-	ReplyTrackingEnabled *bool              `json:"replyTrackingEnabled,omitempty" url:"replyTrackingEnabled,omitempty"`
-	SocialLinks          map[string]*string `json:"socialLinks,omitempty" url:"socialLinks,omitempty"`
-	Status               *string            `json:"status,omitempty" url:"status,omitempty"`
-	TermsURL             *string            `json:"termsUrl,omitempty" url:"termsUrl,omitempty"`
-	Testimonials         []map[string]any   `json:"testimonials,omitempty" url:"testimonials,omitempty"`
-	ToneVoice            *string            `json:"toneVoice,omitempty" url:"toneVoice,omitempty"`
+	ReplyTrackingEnabled *bool `json:"replyTrackingEnabled,omitempty" url:"replyTrackingEnabled,omitempty"`
+	// Profile URL per platform. Bare hosts (`x.com/acme`) and mistyped web schemes (`ttps://`, `https:/`) are saved as `https://` URLs.
+	SocialLinks  map[string]*string `json:"socialLinks,omitempty" url:"socialLinks,omitempty"`
+	Status       *string            `json:"status,omitempty" url:"status,omitempty"`
+	TermsURL     *string            `json:"termsUrl,omitempty" url:"termsUrl,omitempty"`
+	Testimonials []map[string]any   `json:"testimonials,omitempty" url:"testimonials,omitempty"`
+	ToneVoice    *string            `json:"toneVoice,omitempty" url:"toneVoice,omitempty"`
 	// Dashboard edit URL for this campaign.
 	URL        *string          `json:"url,omitempty" url:"url,omitempty"`
 	ValueProps []map[string]any `json:"valueProps,omitempty" url:"valueProps,omitempty"`

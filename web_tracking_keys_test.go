@@ -11,6 +11,14 @@ import (
 )
 
 func TestSettersCreateWebTrackingKeysRequest(t *testing.T) {
+	t.Run("SetAllowedAppIDs", func(t *testing.T) {
+		obj := &CreateWebTrackingKeysRequest{}
+		var fernTestValueAllowedAppIDs []string
+		obj.SetAllowedAppIDs(fernTestValueAllowedAppIDs)
+		assert.Equal(t, fernTestValueAllowedAppIDs, obj.AllowedAppIDs)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetAllowedOrigins", func(t *testing.T) {
 		obj := &CreateWebTrackingKeysRequest{}
 		var fernTestValueAllowedOrigins []string
@@ -30,6 +38,37 @@ func TestSettersCreateWebTrackingKeysRequest(t *testing.T) {
 }
 
 func TestSettersMarkExplicitCreateWebTrackingKeysRequest(t *testing.T) {
+	t.Run("SetAllowedAppIDs_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateWebTrackingKeysRequest{}
+		var fernTestValueAllowedAppIDs []string
+
+		// Act
+		obj.SetAllowedAppIDs(fernTestValueAllowedAppIDs)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetAllowedOrigins_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -347,6 +386,14 @@ func TestSettersMarkExplicitMintIdentityWebTrackingKeysRequest(t *testing.T) {
 }
 
 func TestSettersWebTrackingKey(t *testing.T) {
+	t.Run("SetAllowedAppIDs", func(t *testing.T) {
+		obj := &WebTrackingKey{}
+		var fernTestValueAllowedAppIDs []string
+		obj.SetAllowedAppIDs(fernTestValueAllowedAppIDs)
+		assert.Equal(t, fernTestValueAllowedAppIDs, obj.AllowedAppIDs)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetAllowedOrigins", func(t *testing.T) {
 		obj := &WebTrackingKey{}
 		var fernTestValueAllowedOrigins []string
@@ -446,6 +493,39 @@ func TestSettersWebTrackingKey(t *testing.T) {
 }
 
 func TestGettersWebTrackingKey(t *testing.T) {
+	t.Run("GetAllowedAppIDs", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &WebTrackingKey{}
+		var expected []string
+		obj.AllowedAppIDs = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAllowedAppIDs(), "getter should return the property value")
+	})
+
+	t.Run("GetAllowedAppIDs_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &WebTrackingKey{}
+		obj.AllowedAppIDs = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetAllowedAppIDs(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetAllowedAppIDs_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *WebTrackingKey
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAllowedAppIDs() // Should return zero value
+	})
+
 	t.Run("GetAllowedOrigins", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -845,6 +925,37 @@ func TestGettersWebTrackingKey(t *testing.T) {
 }
 
 func TestSettersMarkExplicitWebTrackingKey(t *testing.T) {
+	t.Run("SetAllowedAppIDs_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &WebTrackingKey{}
+		var fernTestValueAllowedAppIDs []string
+
+		// Act
+		obj.SetAllowedAppIDs(fernTestValueAllowedAppIDs)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetAllowedOrigins_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -2578,6 +2689,14 @@ func TestSettersUpdateWebTrackingKeysRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetAllowedAppIDs", func(t *testing.T) {
+		obj := &UpdateWebTrackingKeysRequest{}
+		var fernTestValueAllowedAppIDs []string
+		obj.SetAllowedAppIDs(fernTestValueAllowedAppIDs)
+		assert.Equal(t, fernTestValueAllowedAppIDs, obj.AllowedAppIDs)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetAllowedOrigins", func(t *testing.T) {
 		obj := &UpdateWebTrackingKeysRequest{}
 		var fernTestValueAllowedOrigins []string
@@ -2613,6 +2732,37 @@ func TestSettersMarkExplicitUpdateWebTrackingKeysRequest(t *testing.T) {
 
 		// Act
 		obj.SetID(fernTestValueID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetAllowedAppIDs_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateWebTrackingKeysRequest{}
+		var fernTestValueAllowedAppIDs []string
+
+		// Act
+		obj.SetAllowedAppIDs(fernTestValueAllowedAppIDs)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)

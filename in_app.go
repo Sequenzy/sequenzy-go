@@ -190,26 +190,28 @@ func (r *RecordInAppEventRequest) MarshalJSON() ([]byte, error) {
 
 // One item in a contact's in-app feed, with merge tags already resolved.
 var (
-	inAppMessageFieldBody        = big.NewInt(1 << 0)
-	inAppMessageFieldButtons     = big.NewInt(1 << 1)
-	inAppMessageFieldClickCount  = big.NewInt(1 << 2)
-	inAppMessageFieldClickedAt   = big.NewInt(1 << 3)
-	inAppMessageFieldCreatedAt   = big.NewInt(1 << 4)
-	inAppMessageFieldData        = big.NewInt(1 << 5)
-	inAppMessageFieldDismissedAt = big.NewInt(1 << 6)
-	inAppMessageFieldDisplayedAt = big.NewInt(1 << 7)
-	inAppMessageFieldExpiresAt   = big.NewInt(1 << 8)
-	inAppMessageFieldFormat      = big.NewInt(1 << 9)
-	inAppMessageFieldID          = big.NewInt(1 << 10)
-	inAppMessageFieldImageURL    = big.NewInt(1 << 11)
-	inAppMessageFieldKind        = big.NewInt(1 << 12)
-	inAppMessageFieldPinned      = big.NewInt(1 << 13)
-	inAppMessageFieldPosition    = big.NewInt(1 << 14)
-	inAppMessageFieldReadAt      = big.NewInt(1 << 15)
-	inAppMessageFieldSequenceID  = big.NewInt(1 << 16)
-	inAppMessageFieldStepID      = big.NewInt(1 << 17)
-	inAppMessageFieldStyle       = big.NewInt(1 << 18)
-	inAppMessageFieldTitle       = big.NewInt(1 << 19)
+	inAppMessageFieldBody           = big.NewInt(1 << 0)
+	inAppMessageFieldButtons        = big.NewInt(1 << 1)
+	inAppMessageFieldClickCount     = big.NewInt(1 << 2)
+	inAppMessageFieldClickedAt      = big.NewInt(1 << 3)
+	inAppMessageFieldCreatedAt      = big.NewInt(1 << 4)
+	inAppMessageFieldData           = big.NewInt(1 << 5)
+	inAppMessageFieldDismissedAt    = big.NewInt(1 << 6)
+	inAppMessageFieldDisplayedAt    = big.NewInt(1 << 7)
+	inAppMessageFieldExpiresAt      = big.NewInt(1 << 8)
+	inAppMessageFieldEyebrow        = big.NewInt(1 << 9)
+	inAppMessageFieldFormat         = big.NewInt(1 << 10)
+	inAppMessageFieldID             = big.NewInt(1 << 11)
+	inAppMessageFieldImagePlacement = big.NewInt(1 << 12)
+	inAppMessageFieldImageURL       = big.NewInt(1 << 13)
+	inAppMessageFieldKind           = big.NewInt(1 << 14)
+	inAppMessageFieldPinned         = big.NewInt(1 << 15)
+	inAppMessageFieldPosition       = big.NewInt(1 << 16)
+	inAppMessageFieldReadAt         = big.NewInt(1 << 17)
+	inAppMessageFieldSequenceID     = big.NewInt(1 << 18)
+	inAppMessageFieldStepID         = big.NewInt(1 << 19)
+	inAppMessageFieldStyle          = big.NewInt(1 << 20)
+	inAppMessageFieldTitle          = big.NewInt(1 << 21)
 )
 
 type InAppMessage struct {
@@ -225,15 +227,19 @@ type InAppMessage struct {
 	DisplayedAt *time.Time        `json:"displayedAt,omitempty" url:"displayedAt,omitempty"`
 	// After this the item leaves the open feed. Messages default to 30 days; cards never expire unless the step sets it.
 	ExpiresAt *time.Time `json:"expiresAt,omitempty" url:"expiresAt,omitempty"`
+	// Short line above the title, such as "3 days left"; empty when the step has none.
+	Eyebrow *string `json:"eyebrow,omitempty" url:"eyebrow,omitempty"`
 	// How a message is shown; null for cards.
-	Format   *InAppMessageFormat `json:"format,omitempty" url:"format,omitempty"`
-	ID       *string             `json:"id,omitempty" url:"id,omitempty"`
-	ImageURL *string             `json:"imageUrl,omitempty" url:"imageUrl,omitempty"`
+	Format *InAppMessageFormat `json:"format,omitempty" url:"format,omitempty"`
+	ID     *string             `json:"id,omitempty" url:"id,omitempty"`
+	// Modals and full screens with an image: top (image above the text) or background (image fills the message, text on a dark scrim over it). Null otherwise.
+	ImagePlacement *InAppMessageImagePlacement `json:"imagePlacement,omitempty" url:"imagePlacement,omitempty"`
+	ImageURL       *string                     `json:"imageUrl,omitempty" url:"imageUrl,omitempty"`
 	// message: modal, banner or fullscreen, shown once. card: stays in the card feed until dismissed.
 	Kind *InAppMessageKind `json:"kind,omitempty" url:"kind,omitempty"`
 	// Cards only. Pinned cards sort first.
 	Pinned *bool `json:"pinned,omitempty" url:"pinned,omitempty"`
-	// Banner position; null for other formats and cards.
+	// Banners: top or bottom. Modals: bottom (a sheet rising from the bottom edge) or center. Null for full screens and cards.
 	Position   *InAppMessagePosition `json:"position,omitempty" url:"position,omitempty"`
 	ReadAt     *time.Time            `json:"readAt,omitempty" url:"readAt,omitempty"`
 	SequenceID *string               `json:"sequenceId,omitempty" url:"sequenceId,omitempty"`
@@ -312,6 +318,13 @@ func (i *InAppMessage) GetExpiresAt() *time.Time {
 	return i.ExpiresAt
 }
 
+func (i *InAppMessage) GetEyebrow() *string {
+	if i == nil {
+		return nil
+	}
+	return i.Eyebrow
+}
+
 func (i *InAppMessage) GetFormat() *InAppMessageFormat {
 	if i == nil {
 		return nil
@@ -324,6 +337,13 @@ func (i *InAppMessage) GetID() *string {
 		return nil
 	}
 	return i.ID
+}
+
+func (i *InAppMessage) GetImagePlacement() *InAppMessageImagePlacement {
+	if i == nil {
+		return nil
+	}
+	return i.ImagePlacement
 }
 
 func (i *InAppMessage) GetImageURL() *string {
@@ -466,6 +486,13 @@ func (i *InAppMessage) SetExpiresAt(expiresAt *time.Time) {
 	i.require(inAppMessageFieldExpiresAt)
 }
 
+// SetEyebrow sets the Eyebrow field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppMessage) SetEyebrow(eyebrow *string) {
+	i.Eyebrow = eyebrow
+	i.require(inAppMessageFieldEyebrow)
+}
+
 // SetFormat sets the Format field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (i *InAppMessage) SetFormat(format *InAppMessageFormat) {
@@ -478,6 +505,13 @@ func (i *InAppMessage) SetFormat(format *InAppMessageFormat) {
 func (i *InAppMessage) SetID(id *string) {
 	i.ID = id
 	i.require(inAppMessageFieldID)
+}
+
+// SetImagePlacement sets the ImagePlacement field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppMessage) SetImagePlacement(imagePlacement *InAppMessageImagePlacement) {
+	i.ImagePlacement = imagePlacement
+	i.require(inAppMessageFieldImagePlacement)
 }
 
 // SetImageURL sets the ImageURL field and marks it as non-optional;
@@ -778,6 +812,29 @@ func (i InAppMessageFormat) Ptr() *InAppMessageFormat {
 	return &i
 }
 
+// Modals and full screens with an image: top (image above the text) or background (image fills the message, text on a dark scrim over it). Null otherwise.
+type InAppMessageImagePlacement string
+
+const (
+	InAppMessageImagePlacementTop        InAppMessageImagePlacement = "top"
+	InAppMessageImagePlacementBackground InAppMessageImagePlacement = "background"
+)
+
+func NewInAppMessageImagePlacementFromString(s string) (InAppMessageImagePlacement, error) {
+	switch s {
+	case "top":
+		return InAppMessageImagePlacementTop, nil
+	case "background":
+		return InAppMessageImagePlacementBackground, nil
+	}
+	var t InAppMessageImagePlacement
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (i InAppMessageImagePlacement) Ptr() *InAppMessageImagePlacement {
+	return &i
+}
+
 // message: modal, banner or fullscreen, shown once. card: stays in the card feed until dismissed.
 type InAppMessageKind string
 
@@ -801,12 +858,13 @@ func (i InAppMessageKind) Ptr() *InAppMessageKind {
 	return &i
 }
 
-// Banner position; null for other formats and cards.
+// Banners: top or bottom. Modals: bottom (a sheet rising from the bottom edge) or center. Null for full screens and cards.
 type InAppMessagePosition string
 
 const (
 	InAppMessagePositionTop    InAppMessagePosition = "top"
 	InAppMessagePositionBottom InAppMessagePosition = "bottom"
+	InAppMessagePositionCenter InAppMessagePosition = "center"
 )
 
 func NewInAppMessagePositionFromString(s string) (InAppMessagePosition, error) {
@@ -815,6 +873,8 @@ func NewInAppMessagePositionFromString(s string) (InAppMessagePosition, error) {
 		return InAppMessagePositionTop, nil
 	case "bottom":
 		return InAppMessagePositionBottom, nil
+	case "center":
+		return InAppMessagePositionCenter, nil
 	}
 	var t InAppMessagePosition
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -1647,6 +1707,283 @@ func (l ListInAppMessagesResponseStatus) Ptr() *ListInAppMessagesResponseStatus 
 	return &l
 }
 
+var (
+	listInAppTemplatesResponseFieldSuccess   = big.NewInt(1 << 0)
+	listInAppTemplatesResponseFieldTemplates = big.NewInt(1 << 1)
+)
+
+type ListInAppTemplatesResponse struct {
+	Success   *bool                                      `json:"success,omitempty" url:"success,omitempty"`
+	Templates []*ListInAppTemplatesResponseTemplatesItem `json:"templates,omitempty" url:"templates,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListInAppTemplatesResponse) GetSuccess() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.Success
+}
+
+func (l *ListInAppTemplatesResponse) GetTemplates() []*ListInAppTemplatesResponseTemplatesItem {
+	if l == nil {
+		return nil
+	}
+	return l.Templates
+}
+
+func (l *ListInAppTemplatesResponse) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListInAppTemplatesResponse) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListInAppTemplatesResponse) SetSuccess(success *bool) {
+	l.Success = success
+	l.require(listInAppTemplatesResponseFieldSuccess)
+}
+
+// SetTemplates sets the Templates field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListInAppTemplatesResponse) SetTemplates(templates []*ListInAppTemplatesResponseTemplatesItem) {
+	l.Templates = templates
+	l.require(listInAppTemplatesResponseFieldTemplates)
+}
+
+func (l *ListInAppTemplatesResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListInAppTemplatesResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListInAppTemplatesResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListInAppTemplatesResponse) MarshalJSON() ([]byte, error) {
+	type embed ListInAppTemplatesResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListInAppTemplatesResponse) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	listInAppTemplatesResponseTemplatesItemFieldCategory    = big.NewInt(1 << 0)
+	listInAppTemplatesResponseTemplatesItemFieldConfig      = big.NewInt(1 << 1)
+	listInAppTemplatesResponseTemplatesItemFieldDescription = big.NewInt(1 << 2)
+	listInAppTemplatesResponseTemplatesItemFieldID          = big.NewInt(1 << 3)
+	listInAppTemplatesResponseTemplatesItemFieldName        = big.NewInt(1 << 4)
+)
+
+type ListInAppTemplatesResponseTemplatesItem struct {
+	Category *ListInAppTemplatesResponseTemplatesItemCategory `json:"category,omitempty" url:"category,omitempty"`
+	// An in_app step config without a label.
+	Config      map[string]any `json:"config,omitempty" url:"config,omitempty"`
+	Description *string        `json:"description,omitempty" url:"description,omitempty"`
+	ID          *string        `json:"id,omitempty" url:"id,omitempty"`
+	Name        *string        `json:"name,omitempty" url:"name,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListInAppTemplatesResponseTemplatesItem) GetCategory() *ListInAppTemplatesResponseTemplatesItemCategory {
+	if l == nil {
+		return nil
+	}
+	return l.Category
+}
+
+func (l *ListInAppTemplatesResponseTemplatesItem) GetConfig() map[string]any {
+	if l == nil {
+		return nil
+	}
+	return l.Config
+}
+
+func (l *ListInAppTemplatesResponseTemplatesItem) GetDescription() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Description
+}
+
+func (l *ListInAppTemplatesResponseTemplatesItem) GetID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.ID
+}
+
+func (l *ListInAppTemplatesResponseTemplatesItem) GetName() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Name
+}
+
+func (l *ListInAppTemplatesResponseTemplatesItem) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListInAppTemplatesResponseTemplatesItem) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetCategory sets the Category field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListInAppTemplatesResponseTemplatesItem) SetCategory(category *ListInAppTemplatesResponseTemplatesItemCategory) {
+	l.Category = category
+	l.require(listInAppTemplatesResponseTemplatesItemFieldCategory)
+}
+
+// SetConfig sets the Config field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListInAppTemplatesResponseTemplatesItem) SetConfig(config map[string]any) {
+	l.Config = config
+	l.require(listInAppTemplatesResponseTemplatesItemFieldConfig)
+}
+
+// SetDescription sets the Description field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListInAppTemplatesResponseTemplatesItem) SetDescription(description *string) {
+	l.Description = description
+	l.require(listInAppTemplatesResponseTemplatesItemFieldDescription)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListInAppTemplatesResponseTemplatesItem) SetID(id *string) {
+	l.ID = id
+	l.require(listInAppTemplatesResponseTemplatesItemFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListInAppTemplatesResponseTemplatesItem) SetName(name *string) {
+	l.Name = name
+	l.require(listInAppTemplatesResponseTemplatesItemFieldName)
+}
+
+func (l *ListInAppTemplatesResponseTemplatesItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListInAppTemplatesResponseTemplatesItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListInAppTemplatesResponseTemplatesItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListInAppTemplatesResponseTemplatesItem) MarshalJSON() ([]byte, error) {
+	type embed ListInAppTemplatesResponseTemplatesItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListInAppTemplatesResponseTemplatesItem) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type ListInAppTemplatesResponseTemplatesItemCategory string
+
+const (
+	ListInAppTemplatesResponseTemplatesItemCategoryConversion   ListInAppTemplatesResponseTemplatesItemCategory = "Conversion"
+	ListInAppTemplatesResponseTemplatesItemCategoryOnboarding   ListInAppTemplatesResponseTemplatesItemCategory = "Onboarding"
+	ListInAppTemplatesResponseTemplatesItemCategoryAnnouncement ListInAppTemplatesResponseTemplatesItemCategory = "Announcement"
+	ListInAppTemplatesResponseTemplatesItemCategoryEngagement   ListInAppTemplatesResponseTemplatesItemCategory = "Engagement"
+)
+
+func NewListInAppTemplatesResponseTemplatesItemCategoryFromString(s string) (ListInAppTemplatesResponseTemplatesItemCategory, error) {
+	switch s {
+	case "Conversion":
+		return ListInAppTemplatesResponseTemplatesItemCategoryConversion, nil
+	case "Onboarding":
+		return ListInAppTemplatesResponseTemplatesItemCategoryOnboarding, nil
+	case "Announcement":
+		return ListInAppTemplatesResponseTemplatesItemCategoryAnnouncement, nil
+	case "Engagement":
+		return ListInAppTemplatesResponseTemplatesItemCategoryEngagement, nil
+	}
+	var t ListInAppTemplatesResponseTemplatesItemCategory
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListInAppTemplatesResponseTemplatesItemCategory) Ptr() *ListInAppTemplatesResponseTemplatesItemCategory {
+	return &l
+}
+
 type RecordInAppEventRequestType string
 
 const (
@@ -1790,4 +2127,478 @@ func (r *RecordInAppEventResponse) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", r)
+}
+
+type WriteInAppCopyRequestFormat string
+
+const (
+	WriteInAppCopyRequestFormatModal      WriteInAppCopyRequestFormat = "modal"
+	WriteInAppCopyRequestFormatBanner     WriteInAppCopyRequestFormat = "banner"
+	WriteInAppCopyRequestFormatFullscreen WriteInAppCopyRequestFormat = "fullscreen"
+)
+
+func NewWriteInAppCopyRequestFormatFromString(s string) (WriteInAppCopyRequestFormat, error) {
+	switch s {
+	case "modal":
+		return WriteInAppCopyRequestFormatModal, nil
+	case "banner":
+		return WriteInAppCopyRequestFormatBanner, nil
+	case "fullscreen":
+		return WriteInAppCopyRequestFormatFullscreen, nil
+	}
+	var t WriteInAppCopyRequestFormat
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (w WriteInAppCopyRequestFormat) Ptr() *WriteInAppCopyRequestFormat {
+	return &w
+}
+
+type WriteInAppCopyRequestKind string
+
+const (
+	WriteInAppCopyRequestKindMessage WriteInAppCopyRequestKind = "message"
+	WriteInAppCopyRequestKindCard    WriteInAppCopyRequestKind = "card"
+)
+
+func NewWriteInAppCopyRequestKindFromString(s string) (WriteInAppCopyRequestKind, error) {
+	switch s {
+	case "message":
+		return WriteInAppCopyRequestKindMessage, nil
+	case "card":
+		return WriteInAppCopyRequestKindCard, nil
+	}
+	var t WriteInAppCopyRequestKind
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (w WriteInAppCopyRequestKind) Ptr() *WriteInAppCopyRequestKind {
+	return &w
+}
+
+var (
+	writeInAppCopyResponseFieldCopy    = big.NewInt(1 << 0)
+	writeInAppCopyResponseFieldSuccess = big.NewInt(1 << 1)
+)
+
+type WriteInAppCopyResponse struct {
+	Copy    *WriteInAppCopyResponseCopy `json:"copy,omitempty" url:"copy,omitempty"`
+	Success *bool                       `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (w *WriteInAppCopyResponse) GetCopy() *WriteInAppCopyResponseCopy {
+	if w == nil {
+		return nil
+	}
+	return w.Copy
+}
+
+func (w *WriteInAppCopyResponse) GetSuccess() *bool {
+	if w == nil {
+		return nil
+	}
+	return w.Success
+}
+
+func (w *WriteInAppCopyResponse) GetExtraProperties() map[string]interface{} {
+	if w == nil {
+		return nil
+	}
+	return w.extraProperties
+}
+
+func (w *WriteInAppCopyResponse) require(field *big.Int) {
+	if w.explicitFields == nil {
+		w.explicitFields = big.NewInt(0)
+	}
+	w.explicitFields.Or(w.explicitFields, field)
+}
+
+// SetCopy sets the Copy field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WriteInAppCopyResponse) SetCopy(copy *WriteInAppCopyResponseCopy) {
+	w.Copy = copy
+	w.require(writeInAppCopyResponseFieldCopy)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WriteInAppCopyResponse) SetSuccess(success *bool) {
+	w.Success = success
+	w.require(writeInAppCopyResponseFieldSuccess)
+}
+
+func (w *WriteInAppCopyResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler WriteInAppCopyResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*w = WriteInAppCopyResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *w)
+	if err != nil {
+		return err
+	}
+	w.extraProperties = extraProperties
+	w.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (w *WriteInAppCopyResponse) MarshalJSON() ([]byte, error) {
+	type embed WriteInAppCopyResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*w),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, w.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (w *WriteInAppCopyResponse) String() string {
+	if w == nil {
+		return "<nil>"
+	}
+	if len(w.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(w.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(w); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", w)
+}
+
+var (
+	writeInAppCopyResponseCopyFieldBody    = big.NewInt(1 << 0)
+	writeInAppCopyResponseCopyFieldButtons = big.NewInt(1 << 1)
+	writeInAppCopyResponseCopyFieldEyebrow = big.NewInt(1 << 2)
+	writeInAppCopyResponseCopyFieldTitle   = big.NewInt(1 << 3)
+)
+
+type WriteInAppCopyResponseCopy struct {
+	Body    *string                                  `json:"body,omitempty" url:"body,omitempty"`
+	Buttons []*WriteInAppCopyResponseCopyButtonsItem `json:"buttons,omitempty" url:"buttons,omitempty"`
+	Eyebrow *string                                  `json:"eyebrow,omitempty" url:"eyebrow,omitempty"`
+	Title   *string                                  `json:"title,omitempty" url:"title,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (w *WriteInAppCopyResponseCopy) GetBody() *string {
+	if w == nil {
+		return nil
+	}
+	return w.Body
+}
+
+func (w *WriteInAppCopyResponseCopy) GetButtons() []*WriteInAppCopyResponseCopyButtonsItem {
+	if w == nil {
+		return nil
+	}
+	return w.Buttons
+}
+
+func (w *WriteInAppCopyResponseCopy) GetEyebrow() *string {
+	if w == nil {
+		return nil
+	}
+	return w.Eyebrow
+}
+
+func (w *WriteInAppCopyResponseCopy) GetTitle() *string {
+	if w == nil {
+		return nil
+	}
+	return w.Title
+}
+
+func (w *WriteInAppCopyResponseCopy) GetExtraProperties() map[string]interface{} {
+	if w == nil {
+		return nil
+	}
+	return w.extraProperties
+}
+
+func (w *WriteInAppCopyResponseCopy) require(field *big.Int) {
+	if w.explicitFields == nil {
+		w.explicitFields = big.NewInt(0)
+	}
+	w.explicitFields.Or(w.explicitFields, field)
+}
+
+// SetBody sets the Body field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WriteInAppCopyResponseCopy) SetBody(body *string) {
+	w.Body = body
+	w.require(writeInAppCopyResponseCopyFieldBody)
+}
+
+// SetButtons sets the Buttons field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WriteInAppCopyResponseCopy) SetButtons(buttons []*WriteInAppCopyResponseCopyButtonsItem) {
+	w.Buttons = buttons
+	w.require(writeInAppCopyResponseCopyFieldButtons)
+}
+
+// SetEyebrow sets the Eyebrow field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WriteInAppCopyResponseCopy) SetEyebrow(eyebrow *string) {
+	w.Eyebrow = eyebrow
+	w.require(writeInAppCopyResponseCopyFieldEyebrow)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WriteInAppCopyResponseCopy) SetTitle(title *string) {
+	w.Title = title
+	w.require(writeInAppCopyResponseCopyFieldTitle)
+}
+
+func (w *WriteInAppCopyResponseCopy) UnmarshalJSON(data []byte) error {
+	type unmarshaler WriteInAppCopyResponseCopy
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*w = WriteInAppCopyResponseCopy(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *w)
+	if err != nil {
+		return err
+	}
+	w.extraProperties = extraProperties
+	w.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (w *WriteInAppCopyResponseCopy) MarshalJSON() ([]byte, error) {
+	type embed WriteInAppCopyResponseCopy
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*w),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, w.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (w *WriteInAppCopyResponseCopy) String() string {
+	if w == nil {
+		return "<nil>"
+	}
+	if len(w.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(w.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(w); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", w)
+}
+
+var (
+	writeInAppCopyResponseCopyButtonsItemFieldAction = big.NewInt(1 << 0)
+	writeInAppCopyResponseCopyButtonsItemFieldLabel  = big.NewInt(1 << 1)
+)
+
+type WriteInAppCopyResponseCopyButtonsItem struct {
+	Action *WriteInAppCopyResponseCopyButtonsItemAction `json:"action,omitempty" url:"action,omitempty"`
+	Label  *string                                      `json:"label,omitempty" url:"label,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (w *WriteInAppCopyResponseCopyButtonsItem) GetAction() *WriteInAppCopyResponseCopyButtonsItemAction {
+	if w == nil {
+		return nil
+	}
+	return w.Action
+}
+
+func (w *WriteInAppCopyResponseCopyButtonsItem) GetLabel() *string {
+	if w == nil {
+		return nil
+	}
+	return w.Label
+}
+
+func (w *WriteInAppCopyResponseCopyButtonsItem) GetExtraProperties() map[string]interface{} {
+	if w == nil {
+		return nil
+	}
+	return w.extraProperties
+}
+
+func (w *WriteInAppCopyResponseCopyButtonsItem) require(field *big.Int) {
+	if w.explicitFields == nil {
+		w.explicitFields = big.NewInt(0)
+	}
+	w.explicitFields.Or(w.explicitFields, field)
+}
+
+// SetAction sets the Action field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WriteInAppCopyResponseCopyButtonsItem) SetAction(action *WriteInAppCopyResponseCopyButtonsItemAction) {
+	w.Action = action
+	w.require(writeInAppCopyResponseCopyButtonsItemFieldAction)
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WriteInAppCopyResponseCopyButtonsItem) SetLabel(label *string) {
+	w.Label = label
+	w.require(writeInAppCopyResponseCopyButtonsItemFieldLabel)
+}
+
+func (w *WriteInAppCopyResponseCopyButtonsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler WriteInAppCopyResponseCopyButtonsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*w = WriteInAppCopyResponseCopyButtonsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *w)
+	if err != nil {
+		return err
+	}
+	w.extraProperties = extraProperties
+	w.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (w *WriteInAppCopyResponseCopyButtonsItem) MarshalJSON() ([]byte, error) {
+	type embed WriteInAppCopyResponseCopyButtonsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*w),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, w.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (w *WriteInAppCopyResponseCopyButtonsItem) String() string {
+	if w == nil {
+		return "<nil>"
+	}
+	if len(w.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(w.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(w); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", w)
+}
+
+type WriteInAppCopyResponseCopyButtonsItemAction string
+
+const (
+	WriteInAppCopyResponseCopyButtonsItemActionOpenURL WriteInAppCopyResponseCopyButtonsItemAction = "open_url"
+	WriteInAppCopyResponseCopyButtonsItemActionDismiss WriteInAppCopyResponseCopyButtonsItemAction = "dismiss"
+)
+
+func NewWriteInAppCopyResponseCopyButtonsItemActionFromString(s string) (WriteInAppCopyResponseCopyButtonsItemAction, error) {
+	switch s {
+	case "open_url":
+		return WriteInAppCopyResponseCopyButtonsItemActionOpenURL, nil
+	case "dismiss":
+		return WriteInAppCopyResponseCopyButtonsItemActionDismiss, nil
+	}
+	var t WriteInAppCopyResponseCopyButtonsItemAction
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (w WriteInAppCopyResponseCopyButtonsItemAction) Ptr() *WriteInAppCopyResponseCopyButtonsItemAction {
+	return &w
+}
+
+var (
+	writeInAppCopyRequestFieldBrief    = big.NewInt(1 << 0)
+	writeInAppCopyRequestFieldFormat   = big.NewInt(1 << 1)
+	writeInAppCopyRequestFieldHasImage = big.NewInt(1 << 2)
+	writeInAppCopyRequestFieldKind     = big.NewInt(1 << 3)
+)
+
+type WriteInAppCopyRequest struct {
+	Brief    string                       `json:"brief" url:"-"`
+	Format   *WriteInAppCopyRequestFormat `json:"format,omitempty" url:"-"`
+	HasImage *bool                        `json:"hasImage,omitempty" url:"-"`
+	Kind     *WriteInAppCopyRequestKind   `json:"kind,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (w *WriteInAppCopyRequest) require(field *big.Int) {
+	if w.explicitFields == nil {
+		w.explicitFields = big.NewInt(0)
+	}
+	w.explicitFields.Or(w.explicitFields, field)
+}
+
+// SetBrief sets the Brief field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WriteInAppCopyRequest) SetBrief(brief string) {
+	w.Brief = brief
+	w.require(writeInAppCopyRequestFieldBrief)
+}
+
+// SetFormat sets the Format field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WriteInAppCopyRequest) SetFormat(format *WriteInAppCopyRequestFormat) {
+	w.Format = format
+	w.require(writeInAppCopyRequestFieldFormat)
+}
+
+// SetHasImage sets the HasImage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WriteInAppCopyRequest) SetHasImage(hasImage *bool) {
+	w.HasImage = hasImage
+	w.require(writeInAppCopyRequestFieldHasImage)
+}
+
+// SetKind sets the Kind field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WriteInAppCopyRequest) SetKind(kind *WriteInAppCopyRequestKind) {
+	w.Kind = kind
+	w.require(writeInAppCopyRequestFieldKind)
+}
+
+func (w *WriteInAppCopyRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler WriteInAppCopyRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*w = WriteInAppCopyRequest(body)
+	return nil
+}
+
+func (w *WriteInAppCopyRequest) MarshalJSON() ([]byte, error) {
+	type embed WriteInAppCopyRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*w),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, w.explicitFields)
+	return json.Marshal(explicitMarshaler)
 }

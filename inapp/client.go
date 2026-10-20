@@ -113,6 +113,27 @@ func (c *Client) ListInAppMessages(
 	return response.Body, nil
 }
 
+// Built-in starting points for in_app sequence steps. Each config is a complete step without a label; link buttons have no url until you add one. Requires the sequences:read scope.
+//
+// Example:
+//
+//	client.InApp.ListInAppTemplates(
+//	    context.TODO(),
+//	)
+func (c *Client) ListInAppTemplates(
+	ctx context.Context,
+	opts ...option.RequestOption,
+) (*sequenzygo.ListInAppTemplatesResponse, error) {
+	response, err := c.WithRawResponse.ListInAppTemplates(
+		ctx,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Records that the app displayed, clicked, dismissed or read an item. The first report of each type sets its timestamp; repeats change nothing except clickCount, and recorded is false. Clicks, dismissals and reads also mark the item displayed. Messages leave the open feed once displayed, clicked or dismissed; cards once dismissed. Requires the subscribers:write scope.
 //
 // Example:
@@ -131,6 +152,33 @@ func (c *Client) RecordInAppEvent(
 	opts ...option.RequestOption,
 ) (*sequenzygo.RecordInAppEventResponse, error) {
 	response, err := c.WithRawResponse.RecordInAppEvent(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Writes an in-app message's eyebrow, title, message and button labels with AI from a brief. Nothing is saved. Requires the sequences:write scope; limited to 20 requests a minute per workspace.
+//
+// Example:
+//
+//	request := &sequenzygo.WriteInAppCopyRequest{
+//	    Brief: "brief",
+//	}
+//	client.InApp.WriteInAppCopy(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) WriteInAppCopy(
+	ctx context.Context,
+	request *sequenzygo.WriteInAppCopyRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.WriteInAppCopyResponse, error) {
+	response, err := c.WithRawResponse.WriteInAppCopy(
 		ctx,
 		request,
 		opts...,

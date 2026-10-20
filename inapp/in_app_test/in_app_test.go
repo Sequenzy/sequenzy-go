@@ -153,6 +153,28 @@ func TestInAppListInAppMessagesWithWireMock(
 	VerifyRequestCount(t, "TestInAppListInAppMessagesWithWireMock", "GET", "/in-app/messages", nil, 1)
 }
 
+func TestInAppListInAppTemplatesWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	_, invocationErr := client.InApp.ListInAppTemplates(
+		context.TODO(),
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestInAppListInAppTemplatesWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestInAppListInAppTemplatesWithWireMock", "GET", "/in-app/templates", nil, 1)
+}
+
 func TestInAppRecordInAppEventWithWireMock(
 	t *testing.T,
 ) {
@@ -178,4 +200,30 @@ func TestInAppRecordInAppEventWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestInAppRecordInAppEventWithWireMock", "POST", "/in-app/messages/messageId/events", nil, 1)
+}
+
+func TestInAppWriteInAppCopyWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.WriteInAppCopyRequest{
+		Brief: "brief",
+	}
+	_, invocationErr := client.InApp.WriteInAppCopy(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestInAppWriteInAppCopyWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestInAppWriteInAppCopyWithWireMock", "POST", "/in-app/copy", nil, 1)
 }

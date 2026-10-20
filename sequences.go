@@ -4136,7 +4136,7 @@ type SequenceActionResponse struct {
 	SequenceID                   *string         `json:"sequenceId,omitempty" url:"sequenceId,omitempty"`
 	Status                       *SequenceStatus `json:"status,omitempty" url:"status,omitempty"`
 	Success                      *bool           `json:"success,omitempty" url:"success,omitempty"`
-	// Enable only. Non-blocking readiness warnings, such as empty branch paths or a `contact_added` trigger with no list, which enrolls every contact added to the company. Absent when there is nothing to report.
+	// Enable only. Non-blocking readiness warnings, such as empty branch paths, a `contact_added` trigger with no list, which enrolls every contact added to the company, or an email that uses `{{webhooks.KEY...}}` or `{{ai.KEY...}}` when no earlier step saves a result under that key, so those tags send empty. Absent when there is nothing to report.
 	Warnings []string `json:"warnings,omitempty" url:"warnings,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -30754,7 +30754,7 @@ type SimulateSequencesResponse struct {
 	Enrollment map[string]any `json:"enrollment" url:"enrollment"`
 	// Walked graph for the optional stored subscriber. emailStepsOnPath counts traversed email nodes; emailsOnPath counts those deliverable for the subscriber's current email and status. Null when none was passed.
 	Path map[string]any `json:"path,omitempty" url:"path,omitempty"`
-	// Activation blockers and warnings.
+	// Activation blockers and warnings. Warnings never block activation; they include empty branch paths and emails that use `{{webhooks.KEY...}}` or `{{ai.KEY...}}` when no earlier step saves that key.
 	Readiness    *SimulateSequencesResponseReadiness `json:"readiness" url:"readiness"`
 	SendsMail    bool                                `json:"sendsMail" url:"sendsMail"`
 	SequenceID   string                              `json:"sequenceId" url:"sequenceId"`
@@ -30937,7 +30937,7 @@ func (s *SimulateSequencesResponse) String() string {
 	return fmt.Sprintf("%#v", s)
 }
 
-// Activation blockers and warnings.
+// Activation blockers and warnings. Warnings never block activation; they include empty branch paths and emails that use `{{webhooks.KEY...}}` or `{{ai.KEY...}}` when no earlier step saves that key.
 var (
 	simulateSequencesResponseReadinessFieldErrors   = big.NewInt(1 << 0)
 	simulateSequencesResponseReadinessFieldReady    = big.NewInt(1 << 1)

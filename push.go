@@ -1912,8 +1912,9 @@ type PushDevice struct {
 	Locale        *string             `json:"locale,omitempty" url:"locale,omitempty"`
 	OsVersion     *string             `json:"osVersion,omitempty" url:"osVersion,omitempty"`
 	Platform      *PushDevicePlatform `json:"platform,omitempty" url:"platform,omitempty"`
-	Source        *PushDeviceSource   `json:"source,omitempty" url:"source,omitempty"`
-	Status        *PushDeviceStatus   `json:"status,omitempty" url:"status,omitempty"`
+	// web_sdk for browsers, mobile_sdk for devices the iOS, Android, React Native and Flutter SDKs registered, api for devices registered with a secret key.
+	Source *PushDeviceSource `json:"source,omitempty" url:"source,omitempty"`
+	Status *PushDeviceStatus `json:"status,omitempty" url:"status,omitempty"`
 	// Linked contact, or null for anonymous browsers.
 	SubscriberID *string `json:"subscriberId,omitempty" url:"subscriberId,omitempty"`
 	Timezone     *string `json:"timezone,omitempty" url:"timezone,omitempty"`
@@ -2464,17 +2465,21 @@ func (p PushDevicePlatform) Ptr() *PushDevicePlatform {
 	return &p
 }
 
+// web_sdk for browsers, mobile_sdk for devices the iOS, Android, React Native and Flutter SDKs registered, api for devices registered with a secret key.
 type PushDeviceSource string
 
 const (
-	PushDeviceSourceWebSdk PushDeviceSource = "web_sdk"
-	PushDeviceSourceAPI    PushDeviceSource = "api"
+	PushDeviceSourceWebSdk    PushDeviceSource = "web_sdk"
+	PushDeviceSourceMobileSdk PushDeviceSource = "mobile_sdk"
+	PushDeviceSourceAPI       PushDeviceSource = "api"
 )
 
 func NewPushDeviceSourceFromString(s string) (PushDeviceSource, error) {
 	switch s {
 	case "web_sdk":
 		return PushDeviceSourceWebSdk, nil
+	case "mobile_sdk":
+		return PushDeviceSourceMobileSdk, nil
 	case "api":
 		return PushDeviceSourceAPI, nil
 	}

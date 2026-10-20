@@ -12721,6 +12721,47 @@ client.InApp.ListInAppMessages(
 </dl>
 </details>
 
+<details><summary><code>client.InApp.ListInAppTemplates() -> *sequenzygo.ListInAppTemplatesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Built-in starting points for in_app sequence steps. Each config is a complete step without a label; link buttons have no url until you add one. Requires the sequences:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+client.InApp.ListInAppTemplates(
+    context.TODO(),
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.InApp.RecordInAppEvent(MessageID, request) -> *sequenzygo.RecordInAppEventResponse</code></summary>
 <dl>
 <dd>
@@ -12779,6 +12820,90 @@ client.InApp.RecordInAppEvent(
 <dd>
 
 **type_:** `*sequenzygo.RecordInAppEventRequestType` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.InApp.WriteInAppCopy(request) -> *sequenzygo.WriteInAppCopyResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Writes an in-app message's eyebrow, title, message and button labels with AI from a brief. Nothing is saved. Requires the sequences:write scope; limited to 20 requests a minute per workspace.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.WriteInAppCopyRequest{
+    Brief: "brief",
+}
+client.InApp.WriteInAppCopy(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**brief:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**format:** `*sequenzygo.WriteInAppCopyRequestFormat` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**hasImage:** `*bool` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**kind:** `*sequenzygo.WriteInAppCopyRequestKind` 
     
 </dd>
 </dl>
@@ -32589,7 +32714,7 @@ client.Websites.VerifySendingDomain(
 <dl>
 <dd>
 
-Creates a publishable key for the browser tracking SDK and returns the script tag to install. The key ships in page source by design and authorizes storefront events only, never the rest of the API. Events start flowing once the snippet is deployed and nothing is backfilled for the period before that. Always pass allowedOrigins - an empty allowlist accepts events from any site. Requires the integrations:manage scope.
+Creates a publishable key for the browser tracking SDK and returns the script tag to install. The key ships in page source by design and authorizes storefront events only, never the rest of the API. Events start flowing once the snippet is deployed and nothing is backfilled for the period before that. Always pass allowedOrigins for a website or allowedAppIds for an iOS or Android app - a key with neither accepts events from any site or app. Requires the integrations:manage scope.
 </dd>
 </dl>
 </dd>
@@ -32625,7 +32750,15 @@ client.WebTrackingKeys.Create(
 <dl>
 <dd>
 
-**allowedOrigins:** `[]string` — Origins allowed to use this key. A bare domain is read as https. A leading *. matches subdomains at any depth but not the apex. Omitting this leaves the key unrestricted.
+**allowedAppIDs:** `[]string` — iOS bundle IDs and Android package names allowed to use this key from the mobile SDKs, e.g. com.example.app. Duplicates are dropped case-insensitively.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**allowedOrigins:** `[]string` — Origins allowed to use this key. A bare domain is read as https. A leading *. matches subdomains at any depth but not the apex. Omitting this and allowedAppIds leaves the key unrestricted.
     
 </dd>
 </dl>
@@ -32902,7 +33035,7 @@ client.WebTrackingKeys.MintIdentity(
 <dl>
 <dd>
 
-Renames a key, replaces its allowed origins, or revokes it. allowedOrigins replaces the whole list rather than appending. Revoking stops events within about a minute while preserving the key value, so the matching snippet can still be found and removed from the site. Requires the integrations:manage scope.
+Renames a key, replaces its allowed origins or app IDs, or revokes it. allowedOrigins and allowedAppIds each replace the whole list rather than appending. Revoking stops events within about a minute while preserving the key value, so the matching snippet can still be found and removed from the site. Requires the integrations:manage scope.
 </dd>
 </dl>
 </dd>
@@ -32946,7 +33079,15 @@ client.WebTrackingKeys.Update(
 <dl>
 <dd>
 
-**allowedOrigins:** `[]string` — Replacement allowlist. Pass an empty array to make the key unrestricted.
+**allowedAppIDs:** `[]string` — Replacement list of iOS bundle IDs and Android package names.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**allowedOrigins:** `[]string` — Replacement origin allowlist. The key becomes unrestricted when both this and allowedAppIds are empty.
     
 </dd>
 </dl>

@@ -15555,6 +15555,13 @@ func TestEnumPushDeviceSource(t *testing.T) {
 		assert.Equal(t, PushDeviceSource("web_sdk"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_mobile_sdk", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPushDeviceSourceFromString("mobile_sdk")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PushDeviceSource("mobile_sdk"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_api", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewPushDeviceSourceFromString("api")

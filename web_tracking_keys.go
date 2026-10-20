@@ -11,12 +11,15 @@ import (
 )
 
 var (
-	createWebTrackingKeysRequestFieldAllowedOrigins = big.NewInt(1 << 0)
-	createWebTrackingKeysRequestFieldName           = big.NewInt(1 << 1)
+	createWebTrackingKeysRequestFieldAllowedAppIDs  = big.NewInt(1 << 0)
+	createWebTrackingKeysRequestFieldAllowedOrigins = big.NewInt(1 << 1)
+	createWebTrackingKeysRequestFieldName           = big.NewInt(1 << 2)
 )
 
 type CreateWebTrackingKeysRequest struct {
-	// Origins allowed to use this key. A bare domain is read as https. A leading *. matches subdomains at any depth but not the apex. Omitting this leaves the key unrestricted.
+	// iOS bundle IDs and Android package names allowed to use this key from the mobile SDKs, e.g. com.example.app. Duplicates are dropped case-insensitively.
+	AllowedAppIDs []string `json:"allowedAppIds,omitempty" url:"-"`
+	// Origins allowed to use this key. A bare domain is read as https. A leading *. matches subdomains at any depth but not the apex. Omitting this and allowedAppIds leaves the key unrestricted.
 	AllowedOrigins []string `json:"allowedOrigins,omitempty" url:"-"`
 	// Human-readable label, e.g. Storefront.
 	Name string `json:"name" url:"-"`
@@ -30,6 +33,13 @@ func (c *CreateWebTrackingKeysRequest) require(field *big.Int) {
 		c.explicitFields = big.NewInt(0)
 	}
 	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetAllowedAppIDs sets the AllowedAppIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateWebTrackingKeysRequest) SetAllowedAppIDs(allowedAppIDs []string) {
+	c.AllowedAppIDs = allowedAppIDs
+	c.require(createWebTrackingKeysRequestFieldAllowedAppIDs)
 }
 
 // SetAllowedOrigins sets the AllowedOrigins field and marks it as non-optional;
@@ -194,24 +204,27 @@ func (m *MintIdentityWebTrackingKeysRequest) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-// A publishable key for the browser tracking SDK. The key ships in the customer's page source by design, so it is not a secret; it authorizes storefront customer events only and carries an origin allowlist instead of scopes.
+// A publishable key for the browser tracking SDK and the mobile SDKs. The key ships in the customer's page source or app by design, so it is not a secret; it authorizes client events only and carries origin and app ID allowlists instead of scopes.
 var (
-	webTrackingKeyFieldAllowedOrigins = big.NewInt(1 << 0)
-	webTrackingKeyFieldCreatedAt      = big.NewInt(1 << 1)
-	webTrackingKeyFieldEndpoint       = big.NewInt(1 << 2)
-	webTrackingKeyFieldID             = big.NewInt(1 << 3)
-	webTrackingKeyFieldInstallSnippet = big.NewInt(1 << 4)
-	webTrackingKeyFieldIsActive       = big.NewInt(1 << 5)
-	webTrackingKeyFieldLastUsedAt     = big.NewInt(1 << 6)
-	webTrackingKeyFieldName           = big.NewInt(1 << 7)
-	webTrackingKeyFieldPublicKey      = big.NewInt(1 << 8)
-	webTrackingKeyFieldUnrestricted   = big.NewInt(1 << 9)
-	webTrackingKeyFieldUpdatedAt      = big.NewInt(1 << 10)
-	webTrackingKeyFieldWarning        = big.NewInt(1 << 11)
+	webTrackingKeyFieldAllowedAppIDs  = big.NewInt(1 << 0)
+	webTrackingKeyFieldAllowedOrigins = big.NewInt(1 << 1)
+	webTrackingKeyFieldCreatedAt      = big.NewInt(1 << 2)
+	webTrackingKeyFieldEndpoint       = big.NewInt(1 << 3)
+	webTrackingKeyFieldID             = big.NewInt(1 << 4)
+	webTrackingKeyFieldInstallSnippet = big.NewInt(1 << 5)
+	webTrackingKeyFieldIsActive       = big.NewInt(1 << 6)
+	webTrackingKeyFieldLastUsedAt     = big.NewInt(1 << 7)
+	webTrackingKeyFieldName           = big.NewInt(1 << 8)
+	webTrackingKeyFieldPublicKey      = big.NewInt(1 << 9)
+	webTrackingKeyFieldUnrestricted   = big.NewInt(1 << 10)
+	webTrackingKeyFieldUpdatedAt      = big.NewInt(1 << 11)
+	webTrackingKeyFieldWarning        = big.NewInt(1 << 12)
 )
 
 type WebTrackingKey struct {
-	// Normalized origins allowed to use this key. Empty means any origin.
+	// iOS bundle IDs and Android package names allowed to use this key from the mobile SDKs, matched case-insensitively against the x-sequenzy-app-id header on requests without an Origin header. A key with app IDs and no origins is rejected from browsers.
+	AllowedAppIDs []string `json:"allowedAppIds,omitempty" url:"allowedAppIds,omitempty"`
+	// Normalized origins allowed to use this key from a browser.
 	AllowedOrigins []string   `json:"allowedOrigins,omitempty" url:"allowedOrigins,omitempty"`
 	CreatedAt      *time.Time `json:"createdAt,omitempty" url:"createdAt,omitempty"`
 	// Ingest URL the SDK posts events to.
@@ -226,7 +239,7 @@ type WebTrackingKey struct {
 	Name       *string    `json:"name,omitempty" url:"name,omitempty"`
 	// The publishable key, prefixed seq_pk_.
 	PublicKey *string `json:"publicKey,omitempty" url:"publicKey,omitempty"`
-	// True when the allowlist is empty, so any site can send events with this key.
+	// True when both allowedOrigins and allowedAppIds are empty, so any site or app can send events with this key.
 	Unrestricted *bool      `json:"unrestricted,omitempty" url:"unrestricted,omitempty"`
 	UpdatedAt    *time.Time `json:"updatedAt,omitempty" url:"updatedAt,omitempty"`
 	// Present only when the key is unrestricted.
@@ -237,6 +250,13 @@ type WebTrackingKey struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (w *WebTrackingKey) GetAllowedAppIDs() []string {
+	if w == nil {
+		return nil
+	}
+	return w.AllowedAppIDs
 }
 
 func (w *WebTrackingKey) GetAllowedOrigins() []string {
@@ -335,6 +355,13 @@ func (w *WebTrackingKey) require(field *big.Int) {
 		w.explicitFields = big.NewInt(0)
 	}
 	w.explicitFields.Or(w.explicitFields, field)
+}
+
+// SetAllowedAppIDs sets the AllowedAppIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebTrackingKey) SetAllowedAppIDs(allowedAppIDs []string) {
+	w.AllowedAppIDs = allowedAppIDs
+	w.require(webTrackingKeyFieldAllowedAppIDs)
 }
 
 // SetAllowedOrigins sets the AllowedOrigins field and marks it as non-optional;
@@ -1186,15 +1213,18 @@ func (u *UpdateWebTrackingKeysResponse) String() string {
 
 var (
 	updateWebTrackingKeysRequestFieldID             = big.NewInt(1 << 0)
-	updateWebTrackingKeysRequestFieldAllowedOrigins = big.NewInt(1 << 1)
-	updateWebTrackingKeysRequestFieldIsActive       = big.NewInt(1 << 2)
-	updateWebTrackingKeysRequestFieldName           = big.NewInt(1 << 3)
+	updateWebTrackingKeysRequestFieldAllowedAppIDs  = big.NewInt(1 << 1)
+	updateWebTrackingKeysRequestFieldAllowedOrigins = big.NewInt(1 << 2)
+	updateWebTrackingKeysRequestFieldIsActive       = big.NewInt(1 << 3)
+	updateWebTrackingKeysRequestFieldName           = big.NewInt(1 << 4)
 )
 
 type UpdateWebTrackingKeysRequest struct {
 	// Web tracking key ID.
 	ID string `json:"-" url:"-"`
-	// Replacement allowlist. Pass an empty array to make the key unrestricted.
+	// Replacement list of iOS bundle IDs and Android package names.
+	AllowedAppIDs []string `json:"allowedAppIds,omitempty" url:"-"`
+	// Replacement origin allowlist. The key becomes unrestricted when both this and allowedAppIds are empty.
 	AllowedOrigins []string `json:"allowedOrigins,omitempty" url:"-"`
 	// Set false to revoke the key, true to re-enable a revoked one.
 	IsActive *bool   `json:"isActive,omitempty" url:"-"`
@@ -1216,6 +1246,13 @@ func (u *UpdateWebTrackingKeysRequest) require(field *big.Int) {
 func (u *UpdateWebTrackingKeysRequest) SetID(id string) {
 	u.ID = id
 	u.require(updateWebTrackingKeysRequestFieldID)
+}
+
+// SetAllowedAppIDs sets the AllowedAppIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateWebTrackingKeysRequest) SetAllowedAppIDs(allowedAppIDs []string) {
+	u.AllowedAppIDs = allowedAppIDs
+	u.require(updateWebTrackingKeysRequestFieldAllowedAppIDs)
 }
 
 // SetAllowedOrigins sets the AllowedOrigins field and marks it as non-optional;
