@@ -3467,7 +3467,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"company\": {\n    \"address\": \"address\",\n    \"brandColors\": {\n      \"primary\": \"#0ea5e9\"\n    },\n    \"companyContext\": \"Acme helps SaaS teams send lifecycle emails from product events.\",\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"defaultFromEmail\": \"defaultFromEmail\",\n    \"defaultFromName\": \"defaultFromName\",\n    \"defaultReplyProfileId\": \"defaultReplyProfileId\",\n    \"defaultReplyToEmail\": \"defaultReplyToEmail\",\n    \"defaultReplyToName\": \"defaultReplyToName\",\n    \"defaultSenderProfileId\": \"defaultSenderProfileId\",\n    \"defaultSubscriberListIds\": [\n      \"list_abc123\"\n    ],\n    \"description\": \"Lifecycle email automation for SaaS teams.\",\n    \"emailBranding\": {\n      \"managedBy\": \"owner_subscription\",\n      \"reason\": \"free_plan\",\n      \"removalAction\": \"none\",\n      \"removalEntitled\": true,\n      \"subscriptionStatus\": \"active\",\n      \"subscriptionTier\": \"free\",\n      \"subscriptionUrl\": \"subscriptionUrl\",\n      \"visible\": true\n    },\n    \"emailDesignPrompt\": \"Editorial and calm. One idea per email, no feature grids.\",\n    \"emailDirection\": \"ltr\",\n    \"emailLengthPreference\": \"concise\",\n    \"emailLocalizationConfig\": {\n      \"key\": \"value\"\n    },\n    \"emailPreset\": \"branded\",\n    \"emailStylePreference\": \"visual\",\n    \"emailTheme\": {\n      \"key\": \"value\"\n    },\n    \"fontFamily\": \"fontFamily\",\n    \"forwardReplies\": true,\n    \"founderName\": \"Sarah\",\n    \"id\": \"company_abc123\",\n    \"language\": \"en\",\n    \"logoUrl\": \"https://example.com/logo.png\",\n    \"name\": \"Acme Inc\",\n    \"previewUrl\": \"https://sequenzy.com/dashboard/company/comp_abc123/campaign/camp_abc123?step=review\",\n    \"pricing\": {\n      \"key\": \"value\"\n    },\n    \"primaryColor\": \"#0ea5e9\",\n    \"privacyPolicyUrl\": \"privacyPolicyUrl\",\n    \"replyRetentionDays\": 1,\n    \"replyTrackingDomainMode\": \"sequenzy\",\n    \"replyTrackingEnabled\": true,\n    \"socialLinks\": {\n      \"key\": \"value\"\n    },\n    \"status\": \"ready\",\n    \"termsUrl\": \"termsUrl\",\n    \"testimonials\": [\n      {\n        \"key\": \"value\"\n      }\n    ],\n    \"toneVoice\": \"clear, direct, warm\",\n    \"url\": \"https://sequenzy.com/dashboard/company/comp_abc123/campaign/camp_abc123\",\n    \"valueProps\": [\n      {\n        \"description\": \"Launch lifecycle emails in minutes.\",\n        \"title\": \"Fast setup\"\n      }\n    ],\n    \"websiteUrl\": \"acme.com\"\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"company\": {\n    \"address\": \"address\",\n    \"brandColors\": {\n      \"primary\": \"#0ea5e9\"\n    },\n    \"companyContext\": \"Acme helps SaaS teams send lifecycle emails from product events.\",\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"defaultFromEmail\": \"defaultFromEmail\",\n    \"defaultFromName\": \"defaultFromName\",\n    \"defaultReplyProfileId\": \"defaultReplyProfileId\",\n    \"defaultReplyToEmail\": \"defaultReplyToEmail\",\n    \"defaultReplyToName\": \"defaultReplyToName\",\n    \"defaultSenderProfileId\": \"defaultSenderProfileId\",\n    \"defaultSubscriberListIds\": [\n      \"list_abc123\"\n    ],\n    \"description\": \"Lifecycle email automation for SaaS teams.\",\n    \"emailBranding\": {\n      \"managedBy\": \"owner_subscription\",\n      \"reason\": \"free_plan\",\n      \"removalAction\": \"none\",\n      \"removalEntitled\": true,\n      \"subscriptionStatus\": \"active\",\n      \"subscriptionTier\": \"free\",\n      \"subscriptionUrl\": \"subscriptionUrl\",\n      \"visible\": true\n    },\n    \"emailDesignPrompt\": \"Editorial and calm. One idea per email, no feature grids.\",\n    \"emailDirection\": \"ltr\",\n    \"emailLengthPreference\": \"concise\",\n    \"emailLocalizationConfig\": {\n      \"key\": \"value\"\n    },\n    \"emailPreset\": \"branded\",\n    \"emailStylePreference\": \"visual\",\n    \"emailTheme\": {\n      \"key\": \"value\"\n    },\n    \"fontFamily\": \"fontFamily\",\n    \"footerStyle\": \"auto\",\n    \"forwardReplies\": true,\n    \"founderName\": \"Sarah\",\n    \"id\": \"company_abc123\",\n    \"language\": \"en\",\n    \"logoUrl\": \"https://example.com/logo.png\",\n    \"name\": \"Acme Inc\",\n    \"previewUrl\": \"https://sequenzy.com/dashboard/company/comp_abc123/campaign/camp_abc123?step=review\",\n    \"pricing\": {\n      \"key\": \"value\"\n    },\n    \"primaryColor\": \"#0ea5e9\",\n    \"privacyPolicyUrl\": \"privacyPolicyUrl\",\n    \"replyRetentionDays\": 1,\n    \"replyTrackingDomainMode\": \"sequenzy\",\n    \"replyTrackingEnabled\": true,\n    \"socialLinks\": {\n      \"key\": \"value\"\n    },\n    \"status\": \"ready\",\n    \"termsUrl\": \"termsUrl\",\n    \"testimonials\": [\n      {\n        \"key\": \"value\"\n      }\n    ],\n    \"toneVoice\": \"clear, direct, warm\",\n    \"url\": \"https://sequenzy.com/dashboard/company/comp_abc123/campaign/camp_abc123\",\n    \"valueProps\": [\n      {\n        \"description\": \"Launch lifecycle emails in minutes.\",\n        \"title\": \"Fast setup\"\n      }\n    ],\n    \"websiteUrl\": \"acme.com\"\n  },\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -3498,7 +3498,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"companies\": [\n    {\n      \"address\": \"address\",\n      \"brandColors\": {\n        \"primary\": \"#0ea5e9\"\n      },\n      \"companyContext\": \"Acme helps SaaS teams send lifecycle emails from product events.\",\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"defaultFromEmail\": \"defaultFromEmail\",\n      \"defaultFromName\": \"defaultFromName\",\n      \"defaultReplyProfileId\": \"defaultReplyProfileId\",\n      \"defaultReplyToEmail\": \"defaultReplyToEmail\",\n      \"defaultReplyToName\": \"defaultReplyToName\",\n      \"defaultSenderProfileId\": \"defaultSenderProfileId\",\n      \"defaultSubscriberListIds\": [\n        \"list_abc123\"\n      ],\n      \"description\": \"Lifecycle email automation for SaaS teams.\",\n      \"emailBranding\": {\n        \"managedBy\": \"owner_subscription\",\n        \"reason\": \"free_plan\",\n        \"removalAction\": \"none\",\n        \"removalEntitled\": true,\n        \"subscriptionStatus\": null,\n        \"subscriptionTier\": null,\n        \"subscriptionUrl\": \"subscriptionUrl\",\n        \"visible\": true\n      },\n      \"emailDesignPrompt\": \"Editorial and calm. One idea per email, no feature grids.\",\n      \"emailDirection\": \"ltr\",\n      \"emailLengthPreference\": \"concise\",\n      \"emailLocalizationConfig\": {\n        \"key\": \"value\"\n      },\n      \"emailPreset\": \"branded\",\n      \"emailStylePreference\": \"visual\",\n      \"emailTheme\": {\n        \"key\": \"value\"\n      },\n      \"fontFamily\": \"fontFamily\",\n      \"forwardReplies\": true,\n      \"founderName\": \"Sarah\",\n      \"id\": \"company_abc123\",\n      \"language\": \"en\",\n      \"logoUrl\": \"https://example.com/logo.png\",\n      \"name\": \"Acme Inc\",\n      \"previewUrl\": \"https://sequenzy.com/dashboard/company/comp_abc123/campaign/camp_abc123?step=review\",\n      \"pricing\": {\n        \"key\": \"value\"\n      },\n      \"primaryColor\": \"#0ea5e9\",\n      \"privacyPolicyUrl\": \"privacyPolicyUrl\",\n      \"replyRetentionDays\": 1,\n      \"replyTrackingDomainMode\": \"sequenzy\",\n      \"replyTrackingEnabled\": true,\n      \"status\": \"ready\",\n      \"termsUrl\": \"termsUrl\",\n      \"testimonials\": [\n        {\n          \"key\": \"value\"\n        }\n      ],\n      \"toneVoice\": \"clear, direct, warm\",\n      \"url\": \"https://sequenzy.com/dashboard/company/comp_abc123/campaign/camp_abc123\",\n      \"valueProps\": [\n        {\n          \"description\": \"Launch lifecycle emails in minutes.\",\n          \"title\": \"Fast setup\"\n        }\n      ],\n      \"websiteUrl\": \"acme.com\"\n    }\n  ],\n  \"currentCompanyId\": \"currentCompanyId\",\n  \"success\": true\n}",
+        "body": "{\n  \"companies\": [\n    {\n      \"address\": \"address\",\n      \"brandColors\": {\n        \"primary\": \"#0ea5e9\"\n      },\n      \"companyContext\": \"Acme helps SaaS teams send lifecycle emails from product events.\",\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"defaultFromEmail\": \"defaultFromEmail\",\n      \"defaultFromName\": \"defaultFromName\",\n      \"defaultReplyProfileId\": \"defaultReplyProfileId\",\n      \"defaultReplyToEmail\": \"defaultReplyToEmail\",\n      \"defaultReplyToName\": \"defaultReplyToName\",\n      \"defaultSenderProfileId\": \"defaultSenderProfileId\",\n      \"defaultSubscriberListIds\": [\n        \"list_abc123\"\n      ],\n      \"description\": \"Lifecycle email automation for SaaS teams.\",\n      \"emailBranding\": {\n        \"managedBy\": \"owner_subscription\",\n        \"reason\": \"free_plan\",\n        \"removalAction\": \"none\",\n        \"removalEntitled\": true,\n        \"subscriptionStatus\": null,\n        \"subscriptionTier\": null,\n        \"subscriptionUrl\": \"subscriptionUrl\",\n        \"visible\": true\n      },\n      \"emailDesignPrompt\": \"Editorial and calm. One idea per email, no feature grids.\",\n      \"emailDirection\": \"ltr\",\n      \"emailLengthPreference\": \"concise\",\n      \"emailLocalizationConfig\": {\n        \"key\": \"value\"\n      },\n      \"emailPreset\": \"branded\",\n      \"emailStylePreference\": \"visual\",\n      \"emailTheme\": {\n        \"key\": \"value\"\n      },\n      \"fontFamily\": \"fontFamily\",\n      \"footerStyle\": \"auto\",\n      \"forwardReplies\": true,\n      \"founderName\": \"Sarah\",\n      \"id\": \"company_abc123\",\n      \"language\": \"en\",\n      \"logoUrl\": \"https://example.com/logo.png\",\n      \"name\": \"Acme Inc\",\n      \"previewUrl\": \"https://sequenzy.com/dashboard/company/comp_abc123/campaign/camp_abc123?step=review\",\n      \"pricing\": {\n        \"key\": \"value\"\n      },\n      \"primaryColor\": \"#0ea5e9\",\n      \"privacyPolicyUrl\": \"privacyPolicyUrl\",\n      \"replyRetentionDays\": 1,\n      \"replyTrackingDomainMode\": \"sequenzy\",\n      \"replyTrackingEnabled\": true,\n      \"status\": \"ready\",\n      \"termsUrl\": \"termsUrl\",\n      \"testimonials\": [\n        {\n          \"key\": \"value\"\n        }\n      ],\n      \"toneVoice\": \"clear, direct, warm\",\n      \"url\": \"https://sequenzy.com/dashboard/company/comp_abc123/campaign/camp_abc123\",\n      \"valueProps\": [\n        {\n          \"description\": \"Launch lifecycle emails in minutes.\",\n          \"title\": \"Fast setup\"\n        }\n      ],\n      \"websiteUrl\": \"acme.com\"\n    }\n  ],\n  \"currentCompanyId\": \"currentCompanyId\",\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -3535,7 +3535,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"company\": {\n    \"address\": \"address\",\n    \"brandColors\": {\n      \"primary\": \"#0ea5e9\"\n    },\n    \"companyContext\": \"Acme helps SaaS teams send lifecycle emails from product events.\",\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"defaultFromEmail\": \"defaultFromEmail\",\n    \"defaultFromName\": \"defaultFromName\",\n    \"defaultReplyProfileId\": \"defaultReplyProfileId\",\n    \"defaultReplyToEmail\": \"defaultReplyToEmail\",\n    \"defaultReplyToName\": \"defaultReplyToName\",\n    \"defaultSenderProfileId\": \"defaultSenderProfileId\",\n    \"defaultSubscriberListIds\": [\n      \"list_abc123\"\n    ],\n    \"description\": \"Lifecycle email automation for SaaS teams.\",\n    \"emailBranding\": {\n      \"managedBy\": \"owner_subscription\",\n      \"reason\": \"free_plan\",\n      \"removalAction\": \"none\",\n      \"removalEntitled\": true,\n      \"subscriptionStatus\": \"active\",\n      \"subscriptionTier\": \"free\",\n      \"subscriptionUrl\": \"subscriptionUrl\",\n      \"visible\": true\n    },\n    \"emailDesignPrompt\": \"Editorial and calm. One idea per email, no feature grids.\",\n    \"emailDirection\": \"ltr\",\n    \"emailLengthPreference\": \"concise\",\n    \"emailLocalizationConfig\": {\n      \"key\": \"value\"\n    },\n    \"emailPreset\": \"branded\",\n    \"emailStylePreference\": \"visual\",\n    \"emailTheme\": {\n      \"key\": \"value\"\n    },\n    \"fontFamily\": \"fontFamily\",\n    \"forwardReplies\": true,\n    \"founderName\": \"Sarah\",\n    \"id\": \"company_abc123\",\n    \"language\": \"en\",\n    \"logoUrl\": \"https://example.com/logo.png\",\n    \"name\": \"Acme Inc\",\n    \"previewUrl\": \"https://sequenzy.com/dashboard/company/comp_abc123/campaign/camp_abc123?step=review\",\n    \"pricing\": {\n      \"key\": \"value\"\n    },\n    \"primaryColor\": \"#0ea5e9\",\n    \"privacyPolicyUrl\": \"privacyPolicyUrl\",\n    \"replyRetentionDays\": 1,\n    \"replyTrackingDomainMode\": \"sequenzy\",\n    \"replyTrackingEnabled\": true,\n    \"socialLinks\": {\n      \"key\": \"value\"\n    },\n    \"status\": \"ready\",\n    \"termsUrl\": \"termsUrl\",\n    \"testimonials\": [\n      {\n        \"key\": \"value\"\n      }\n    ],\n    \"toneVoice\": \"clear, direct, warm\",\n    \"url\": \"https://sequenzy.com/dashboard/company/comp_abc123/campaign/camp_abc123\",\n    \"valueProps\": [\n      {\n        \"description\": \"Launch lifecycle emails in minutes.\",\n        \"title\": \"Fast setup\"\n      }\n    ],\n    \"websiteUrl\": \"acme.com\"\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"company\": {\n    \"address\": \"address\",\n    \"brandColors\": {\n      \"primary\": \"#0ea5e9\"\n    },\n    \"companyContext\": \"Acme helps SaaS teams send lifecycle emails from product events.\",\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"defaultFromEmail\": \"defaultFromEmail\",\n    \"defaultFromName\": \"defaultFromName\",\n    \"defaultReplyProfileId\": \"defaultReplyProfileId\",\n    \"defaultReplyToEmail\": \"defaultReplyToEmail\",\n    \"defaultReplyToName\": \"defaultReplyToName\",\n    \"defaultSenderProfileId\": \"defaultSenderProfileId\",\n    \"defaultSubscriberListIds\": [\n      \"list_abc123\"\n    ],\n    \"description\": \"Lifecycle email automation for SaaS teams.\",\n    \"emailBranding\": {\n      \"managedBy\": \"owner_subscription\",\n      \"reason\": \"free_plan\",\n      \"removalAction\": \"none\",\n      \"removalEntitled\": true,\n      \"subscriptionStatus\": \"active\",\n      \"subscriptionTier\": \"free\",\n      \"subscriptionUrl\": \"subscriptionUrl\",\n      \"visible\": true\n    },\n    \"emailDesignPrompt\": \"Editorial and calm. One idea per email, no feature grids.\",\n    \"emailDirection\": \"ltr\",\n    \"emailLengthPreference\": \"concise\",\n    \"emailLocalizationConfig\": {\n      \"key\": \"value\"\n    },\n    \"emailPreset\": \"branded\",\n    \"emailStylePreference\": \"visual\",\n    \"emailTheme\": {\n      \"key\": \"value\"\n    },\n    \"fontFamily\": \"fontFamily\",\n    \"footerStyle\": \"auto\",\n    \"forwardReplies\": true,\n    \"founderName\": \"Sarah\",\n    \"id\": \"company_abc123\",\n    \"language\": \"en\",\n    \"logoUrl\": \"https://example.com/logo.png\",\n    \"name\": \"Acme Inc\",\n    \"previewUrl\": \"https://sequenzy.com/dashboard/company/comp_abc123/campaign/camp_abc123?step=review\",\n    \"pricing\": {\n      \"key\": \"value\"\n    },\n    \"primaryColor\": \"#0ea5e9\",\n    \"privacyPolicyUrl\": \"privacyPolicyUrl\",\n    \"replyRetentionDays\": 1,\n    \"replyTrackingDomainMode\": \"sequenzy\",\n    \"replyTrackingEnabled\": true,\n    \"socialLinks\": {\n      \"key\": \"value\"\n    },\n    \"status\": \"ready\",\n    \"termsUrl\": \"termsUrl\",\n    \"testimonials\": [\n      {\n        \"key\": \"value\"\n      }\n    ],\n    \"toneVoice\": \"clear, direct, warm\",\n    \"url\": \"https://sequenzy.com/dashboard/company/comp_abc123/campaign/camp_abc123\",\n    \"valueProps\": [\n      {\n        \"description\": \"Launch lifecycle emails in minutes.\",\n        \"title\": \"Fast setup\"\n      }\n    ],\n    \"websiteUrl\": \"acme.com\"\n  },\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -7681,6 +7681,37 @@
       }
     },
     {
+      "id": "d0c9a28c-fe4b-4ffa-9032-5fdc489eceda",
+      "name": "End a Live Activity - default",
+      "request": {
+        "urlPathTemplate": "/push/live-activities/end",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 202,
+        "body": "{\n  \"activityId\": \"order-1234\",\n  \"event\": \"start\",\n  \"jobIds\": [\n    \"jobIds\"\n  ],\n  \"message\": \"Update queued for 1 device.\",\n  \"success\": true,\n  \"tokenCount\": 1\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "d0c9a28c-fe4b-4ffa-9032-5fdc489eceda",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "268726aa-30b9-4b0f-b912-ba5dbe03cc00",
       "name": "Estimate push campaign recipients - default",
       "request": {
@@ -7803,6 +7834,38 @@
         }
       },
       "uuid": "1b063ad4-f3e3-466c-ab57-b1f10bf242f9",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
+      "id": "6ba48967-ee8e-40bf-b9e7-21e18d9233bb",
+      "name": "List Live Activity tokens - default",
+      "request": {
+        "urlPathTemplate": "/push/live-activities",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"nextCursor\": \"nextCursor\",\n  \"success\": true,\n  \"summary\": {\n    \"activeActivities\": 1,\n    \"activityTypes\": [\n      {}\n    ],\n    \"pushToStartDevices\": 1\n  },\n  \"tokens\": [\n    {\n      \"activityId\": \"order-1234\",\n      \"activityType\": \"DeliveryAttributes\",\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"deviceId\": \"deviceId\",\n      \"endedAt\": \"2024-01-15T09:30:00Z\",\n      \"id\": \"id\",\n      \"invalidReason\": \"invalidReason\",\n      \"kind\": \"push_to_start\",\n      \"lastPushAt\": \"2024-01-15T09:30:00Z\",\n      \"lastPushError\": \"lastPushError\",\n      \"lastPushOutcome\": \"lastPushOutcome\",\n      \"lastSeenAt\": \"2024-01-15T09:30:00Z\",\n      \"status\": \"active\",\n      \"subscriberId\": \"subscriberId\",\n      \"tokenPreview\": \"…9f3a2b1c\"\n    }\n  ]\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "6ba48967-ee8e-40bf-b9e7-21e18d9233bb",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -8040,6 +8103,37 @@
       }
     },
     {
+      "id": "378c11f2-737d-427c-86ed-11bec399f315",
+      "name": "Start a Live Activity - default",
+      "request": {
+        "urlPathTemplate": "/push/live-activities/start",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 202,
+        "body": "{\n  \"activityId\": \"order-1234\",\n  \"event\": \"start\",\n  \"jobIds\": [\n    \"jobIds\"\n  ],\n  \"message\": \"Update queued for 1 device.\",\n  \"success\": true,\n  \"tokenCount\": 1\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "378c11f2-737d-427c-86ed-11bec399f315",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "8adc51a8-00e9-4f36-999b-689da1e8eebd",
       "name": "Unschedule a push campaign - default",
       "request": {
@@ -8064,6 +8158,37 @@
         }
       },
       "uuid": "8adc51a8-00e9-4f36-999b-689da1e8eebd",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "36d1353c-82ed-4afb-a625-c886e1798c29",
+      "name": "Update a Live Activity - default",
+      "request": {
+        "urlPathTemplate": "/push/live-activities/update",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 202,
+        "body": "{\n  \"activityId\": \"order-1234\",\n  \"event\": \"start\",\n  \"jobIds\": [\n    \"jobIds\"\n  ],\n  \"message\": \"Update queued for 1 device.\",\n  \"success\": true,\n  \"tokenCount\": 1\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "36d1353c-82ed-4afb-a625-c886e1798c29",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -15178,6 +15303,6 @@
     }
   ],
   "meta": {
-    "total": 440
+    "total": 444
   }
 }

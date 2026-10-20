@@ -223,6 +223,35 @@ func TestPushDuplicatePushCampaignWithWireMock(
 	VerifyRequestCount(t, "TestPushDuplicatePushCampaignWithWireMock", "POST", "/push/campaigns/campaignId/duplicate", nil, 1)
 }
 
+func TestPushEndLiveActivityWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.EndLiveActivityRequest{
+		ActivityID: "order-1234",
+		ContentState: map[string]any{
+			"key": "value",
+		},
+	}
+	_, invocationErr := client.Push.EndLiveActivity(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestPushEndLiveActivityWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestPushEndLiveActivityWithWireMock", "POST", "/push/live-activities/end", nil, 1)
+}
+
 func TestPushEstimatePushCampaignRecipientsWithWireMock(
 	t *testing.T,
 ) {
@@ -323,6 +352,30 @@ func TestPushGetPushSettingsWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestPushGetPushSettingsWithWireMock", "GET", "/push/settings", nil, 1)
+}
+
+func TestPushListLiveActivitiesWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.ListLiveActivitiesRequest{}
+	_, invocationErr := client.Push.ListLiveActivities(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestPushListLiveActivitiesWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestPushListLiveActivitiesWithWireMock", "GET", "/push/live-activities", nil, 1)
 }
 
 func TestPushListPushCampaignsWithWireMock(
@@ -507,6 +560,38 @@ func TestPushSetFcmCredentialsWithWireMock(
 	VerifyRequestCount(t, "TestPushSetFcmCredentialsWithWireMock", "PUT", "/push/settings/android", nil, 1)
 }
 
+func TestPushStartLiveActivityWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.StartLiveActivityRequest{
+		ActivityID:   "order-1234",
+		ActivityType: "DeliveryAttributes",
+		Alert:        &sequenzygo.LiveActivityAlert{},
+		ContentState: map[string]any{
+			"minutesAway": 8,
+			"status":      "out_for_delivery",
+		},
+	}
+	_, invocationErr := client.Push.StartLiveActivity(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestPushStartLiveActivityWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestPushStartLiveActivityWithWireMock", "POST", "/push/live-activities/start", nil, 1)
+}
+
 func TestPushUnschedulePushCampaignWithWireMock(
 	t *testing.T,
 ) {
@@ -531,6 +616,36 @@ func TestPushUnschedulePushCampaignWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestPushUnschedulePushCampaignWithWireMock", "POST", "/push/campaigns/campaignId/unschedule", nil, 1)
+}
+
+func TestPushUpdateLiveActivityWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.UpdateLiveActivityRequest{
+		ActivityID: "order-1234",
+		ContentState: map[string]any{
+			"minutesAway": 8,
+			"status":      "out_for_delivery",
+		},
+	}
+	_, invocationErr := client.Push.UpdateLiveActivity(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestPushUpdateLiveActivityWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestPushUpdateLiveActivityWithWireMock", "POST", "/push/live-activities/update", nil, 1)
 }
 
 func TestPushUpdatePushCampaignWithWireMock(

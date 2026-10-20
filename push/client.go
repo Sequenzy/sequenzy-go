@@ -182,6 +182,36 @@ func (c *Client) DuplicatePushCampaign(
 	return response.Body, nil
 }
 
+// Ends the contact's activity on every device running it. Tokens are marked ended as APNs accepts the push, so an end that failed can be sent again. Without dismissalDate iOS keeps an ended activity on the Lock Screen for up to four hours. Requires the transactional:send scope.
+//
+// Example:
+//
+//	request := &sequenzygo.EndLiveActivityRequest{
+//	    ActivityID: "order-1234",
+//	    ContentState: map[string]any{
+//	        "key": "value",
+//	    },
+//	}
+//	client.Push.EndLiveActivity(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) EndLiveActivity(
+	ctx context.Context,
+	request *sequenzygo.EndLiveActivityRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.LiveActivityDispatch, error) {
+	response, err := c.WithRawResponse.EndLiveActivity(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Counts the contacts in an audience (audienceCount) and those with an active device on the selected platforms (eligibleCount). Email status does not affect push eligibility. Requires the campaigns:read scope.
 //
 // Example:
@@ -278,6 +308,31 @@ func (c *Client) GetPushSettings(
 ) (*sequenzygo.GetPushSettingsResponse, error) {
 	response, err := c.WithRawResponse.GetPushSettings(
 		ctx,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Lists ActivityKit tokens the Sequenzy iOS SDK reported, with a summary per activity type (for the contact when email or subscriberId is given). push_to_start tokens can start an activity of their type; update tokens address one running activity. Tokens are masked. Requires the subscribers:read scope.
+//
+// Example:
+//
+//	request := &sequenzygo.ListLiveActivitiesRequest{}
+//	client.Push.ListLiveActivities(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) ListLiveActivities(
+	ctx context.Context,
+	request *sequenzygo.ListLiveActivitiesRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.ListLiveActivitiesResponse, error) {
+	response, err := c.WithRawResponse.ListLiveActivities(
+		ctx,
+		request,
 		opts...,
 	)
 	if err != nil {
@@ -475,6 +530,39 @@ func (c *Client) SetFcmCredentials(
 	return response.Body, nil
 }
 
+// Starts an iOS Live Activity remotely (push-to-start, iOS 17.2+) on every device of one contact that reported a push-to-start token for activityType. Sequenzy adds sequenzy.activityId to the attributes so the SDK can report the new activity's update token under your id. Returns 202 with tokenCount 0, sending nothing, when no device can start it. Calling it again starts another copy. Requires the transactional:send scope.
+//
+// Example:
+//
+//	request := &sequenzygo.StartLiveActivityRequest{
+//	    ActivityID: "order-1234",
+//	    ActivityType: "DeliveryAttributes",
+//	    Alert: &sequenzygo.LiveActivityAlert{},
+//	    ContentState: map[string]any{
+//	        "minutesAway": 8,
+//	        "status": "out_for_delivery",
+//	    },
+//	}
+//	client.Push.StartLiveActivity(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) StartLiveActivity(
+	ctx context.Context,
+	request *sequenzygo.StartLiveActivityRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.LiveActivityDispatch, error) {
+	response, err := c.WithRawResponse.StartLiveActivity(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Moves a scheduled push campaign back to draft. The queued send is discarded. Requires the campaigns:send scope.
 //
 // Example:
@@ -492,6 +580,37 @@ func (c *Client) UnschedulePushCampaign(
 	opts ...option.RequestOption,
 ) (*sequenzygo.UnschedulePushCampaignResponse, error) {
 	response, err := c.WithRawResponse.UnschedulePushCampaign(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Sends new content state to every running copy of the contact's activity (one per device that reported an update token). Each request carries a fixed timestamp, so a retried or late delivery never replaces newer content. Returns tokenCount 0 when no running copy has reported a token. Requires the transactional:send scope.
+//
+// Example:
+//
+//	request := &sequenzygo.UpdateLiveActivityRequest{
+//	    ActivityID: "order-1234",
+//	    ContentState: map[string]any{
+//	        "minutesAway": 8,
+//	        "status": "out_for_delivery",
+//	    },
+//	}
+//	client.Push.UpdateLiveActivity(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) UpdateLiveActivity(
+	ctx context.Context,
+	request *sequenzygo.UpdateLiveActivityRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.LiveActivityDispatch, error) {
+	response, err := c.WithRawResponse.UpdateLiveActivity(
 		ctx,
 		request,
 		opts...,

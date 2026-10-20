@@ -8388,6 +8388,14 @@ client.Companies.Update(
 <dl>
 <dd>
 
+**footerStyle:** `*sequenzygo.UpdateCompaniesRequestFooterStyle` — Footer style for new AI-designed emails: `auto` (fits the brand), `classic`, `mono`, `band` or `editorial`. Kept in the stored footer theme, alongside its other settings. Existing emails keep their footers. Other values return 400.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **forwardReplies:** `*bool` — Enable or disable forwarding captured replies to the configured mailbox.
     
 </dd>
@@ -17479,6 +17487,133 @@ client.Push.DuplicatePushCampaign(
 </dl>
 </details>
 
+<details><summary><code>client.Push.EndLiveActivity(request) -> *sequenzygo.LiveActivityDispatch</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Ends the contact's activity on every device running it. Tokens are marked ended as APNs accepts the push, so an end that failed can be sent again. Without dismissalDate iOS keeps an ended activity on the Lock Screen for up to four hours. Requires the transactional:send scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.EndLiveActivityRequest{
+    ActivityID: "order-1234",
+    ContentState: map[string]any{
+        "key": "value",
+    },
+}
+client.Push.EndLiveActivity(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**activityID:** `string` — Your id for the activity, chosen when it starts.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**alert:** `*sequenzygo.LiveActivityAlert` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**contentState:** `map[string]any` — Final content shown until the activity is removed. Required, as in Apple's end payloads.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**dismissalDate:** `*sequenzygo.LiveActivityTime` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**email:** `*string` — Contact whose activity it is. Provide email or subscriberId; activities are always addressed per contact, so a token registered under the same activityId by another device never receives this content.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**priority:** `*sequenzygo.EndLiveActivityRequestPriority` — high (default) delivers immediately and counts against Apple's Live Activity update budget; low (apns-priority 5) does not. Pushes with an alert always go at high priority.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**relevanceScore:** `*float64` — Orders a person's concurrent activities; higher shows first.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**staleDate:** `*sequenzygo.LiveActivityTime` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**subscriberID:** `*string` — Subscriber whose activity it is.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Push.EstimatePushCampaignRecipients(request) -> *sequenzygo.EstimatePushCampaignRecipientsResponse</code></summary>
 <dl>
 <dd>
@@ -17700,6 +17835,120 @@ client.Push.GetPushSettings(
     context.TODO(),
 )
 ```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Push.ListLiveActivities() -> *sequenzygo.ListLiveActivitiesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists ActivityKit tokens the Sequenzy iOS SDK reported, with a summary per activity type (for the contact when email or subscriberId is given). push_to_start tokens can start an activity of their type; update tokens address one running activity. Tokens are masked. Requires the subscribers:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.ListLiveActivitiesRequest{}
+client.Push.ListLiveActivities(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**activityID:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**activityType:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**cursor:** `*string` — nextCursor from the previous page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**email:** `*string` — Only this contact's tokens.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**kind:** `*sequenzygo.ListLiveActivitiesRequestKind` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `*int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**status:** `*sequenzygo.ListLiveActivitiesRequestStatus` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**subscriberID:** `*string` 
+    
 </dd>
 </dl>
 </dd>
@@ -18362,6 +18611,136 @@ client.Push.SetFcmCredentials(
 </dl>
 </details>
 
+<details><summary><code>client.Push.StartLiveActivity(request) -> *sequenzygo.LiveActivityDispatch</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Starts an iOS Live Activity remotely (push-to-start, iOS 17.2+) on every device of one contact that reported a push-to-start token for activityType. Sequenzy adds sequenzy.activityId to the attributes so the SDK can report the new activity's update token under your id. Returns 202 with tokenCount 0, sending nothing, when no device can start it. Calling it again starts another copy. Requires the transactional:send scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.StartLiveActivityRequest{
+    ActivityID: "order-1234",
+    ActivityType: "DeliveryAttributes",
+    Alert: &sequenzygo.LiveActivityAlert{},
+    ContentState: map[string]any{
+        "minutesAway": 8,
+        "status": "out_for_delivery",
+    },
+}
+client.Push.StartLiveActivity(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**activityID:** `string` — Your id for the activity, chosen when it starts.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**activityType:** `string` — The Swift ActivityAttributes type name, sent to APNs as attributes-type.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**alert:** `*sequenzygo.LiveActivityAlert` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**attributes:** `map[string]any` — Static attributes as JSON. A sequenzy key you send is replaced.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**contentState:** `map[string]any` — Your Swift ContentState as JSON. Date fields decode as seconds since 2001-01-01 unless your struct decodes them differently.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**email:** `*string` — Contact whose devices start the activity. Provide email or subscriberId.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**relevanceScore:** `*float64` — Orders a person's concurrent activities; higher shows first.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**staleDate:** `*sequenzygo.LiveActivityTime` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**subscriberID:** `*string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Push.UnschedulePushCampaign(CampaignID) -> *sequenzygo.UnschedulePushCampaignResponse</code></summary>
 <dl>
 <dd>
@@ -18411,6 +18790,126 @@ client.Push.UnschedulePushCampaign(
 <dd>
 
 **campaignID:** `string` — Push campaign ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Push.UpdateLiveActivity(request) -> *sequenzygo.LiveActivityDispatch</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Sends new content state to every running copy of the contact's activity (one per device that reported an update token). Each request carries a fixed timestamp, so a retried or late delivery never replaces newer content. Returns tokenCount 0 when no running copy has reported a token. Requires the transactional:send scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.UpdateLiveActivityRequest{
+    ActivityID: "order-1234",
+    ContentState: map[string]any{
+        "minutesAway": 8,
+        "status": "out_for_delivery",
+    },
+}
+client.Push.UpdateLiveActivity(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**activityID:** `string` — Your id for the activity, chosen when it starts.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**alert:** `*sequenzygo.LiveActivityAlert` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**contentState:** `map[string]any` — Your Swift ContentState as JSON. Date fields decode as seconds since 2001-01-01 unless your struct decodes them differently.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**email:** `*string` — Contact whose activity it is. Provide email or subscriberId; activities are always addressed per contact, so a token registered under the same activityId by another device never receives this content.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**priority:** `*sequenzygo.UpdateLiveActivityRequestPriority` — high (default) delivers immediately and counts against Apple's Live Activity update budget; low (apns-priority 5) does not. Pushes with an alert always go at high priority.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**relevanceScore:** `*float64` — Orders a person's concurrent activities; higher shows first.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**staleDate:** `*sequenzygo.LiveActivityTime` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**subscriberID:** `*string` — Subscriber whose activity it is.
     
 </dd>
 </dl>

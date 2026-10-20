@@ -145,27 +145,28 @@ var (
 	companyFieldEmailStylePreference     = big.NewInt(1 << 18)
 	companyFieldEmailTheme               = big.NewInt(1 << 19)
 	companyFieldFontFamily               = big.NewInt(1 << 20)
-	companyFieldForwardReplies           = big.NewInt(1 << 21)
-	companyFieldFounderName              = big.NewInt(1 << 22)
-	companyFieldID                       = big.NewInt(1 << 23)
-	companyFieldLanguage                 = big.NewInt(1 << 24)
-	companyFieldLogoURL                  = big.NewInt(1 << 25)
-	companyFieldName                     = big.NewInt(1 << 26)
-	companyFieldPreviewURL               = big.NewInt(1 << 27)
-	companyFieldPricing                  = big.NewInt(1 << 28)
-	companyFieldPrimaryColor             = big.NewInt(1 << 29)
-	companyFieldPrivacyPolicyURL         = big.NewInt(1 << 30)
-	companyFieldReplyRetentionDays       = big.NewInt(1 << 31)
-	companyFieldReplyTrackingDomainMode  = big.NewInt(1 << 32)
-	companyFieldReplyTrackingEnabled     = big.NewInt(1 << 33)
-	companyFieldSocialLinks              = big.NewInt(1 << 34)
-	companyFieldStatus                   = big.NewInt(1 << 35)
-	companyFieldTermsURL                 = big.NewInt(1 << 36)
-	companyFieldTestimonials             = big.NewInt(1 << 37)
-	companyFieldToneVoice                = big.NewInt(1 << 38)
-	companyFieldURL                      = big.NewInt(1 << 39)
-	companyFieldValueProps               = big.NewInt(1 << 40)
-	companyFieldWebsiteURL               = big.NewInt(1 << 41)
+	companyFieldFooterStyle              = big.NewInt(1 << 21)
+	companyFieldForwardReplies           = big.NewInt(1 << 22)
+	companyFieldFounderName              = big.NewInt(1 << 23)
+	companyFieldID                       = big.NewInt(1 << 24)
+	companyFieldLanguage                 = big.NewInt(1 << 25)
+	companyFieldLogoURL                  = big.NewInt(1 << 26)
+	companyFieldName                     = big.NewInt(1 << 27)
+	companyFieldPreviewURL               = big.NewInt(1 << 28)
+	companyFieldPricing                  = big.NewInt(1 << 29)
+	companyFieldPrimaryColor             = big.NewInt(1 << 30)
+	companyFieldPrivacyPolicyURL         = big.NewInt(1 << 31)
+	companyFieldReplyRetentionDays       = big.NewInt(1 << 32)
+	companyFieldReplyTrackingDomainMode  = big.NewInt(1 << 33)
+	companyFieldReplyTrackingEnabled     = big.NewInt(1 << 34)
+	companyFieldSocialLinks              = big.NewInt(1 << 35)
+	companyFieldStatus                   = big.NewInt(1 << 36)
+	companyFieldTermsURL                 = big.NewInt(1 << 37)
+	companyFieldTestimonials             = big.NewInt(1 << 38)
+	companyFieldToneVoice                = big.NewInt(1 << 39)
+	companyFieldURL                      = big.NewInt(1 << 40)
+	companyFieldValueProps               = big.NewInt(1 << 41)
+	companyFieldWebsiteURL               = big.NewInt(1 << 42)
 )
 
 type Company struct {
@@ -196,6 +197,8 @@ type Company struct {
 	EmailStylePreference *CompanyEmailStylePreference `json:"emailStylePreference,omitempty" url:"emailStylePreference,omitempty"`
 	EmailTheme           map[string]any               `json:"emailTheme,omitempty" url:"emailTheme,omitempty"`
 	FontFamily           *string                      `json:"fontFamily,omitempty" url:"fontFamily,omitempty"`
+	// Footer style for new AI-designed emails. `classic` keeps brand-colored social icons, centered; `mono` uses monochrome icons and sets the company name as a small wordmark; `band` sets that on a dark full-width band; `editorial` is mono and left-aligned. `auto` (the default) picks one that fits the brand. Existing emails keep their footers.
+	FooterStyle *CompanyFooterStyle `json:"footerStyle,omitempty" url:"footerStyle,omitempty"`
 	// Whether captured replies are forwarded to the configured mailbox.
 	ForwardReplies *bool   `json:"forwardReplies,omitempty" url:"forwardReplies,omitempty"`
 	FounderName    *string `json:"founderName,omitempty" url:"founderName,omitempty"`
@@ -377,6 +380,13 @@ func (c *Company) GetFontFamily() *string {
 		return nil
 	}
 	return c.FontFamily
+}
+
+func (c *Company) GetFooterStyle() *CompanyFooterStyle {
+	if c == nil {
+		return nil
+	}
+	return c.FooterStyle
 }
 
 func (c *Company) GetForwardReplies() *bool {
@@ -685,6 +695,13 @@ func (c *Company) SetEmailTheme(emailTheme map[string]any) {
 func (c *Company) SetFontFamily(fontFamily *string) {
 	c.FontFamily = fontFamily
 	c.require(companyFieldFontFamily)
+}
+
+// SetFooterStyle sets the FooterStyle field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *Company) SetFooterStyle(footerStyle *CompanyFooterStyle) {
+	c.FooterStyle = footerStyle
+	c.require(companyFieldFooterStyle)
 }
 
 // SetForwardReplies sets the ForwardReplies field and marks it as non-optional;
@@ -1317,6 +1334,38 @@ func NewCompanyEmailStylePreferenceFromString(s string) (CompanyEmailStylePrefer
 }
 
 func (c CompanyEmailStylePreference) Ptr() *CompanyEmailStylePreference {
+	return &c
+}
+
+// Footer style for new AI-designed emails. `classic` keeps brand-colored social icons, centered; `mono` uses monochrome icons and sets the company name as a small wordmark; `band` sets that on a dark full-width band; `editorial` is mono and left-aligned. `auto` (the default) picks one that fits the brand. Existing emails keep their footers.
+type CompanyFooterStyle string
+
+const (
+	CompanyFooterStyleAuto      CompanyFooterStyle = "auto"
+	CompanyFooterStyleClassic   CompanyFooterStyle = "classic"
+	CompanyFooterStyleMono      CompanyFooterStyle = "mono"
+	CompanyFooterStyleBand      CompanyFooterStyle = "band"
+	CompanyFooterStyleEditorial CompanyFooterStyle = "editorial"
+)
+
+func NewCompanyFooterStyleFromString(s string) (CompanyFooterStyle, error) {
+	switch s {
+	case "auto":
+		return CompanyFooterStyleAuto, nil
+	case "classic":
+		return CompanyFooterStyleClassic, nil
+	case "mono":
+		return CompanyFooterStyleMono, nil
+	case "band":
+		return CompanyFooterStyleBand, nil
+	case "editorial":
+		return CompanyFooterStyleEditorial, nil
+	}
+	var t CompanyFooterStyle
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CompanyFooterStyle) Ptr() *CompanyFooterStyle {
 	return &c
 }
 
@@ -2832,6 +2881,38 @@ func (u *UpdateCompaniesRequestEmailThemeTypography) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
+// Footer style for new AI-designed emails: `auto` (fits the brand), `classic`, `mono`, `band` or `editorial`. Kept in the stored footer theme, alongside its other settings. Existing emails keep their footers. Other values return 400.
+type UpdateCompaniesRequestFooterStyle string
+
+const (
+	UpdateCompaniesRequestFooterStyleAuto      UpdateCompaniesRequestFooterStyle = "auto"
+	UpdateCompaniesRequestFooterStyleClassic   UpdateCompaniesRequestFooterStyle = "classic"
+	UpdateCompaniesRequestFooterStyleMono      UpdateCompaniesRequestFooterStyle = "mono"
+	UpdateCompaniesRequestFooterStyleBand      UpdateCompaniesRequestFooterStyle = "band"
+	UpdateCompaniesRequestFooterStyleEditorial UpdateCompaniesRequestFooterStyle = "editorial"
+)
+
+func NewUpdateCompaniesRequestFooterStyleFromString(s string) (UpdateCompaniesRequestFooterStyle, error) {
+	switch s {
+	case "auto":
+		return UpdateCompaniesRequestFooterStyleAuto, nil
+	case "classic":
+		return UpdateCompaniesRequestFooterStyleClassic, nil
+	case "mono":
+		return UpdateCompaniesRequestFooterStyleMono, nil
+	case "band":
+		return UpdateCompaniesRequestFooterStyleBand, nil
+	case "editorial":
+		return UpdateCompaniesRequestFooterStyleEditorial, nil
+	}
+	var t UpdateCompaniesRequestFooterStyle
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateCompaniesRequestFooterStyle) Ptr() *UpdateCompaniesRequestFooterStyle {
+	return &u
+}
+
 // custom points reply addresses at your verified receiving domain for emails from every sending domain, falling back to inbound.sequenzy.com until one is verified; sequenzy always uses inbound.sequenzy.com.
 type UpdateCompaniesRequestReplyTrackingDomainMode string
 
@@ -2969,29 +3050,30 @@ var (
 	updateCompaniesRequestFieldEmailStylePreference     = big.NewInt(1 << 10)
 	updateCompaniesRequestFieldEmailTheme               = big.NewInt(1 << 11)
 	updateCompaniesRequestFieldFontFamily               = big.NewInt(1 << 12)
-	updateCompaniesRequestFieldForwardReplies           = big.NewInt(1 << 13)
-	updateCompaniesRequestFieldFounderName              = big.NewInt(1 << 14)
-	updateCompaniesRequestFieldFromEmail                = big.NewInt(1 << 15)
-	updateCompaniesRequestFieldFromName                 = big.NewInt(1 << 16)
-	updateCompaniesRequestFieldLanguage                 = big.NewInt(1 << 17)
-	updateCompaniesRequestFieldLogoURL                  = big.NewInt(1 << 18)
-	updateCompaniesRequestFieldName                     = big.NewInt(1 << 19)
-	updateCompaniesRequestFieldPreviousCompanyName      = big.NewInt(1 << 20)
-	updateCompaniesRequestFieldPricing                  = big.NewInt(1 << 21)
-	updateCompaniesRequestFieldPrimaryColor             = big.NewInt(1 << 22)
-	updateCompaniesRequestFieldPrivacyPolicyURL         = big.NewInt(1 << 23)
-	updateCompaniesRequestFieldRenameMatchingFooters    = big.NewInt(1 << 24)
-	updateCompaniesRequestFieldReplyProfileID           = big.NewInt(1 << 25)
-	updateCompaniesRequestFieldReplyTo                  = big.NewInt(1 << 26)
-	updateCompaniesRequestFieldReplyToName              = big.NewInt(1 << 27)
-	updateCompaniesRequestFieldReplyTrackingDomainMode  = big.NewInt(1 << 28)
-	updateCompaniesRequestFieldReplyTrackingEnabled     = big.NewInt(1 << 29)
-	updateCompaniesRequestFieldSenderProfileID          = big.NewInt(1 << 30)
-	updateCompaniesRequestFieldSocialLinks              = big.NewInt(1 << 31)
-	updateCompaniesRequestFieldTermsURL                 = big.NewInt(1 << 32)
-	updateCompaniesRequestFieldTestimonials             = big.NewInt(1 << 33)
-	updateCompaniesRequestFieldToneVoice                = big.NewInt(1 << 34)
-	updateCompaniesRequestFieldValueProps               = big.NewInt(1 << 35)
+	updateCompaniesRequestFieldFooterStyle              = big.NewInt(1 << 13)
+	updateCompaniesRequestFieldForwardReplies           = big.NewInt(1 << 14)
+	updateCompaniesRequestFieldFounderName              = big.NewInt(1 << 15)
+	updateCompaniesRequestFieldFromEmail                = big.NewInt(1 << 16)
+	updateCompaniesRequestFieldFromName                 = big.NewInt(1 << 17)
+	updateCompaniesRequestFieldLanguage                 = big.NewInt(1 << 18)
+	updateCompaniesRequestFieldLogoURL                  = big.NewInt(1 << 19)
+	updateCompaniesRequestFieldName                     = big.NewInt(1 << 20)
+	updateCompaniesRequestFieldPreviousCompanyName      = big.NewInt(1 << 21)
+	updateCompaniesRequestFieldPricing                  = big.NewInt(1 << 22)
+	updateCompaniesRequestFieldPrimaryColor             = big.NewInt(1 << 23)
+	updateCompaniesRequestFieldPrivacyPolicyURL         = big.NewInt(1 << 24)
+	updateCompaniesRequestFieldRenameMatchingFooters    = big.NewInt(1 << 25)
+	updateCompaniesRequestFieldReplyProfileID           = big.NewInt(1 << 26)
+	updateCompaniesRequestFieldReplyTo                  = big.NewInt(1 << 27)
+	updateCompaniesRequestFieldReplyToName              = big.NewInt(1 << 28)
+	updateCompaniesRequestFieldReplyTrackingDomainMode  = big.NewInt(1 << 29)
+	updateCompaniesRequestFieldReplyTrackingEnabled     = big.NewInt(1 << 30)
+	updateCompaniesRequestFieldSenderProfileID          = big.NewInt(1 << 31)
+	updateCompaniesRequestFieldSocialLinks              = big.NewInt(1 << 32)
+	updateCompaniesRequestFieldTermsURL                 = big.NewInt(1 << 33)
+	updateCompaniesRequestFieldTestimonials             = big.NewInt(1 << 34)
+	updateCompaniesRequestFieldToneVoice                = big.NewInt(1 << 35)
+	updateCompaniesRequestFieldValueProps               = big.NewInt(1 << 36)
 )
 
 type UpdateCompaniesRequest struct {
@@ -3015,6 +3097,8 @@ type UpdateCompaniesRequest struct {
 	// Default email theme. Partial update - omitted fields keep their current value (or the preset default) and numeric values are clamped to supported ranges. Pass null to reset to the platform default theme.
 	EmailTheme *UpdateCompaniesRequestEmailTheme `json:"emailTheme,omitempty" url:"-"`
 	FontFamily *string                           `json:"fontFamily,omitempty" url:"-"`
+	// Footer style for new AI-designed emails: `auto` (fits the brand), `classic`, `mono`, `band` or `editorial`. Kept in the stored footer theme, alongside its other settings. Existing emails keep their footers. Other values return 400.
+	FooterStyle *UpdateCompaniesRequestFooterStyle `json:"footerStyle,omitempty" url:"-"`
 	// Enable or disable forwarding captured replies to the configured mailbox.
 	ForwardReplies *bool   `json:"forwardReplies,omitempty" url:"-"`
 	FounderName    *string `json:"founderName,omitempty" url:"-"`
@@ -3151,6 +3235,13 @@ func (u *UpdateCompaniesRequest) SetEmailTheme(emailTheme *UpdateCompaniesReques
 func (u *UpdateCompaniesRequest) SetFontFamily(fontFamily *string) {
 	u.FontFamily = fontFamily
 	u.require(updateCompaniesRequestFieldFontFamily)
+}
+
+// SetFooterStyle sets the FooterStyle field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateCompaniesRequest) SetFooterStyle(footerStyle *UpdateCompaniesRequestFooterStyle) {
+	u.FooterStyle = footerStyle
+	u.require(updateCompaniesRequestFieldFooterStyle)
 }
 
 // SetForwardReplies sets the ForwardReplies field and marks it as non-optional;

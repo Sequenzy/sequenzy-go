@@ -235,6 +235,130 @@ func (d *DuplicatePushCampaignRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
+	endLiveActivityRequestFieldActivityID     = big.NewInt(1 << 0)
+	endLiveActivityRequestFieldAlert          = big.NewInt(1 << 1)
+	endLiveActivityRequestFieldContentState   = big.NewInt(1 << 2)
+	endLiveActivityRequestFieldDismissalDate  = big.NewInt(1 << 3)
+	endLiveActivityRequestFieldEmail          = big.NewInt(1 << 4)
+	endLiveActivityRequestFieldPriority       = big.NewInt(1 << 5)
+	endLiveActivityRequestFieldRelevanceScore = big.NewInt(1 << 6)
+	endLiveActivityRequestFieldStaleDate      = big.NewInt(1 << 7)
+	endLiveActivityRequestFieldSubscriberID   = big.NewInt(1 << 8)
+)
+
+type EndLiveActivityRequest struct {
+	// Your id for the activity, chosen when it starts.
+	ActivityID string             `json:"activityId" url:"-"`
+	Alert      *LiveActivityAlert `json:"alert,omitempty" url:"-"`
+	// Final content shown until the activity is removed. Required, as in Apple's end payloads.
+	ContentState  map[string]any    `json:"contentState" url:"-"`
+	DismissalDate *LiveActivityTime `json:"dismissalDate,omitempty" url:"-"`
+	// Contact whose activity it is. Provide email or subscriberId; activities are always addressed per contact, so a token registered under the same activityId by another device never receives this content.
+	Email *string `json:"email,omitempty" url:"-"`
+	// high (default) delivers immediately and counts against Apple's Live Activity update budget; low (apns-priority 5) does not. Pushes with an alert always go at high priority.
+	Priority *EndLiveActivityRequestPriority `json:"priority,omitempty" url:"-"`
+	// Orders a person's concurrent activities; higher shows first.
+	RelevanceScore *float64          `json:"relevanceScore,omitempty" url:"-"`
+	StaleDate      *LiveActivityTime `json:"staleDate,omitempty" url:"-"`
+	// Subscriber whose activity it is.
+	SubscriberID *string `json:"subscriberId,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (e *EndLiveActivityRequest) require(field *big.Int) {
+	if e.explicitFields == nil {
+		e.explicitFields = big.NewInt(0)
+	}
+	e.explicitFields.Or(e.explicitFields, field)
+}
+
+// SetActivityID sets the ActivityID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EndLiveActivityRequest) SetActivityID(activityID string) {
+	e.ActivityID = activityID
+	e.require(endLiveActivityRequestFieldActivityID)
+}
+
+// SetAlert sets the Alert field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EndLiveActivityRequest) SetAlert(alert *LiveActivityAlert) {
+	e.Alert = alert
+	e.require(endLiveActivityRequestFieldAlert)
+}
+
+// SetContentState sets the ContentState field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EndLiveActivityRequest) SetContentState(contentState map[string]any) {
+	e.ContentState = contentState
+	e.require(endLiveActivityRequestFieldContentState)
+}
+
+// SetDismissalDate sets the DismissalDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EndLiveActivityRequest) SetDismissalDate(dismissalDate *LiveActivityTime) {
+	e.DismissalDate = dismissalDate
+	e.require(endLiveActivityRequestFieldDismissalDate)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EndLiveActivityRequest) SetEmail(email *string) {
+	e.Email = email
+	e.require(endLiveActivityRequestFieldEmail)
+}
+
+// SetPriority sets the Priority field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EndLiveActivityRequest) SetPriority(priority *EndLiveActivityRequestPriority) {
+	e.Priority = priority
+	e.require(endLiveActivityRequestFieldPriority)
+}
+
+// SetRelevanceScore sets the RelevanceScore field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EndLiveActivityRequest) SetRelevanceScore(relevanceScore *float64) {
+	e.RelevanceScore = relevanceScore
+	e.require(endLiveActivityRequestFieldRelevanceScore)
+}
+
+// SetStaleDate sets the StaleDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EndLiveActivityRequest) SetStaleDate(staleDate *LiveActivityTime) {
+	e.StaleDate = staleDate
+	e.require(endLiveActivityRequestFieldStaleDate)
+}
+
+// SetSubscriberID sets the SubscriberID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EndLiveActivityRequest) SetSubscriberID(subscriberID *string) {
+	e.SubscriberID = subscriberID
+	e.require(endLiveActivityRequestFieldSubscriberID)
+}
+
+func (e *EndLiveActivityRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler EndLiveActivityRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*e = EndLiveActivityRequest(body)
+	return nil
+}
+
+func (e *EndLiveActivityRequest) MarshalJSON() ([]byte, error) {
+	type embed EndLiveActivityRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*e),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
 	estimatePushCampaignRecipientsRequestFieldPlatforms   = big.NewInt(1 << 0)
 	estimatePushCampaignRecipientsRequestFieldTargetLists = big.NewInt(1 << 1)
 )
@@ -340,6 +464,96 @@ func (g *GetPushCampaignStatsRequest) require(field *big.Int) {
 func (g *GetPushCampaignStatsRequest) SetCampaignID(campaignID string) {
 	g.CampaignID = campaignID
 	g.require(getPushCampaignStatsRequestFieldCampaignID)
+}
+
+var (
+	listLiveActivitiesRequestFieldActivityID   = big.NewInt(1 << 0)
+	listLiveActivitiesRequestFieldActivityType = big.NewInt(1 << 1)
+	listLiveActivitiesRequestFieldCursor       = big.NewInt(1 << 2)
+	listLiveActivitiesRequestFieldEmail        = big.NewInt(1 << 3)
+	listLiveActivitiesRequestFieldKind         = big.NewInt(1 << 4)
+	listLiveActivitiesRequestFieldLimit        = big.NewInt(1 << 5)
+	listLiveActivitiesRequestFieldStatus       = big.NewInt(1 << 6)
+	listLiveActivitiesRequestFieldSubscriberID = big.NewInt(1 << 7)
+)
+
+type ListLiveActivitiesRequest struct {
+	ActivityID   *string `json:"-" url:"activityId,omitempty"`
+	ActivityType *string `json:"-" url:"activityType,omitempty"`
+	// nextCursor from the previous page.
+	Cursor *string `json:"-" url:"cursor,omitempty"`
+	// Only this contact's tokens.
+	Email        *string                          `json:"-" url:"email,omitempty"`
+	Kind         *ListLiveActivitiesRequestKind   `json:"-" url:"kind,omitempty"`
+	Limit        *int                             `json:"-" url:"limit,omitempty"`
+	Status       *ListLiveActivitiesRequestStatus `json:"-" url:"status,omitempty"`
+	SubscriberID *string                          `json:"-" url:"subscriberId,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (l *ListLiveActivitiesRequest) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetActivityID sets the ActivityID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListLiveActivitiesRequest) SetActivityID(activityID *string) {
+	l.ActivityID = activityID
+	l.require(listLiveActivitiesRequestFieldActivityID)
+}
+
+// SetActivityType sets the ActivityType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListLiveActivitiesRequest) SetActivityType(activityType *string) {
+	l.ActivityType = activityType
+	l.require(listLiveActivitiesRequestFieldActivityType)
+}
+
+// SetCursor sets the Cursor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListLiveActivitiesRequest) SetCursor(cursor *string) {
+	l.Cursor = cursor
+	l.require(listLiveActivitiesRequestFieldCursor)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListLiveActivitiesRequest) SetEmail(email *string) {
+	l.Email = email
+	l.require(listLiveActivitiesRequestFieldEmail)
+}
+
+// SetKind sets the Kind field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListLiveActivitiesRequest) SetKind(kind *ListLiveActivitiesRequestKind) {
+	l.Kind = kind
+	l.require(listLiveActivitiesRequestFieldKind)
+}
+
+// SetLimit sets the Limit field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListLiveActivitiesRequest) SetLimit(limit *int) {
+	l.Limit = limit
+	l.require(listLiveActivitiesRequestFieldLimit)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListLiveActivitiesRequest) SetStatus(status *ListLiveActivitiesRequestStatus) {
+	l.Status = status
+	l.require(listLiveActivitiesRequestFieldStatus)
+}
+
+// SetSubscriberID sets the SubscriberID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListLiveActivitiesRequest) SetSubscriberID(subscriberID *string) {
+	l.SubscriberID = subscriberID
+	l.require(listLiveActivitiesRequestFieldSubscriberID)
 }
 
 var (
@@ -908,6 +1122,885 @@ func (s *SetFcmCredentialsRequest) MarshalJSON() ([]byte, error) {
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
 	return json.Marshal(explicitMarshaler)
+}
+
+var (
+	startLiveActivityRequestFieldActivityID     = big.NewInt(1 << 0)
+	startLiveActivityRequestFieldActivityType   = big.NewInt(1 << 1)
+	startLiveActivityRequestFieldAlert          = big.NewInt(1 << 2)
+	startLiveActivityRequestFieldAttributes     = big.NewInt(1 << 3)
+	startLiveActivityRequestFieldContentState   = big.NewInt(1 << 4)
+	startLiveActivityRequestFieldEmail          = big.NewInt(1 << 5)
+	startLiveActivityRequestFieldRelevanceScore = big.NewInt(1 << 6)
+	startLiveActivityRequestFieldStaleDate      = big.NewInt(1 << 7)
+	startLiveActivityRequestFieldSubscriberID   = big.NewInt(1 << 8)
+)
+
+type StartLiveActivityRequest struct {
+	// Your id for the activity, chosen when it starts.
+	ActivityID string `json:"activityId" url:"-"`
+	// The Swift ActivityAttributes type name, sent to APNs as attributes-type.
+	ActivityType string             `json:"activityType" url:"-"`
+	Alert        *LiveActivityAlert `json:"alert" url:"-"`
+	// Static attributes as JSON. A sequenzy key you send is replaced.
+	Attributes map[string]any `json:"attributes,omitempty" url:"-"`
+	// Your Swift ContentState as JSON. Date fields decode as seconds since 2001-01-01 unless your struct decodes them differently.
+	ContentState map[string]any `json:"contentState" url:"-"`
+	// Contact whose devices start the activity. Provide email or subscriberId.
+	Email *string `json:"email,omitempty" url:"-"`
+	// Orders a person's concurrent activities; higher shows first.
+	RelevanceScore *float64          `json:"relevanceScore,omitempty" url:"-"`
+	StaleDate      *LiveActivityTime `json:"staleDate,omitempty" url:"-"`
+	SubscriberID   *string           `json:"subscriberId,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (s *StartLiveActivityRequest) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetActivityID sets the ActivityID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *StartLiveActivityRequest) SetActivityID(activityID string) {
+	s.ActivityID = activityID
+	s.require(startLiveActivityRequestFieldActivityID)
+}
+
+// SetActivityType sets the ActivityType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *StartLiveActivityRequest) SetActivityType(activityType string) {
+	s.ActivityType = activityType
+	s.require(startLiveActivityRequestFieldActivityType)
+}
+
+// SetAlert sets the Alert field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *StartLiveActivityRequest) SetAlert(alert *LiveActivityAlert) {
+	s.Alert = alert
+	s.require(startLiveActivityRequestFieldAlert)
+}
+
+// SetAttributes sets the Attributes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *StartLiveActivityRequest) SetAttributes(attributes map[string]any) {
+	s.Attributes = attributes
+	s.require(startLiveActivityRequestFieldAttributes)
+}
+
+// SetContentState sets the ContentState field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *StartLiveActivityRequest) SetContentState(contentState map[string]any) {
+	s.ContentState = contentState
+	s.require(startLiveActivityRequestFieldContentState)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *StartLiveActivityRequest) SetEmail(email *string) {
+	s.Email = email
+	s.require(startLiveActivityRequestFieldEmail)
+}
+
+// SetRelevanceScore sets the RelevanceScore field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *StartLiveActivityRequest) SetRelevanceScore(relevanceScore *float64) {
+	s.RelevanceScore = relevanceScore
+	s.require(startLiveActivityRequestFieldRelevanceScore)
+}
+
+// SetStaleDate sets the StaleDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *StartLiveActivityRequest) SetStaleDate(staleDate *LiveActivityTime) {
+	s.StaleDate = staleDate
+	s.require(startLiveActivityRequestFieldStaleDate)
+}
+
+// SetSubscriberID sets the SubscriberID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *StartLiveActivityRequest) SetSubscriberID(subscriberID *string) {
+	s.SubscriberID = subscriberID
+	s.require(startLiveActivityRequestFieldSubscriberID)
+}
+
+func (s *StartLiveActivityRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler StartLiveActivityRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*s = StartLiveActivityRequest(body)
+	return nil
+}
+
+func (s *StartLiveActivityRequest) MarshalJSON() ([]byte, error) {
+	type embed StartLiveActivityRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+// Alert shown with the push. Provide a title, a body, or both.
+var (
+	liveActivityAlertFieldBody  = big.NewInt(1 << 0)
+	liveActivityAlertFieldSound = big.NewInt(1 << 1)
+	liveActivityAlertFieldTitle = big.NewInt(1 << 2)
+)
+
+type LiveActivityAlert struct {
+	Body *string `json:"body,omitempty" url:"body,omitempty"`
+	// Sound name, such as `default`. Omit for a silent alert.
+	Sound *string `json:"sound,omitempty" url:"sound,omitempty"`
+	Title *string `json:"title,omitempty" url:"title,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LiveActivityAlert) GetBody() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Body
+}
+
+func (l *LiveActivityAlert) GetSound() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Sound
+}
+
+func (l *LiveActivityAlert) GetTitle() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Title
+}
+
+func (l *LiveActivityAlert) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LiveActivityAlert) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetBody sets the Body field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LiveActivityAlert) SetBody(body *string) {
+	l.Body = body
+	l.require(liveActivityAlertFieldBody)
+}
+
+// SetSound sets the Sound field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LiveActivityAlert) SetSound(sound *string) {
+	l.Sound = sound
+	l.require(liveActivityAlertFieldSound)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LiveActivityAlert) SetTitle(title *string) {
+	l.Title = title
+	l.require(liveActivityAlertFieldTitle)
+}
+
+func (l *LiveActivityAlert) UnmarshalJSON(data []byte) error {
+	type unmarshaler LiveActivityAlert
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LiveActivityAlert(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LiveActivityAlert) MarshalJSON() ([]byte, error) {
+	type embed LiveActivityAlert
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LiveActivityAlert) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	liveActivityDispatchFieldActivityID = big.NewInt(1 << 0)
+	liveActivityDispatchFieldEvent      = big.NewInt(1 << 1)
+	liveActivityDispatchFieldJobIDs     = big.NewInt(1 << 2)
+	liveActivityDispatchFieldMessage    = big.NewInt(1 << 3)
+	liveActivityDispatchFieldSuccess    = big.NewInt(1 << 4)
+	liveActivityDispatchFieldTokenCount = big.NewInt(1 << 5)
+)
+
+type LiveActivityDispatch struct {
+	ActivityID *string                    `json:"activityId,omitempty" url:"activityId,omitempty"`
+	Event      *LiveActivityDispatchEvent `json:"event,omitempty" url:"event,omitempty"`
+	// Queued delivery jobs, one per batch of 100 devices.
+	JobIDs  []string `json:"jobIds,omitempty" url:"jobIds,omitempty"`
+	Message *string  `json:"message,omitempty" url:"message,omitempty"`
+	Success *bool    `json:"success,omitempty" url:"success,omitempty"`
+	// Devices the push was queued for. 0 means nothing was sent.
+	TokenCount *int `json:"tokenCount,omitempty" url:"tokenCount,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LiveActivityDispatch) GetActivityID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.ActivityID
+}
+
+func (l *LiveActivityDispatch) GetEvent() *LiveActivityDispatchEvent {
+	if l == nil {
+		return nil
+	}
+	return l.Event
+}
+
+func (l *LiveActivityDispatch) GetJobIDs() []string {
+	if l == nil {
+		return nil
+	}
+	return l.JobIDs
+}
+
+func (l *LiveActivityDispatch) GetMessage() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Message
+}
+
+func (l *LiveActivityDispatch) GetSuccess() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.Success
+}
+
+func (l *LiveActivityDispatch) GetTokenCount() *int {
+	if l == nil {
+		return nil
+	}
+	return l.TokenCount
+}
+
+func (l *LiveActivityDispatch) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LiveActivityDispatch) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetActivityID sets the ActivityID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LiveActivityDispatch) SetActivityID(activityID *string) {
+	l.ActivityID = activityID
+	l.require(liveActivityDispatchFieldActivityID)
+}
+
+// SetEvent sets the Event field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LiveActivityDispatch) SetEvent(event *LiveActivityDispatchEvent) {
+	l.Event = event
+	l.require(liveActivityDispatchFieldEvent)
+}
+
+// SetJobIDs sets the JobIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LiveActivityDispatch) SetJobIDs(jobIDs []string) {
+	l.JobIDs = jobIDs
+	l.require(liveActivityDispatchFieldJobIDs)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LiveActivityDispatch) SetMessage(message *string) {
+	l.Message = message
+	l.require(liveActivityDispatchFieldMessage)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LiveActivityDispatch) SetSuccess(success *bool) {
+	l.Success = success
+	l.require(liveActivityDispatchFieldSuccess)
+}
+
+// SetTokenCount sets the TokenCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LiveActivityDispatch) SetTokenCount(tokenCount *int) {
+	l.TokenCount = tokenCount
+	l.require(liveActivityDispatchFieldTokenCount)
+}
+
+func (l *LiveActivityDispatch) UnmarshalJSON(data []byte) error {
+	type unmarshaler LiveActivityDispatch
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LiveActivityDispatch(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LiveActivityDispatch) MarshalJSON() ([]byte, error) {
+	type embed LiveActivityDispatch
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LiveActivityDispatch) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type LiveActivityDispatchEvent string
+
+const (
+	LiveActivityDispatchEventStart  LiveActivityDispatchEvent = "start"
+	LiveActivityDispatchEventUpdate LiveActivityDispatchEvent = "update"
+	LiveActivityDispatchEventEnd    LiveActivityDispatchEvent = "end"
+)
+
+func NewLiveActivityDispatchEventFromString(s string) (LiveActivityDispatchEvent, error) {
+	switch s {
+	case "start":
+		return LiveActivityDispatchEventStart, nil
+	case "update":
+		return LiveActivityDispatchEventUpdate, nil
+	case "end":
+		return LiveActivityDispatchEventEnd, nil
+	}
+	var t LiveActivityDispatchEvent
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LiveActivityDispatchEvent) Ptr() *LiveActivityDispatchEvent {
+	return &l
+}
+
+// Unix seconds, or an ISO 8601 date. A string of digits is read as Unix seconds.
+type LiveActivityTime struct {
+	Integer int
+	String  string
+
+	typ string
+}
+
+func (l *LiveActivityTime) GetInteger() int {
+	if l == nil {
+		return 0
+	}
+	return l.Integer
+}
+
+func (l *LiveActivityTime) GetString() string {
+	if l == nil {
+		return ""
+	}
+	return l.String
+}
+
+func (l *LiveActivityTime) UnmarshalJSON(data []byte) error {
+	var valueInteger int
+	if err := json.Unmarshal(data, &valueInteger); err == nil {
+		l.typ = "Integer"
+		l.Integer = valueInteger
+		return nil
+	}
+	var valueString string
+	if err := json.Unmarshal(data, &valueString); err == nil {
+		l.typ = "String"
+		l.String = valueString
+		return nil
+	}
+	return fmt.Errorf("%s cannot be deserialized as a %T", data, l)
+}
+
+func (l LiveActivityTime) MarshalJSON() ([]byte, error) {
+	if l.typ == "Integer" || l.Integer != 0 {
+		return json.Marshal(l.Integer)
+	}
+	if l.typ == "String" || l.String != "" {
+		return json.Marshal(l.String)
+	}
+	return nil, fmt.Errorf("type %T does not include a non-empty union type", l)
+}
+
+type LiveActivityTimeVisitor interface {
+	VisitInteger(int) error
+	VisitString(string) error
+}
+
+func (l *LiveActivityTime) Accept(visitor LiveActivityTimeVisitor) error {
+	if l.typ == "Integer" || l.Integer != 0 {
+		return visitor.VisitInteger(l.Integer)
+	}
+	if l.typ == "String" || l.String != "" {
+		return visitor.VisitString(l.String)
+	}
+	return fmt.Errorf("type %T does not include a non-empty union type", l)
+}
+
+var (
+	liveActivityTokenFieldActivityID      = big.NewInt(1 << 0)
+	liveActivityTokenFieldActivityType    = big.NewInt(1 << 1)
+	liveActivityTokenFieldCreatedAt       = big.NewInt(1 << 2)
+	liveActivityTokenFieldDeviceID        = big.NewInt(1 << 3)
+	liveActivityTokenFieldEndedAt         = big.NewInt(1 << 4)
+	liveActivityTokenFieldID              = big.NewInt(1 << 5)
+	liveActivityTokenFieldInvalidReason   = big.NewInt(1 << 6)
+	liveActivityTokenFieldKind            = big.NewInt(1 << 7)
+	liveActivityTokenFieldLastPushAt      = big.NewInt(1 << 8)
+	liveActivityTokenFieldLastPushError   = big.NewInt(1 << 9)
+	liveActivityTokenFieldLastPushOutcome = big.NewInt(1 << 10)
+	liveActivityTokenFieldLastSeenAt      = big.NewInt(1 << 11)
+	liveActivityTokenFieldStatus          = big.NewInt(1 << 12)
+	liveActivityTokenFieldSubscriberID    = big.NewInt(1 << 13)
+	liveActivityTokenFieldTokenPreview    = big.NewInt(1 << 14)
+)
+
+type LiveActivityToken struct {
+	// Your activity id. Null for push-to-start tokens.
+	ActivityID *string `json:"activityId,omitempty" url:"activityId,omitempty"`
+	// The Swift ActivityAttributes type name.
+	ActivityType *string    `json:"activityType,omitempty" url:"activityType,omitempty"`
+	CreatedAt    *time.Time `json:"createdAt,omitempty" url:"createdAt,omitempty"`
+	// The push device of the same installation, when the app registered one.
+	DeviceID *string    `json:"deviceId,omitempty" url:"deviceId,omitempty"`
+	EndedAt  *time.Time `json:"endedAt,omitempty" url:"endedAt,omitempty"`
+	ID       *string    `json:"id,omitempty" url:"id,omitempty"`
+	// Why the token is invalid, such as `replaced`, `unregistered` or an APNs reason like `Unregistered`.
+	InvalidReason *string `json:"invalidReason,omitempty" url:"invalidReason,omitempty"`
+	// push_to_start tokens start activities of a type on one device; update tokens address one running activity.
+	Kind          *LiveActivityTokenKind `json:"kind,omitempty" url:"kind,omitempty"`
+	LastPushAt    *time.Time             `json:"lastPushAt,omitempty" url:"lastPushAt,omitempty"`
+	LastPushError *string                `json:"lastPushError,omitempty" url:"lastPushError,omitempty"`
+	// accepted, invalid_token, credentials_error, failed, retryable, or retrying while a retry is pending.
+	LastPushOutcome *string                  `json:"lastPushOutcome,omitempty" url:"lastPushOutcome,omitempty"`
+	LastSeenAt      *time.Time               `json:"lastSeenAt,omitempty" url:"lastSeenAt,omitempty"`
+	Status          *LiveActivityTokenStatus `json:"status,omitempty" url:"status,omitempty"`
+	SubscriberID    *string                  `json:"subscriberId,omitempty" url:"subscriberId,omitempty"`
+	// Last eight characters of the token.
+	TokenPreview *string `json:"tokenPreview,omitempty" url:"tokenPreview,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LiveActivityToken) GetActivityID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.ActivityID
+}
+
+func (l *LiveActivityToken) GetActivityType() *string {
+	if l == nil {
+		return nil
+	}
+	return l.ActivityType
+}
+
+func (l *LiveActivityToken) GetCreatedAt() *time.Time {
+	if l == nil {
+		return nil
+	}
+	return l.CreatedAt
+}
+
+func (l *LiveActivityToken) GetDeviceID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.DeviceID
+}
+
+func (l *LiveActivityToken) GetEndedAt() *time.Time {
+	if l == nil {
+		return nil
+	}
+	return l.EndedAt
+}
+
+func (l *LiveActivityToken) GetID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.ID
+}
+
+func (l *LiveActivityToken) GetInvalidReason() *string {
+	if l == nil {
+		return nil
+	}
+	return l.InvalidReason
+}
+
+func (l *LiveActivityToken) GetKind() *LiveActivityTokenKind {
+	if l == nil {
+		return nil
+	}
+	return l.Kind
+}
+
+func (l *LiveActivityToken) GetLastPushAt() *time.Time {
+	if l == nil {
+		return nil
+	}
+	return l.LastPushAt
+}
+
+func (l *LiveActivityToken) GetLastPushError() *string {
+	if l == nil {
+		return nil
+	}
+	return l.LastPushError
+}
+
+func (l *LiveActivityToken) GetLastPushOutcome() *string {
+	if l == nil {
+		return nil
+	}
+	return l.LastPushOutcome
+}
+
+func (l *LiveActivityToken) GetLastSeenAt() *time.Time {
+	if l == nil {
+		return nil
+	}
+	return l.LastSeenAt
+}
+
+func (l *LiveActivityToken) GetStatus() *LiveActivityTokenStatus {
+	if l == nil {
+		return nil
+	}
+	return l.Status
+}
+
+func (l *LiveActivityToken) GetSubscriberID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SubscriberID
+}
+
+func (l *LiveActivityToken) GetTokenPreview() *string {
+	if l == nil {
+		return nil
+	}
+	return l.TokenPreview
+}
+
+func (l *LiveActivityToken) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LiveActivityToken) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetActivityID sets the ActivityID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LiveActivityToken) SetActivityID(activityID *string) {
+	l.ActivityID = activityID
+	l.require(liveActivityTokenFieldActivityID)
+}
+
+// SetActivityType sets the ActivityType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LiveActivityToken) SetActivityType(activityType *string) {
+	l.ActivityType = activityType
+	l.require(liveActivityTokenFieldActivityType)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LiveActivityToken) SetCreatedAt(createdAt *time.Time) {
+	l.CreatedAt = createdAt
+	l.require(liveActivityTokenFieldCreatedAt)
+}
+
+// SetDeviceID sets the DeviceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LiveActivityToken) SetDeviceID(deviceID *string) {
+	l.DeviceID = deviceID
+	l.require(liveActivityTokenFieldDeviceID)
+}
+
+// SetEndedAt sets the EndedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LiveActivityToken) SetEndedAt(endedAt *time.Time) {
+	l.EndedAt = endedAt
+	l.require(liveActivityTokenFieldEndedAt)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LiveActivityToken) SetID(id *string) {
+	l.ID = id
+	l.require(liveActivityTokenFieldID)
+}
+
+// SetInvalidReason sets the InvalidReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LiveActivityToken) SetInvalidReason(invalidReason *string) {
+	l.InvalidReason = invalidReason
+	l.require(liveActivityTokenFieldInvalidReason)
+}
+
+// SetKind sets the Kind field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LiveActivityToken) SetKind(kind *LiveActivityTokenKind) {
+	l.Kind = kind
+	l.require(liveActivityTokenFieldKind)
+}
+
+// SetLastPushAt sets the LastPushAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LiveActivityToken) SetLastPushAt(lastPushAt *time.Time) {
+	l.LastPushAt = lastPushAt
+	l.require(liveActivityTokenFieldLastPushAt)
+}
+
+// SetLastPushError sets the LastPushError field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LiveActivityToken) SetLastPushError(lastPushError *string) {
+	l.LastPushError = lastPushError
+	l.require(liveActivityTokenFieldLastPushError)
+}
+
+// SetLastPushOutcome sets the LastPushOutcome field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LiveActivityToken) SetLastPushOutcome(lastPushOutcome *string) {
+	l.LastPushOutcome = lastPushOutcome
+	l.require(liveActivityTokenFieldLastPushOutcome)
+}
+
+// SetLastSeenAt sets the LastSeenAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LiveActivityToken) SetLastSeenAt(lastSeenAt *time.Time) {
+	l.LastSeenAt = lastSeenAt
+	l.require(liveActivityTokenFieldLastSeenAt)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LiveActivityToken) SetStatus(status *LiveActivityTokenStatus) {
+	l.Status = status
+	l.require(liveActivityTokenFieldStatus)
+}
+
+// SetSubscriberID sets the SubscriberID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LiveActivityToken) SetSubscriberID(subscriberID *string) {
+	l.SubscriberID = subscriberID
+	l.require(liveActivityTokenFieldSubscriberID)
+}
+
+// SetTokenPreview sets the TokenPreview field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LiveActivityToken) SetTokenPreview(tokenPreview *string) {
+	l.TokenPreview = tokenPreview
+	l.require(liveActivityTokenFieldTokenPreview)
+}
+
+func (l *LiveActivityToken) UnmarshalJSON(data []byte) error {
+	type embed LiveActivityToken
+	var unmarshaler = struct {
+		embed
+		CreatedAt  *internal.DateTime `json:"createdAt,omitempty"`
+		EndedAt    *internal.DateTime `json:"endedAt,omitempty"`
+		LastPushAt *internal.DateTime `json:"lastPushAt,omitempty"`
+		LastSeenAt *internal.DateTime `json:"lastSeenAt,omitempty"`
+	}{
+		embed: embed(*l),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*l = LiveActivityToken(unmarshaler.embed)
+	l.CreatedAt = unmarshaler.CreatedAt.TimePtr()
+	l.EndedAt = unmarshaler.EndedAt.TimePtr()
+	l.LastPushAt = unmarshaler.LastPushAt.TimePtr()
+	l.LastSeenAt = unmarshaler.LastSeenAt.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LiveActivityToken) MarshalJSON() ([]byte, error) {
+	type embed LiveActivityToken
+	var marshaler = struct {
+		embed
+		CreatedAt  *internal.DateTime `json:"createdAt,omitempty"`
+		EndedAt    *internal.DateTime `json:"endedAt,omitempty"`
+		LastPushAt *internal.DateTime `json:"lastPushAt,omitempty"`
+		LastSeenAt *internal.DateTime `json:"lastSeenAt,omitempty"`
+	}{
+		embed:      embed(*l),
+		CreatedAt:  internal.NewOptionalDateTime(l.CreatedAt),
+		EndedAt:    internal.NewOptionalDateTime(l.EndedAt),
+		LastPushAt: internal.NewOptionalDateTime(l.LastPushAt),
+		LastSeenAt: internal.NewOptionalDateTime(l.LastSeenAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LiveActivityToken) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+// push_to_start tokens start activities of a type on one device; update tokens address one running activity.
+type LiveActivityTokenKind string
+
+const (
+	LiveActivityTokenKindPushToStart LiveActivityTokenKind = "push_to_start"
+	LiveActivityTokenKindUpdate      LiveActivityTokenKind = "update"
+)
+
+func NewLiveActivityTokenKindFromString(s string) (LiveActivityTokenKind, error) {
+	switch s {
+	case "push_to_start":
+		return LiveActivityTokenKindPushToStart, nil
+	case "update":
+		return LiveActivityTokenKindUpdate, nil
+	}
+	var t LiveActivityTokenKind
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LiveActivityTokenKind) Ptr() *LiveActivityTokenKind {
+	return &l
+}
+
+type LiveActivityTokenStatus string
+
+const (
+	LiveActivityTokenStatusActive  LiveActivityTokenStatus = "active"
+	LiveActivityTokenStatusEnded   LiveActivityTokenStatus = "ended"
+	LiveActivityTokenStatusInvalid LiveActivityTokenStatus = "invalid"
+)
+
+func NewLiveActivityTokenStatusFromString(s string) (LiveActivityTokenStatus, error) {
+	switch s {
+	case "active":
+		return LiveActivityTokenStatusActive, nil
+	case "ended":
+		return LiveActivityTokenStatusEnded, nil
+	case "invalid":
+		return LiveActivityTokenStatusInvalid, nil
+	}
+	var t LiveActivityTokenStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LiveActivityTokenStatus) Ptr() *LiveActivityTokenStatus {
+	return &l
 }
 
 var (
@@ -3791,6 +4884,29 @@ func (d *DuplicatePushCampaignResponse) String() string {
 	return fmt.Sprintf("%#v", d)
 }
 
+// high (default) delivers immediately and counts against Apple's Live Activity update budget; low (apns-priority 5) does not. Pushes with an alert always go at high priority.
+type EndLiveActivityRequestPriority string
+
+const (
+	EndLiveActivityRequestPriorityHigh EndLiveActivityRequestPriority = "high"
+	EndLiveActivityRequestPriorityLow  EndLiveActivityRequestPriority = "low"
+)
+
+func NewEndLiveActivityRequestPriorityFromString(s string) (EndLiveActivityRequestPriority, error) {
+	switch s {
+	case "high":
+		return EndLiveActivityRequestPriorityHigh, nil
+	case "low":
+		return EndLiveActivityRequestPriorityLow, nil
+	}
+	var t EndLiveActivityRequestPriority
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (e EndLiveActivityRequestPriority) Ptr() *EndLiveActivityRequestPriority {
+	return &e
+}
+
 type EstimatePushCampaignRecipientsRequestPlatformsItem string
 
 const (
@@ -4460,6 +5576,419 @@ func (g *GetPushSettingsResponsePush) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", g)
+}
+
+type ListLiveActivitiesRequestKind string
+
+const (
+	ListLiveActivitiesRequestKindPushToStart ListLiveActivitiesRequestKind = "push_to_start"
+	ListLiveActivitiesRequestKindUpdate      ListLiveActivitiesRequestKind = "update"
+)
+
+func NewListLiveActivitiesRequestKindFromString(s string) (ListLiveActivitiesRequestKind, error) {
+	switch s {
+	case "push_to_start":
+		return ListLiveActivitiesRequestKindPushToStart, nil
+	case "update":
+		return ListLiveActivitiesRequestKindUpdate, nil
+	}
+	var t ListLiveActivitiesRequestKind
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListLiveActivitiesRequestKind) Ptr() *ListLiveActivitiesRequestKind {
+	return &l
+}
+
+type ListLiveActivitiesRequestStatus string
+
+const (
+	ListLiveActivitiesRequestStatusActive  ListLiveActivitiesRequestStatus = "active"
+	ListLiveActivitiesRequestStatusEnded   ListLiveActivitiesRequestStatus = "ended"
+	ListLiveActivitiesRequestStatusInvalid ListLiveActivitiesRequestStatus = "invalid"
+)
+
+func NewListLiveActivitiesRequestStatusFromString(s string) (ListLiveActivitiesRequestStatus, error) {
+	switch s {
+	case "active":
+		return ListLiveActivitiesRequestStatusActive, nil
+	case "ended":
+		return ListLiveActivitiesRequestStatusEnded, nil
+	case "invalid":
+		return ListLiveActivitiesRequestStatusInvalid, nil
+	}
+	var t ListLiveActivitiesRequestStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListLiveActivitiesRequestStatus) Ptr() *ListLiveActivitiesRequestStatus {
+	return &l
+}
+
+var (
+	listLiveActivitiesResponseFieldNextCursor = big.NewInt(1 << 0)
+	listLiveActivitiesResponseFieldSuccess    = big.NewInt(1 << 1)
+	listLiveActivitiesResponseFieldSummary    = big.NewInt(1 << 2)
+	listLiveActivitiesResponseFieldTokens     = big.NewInt(1 << 3)
+)
+
+type ListLiveActivitiesResponse struct {
+	NextCursor *string `json:"nextCursor,omitempty" url:"nextCursor,omitempty"`
+	Success    *bool   `json:"success,omitempty" url:"success,omitempty"`
+	// Active tokens only, for the contact when one is given. A device that can start several types counts once in pushToStartDevices; several devices running one activity count as one activity.
+	Summary *ListLiveActivitiesResponseSummary `json:"summary,omitempty" url:"summary,omitempty"`
+	Tokens  []*LiveActivityToken               `json:"tokens,omitempty" url:"tokens,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListLiveActivitiesResponse) GetNextCursor() *string {
+	if l == nil {
+		return nil
+	}
+	return l.NextCursor
+}
+
+func (l *ListLiveActivitiesResponse) GetSuccess() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.Success
+}
+
+func (l *ListLiveActivitiesResponse) GetSummary() *ListLiveActivitiesResponseSummary {
+	if l == nil {
+		return nil
+	}
+	return l.Summary
+}
+
+func (l *ListLiveActivitiesResponse) GetTokens() []*LiveActivityToken {
+	if l == nil {
+		return nil
+	}
+	return l.Tokens
+}
+
+func (l *ListLiveActivitiesResponse) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListLiveActivitiesResponse) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetNextCursor sets the NextCursor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListLiveActivitiesResponse) SetNextCursor(nextCursor *string) {
+	l.NextCursor = nextCursor
+	l.require(listLiveActivitiesResponseFieldNextCursor)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListLiveActivitiesResponse) SetSuccess(success *bool) {
+	l.Success = success
+	l.require(listLiveActivitiesResponseFieldSuccess)
+}
+
+// SetSummary sets the Summary field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListLiveActivitiesResponse) SetSummary(summary *ListLiveActivitiesResponseSummary) {
+	l.Summary = summary
+	l.require(listLiveActivitiesResponseFieldSummary)
+}
+
+// SetTokens sets the Tokens field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListLiveActivitiesResponse) SetTokens(tokens []*LiveActivityToken) {
+	l.Tokens = tokens
+	l.require(listLiveActivitiesResponseFieldTokens)
+}
+
+func (l *ListLiveActivitiesResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListLiveActivitiesResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListLiveActivitiesResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListLiveActivitiesResponse) MarshalJSON() ([]byte, error) {
+	type embed ListLiveActivitiesResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListLiveActivitiesResponse) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+// Active tokens only, for the contact when one is given. A device that can start several types counts once in pushToStartDevices; several devices running one activity count as one activity.
+var (
+	listLiveActivitiesResponseSummaryFieldActiveActivities   = big.NewInt(1 << 0)
+	listLiveActivitiesResponseSummaryFieldActivityTypes      = big.NewInt(1 << 1)
+	listLiveActivitiesResponseSummaryFieldPushToStartDevices = big.NewInt(1 << 2)
+)
+
+type ListLiveActivitiesResponseSummary struct {
+	ActiveActivities   *int                                                  `json:"activeActivities,omitempty" url:"activeActivities,omitempty"`
+	ActivityTypes      []*ListLiveActivitiesResponseSummaryActivityTypesItem `json:"activityTypes,omitempty" url:"activityTypes,omitempty"`
+	PushToStartDevices *int                                                  `json:"pushToStartDevices,omitempty" url:"pushToStartDevices,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListLiveActivitiesResponseSummary) GetActiveActivities() *int {
+	if l == nil {
+		return nil
+	}
+	return l.ActiveActivities
+}
+
+func (l *ListLiveActivitiesResponseSummary) GetActivityTypes() []*ListLiveActivitiesResponseSummaryActivityTypesItem {
+	if l == nil {
+		return nil
+	}
+	return l.ActivityTypes
+}
+
+func (l *ListLiveActivitiesResponseSummary) GetPushToStartDevices() *int {
+	if l == nil {
+		return nil
+	}
+	return l.PushToStartDevices
+}
+
+func (l *ListLiveActivitiesResponseSummary) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListLiveActivitiesResponseSummary) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetActiveActivities sets the ActiveActivities field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListLiveActivitiesResponseSummary) SetActiveActivities(activeActivities *int) {
+	l.ActiveActivities = activeActivities
+	l.require(listLiveActivitiesResponseSummaryFieldActiveActivities)
+}
+
+// SetActivityTypes sets the ActivityTypes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListLiveActivitiesResponseSummary) SetActivityTypes(activityTypes []*ListLiveActivitiesResponseSummaryActivityTypesItem) {
+	l.ActivityTypes = activityTypes
+	l.require(listLiveActivitiesResponseSummaryFieldActivityTypes)
+}
+
+// SetPushToStartDevices sets the PushToStartDevices field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListLiveActivitiesResponseSummary) SetPushToStartDevices(pushToStartDevices *int) {
+	l.PushToStartDevices = pushToStartDevices
+	l.require(listLiveActivitiesResponseSummaryFieldPushToStartDevices)
+}
+
+func (l *ListLiveActivitiesResponseSummary) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListLiveActivitiesResponseSummary
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListLiveActivitiesResponseSummary(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListLiveActivitiesResponseSummary) MarshalJSON() ([]byte, error) {
+	type embed ListLiveActivitiesResponseSummary
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListLiveActivitiesResponseSummary) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	listLiveActivitiesResponseSummaryActivityTypesItemFieldActiveActivities   = big.NewInt(1 << 0)
+	listLiveActivitiesResponseSummaryActivityTypesItemFieldActivityType       = big.NewInt(1 << 1)
+	listLiveActivitiesResponseSummaryActivityTypesItemFieldPushToStartDevices = big.NewInt(1 << 2)
+)
+
+type ListLiveActivitiesResponseSummaryActivityTypesItem struct {
+	ActiveActivities   *int    `json:"activeActivities,omitempty" url:"activeActivities,omitempty"`
+	ActivityType       *string `json:"activityType,omitempty" url:"activityType,omitempty"`
+	PushToStartDevices *int    `json:"pushToStartDevices,omitempty" url:"pushToStartDevices,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListLiveActivitiesResponseSummaryActivityTypesItem) GetActiveActivities() *int {
+	if l == nil {
+		return nil
+	}
+	return l.ActiveActivities
+}
+
+func (l *ListLiveActivitiesResponseSummaryActivityTypesItem) GetActivityType() *string {
+	if l == nil {
+		return nil
+	}
+	return l.ActivityType
+}
+
+func (l *ListLiveActivitiesResponseSummaryActivityTypesItem) GetPushToStartDevices() *int {
+	if l == nil {
+		return nil
+	}
+	return l.PushToStartDevices
+}
+
+func (l *ListLiveActivitiesResponseSummaryActivityTypesItem) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListLiveActivitiesResponseSummaryActivityTypesItem) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetActiveActivities sets the ActiveActivities field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListLiveActivitiesResponseSummaryActivityTypesItem) SetActiveActivities(activeActivities *int) {
+	l.ActiveActivities = activeActivities
+	l.require(listLiveActivitiesResponseSummaryActivityTypesItemFieldActiveActivities)
+}
+
+// SetActivityType sets the ActivityType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListLiveActivitiesResponseSummaryActivityTypesItem) SetActivityType(activityType *string) {
+	l.ActivityType = activityType
+	l.require(listLiveActivitiesResponseSummaryActivityTypesItemFieldActivityType)
+}
+
+// SetPushToStartDevices sets the PushToStartDevices field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListLiveActivitiesResponseSummaryActivityTypesItem) SetPushToStartDevices(pushToStartDevices *int) {
+	l.PushToStartDevices = pushToStartDevices
+	l.require(listLiveActivitiesResponseSummaryActivityTypesItemFieldPushToStartDevices)
+}
+
+func (l *ListLiveActivitiesResponseSummaryActivityTypesItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListLiveActivitiesResponseSummaryActivityTypesItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListLiveActivitiesResponseSummaryActivityTypesItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListLiveActivitiesResponseSummaryActivityTypesItem) MarshalJSON() ([]byte, error) {
+	type embed ListLiveActivitiesResponseSummaryActivityTypesItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListLiveActivitiesResponseSummaryActivityTypesItem) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
 }
 
 type ListPushCampaignsRequestStatus string
@@ -5741,6 +7270,29 @@ func (u *UnschedulePushCampaignResponse) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
+// high (default) delivers immediately and counts against Apple's Live Activity update budget; low (apns-priority 5) does not. Pushes with an alert always go at high priority.
+type UpdateLiveActivityRequestPriority string
+
+const (
+	UpdateLiveActivityRequestPriorityHigh UpdateLiveActivityRequestPriority = "high"
+	UpdateLiveActivityRequestPriorityLow  UpdateLiveActivityRequestPriority = "low"
+)
+
+func NewUpdateLiveActivityRequestPriorityFromString(s string) (UpdateLiveActivityRequestPriority, error) {
+	switch s {
+	case "high":
+		return UpdateLiveActivityRequestPriorityHigh, nil
+	case "low":
+		return UpdateLiveActivityRequestPriorityLow, nil
+	}
+	var t UpdateLiveActivityRequestPriority
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateLiveActivityRequestPriority) Ptr() *UpdateLiveActivityRequestPriority {
+	return &u
+}
+
 type UpdatePushCampaignRequestPlatformsItem string
 
 const (
@@ -6189,6 +7741,121 @@ func (u *UnschedulePushCampaignRequest) require(field *big.Int) {
 func (u *UnschedulePushCampaignRequest) SetCampaignID(campaignID string) {
 	u.CampaignID = campaignID
 	u.require(unschedulePushCampaignRequestFieldCampaignID)
+}
+
+var (
+	updateLiveActivityRequestFieldActivityID     = big.NewInt(1 << 0)
+	updateLiveActivityRequestFieldAlert          = big.NewInt(1 << 1)
+	updateLiveActivityRequestFieldContentState   = big.NewInt(1 << 2)
+	updateLiveActivityRequestFieldEmail          = big.NewInt(1 << 3)
+	updateLiveActivityRequestFieldPriority       = big.NewInt(1 << 4)
+	updateLiveActivityRequestFieldRelevanceScore = big.NewInt(1 << 5)
+	updateLiveActivityRequestFieldStaleDate      = big.NewInt(1 << 6)
+	updateLiveActivityRequestFieldSubscriberID   = big.NewInt(1 << 7)
+)
+
+type UpdateLiveActivityRequest struct {
+	// Your id for the activity, chosen when it starts.
+	ActivityID string             `json:"activityId" url:"-"`
+	Alert      *LiveActivityAlert `json:"alert,omitempty" url:"-"`
+	// Your Swift ContentState as JSON. Date fields decode as seconds since 2001-01-01 unless your struct decodes them differently.
+	ContentState map[string]any `json:"contentState" url:"-"`
+	// Contact whose activity it is. Provide email or subscriberId; activities are always addressed per contact, so a token registered under the same activityId by another device never receives this content.
+	Email *string `json:"email,omitempty" url:"-"`
+	// high (default) delivers immediately and counts against Apple's Live Activity update budget; low (apns-priority 5) does not. Pushes with an alert always go at high priority.
+	Priority *UpdateLiveActivityRequestPriority `json:"priority,omitempty" url:"-"`
+	// Orders a person's concurrent activities; higher shows first.
+	RelevanceScore *float64          `json:"relevanceScore,omitempty" url:"-"`
+	StaleDate      *LiveActivityTime `json:"staleDate,omitempty" url:"-"`
+	// Subscriber whose activity it is.
+	SubscriberID *string `json:"subscriberId,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (u *UpdateLiveActivityRequest) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetActivityID sets the ActivityID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateLiveActivityRequest) SetActivityID(activityID string) {
+	u.ActivityID = activityID
+	u.require(updateLiveActivityRequestFieldActivityID)
+}
+
+// SetAlert sets the Alert field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateLiveActivityRequest) SetAlert(alert *LiveActivityAlert) {
+	u.Alert = alert
+	u.require(updateLiveActivityRequestFieldAlert)
+}
+
+// SetContentState sets the ContentState field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateLiveActivityRequest) SetContentState(contentState map[string]any) {
+	u.ContentState = contentState
+	u.require(updateLiveActivityRequestFieldContentState)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateLiveActivityRequest) SetEmail(email *string) {
+	u.Email = email
+	u.require(updateLiveActivityRequestFieldEmail)
+}
+
+// SetPriority sets the Priority field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateLiveActivityRequest) SetPriority(priority *UpdateLiveActivityRequestPriority) {
+	u.Priority = priority
+	u.require(updateLiveActivityRequestFieldPriority)
+}
+
+// SetRelevanceScore sets the RelevanceScore field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateLiveActivityRequest) SetRelevanceScore(relevanceScore *float64) {
+	u.RelevanceScore = relevanceScore
+	u.require(updateLiveActivityRequestFieldRelevanceScore)
+}
+
+// SetStaleDate sets the StaleDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateLiveActivityRequest) SetStaleDate(staleDate *LiveActivityTime) {
+	u.StaleDate = staleDate
+	u.require(updateLiveActivityRequestFieldStaleDate)
+}
+
+// SetSubscriberID sets the SubscriberID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateLiveActivityRequest) SetSubscriberID(subscriberID *string) {
+	u.SubscriberID = subscriberID
+	u.require(updateLiveActivityRequestFieldSubscriberID)
+}
+
+func (u *UpdateLiveActivityRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateLiveActivityRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*u = UpdateLiveActivityRequest(body)
+	return nil
+}
+
+func (u *UpdateLiveActivityRequest) MarshalJSON() ([]byte, error) {
+	type embed UpdateLiveActivityRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
 }
 
 var (

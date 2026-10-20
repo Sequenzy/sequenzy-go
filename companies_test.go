@@ -425,6 +425,14 @@ func TestSettersCompany(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetFooterStyle", func(t *testing.T) {
+		obj := &Company{}
+		var fernTestValueFooterStyle *CompanyFooterStyle
+		obj.SetFooterStyle(fernTestValueFooterStyle)
+		assert.Equal(t, fernTestValueFooterStyle, obj.FooterStyle)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetForwardReplies", func(t *testing.T) {
 		obj := &Company{}
 		var fernTestValueForwardReplies *bool
@@ -1287,6 +1295,39 @@ func TestGettersCompany(t *testing.T) {
 			}
 		}()
 		_ = obj.GetFontFamily() // Should return zero value
+	})
+
+	t.Run("GetFooterStyle", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Company{}
+		var expected *CompanyFooterStyle
+		obj.FooterStyle = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetFooterStyle(), "getter should return the property value")
+	})
+
+	t.Run("GetFooterStyle_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Company{}
+		obj.FooterStyle = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetFooterStyle(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetFooterStyle_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Company
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetFooterStyle() // Should return zero value
 	})
 
 	t.Run("GetForwardReplies", func(t *testing.T) {
@@ -2613,6 +2654,37 @@ func TestSettersMarkExplicitCompany(t *testing.T) {
 
 		// Act
 		obj.SetFontFamily(fernTestValueFontFamily)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetFooterStyle_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Company{}
+		var fernTestValueFooterStyle *CompanyFooterStyle
+
+		// Act
+		obj.SetFooterStyle(fernTestValueFooterStyle)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -7672,6 +7744,14 @@ func TestSettersUpdateCompaniesRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetFooterStyle", func(t *testing.T) {
+		obj := &UpdateCompaniesRequest{}
+		var fernTestValueFooterStyle *UpdateCompaniesRequestFooterStyle
+		obj.SetFooterStyle(fernTestValueFooterStyle)
+		assert.Equal(t, fernTestValueFooterStyle, obj.FooterStyle)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetForwardReplies", func(t *testing.T) {
 		obj := &UpdateCompaniesRequest{}
 		var fernTestValueForwardReplies *bool
@@ -8239,6 +8319,37 @@ func TestSettersMarkExplicitUpdateCompaniesRequest(t *testing.T) {
 
 		// Act
 		obj.SetFontFamily(fernTestValueFontFamily)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetFooterStyle_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateCompaniesRequest{}
+		var fernTestValueFooterStyle *UpdateCompaniesRequestFooterStyle
+
+		// Act
+		obj.SetFooterStyle(fernTestValueFooterStyle)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -9881,6 +9992,56 @@ func TestEnumCompanyEmailStylePreference(t *testing.T) {
 	})
 }
 
+func TestEnumCompanyFooterStyle(t *testing.T) {
+	t.Run("NewFromString_auto", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyFooterStyleFromString("auto")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyFooterStyle("auto"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_classic", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyFooterStyleFromString("classic")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyFooterStyle("classic"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_mono", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyFooterStyleFromString("mono")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyFooterStyle("mono"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_band", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyFooterStyleFromString("band")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyFooterStyle("band"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_editorial", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyFooterStyleFromString("editorial")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyFooterStyle("editorial"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewCompanyFooterStyleFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewCompanyFooterStyleFromString("auto")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumCompanyReplyTrackingDomainMode(t *testing.T) {
 	t.Run("NewFromString_sequenzy", func(t *testing.T) {
 		t.Parallel()
@@ -10098,6 +10259,56 @@ func TestEnumUpdateCompaniesRequestEmailThemePresetID(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewUpdateCompaniesRequestEmailThemePresetIDFromString("default")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumUpdateCompaniesRequestFooterStyle(t *testing.T) {
+	t.Run("NewFromString_auto", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateCompaniesRequestFooterStyleFromString("auto")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateCompaniesRequestFooterStyle("auto"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_classic", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateCompaniesRequestFooterStyleFromString("classic")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateCompaniesRequestFooterStyle("classic"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_mono", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateCompaniesRequestFooterStyleFromString("mono")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateCompaniesRequestFooterStyle("mono"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_band", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateCompaniesRequestFooterStyleFromString("band")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateCompaniesRequestFooterStyle("band"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_editorial", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateCompaniesRequestFooterStyleFromString("editorial")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateCompaniesRequestFooterStyle("editorial"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewUpdateCompaniesRequestFooterStyleFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewUpdateCompaniesRequestFooterStyleFromString("auto")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
