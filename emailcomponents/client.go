@@ -93,6 +93,33 @@ func (c *Client) Delete(
 	return response.Body, nil
 }
 
+// Creates a new component with the same description, type and blocks as an existing one. Without a name, the copy is called "<name> (Copy)", or "<name> (Copy 2)" and so on when that name is taken. Duplicating a copy keeps a single "(Copy N)" suffix. The copy is never pinned as a default, so duplicating the default footer gives a regular component.
+//
+// Example:
+//
+//	request := &sequenzygo.DuplicateEmailComponentsRequest{
+//	    ComponentID: "componentId",
+//	}
+//	client.EmailComponents.Duplicate(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Duplicate(
+	ctx context.Context,
+	request *sequenzygo.DuplicateEmailComponentsRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.DuplicateEmailComponentsResponse, error) {
+	response, err := c.WithRawResponse.Duplicate(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Returns a single email component by id.
 //
 // Example:

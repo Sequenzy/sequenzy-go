@@ -110,6 +110,63 @@ func (d *DeleteEmailComponentsRequest) SetComponentID(componentID string) {
 }
 
 var (
+	duplicateEmailComponentsRequestFieldComponentID = big.NewInt(1 << 0)
+	duplicateEmailComponentsRequestFieldName        = big.NewInt(1 << 1)
+)
+
+type DuplicateEmailComponentsRequest struct {
+	// ID of the component to copy.
+	ComponentID string `json:"-" url:"-"`
+	// Name for the copy, unique within the company. Omit it to use the default copy name.
+	Name *string `json:"name,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (d *DuplicateEmailComponentsRequest) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetComponentID sets the ComponentID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DuplicateEmailComponentsRequest) SetComponentID(componentID string) {
+	d.ComponentID = componentID
+	d.require(duplicateEmailComponentsRequestFieldComponentID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DuplicateEmailComponentsRequest) SetName(name *string) {
+	d.Name = name
+	d.require(duplicateEmailComponentsRequestFieldName)
+}
+
+func (d *DuplicateEmailComponentsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler DuplicateEmailComponentsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*d = DuplicateEmailComponentsRequest(body)
+	return nil
+}
+
+func (d *DuplicateEmailComponentsRequest) MarshalJSON() ([]byte, error) {
+	type embed DuplicateEmailComponentsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
 	getEmailComponentsRequestFieldComponentID = big.NewInt(1 << 0)
 )
 
@@ -1831,6 +1888,106 @@ func (d *DeleteEmailComponentsResponse) MarshalJSON() ([]byte, error) {
 }
 
 func (d *DeleteEmailComponentsResponse) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
+var (
+	duplicateEmailComponentsResponseFieldComponent = big.NewInt(1 << 0)
+	duplicateEmailComponentsResponseFieldSuccess   = big.NewInt(1 << 1)
+)
+
+type DuplicateEmailComponentsResponse struct {
+	Component *EmailComponent `json:"component,omitempty" url:"component,omitempty"`
+	Success   *bool           `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DuplicateEmailComponentsResponse) GetComponent() *EmailComponent {
+	if d == nil {
+		return nil
+	}
+	return d.Component
+}
+
+func (d *DuplicateEmailComponentsResponse) GetSuccess() *bool {
+	if d == nil {
+		return nil
+	}
+	return d.Success
+}
+
+func (d *DuplicateEmailComponentsResponse) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DuplicateEmailComponentsResponse) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetComponent sets the Component field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DuplicateEmailComponentsResponse) SetComponent(component *EmailComponent) {
+	d.Component = component
+	d.require(duplicateEmailComponentsResponseFieldComponent)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DuplicateEmailComponentsResponse) SetSuccess(success *bool) {
+	d.Success = success
+	d.require(duplicateEmailComponentsResponseFieldSuccess)
+}
+
+func (d *DuplicateEmailComponentsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler DuplicateEmailComponentsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DuplicateEmailComponentsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DuplicateEmailComponentsResponse) MarshalJSON() ([]byte, error) {
+	type embed DuplicateEmailComponentsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DuplicateEmailComponentsResponse) String() string {
 	if d == nil {
 		return "<nil>"
 	}

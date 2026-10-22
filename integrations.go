@@ -56,7 +56,7 @@ type ConnectIntegrationsRequest struct {
 	ProviderAccountID *string `json:"providerAccountId,omitempty" url:"-"`
 	// PostHog and Segment: event delivery scope. Attio: listMap (Sequenzy list id to Attio list id or slug) and syncCompanyFromDomain.
 	Settings *ConnectIntegrationsRequestSettings `json:"settings,omitempty" url:"-"`
-	// Signing secret of the provider webhook. Optional for lemon_squeezy managed provisioning and outbound-only attio; required for other providers. Lemon Squeezy manual secrets use 16-40 characters. For Chargebee, pass username:password. For RevenueCat, pass at least 16 characters: the authorization header value set on the RevenueCat webhook, or its HMAC signing secret. For Superwall, pass the webhook's whsec_ signing secret, the only credential it needs. For Segment, use 16-153 UTF-8 bytes.
+	// Signing secret of the provider webhook. Optional for lemon_squeezy managed provisioning and not used by attio; required for other providers. Lemon Squeezy manual secrets use 16-40 characters. For Chargebee, pass username:password. For RevenueCat, pass at least 16 characters: the authorization header value set on the RevenueCat webhook, or its HMAC signing secret. For Superwall, pass the webhook's whsec_ signing secret, the only credential it needs. For Segment, use 16-153 UTF-8 bytes.
 	WebhookSecret *string `json:"webhookSecret,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -823,19 +823,26 @@ func (i IntegrationActivityEntryStatus) Ptr() *IntegrationActivityEntryStatus {
 	return &i
 }
 
-// Attio list mapping for a connected integration: saved Sequenzy-to-Attio listMap, live people-lists from Attio, and this company's Sequenzy lists.
+// Two-way Attio sync settings for a connected integration: saved maps in both directions, removal mirroring, inbound sync health, live people-lists from Attio, and this company's Sequenzy lists.
 var (
 	integrationAttioMappingFieldAttioLists            = big.NewInt(1 << 0)
 	integrationAttioMappingFieldChanged               = big.NewInt(1 << 1)
 	integrationAttioMappingFieldChangedFields         = big.NewInt(1 << 2)
-	integrationAttioMappingFieldIntegrationID         = big.NewInt(1 << 3)
-	integrationAttioMappingFieldListMap               = big.NewInt(1 << 4)
-	integrationAttioMappingFieldMappedListCount       = big.NewInt(1 << 5)
-	integrationAttioMappingFieldMessage               = big.NewInt(1 << 6)
-	integrationAttioMappingFieldProvider              = big.NewInt(1 << 7)
-	integrationAttioMappingFieldSequenzyLists         = big.NewInt(1 << 8)
-	integrationAttioMappingFieldSuccess               = big.NewInt(1 << 9)
-	integrationAttioMappingFieldSyncCompanyFromDomain = big.NewInt(1 << 10)
+	integrationAttioMappingFieldInbound               = big.NewInt(1 << 3)
+	integrationAttioMappingFieldInboundListMap        = big.NewInt(1 << 4)
+	integrationAttioMappingFieldInboundMappingCount   = big.NewInt(1 << 5)
+	integrationAttioMappingFieldInboundTagMap         = big.NewInt(1 << 6)
+	integrationAttioMappingFieldIntegrationID         = big.NewInt(1 << 7)
+	integrationAttioMappingFieldListMap               = big.NewInt(1 << 8)
+	integrationAttioMappingFieldMappedListCount       = big.NewInt(1 << 9)
+	integrationAttioMappingFieldMappedTagCount        = big.NewInt(1 << 10)
+	integrationAttioMappingFieldMessage               = big.NewInt(1 << 11)
+	integrationAttioMappingFieldProvider              = big.NewInt(1 << 12)
+	integrationAttioMappingFieldSequenzyLists         = big.NewInt(1 << 13)
+	integrationAttioMappingFieldSuccess               = big.NewInt(1 << 14)
+	integrationAttioMappingFieldSyncCompanyFromDomain = big.NewInt(1 << 15)
+	integrationAttioMappingFieldSyncRemovals          = big.NewInt(1 << 16)
+	integrationAttioMappingFieldTagMap                = big.NewInt(1 << 17)
 )
 
 type IntegrationAttioMapping struct {
@@ -843,19 +850,33 @@ type IntegrationAttioMapping struct {
 	AttioLists []*IntegrationAttioMappingAttioListsItem `json:"attioLists,omitempty" url:"attioLists,omitempty"`
 	// Present on PATCH. False when already in the requested state.
 	Changed *bool `json:"changed,omitempty" url:"changed,omitempty"`
-	// Present on PATCH. Which settings actually moved.
+	// Present on PATCH. Which settings actually moved (listMap, tagMap, inboundListMap, inboundTagMap, syncRemovals, syncCompanyFromDomain), plus inboundWebhook when the save set up, repaired or removed the Attio webhook.
 	ChangedFields []string `json:"changedFields,omitempty" url:"changedFields,omitempty"`
-	IntegrationID *string  `json:"integrationId,omitempty" url:"integrationId,omitempty"`
-	// Sequenzy list id to Attio list UUID or api slug.
+	// Inbound sync health.
+	Inbound *IntegrationAttioMappingInbound `json:"inbound,omitempty" url:"inbound,omitempty"`
+	// Attio to Sequenzy. Attio list UUID to Sequenzy list id.
+	InboundListMap map[string]string `json:"inboundListMap,omitempty" url:"inboundListMap,omitempty"`
+	// Number of saved Attio to Sequenzy mappings whose Attio source and Sequenzy target both still exist.
+	InboundMappingCount *int `json:"inboundMappingCount,omitempty" url:"inboundMappingCount,omitempty"`
+	// Attio to Sequenzy. Attio list UUID to Sequenzy tag name.
+	InboundTagMap map[string]string `json:"inboundTagMap,omitempty" url:"inboundTagMap,omitempty"`
+	IntegrationID *string           `json:"integrationId,omitempty" url:"integrationId,omitempty"`
+	// Sequenzy to Attio. Sequenzy list id to Attio list UUID or api slug.
 	ListMap map[string]string `json:"listMap,omitempty" url:"listMap,omitempty"`
-	// Number of saved mappings whose Sequenzy source and Attio target lists both still exist. Stale saved entries remain in listMap but are not counted.
-	MappedListCount *int                                        `json:"mappedListCount,omitempty" url:"mappedListCount,omitempty"`
-	Message         *string                                     `json:"message,omitempty" url:"message,omitempty"`
-	Provider        *string                                     `json:"provider,omitempty" url:"provider,omitempty"`
-	SequenzyLists   []*IntegrationAttioMappingSequenzyListsItem `json:"sequenzyLists,omitempty" url:"sequenzyLists,omitempty"`
-	Success         *bool                                       `json:"success,omitempty" url:"success,omitempty"`
+	// Number of saved listMap entries whose Sequenzy source and Attio target lists both still exist. Stale saved entries remain in listMap but are not counted.
+	MappedListCount *int `json:"mappedListCount,omitempty" url:"mappedListCount,omitempty"`
+	// Number of saved tagMap entries whose Attio target list still exists.
+	MappedTagCount *int                                        `json:"mappedTagCount,omitempty" url:"mappedTagCount,omitempty"`
+	Message        *string                                     `json:"message,omitempty" url:"message,omitempty"`
+	Provider       *string                                     `json:"provider,omitempty" url:"provider,omitempty"`
+	SequenzyLists  []*IntegrationAttioMappingSequenzyListsItem `json:"sequenzyLists,omitempty" url:"sequenzyLists,omitempty"`
+	Success        *bool                                       `json:"success,omitempty" url:"success,omitempty"`
 	// When true, upsert a company from the person's non-free-mail email domain.
 	SyncCompanyFromDomain *bool `json:"syncCompanyFromDomain,omitempty" url:"syncCompanyFromDomain,omitempty"`
+	// Whether removals are mirrored in every mapped direction. False means the sync only adds people.
+	SyncRemovals *bool `json:"syncRemovals,omitempty" url:"syncRemovals,omitempty"`
+	// Sequenzy to Attio. Sequenzy tag name to Attio list UUID or api slug.
+	TagMap map[string]string `json:"tagMap,omitempty" url:"tagMap,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -885,6 +906,34 @@ func (i *IntegrationAttioMapping) GetChangedFields() []string {
 	return i.ChangedFields
 }
 
+func (i *IntegrationAttioMapping) GetInbound() *IntegrationAttioMappingInbound {
+	if i == nil {
+		return nil
+	}
+	return i.Inbound
+}
+
+func (i *IntegrationAttioMapping) GetInboundListMap() map[string]string {
+	if i == nil {
+		return nil
+	}
+	return i.InboundListMap
+}
+
+func (i *IntegrationAttioMapping) GetInboundMappingCount() *int {
+	if i == nil {
+		return nil
+	}
+	return i.InboundMappingCount
+}
+
+func (i *IntegrationAttioMapping) GetInboundTagMap() map[string]string {
+	if i == nil {
+		return nil
+	}
+	return i.InboundTagMap
+}
+
 func (i *IntegrationAttioMapping) GetIntegrationID() *string {
 	if i == nil {
 		return nil
@@ -904,6 +953,13 @@ func (i *IntegrationAttioMapping) GetMappedListCount() *int {
 		return nil
 	}
 	return i.MappedListCount
+}
+
+func (i *IntegrationAttioMapping) GetMappedTagCount() *int {
+	if i == nil {
+		return nil
+	}
+	return i.MappedTagCount
 }
 
 func (i *IntegrationAttioMapping) GetMessage() *string {
@@ -941,6 +997,20 @@ func (i *IntegrationAttioMapping) GetSyncCompanyFromDomain() *bool {
 	return i.SyncCompanyFromDomain
 }
 
+func (i *IntegrationAttioMapping) GetSyncRemovals() *bool {
+	if i == nil {
+		return nil
+	}
+	return i.SyncRemovals
+}
+
+func (i *IntegrationAttioMapping) GetTagMap() map[string]string {
+	if i == nil {
+		return nil
+	}
+	return i.TagMap
+}
+
 func (i *IntegrationAttioMapping) GetExtraProperties() map[string]interface{} {
 	if i == nil {
 		return nil
@@ -976,6 +1046,34 @@ func (i *IntegrationAttioMapping) SetChangedFields(changedFields []string) {
 	i.require(integrationAttioMappingFieldChangedFields)
 }
 
+// SetInbound sets the Inbound field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IntegrationAttioMapping) SetInbound(inbound *IntegrationAttioMappingInbound) {
+	i.Inbound = inbound
+	i.require(integrationAttioMappingFieldInbound)
+}
+
+// SetInboundListMap sets the InboundListMap field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IntegrationAttioMapping) SetInboundListMap(inboundListMap map[string]string) {
+	i.InboundListMap = inboundListMap
+	i.require(integrationAttioMappingFieldInboundListMap)
+}
+
+// SetInboundMappingCount sets the InboundMappingCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IntegrationAttioMapping) SetInboundMappingCount(inboundMappingCount *int) {
+	i.InboundMappingCount = inboundMappingCount
+	i.require(integrationAttioMappingFieldInboundMappingCount)
+}
+
+// SetInboundTagMap sets the InboundTagMap field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IntegrationAttioMapping) SetInboundTagMap(inboundTagMap map[string]string) {
+	i.InboundTagMap = inboundTagMap
+	i.require(integrationAttioMappingFieldInboundTagMap)
+}
+
 // SetIntegrationID sets the IntegrationID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (i *IntegrationAttioMapping) SetIntegrationID(integrationID *string) {
@@ -995,6 +1093,13 @@ func (i *IntegrationAttioMapping) SetListMap(listMap map[string]string) {
 func (i *IntegrationAttioMapping) SetMappedListCount(mappedListCount *int) {
 	i.MappedListCount = mappedListCount
 	i.require(integrationAttioMappingFieldMappedListCount)
+}
+
+// SetMappedTagCount sets the MappedTagCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IntegrationAttioMapping) SetMappedTagCount(mappedTagCount *int) {
+	i.MappedTagCount = mappedTagCount
+	i.require(integrationAttioMappingFieldMappedTagCount)
 }
 
 // SetMessage sets the Message field and marks it as non-optional;
@@ -1030,6 +1135,20 @@ func (i *IntegrationAttioMapping) SetSuccess(success *bool) {
 func (i *IntegrationAttioMapping) SetSyncCompanyFromDomain(syncCompanyFromDomain *bool) {
 	i.SyncCompanyFromDomain = syncCompanyFromDomain
 	i.require(integrationAttioMappingFieldSyncCompanyFromDomain)
+}
+
+// SetSyncRemovals sets the SyncRemovals field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IntegrationAttioMapping) SetSyncRemovals(syncRemovals *bool) {
+	i.SyncRemovals = syncRemovals
+	i.require(integrationAttioMappingFieldSyncRemovals)
+}
+
+// SetTagMap sets the TagMap field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IntegrationAttioMapping) SetTagMap(tagMap map[string]string) {
+	i.TagMap = tagMap
+	i.require(integrationAttioMappingFieldTagMap)
 }
 
 func (i *IntegrationAttioMapping) UnmarshalJSON(data []byte) error {
@@ -1188,6 +1307,169 @@ func (i *IntegrationAttioMappingAttioListsItem) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", i)
+}
+
+// Inbound sync health.
+var (
+	integrationAttioMappingInboundFieldEnabled    = big.NewInt(1 << 0)
+	integrationAttioMappingInboundFieldError      = big.NewInt(1 << 1)
+	integrationAttioMappingInboundFieldStatus     = big.NewInt(1 << 2)
+	integrationAttioMappingInboundFieldWebhookURL = big.NewInt(1 << 3)
+)
+
+type IntegrationAttioMappingInbound struct {
+	// True when at least one Attio list pulls into Sequenzy.
+	Enabled *bool `json:"enabled,omitempty" url:"enabled,omitempty"`
+	// What to fix when status is error.
+	Error *string `json:"error,omitempty" url:"error,omitempty"`
+	// off without inbound mappings, active when the Attio webhook is set up, error otherwise.
+	Status *IntegrationAttioMappingInboundStatus `json:"status,omitempty" url:"status,omitempty"`
+	// URL Sequenzy registers in Attio. Never needs manual configuration.
+	WebhookURL *string `json:"webhookUrl,omitempty" url:"webhookUrl,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (i *IntegrationAttioMappingInbound) GetEnabled() *bool {
+	if i == nil {
+		return nil
+	}
+	return i.Enabled
+}
+
+func (i *IntegrationAttioMappingInbound) GetError() *string {
+	if i == nil {
+		return nil
+	}
+	return i.Error
+}
+
+func (i *IntegrationAttioMappingInbound) GetStatus() *IntegrationAttioMappingInboundStatus {
+	if i == nil {
+		return nil
+	}
+	return i.Status
+}
+
+func (i *IntegrationAttioMappingInbound) GetWebhookURL() *string {
+	if i == nil {
+		return nil
+	}
+	return i.WebhookURL
+}
+
+func (i *IntegrationAttioMappingInbound) GetExtraProperties() map[string]interface{} {
+	if i == nil {
+		return nil
+	}
+	return i.extraProperties
+}
+
+func (i *IntegrationAttioMappingInbound) require(field *big.Int) {
+	if i.explicitFields == nil {
+		i.explicitFields = big.NewInt(0)
+	}
+	i.explicitFields.Or(i.explicitFields, field)
+}
+
+// SetEnabled sets the Enabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IntegrationAttioMappingInbound) SetEnabled(enabled *bool) {
+	i.Enabled = enabled
+	i.require(integrationAttioMappingInboundFieldEnabled)
+}
+
+// SetError sets the Error field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IntegrationAttioMappingInbound) SetError(error_ *string) {
+	i.Error = error_
+	i.require(integrationAttioMappingInboundFieldError)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IntegrationAttioMappingInbound) SetStatus(status *IntegrationAttioMappingInboundStatus) {
+	i.Status = status
+	i.require(integrationAttioMappingInboundFieldStatus)
+}
+
+// SetWebhookURL sets the WebhookURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IntegrationAttioMappingInbound) SetWebhookURL(webhookURL *string) {
+	i.WebhookURL = webhookURL
+	i.require(integrationAttioMappingInboundFieldWebhookURL)
+}
+
+func (i *IntegrationAttioMappingInbound) UnmarshalJSON(data []byte) error {
+	type unmarshaler IntegrationAttioMappingInbound
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*i = IntegrationAttioMappingInbound(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+	i.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *IntegrationAttioMappingInbound) MarshalJSON() ([]byte, error) {
+	type embed IntegrationAttioMappingInbound
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*i),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (i *IntegrationAttioMappingInbound) String() string {
+	if i == nil {
+		return "<nil>"
+	}
+	if len(i.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
+// off without inbound mappings, active when the Attio webhook is set up, error otherwise.
+type IntegrationAttioMappingInboundStatus string
+
+const (
+	IntegrationAttioMappingInboundStatusOff    IntegrationAttioMappingInboundStatus = "off"
+	IntegrationAttioMappingInboundStatusActive IntegrationAttioMappingInboundStatus = "active"
+	IntegrationAttioMappingInboundStatusError  IntegrationAttioMappingInboundStatus = "error"
+)
+
+func NewIntegrationAttioMappingInboundStatusFromString(s string) (IntegrationAttioMappingInboundStatus, error) {
+	switch s {
+	case "off":
+		return IntegrationAttioMappingInboundStatusOff, nil
+	case "active":
+		return IntegrationAttioMappingInboundStatusActive, nil
+	case "error":
+		return IntegrationAttioMappingInboundStatusError, nil
+	}
+	var t IntegrationAttioMappingInboundStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (i IntegrationAttioMappingInboundStatus) Ptr() *IntegrationAttioMappingInboundStatus {
+	return &i
 }
 
 var (
@@ -2236,7 +2518,7 @@ type IntegrationDetailIntegration struct {
 	// Provider category, or null for a provider with no catalog entry.
 	Category    *IntegrationDetailIntegrationCategory `json:"category,omitempty" url:"category,omitempty"`
 	ConnectedAt *time.Time                            `json:"connectedAt,omitempty" url:"connectedAt,omitempty"`
-	// Allowlisted non-secret metadata. Never contains credentials. Attio includes listMap, mappedListCount, and syncCompanyFromDomain for configuration diagnostics.
+	// Allowlisted non-secret metadata. Never contains credentials. Attio includes listMap, mappedListCount, syncCompanyFromDomain, tagMap, inboundListMap, inboundTagMap, syncRemovals, and inboundSyncStatus (off, active, or error) for configuration diagnostics.
 	Details        map[string]any `json:"details,omitempty" url:"details,omitempty"`
 	DisconnectedAt *time.Time     `json:"disconnectedAt,omitempty" url:"disconnectedAt,omitempty"`
 	ID             *string        `json:"id,omitempty" url:"id,omitempty"`
@@ -4639,7 +4921,7 @@ type IntegrationSummary struct {
 	// Provider category, or null for a provider with no catalog entry.
 	Category    *IntegrationSummaryCategory `json:"category,omitempty" url:"category,omitempty"`
 	ConnectedAt *time.Time                  `json:"connectedAt,omitempty" url:"connectedAt,omitempty"`
-	// Allowlisted non-secret metadata. Never contains credentials. Attio includes listMap, mappedListCount, and syncCompanyFromDomain for configuration diagnostics.
+	// Allowlisted non-secret metadata. Never contains credentials. Attio includes listMap, mappedListCount, syncCompanyFromDomain, tagMap, inboundListMap, inboundTagMap, syncRemovals, and inboundSyncStatus (off, active, or error) for configuration diagnostics.
 	Details        map[string]any `json:"details,omitempty" url:"details,omitempty"`
 	DisconnectedAt *time.Time     `json:"disconnectedAt,omitempty" url:"disconnectedAt,omitempty"`
 	ID             *string        `json:"id,omitempty" url:"id,omitempty"`
@@ -7330,17 +7612,29 @@ func (u UpdateSyncIntegrationsResponseListTargeting) Ptr() *UpdateSyncIntegratio
 
 var (
 	updateAttioSettingsRequestFieldID                    = big.NewInt(1 << 0)
-	updateAttioSettingsRequestFieldListMap               = big.NewInt(1 << 1)
-	updateAttioSettingsRequestFieldSyncCompanyFromDomain = big.NewInt(1 << 2)
+	updateAttioSettingsRequestFieldInboundListMap        = big.NewInt(1 << 1)
+	updateAttioSettingsRequestFieldInboundTagMap         = big.NewInt(1 << 2)
+	updateAttioSettingsRequestFieldListMap               = big.NewInt(1 << 3)
+	updateAttioSettingsRequestFieldSyncCompanyFromDomain = big.NewInt(1 << 4)
+	updateAttioSettingsRequestFieldSyncRemovals          = big.NewInt(1 << 5)
+	updateAttioSettingsRequestFieldTagMap                = big.NewInt(1 << 6)
 )
 
 type UpdateAttioSettingsRequest struct {
 	// Attio integration ID.
 	ID string `json:"-" url:"-"`
-	// Complete Sequenzy list id to Attio list UUID or api slug map. Replaces the saved map. Pass {} to clear every mapping.
+	// Attio to Sequenzy. Complete Attio list UUID or api slug to Sequenzy list id map. Saved with Attio list UUIDs. Needs webhook:read-write on the Attio token.
+	InboundListMap map[string]string `json:"inboundListMap,omitempty" url:"-"`
+	// Attio to Sequenzy. Complete Attio list UUID or api slug to Sequenzy tag name map. Needs webhook:read-write on the Attio token.
+	InboundTagMap map[string]string `json:"inboundTagMap,omitempty" url:"-"`
+	// Sequenzy to Attio. Complete Sequenzy list id to Attio list UUID or api slug map. Replaces the saved map. Pass {} to clear every mapping.
 	ListMap map[string]string `json:"listMap,omitempty" url:"-"`
 	// When true, upsert a company from the person's non-free-mail email domain.
 	SyncCompanyFromDomain *bool `json:"syncCompanyFromDomain,omitempty" url:"-"`
+	// Mirror removals in every mapped direction. Defaults to false (add-only).
+	SyncRemovals *bool `json:"syncRemovals,omitempty" url:"-"`
+	// Sequenzy to Attio. Complete Sequenzy tag name to Attio list UUID or api slug map. Tag names are normalized (lowercase, spaces become dashes), at most 255 characters.
+	TagMap map[string]string `json:"tagMap,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -7360,6 +7654,20 @@ func (u *UpdateAttioSettingsRequest) SetID(id string) {
 	u.require(updateAttioSettingsRequestFieldID)
 }
 
+// SetInboundListMap sets the InboundListMap field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAttioSettingsRequest) SetInboundListMap(inboundListMap map[string]string) {
+	u.InboundListMap = inboundListMap
+	u.require(updateAttioSettingsRequestFieldInboundListMap)
+}
+
+// SetInboundTagMap sets the InboundTagMap field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAttioSettingsRequest) SetInboundTagMap(inboundTagMap map[string]string) {
+	u.InboundTagMap = inboundTagMap
+	u.require(updateAttioSettingsRequestFieldInboundTagMap)
+}
+
 // SetListMap sets the ListMap field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateAttioSettingsRequest) SetListMap(listMap map[string]string) {
@@ -7372,6 +7680,20 @@ func (u *UpdateAttioSettingsRequest) SetListMap(listMap map[string]string) {
 func (u *UpdateAttioSettingsRequest) SetSyncCompanyFromDomain(syncCompanyFromDomain *bool) {
 	u.SyncCompanyFromDomain = syncCompanyFromDomain
 	u.require(updateAttioSettingsRequestFieldSyncCompanyFromDomain)
+}
+
+// SetSyncRemovals sets the SyncRemovals field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAttioSettingsRequest) SetSyncRemovals(syncRemovals *bool) {
+	u.SyncRemovals = syncRemovals
+	u.require(updateAttioSettingsRequestFieldSyncRemovals)
+}
+
+// SetTagMap sets the TagMap field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAttioSettingsRequest) SetTagMap(tagMap map[string]string) {
+	u.TagMap = tagMap
+	u.require(updateAttioSettingsRequestFieldTagMap)
 }
 
 func (u *UpdateAttioSettingsRequest) UnmarshalJSON(data []byte) error {

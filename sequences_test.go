@@ -11604,6 +11604,14 @@ func TestSettersSequenceAudience(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetIncludedSubscriberIDs", func(t *testing.T) {
+		obj := &SequenceAudience{}
+		var fernTestValueIncludedSubscriberIDs []string
+		obj.SetIncludedSubscriberIDs(fernTestValueIncludedSubscriberIDs)
+		assert.Equal(t, fernTestValueIncludedSubscriberIDs, obj.IncludedSubscriberIDs)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetListIDs", func(t *testing.T) {
 		obj := &SequenceAudience{}
 		var fernTestValueListIDs []string
@@ -11794,6 +11802,39 @@ func TestGettersSequenceAudience(t *testing.T) {
 			}
 		}()
 		_ = obj.GetInclude() // Should return zero value
+	})
+
+	t.Run("GetIncludedSubscriberIDs", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceAudience{}
+		var expected []string
+		obj.IncludedSubscriberIDs = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetIncludedSubscriberIDs(), "getter should return the property value")
+	})
+
+	t.Run("GetIncludedSubscriberIDs_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceAudience{}
+		obj.IncludedSubscriberIDs = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetIncludedSubscriberIDs(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetIncludedSubscriberIDs_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequenceAudience
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetIncludedSubscriberIDs() // Should return zero value
 	})
 
 	t.Run("GetListIDs", func(t *testing.T) {
@@ -12020,6 +12061,37 @@ func TestSettersMarkExplicitSequenceAudience(t *testing.T) {
 
 		// Act
 		obj.SetInclude(fernTestValueInclude)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetIncludedSubscriberIDs_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceAudience{}
+		var fernTestValueIncludedSubscriberIDs []string
+
+		// Act
+		obj.SetIncludedSubscriberIDs(fernTestValueIncludedSubscriberIDs)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -12724,6 +12796,14 @@ func TestSettersSequenceAudienceEnrollment(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetIncludedSubscriberCount", func(t *testing.T) {
+		obj := &SequenceAudienceEnrollment{}
+		var fernTestValueIncludedSubscriberCount *int
+		obj.SetIncludedSubscriberCount(fernTestValueIncludedSubscriberCount)
+		assert.Equal(t, fernTestValueIncludedSubscriberCount, obj.IncludedSubscriberCount)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetProcessedCount", func(t *testing.T) {
 		obj := &SequenceAudienceEnrollment{}
 		var fernTestValueProcessedCount *int
@@ -13086,6 +13166,39 @@ func TestGettersSequenceAudienceEnrollment(t *testing.T) {
 			}
 		}()
 		_ = obj.GetID() // Should return zero value
+	})
+
+	t.Run("GetIncludedSubscriberCount", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceAudienceEnrollment{}
+		var expected *int
+		obj.IncludedSubscriberCount = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetIncludedSubscriberCount(), "getter should return the property value")
+	})
+
+	t.Run("GetIncludedSubscriberCount_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceAudienceEnrollment{}
+		obj.IncludedSubscriberCount = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetIncludedSubscriberCount(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetIncludedSubscriberCount_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequenceAudienceEnrollment
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetIncludedSubscriberCount() // Should return zero value
 	})
 
 	t.Run("GetProcessedCount", func(t *testing.T) {
@@ -13611,6 +13724,37 @@ func TestSettersMarkExplicitSequenceAudienceEnrollment(t *testing.T) {
 
 		// Act
 		obj.SetID(fernTestValueID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetIncludedSubscriberCount_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceAudienceEnrollment{}
+		var fernTestValueIncludedSubscriberCount *int
+
+		// Act
+		obj.SetIncludedSubscriberCount(fernTestValueIncludedSubscriberCount)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -73628,6 +73772,14 @@ func TestSettersGetStatsSequencesResponseStepsItem(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetPolls", func(t *testing.T) {
+		obj := &GetStatsSequencesResponseStepsItem{}
+		var fernTestValuePolls []*PollResultsSummary
+		obj.SetPolls(fernTestValuePolls)
+		assert.Equal(t, fernTestValuePolls, obj.Polls)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetStats", func(t *testing.T) {
 		obj := &GetStatsSequencesResponseStepsItem{}
 		var fernTestValueStats *EngagementStats
@@ -73752,6 +73904,39 @@ func TestGettersGetStatsSequencesResponseStepsItem(t *testing.T) {
 			}
 		}()
 		_ = obj.GetNodeID() // Should return zero value
+	})
+
+	t.Run("GetPolls", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetStatsSequencesResponseStepsItem{}
+		var expected []*PollResultsSummary
+		obj.Polls = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPolls(), "getter should return the property value")
+	})
+
+	t.Run("GetPolls_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetStatsSequencesResponseStepsItem{}
+		obj.Polls = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetPolls(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetPolls_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *GetStatsSequencesResponseStepsItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPolls() // Should return zero value
 	})
 
 	t.Run("GetStats", func(t *testing.T) {
@@ -73926,6 +74111,37 @@ func TestSettersMarkExplicitGetStatsSequencesResponseStepsItem(t *testing.T) {
 
 		// Act
 		obj.SetNodeID(fernTestValueNodeID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPolls_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetStatsSequencesResponseStepsItem{}
+		var fernTestValuePolls []*PollResultsSummary
+
+		// Act
+		obj.SetPolls(fernTestValuePolls)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)

@@ -4349,20 +4349,24 @@ var (
 	sequenceAudienceFieldFilterJoinOperator    = big.NewInt(1 << 2)
 	sequenceAudienceFieldFilters               = big.NewInt(1 << 3)
 	sequenceAudienceFieldInclude               = big.NewInt(1 << 4)
-	sequenceAudienceFieldListIDs               = big.NewInt(1 << 5)
-	sequenceAudienceFieldSegmentID             = big.NewInt(1 << 6)
-	sequenceAudienceFieldType                  = big.NewInt(1 << 7)
+	sequenceAudienceFieldIncludedSubscriberIDs = big.NewInt(1 << 5)
+	sequenceAudienceFieldListIDs               = big.NewInt(1 << 6)
+	sequenceAudienceFieldSegmentID             = big.NewInt(1 << 7)
+	sequenceAudienceFieldType                  = big.NewInt(1 << 8)
 )
 
 type SequenceAudience struct {
 	// For type rules; exclude rules.
-	Exclude               []map[string]any                    `json:"exclude,omitempty" url:"exclude,omitempty"`
+	Exclude []map[string]any `json:"exclude,omitempty" url:"exclude,omitempty"`
+	// Contacts removed from the include rules. Does not remove contacts listed in includedSubscriberIds.
 	ExcludedSubscriberIDs []string                            `json:"excludedSubscriberIds,omitempty" url:"excludedSubscriberIds,omitempty"`
 	FilterJoinOperator    *SequenceAudienceFilterJoinOperator `json:"filterJoinOperator,omitempty" url:"filterJoinOperator,omitempty"`
 	// For type filtered; subscriber filters.
 	Filters []map[string]any `json:"filters,omitempty" url:"filters,omitempty"`
 	// For type rules; include rules of type all, lists, segments, or filtered.
 	Include []map[string]any `json:"include,omitempty" url:"include,omitempty"`
+	// Specific contacts to enroll in addition to the include rules. Use type rules with an empty include array to enroll only these contacts, with no per-request cap. IDs that belong to another company, or to contacts who are unsubscribed, bounced or without an email, are skipped.
+	IncludedSubscriberIDs []string `json:"includedSubscriberIds,omitempty" url:"includedSubscriberIds,omitempty"`
 	// For type lists.
 	ListIDs []string `json:"listIds,omitempty" url:"listIds,omitempty"`
 	// For type segment.
@@ -4409,6 +4413,13 @@ func (s *SequenceAudience) GetInclude() []map[string]any {
 		return nil
 	}
 	return s.Include
+}
+
+func (s *SequenceAudience) GetIncludedSubscriberIDs() []string {
+	if s == nil {
+		return nil
+	}
+	return s.IncludedSubscriberIDs
 }
 
 func (s *SequenceAudience) GetListIDs() []string {
@@ -4479,6 +4490,13 @@ func (s *SequenceAudience) SetFilters(filters []map[string]any) {
 func (s *SequenceAudience) SetInclude(include []map[string]any) {
 	s.Include = include
 	s.require(sequenceAudienceFieldInclude)
+}
+
+// SetIncludedSubscriberIDs sets the IncludedSubscriberIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceAudience) SetIncludedSubscriberIDs(includedSubscriberIDs []string) {
+	s.IncludedSubscriberIDs = includedSubscriberIDs
+	s.require(sequenceAudienceFieldIncludedSubscriberIDs)
 }
 
 // SetListIDs sets the ListIDs field and marks it as non-optional;
@@ -4772,23 +4790,24 @@ func (s SequenceAudienceAutoEnrollEndedReason) Ptr() *SequenceAudienceAutoEnroll
 
 // One background audience enrollment run.
 var (
-	sequenceAudienceEnrollmentFieldAudience          = big.NewInt(1 << 0)
-	sequenceAudienceEnrollmentFieldCancelRequestedAt = big.NewInt(1 << 1)
-	sequenceAudienceEnrollmentFieldCompletedAt       = big.NewInt(1 << 2)
-	sequenceAudienceEnrollmentFieldCreatedAt         = big.NewInt(1 << 3)
-	sequenceAudienceEnrollmentFieldData              = big.NewInt(1 << 4)
-	sequenceAudienceEnrollmentFieldEnrolledCount     = big.NewInt(1 << 5)
-	sequenceAudienceEnrollmentFieldError             = big.NewInt(1 << 6)
-	sequenceAudienceEnrollmentFieldEstimatedCount    = big.NewInt(1 << 7)
-	sequenceAudienceEnrollmentFieldID                = big.NewInt(1 << 8)
-	sequenceAudienceEnrollmentFieldProcessedCount    = big.NewInt(1 << 9)
-	sequenceAudienceEnrollmentFieldScheduledFor      = big.NewInt(1 << 10)
-	sequenceAudienceEnrollmentFieldSequenceID        = big.NewInt(1 << 11)
-	sequenceAudienceEnrollmentFieldSkippedCount      = big.NewInt(1 << 12)
-	sequenceAudienceEnrollmentFieldSource            = big.NewInt(1 << 13)
-	sequenceAudienceEnrollmentFieldStartedAt         = big.NewInt(1 << 14)
-	sequenceAudienceEnrollmentFieldStatus            = big.NewInt(1 << 15)
-	sequenceAudienceEnrollmentFieldTargetNodeID      = big.NewInt(1 << 16)
+	sequenceAudienceEnrollmentFieldAudience                = big.NewInt(1 << 0)
+	sequenceAudienceEnrollmentFieldCancelRequestedAt       = big.NewInt(1 << 1)
+	sequenceAudienceEnrollmentFieldCompletedAt             = big.NewInt(1 << 2)
+	sequenceAudienceEnrollmentFieldCreatedAt               = big.NewInt(1 << 3)
+	sequenceAudienceEnrollmentFieldData                    = big.NewInt(1 << 4)
+	sequenceAudienceEnrollmentFieldEnrolledCount           = big.NewInt(1 << 5)
+	sequenceAudienceEnrollmentFieldError                   = big.NewInt(1 << 6)
+	sequenceAudienceEnrollmentFieldEstimatedCount          = big.NewInt(1 << 7)
+	sequenceAudienceEnrollmentFieldID                      = big.NewInt(1 << 8)
+	sequenceAudienceEnrollmentFieldIncludedSubscriberCount = big.NewInt(1 << 9)
+	sequenceAudienceEnrollmentFieldProcessedCount          = big.NewInt(1 << 10)
+	sequenceAudienceEnrollmentFieldScheduledFor            = big.NewInt(1 << 11)
+	sequenceAudienceEnrollmentFieldSequenceID              = big.NewInt(1 << 12)
+	sequenceAudienceEnrollmentFieldSkippedCount            = big.NewInt(1 << 13)
+	sequenceAudienceEnrollmentFieldSource                  = big.NewInt(1 << 14)
+	sequenceAudienceEnrollmentFieldStartedAt               = big.NewInt(1 << 15)
+	sequenceAudienceEnrollmentFieldStatus                  = big.NewInt(1 << 16)
+	sequenceAudienceEnrollmentFieldTargetNodeID            = big.NewInt(1 << 17)
 )
 
 type SequenceAudienceEnrollment struct {
@@ -4803,6 +4822,8 @@ type SequenceAudienceEnrollment struct {
 	// Audience size estimated when the run started.
 	EstimatedCount *int    `json:"estimatedCount,omitempty" url:"estimatedCount,omitempty"`
 	ID             *string `json:"id,omitempty" url:"id,omitempty"`
+	// Number of hand-picked contacts in `audience.includedSubscriberIds`, 0 when none.
+	IncludedSubscriberCount *int `json:"includedSubscriberCount,omitempty" url:"includedSubscriberCount,omitempty"`
 	// Subscribers scanned so far.
 	ProcessedCount *int `json:"processedCount,omitempty" url:"processedCount,omitempty"`
 	// Delayed start. While set and in the future the run stays queued; cancel it before then to prevent the enrollment.
@@ -4884,6 +4905,13 @@ func (s *SequenceAudienceEnrollment) GetID() *string {
 		return nil
 	}
 	return s.ID
+}
+
+func (s *SequenceAudienceEnrollment) GetIncludedSubscriberCount() *int {
+	if s == nil {
+		return nil
+	}
+	return s.IncludedSubscriberCount
 }
 
 func (s *SequenceAudienceEnrollment) GetProcessedCount() *int {
@@ -5017,6 +5045,13 @@ func (s *SequenceAudienceEnrollment) SetEstimatedCount(estimatedCount *int) {
 func (s *SequenceAudienceEnrollment) SetID(id *string) {
 	s.ID = id
 	s.require(sequenceAudienceEnrollmentFieldID)
+}
+
+// SetIncludedSubscriberCount sets the IncludedSubscriberCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceAudienceEnrollment) SetIncludedSubscriberCount(includedSubscriberCount *int) {
+	s.IncludedSubscriberCount = includedSubscriberCount
+	s.require(sequenceAudienceEnrollmentFieldIncludedSubscriberCount)
 }
 
 // SetProcessedCount sets the ProcessedCount field and marks it as non-optional;
@@ -28615,9 +28650,10 @@ var (
 	getStatsSequencesResponseStepsItemFieldFailedCount       = big.NewInt(1 << 0)
 	getStatsSequencesResponseStepsItemFieldFailedSubscribers = big.NewInt(1 << 1)
 	getStatsSequencesResponseStepsItemFieldNodeID            = big.NewInt(1 << 2)
-	getStatsSequencesResponseStepsItemFieldStats             = big.NewInt(1 << 3)
-	getStatsSequencesResponseStepsItemFieldStep              = big.NewInt(1 << 4)
-	getStatsSequencesResponseStepsItemFieldSubject           = big.NewInt(1 << 5)
+	getStatsSequencesResponseStepsItemFieldPolls             = big.NewInt(1 << 3)
+	getStatsSequencesResponseStepsItemFieldStats             = big.NewInt(1 << 4)
+	getStatsSequencesResponseStepsItemFieldStep              = big.NewInt(1 << 5)
+	getStatsSequencesResponseStepsItemFieldSubject           = big.NewInt(1 << 6)
 )
 
 type GetStatsSequencesResponseStepsItem struct {
@@ -28626,8 +28662,10 @@ type GetStatsSequencesResponseStepsItem struct {
 	// Up to 20 most recent failed subscribers for this step.
 	FailedSubscribers []*GetStatsSequencesResponseStepsItemFailedSubscribersItem `json:"failedSubscribers,omitempty" url:"failedSubscribers,omitempty"`
 	// Node ID for this email step.
-	NodeID *string          `json:"nodeId,omitempty" url:"nodeId,omitempty"`
-	Stats  *EngagementStats `json:"stats,omitempty" url:"stats,omitempty"`
+	NodeID *string `json:"nodeId,omitempty" url:"nodeId,omitempty"`
+	// Lifetime Poll and NPS summaries for this step, in the same shape as the campaign stats polls. Each subscriber counts once per poll block with their latest answer. Not limited by period, start or end. Omitted when the step has no responses.
+	Polls []*PollResultsSummary `json:"polls,omitempty" url:"polls,omitempty"`
+	Stats *EngagementStats      `json:"stats,omitempty" url:"stats,omitempty"`
 	// Step number.
 	Step *int `json:"step,omitempty" url:"step,omitempty"`
 	// Email subject line.
@@ -28659,6 +28697,13 @@ func (g *GetStatsSequencesResponseStepsItem) GetNodeID() *string {
 		return nil
 	}
 	return g.NodeID
+}
+
+func (g *GetStatsSequencesResponseStepsItem) GetPolls() []*PollResultsSummary {
+	if g == nil {
+		return nil
+	}
+	return g.Polls
 }
 
 func (g *GetStatsSequencesResponseStepsItem) GetStats() *EngagementStats {
@@ -28715,6 +28760,13 @@ func (g *GetStatsSequencesResponseStepsItem) SetFailedSubscribers(failedSubscrib
 func (g *GetStatsSequencesResponseStepsItem) SetNodeID(nodeID *string) {
 	g.NodeID = nodeID
 	g.require(getStatsSequencesResponseStepsItemFieldNodeID)
+}
+
+// SetPolls sets the Polls field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetStatsSequencesResponseStepsItem) SetPolls(polls []*PollResultsSummary) {
+	g.Polls = polls
+	g.require(getStatsSequencesResponseStepsItemFieldPolls)
 }
 
 // SetStats sets the Stats field and marks it as non-optional;

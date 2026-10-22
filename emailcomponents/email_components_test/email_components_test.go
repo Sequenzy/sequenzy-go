@@ -134,6 +134,32 @@ func TestEmailComponentsDeleteWithWireMock(
 	VerifyRequestCount(t, "TestEmailComponentsDeleteWithWireMock", "DELETE", "/email-components/componentId", nil, 1)
 }
 
+func TestEmailComponentsDuplicateWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.DuplicateEmailComponentsRequest{
+		ComponentID: "componentId",
+	}
+	_, invocationErr := client.EmailComponents.Duplicate(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestEmailComponentsDuplicateWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestEmailComponentsDuplicateWithWireMock", "POST", "/email-components/componentId/duplicate", nil, 1)
+}
+
 func TestEmailComponentsGetWithWireMock(
 	t *testing.T,
 ) {

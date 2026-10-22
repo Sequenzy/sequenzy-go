@@ -2285,6 +2285,38 @@ func TestSettersIntegrationAttioMapping(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetInbound", func(t *testing.T) {
+		obj := &IntegrationAttioMapping{}
+		var fernTestValueInbound *IntegrationAttioMappingInbound
+		obj.SetInbound(fernTestValueInbound)
+		assert.Equal(t, fernTestValueInbound, obj.Inbound)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetInboundListMap", func(t *testing.T) {
+		obj := &IntegrationAttioMapping{}
+		var fernTestValueInboundListMap map[string]string
+		obj.SetInboundListMap(fernTestValueInboundListMap)
+		assert.Equal(t, fernTestValueInboundListMap, obj.InboundListMap)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetInboundMappingCount", func(t *testing.T) {
+		obj := &IntegrationAttioMapping{}
+		var fernTestValueInboundMappingCount *int
+		obj.SetInboundMappingCount(fernTestValueInboundMappingCount)
+		assert.Equal(t, fernTestValueInboundMappingCount, obj.InboundMappingCount)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetInboundTagMap", func(t *testing.T) {
+		obj := &IntegrationAttioMapping{}
+		var fernTestValueInboundTagMap map[string]string
+		obj.SetInboundTagMap(fernTestValueInboundTagMap)
+		assert.Equal(t, fernTestValueInboundTagMap, obj.InboundTagMap)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetIntegrationID", func(t *testing.T) {
 		obj := &IntegrationAttioMapping{}
 		var fernTestValueIntegrationID *string
@@ -2306,6 +2338,14 @@ func TestSettersIntegrationAttioMapping(t *testing.T) {
 		var fernTestValueMappedListCount *int
 		obj.SetMappedListCount(fernTestValueMappedListCount)
 		assert.Equal(t, fernTestValueMappedListCount, obj.MappedListCount)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetMappedTagCount", func(t *testing.T) {
+		obj := &IntegrationAttioMapping{}
+		var fernTestValueMappedTagCount *int
+		obj.SetMappedTagCount(fernTestValueMappedTagCount)
+		assert.Equal(t, fernTestValueMappedTagCount, obj.MappedTagCount)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -2346,6 +2386,22 @@ func TestSettersIntegrationAttioMapping(t *testing.T) {
 		var fernTestValueSyncCompanyFromDomain *bool
 		obj.SetSyncCompanyFromDomain(fernTestValueSyncCompanyFromDomain)
 		assert.Equal(t, fernTestValueSyncCompanyFromDomain, obj.SyncCompanyFromDomain)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetSyncRemovals", func(t *testing.T) {
+		obj := &IntegrationAttioMapping{}
+		var fernTestValueSyncRemovals *bool
+		obj.SetSyncRemovals(fernTestValueSyncRemovals)
+		assert.Equal(t, fernTestValueSyncRemovals, obj.SyncRemovals)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetTagMap", func(t *testing.T) {
+		obj := &IntegrationAttioMapping{}
+		var fernTestValueTagMap map[string]string
+		obj.SetTagMap(fernTestValueTagMap)
+		assert.Equal(t, fernTestValueTagMap, obj.TagMap)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -2451,6 +2507,138 @@ func TestGettersIntegrationAttioMapping(t *testing.T) {
 		_ = obj.GetChangedFields() // Should return zero value
 	})
 
+	t.Run("GetInbound", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &IntegrationAttioMapping{}
+		var expected *IntegrationAttioMappingInbound
+		obj.Inbound = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetInbound(), "getter should return the property value")
+	})
+
+	t.Run("GetInbound_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &IntegrationAttioMapping{}
+		obj.Inbound = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetInbound(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetInbound_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *IntegrationAttioMapping
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetInbound() // Should return zero value
+	})
+
+	t.Run("GetInboundListMap", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &IntegrationAttioMapping{}
+		var expected map[string]string
+		obj.InboundListMap = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetInboundListMap(), "getter should return the property value")
+	})
+
+	t.Run("GetInboundListMap_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &IntegrationAttioMapping{}
+		obj.InboundListMap = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetInboundListMap(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetInboundListMap_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *IntegrationAttioMapping
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetInboundListMap() // Should return zero value
+	})
+
+	t.Run("GetInboundMappingCount", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &IntegrationAttioMapping{}
+		var expected *int
+		obj.InboundMappingCount = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetInboundMappingCount(), "getter should return the property value")
+	})
+
+	t.Run("GetInboundMappingCount_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &IntegrationAttioMapping{}
+		obj.InboundMappingCount = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetInboundMappingCount(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetInboundMappingCount_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *IntegrationAttioMapping
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetInboundMappingCount() // Should return zero value
+	})
+
+	t.Run("GetInboundTagMap", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &IntegrationAttioMapping{}
+		var expected map[string]string
+		obj.InboundTagMap = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetInboundTagMap(), "getter should return the property value")
+	})
+
+	t.Run("GetInboundTagMap_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &IntegrationAttioMapping{}
+		obj.InboundTagMap = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetInboundTagMap(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetInboundTagMap_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *IntegrationAttioMapping
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetInboundTagMap() // Should return zero value
+	})
+
 	t.Run("GetIntegrationID", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -2548,6 +2736,39 @@ func TestGettersIntegrationAttioMapping(t *testing.T) {
 			}
 		}()
 		_ = obj.GetMappedListCount() // Should return zero value
+	})
+
+	t.Run("GetMappedTagCount", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &IntegrationAttioMapping{}
+		var expected *int
+		obj.MappedTagCount = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetMappedTagCount(), "getter should return the property value")
+	})
+
+	t.Run("GetMappedTagCount_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &IntegrationAttioMapping{}
+		obj.MappedTagCount = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetMappedTagCount(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetMappedTagCount_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *IntegrationAttioMapping
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetMappedTagCount() // Should return zero value
 	})
 
 	t.Run("GetMessage", func(t *testing.T) {
@@ -2715,6 +2936,72 @@ func TestGettersIntegrationAttioMapping(t *testing.T) {
 		_ = obj.GetSyncCompanyFromDomain() // Should return zero value
 	})
 
+	t.Run("GetSyncRemovals", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &IntegrationAttioMapping{}
+		var expected *bool
+		obj.SyncRemovals = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSyncRemovals(), "getter should return the property value")
+	})
+
+	t.Run("GetSyncRemovals_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &IntegrationAttioMapping{}
+		obj.SyncRemovals = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSyncRemovals(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSyncRemovals_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *IntegrationAttioMapping
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSyncRemovals() // Should return zero value
+	})
+
+	t.Run("GetTagMap", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &IntegrationAttioMapping{}
+		var expected map[string]string
+		obj.TagMap = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetTagMap(), "getter should return the property value")
+	})
+
+	t.Run("GetTagMap_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &IntegrationAttioMapping{}
+		obj.TagMap = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetTagMap(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetTagMap_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *IntegrationAttioMapping
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetTagMap() // Should return zero value
+	})
+
 }
 
 func TestSettersMarkExplicitIntegrationAttioMapping(t *testing.T) {
@@ -2811,6 +3098,130 @@ func TestSettersMarkExplicitIntegrationAttioMapping(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetInbound_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &IntegrationAttioMapping{}
+		var fernTestValueInbound *IntegrationAttioMappingInbound
+
+		// Act
+		obj.SetInbound(fernTestValueInbound)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetInboundListMap_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &IntegrationAttioMapping{}
+		var fernTestValueInboundListMap map[string]string
+
+		// Act
+		obj.SetInboundListMap(fernTestValueInboundListMap)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetInboundMappingCount_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &IntegrationAttioMapping{}
+		var fernTestValueInboundMappingCount *int
+
+		// Act
+		obj.SetInboundMappingCount(fernTestValueInboundMappingCount)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetInboundTagMap_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &IntegrationAttioMapping{}
+		var fernTestValueInboundTagMap map[string]string
+
+		// Act
+		obj.SetInboundTagMap(fernTestValueInboundTagMap)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetIntegrationID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -2881,6 +3292,37 @@ func TestSettersMarkExplicitIntegrationAttioMapping(t *testing.T) {
 
 		// Act
 		obj.SetMappedListCount(fernTestValueMappedListCount)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetMappedTagCount_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &IntegrationAttioMapping{}
+		var fernTestValueMappedTagCount *int
+
+		// Act
+		obj.SetMappedTagCount(fernTestValueMappedTagCount)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -3036,6 +3478,68 @@ func TestSettersMarkExplicitIntegrationAttioMapping(t *testing.T) {
 
 		// Act
 		obj.SetSyncCompanyFromDomain(fernTestValueSyncCompanyFromDomain)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSyncRemovals_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &IntegrationAttioMapping{}
+		var fernTestValueSyncRemovals *bool
+
+		// Act
+		obj.SetSyncRemovals(fernTestValueSyncRemovals)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetTagMap_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &IntegrationAttioMapping{}
+		var fernTestValueTagMap map[string]string
+
+		// Act
+		obj.SetTagMap(fernTestValueTagMap)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -3261,6 +3765,303 @@ func TestSettersMarkExplicitIntegrationAttioMappingAttioListsItem(t *testing.T) 
 
 		// Act
 		obj.SetName(fernTestValueName)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersIntegrationAttioMappingInbound(t *testing.T) {
+	t.Run("SetEnabled", func(t *testing.T) {
+		obj := &IntegrationAttioMappingInbound{}
+		var fernTestValueEnabled *bool
+		obj.SetEnabled(fernTestValueEnabled)
+		assert.Equal(t, fernTestValueEnabled, obj.Enabled)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetError", func(t *testing.T) {
+		obj := &IntegrationAttioMappingInbound{}
+		var fernTestValueError *string
+		obj.SetError(fernTestValueError)
+		assert.Equal(t, fernTestValueError, obj.Error)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetStatus", func(t *testing.T) {
+		obj := &IntegrationAttioMappingInbound{}
+		var fernTestValueStatus *IntegrationAttioMappingInboundStatus
+		obj.SetStatus(fernTestValueStatus)
+		assert.Equal(t, fernTestValueStatus, obj.Status)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetWebhookURL", func(t *testing.T) {
+		obj := &IntegrationAttioMappingInbound{}
+		var fernTestValueWebhookURL *string
+		obj.SetWebhookURL(fernTestValueWebhookURL)
+		assert.Equal(t, fernTestValueWebhookURL, obj.WebhookURL)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersIntegrationAttioMappingInbound(t *testing.T) {
+	t.Run("GetEnabled", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &IntegrationAttioMappingInbound{}
+		var expected *bool
+		obj.Enabled = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetEnabled(), "getter should return the property value")
+	})
+
+	t.Run("GetEnabled_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &IntegrationAttioMappingInbound{}
+		obj.Enabled = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetEnabled(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetEnabled_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *IntegrationAttioMappingInbound
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetEnabled() // Should return zero value
+	})
+
+	t.Run("GetError", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &IntegrationAttioMappingInbound{}
+		var expected *string
+		obj.Error = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetError(), "getter should return the property value")
+	})
+
+	t.Run("GetError_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &IntegrationAttioMappingInbound{}
+		obj.Error = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetError(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetError_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *IntegrationAttioMappingInbound
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetError() // Should return zero value
+	})
+
+	t.Run("GetStatus", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &IntegrationAttioMappingInbound{}
+		var expected *IntegrationAttioMappingInboundStatus
+		obj.Status = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetStatus(), "getter should return the property value")
+	})
+
+	t.Run("GetStatus_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &IntegrationAttioMappingInbound{}
+		obj.Status = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetStatus(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetStatus_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *IntegrationAttioMappingInbound
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetStatus() // Should return zero value
+	})
+
+	t.Run("GetWebhookURL", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &IntegrationAttioMappingInbound{}
+		var expected *string
+		obj.WebhookURL = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetWebhookURL(), "getter should return the property value")
+	})
+
+	t.Run("GetWebhookURL_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &IntegrationAttioMappingInbound{}
+		obj.WebhookURL = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetWebhookURL(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetWebhookURL_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *IntegrationAttioMappingInbound
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetWebhookURL() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitIntegrationAttioMappingInbound(t *testing.T) {
+	t.Run("SetEnabled_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &IntegrationAttioMappingInbound{}
+		var fernTestValueEnabled *bool
+
+		// Act
+		obj.SetEnabled(fernTestValueEnabled)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetError_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &IntegrationAttioMappingInbound{}
+		var fernTestValueError *string
+
+		// Act
+		obj.SetError(fernTestValueError)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetStatus_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &IntegrationAttioMappingInbound{}
+		var fernTestValueStatus *IntegrationAttioMappingInboundStatus
+
+		// Act
+		obj.SetStatus(fernTestValueStatus)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetWebhookURL_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &IntegrationAttioMappingInbound{}
+		var fernTestValueWebhookURL *string
+
+		// Act
+		obj.SetWebhookURL(fernTestValueWebhookURL)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -18014,6 +18815,22 @@ func TestSettersUpdateAttioSettingsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetInboundListMap", func(t *testing.T) {
+		obj := &UpdateAttioSettingsRequest{}
+		var fernTestValueInboundListMap map[string]string
+		obj.SetInboundListMap(fernTestValueInboundListMap)
+		assert.Equal(t, fernTestValueInboundListMap, obj.InboundListMap)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetInboundTagMap", func(t *testing.T) {
+		obj := &UpdateAttioSettingsRequest{}
+		var fernTestValueInboundTagMap map[string]string
+		obj.SetInboundTagMap(fernTestValueInboundTagMap)
+		assert.Equal(t, fernTestValueInboundTagMap, obj.InboundTagMap)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetListMap", func(t *testing.T) {
 		obj := &UpdateAttioSettingsRequest{}
 		var fernTestValueListMap map[string]string
@@ -18030,6 +18847,22 @@ func TestSettersUpdateAttioSettingsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetSyncRemovals", func(t *testing.T) {
+		obj := &UpdateAttioSettingsRequest{}
+		var fernTestValueSyncRemovals *bool
+		obj.SetSyncRemovals(fernTestValueSyncRemovals)
+		assert.Equal(t, fernTestValueSyncRemovals, obj.SyncRemovals)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetTagMap", func(t *testing.T) {
+		obj := &UpdateAttioSettingsRequest{}
+		var fernTestValueTagMap map[string]string
+		obj.SetTagMap(fernTestValueTagMap)
+		assert.Equal(t, fernTestValueTagMap, obj.TagMap)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 }
 
 func TestSettersMarkExplicitUpdateAttioSettingsRequest(t *testing.T) {
@@ -18041,6 +18874,68 @@ func TestSettersMarkExplicitUpdateAttioSettingsRequest(t *testing.T) {
 
 		// Act
 		obj.SetID(fernTestValueID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetInboundListMap_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAttioSettingsRequest{}
+		var fernTestValueInboundListMap map[string]string
+
+		// Act
+		obj.SetInboundListMap(fernTestValueInboundListMap)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetInboundTagMap_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAttioSettingsRequest{}
+		var fernTestValueInboundTagMap map[string]string
+
+		// Act
+		obj.SetInboundTagMap(fernTestValueInboundTagMap)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -18103,6 +18998,68 @@ func TestSettersMarkExplicitUpdateAttioSettingsRequest(t *testing.T) {
 
 		// Act
 		obj.SetSyncCompanyFromDomain(fernTestValueSyncCompanyFromDomain)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSyncRemovals_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAttioSettingsRequest{}
+		var fernTestValueSyncRemovals *bool
+
+		// Act
+		obj.SetSyncRemovals(fernTestValueSyncRemovals)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetTagMap_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAttioSettingsRequest{}
+		var fernTestValueTagMap map[string]string
+
+		// Act
+		obj.SetTagMap(fernTestValueTagMap)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -18543,6 +19500,39 @@ func TestJSONMarshalingIntegrationAttioMappingAttioListsItem(t *testing.T) {
 	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
 		t.Parallel()
 		var obj IntegrationAttioMappingAttioListsItem
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestJSONMarshalingIntegrationAttioMappingInbound(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &IntegrationAttioMappingInbound{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled IntegrationAttioMappingInbound
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj IntegrationAttioMappingInbound
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj IntegrationAttioMappingInbound
 		err := json.Unmarshal([]byte(`{}`), &obj)
 		assert.NoError(t, err, "unmarshaling empty object should succeed")
 	})
@@ -19583,6 +20573,22 @@ func TestStringIntegrationAttioMappingAttioListsItem(t *testing.T) {
 	})
 }
 
+func TestStringIntegrationAttioMappingInbound(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &IntegrationAttioMappingInbound{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *IntegrationAttioMappingInbound
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
 func TestStringIntegrationAttioMappingSequenzyListsItem(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
@@ -20251,6 +21257,42 @@ func TestEnumIntegrationActivityEntryStatus(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewIntegrationActivityEntryStatusFromString("received")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumIntegrationAttioMappingInboundStatus(t *testing.T) {
+	t.Run("NewFromString_off", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewIntegrationAttioMappingInboundStatusFromString("off")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, IntegrationAttioMappingInboundStatus("off"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_active", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewIntegrationAttioMappingInboundStatusFromString("active")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, IntegrationAttioMappingInboundStatus("active"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_error", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewIntegrationAttioMappingInboundStatusFromString("error")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, IntegrationAttioMappingInboundStatus("error"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewIntegrationAttioMappingInboundStatusFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewIntegrationAttioMappingInboundStatusFromString("off")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -21131,6 +22173,29 @@ func TestExtraPropertiesIntegrationAttioMappingAttioListsItem(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *IntegrationAttioMappingAttioListsItem
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesIntegrationAttioMappingInbound(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &IntegrationAttioMappingInbound{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *IntegrationAttioMappingInbound
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})
