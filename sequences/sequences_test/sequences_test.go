@@ -1002,6 +1002,38 @@ func TestSequencesPauseEnrollmentsWithWireMock(
 	VerifyRequestCount(t, "TestSequencesPauseEnrollmentsWithWireMock", "POST", "/sequences/sequenceId/pause-enrollments", nil, 1)
 }
 
+func TestSequencesPauseSubscribersWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.SequenceEnrollmentPauseRequest{
+		SequenceID: "sequenceId",
+		Emails: []string{
+			"ada@example.com",
+		},
+		Reason: sequenzygo.String(
+			"Project blocked",
+		),
+	}
+	_, invocationErr := client.Sequences.PauseSubscribers(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestSequencesPauseSubscribersWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestSequencesPauseSubscribersWithWireMock", "POST", "/sequences/sequenceId/enrollments/pause", nil, 1)
+}
+
 func TestSequencesPreviewFromExampleWithWireMock(
 	t *testing.T,
 ) {
@@ -1104,6 +1136,35 @@ func TestSequencesResumeEnrollmentsWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestSequencesResumeEnrollmentsWithWireMock", "POST", "/sequences/sequenceId/resume-enrollments", nil, 1)
+}
+
+func TestSequencesResumeSubscribersWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.SequenceEnrollmentResumeRequest{
+		SequenceID: "sequenceId",
+		Emails: []string{
+			"ada@example.com",
+		},
+	}
+	_, invocationErr := client.Sequences.ResumeSubscribers(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestSequencesResumeSubscribersWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestSequencesResumeSubscribersWithWireMock", "POST", "/sequences/sequenceId/enrollments/resume", nil, 1)
 }
 
 func TestSequencesRotateInboundWebhookSecretWithWireMock(

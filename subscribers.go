@@ -5317,9 +5317,10 @@ var (
 )
 
 type SubscriberSequenceEnrollment struct {
-	CurrentNodeID    *string    `json:"currentNodeId,omitempty" url:"currentNodeId,omitempty"`
-	CurrentNodeLabel *string    `json:"currentNodeLabel,omitempty" url:"currentNodeLabel,omitempty"`
-	CurrentNodeType  *string    `json:"currentNodeType,omitempty" url:"currentNodeType,omitempty"`
+	CurrentNodeID    *string `json:"currentNodeId,omitempty" url:"currentNodeId,omitempty"`
+	CurrentNodeLabel *string `json:"currentNodeLabel,omitempty" url:"currentNodeLabel,omitempty"`
+	CurrentNodeType  *string `json:"currentNodeType,omitempty" url:"currentNodeType,omitempty"`
+	// active, waiting, paused, completed, failed, or cancelled. paused means the enrollment is held on its step by POST /sequences/{sequenceId}/enrollments/pause; its scheduledFor is the wake-up time it keeps for when it is resumed.
 	EnrollmentStatus *string    `json:"enrollmentStatus,omitempty" url:"enrollmentStatus,omitempty"`
 	EnteredAt        *time.Time `json:"enteredAt,omitempty" url:"enteredAt,omitempty"`
 	ScheduledFor     *time.Time `json:"scheduledFor,omitempty" url:"scheduledFor,omitempty"`

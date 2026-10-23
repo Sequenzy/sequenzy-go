@@ -19788,6 +19788,14 @@ func TestSettersGetSequenceMetricsResponse(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetPausedEnrollments", func(t *testing.T) {
+		obj := &GetSequenceMetricsResponse{}
+		var fernTestValuePausedEnrollments *SequencePausedEnrollmentCounts
+		obj.SetPausedEnrollments(fernTestValuePausedEnrollments)
+		assert.Equal(t, fernTestValuePausedEnrollments, obj.PausedEnrollments)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetPeriod", func(t *testing.T) {
 		obj := &GetSequenceMetricsResponse{}
 		var fernTestValuePeriod *string
@@ -19903,6 +19911,39 @@ func TestGettersGetSequenceMetricsResponse(t *testing.T) {
 			}
 		}()
 		_ = obj.GetEnrollmentSkipped() // Should return zero value
+	})
+
+	t.Run("GetPausedEnrollments", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetSequenceMetricsResponse{}
+		var expected *SequencePausedEnrollmentCounts
+		obj.PausedEnrollments = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPausedEnrollments(), "getter should return the property value")
+	})
+
+	t.Run("GetPausedEnrollments_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetSequenceMetricsResponse{}
+		obj.PausedEnrollments = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetPausedEnrollments(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetPausedEnrollments_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *GetSequenceMetricsResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPausedEnrollments() // Should return zero value
 	})
 
 	t.Run("GetPeriod", func(t *testing.T) {
@@ -20145,6 +20186,37 @@ func TestSettersMarkExplicitGetSequenceMetricsResponse(t *testing.T) {
 
 		// Act
 		obj.SetEnrollmentSkipped(fernTestValueEnrollmentSkipped)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPausedEnrollments_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetSequenceMetricsResponse{}
+		var fernTestValuePausedEnrollments *SequencePausedEnrollmentCounts
+
+		// Act
+		obj.SetPausedEnrollments(fernTestValuePausedEnrollments)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)

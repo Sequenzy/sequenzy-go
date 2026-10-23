@@ -85,7 +85,7 @@ var (
 type SequenceEnrollmentCancelRequest struct {
 	// Sequence ID
 	SequenceID string `json:"-" url:"-"`
-	// Cancel every active or waiting enrollment in the sequence, regardless of how contacts entered it. Use this when segment-triggered enrollments share no entry field value. Defaults to dry run unless dryRun is explicitly false.
+	// Cancel every active, waiting, or paused enrollment in the sequence, regardless of how contacts entered it. Use this when segment-triggered enrollments share no entry field value. Defaults to dry run unless dryRun is explicitly false.
 	CancelAll *bool `json:"cancelAll,omitempty" url:"-"`
 	// When true, returns matching enrollments without cancelling them. cancelAll, subscriberIds, and fieldValues default to dry run unless explicitly false; a single subscriberId cancels immediately.
 	DryRun *bool `json:"dryRun,omitempty" url:"-"`
@@ -2014,7 +2014,7 @@ type ListEnrollmentsSequencesRequest struct {
 	Offset *int `json:"-" url:"offset,omitempty"`
 	// Result order. Defaults to enrolled_at_desc. Enrollments with no scheduled resume sort last under wait_until ordering.
 	Sort *ListEnrollmentsSequencesRequestSort `json:"-" url:"sort,omitempty"`
-	// Comma-separated enrollment statuses: active, waiting, completed, failed, cancelled. Defaults to active,waiting.
+	// Comma-separated enrollment statuses: active, waiting, paused, completed, failed, cancelled. Defaults to active,waiting,paused.
 	Status *string `json:"-" url:"status,omitempty"`
 	// Annotate each returned active or waiting enrollment with whether the sequence stop condition already matches for that contact right now. Stop conditions are re-evaluated when an enrollment next runs a step, not when their event arrives, so a stopped contact keeps reporting waiting until its delay expires. Use this to confirm a stop event registered without waiting the delay out. Caps the page at 100 regardless of limit.
 	StopConditionMatch *bool `json:"-" url:"stopConditionMatch,omitempty"`
@@ -2284,6 +2284,83 @@ func (p *PauseEnrollmentsSequencesRequest) SetSequenceID(sequenceID string) {
 }
 
 var (
+	sequenceEnrollmentPauseRequestFieldSequenceID    = big.NewInt(1 << 0)
+	sequenceEnrollmentPauseRequestFieldEmails        = big.NewInt(1 << 1)
+	sequenceEnrollmentPauseRequestFieldReason        = big.NewInt(1 << 2)
+	sequenceEnrollmentPauseRequestFieldSubscriberIDs = big.NewInt(1 << 3)
+)
+
+type SequenceEnrollmentPauseRequest struct {
+	// Sequence ID
+	SequenceID string `json:"-" url:"-"`
+	// Subscriber emails to pause, matched case-insensitively. Emails that match no contact come back in notFound.emails.
+	Emails []string `json:"emails,omitempty" url:"-"`
+	// Note stored on each paused enrollment and returned as pauseReason by list enrollments.
+	Reason *string `json:"reason,omitempty" url:"-"`
+	// Subscriber IDs to pause. IDs that match no contact come back in notFound.subscriberIds.
+	SubscriberIDs []string `json:"subscriberIds,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (s *SequenceEnrollmentPauseRequest) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetSequenceID sets the SequenceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentPauseRequest) SetSequenceID(sequenceID string) {
+	s.SequenceID = sequenceID
+	s.require(sequenceEnrollmentPauseRequestFieldSequenceID)
+}
+
+// SetEmails sets the Emails field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentPauseRequest) SetEmails(emails []string) {
+	s.Emails = emails
+	s.require(sequenceEnrollmentPauseRequestFieldEmails)
+}
+
+// SetReason sets the Reason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentPauseRequest) SetReason(reason *string) {
+	s.Reason = reason
+	s.require(sequenceEnrollmentPauseRequestFieldReason)
+}
+
+// SetSubscriberIDs sets the SubscriberIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentPauseRequest) SetSubscriberIDs(subscriberIDs []string) {
+	s.SubscriberIDs = subscriberIDs
+	s.require(sequenceEnrollmentPauseRequestFieldSubscriberIDs)
+}
+
+func (s *SequenceEnrollmentPauseRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler SequenceEnrollmentPauseRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*s = SequenceEnrollmentPauseRequest(body)
+	return nil
+}
+
+func (s *SequenceEnrollmentPauseRequest) MarshalJSON() ([]byte, error) {
+	type embed SequenceEnrollmentPauseRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
 	previewFromExampleSequencesRequestFieldBrand    = big.NewInt(1 << 0)
 	previewFromExampleSequencesRequestFieldBrief    = big.NewInt(1 << 1)
 	previewFromExampleSequencesRequestFieldSequence = big.NewInt(1 << 2)
@@ -2531,6 +2608,73 @@ func (r *ResumeEnrollmentsSequencesRequest) require(field *big.Int) {
 func (r *ResumeEnrollmentsSequencesRequest) SetSequenceID(sequenceID string) {
 	r.SequenceID = sequenceID
 	r.require(resumeEnrollmentsSequencesRequestFieldSequenceID)
+}
+
+var (
+	sequenceEnrollmentResumeRequestFieldSequenceID    = big.NewInt(1 << 0)
+	sequenceEnrollmentResumeRequestFieldEmails        = big.NewInt(1 << 1)
+	sequenceEnrollmentResumeRequestFieldSubscriberIDs = big.NewInt(1 << 2)
+)
+
+type SequenceEnrollmentResumeRequest struct {
+	// Sequence ID
+	SequenceID string `json:"-" url:"-"`
+	// Subscriber emails to resume, matched case-insensitively.
+	Emails []string `json:"emails,omitempty" url:"-"`
+	// Subscriber IDs to resume.
+	SubscriberIDs []string `json:"subscriberIds,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (s *SequenceEnrollmentResumeRequest) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetSequenceID sets the SequenceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentResumeRequest) SetSequenceID(sequenceID string) {
+	s.SequenceID = sequenceID
+	s.require(sequenceEnrollmentResumeRequestFieldSequenceID)
+}
+
+// SetEmails sets the Emails field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentResumeRequest) SetEmails(emails []string) {
+	s.Emails = emails
+	s.require(sequenceEnrollmentResumeRequestFieldEmails)
+}
+
+// SetSubscriberIDs sets the SubscriberIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentResumeRequest) SetSubscriberIDs(subscriberIDs []string) {
+	s.SubscriberIDs = subscriberIDs
+	s.require(sequenceEnrollmentResumeRequestFieldSubscriberIDs)
+}
+
+func (s *SequenceEnrollmentResumeRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler SequenceEnrollmentResumeRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*s = SequenceEnrollmentResumeRequest(body)
+	return nil
+}
+
+func (s *SequenceEnrollmentResumeRequest) MarshalJSON() ([]byte, error) {
+	type embed SequenceEnrollmentResumeRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
 }
 
 var (
@@ -11343,7 +11487,7 @@ type SequenceEnrollmentCancelResponse struct {
 	DryRun         *bool                                              `json:"dryRun,omitempty" url:"dryRun,omitempty"`
 	Enrollments    []*SequenceEnrollmentCancelResponseEnrollmentsItem `json:"enrollments,omitempty" url:"enrollments,omitempty"`
 	HasMore        *bool                                              `json:"hasMore,omitempty" url:"hasMore,omitempty"`
-	// Active or waiting enrollments matching the target when the request started.
+	// Active, waiting, or paused enrollments matching the target when the request started.
 	MatchedCount *float64 `json:"matchedCount,omitempty" url:"matchedCount,omitempty"`
 	Message      *string  `json:"message,omitempty" url:"message,omitempty"`
 	// Enrollments still matching the target after this request. Repeat the same request while this is above zero.
@@ -12128,13 +12272,15 @@ var (
 	sequenceEnrollmentGetResponseEnrollmentFieldMovedAt                  = big.NewInt(1 << 17)
 	sequenceEnrollmentGetResponseEnrollmentFieldMovedFromNodeID          = big.NewInt(1 << 18)
 	sequenceEnrollmentGetResponseEnrollmentFieldMoveReason               = big.NewInt(1 << 19)
-	sequenceEnrollmentGetResponseEnrollmentFieldSequenceID               = big.NewInt(1 << 20)
-	sequenceEnrollmentGetResponseEnrollmentFieldStatus                   = big.NewInt(1 << 21)
-	sequenceEnrollmentGetResponseEnrollmentFieldStopConditionMatches     = big.NewInt(1 << 22)
-	sequenceEnrollmentGetResponseEnrollmentFieldStopConditionMatchReason = big.NewInt(1 << 23)
-	sequenceEnrollmentGetResponseEnrollmentFieldSubscriberID             = big.NewInt(1 << 24)
-	sequenceEnrollmentGetResponseEnrollmentFieldSubscriberStatus         = big.NewInt(1 << 25)
-	sequenceEnrollmentGetResponseEnrollmentFieldWaitUntil                = big.NewInt(1 << 26)
+	sequenceEnrollmentGetResponseEnrollmentFieldPausedAt                 = big.NewInt(1 << 20)
+	sequenceEnrollmentGetResponseEnrollmentFieldPauseReason              = big.NewInt(1 << 21)
+	sequenceEnrollmentGetResponseEnrollmentFieldSequenceID               = big.NewInt(1 << 22)
+	sequenceEnrollmentGetResponseEnrollmentFieldStatus                   = big.NewInt(1 << 23)
+	sequenceEnrollmentGetResponseEnrollmentFieldStopConditionMatches     = big.NewInt(1 << 24)
+	sequenceEnrollmentGetResponseEnrollmentFieldStopConditionMatchReason = big.NewInt(1 << 25)
+	sequenceEnrollmentGetResponseEnrollmentFieldSubscriberID             = big.NewInt(1 << 26)
+	sequenceEnrollmentGetResponseEnrollmentFieldSubscriberStatus         = big.NewInt(1 << 27)
+	sequenceEnrollmentGetResponseEnrollmentFieldWaitUntil                = big.NewInt(1 << 28)
 )
 
 type SequenceEnrollmentGetResponseEnrollment struct {
@@ -12171,16 +12317,21 @@ type SequenceEnrollmentGetResponseEnrollment struct {
 	// Step this enrollment was released from by POST /sequences/{sequenceId}/enrollments/move, or null when it reached its current step on its own.
 	MovedFromNodeID *string `json:"movedFromNodeId,omitempty" url:"movedFromNodeId,omitempty"`
 	// Note recorded with that release, or null when none was given.
-	MoveReason *string                                        `json:"moveReason,omitempty" url:"moveReason,omitempty"`
-	SequenceID *string                                        `json:"sequenceId,omitempty" url:"sequenceId,omitempty"`
-	Status     *SequenceEnrollmentGetResponseEnrollmentStatus `json:"status,omitempty" url:"status,omitempty"`
+	MoveReason *string `json:"moveReason,omitempty" url:"moveReason,omitempty"`
+	// When the current pause began, or null when the enrollment is not paused.
+	PausedAt *time.Time `json:"pausedAt,omitempty" url:"pausedAt,omitempty"`
+	// Reason given when the enrollment was paused, or null.
+	PauseReason *string `json:"pauseReason,omitempty" url:"pauseReason,omitempty"`
+	SequenceID  *string `json:"sequenceId,omitempty" url:"sequenceId,omitempty"`
+	// `paused` means the enrollment is held on its current step by POST /sequences/{sequenceId}/enrollments/pause.
+	Status *SequenceEnrollmentGetResponseEnrollmentStatus `json:"status,omitempty" url:"status,omitempty"`
 	// Whether the sequence stop condition matches for this contact right now. Null when it was not determined - stopConditionMatch was not requested, the sequence has no stop condition, this enrollment is no longer active or waiting, or it fell outside the evaluated window. Null never means "does not match". This is a non-atomic snapshot; the worker re-checks before a future step, but the condition can change and a step already past its stop check may still finish.
 	StopConditionMatches *bool `json:"stopConditionMatches,omitempty" url:"stopConditionMatches,omitempty"`
 	// Human-readable reason the stop condition matches. Null when stopConditionMatches is not true.
 	StopConditionMatchReason *string `json:"stopConditionMatchReason,omitempty" url:"stopConditionMatchReason,omitempty"`
 	SubscriberID             *string `json:"subscriberId,omitempty" url:"subscriberId,omitempty"`
 	SubscriberStatus         *string `json:"subscriberStatus,omitempty" url:"subscriberStatus,omitempty"`
-	// When a waiting enrollment is scheduled to resume, or null when nothing is scheduled.
+	// When a waiting enrollment is scheduled to resume, or null when nothing is scheduled. Always null for a paused enrollment, because nothing runs until it is resumed.
 	WaitUntil *time.Time `json:"waitUntil,omitempty" url:"waitUntil,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -12328,6 +12479,20 @@ func (s *SequenceEnrollmentGetResponseEnrollment) GetMoveReason() *string {
 		return nil
 	}
 	return s.MoveReason
+}
+
+func (s *SequenceEnrollmentGetResponseEnrollment) GetPausedAt() *time.Time {
+	if s == nil {
+		return nil
+	}
+	return s.PausedAt
+}
+
+func (s *SequenceEnrollmentGetResponseEnrollment) GetPauseReason() *string {
+	if s == nil {
+		return nil
+	}
+	return s.PauseReason
 }
 
 func (s *SequenceEnrollmentGetResponseEnrollment) GetSequenceID() *string {
@@ -12533,6 +12698,20 @@ func (s *SequenceEnrollmentGetResponseEnrollment) SetMoveReason(moveReason *stri
 	s.require(sequenceEnrollmentGetResponseEnrollmentFieldMoveReason)
 }
 
+// SetPausedAt sets the PausedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponseEnrollment) SetPausedAt(pausedAt *time.Time) {
+	s.PausedAt = pausedAt
+	s.require(sequenceEnrollmentGetResponseEnrollmentFieldPausedAt)
+}
+
+// SetPauseReason sets the PauseReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentGetResponseEnrollment) SetPauseReason(pauseReason *string) {
+	s.PauseReason = pauseReason
+	s.require(sequenceEnrollmentGetResponseEnrollmentFieldPauseReason)
+}
+
 // SetSequenceID sets the SequenceID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *SequenceEnrollmentGetResponseEnrollment) SetSequenceID(sequenceID *string) {
@@ -12589,6 +12768,7 @@ func (s *SequenceEnrollmentGetResponseEnrollment) UnmarshalJSON(data []byte) err
 		EnrollmentStartedAt *internal.DateTime `json:"enrollmentStartedAt,omitempty"`
 		LastUpdatedAt       *internal.DateTime `json:"lastUpdatedAt,omitempty"`
 		MovedAt             *internal.DateTime `json:"movedAt,omitempty"`
+		PausedAt            *internal.DateTime `json:"pausedAt,omitempty"`
 		WaitUntil           *internal.DateTime `json:"waitUntil,omitempty"`
 	}{
 		embed: embed(*s),
@@ -12600,6 +12780,7 @@ func (s *SequenceEnrollmentGetResponseEnrollment) UnmarshalJSON(data []byte) err
 	s.EnrollmentStartedAt = unmarshaler.EnrollmentStartedAt.TimePtr()
 	s.LastUpdatedAt = unmarshaler.LastUpdatedAt.TimePtr()
 	s.MovedAt = unmarshaler.MovedAt.TimePtr()
+	s.PausedAt = unmarshaler.PausedAt.TimePtr()
 	s.WaitUntil = unmarshaler.WaitUntil.TimePtr()
 	extraProperties, err := internal.ExtractExtraProperties(data, *s)
 	if err != nil {
@@ -12617,12 +12798,14 @@ func (s *SequenceEnrollmentGetResponseEnrollment) MarshalJSON() ([]byte, error) 
 		EnrollmentStartedAt *internal.DateTime `json:"enrollmentStartedAt,omitempty"`
 		LastUpdatedAt       *internal.DateTime `json:"lastUpdatedAt,omitempty"`
 		MovedAt             *internal.DateTime `json:"movedAt,omitempty"`
+		PausedAt            *internal.DateTime `json:"pausedAt,omitempty"`
 		WaitUntil           *internal.DateTime `json:"waitUntil,omitempty"`
 	}{
 		embed:               embed(*s),
 		EnrollmentStartedAt: internal.NewOptionalDateTime(s.EnrollmentStartedAt),
 		LastUpdatedAt:       internal.NewOptionalDateTime(s.LastUpdatedAt),
 		MovedAt:             internal.NewOptionalDateTime(s.MovedAt),
+		PausedAt:            internal.NewOptionalDateTime(s.PausedAt),
 		WaitUntil:           internal.NewOptionalDateTime(s.WaitUntil),
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
@@ -12825,11 +13008,13 @@ func (s SequenceEnrollmentGetResponseEnrollmentEnteredViaKind) Ptr() *SequenceEn
 	return &s
 }
 
+// `paused` means the enrollment is held on its current step by POST /sequences/{sequenceId}/enrollments/pause.
 type SequenceEnrollmentGetResponseEnrollmentStatus string
 
 const (
 	SequenceEnrollmentGetResponseEnrollmentStatusActive    SequenceEnrollmentGetResponseEnrollmentStatus = "active"
 	SequenceEnrollmentGetResponseEnrollmentStatusWaiting   SequenceEnrollmentGetResponseEnrollmentStatus = "waiting"
+	SequenceEnrollmentGetResponseEnrollmentStatusPaused    SequenceEnrollmentGetResponseEnrollmentStatus = "paused"
 	SequenceEnrollmentGetResponseEnrollmentStatusCompleted SequenceEnrollmentGetResponseEnrollmentStatus = "completed"
 	SequenceEnrollmentGetResponseEnrollmentStatusFailed    SequenceEnrollmentGetResponseEnrollmentStatus = "failed"
 	SequenceEnrollmentGetResponseEnrollmentStatusCancelled SequenceEnrollmentGetResponseEnrollmentStatus = "cancelled"
@@ -12841,6 +13026,8 @@ func NewSequenceEnrollmentGetResponseEnrollmentStatusFromString(s string) (Seque
 		return SequenceEnrollmentGetResponseEnrollmentStatusActive, nil
 	case "waiting":
 		return SequenceEnrollmentGetResponseEnrollmentStatusWaiting, nil
+	case "paused":
+		return SequenceEnrollmentGetResponseEnrollmentStatusPaused, nil
 	case "completed":
 		return SequenceEnrollmentGetResponseEnrollmentStatusCompleted, nil
 	case "failed":
@@ -13277,13 +13464,15 @@ var (
 	sequenceEnrollmentListResponseEnrollmentsItemFieldMovedAt                  = big.NewInt(1 << 17)
 	sequenceEnrollmentListResponseEnrollmentsItemFieldMovedFromNodeID          = big.NewInt(1 << 18)
 	sequenceEnrollmentListResponseEnrollmentsItemFieldMoveReason               = big.NewInt(1 << 19)
-	sequenceEnrollmentListResponseEnrollmentsItemFieldSequenceID               = big.NewInt(1 << 20)
-	sequenceEnrollmentListResponseEnrollmentsItemFieldStatus                   = big.NewInt(1 << 21)
-	sequenceEnrollmentListResponseEnrollmentsItemFieldStopConditionMatches     = big.NewInt(1 << 22)
-	sequenceEnrollmentListResponseEnrollmentsItemFieldStopConditionMatchReason = big.NewInt(1 << 23)
-	sequenceEnrollmentListResponseEnrollmentsItemFieldSubscriberID             = big.NewInt(1 << 24)
-	sequenceEnrollmentListResponseEnrollmentsItemFieldSubscriberStatus         = big.NewInt(1 << 25)
-	sequenceEnrollmentListResponseEnrollmentsItemFieldWaitUntil                = big.NewInt(1 << 26)
+	sequenceEnrollmentListResponseEnrollmentsItemFieldPausedAt                 = big.NewInt(1 << 20)
+	sequenceEnrollmentListResponseEnrollmentsItemFieldPauseReason              = big.NewInt(1 << 21)
+	sequenceEnrollmentListResponseEnrollmentsItemFieldSequenceID               = big.NewInt(1 << 22)
+	sequenceEnrollmentListResponseEnrollmentsItemFieldStatus                   = big.NewInt(1 << 23)
+	sequenceEnrollmentListResponseEnrollmentsItemFieldStopConditionMatches     = big.NewInt(1 << 24)
+	sequenceEnrollmentListResponseEnrollmentsItemFieldStopConditionMatchReason = big.NewInt(1 << 25)
+	sequenceEnrollmentListResponseEnrollmentsItemFieldSubscriberID             = big.NewInt(1 << 26)
+	sequenceEnrollmentListResponseEnrollmentsItemFieldSubscriberStatus         = big.NewInt(1 << 27)
+	sequenceEnrollmentListResponseEnrollmentsItemFieldWaitUntil                = big.NewInt(1 << 28)
 )
 
 type SequenceEnrollmentListResponseEnrollmentsItem struct {
@@ -13320,16 +13509,21 @@ type SequenceEnrollmentListResponseEnrollmentsItem struct {
 	// Step this enrollment was released from by POST /sequences/{sequenceId}/enrollments/move, or null when it reached its current step on its own.
 	MovedFromNodeID *string `json:"movedFromNodeId,omitempty" url:"movedFromNodeId,omitempty"`
 	// Note recorded with that release, or null when none was given.
-	MoveReason *string                                              `json:"moveReason,omitempty" url:"moveReason,omitempty"`
-	SequenceID *string                                              `json:"sequenceId,omitempty" url:"sequenceId,omitempty"`
-	Status     *SequenceEnrollmentListResponseEnrollmentsItemStatus `json:"status,omitempty" url:"status,omitempty"`
+	MoveReason *string `json:"moveReason,omitempty" url:"moveReason,omitempty"`
+	// When the current pause began, or null when the enrollment is not paused.
+	PausedAt *time.Time `json:"pausedAt,omitempty" url:"pausedAt,omitempty"`
+	// Reason given when the enrollment was paused, or null.
+	PauseReason *string `json:"pauseReason,omitempty" url:"pauseReason,omitempty"`
+	SequenceID  *string `json:"sequenceId,omitempty" url:"sequenceId,omitempty"`
+	// `paused` means the enrollment is held on its current step by POST /sequences/{sequenceId}/enrollments/pause.
+	Status *SequenceEnrollmentListResponseEnrollmentsItemStatus `json:"status,omitempty" url:"status,omitempty"`
 	// Whether the sequence stop condition matches for this contact right now. Null when it was not determined - stopConditionMatch was not requested, the sequence has no stop condition, this enrollment is no longer active or waiting, or it fell outside the evaluated window. Null never means "does not match". This is a non-atomic snapshot; the worker re-checks before a future step, but the condition can change and a step already past its stop check may still finish.
 	StopConditionMatches *bool `json:"stopConditionMatches,omitempty" url:"stopConditionMatches,omitempty"`
 	// Human-readable reason the stop condition matches. Null when stopConditionMatches is not true.
 	StopConditionMatchReason *string `json:"stopConditionMatchReason,omitempty" url:"stopConditionMatchReason,omitempty"`
 	SubscriberID             *string `json:"subscriberId,omitempty" url:"subscriberId,omitempty"`
 	SubscriberStatus         *string `json:"subscriberStatus,omitempty" url:"subscriberStatus,omitempty"`
-	// When a waiting enrollment is scheduled to resume, or null when nothing is scheduled.
+	// When a waiting enrollment is scheduled to resume, or null when nothing is scheduled. Always null for a paused enrollment, because nothing runs until it is resumed.
 	WaitUntil *time.Time `json:"waitUntil,omitempty" url:"waitUntil,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -13477,6 +13671,20 @@ func (s *SequenceEnrollmentListResponseEnrollmentsItem) GetMoveReason() *string 
 		return nil
 	}
 	return s.MoveReason
+}
+
+func (s *SequenceEnrollmentListResponseEnrollmentsItem) GetPausedAt() *time.Time {
+	if s == nil {
+		return nil
+	}
+	return s.PausedAt
+}
+
+func (s *SequenceEnrollmentListResponseEnrollmentsItem) GetPauseReason() *string {
+	if s == nil {
+		return nil
+	}
+	return s.PauseReason
 }
 
 func (s *SequenceEnrollmentListResponseEnrollmentsItem) GetSequenceID() *string {
@@ -13682,6 +13890,20 @@ func (s *SequenceEnrollmentListResponseEnrollmentsItem) SetMoveReason(moveReason
 	s.require(sequenceEnrollmentListResponseEnrollmentsItemFieldMoveReason)
 }
 
+// SetPausedAt sets the PausedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentListResponseEnrollmentsItem) SetPausedAt(pausedAt *time.Time) {
+	s.PausedAt = pausedAt
+	s.require(sequenceEnrollmentListResponseEnrollmentsItemFieldPausedAt)
+}
+
+// SetPauseReason sets the PauseReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentListResponseEnrollmentsItem) SetPauseReason(pauseReason *string) {
+	s.PauseReason = pauseReason
+	s.require(sequenceEnrollmentListResponseEnrollmentsItemFieldPauseReason)
+}
+
 // SetSequenceID sets the SequenceID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *SequenceEnrollmentListResponseEnrollmentsItem) SetSequenceID(sequenceID *string) {
@@ -13738,6 +13960,7 @@ func (s *SequenceEnrollmentListResponseEnrollmentsItem) UnmarshalJSON(data []byt
 		EnrollmentStartedAt *internal.DateTime `json:"enrollmentStartedAt,omitempty"`
 		LastUpdatedAt       *internal.DateTime `json:"lastUpdatedAt,omitempty"`
 		MovedAt             *internal.DateTime `json:"movedAt,omitempty"`
+		PausedAt            *internal.DateTime `json:"pausedAt,omitempty"`
 		WaitUntil           *internal.DateTime `json:"waitUntil,omitempty"`
 	}{
 		embed: embed(*s),
@@ -13749,6 +13972,7 @@ func (s *SequenceEnrollmentListResponseEnrollmentsItem) UnmarshalJSON(data []byt
 	s.EnrollmentStartedAt = unmarshaler.EnrollmentStartedAt.TimePtr()
 	s.LastUpdatedAt = unmarshaler.LastUpdatedAt.TimePtr()
 	s.MovedAt = unmarshaler.MovedAt.TimePtr()
+	s.PausedAt = unmarshaler.PausedAt.TimePtr()
 	s.WaitUntil = unmarshaler.WaitUntil.TimePtr()
 	extraProperties, err := internal.ExtractExtraProperties(data, *s)
 	if err != nil {
@@ -13766,12 +13990,14 @@ func (s *SequenceEnrollmentListResponseEnrollmentsItem) MarshalJSON() ([]byte, e
 		EnrollmentStartedAt *internal.DateTime `json:"enrollmentStartedAt,omitempty"`
 		LastUpdatedAt       *internal.DateTime `json:"lastUpdatedAt,omitempty"`
 		MovedAt             *internal.DateTime `json:"movedAt,omitempty"`
+		PausedAt            *internal.DateTime `json:"pausedAt,omitempty"`
 		WaitUntil           *internal.DateTime `json:"waitUntil,omitempty"`
 	}{
 		embed:               embed(*s),
 		EnrollmentStartedAt: internal.NewOptionalDateTime(s.EnrollmentStartedAt),
 		LastUpdatedAt:       internal.NewOptionalDateTime(s.LastUpdatedAt),
 		MovedAt:             internal.NewOptionalDateTime(s.MovedAt),
+		PausedAt:            internal.NewOptionalDateTime(s.PausedAt),
 		WaitUntil:           internal.NewOptionalDateTime(s.WaitUntil),
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
@@ -13974,11 +14200,13 @@ func (s SequenceEnrollmentListResponseEnrollmentsItemEnteredViaKind) Ptr() *Sequ
 	return &s
 }
 
+// `paused` means the enrollment is held on its current step by POST /sequences/{sequenceId}/enrollments/pause.
 type SequenceEnrollmentListResponseEnrollmentsItemStatus string
 
 const (
 	SequenceEnrollmentListResponseEnrollmentsItemStatusActive    SequenceEnrollmentListResponseEnrollmentsItemStatus = "active"
 	SequenceEnrollmentListResponseEnrollmentsItemStatusWaiting   SequenceEnrollmentListResponseEnrollmentsItemStatus = "waiting"
+	SequenceEnrollmentListResponseEnrollmentsItemStatusPaused    SequenceEnrollmentListResponseEnrollmentsItemStatus = "paused"
 	SequenceEnrollmentListResponseEnrollmentsItemStatusCompleted SequenceEnrollmentListResponseEnrollmentsItemStatus = "completed"
 	SequenceEnrollmentListResponseEnrollmentsItemStatusFailed    SequenceEnrollmentListResponseEnrollmentsItemStatus = "failed"
 	SequenceEnrollmentListResponseEnrollmentsItemStatusCancelled SequenceEnrollmentListResponseEnrollmentsItemStatus = "cancelled"
@@ -13990,6 +14218,8 @@ func NewSequenceEnrollmentListResponseEnrollmentsItemStatusFromString(s string) 
 		return SequenceEnrollmentListResponseEnrollmentsItemStatusActive, nil
 	case "waiting":
 		return SequenceEnrollmentListResponseEnrollmentsItemStatusWaiting, nil
+	case "paused":
+		return SequenceEnrollmentListResponseEnrollmentsItemStatusPaused, nil
 	case "completed":
 		return SequenceEnrollmentListResponseEnrollmentsItemStatusCompleted, nil
 	case "failed":
@@ -14838,6 +15068,860 @@ func (s *SequenceEnrollmentMoveResponseEnrollmentsItem) String() string {
 }
 
 var (
+	sequenceEnrollmentPauseItemFieldCurrentNodeID   = big.NewInt(1 << 0)
+	sequenceEnrollmentPauseItemFieldEnrollmentID    = big.NewInt(1 << 1)
+	sequenceEnrollmentPauseItemFieldOutcome         = big.NewInt(1 << 2)
+	sequenceEnrollmentPauseItemFieldPausedAt        = big.NewInt(1 << 3)
+	sequenceEnrollmentPauseItemFieldStatus          = big.NewInt(1 << 4)
+	sequenceEnrollmentPauseItemFieldSubscriberEmail = big.NewInt(1 << 5)
+	sequenceEnrollmentPauseItemFieldSubscriberID    = big.NewInt(1 << 6)
+	sequenceEnrollmentPauseItemFieldWaitUntil       = big.NewInt(1 << 7)
+)
+
+type SequenceEnrollmentPauseItem struct {
+	// Step the enrollment is on. Pausing and resuming never change it.
+	CurrentNodeID string `json:"currentNodeId" url:"currentNodeId"`
+	EnrollmentID  string `json:"enrollmentId" url:"enrollmentId"`
+	// paused, already_paused, or in_progress (a step was running at that moment; repeat the request shortly) for pause. resumed or not_paused for resume.
+	Outcome SequenceEnrollmentPauseItemOutcome `json:"outcome" url:"outcome"`
+	// When the current pause began; null unless status is paused.
+	PausedAt *time.Time `json:"pausedAt,omitempty" url:"pausedAt,omitempty"`
+	// Status after this request.
+	Status          SequenceEnrollmentPauseItemStatus `json:"status" url:"status"`
+	SubscriberEmail *string                           `json:"subscriberEmail,omitempty" url:"subscriberEmail,omitempty"`
+	SubscriberID    string                            `json:"subscriberId" url:"subscriberId"`
+	// When a waiting enrollment next runs its step, or null.
+	WaitUntil *time.Time `json:"waitUntil,omitempty" url:"waitUntil,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequenceEnrollmentPauseItem) GetCurrentNodeID() string {
+	if s == nil {
+		return ""
+	}
+	return s.CurrentNodeID
+}
+
+func (s *SequenceEnrollmentPauseItem) GetEnrollmentID() string {
+	if s == nil {
+		return ""
+	}
+	return s.EnrollmentID
+}
+
+func (s *SequenceEnrollmentPauseItem) GetOutcome() SequenceEnrollmentPauseItemOutcome {
+	if s == nil {
+		return ""
+	}
+	return s.Outcome
+}
+
+func (s *SequenceEnrollmentPauseItem) GetPausedAt() *time.Time {
+	if s == nil {
+		return nil
+	}
+	return s.PausedAt
+}
+
+func (s *SequenceEnrollmentPauseItem) GetStatus() SequenceEnrollmentPauseItemStatus {
+	if s == nil {
+		return ""
+	}
+	return s.Status
+}
+
+func (s *SequenceEnrollmentPauseItem) GetSubscriberEmail() *string {
+	if s == nil {
+		return nil
+	}
+	return s.SubscriberEmail
+}
+
+func (s *SequenceEnrollmentPauseItem) GetSubscriberID() string {
+	if s == nil {
+		return ""
+	}
+	return s.SubscriberID
+}
+
+func (s *SequenceEnrollmentPauseItem) GetWaitUntil() *time.Time {
+	if s == nil {
+		return nil
+	}
+	return s.WaitUntil
+}
+
+func (s *SequenceEnrollmentPauseItem) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequenceEnrollmentPauseItem) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetCurrentNodeID sets the CurrentNodeID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentPauseItem) SetCurrentNodeID(currentNodeID string) {
+	s.CurrentNodeID = currentNodeID
+	s.require(sequenceEnrollmentPauseItemFieldCurrentNodeID)
+}
+
+// SetEnrollmentID sets the EnrollmentID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentPauseItem) SetEnrollmentID(enrollmentID string) {
+	s.EnrollmentID = enrollmentID
+	s.require(sequenceEnrollmentPauseItemFieldEnrollmentID)
+}
+
+// SetOutcome sets the Outcome field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentPauseItem) SetOutcome(outcome SequenceEnrollmentPauseItemOutcome) {
+	s.Outcome = outcome
+	s.require(sequenceEnrollmentPauseItemFieldOutcome)
+}
+
+// SetPausedAt sets the PausedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentPauseItem) SetPausedAt(pausedAt *time.Time) {
+	s.PausedAt = pausedAt
+	s.require(sequenceEnrollmentPauseItemFieldPausedAt)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentPauseItem) SetStatus(status SequenceEnrollmentPauseItemStatus) {
+	s.Status = status
+	s.require(sequenceEnrollmentPauseItemFieldStatus)
+}
+
+// SetSubscriberEmail sets the SubscriberEmail field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentPauseItem) SetSubscriberEmail(subscriberEmail *string) {
+	s.SubscriberEmail = subscriberEmail
+	s.require(sequenceEnrollmentPauseItemFieldSubscriberEmail)
+}
+
+// SetSubscriberID sets the SubscriberID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentPauseItem) SetSubscriberID(subscriberID string) {
+	s.SubscriberID = subscriberID
+	s.require(sequenceEnrollmentPauseItemFieldSubscriberID)
+}
+
+// SetWaitUntil sets the WaitUntil field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentPauseItem) SetWaitUntil(waitUntil *time.Time) {
+	s.WaitUntil = waitUntil
+	s.require(sequenceEnrollmentPauseItemFieldWaitUntil)
+}
+
+func (s *SequenceEnrollmentPauseItem) UnmarshalJSON(data []byte) error {
+	type embed SequenceEnrollmentPauseItem
+	var unmarshaler = struct {
+		embed
+		PausedAt  *internal.DateTime `json:"pausedAt,omitempty"`
+		WaitUntil *internal.DateTime `json:"waitUntil,omitempty"`
+	}{
+		embed: embed(*s),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*s = SequenceEnrollmentPauseItem(unmarshaler.embed)
+	s.PausedAt = unmarshaler.PausedAt.TimePtr()
+	s.WaitUntil = unmarshaler.WaitUntil.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceEnrollmentPauseItem) MarshalJSON() ([]byte, error) {
+	type embed SequenceEnrollmentPauseItem
+	var marshaler = struct {
+		embed
+		PausedAt  *internal.DateTime `json:"pausedAt,omitempty"`
+		WaitUntil *internal.DateTime `json:"waitUntil,omitempty"`
+	}{
+		embed:     embed(*s),
+		PausedAt:  internal.NewOptionalDateTime(s.PausedAt),
+		WaitUntil: internal.NewOptionalDateTime(s.WaitUntil),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequenceEnrollmentPauseItem) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+// paused, already_paused, or in_progress (a step was running at that moment; repeat the request shortly) for pause. resumed or not_paused for resume.
+type SequenceEnrollmentPauseItemOutcome string
+
+const (
+	SequenceEnrollmentPauseItemOutcomePaused        SequenceEnrollmentPauseItemOutcome = "paused"
+	SequenceEnrollmentPauseItemOutcomeAlreadyPaused SequenceEnrollmentPauseItemOutcome = "already_paused"
+	SequenceEnrollmentPauseItemOutcomeInProgress    SequenceEnrollmentPauseItemOutcome = "in_progress"
+	SequenceEnrollmentPauseItemOutcomeResumed       SequenceEnrollmentPauseItemOutcome = "resumed"
+	SequenceEnrollmentPauseItemOutcomeNotPaused     SequenceEnrollmentPauseItemOutcome = "not_paused"
+)
+
+func NewSequenceEnrollmentPauseItemOutcomeFromString(s string) (SequenceEnrollmentPauseItemOutcome, error) {
+	switch s {
+	case "paused":
+		return SequenceEnrollmentPauseItemOutcomePaused, nil
+	case "already_paused":
+		return SequenceEnrollmentPauseItemOutcomeAlreadyPaused, nil
+	case "in_progress":
+		return SequenceEnrollmentPauseItemOutcomeInProgress, nil
+	case "resumed":
+		return SequenceEnrollmentPauseItemOutcomeResumed, nil
+	case "not_paused":
+		return SequenceEnrollmentPauseItemOutcomeNotPaused, nil
+	}
+	var t SequenceEnrollmentPauseItemOutcome
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SequenceEnrollmentPauseItemOutcome) Ptr() *SequenceEnrollmentPauseItemOutcome {
+	return &s
+}
+
+// Status after this request.
+type SequenceEnrollmentPauseItemStatus string
+
+const (
+	SequenceEnrollmentPauseItemStatusActive  SequenceEnrollmentPauseItemStatus = "active"
+	SequenceEnrollmentPauseItemStatusWaiting SequenceEnrollmentPauseItemStatus = "waiting"
+	SequenceEnrollmentPauseItemStatusPaused  SequenceEnrollmentPauseItemStatus = "paused"
+)
+
+func NewSequenceEnrollmentPauseItemStatusFromString(s string) (SequenceEnrollmentPauseItemStatus, error) {
+	switch s {
+	case "active":
+		return SequenceEnrollmentPauseItemStatusActive, nil
+	case "waiting":
+		return SequenceEnrollmentPauseItemStatusWaiting, nil
+	case "paused":
+		return SequenceEnrollmentPauseItemStatusPaused, nil
+	}
+	var t SequenceEnrollmentPauseItemStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SequenceEnrollmentPauseItemStatus) Ptr() *SequenceEnrollmentPauseItemStatus {
+	return &s
+}
+
+var (
+	sequenceEnrollmentPauseResponseFieldEnrollments        = big.NewInt(1 << 0)
+	sequenceEnrollmentPauseResponseFieldMessage            = big.NewInt(1 << 1)
+	sequenceEnrollmentPauseResponseFieldNotEnrolled        = big.NewInt(1 << 2)
+	sequenceEnrollmentPauseResponseFieldNotFound           = big.NewInt(1 << 3)
+	sequenceEnrollmentPauseResponseFieldSequenceID         = big.NewInt(1 << 4)
+	sequenceEnrollmentPauseResponseFieldSuccess            = big.NewInt(1 << 5)
+	sequenceEnrollmentPauseResponseFieldAlreadyPausedCount = big.NewInt(1 << 6)
+	sequenceEnrollmentPauseResponseFieldInProgressCount    = big.NewInt(1 << 7)
+	sequenceEnrollmentPauseResponseFieldPausedCount        = big.NewInt(1 << 8)
+)
+
+type SequenceEnrollmentPauseResponse struct {
+	// Every active, waiting, or paused enrollment of the targeted contacts in this sequence, with its outcome.
+	Enrollments []*SequenceEnrollmentPauseItem `json:"enrollments" url:"enrollments"`
+	Message     string                         `json:"message" url:"message"`
+	// Targeted contacts that exist but have no active, waiting, or paused enrollment in this sequence.
+	NotEnrolled []*SequenceEnrollmentPauseResultBaseNotEnrolledItem `json:"notEnrolled" url:"notEnrolled"`
+	NotFound    *SequenceEnrollmentPauseResultBaseNotFound          `json:"notFound" url:"notFound"`
+	SequenceID  string                                              `json:"sequenceId" url:"sequenceId"`
+	Success     bool                                                `json:"success" url:"success"`
+	// Enrollments that were already paused and were left as they were.
+	AlreadyPausedCount int `json:"alreadyPausedCount" url:"alreadyPausedCount"`
+	// Enrollments not paused because their current step was running. Repeat the request shortly.
+	InProgressCount int `json:"inProgressCount" url:"inProgressCount"`
+	// Enrollments paused by this request.
+	PausedCount int `json:"pausedCount" url:"pausedCount"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequenceEnrollmentPauseResponse) GetEnrollments() []*SequenceEnrollmentPauseItem {
+	if s == nil {
+		return nil
+	}
+	return s.Enrollments
+}
+
+func (s *SequenceEnrollmentPauseResponse) GetMessage() string {
+	if s == nil {
+		return ""
+	}
+	return s.Message
+}
+
+func (s *SequenceEnrollmentPauseResponse) GetNotEnrolled() []*SequenceEnrollmentPauseResultBaseNotEnrolledItem {
+	if s == nil {
+		return nil
+	}
+	return s.NotEnrolled
+}
+
+func (s *SequenceEnrollmentPauseResponse) GetNotFound() *SequenceEnrollmentPauseResultBaseNotFound {
+	if s == nil {
+		return nil
+	}
+	return s.NotFound
+}
+
+func (s *SequenceEnrollmentPauseResponse) GetSequenceID() string {
+	if s == nil {
+		return ""
+	}
+	return s.SequenceID
+}
+
+func (s *SequenceEnrollmentPauseResponse) GetSuccess() bool {
+	if s == nil {
+		return false
+	}
+	return s.Success
+}
+
+func (s *SequenceEnrollmentPauseResponse) GetAlreadyPausedCount() int {
+	if s == nil {
+		return 0
+	}
+	return s.AlreadyPausedCount
+}
+
+func (s *SequenceEnrollmentPauseResponse) GetInProgressCount() int {
+	if s == nil {
+		return 0
+	}
+	return s.InProgressCount
+}
+
+func (s *SequenceEnrollmentPauseResponse) GetPausedCount() int {
+	if s == nil {
+		return 0
+	}
+	return s.PausedCount
+}
+
+func (s *SequenceEnrollmentPauseResponse) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequenceEnrollmentPauseResponse) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetEnrollments sets the Enrollments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentPauseResponse) SetEnrollments(enrollments []*SequenceEnrollmentPauseItem) {
+	s.Enrollments = enrollments
+	s.require(sequenceEnrollmentPauseResponseFieldEnrollments)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentPauseResponse) SetMessage(message string) {
+	s.Message = message
+	s.require(sequenceEnrollmentPauseResponseFieldMessage)
+}
+
+// SetNotEnrolled sets the NotEnrolled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentPauseResponse) SetNotEnrolled(notEnrolled []*SequenceEnrollmentPauseResultBaseNotEnrolledItem) {
+	s.NotEnrolled = notEnrolled
+	s.require(sequenceEnrollmentPauseResponseFieldNotEnrolled)
+}
+
+// SetNotFound sets the NotFound field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentPauseResponse) SetNotFound(notFound *SequenceEnrollmentPauseResultBaseNotFound) {
+	s.NotFound = notFound
+	s.require(sequenceEnrollmentPauseResponseFieldNotFound)
+}
+
+// SetSequenceID sets the SequenceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentPauseResponse) SetSequenceID(sequenceID string) {
+	s.SequenceID = sequenceID
+	s.require(sequenceEnrollmentPauseResponseFieldSequenceID)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentPauseResponse) SetSuccess(success bool) {
+	s.Success = success
+	s.require(sequenceEnrollmentPauseResponseFieldSuccess)
+}
+
+// SetAlreadyPausedCount sets the AlreadyPausedCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentPauseResponse) SetAlreadyPausedCount(alreadyPausedCount int) {
+	s.AlreadyPausedCount = alreadyPausedCount
+	s.require(sequenceEnrollmentPauseResponseFieldAlreadyPausedCount)
+}
+
+// SetInProgressCount sets the InProgressCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentPauseResponse) SetInProgressCount(inProgressCount int) {
+	s.InProgressCount = inProgressCount
+	s.require(sequenceEnrollmentPauseResponseFieldInProgressCount)
+}
+
+// SetPausedCount sets the PausedCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentPauseResponse) SetPausedCount(pausedCount int) {
+	s.PausedCount = pausedCount
+	s.require(sequenceEnrollmentPauseResponseFieldPausedCount)
+}
+
+func (s *SequenceEnrollmentPauseResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler SequenceEnrollmentPauseResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SequenceEnrollmentPauseResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceEnrollmentPauseResponse) MarshalJSON() ([]byte, error) {
+	type embed SequenceEnrollmentPauseResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequenceEnrollmentPauseResponse) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	sequenceEnrollmentPauseResultBaseFieldEnrollments = big.NewInt(1 << 0)
+	sequenceEnrollmentPauseResultBaseFieldMessage     = big.NewInt(1 << 1)
+	sequenceEnrollmentPauseResultBaseFieldNotEnrolled = big.NewInt(1 << 2)
+	sequenceEnrollmentPauseResultBaseFieldNotFound    = big.NewInt(1 << 3)
+	sequenceEnrollmentPauseResultBaseFieldSequenceID  = big.NewInt(1 << 4)
+	sequenceEnrollmentPauseResultBaseFieldSuccess     = big.NewInt(1 << 5)
+)
+
+type SequenceEnrollmentPauseResultBase struct {
+	// Every active, waiting, or paused enrollment of the targeted contacts in this sequence, with its outcome.
+	Enrollments []*SequenceEnrollmentPauseItem `json:"enrollments" url:"enrollments"`
+	Message     string                         `json:"message" url:"message"`
+	// Targeted contacts that exist but have no active, waiting, or paused enrollment in this sequence.
+	NotEnrolled []*SequenceEnrollmentPauseResultBaseNotEnrolledItem `json:"notEnrolled" url:"notEnrolled"`
+	NotFound    *SequenceEnrollmentPauseResultBaseNotFound          `json:"notFound" url:"notFound"`
+	SequenceID  string                                              `json:"sequenceId" url:"sequenceId"`
+	Success     bool                                                `json:"success" url:"success"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequenceEnrollmentPauseResultBase) GetEnrollments() []*SequenceEnrollmentPauseItem {
+	if s == nil {
+		return nil
+	}
+	return s.Enrollments
+}
+
+func (s *SequenceEnrollmentPauseResultBase) GetMessage() string {
+	if s == nil {
+		return ""
+	}
+	return s.Message
+}
+
+func (s *SequenceEnrollmentPauseResultBase) GetNotEnrolled() []*SequenceEnrollmentPauseResultBaseNotEnrolledItem {
+	if s == nil {
+		return nil
+	}
+	return s.NotEnrolled
+}
+
+func (s *SequenceEnrollmentPauseResultBase) GetNotFound() *SequenceEnrollmentPauseResultBaseNotFound {
+	if s == nil {
+		return nil
+	}
+	return s.NotFound
+}
+
+func (s *SequenceEnrollmentPauseResultBase) GetSequenceID() string {
+	if s == nil {
+		return ""
+	}
+	return s.SequenceID
+}
+
+func (s *SequenceEnrollmentPauseResultBase) GetSuccess() bool {
+	if s == nil {
+		return false
+	}
+	return s.Success
+}
+
+func (s *SequenceEnrollmentPauseResultBase) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequenceEnrollmentPauseResultBase) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetEnrollments sets the Enrollments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentPauseResultBase) SetEnrollments(enrollments []*SequenceEnrollmentPauseItem) {
+	s.Enrollments = enrollments
+	s.require(sequenceEnrollmentPauseResultBaseFieldEnrollments)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentPauseResultBase) SetMessage(message string) {
+	s.Message = message
+	s.require(sequenceEnrollmentPauseResultBaseFieldMessage)
+}
+
+// SetNotEnrolled sets the NotEnrolled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentPauseResultBase) SetNotEnrolled(notEnrolled []*SequenceEnrollmentPauseResultBaseNotEnrolledItem) {
+	s.NotEnrolled = notEnrolled
+	s.require(sequenceEnrollmentPauseResultBaseFieldNotEnrolled)
+}
+
+// SetNotFound sets the NotFound field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentPauseResultBase) SetNotFound(notFound *SequenceEnrollmentPauseResultBaseNotFound) {
+	s.NotFound = notFound
+	s.require(sequenceEnrollmentPauseResultBaseFieldNotFound)
+}
+
+// SetSequenceID sets the SequenceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentPauseResultBase) SetSequenceID(sequenceID string) {
+	s.SequenceID = sequenceID
+	s.require(sequenceEnrollmentPauseResultBaseFieldSequenceID)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentPauseResultBase) SetSuccess(success bool) {
+	s.Success = success
+	s.require(sequenceEnrollmentPauseResultBaseFieldSuccess)
+}
+
+func (s *SequenceEnrollmentPauseResultBase) UnmarshalJSON(data []byte) error {
+	type unmarshaler SequenceEnrollmentPauseResultBase
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SequenceEnrollmentPauseResultBase(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceEnrollmentPauseResultBase) MarshalJSON() ([]byte, error) {
+	type embed SequenceEnrollmentPauseResultBase
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequenceEnrollmentPauseResultBase) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	sequenceEnrollmentPauseResultBaseNotEnrolledItemFieldEmail        = big.NewInt(1 << 0)
+	sequenceEnrollmentPauseResultBaseNotEnrolledItemFieldSubscriberID = big.NewInt(1 << 1)
+)
+
+type SequenceEnrollmentPauseResultBaseNotEnrolledItem struct {
+	Email        *string `json:"email,omitempty" url:"email,omitempty"`
+	SubscriberID *string `json:"subscriberId,omitempty" url:"subscriberId,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequenceEnrollmentPauseResultBaseNotEnrolledItem) GetEmail() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Email
+}
+
+func (s *SequenceEnrollmentPauseResultBaseNotEnrolledItem) GetSubscriberID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.SubscriberID
+}
+
+func (s *SequenceEnrollmentPauseResultBaseNotEnrolledItem) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequenceEnrollmentPauseResultBaseNotEnrolledItem) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentPauseResultBaseNotEnrolledItem) SetEmail(email *string) {
+	s.Email = email
+	s.require(sequenceEnrollmentPauseResultBaseNotEnrolledItemFieldEmail)
+}
+
+// SetSubscriberID sets the SubscriberID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentPauseResultBaseNotEnrolledItem) SetSubscriberID(subscriberID *string) {
+	s.SubscriberID = subscriberID
+	s.require(sequenceEnrollmentPauseResultBaseNotEnrolledItemFieldSubscriberID)
+}
+
+func (s *SequenceEnrollmentPauseResultBaseNotEnrolledItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler SequenceEnrollmentPauseResultBaseNotEnrolledItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SequenceEnrollmentPauseResultBaseNotEnrolledItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceEnrollmentPauseResultBaseNotEnrolledItem) MarshalJSON() ([]byte, error) {
+	type embed SequenceEnrollmentPauseResultBaseNotEnrolledItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequenceEnrollmentPauseResultBaseNotEnrolledItem) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	sequenceEnrollmentPauseResultBaseNotFoundFieldEmails        = big.NewInt(1 << 0)
+	sequenceEnrollmentPauseResultBaseNotFoundFieldSubscriberIDs = big.NewInt(1 << 1)
+)
+
+type SequenceEnrollmentPauseResultBaseNotFound struct {
+	Emails        []string `json:"emails,omitempty" url:"emails,omitempty"`
+	SubscriberIDs []string `json:"subscriberIds,omitempty" url:"subscriberIds,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequenceEnrollmentPauseResultBaseNotFound) GetEmails() []string {
+	if s == nil {
+		return nil
+	}
+	return s.Emails
+}
+
+func (s *SequenceEnrollmentPauseResultBaseNotFound) GetSubscriberIDs() []string {
+	if s == nil {
+		return nil
+	}
+	return s.SubscriberIDs
+}
+
+func (s *SequenceEnrollmentPauseResultBaseNotFound) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequenceEnrollmentPauseResultBaseNotFound) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetEmails sets the Emails field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentPauseResultBaseNotFound) SetEmails(emails []string) {
+	s.Emails = emails
+	s.require(sequenceEnrollmentPauseResultBaseNotFoundFieldEmails)
+}
+
+// SetSubscriberIDs sets the SubscriberIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentPauseResultBaseNotFound) SetSubscriberIDs(subscriberIDs []string) {
+	s.SubscriberIDs = subscriberIDs
+	s.require(sequenceEnrollmentPauseResultBaseNotFoundFieldSubscriberIDs)
+}
+
+func (s *SequenceEnrollmentPauseResultBaseNotFound) UnmarshalJSON(data []byte) error {
+	type unmarshaler SequenceEnrollmentPauseResultBaseNotFound
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SequenceEnrollmentPauseResultBaseNotFound(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceEnrollmentPauseResultBaseNotFound) MarshalJSON() ([]byte, error) {
+	type embed SequenceEnrollmentPauseResultBaseNotFound
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequenceEnrollmentPauseResultBaseNotFound) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
 	sequenceEnrollmentRealignJobResponseFieldDryRun       = big.NewInt(1 << 0)
 	sequenceEnrollmentRealignJobResponseFieldError        = big.NewInt(1 << 1)
 	sequenceEnrollmentRealignJobResponseFieldJobID        = big.NewInt(1 << 2)
@@ -15572,6 +16656,357 @@ func (s *SequenceEnrollmentRealignResponseChangesItem) MarshalJSON() ([]byte, er
 }
 
 func (s *SequenceEnrollmentRealignResponseChangesItem) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	sequenceEnrollmentResumeResponseFieldEnrollments     = big.NewInt(1 << 0)
+	sequenceEnrollmentResumeResponseFieldMessage         = big.NewInt(1 << 1)
+	sequenceEnrollmentResumeResponseFieldNotEnrolled     = big.NewInt(1 << 2)
+	sequenceEnrollmentResumeResponseFieldNotFound        = big.NewInt(1 << 3)
+	sequenceEnrollmentResumeResponseFieldSequenceID      = big.NewInt(1 << 4)
+	sequenceEnrollmentResumeResponseFieldSuccess         = big.NewInt(1 << 5)
+	sequenceEnrollmentResumeResponseFieldEnqueuedCount   = big.NewInt(1 << 6)
+	sequenceEnrollmentResumeResponseFieldEnqueueErrors   = big.NewInt(1 << 7)
+	sequenceEnrollmentResumeResponseFieldNotPausedCount  = big.NewInt(1 << 8)
+	sequenceEnrollmentResumeResponseFieldResumedCount    = big.NewInt(1 << 9)
+	sequenceEnrollmentResumeResponseFieldSequenceRunning = big.NewInt(1 << 10)
+)
+
+type SequenceEnrollmentResumeResponse struct {
+	// Every active, waiting, or paused enrollment of the targeted contacts in this sequence, with its outcome.
+	Enrollments []*SequenceEnrollmentPauseItem `json:"enrollments" url:"enrollments"`
+	Message     string                         `json:"message" url:"message"`
+	// Targeted contacts that exist but have no active, waiting, or paused enrollment in this sequence.
+	NotEnrolled []*SequenceEnrollmentPauseResultBaseNotEnrolledItem `json:"notEnrolled" url:"notEnrolled"`
+	NotFound    *SequenceEnrollmentPauseResultBaseNotFound          `json:"notFound" url:"notFound"`
+	SequenceID  string                                              `json:"sequenceId" url:"sequenceId"`
+	Success     bool                                                `json:"success" url:"success"`
+	// Resumed enrollments handed to the sending queue. Zero while the sequence is not running.
+	EnqueuedCount int `json:"enqueuedCount" url:"enqueuedCount"`
+	// Resumed enrollments whose queue handoff failed. They stay resumed and are picked up by the stuck-enrollment sweeper.
+	EnqueueErrors []*SequenceEnrollmentResumeResponseEnqueueErrorsItem `json:"enqueueErrors" url:"enqueueErrors"`
+	// Enrollments of the targeted contacts that were not paused.
+	NotPausedCount int `json:"notPausedCount" url:"notPausedCount"`
+	// Enrollments resumed by this request.
+	ResumedCount int `json:"resumedCount" url:"resumedCount"`
+	// False when the sequence itself is disabled or not live; resumed contacts continue once it is enabled.
+	SequenceRunning bool `json:"sequenceRunning" url:"sequenceRunning"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequenceEnrollmentResumeResponse) GetEnrollments() []*SequenceEnrollmentPauseItem {
+	if s == nil {
+		return nil
+	}
+	return s.Enrollments
+}
+
+func (s *SequenceEnrollmentResumeResponse) GetMessage() string {
+	if s == nil {
+		return ""
+	}
+	return s.Message
+}
+
+func (s *SequenceEnrollmentResumeResponse) GetNotEnrolled() []*SequenceEnrollmentPauseResultBaseNotEnrolledItem {
+	if s == nil {
+		return nil
+	}
+	return s.NotEnrolled
+}
+
+func (s *SequenceEnrollmentResumeResponse) GetNotFound() *SequenceEnrollmentPauseResultBaseNotFound {
+	if s == nil {
+		return nil
+	}
+	return s.NotFound
+}
+
+func (s *SequenceEnrollmentResumeResponse) GetSequenceID() string {
+	if s == nil {
+		return ""
+	}
+	return s.SequenceID
+}
+
+func (s *SequenceEnrollmentResumeResponse) GetSuccess() bool {
+	if s == nil {
+		return false
+	}
+	return s.Success
+}
+
+func (s *SequenceEnrollmentResumeResponse) GetEnqueuedCount() int {
+	if s == nil {
+		return 0
+	}
+	return s.EnqueuedCount
+}
+
+func (s *SequenceEnrollmentResumeResponse) GetEnqueueErrors() []*SequenceEnrollmentResumeResponseEnqueueErrorsItem {
+	if s == nil {
+		return nil
+	}
+	return s.EnqueueErrors
+}
+
+func (s *SequenceEnrollmentResumeResponse) GetNotPausedCount() int {
+	if s == nil {
+		return 0
+	}
+	return s.NotPausedCount
+}
+
+func (s *SequenceEnrollmentResumeResponse) GetResumedCount() int {
+	if s == nil {
+		return 0
+	}
+	return s.ResumedCount
+}
+
+func (s *SequenceEnrollmentResumeResponse) GetSequenceRunning() bool {
+	if s == nil {
+		return false
+	}
+	return s.SequenceRunning
+}
+
+func (s *SequenceEnrollmentResumeResponse) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequenceEnrollmentResumeResponse) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetEnrollments sets the Enrollments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentResumeResponse) SetEnrollments(enrollments []*SequenceEnrollmentPauseItem) {
+	s.Enrollments = enrollments
+	s.require(sequenceEnrollmentResumeResponseFieldEnrollments)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentResumeResponse) SetMessage(message string) {
+	s.Message = message
+	s.require(sequenceEnrollmentResumeResponseFieldMessage)
+}
+
+// SetNotEnrolled sets the NotEnrolled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentResumeResponse) SetNotEnrolled(notEnrolled []*SequenceEnrollmentPauseResultBaseNotEnrolledItem) {
+	s.NotEnrolled = notEnrolled
+	s.require(sequenceEnrollmentResumeResponseFieldNotEnrolled)
+}
+
+// SetNotFound sets the NotFound field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentResumeResponse) SetNotFound(notFound *SequenceEnrollmentPauseResultBaseNotFound) {
+	s.NotFound = notFound
+	s.require(sequenceEnrollmentResumeResponseFieldNotFound)
+}
+
+// SetSequenceID sets the SequenceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentResumeResponse) SetSequenceID(sequenceID string) {
+	s.SequenceID = sequenceID
+	s.require(sequenceEnrollmentResumeResponseFieldSequenceID)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentResumeResponse) SetSuccess(success bool) {
+	s.Success = success
+	s.require(sequenceEnrollmentResumeResponseFieldSuccess)
+}
+
+// SetEnqueuedCount sets the EnqueuedCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentResumeResponse) SetEnqueuedCount(enqueuedCount int) {
+	s.EnqueuedCount = enqueuedCount
+	s.require(sequenceEnrollmentResumeResponseFieldEnqueuedCount)
+}
+
+// SetEnqueueErrors sets the EnqueueErrors field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentResumeResponse) SetEnqueueErrors(enqueueErrors []*SequenceEnrollmentResumeResponseEnqueueErrorsItem) {
+	s.EnqueueErrors = enqueueErrors
+	s.require(sequenceEnrollmentResumeResponseFieldEnqueueErrors)
+}
+
+// SetNotPausedCount sets the NotPausedCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentResumeResponse) SetNotPausedCount(notPausedCount int) {
+	s.NotPausedCount = notPausedCount
+	s.require(sequenceEnrollmentResumeResponseFieldNotPausedCount)
+}
+
+// SetResumedCount sets the ResumedCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentResumeResponse) SetResumedCount(resumedCount int) {
+	s.ResumedCount = resumedCount
+	s.require(sequenceEnrollmentResumeResponseFieldResumedCount)
+}
+
+// SetSequenceRunning sets the SequenceRunning field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentResumeResponse) SetSequenceRunning(sequenceRunning bool) {
+	s.SequenceRunning = sequenceRunning
+	s.require(sequenceEnrollmentResumeResponseFieldSequenceRunning)
+}
+
+func (s *SequenceEnrollmentResumeResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler SequenceEnrollmentResumeResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SequenceEnrollmentResumeResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceEnrollmentResumeResponse) MarshalJSON() ([]byte, error) {
+	type embed SequenceEnrollmentResumeResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequenceEnrollmentResumeResponse) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	sequenceEnrollmentResumeResponseEnqueueErrorsItemFieldEnrollmentID = big.NewInt(1 << 0)
+	sequenceEnrollmentResumeResponseEnqueueErrorsItemFieldError        = big.NewInt(1 << 1)
+)
+
+type SequenceEnrollmentResumeResponseEnqueueErrorsItem struct {
+	EnrollmentID *string `json:"enrollmentId,omitempty" url:"enrollmentId,omitempty"`
+	Error        *string `json:"error,omitempty" url:"error,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequenceEnrollmentResumeResponseEnqueueErrorsItem) GetEnrollmentID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.EnrollmentID
+}
+
+func (s *SequenceEnrollmentResumeResponseEnqueueErrorsItem) GetError() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Error
+}
+
+func (s *SequenceEnrollmentResumeResponseEnqueueErrorsItem) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequenceEnrollmentResumeResponseEnqueueErrorsItem) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetEnrollmentID sets the EnrollmentID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentResumeResponseEnqueueErrorsItem) SetEnrollmentID(enrollmentID *string) {
+	s.EnrollmentID = enrollmentID
+	s.require(sequenceEnrollmentResumeResponseEnqueueErrorsItemFieldEnrollmentID)
+}
+
+// SetError sets the Error field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceEnrollmentResumeResponseEnqueueErrorsItem) SetError(error_ *string) {
+	s.Error = error_
+	s.require(sequenceEnrollmentResumeResponseEnqueueErrorsItemFieldError)
+}
+
+func (s *SequenceEnrollmentResumeResponseEnqueueErrorsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler SequenceEnrollmentResumeResponseEnqueueErrorsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SequenceEnrollmentResumeResponseEnqueueErrorsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceEnrollmentResumeResponseEnqueueErrorsItem) MarshalJSON() ([]byte, error) {
+	type embed SequenceEnrollmentResumeResponseEnqueueErrorsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequenceEnrollmentResumeResponseEnqueueErrorsItem) String() string {
 	if s == nil {
 		return "<nil>"
 	}
@@ -28347,18 +29782,20 @@ func (g GetStatsSequencesRequestPeriod) Ptr() *GetStatsSequencesRequestPeriod {
 var (
 	getStatsSequencesResponseFieldEnrollmentCounts  = big.NewInt(1 << 0)
 	getStatsSequencesResponseFieldEnrollmentSkipped = big.NewInt(1 << 1)
-	getStatsSequencesResponseFieldPeriod            = big.NewInt(1 << 2)
-	getStatsSequencesResponseFieldRecommendations   = big.NewInt(1 << 3)
-	getStatsSequencesResponseFieldSequenceID        = big.NewInt(1 << 4)
-	getStatsSequencesResponseFieldStats             = big.NewInt(1 << 5)
-	getStatsSequencesResponseFieldSteps             = big.NewInt(1 << 6)
-	getStatsSequencesResponseFieldSuccess           = big.NewInt(1 << 7)
+	getStatsSequencesResponseFieldPausedEnrollments = big.NewInt(1 << 2)
+	getStatsSequencesResponseFieldPeriod            = big.NewInt(1 << 3)
+	getStatsSequencesResponseFieldRecommendations   = big.NewInt(1 << 4)
+	getStatsSequencesResponseFieldSequenceID        = big.NewInt(1 << 5)
+	getStatsSequencesResponseFieldStats             = big.NewInt(1 << 6)
+	getStatsSequencesResponseFieldSteps             = big.NewInt(1 << 7)
+	getStatsSequencesResponseFieldSuccess           = big.NewInt(1 << 8)
 )
 
 type GetStatsSequencesResponse struct {
 	EnrollmentCounts *SequenceEnrollmentCounts `json:"enrollmentCounts,omitempty" url:"enrollmentCounts,omitempty"`
 	// Trigger matches where the contact could not be enrolled because they are unsubscribed or bounced. Defaults to the last 30 days when no explicit time range is provided.
 	EnrollmentSkipped *GetStatsSequencesResponseEnrollmentSkipped `json:"enrollmentSkipped,omitempty" url:"enrollmentSkipped,omitempty"`
+	PausedEnrollments *SequencePausedEnrollmentCounts             `json:"pausedEnrollments,omitempty" url:"pausedEnrollments,omitempty"`
 	// Echoed back when `period` is provided.
 	Period          *string                `json:"period,omitempty" url:"period,omitempty"`
 	Recommendations *RecommendationMetrics `json:"recommendations,omitempty" url:"recommendations,omitempty"`
@@ -28387,6 +29824,13 @@ func (g *GetStatsSequencesResponse) GetEnrollmentSkipped() *GetStatsSequencesRes
 		return nil
 	}
 	return g.EnrollmentSkipped
+}
+
+func (g *GetStatsSequencesResponse) GetPausedEnrollments() *SequencePausedEnrollmentCounts {
+	if g == nil {
+		return nil
+	}
+	return g.PausedEnrollments
 }
 
 func (g *GetStatsSequencesResponse) GetPeriod() *string {
@@ -28457,6 +29901,13 @@ func (g *GetStatsSequencesResponse) SetEnrollmentCounts(enrollmentCounts *Sequen
 func (g *GetStatsSequencesResponse) SetEnrollmentSkipped(enrollmentSkipped *GetStatsSequencesResponseEnrollmentSkipped) {
 	g.EnrollmentSkipped = enrollmentSkipped
 	g.require(getStatsSequencesResponseFieldEnrollmentSkipped)
+}
+
+// SetPausedEnrollments sets the PausedEnrollments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetStatsSequencesResponse) SetPausedEnrollments(pausedEnrollments *SequencePausedEnrollmentCounts) {
+	g.PausedEnrollments = pausedEnrollments
+	g.require(getStatsSequencesResponseFieldPausedEnrollments)
 }
 
 // SetPeriod sets the Period field and marks it as non-optional;

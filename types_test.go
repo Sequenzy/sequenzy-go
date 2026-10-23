@@ -21673,6 +21673,344 @@ func TestSettersMarkExplicitSequenceEnrollmentRealignQueuedResponse(t *testing.T
 
 }
 
+func TestSettersSequencePausedEnrollmentCounts(t *testing.T) {
+	t.Run("SetByCurrentNode", func(t *testing.T) {
+		obj := &SequencePausedEnrollmentCounts{}
+		var fernTestValueByCurrentNode []*SequencePausedEnrollmentCountsByCurrentNodeItem
+		obj.SetByCurrentNode(fernTestValueByCurrentNode)
+		assert.Equal(t, fernTestValueByCurrentNode, obj.ByCurrentNode)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetTotal", func(t *testing.T) {
+		obj := &SequencePausedEnrollmentCounts{}
+		var fernTestValueTotal int
+		obj.SetTotal(fernTestValueTotal)
+		assert.Equal(t, fernTestValueTotal, obj.Total)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersSequencePausedEnrollmentCounts(t *testing.T) {
+	t.Run("GetByCurrentNode", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequencePausedEnrollmentCounts{}
+		var expected []*SequencePausedEnrollmentCountsByCurrentNodeItem
+		obj.ByCurrentNode = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetByCurrentNode(), "getter should return the property value")
+	})
+
+	t.Run("GetByCurrentNode_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequencePausedEnrollmentCounts{}
+		obj.ByCurrentNode = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetByCurrentNode(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetByCurrentNode_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequencePausedEnrollmentCounts
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetByCurrentNode() // Should return zero value
+	})
+
+	t.Run("GetTotal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequencePausedEnrollmentCounts{}
+		var expected int
+		obj.Total = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetTotal(), "getter should return the property value")
+	})
+
+	t.Run("GetTotal_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequencePausedEnrollmentCounts
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetTotal() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitSequencePausedEnrollmentCounts(t *testing.T) {
+	t.Run("SetByCurrentNode_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequencePausedEnrollmentCounts{}
+		var fernTestValueByCurrentNode []*SequencePausedEnrollmentCountsByCurrentNodeItem
+
+		// Act
+		obj.SetByCurrentNode(fernTestValueByCurrentNode)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetTotal_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequencePausedEnrollmentCounts{}
+		var fernTestValueTotal int
+
+		// Act
+		obj.SetTotal(fernTestValueTotal)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersSequencePausedEnrollmentCountsByCurrentNodeItem(t *testing.T) {
+	t.Run("SetCount", func(t *testing.T) {
+		obj := &SequencePausedEnrollmentCountsByCurrentNodeItem{}
+		var fernTestValueCount int
+		obj.SetCount(fernTestValueCount)
+		assert.Equal(t, fernTestValueCount, obj.Count)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetCurrentNodeID", func(t *testing.T) {
+		obj := &SequencePausedEnrollmentCountsByCurrentNodeItem{}
+		var fernTestValueCurrentNodeID string
+		obj.SetCurrentNodeID(fernTestValueCurrentNodeID)
+		assert.Equal(t, fernTestValueCurrentNodeID, obj.CurrentNodeID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetCurrentNodeMissing", func(t *testing.T) {
+		obj := &SequencePausedEnrollmentCountsByCurrentNodeItem{}
+		var fernTestValueCurrentNodeMissing bool
+		obj.SetCurrentNodeMissing(fernTestValueCurrentNodeMissing)
+		assert.Equal(t, fernTestValueCurrentNodeMissing, obj.CurrentNodeMissing)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersSequencePausedEnrollmentCountsByCurrentNodeItem(t *testing.T) {
+	t.Run("GetCount", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequencePausedEnrollmentCountsByCurrentNodeItem{}
+		var expected int
+		obj.Count = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCount(), "getter should return the property value")
+	})
+
+	t.Run("GetCount_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequencePausedEnrollmentCountsByCurrentNodeItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCount() // Should return zero value
+	})
+
+	t.Run("GetCurrentNodeID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequencePausedEnrollmentCountsByCurrentNodeItem{}
+		var expected string
+		obj.CurrentNodeID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCurrentNodeID(), "getter should return the property value")
+	})
+
+	t.Run("GetCurrentNodeID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequencePausedEnrollmentCountsByCurrentNodeItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCurrentNodeID() // Should return zero value
+	})
+
+	t.Run("GetCurrentNodeMissing", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequencePausedEnrollmentCountsByCurrentNodeItem{}
+		var expected bool
+		obj.CurrentNodeMissing = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCurrentNodeMissing(), "getter should return the property value")
+	})
+
+	t.Run("GetCurrentNodeMissing_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequencePausedEnrollmentCountsByCurrentNodeItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCurrentNodeMissing() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitSequencePausedEnrollmentCountsByCurrentNodeItem(t *testing.T) {
+	t.Run("SetCount_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequencePausedEnrollmentCountsByCurrentNodeItem{}
+		var fernTestValueCount int
+
+		// Act
+		obj.SetCount(fernTestValueCount)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetCurrentNodeID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequencePausedEnrollmentCountsByCurrentNodeItem{}
+		var fernTestValueCurrentNodeID string
+
+		// Act
+		obj.SetCurrentNodeID(fernTestValueCurrentNodeID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetCurrentNodeMissing_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequencePausedEnrollmentCountsByCurrentNodeItem{}
+		var fernTestValueCurrentNodeMissing bool
+
+		// Act
+		obj.SetCurrentNodeMissing(fernTestValueCurrentNodeMissing)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
 func TestSettersServiceUnavailableErrorBody(t *testing.T) {
 	t.Run("SetError", func(t *testing.T) {
 		obj := &ServiceUnavailableErrorBody{}
@@ -24945,6 +25283,72 @@ func TestJSONMarshalingSequenceEnrollmentRealignQueuedResponse(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingSequencePausedEnrollmentCounts(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequencePausedEnrollmentCounts{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled SequencePausedEnrollmentCounts
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj SequencePausedEnrollmentCounts
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj SequencePausedEnrollmentCounts
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestJSONMarshalingSequencePausedEnrollmentCountsByCurrentNodeItem(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequencePausedEnrollmentCountsByCurrentNodeItem{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled SequencePausedEnrollmentCountsByCurrentNodeItem
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj SequencePausedEnrollmentCountsByCurrentNodeItem
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj SequencePausedEnrollmentCountsByCurrentNodeItem
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingServiceUnavailableErrorBody(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -25970,6 +26374,38 @@ func TestStringSequenceEnrollmentRealignQueuedResponse(t *testing.T) {
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *SequenceEnrollmentRealignQueuedResponse
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringSequencePausedEnrollmentCounts(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &SequencePausedEnrollmentCounts{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequencePausedEnrollmentCounts
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringSequencePausedEnrollmentCountsByCurrentNodeItem(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &SequencePausedEnrollmentCountsByCurrentNodeItem{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequencePausedEnrollmentCountsByCurrentNodeItem
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -29177,6 +29613,52 @@ func TestExtraPropertiesSequenceEnrollmentRealignQueuedResponse(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *SequenceEnrollmentRealignQueuedResponse
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesSequencePausedEnrollmentCounts(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &SequencePausedEnrollmentCounts{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequencePausedEnrollmentCounts
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesSequencePausedEnrollmentCountsByCurrentNodeItem(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &SequencePausedEnrollmentCountsByCurrentNodeItem{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequencePausedEnrollmentCountsByCurrentNodeItem
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})

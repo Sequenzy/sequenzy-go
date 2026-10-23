@@ -217,7 +217,7 @@ type Company struct {
 	ReplyTrackingDomainMode *CompanyReplyTrackingDomainMode `json:"replyTrackingDomainMode,omitempty" url:"replyTrackingDomainMode,omitempty"`
 	// Whether inbound reply capture is enabled for this company.
 	ReplyTrackingEnabled *bool `json:"replyTrackingEnabled,omitempty" url:"replyTrackingEnabled,omitempty"`
-	// Profile URL per platform. Bare hosts (`x.com/acme`) and mistyped web schemes (`ttps://`, `https:/`) are saved as `https://` URLs.
+	// Profile URL per platform. Bare hosts (`x.com/acme`) and mistyped web schemes (`ttps://`, `https:/`) are saved as `https://` URLs. Branded footers show an icon for `x` (or `twitter`), `threads`, `bluesky`, `linkedin`, `instagram`, `facebook`, `youtube`, `tiktok`, `pinterest`, `discord`, `reddit`, and the mobile app store listings `appstore` and `googleplay`. Other keys are stored but get no icon.
 	SocialLinks  map[string]*string `json:"socialLinks,omitempty" url:"socialLinks,omitempty"`
 	Status       *string            `json:"status,omitempty" url:"status,omitempty"`
 	TermsURL     *string            `json:"termsUrl,omitempty" url:"termsUrl,omitempty"`

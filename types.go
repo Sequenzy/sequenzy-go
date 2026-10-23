@@ -9995,6 +9995,226 @@ func (s SequenceEnrollmentRealignQueuedResponseStatus) Ptr() *SequenceEnrollment
 	return &s
 }
 
+// Live count of enrollments held by a per-subscriber pause (POST /sequences/{sequenceId}/enrollments/pause). Reported separately because enrollmentCounts covers only active and waiting enrollments.
+var (
+	sequencePausedEnrollmentCountsFieldByCurrentNode = big.NewInt(1 << 0)
+	sequencePausedEnrollmentCountsFieldTotal         = big.NewInt(1 << 1)
+)
+
+type SequencePausedEnrollmentCounts struct {
+	// Paused enrollments grouped by the step they are held on.
+	ByCurrentNode []*SequencePausedEnrollmentCountsByCurrentNodeItem `json:"byCurrentNode" url:"byCurrentNode"`
+	// Paused enrollments in the sequence.
+	Total int `json:"total" url:"total"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequencePausedEnrollmentCounts) GetByCurrentNode() []*SequencePausedEnrollmentCountsByCurrentNodeItem {
+	if s == nil {
+		return nil
+	}
+	return s.ByCurrentNode
+}
+
+func (s *SequencePausedEnrollmentCounts) GetTotal() int {
+	if s == nil {
+		return 0
+	}
+	return s.Total
+}
+
+func (s *SequencePausedEnrollmentCounts) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequencePausedEnrollmentCounts) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetByCurrentNode sets the ByCurrentNode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequencePausedEnrollmentCounts) SetByCurrentNode(byCurrentNode []*SequencePausedEnrollmentCountsByCurrentNodeItem) {
+	s.ByCurrentNode = byCurrentNode
+	s.require(sequencePausedEnrollmentCountsFieldByCurrentNode)
+}
+
+// SetTotal sets the Total field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequencePausedEnrollmentCounts) SetTotal(total int) {
+	s.Total = total
+	s.require(sequencePausedEnrollmentCountsFieldTotal)
+}
+
+func (s *SequencePausedEnrollmentCounts) UnmarshalJSON(data []byte) error {
+	type unmarshaler SequencePausedEnrollmentCounts
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SequencePausedEnrollmentCounts(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequencePausedEnrollmentCounts) MarshalJSON() ([]byte, error) {
+	type embed SequencePausedEnrollmentCounts
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequencePausedEnrollmentCounts) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	sequencePausedEnrollmentCountsByCurrentNodeItemFieldCount              = big.NewInt(1 << 0)
+	sequencePausedEnrollmentCountsByCurrentNodeItemFieldCurrentNodeID      = big.NewInt(1 << 1)
+	sequencePausedEnrollmentCountsByCurrentNodeItemFieldCurrentNodeMissing = big.NewInt(1 << 2)
+)
+
+type SequencePausedEnrollmentCountsByCurrentNodeItem struct {
+	Count         int    `json:"count" url:"count"`
+	CurrentNodeID string `json:"currentNodeId" url:"currentNodeId"`
+	// Whether that step no longer exists in the sequence graph.
+	CurrentNodeMissing bool `json:"currentNodeMissing" url:"currentNodeMissing"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequencePausedEnrollmentCountsByCurrentNodeItem) GetCount() int {
+	if s == nil {
+		return 0
+	}
+	return s.Count
+}
+
+func (s *SequencePausedEnrollmentCountsByCurrentNodeItem) GetCurrentNodeID() string {
+	if s == nil {
+		return ""
+	}
+	return s.CurrentNodeID
+}
+
+func (s *SequencePausedEnrollmentCountsByCurrentNodeItem) GetCurrentNodeMissing() bool {
+	if s == nil {
+		return false
+	}
+	return s.CurrentNodeMissing
+}
+
+func (s *SequencePausedEnrollmentCountsByCurrentNodeItem) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequencePausedEnrollmentCountsByCurrentNodeItem) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetCount sets the Count field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequencePausedEnrollmentCountsByCurrentNodeItem) SetCount(count int) {
+	s.Count = count
+	s.require(sequencePausedEnrollmentCountsByCurrentNodeItemFieldCount)
+}
+
+// SetCurrentNodeID sets the CurrentNodeID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequencePausedEnrollmentCountsByCurrentNodeItem) SetCurrentNodeID(currentNodeID string) {
+	s.CurrentNodeID = currentNodeID
+	s.require(sequencePausedEnrollmentCountsByCurrentNodeItemFieldCurrentNodeID)
+}
+
+// SetCurrentNodeMissing sets the CurrentNodeMissing field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequencePausedEnrollmentCountsByCurrentNodeItem) SetCurrentNodeMissing(currentNodeMissing bool) {
+	s.CurrentNodeMissing = currentNodeMissing
+	s.require(sequencePausedEnrollmentCountsByCurrentNodeItemFieldCurrentNodeMissing)
+}
+
+func (s *SequencePausedEnrollmentCountsByCurrentNodeItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler SequencePausedEnrollmentCountsByCurrentNodeItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SequencePausedEnrollmentCountsByCurrentNodeItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequencePausedEnrollmentCountsByCurrentNodeItem) MarshalJSON() ([]byte, error) {
+	type embed SequencePausedEnrollmentCountsByCurrentNodeItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequencePausedEnrollmentCountsByCurrentNodeItem) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
 var (
 	serviceUnavailableErrorBodyFieldError     = big.NewInt(1 << 0)
 	serviceUnavailableErrorBodyFieldImportID  = big.NewInt(1 << 1)

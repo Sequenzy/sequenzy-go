@@ -8014,18 +8014,20 @@ func (g GetSequenceMetricsRequestPeriod) Ptr() *GetSequenceMetricsRequestPeriod 
 var (
 	getSequenceMetricsResponseFieldEnrollmentCounts  = big.NewInt(1 << 0)
 	getSequenceMetricsResponseFieldEnrollmentSkipped = big.NewInt(1 << 1)
-	getSequenceMetricsResponseFieldPeriod            = big.NewInt(1 << 2)
-	getSequenceMetricsResponseFieldRecommendations   = big.NewInt(1 << 3)
-	getSequenceMetricsResponseFieldSequenceID        = big.NewInt(1 << 4)
-	getSequenceMetricsResponseFieldStats             = big.NewInt(1 << 5)
-	getSequenceMetricsResponseFieldSteps             = big.NewInt(1 << 6)
-	getSequenceMetricsResponseFieldSuccess           = big.NewInt(1 << 7)
+	getSequenceMetricsResponseFieldPausedEnrollments = big.NewInt(1 << 2)
+	getSequenceMetricsResponseFieldPeriod            = big.NewInt(1 << 3)
+	getSequenceMetricsResponseFieldRecommendations   = big.NewInt(1 << 4)
+	getSequenceMetricsResponseFieldSequenceID        = big.NewInt(1 << 5)
+	getSequenceMetricsResponseFieldStats             = big.NewInt(1 << 6)
+	getSequenceMetricsResponseFieldSteps             = big.NewInt(1 << 7)
+	getSequenceMetricsResponseFieldSuccess           = big.NewInt(1 << 8)
 )
 
 type GetSequenceMetricsResponse struct {
 	EnrollmentCounts *SequenceEnrollmentCounts `json:"enrollmentCounts,omitempty" url:"enrollmentCounts,omitempty"`
 	// Trigger matches where the contact could not be enrolled because they are unsubscribed or bounced. Defaults to the last 30 days when no explicit time range is provided.
 	EnrollmentSkipped *GetSequenceMetricsResponseEnrollmentSkipped `json:"enrollmentSkipped,omitempty" url:"enrollmentSkipped,omitempty"`
+	PausedEnrollments *SequencePausedEnrollmentCounts              `json:"pausedEnrollments,omitempty" url:"pausedEnrollments,omitempty"`
 	// Echoed back when `period` is provided.
 	Period          *string                `json:"period,omitempty" url:"period,omitempty"`
 	Recommendations *RecommendationMetrics `json:"recommendations,omitempty" url:"recommendations,omitempty"`
@@ -8054,6 +8056,13 @@ func (g *GetSequenceMetricsResponse) GetEnrollmentSkipped() *GetSequenceMetricsR
 		return nil
 	}
 	return g.EnrollmentSkipped
+}
+
+func (g *GetSequenceMetricsResponse) GetPausedEnrollments() *SequencePausedEnrollmentCounts {
+	if g == nil {
+		return nil
+	}
+	return g.PausedEnrollments
 }
 
 func (g *GetSequenceMetricsResponse) GetPeriod() *string {
@@ -8124,6 +8133,13 @@ func (g *GetSequenceMetricsResponse) SetEnrollmentCounts(enrollmentCounts *Seque
 func (g *GetSequenceMetricsResponse) SetEnrollmentSkipped(enrollmentSkipped *GetSequenceMetricsResponseEnrollmentSkipped) {
 	g.EnrollmentSkipped = enrollmentSkipped
 	g.require(getSequenceMetricsResponseFieldEnrollmentSkipped)
+}
+
+// SetPausedEnrollments sets the PausedEnrollments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetSequenceMetricsResponse) SetPausedEnrollments(pausedEnrollments *SequencePausedEnrollmentCounts) {
+	g.PausedEnrollments = pausedEnrollments
+	g.require(getSequenceMetricsResponseFieldPausedEnrollments)
 }
 
 // SetPeriod sets the Period field and marks it as non-optional;
