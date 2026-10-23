@@ -46,17 +46,17 @@ var (
 )
 
 type ConnectIntegrationsRequest struct {
-	// Provider API key. Required for polar, paddle, dodo, lemon_squeezy, whop, revenuecat, creem, chargebee, affonso, and attio. RevenueCat uses a secret REST API v2 key with Projects read and Customers read permissions. Attio uses the workspace access token.
+	// Provider API key. Required for polar, paddle, dodo, lemon_squeezy, whop, revenuecat, creem, chargebee, affonso, attio, and sparkloop. RevenueCat uses a secret REST API v2 key with Projects read and Customers read permissions. Attio uses the workspace access token. SparkLoop uses the API key from Settings → Integrations.
 	APIKey *string `json:"apiKey,omitempty" url:"-"`
 	// PostHog and Segment only. Imports event history after connecting: PostHog reads the project archive (projectId + personalApiKey); Segment walks your existing contacts' Unify profiles (spaceId + profileApiToken) and covers at most the last 14 days the Profile API serves, because Segment has no bulk event export.
 	HistoryImport *ConnectIntegrationsRequestHistoryImport `json:"historyImport,omitempty" url:"-"`
 	// Provider to connect.
 	Provider ConnectIntegrationsRequestProvider `json:"provider" url:"-"`
-	// Provider account id: Paddle seller ID, Dodo business ID, Lemon Squeezy numeric store ID, Whop company ID, Creem store ID, or Chargebee site name. Polar resolves it from the API key. RevenueCat resolves its project ID from the API key; pass it only when the key can access several projects. Superwall does not use one.
+	// Provider account id: Paddle seller ID, Dodo business ID, Lemon Squeezy numeric store ID, Whop company ID, Creem store ID, or Chargebee site name. Polar resolves it from the API key. RevenueCat resolves its project ID from the API key; pass it only when the key can access several projects. Superwall does not use one. SparkLoop: the publication ID (pub_...), required only when the account has several publications.
 	ProviderAccountID *string `json:"providerAccountId,omitempty" url:"-"`
-	// PostHog and Segment: event delivery scope. Attio: listMap (Sequenzy list id to Attio list id or slug) and syncCompanyFromDomain.
+	// PostHog and Segment: event delivery scope. Attio: listMap (Sequenzy list id to Attio list id or slug) and syncCompanyFromDomain. SparkLoop: listIds for new referrals.
 	Settings *ConnectIntegrationsRequestSettings `json:"settings,omitempty" url:"-"`
-	// Signing secret of the provider webhook. Optional for lemon_squeezy managed provisioning and not used by attio; required for other providers. Lemon Squeezy manual secrets use 16-40 characters. For Chargebee, pass username:password. For RevenueCat, pass at least 16 characters: the authorization header value set on the RevenueCat webhook, or its HMAC signing secret. For Superwall, pass the webhook's whsec_ signing secret, the only credential it needs. For Segment, use 16-153 UTF-8 bytes.
+	// Signing secret of the provider webhook. Optional for lemon_squeezy managed provisioning and not used by attio; required for other providers. Lemon Squeezy manual secrets use 16-40 characters. For Chargebee, pass username:password. For RevenueCat, pass at least 16 characters: the authorization header value set on the RevenueCat webhook, or its HMAC signing secret. For Superwall, pass the webhook's whsec_ signing secret, the only credential it needs. For Segment, use 16-153 UTF-8 bytes. For SparkLoop, pass the webhook authentication token from SparkLoop Settings → Integrations (sent as the SparkLoop-Token header).
 	WebhookSecret *string `json:"webhookSecret,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -138,7 +138,7 @@ var (
 )
 
 type DisconnectIntegrationsRequest struct {
-	// Lemon Squeezy integration ID.
+	// Lemon Squeezy or SparkLoop integration ID.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -6020,6 +6020,7 @@ const (
 	ConnectIntegrationsRequestProviderSegment      ConnectIntegrationsRequestProvider = "segment"
 	ConnectIntegrationsRequestProviderAffonso      ConnectIntegrationsRequestProvider = "affonso"
 	ConnectIntegrationsRequestProviderAttio        ConnectIntegrationsRequestProvider = "attio"
+	ConnectIntegrationsRequestProviderSparkloop    ConnectIntegrationsRequestProvider = "sparkloop"
 )
 
 func NewConnectIntegrationsRequestProviderFromString(s string) (ConnectIntegrationsRequestProvider, error) {
@@ -6052,6 +6053,8 @@ func NewConnectIntegrationsRequestProviderFromString(s string) (ConnectIntegrati
 		return ConnectIntegrationsRequestProviderAffonso, nil
 	case "attio":
 		return ConnectIntegrationsRequestProviderAttio, nil
+	case "sparkloop":
+		return ConnectIntegrationsRequestProviderSparkloop, nil
 	}
 	var t ConnectIntegrationsRequestProvider
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -6061,16 +6064,19 @@ func (c ConnectIntegrationsRequestProvider) Ptr() *ConnectIntegrationsRequestPro
 	return &c
 }
 
-// PostHog and Segment: event delivery scope. Attio: listMap (Sequenzy list id to Attio list id or slug) and syncCompanyFromDomain.
+// PostHog and Segment: event delivery scope. Attio: listMap (Sequenzy list id to Attio list id or slug) and syncCompanyFromDomain. SparkLoop: listIds for new referrals.
 var (
 	connectIntegrationsRequestSettingsFieldEventAllowlist        = big.NewInt(1 << 0)
-	connectIntegrationsRequestSettingsFieldListMap               = big.NewInt(1 << 1)
-	connectIntegrationsRequestSettingsFieldSyncAllEvents         = big.NewInt(1 << 2)
-	connectIntegrationsRequestSettingsFieldSyncCompanyFromDomain = big.NewInt(1 << 3)
+	connectIntegrationsRequestSettingsFieldListIDs               = big.NewInt(1 << 1)
+	connectIntegrationsRequestSettingsFieldListMap               = big.NewInt(1 << 2)
+	connectIntegrationsRequestSettingsFieldSyncAllEvents         = big.NewInt(1 << 3)
+	connectIntegrationsRequestSettingsFieldSyncCompanyFromDomain = big.NewInt(1 << 4)
 )
 
 type ConnectIntegrationsRequestSettings struct {
 	EventAllowlist []string `json:"eventAllowlist,omitempty" url:"eventAllowlist,omitempty"`
+	// SparkLoop only. Lists new referrals join. Omit to keep the current choice (the workspace default lists on a first connect), null to reset to the workspace default lists, or an empty array for none.
+	ListIDs []string `json:"listIds,omitempty" url:"listIds,omitempty"`
 	// Attio only. Sequenzy list id to Attio list UUID or slug.
 	ListMap       map[string]string `json:"listMap,omitempty" url:"listMap,omitempty"`
 	SyncAllEvents *bool             `json:"syncAllEvents,omitempty" url:"syncAllEvents,omitempty"`
@@ -6089,6 +6095,13 @@ func (c *ConnectIntegrationsRequestSettings) GetEventAllowlist() []string {
 		return nil
 	}
 	return c.EventAllowlist
+}
+
+func (c *ConnectIntegrationsRequestSettings) GetListIDs() []string {
+	if c == nil {
+		return nil
+	}
+	return c.ListIDs
 }
 
 func (c *ConnectIntegrationsRequestSettings) GetListMap() map[string]string {
@@ -6131,6 +6144,13 @@ func (c *ConnectIntegrationsRequestSettings) require(field *big.Int) {
 func (c *ConnectIntegrationsRequestSettings) SetEventAllowlist(eventAllowlist []string) {
 	c.EventAllowlist = eventAllowlist
 	c.require(connectIntegrationsRequestSettingsFieldEventAllowlist)
+}
+
+// SetListIDs sets the ListIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ConnectIntegrationsRequestSettings) SetListIDs(listIDs []string) {
+	c.ListIDs = listIDs
+	c.require(connectIntegrationsRequestSettingsFieldListIDs)
 }
 
 // SetListMap sets the ListMap field and marks it as non-optional;
@@ -6200,11 +6220,12 @@ var (
 	connectIntegrationsResponseFieldBackfillQueued      = big.NewInt(1 << 0)
 	connectIntegrationsResponseFieldHistory             = big.NewInt(1 << 1)
 	connectIntegrationsResponseFieldIntegration         = big.NewInt(1 << 2)
-	connectIntegrationsResponseFieldRevenueSyncQueued   = big.NewInt(1 << 3)
-	connectIntegrationsResponseFieldSuccess             = big.NewInt(1 << 4)
-	connectIntegrationsResponseFieldTestMode            = big.NewInt(1 << 5)
-	connectIntegrationsResponseFieldWebhookProvisioning = big.NewInt(1 << 6)
-	connectIntegrationsResponseFieldWebhookURL          = big.NewInt(1 << 7)
+	connectIntegrationsResponseFieldPublication         = big.NewInt(1 << 3)
+	connectIntegrationsResponseFieldRevenueSyncQueued   = big.NewInt(1 << 4)
+	connectIntegrationsResponseFieldSuccess             = big.NewInt(1 << 5)
+	connectIntegrationsResponseFieldTestMode            = big.NewInt(1 << 6)
+	connectIntegrationsResponseFieldWebhookProvisioning = big.NewInt(1 << 7)
+	connectIntegrationsResponseFieldWebhookURL          = big.NewInt(1 << 8)
 )
 
 type ConnectIntegrationsResponse struct {
@@ -6213,6 +6234,8 @@ type ConnectIntegrationsResponse struct {
 	// PostHog and Segment only. Outcome of the optional history import request.
 	History     *ConnectIntegrationsResponseHistory `json:"history,omitempty" url:"history,omitempty"`
 	Integration *IntegrationSummary                 `json:"integration,omitempty" url:"integration,omitempty"`
+	// SparkLoop only. The publication whose partner referrals this workspace receives.
+	Publication *ConnectIntegrationsResponsePublication `json:"publication,omitempty" url:"publication,omitempty"`
 	// Payment providers only. Whether the initial revenue backfill was queued.
 	RevenueSyncQueued *bool `json:"revenueSyncQueued,omitempty" url:"revenueSyncQueued,omitempty"`
 	Success           *bool `json:"success,omitempty" url:"success,omitempty"`
@@ -6220,7 +6243,7 @@ type ConnectIntegrationsResponse struct {
 	TestMode *bool `json:"testMode,omitempty" url:"testMode,omitempty"`
 	// Lemon Squeezy only. Whether Sequenzy manages the provider webhook.
 	WebhookProvisioning *ConnectIntegrationsResponseWebhookProvisioning `json:"webhookProvisioning,omitempty" url:"webhookProvisioning,omitempty"`
-	// Provider webhook URL. Lemon Squeezy managed mode installs it automatically; manual mode uses the supplied secret. Empty for Attio.
+	// Provider webhook URL. Lemon Squeezy managed mode installs it automatically; manual mode uses the supplied secret. SparkLoop's is already registered in SparkLoop. Empty for Attio.
 	WebhookURL *string `json:"webhookUrl,omitempty" url:"webhookUrl,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -6249,6 +6272,13 @@ func (c *ConnectIntegrationsResponse) GetIntegration() *IntegrationSummary {
 		return nil
 	}
 	return c.Integration
+}
+
+func (c *ConnectIntegrationsResponse) GetPublication() *ConnectIntegrationsResponsePublication {
+	if c == nil {
+		return nil
+	}
+	return c.Publication
 }
 
 func (c *ConnectIntegrationsResponse) GetRevenueSyncQueued() *bool {
@@ -6319,6 +6349,13 @@ func (c *ConnectIntegrationsResponse) SetHistory(history *ConnectIntegrationsRes
 func (c *ConnectIntegrationsResponse) SetIntegration(integration *IntegrationSummary) {
 	c.Integration = integration
 	c.require(connectIntegrationsResponseFieldIntegration)
+}
+
+// SetPublication sets the Publication field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ConnectIntegrationsResponse) SetPublication(publication *ConnectIntegrationsResponsePublication) {
+	c.Publication = publication
+	c.require(connectIntegrationsResponseFieldPublication)
 }
 
 // SetRevenueSyncQueued sets the RevenueSyncQueued field and marks it as non-optional;
@@ -6515,6 +6552,107 @@ func (c *ConnectIntegrationsResponseHistory) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
+// SparkLoop only. The publication whose partner referrals this workspace receives.
+var (
+	connectIntegrationsResponsePublicationFieldID   = big.NewInt(1 << 0)
+	connectIntegrationsResponsePublicationFieldName = big.NewInt(1 << 1)
+)
+
+type ConnectIntegrationsResponsePublication struct {
+	ID   *string `json:"id,omitempty" url:"id,omitempty"`
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *ConnectIntegrationsResponsePublication) GetID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.ID
+}
+
+func (c *ConnectIntegrationsResponsePublication) GetName() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Name
+}
+
+func (c *ConnectIntegrationsResponsePublication) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *ConnectIntegrationsResponsePublication) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ConnectIntegrationsResponsePublication) SetID(id *string) {
+	c.ID = id
+	c.require(connectIntegrationsResponsePublicationFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ConnectIntegrationsResponsePublication) SetName(name *string) {
+	c.Name = name
+	c.require(connectIntegrationsResponsePublicationFieldName)
+}
+
+func (c *ConnectIntegrationsResponsePublication) UnmarshalJSON(data []byte) error {
+	type unmarshaler ConnectIntegrationsResponsePublication
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = ConnectIntegrationsResponsePublication(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *ConnectIntegrationsResponsePublication) MarshalJSON() ([]byte, error) {
+	type embed ConnectIntegrationsResponsePublication
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *ConnectIntegrationsResponsePublication) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
 // Lemon Squeezy only. Whether Sequenzy manages the provider webhook.
 type ConnectIntegrationsResponseWebhookProvisioning string
 
@@ -6547,7 +6685,7 @@ var (
 )
 
 type DisconnectIntegrationsResponse struct {
-	// Null when cleanup succeeded or no managed webhook exists. Otherwise repeat disconnect to retry provider cleanup.
+	// Null when cleanup succeeded or no managed webhook exists. Otherwise repeat disconnect to retry Lemon Squeezy cleanup, or delete the SparkLoop webhook in SparkLoop.
 	CleanupWarning *string                                `json:"cleanupWarning,omitempty" url:"cleanupWarning,omitempty"`
 	IntegrationID  string                                 `json:"integrationId" url:"integrationId"`
 	Message        string                                 `json:"message" url:"message"`
@@ -6691,12 +6829,15 @@ type DisconnectIntegrationsResponseProvider string
 
 const (
 	DisconnectIntegrationsResponseProviderLemonSqueezy DisconnectIntegrationsResponseProvider = "lemon_squeezy"
+	DisconnectIntegrationsResponseProviderSparkloop    DisconnectIntegrationsResponseProvider = "sparkloop"
 )
 
 func NewDisconnectIntegrationsResponseProviderFromString(s string) (DisconnectIntegrationsResponseProvider, error) {
 	switch s {
 	case "lemon_squeezy":
 		return DisconnectIntegrationsResponseProviderLemonSqueezy, nil
+	case "sparkloop":
+		return DisconnectIntegrationsResponseProviderSparkloop, nil
 	}
 	var t DisconnectIntegrationsResponseProvider
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

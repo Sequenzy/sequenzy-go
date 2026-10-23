@@ -346,17 +346,25 @@ func (a *AgentFriendlyError) String() string {
 }
 
 var (
-	badRequestErrorBodyFieldCode    = big.NewInt(1 << 0)
-	badRequestErrorBodyFieldError   = big.NewInt(1 << 1)
-	badRequestErrorBodyFieldIssues  = big.NewInt(1 << 2)
-	badRequestErrorBodyFieldSuccess = big.NewInt(1 << 3)
+	badRequestErrorBodyFieldCode         = big.NewInt(1 << 0)
+	badRequestErrorBodyFieldError        = big.NewInt(1 << 1)
+	badRequestErrorBodyFieldIssues       = big.NewInt(1 << 2)
+	badRequestErrorBodyFieldRetryable    = big.NewInt(1 << 3)
+	badRequestErrorBodyFieldSuccess      = big.NewInt(1 << 4)
+	badRequestErrorBodyFieldPublications = big.NewInt(1 << 5)
 )
 
 type BadRequestErrorBody struct {
-	Code    *string          `json:"code,omitempty" url:"code,omitempty"`
-	Error   *string          `json:"error,omitempty" url:"error,omitempty"`
-	Issues  []*DesignMdIssue `json:"issues,omitempty" url:"issues,omitempty"`
-	Success *bool            `json:"success,omitempty" url:"success,omitempty"`
+	// Optional stable machine-readable error discriminator when available.
+	Code  *string `json:"code,omitempty" url:"code,omitempty"`
+	Error string  `json:"error" url:"error"`
+	// Field-level problems with the request, when the endpoint reports them. Up to ten entries; `error` summarizes the first three.
+	Issues []*InputIssue `json:"issues,omitempty" url:"issues,omitempty"`
+	// Whether retrying the request can recover from the error.
+	Retryable *bool `json:"retryable,omitempty" url:"retryable,omitempty"`
+	Success   *bool `json:"success,omitempty" url:"success,omitempty"`
+	// SparkLoop only, with code sparkloop_publication_required. The publications to pass as providerAccountId.
+	Publications []*BadRequestErrorBodyPublicationsItem `json:"publications,omitempty" url:"publications,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -372,18 +380,25 @@ func (b *BadRequestErrorBody) GetCode() *string {
 	return b.Code
 }
 
-func (b *BadRequestErrorBody) GetError() *string {
+func (b *BadRequestErrorBody) GetError() string {
 	if b == nil {
-		return nil
+		return ""
 	}
 	return b.Error
 }
 
-func (b *BadRequestErrorBody) GetIssues() []*DesignMdIssue {
+func (b *BadRequestErrorBody) GetIssues() []*InputIssue {
 	if b == nil {
 		return nil
 	}
 	return b.Issues
+}
+
+func (b *BadRequestErrorBody) GetRetryable() *bool {
+	if b == nil {
+		return nil
+	}
+	return b.Retryable
 }
 
 func (b *BadRequestErrorBody) GetSuccess() *bool {
@@ -391,6 +406,13 @@ func (b *BadRequestErrorBody) GetSuccess() *bool {
 		return nil
 	}
 	return b.Success
+}
+
+func (b *BadRequestErrorBody) GetPublications() []*BadRequestErrorBodyPublicationsItem {
+	if b == nil {
+		return nil
+	}
+	return b.Publications
 }
 
 func (b *BadRequestErrorBody) GetExtraProperties() map[string]interface{} {
@@ -416,16 +438,23 @@ func (b *BadRequestErrorBody) SetCode(code *string) {
 
 // SetError sets the Error field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (b *BadRequestErrorBody) SetError(error_ *string) {
+func (b *BadRequestErrorBody) SetError(error_ string) {
 	b.Error = error_
 	b.require(badRequestErrorBodyFieldError)
 }
 
 // SetIssues sets the Issues field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (b *BadRequestErrorBody) SetIssues(issues []*DesignMdIssue) {
+func (b *BadRequestErrorBody) SetIssues(issues []*InputIssue) {
 	b.Issues = issues
 	b.require(badRequestErrorBodyFieldIssues)
+}
+
+// SetRetryable sets the Retryable field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *BadRequestErrorBody) SetRetryable(retryable *bool) {
+	b.Retryable = retryable
+	b.require(badRequestErrorBodyFieldRetryable)
 }
 
 // SetSuccess sets the Success field and marks it as non-optional;
@@ -433,6 +462,13 @@ func (b *BadRequestErrorBody) SetIssues(issues []*DesignMdIssue) {
 func (b *BadRequestErrorBody) SetSuccess(success *bool) {
 	b.Success = success
 	b.require(badRequestErrorBodyFieldSuccess)
+}
+
+// SetPublications sets the Publications field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *BadRequestErrorBody) SetPublications(publications []*BadRequestErrorBodyPublicationsItem) {
+	b.Publications = publications
+	b.require(badRequestErrorBodyFieldPublications)
 }
 
 func (b *BadRequestErrorBody) UnmarshalJSON(data []byte) error {
@@ -758,6 +794,106 @@ func (b *BadRequestErrorBodyError) MarshalJSON() ([]byte, error) {
 }
 
 func (b *BadRequestErrorBodyError) String() string {
+	if b == nil {
+		return "<nil>"
+	}
+	if len(b.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(b.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(b); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", b)
+}
+
+var (
+	badRequestErrorBodyPublicationsItemFieldID   = big.NewInt(1 << 0)
+	badRequestErrorBodyPublicationsItemFieldName = big.NewInt(1 << 1)
+)
+
+type BadRequestErrorBodyPublicationsItem struct {
+	ID   *string `json:"id,omitempty" url:"id,omitempty"`
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (b *BadRequestErrorBodyPublicationsItem) GetID() *string {
+	if b == nil {
+		return nil
+	}
+	return b.ID
+}
+
+func (b *BadRequestErrorBodyPublicationsItem) GetName() *string {
+	if b == nil {
+		return nil
+	}
+	return b.Name
+}
+
+func (b *BadRequestErrorBodyPublicationsItem) GetExtraProperties() map[string]interface{} {
+	if b == nil {
+		return nil
+	}
+	return b.extraProperties
+}
+
+func (b *BadRequestErrorBodyPublicationsItem) require(field *big.Int) {
+	if b.explicitFields == nil {
+		b.explicitFields = big.NewInt(0)
+	}
+	b.explicitFields.Or(b.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *BadRequestErrorBodyPublicationsItem) SetID(id *string) {
+	b.ID = id
+	b.require(badRequestErrorBodyPublicationsItemFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *BadRequestErrorBodyPublicationsItem) SetName(name *string) {
+	b.Name = name
+	b.require(badRequestErrorBodyPublicationsItemFieldName)
+}
+
+func (b *BadRequestErrorBodyPublicationsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler BadRequestErrorBodyPublicationsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*b = BadRequestErrorBodyPublicationsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *b)
+	if err != nil {
+		return err
+	}
+	b.extraProperties = extraProperties
+	b.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (b *BadRequestErrorBodyPublicationsItem) MarshalJSON() ([]byte, error) {
+	type embed BadRequestErrorBodyPublicationsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*b),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, b.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (b *BadRequestErrorBodyPublicationsItem) String() string {
 	if b == nil {
 		return "<nil>"
 	}

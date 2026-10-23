@@ -11595,6 +11595,14 @@ func TestSettersMarkExplicitTransactionalMetricsResponse(t *testing.T) {
 }
 
 func TestSettersTransactionalMetricsResponseBounceBreakdown(t *testing.T) {
+	t.Run("SetBlocked", func(t *testing.T) {
+		obj := &TransactionalMetricsResponseBounceBreakdown{}
+		var fernTestValueBlocked *int
+		obj.SetBlocked(fernTestValueBlocked)
+		assert.Equal(t, fernTestValueBlocked, obj.Blocked)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetPermanent", func(t *testing.T) {
 		obj := &TransactionalMetricsResponseBounceBreakdown{}
 		var fernTestValuePermanent *int
@@ -11630,6 +11638,39 @@ func TestSettersTransactionalMetricsResponseBounceBreakdown(t *testing.T) {
 }
 
 func TestGettersTransactionalMetricsResponseBounceBreakdown(t *testing.T) {
+	t.Run("GetBlocked", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TransactionalMetricsResponseBounceBreakdown{}
+		var expected *int
+		obj.Blocked = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetBlocked(), "getter should return the property value")
+	})
+
+	t.Run("GetBlocked_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TransactionalMetricsResponseBounceBreakdown{}
+		obj.Blocked = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetBlocked(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetBlocked_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *TransactionalMetricsResponseBounceBreakdown
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetBlocked() // Should return zero value
+	})
+
 	t.Run("GetPermanent", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -11765,6 +11806,37 @@ func TestGettersTransactionalMetricsResponseBounceBreakdown(t *testing.T) {
 }
 
 func TestSettersMarkExplicitTransactionalMetricsResponseBounceBreakdown(t *testing.T) {
+	t.Run("SetBlocked_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TransactionalMetricsResponseBounceBreakdown{}
+		var fernTestValueBlocked *int
+
+		// Act
+		obj.SetBlocked(fernTestValueBlocked)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetPermanent_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange

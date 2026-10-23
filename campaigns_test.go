@@ -36732,6 +36732,20 @@ func TestEnumCreateForAudienceCampaignsRequestSelectionActivityBounceType(t *tes
 		assert.Equal(t, CreateForAudienceCampaignsRequestSelectionActivityBounceType("Transient"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_Soft", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateForAudienceCampaignsRequestSelectionActivityBounceTypeFromString("Soft")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateForAudienceCampaignsRequestSelectionActivityBounceType("Soft"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Blocked", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateForAudienceCampaignsRequestSelectionActivityBounceTypeFromString("Blocked")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateForAudienceCampaignsRequestSelectionActivityBounceType("Blocked"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewCreateForAudienceCampaignsRequestSelectionActivityBounceTypeFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)

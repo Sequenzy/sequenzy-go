@@ -61,12 +61,13 @@ var (
 type ListEmailSendsRequest struct {
 	AutomationID *string `json:"-" url:"automationId,omitempty"`
 	// Filter to one email step of a sequence. Take the node ID from the `steps` array of the sequence metrics endpoint. Combined with `automationId` the two intersect.
-	AutomationNodeID *string                          `json:"-" url:"automationNodeId,omitempty"`
-	BounceType       *ListEmailSendsRequestBounceType `json:"-" url:"bounceType,omitempty"`
-	CampaignID       *string                          `json:"-" url:"campaignId,omitempty"`
-	Days             *int                             `json:"-" url:"days,omitempty"`
-	EmailType        *ListEmailSendsRequestEmailType  `json:"-" url:"emailType,omitempty"`
-	Limit            *int                             `json:"-" url:"limit,omitempty"`
+	AutomationNodeID *string `json:"-" url:"automationNodeId,omitempty"`
+	// Transient is every temporary bounce. Blocked is the part the receiving server refused over content, policy or reputation, and Soft is the rest.
+	BounceType *ListEmailSendsRequestBounceType `json:"-" url:"bounceType,omitempty"`
+	CampaignID *string                          `json:"-" url:"campaignId,omitempty"`
+	Days       *int                             `json:"-" url:"days,omitempty"`
+	EmailType  *ListEmailSendsRequestEmailType  `json:"-" url:"emailType,omitempty"`
+	Limit      *int                             `json:"-" url:"limit,omitempty"`
 	// Only sends to active subscribers currently on this list, the same audience the analytics list filter uses. A list ID from another company matches no rows.
 	ListID *string `json:"-" url:"listId,omitempty"`
 	// Recipient mailbox provider, with the same values and domain classification as the analytics `mailboxProvider` filter (e.g. gmail, microsoft, yahoo, icloud, orange). `other` matches every recipient domain outside the named providers. Case-insensitive; an unknown value returns 400.
@@ -2317,6 +2318,8 @@ type ListEmailSendsRequestBounceType string
 const (
 	ListEmailSendsRequestBounceTypePermanent ListEmailSendsRequestBounceType = "Permanent"
 	ListEmailSendsRequestBounceTypeTransient ListEmailSendsRequestBounceType = "Transient"
+	ListEmailSendsRequestBounceTypeSoft      ListEmailSendsRequestBounceType = "Soft"
+	ListEmailSendsRequestBounceTypeBlocked   ListEmailSendsRequestBounceType = "Blocked"
 )
 
 func NewListEmailSendsRequestBounceTypeFromString(s string) (ListEmailSendsRequestBounceType, error) {
@@ -2325,6 +2328,10 @@ func NewListEmailSendsRequestBounceTypeFromString(s string) (ListEmailSendsReque
 		return ListEmailSendsRequestBounceTypePermanent, nil
 	case "Transient":
 		return ListEmailSendsRequestBounceTypeTransient, nil
+	case "Soft":
+		return ListEmailSendsRequestBounceTypeSoft, nil
+	case "Blocked":
+		return ListEmailSendsRequestBounceTypeBlocked, nil
 	}
 	var t ListEmailSendsRequestBounceType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

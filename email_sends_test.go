@@ -11368,6 +11368,20 @@ func TestEnumListEmailSendsRequestBounceType(t *testing.T) {
 		assert.Equal(t, ListEmailSendsRequestBounceType("Transient"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_Soft", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListEmailSendsRequestBounceTypeFromString("Soft")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListEmailSendsRequestBounceType("Soft"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Blocked", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListEmailSendsRequestBounceTypeFromString("Blocked")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListEmailSendsRequestBounceType("Blocked"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewListEmailSendsRequestBounceTypeFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)

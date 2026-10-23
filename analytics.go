@@ -4385,23 +4385,34 @@ func (t *TransactionalMetricsResponse) String() string {
 }
 
 var (
-	transactionalMetricsResponseBounceBreakdownFieldPermanent    = big.NewInt(1 << 0)
-	transactionalMetricsResponseBounceBreakdownFieldSubtypes     = big.NewInt(1 << 1)
-	transactionalMetricsResponseBounceBreakdownFieldTransient    = big.NewInt(1 << 2)
-	transactionalMetricsResponseBounceBreakdownFieldUndetermined = big.NewInt(1 << 3)
+	transactionalMetricsResponseBounceBreakdownFieldBlocked      = big.NewInt(1 << 0)
+	transactionalMetricsResponseBounceBreakdownFieldPermanent    = big.NewInt(1 << 1)
+	transactionalMetricsResponseBounceBreakdownFieldSubtypes     = big.NewInt(1 << 2)
+	transactionalMetricsResponseBounceBreakdownFieldTransient    = big.NewInt(1 << 3)
+	transactionalMetricsResponseBounceBreakdownFieldUndetermined = big.NewInt(1 << 4)
 )
 
 type TransactionalMetricsResponseBounceBreakdown struct {
-	Permanent    *int                                                       `json:"permanent,omitempty" url:"permanent,omitempty"`
-	Subtypes     []*TransactionalMetricsResponseBounceBreakdownSubtypesItem `json:"subtypes,omitempty" url:"subtypes,omitempty"`
-	Transient    *int                                                       `json:"transient,omitempty" url:"transient,omitempty"`
-	Undetermined *int                                                       `json:"undetermined,omitempty" url:"undetermined,omitempty"`
+	// Temporary bounces the receiving server refused over content, policy, reputation or sender authentication (subtypes ContentRejected, AttachmentRejected, ReputationBlocked, NonRecipientFailure and AppleRelayUnregistered). A subset of transient; soft bounces are transient minus blocked. Blocked bounces never suppress the address.
+	Blocked   *int                                                       `json:"blocked,omitempty" url:"blocked,omitempty"`
+	Permanent *int                                                       `json:"permanent,omitempty" url:"permanent,omitempty"`
+	Subtypes  []*TransactionalMetricsResponseBounceBreakdownSubtypesItem `json:"subtypes,omitempty" url:"subtypes,omitempty"`
+	// Every temporary bounce, including blocked ones.
+	Transient    *int `json:"transient,omitempty" url:"transient,omitempty"`
+	Undetermined *int `json:"undetermined,omitempty" url:"undetermined,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (t *TransactionalMetricsResponseBounceBreakdown) GetBlocked() *int {
+	if t == nil {
+		return nil
+	}
+	return t.Blocked
 }
 
 func (t *TransactionalMetricsResponseBounceBreakdown) GetPermanent() *int {
@@ -4444,6 +4455,13 @@ func (t *TransactionalMetricsResponseBounceBreakdown) require(field *big.Int) {
 		t.explicitFields = big.NewInt(0)
 	}
 	t.explicitFields.Or(t.explicitFields, field)
+}
+
+// SetBlocked sets the Blocked field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TransactionalMetricsResponseBounceBreakdown) SetBlocked(blocked *int) {
+	t.Blocked = blocked
+	t.require(transactionalMetricsResponseBounceBreakdownFieldBlocked)
 }
 
 // SetPermanent sets the Permanent field and marks it as non-optional;

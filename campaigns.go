@@ -5615,7 +5615,7 @@ type CreateForAudienceCampaignsRequestSelectionActivity struct {
 	AutomationNodeID *string                                                     `json:"automationNodeId,omitempty" url:"automationNodeId,omitempty"`
 	// Only for bounce activity.
 	BounceSubType *string `json:"bounceSubType,omitempty" url:"bounceSubType,omitempty"`
-	// Only for bounce activity.
+	// Only for bounce activity. Transient is every temporary bounce; Blocked is the part the receiver refused over content, policy or reputation, and Soft is the rest.
 	BounceType               *CreateForAudienceCampaignsRequestSelectionActivityBounceType `json:"bounceType,omitempty" url:"bounceType,omitempty"`
 	CampaignID               *string                                                       `json:"campaignId,omitempty" url:"campaignId,omitempty"`
 	EventType                CreateForAudienceCampaignsRequestSelectionActivityEventType   `json:"eventType" url:"eventType"`
@@ -5978,12 +5978,14 @@ func (c CreateForAudienceCampaignsRequestSelectionActivityAudienceType) Ptr() *C
 	return &c
 }
 
-// Only for bounce activity.
+// Only for bounce activity. Transient is every temporary bounce; Blocked is the part the receiver refused over content, policy or reputation, and Soft is the rest.
 type CreateForAudienceCampaignsRequestSelectionActivityBounceType string
 
 const (
 	CreateForAudienceCampaignsRequestSelectionActivityBounceTypePermanent CreateForAudienceCampaignsRequestSelectionActivityBounceType = "Permanent"
 	CreateForAudienceCampaignsRequestSelectionActivityBounceTypeTransient CreateForAudienceCampaignsRequestSelectionActivityBounceType = "Transient"
+	CreateForAudienceCampaignsRequestSelectionActivityBounceTypeSoft      CreateForAudienceCampaignsRequestSelectionActivityBounceType = "Soft"
+	CreateForAudienceCampaignsRequestSelectionActivityBounceTypeBlocked   CreateForAudienceCampaignsRequestSelectionActivityBounceType = "Blocked"
 )
 
 func NewCreateForAudienceCampaignsRequestSelectionActivityBounceTypeFromString(s string) (CreateForAudienceCampaignsRequestSelectionActivityBounceType, error) {
@@ -5992,6 +5994,10 @@ func NewCreateForAudienceCampaignsRequestSelectionActivityBounceTypeFromString(s
 		return CreateForAudienceCampaignsRequestSelectionActivityBounceTypePermanent, nil
 	case "Transient":
 		return CreateForAudienceCampaignsRequestSelectionActivityBounceTypeTransient, nil
+	case "Soft":
+		return CreateForAudienceCampaignsRequestSelectionActivityBounceTypeSoft, nil
+	case "Blocked":
+		return CreateForAudienceCampaignsRequestSelectionActivityBounceTypeBlocked, nil
 	}
 	var t CreateForAudienceCampaignsRequestSelectionActivityBounceType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
