@@ -9952,13 +9952,14 @@ func (u UpdateByExternalIDPathSubscribersRequestCustomAttributesStrategy) Ptr() 
 	return &u
 }
 
-// Setting `unsubscribed` performs the unsubscribe workflow.
+// Setting `unsubscribed` performs a full global unsubscribe. Setting `complained` records a company spam-complaint suppression (visible through the suppressions endpoints), then runs the same unsubscribe workflow; the subscriber then reads as `unsubscribed`. Repeating it is safe.
 type UpdateByExternalIDPathSubscribersRequestStatus string
 
 const (
 	UpdateByExternalIDPathSubscribersRequestStatusActive       UpdateByExternalIDPathSubscribersRequestStatus = "active"
 	UpdateByExternalIDPathSubscribersRequestStatusUnsubscribed UpdateByExternalIDPathSubscribersRequestStatus = "unsubscribed"
 	UpdateByExternalIDPathSubscribersRequestStatusBounced      UpdateByExternalIDPathSubscribersRequestStatus = "bounced"
+	UpdateByExternalIDPathSubscribersRequestStatusComplained   UpdateByExternalIDPathSubscribersRequestStatus = "complained"
 )
 
 func NewUpdateByExternalIDPathSubscribersRequestStatusFromString(s string) (UpdateByExternalIDPathSubscribersRequestStatus, error) {
@@ -9969,6 +9970,8 @@ func NewUpdateByExternalIDPathSubscribersRequestStatusFromString(s string) (Upda
 		return UpdateByExternalIDPathSubscribersRequestStatusUnsubscribed, nil
 	case "bounced":
 		return UpdateByExternalIDPathSubscribersRequestStatusBounced, nil
+	case "complained":
+		return UpdateByExternalIDPathSubscribersRequestStatusComplained, nil
 	}
 	var t UpdateByExternalIDPathSubscribersRequestStatus
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -10101,13 +10104,14 @@ func (u UpdateByExternalIDSubscribersRequestCustomAttributesStrategy) Ptr() *Upd
 	return &u
 }
 
-// Setting `unsubscribed` performs the unsubscribe workflow.
+// Setting `unsubscribed` performs a full global unsubscribe. Setting `complained` records a company spam-complaint suppression (visible through the suppressions endpoints), then runs the same unsubscribe workflow; the subscriber then reads as `unsubscribed`. Repeating it is safe.
 type UpdateByExternalIDSubscribersRequestStatus string
 
 const (
 	UpdateByExternalIDSubscribersRequestStatusActive       UpdateByExternalIDSubscribersRequestStatus = "active"
 	UpdateByExternalIDSubscribersRequestStatusUnsubscribed UpdateByExternalIDSubscribersRequestStatus = "unsubscribed"
 	UpdateByExternalIDSubscribersRequestStatusBounced      UpdateByExternalIDSubscribersRequestStatus = "bounced"
+	UpdateByExternalIDSubscribersRequestStatusComplained   UpdateByExternalIDSubscribersRequestStatus = "complained"
 )
 
 func NewUpdateByExternalIDSubscribersRequestStatusFromString(s string) (UpdateByExternalIDSubscribersRequestStatus, error) {
@@ -10118,6 +10122,8 @@ func NewUpdateByExternalIDSubscribersRequestStatusFromString(s string) (UpdateBy
 		return UpdateByExternalIDSubscribersRequestStatusUnsubscribed, nil
 	case "bounced":
 		return UpdateByExternalIDSubscribersRequestStatusBounced, nil
+	case "complained":
+		return UpdateByExternalIDSubscribersRequestStatusComplained, nil
 	}
 	var t UpdateByExternalIDSubscribersRequestStatus
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -10250,13 +10256,14 @@ func (u UpdateSubscribersRequestCustomAttributesStrategy) Ptr() *UpdateSubscribe
 	return &u
 }
 
-// Setting `unsubscribed` performs a full global unsubscribe.
+// Setting `unsubscribed` performs a full global unsubscribe. Setting `complained` records a company spam-complaint suppression (visible through the suppressions endpoints), then runs the same unsubscribe workflow; the subscriber then reads as `unsubscribed`. Repeating it is safe.
 type UpdateSubscribersRequestStatus string
 
 const (
 	UpdateSubscribersRequestStatusActive       UpdateSubscribersRequestStatus = "active"
 	UpdateSubscribersRequestStatusUnsubscribed UpdateSubscribersRequestStatus = "unsubscribed"
 	UpdateSubscribersRequestStatusBounced      UpdateSubscribersRequestStatus = "bounced"
+	UpdateSubscribersRequestStatusComplained   UpdateSubscribersRequestStatus = "complained"
 )
 
 func NewUpdateSubscribersRequestStatusFromString(s string) (UpdateSubscribersRequestStatus, error) {
@@ -10267,6 +10274,8 @@ func NewUpdateSubscribersRequestStatusFromString(s string) (UpdateSubscribersReq
 		return UpdateSubscribersRequestStatusUnsubscribed, nil
 	case "bounced":
 		return UpdateSubscribersRequestStatusBounced, nil
+	case "complained":
+		return UpdateSubscribersRequestStatusComplained, nil
 	}
 	var t UpdateSubscribersRequestStatus
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -10413,7 +10422,7 @@ type UpdateSubscribersRequest struct {
 	PhoneCountry *string `json:"phoneCountry,omitempty" url:"-"`
 	// SMS marketing consent. true sets smsStatus to subscribed with consent source api, false sets unsubscribed, omitted leaves SMS status unchanged. Never inferred from phone presence.
 	SmsConsent *bool `json:"smsConsent,omitempty" url:"-"`
-	// Setting `unsubscribed` performs a full global unsubscribe.
+	// Setting `unsubscribed` performs a full global unsubscribe. Setting `complained` records a company spam-complaint suppression (visible through the suppressions endpoints), then runs the same unsubscribe workflow; the subscriber then reads as `unsubscribed`. Repeating it is safe.
 	Status *UpdateSubscribersRequestStatus `json:"status,omitempty" url:"-"`
 	Tags   []string                        `json:"tags,omitempty" url:"-"`
 	// IANA timezone identifier such as America/New_York, stored as a native profile field and used for recipient-local campaign delivery. An invalid identifier returns 400 VALIDATION_ERROR. Omit to keep unchanged, or send null to clear.
@@ -10579,7 +10588,7 @@ type UpdateByExternalIDSubscribersRequest struct {
 	PhoneCountry *string `json:"phoneCountry,omitempty" url:"-"`
 	// SMS marketing consent. true sets smsStatus to subscribed with consent source api, false sets unsubscribed, omitted leaves SMS status unchanged. Never inferred from phone presence.
 	SmsConsent *bool `json:"smsConsent,omitempty" url:"-"`
-	// Setting `unsubscribed` performs the unsubscribe workflow.
+	// Setting `unsubscribed` performs a full global unsubscribe. Setting `complained` records a company spam-complaint suppression (visible through the suppressions endpoints), then runs the same unsubscribe workflow; the subscriber then reads as `unsubscribed`. Repeating it is safe.
 	Status *UpdateByExternalIDSubscribersRequestStatus `json:"status,omitempty" url:"-"`
 	Tags   []string                                    `json:"tags,omitempty" url:"-"`
 	// IANA timezone identifier (e.g. America/New_York) used for recipient-local campaign delivery. Invalid values fail with a 400 validation error; null clears the stored value.
@@ -10745,7 +10754,7 @@ type UpdateByExternalIDPathSubscribersRequest struct {
 	PhoneCountry *string `json:"phoneCountry,omitempty" url:"-"`
 	// SMS marketing consent. true sets smsStatus to subscribed with consent source api, false sets unsubscribed, omitted leaves SMS status unchanged. Never inferred from phone presence.
 	SmsConsent *bool `json:"smsConsent,omitempty" url:"-"`
-	// Setting `unsubscribed` performs the unsubscribe workflow.
+	// Setting `unsubscribed` performs a full global unsubscribe. Setting `complained` records a company spam-complaint suppression (visible through the suppressions endpoints), then runs the same unsubscribe workflow; the subscriber then reads as `unsubscribed`. Repeating it is safe.
 	Status *UpdateByExternalIDPathSubscribersRequestStatus `json:"status,omitempty" url:"-"`
 	Tags   []string                                        `json:"tags,omitempty" url:"-"`
 	// IANA timezone identifier (e.g. America/New_York) used for recipient-local campaign delivery. Invalid values fail with a 400 validation error; null clears the stored value.

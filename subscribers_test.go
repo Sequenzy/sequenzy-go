@@ -28690,6 +28690,13 @@ func TestEnumUpdateByExternalIDPathSubscribersRequestStatus(t *testing.T) {
 		assert.Equal(t, UpdateByExternalIDPathSubscribersRequestStatus("bounced"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_complained", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateByExternalIDPathSubscribersRequestStatusFromString("complained")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateByExternalIDPathSubscribersRequestStatus("complained"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewUpdateByExternalIDPathSubscribersRequestStatusFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -28755,6 +28762,13 @@ func TestEnumUpdateByExternalIDSubscribersRequestStatus(t *testing.T) {
 		assert.Equal(t, UpdateByExternalIDSubscribersRequestStatus("bounced"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_complained", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateByExternalIDSubscribersRequestStatusFromString("complained")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateByExternalIDSubscribersRequestStatus("complained"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewUpdateByExternalIDSubscribersRequestStatusFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -28818,6 +28832,13 @@ func TestEnumUpdateSubscribersRequestStatus(t *testing.T) {
 		val, err := NewUpdateSubscribersRequestStatusFromString("bounced")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, UpdateSubscribersRequestStatus("bounced"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_complained", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateSubscribersRequestStatusFromString("complained")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateSubscribersRequestStatus("complained"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {

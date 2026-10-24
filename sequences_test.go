@@ -665,6 +665,14 @@ func TestSettersMarkExplicitConfigureInboundWebhookSequencesRequest(t *testing.T
 }
 
 func TestSettersSequenceCreateRequest(t *testing.T) {
+	t.Run("SetActiveSubscribersOnly", func(t *testing.T) {
+		obj := &SequenceCreateRequest{}
+		var fernTestValueActiveSubscribersOnly *bool
+		obj.SetActiveSubscribersOnly(fernTestValueActiveSubscribersOnly)
+		assert.Equal(t, fernTestValueActiveSubscribersOnly, obj.ActiveSubscribersOnly)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetBccEmails", func(t *testing.T) {
 		obj := &SequenceCreateRequest{}
 		var fernTestValueBccEmails []string
@@ -980,6 +988,37 @@ func TestSettersSequenceCreateRequest(t *testing.T) {
 }
 
 func TestSettersMarkExplicitSequenceCreateRequest(t *testing.T) {
+	t.Run("SetActiveSubscribersOnly_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceCreateRequest{}
+		var fernTestValueActiveSubscribersOnly *bool
+
+		// Act
+		obj.SetActiveSubscribersOnly(fernTestValueActiveSubscribersOnly)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetBccEmails_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -19847,6 +19886,14 @@ func TestSettersSequenceCreateResponseSequence(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetActiveSubscribersOnly", func(t *testing.T) {
+		obj := &SequenceCreateResponseSequence{}
+		var fernTestValueActiveSubscribersOnly *bool
+		obj.SetActiveSubscribersOnly(fernTestValueActiveSubscribersOnly)
+		assert.Equal(t, fernTestValueActiveSubscribersOnly, obj.ActiveSubscribersOnly)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetDiscountCount", func(t *testing.T) {
 		obj := &SequenceCreateResponseSequence{}
 		var fernTestValueDiscountCount *float64
@@ -20017,6 +20064,39 @@ func TestGettersSequenceCreateResponseSequence(t *testing.T) {
 			}
 		}()
 		_ = obj.GetAcceptsNewEnrollments() // Should return zero value
+	})
+
+	t.Run("GetActiveSubscribersOnly", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceCreateResponseSequence{}
+		var expected *bool
+		obj.ActiveSubscribersOnly = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetActiveSubscribersOnly(), "getter should return the property value")
+	})
+
+	t.Run("GetActiveSubscribersOnly_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceCreateResponseSequence{}
+		obj.ActiveSubscribersOnly = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetActiveSubscribersOnly(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetActiveSubscribersOnly_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequenceCreateResponseSequence
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetActiveSubscribersOnly() // Should return zero value
 	})
 
 	t.Run("GetDiscountCount", func(t *testing.T) {
@@ -20591,6 +20671,37 @@ func TestSettersMarkExplicitSequenceCreateResponseSequence(t *testing.T) {
 
 		// Act
 		obj.SetAcceptsNewEnrollments(fernTestValueAcceptsNewEnrollments)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetActiveSubscribersOnly_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceCreateResponseSequence{}
+		var fernTestValueActiveSubscribersOnly *bool
+
+		// Act
+		obj.SetActiveSubscribersOnly(fernTestValueActiveSubscribersOnly)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -22898,6 +23009,14 @@ func TestSettersSequenceDetails(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetActiveSubscribersOnly", func(t *testing.T) {
+		obj := &SequenceDetails{}
+		var fernTestValueActiveSubscribersOnly *bool
+		obj.SetActiveSubscribersOnly(fernTestValueActiveSubscribersOnly)
+		assert.Equal(t, fernTestValueActiveSubscribersOnly, obj.ActiveSubscribersOnly)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetAudienceAutoEnroll", func(t *testing.T) {
 		obj := &SequenceDetails{}
 		var fernTestValueAudienceAutoEnroll *SequenceAudienceAutoEnroll
@@ -23268,6 +23387,39 @@ func TestGettersSequenceDetails(t *testing.T) {
 			}
 		}()
 		_ = obj.GetAcceptsNewEnrollments() // Should return zero value
+	})
+
+	t.Run("GetActiveSubscribersOnly", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceDetails{}
+		var expected *bool
+		obj.ActiveSubscribersOnly = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetActiveSubscribersOnly(), "getter should return the property value")
+	})
+
+	t.Run("GetActiveSubscribersOnly_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceDetails{}
+		obj.ActiveSubscribersOnly = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetActiveSubscribersOnly(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetActiveSubscribersOnly_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequenceDetails
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetActiveSubscribersOnly() // Should return zero value
 	})
 
 	t.Run("GetAudienceAutoEnroll", func(t *testing.T) {
@@ -24667,6 +24819,37 @@ func TestSettersMarkExplicitSequenceDetails(t *testing.T) {
 
 		// Act
 		obj.SetAcceptsNewEnrollments(fernTestValueAcceptsNewEnrollments)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetActiveSubscribersOnly_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceDetails{}
+		var fernTestValueActiveSubscribersOnly *bool
+
+		// Act
+		obj.SetActiveSubscribersOnly(fernTestValueActiveSubscribersOnly)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -61278,6 +61461,14 @@ func TestSettersSequenceSummary(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetActiveSubscribersOnly", func(t *testing.T) {
+		obj := &SequenceSummary{}
+		var fernTestValueActiveSubscribersOnly *bool
+		obj.SetActiveSubscribersOnly(fernTestValueActiveSubscribersOnly)
+		assert.Equal(t, fernTestValueActiveSubscribersOnly, obj.ActiveSubscribersOnly)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetAudienceAutoEnroll", func(t *testing.T) {
 		obj := &SequenceSummary{}
 		var fernTestValueAudienceAutoEnroll *SequenceAudienceAutoEnroll
@@ -61560,6 +61751,39 @@ func TestGettersSequenceSummary(t *testing.T) {
 			}
 		}()
 		_ = obj.GetAcceptsNewEnrollments() // Should return zero value
+	})
+
+	t.Run("GetActiveSubscribersOnly", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceSummary{}
+		var expected *bool
+		obj.ActiveSubscribersOnly = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetActiveSubscribersOnly(), "getter should return the property value")
+	})
+
+	t.Run("GetActiveSubscribersOnly_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceSummary{}
+		obj.ActiveSubscribersOnly = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetActiveSubscribersOnly(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetActiveSubscribersOnly_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequenceSummary
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetActiveSubscribersOnly() // Should return zero value
 	})
 
 	t.Run("GetAudienceAutoEnroll", func(t *testing.T) {
@@ -62596,6 +62820,37 @@ func TestSettersMarkExplicitSequenceSummary(t *testing.T) {
 
 		// Act
 		obj.SetAcceptsNewEnrollments(fernTestValueAcceptsNewEnrollments)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetActiveSubscribersOnly_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceSummary{}
+		var fernTestValueActiveSubscribersOnly *bool
+
+		// Act
+		obj.SetActiveSubscribersOnly(fernTestValueActiveSubscribersOnly)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -85288,6 +85543,14 @@ func TestSettersSequenceUpdateRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetActiveSubscribersOnly", func(t *testing.T) {
+		obj := &SequenceUpdateRequest{}
+		var fernTestValueActiveSubscribersOnly *bool
+		obj.SetActiveSubscribersOnly(fernTestValueActiveSubscribersOnly)
+		assert.Equal(t, fernTestValueActiveSubscribersOnly, obj.ActiveSubscribersOnly)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetAudienceAutoEnroll", func(t *testing.T) {
 		obj := &SequenceUpdateRequest{}
 		var fernTestValueAudienceAutoEnroll *SequenceAudienceAutoEnroll
@@ -85667,6 +85930,37 @@ func TestSettersMarkExplicitSequenceUpdateRequest(t *testing.T) {
 
 		// Act
 		obj.SetSequenceID(fernTestValueSequenceID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetActiveSubscribersOnly_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceUpdateRequest{}
+		var fernTestValueActiveSubscribersOnly *bool
+
+		// Act
+		obj.SetActiveSubscribersOnly(fernTestValueActiveSubscribersOnly)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)

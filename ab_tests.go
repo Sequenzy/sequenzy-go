@@ -107,7 +107,9 @@ var (
 	createAbTestsRequestFieldTestType            = big.NewInt(1 << 6)
 	createAbTestsRequestFieldVariants            = big.NewInt(1 << 7)
 	createAbTestsRequestFieldWinnerCriteria      = big.NewInt(1 << 8)
-	createAbTestsRequestFieldWinnerThreshold     = big.NewInt(1 << 9)
+	createAbTestsRequestFieldWinnerEventName     = big.NewInt(1 << 9)
+	createAbTestsRequestFieldWinnerGoalID        = big.NewInt(1 << 10)
+	createAbTestsRequestFieldWinnerThreshold     = big.NewInt(1 << 11)
 )
 
 type CreateAbTestsRequest struct {
@@ -127,8 +129,12 @@ type CreateAbTestsRequest struct {
 	TestType *CreateAbTestsRequestTestType `json:"testType,omitempty" url:"-"`
 	// Extra variants beyond the control. Required (min 1) when converting with automationNodeId. Total variants cannot exceed 5.
 	Variants []*CreateAbTestsRequestVariantsItem `json:"variants,omitempty" url:"-"`
-	// Metric used to pick the winner. For sequence tests, an explicit value overrides the testType default.
+	// Metric used to pick the winner. For sequence tests, an explicit value overrides the testType default. `goal_conversion_rate` picks the variant whose recipients convert on `winnerGoalId` most often per delivered email, `goal_value` the one with the most goal value per delivered email, and `event_rate` the one whose recipients most often fire `winnerEventName` after receiving it. Goal conversions count when attributed to the email (an open or click within the goal's attribution window; for campaigns, revenue and campaign goals also credit a recipient who received the email in that window). When no variant converts, campaign tests fall back to click rate and sequence tests keep splitting contacts.
 	WinnerCriteria *CreateAbTestsRequestWinnerCriteria `json:"winnerCriteria,omitempty" url:"-"`
+	// Required for `event_rate`. The event a recipient must fire after receiving the variant.
+	WinnerEventName *string `json:"winnerEventName,omitempty" url:"-"`
+	// Required for `goal_conversion_rate` and `goal_value`. A goal ID that is active and company-wide or scoped to this campaign or sequence, or `default-revenue` for built-in purchase revenue (SaaS purchases and commerce orders, in cents). Other goals return 400.
+	WinnerGoalID *string `json:"winnerGoalId,omitempty" url:"-"`
 	// Number of sequence recipients in the test sample.
 	WinnerThreshold *int `json:"winnerThreshold,omitempty" url:"-"`
 
@@ -204,6 +210,20 @@ func (c *CreateAbTestsRequest) SetVariants(variants []*CreateAbTestsRequestVaria
 func (c *CreateAbTestsRequest) SetWinnerCriteria(winnerCriteria *CreateAbTestsRequestWinnerCriteria) {
 	c.WinnerCriteria = winnerCriteria
 	c.require(createAbTestsRequestFieldWinnerCriteria)
+}
+
+// SetWinnerEventName sets the WinnerEventName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAbTestsRequest) SetWinnerEventName(winnerEventName *string) {
+	c.WinnerEventName = winnerEventName
+	c.require(createAbTestsRequestFieldWinnerEventName)
+}
+
+// SetWinnerGoalID sets the WinnerGoalID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAbTestsRequest) SetWinnerGoalID(winnerGoalID *string) {
+	c.WinnerGoalID = winnerGoalID
+	c.require(createAbTestsRequestFieldWinnerGoalID)
 }
 
 // SetWinnerThreshold sets the WinnerThreshold field and marks it as non-optional;
@@ -654,9 +674,11 @@ var (
 	abTestFieldUpdatedAt           = big.NewInt(1 << 17)
 	abTestFieldVariants            = big.NewInt(1 << 18)
 	abTestFieldWinnerCriteria      = big.NewInt(1 << 19)
-	abTestFieldWinnerSelectedAt    = big.NewInt(1 << 20)
-	abTestFieldWinnerThreshold     = big.NewInt(1 << 21)
-	abTestFieldWinningVariantID    = big.NewInt(1 << 22)
+	abTestFieldWinnerEventName     = big.NewInt(1 << 20)
+	abTestFieldWinnerGoalID        = big.NewInt(1 << 21)
+	abTestFieldWinnerSelectedAt    = big.NewInt(1 << 22)
+	abTestFieldWinnerThreshold     = big.NewInt(1 << 23)
+	abTestFieldWinningVariantID    = big.NewInt(1 << 24)
 )
 
 type AbTest struct {
@@ -674,7 +696,7 @@ type AbTest struct {
 	PendingSampleUpdate *AbTestPendingSampleUpdate `json:"pendingSampleUpdate,omitempty" url:"pendingSampleUpdate,omitempty"`
 	// Present on campaign detail and settings responses. Null if the campaign is missing. Counts unique recipient deliveries across retry attempts, excluding separate test emails.
 	Progress *AbTestProgress `json:"progress,omitempty" url:"progress,omitempty"`
-	// Effective settings for this test kind. Campaign tests return testPercentage, testDurationMinutes, and winnerCriteria; sequence tests return testType, winnerThreshold, and winnerCriteria.
+	// Effective settings for this test kind. Campaign tests return testPercentage, testDurationMinutes, winnerCriteria, winnerGoalId, and winnerEventName; sequence tests return testType, winnerThreshold, winnerCriteria, winnerGoalId, and winnerEventName.
 	Settings map[string]any `json:"settings,omitempty" url:"settings,omitempty"`
 	Status   *string        `json:"status,omitempty" url:"status,omitempty"`
 	// Campaign test duration. Sequence tests retain the legacy internal sentinel value 0; use settings instead.
@@ -684,11 +706,15 @@ type AbTest struct {
 	TestPercentage *int       `json:"testPercentage,omitempty" url:"testPercentage,omitempty"`
 	TestStartedAt  *time.Time `json:"testStartedAt,omitempty" url:"testStartedAt,omitempty"`
 	// Effective sequence variant strategy. Present for sequence tests.
-	TestType         *AbTestTestType  `json:"testType,omitempty" url:"testType,omitempty"`
-	UpdatedAt        *time.Time       `json:"updatedAt,omitempty" url:"updatedAt,omitempty"`
-	Variants         []*AbTestVariant `json:"variants,omitempty" url:"variants,omitempty"`
-	WinnerCriteria   *string          `json:"winnerCriteria,omitempty" url:"winnerCriteria,omitempty"`
-	WinnerSelectedAt *time.Time       `json:"winnerSelectedAt,omitempty" url:"winnerSelectedAt,omitempty"`
+	TestType       *AbTestTestType       `json:"testType,omitempty" url:"testType,omitempty"`
+	UpdatedAt      *time.Time            `json:"updatedAt,omitempty" url:"updatedAt,omitempty"`
+	Variants       []*AbTestVariant      `json:"variants,omitempty" url:"variants,omitempty"`
+	WinnerCriteria *AbTestWinnerCriteria `json:"winnerCriteria,omitempty" url:"winnerCriteria,omitempty"`
+	// Event judged by `event_rate`. Null for other criteria.
+	WinnerEventName *string `json:"winnerEventName,omitempty" url:"winnerEventName,omitempty"`
+	// Goal judged by `goal_conversion_rate` or `goal_value` (a goal ID or `default-revenue`). Null for other criteria.
+	WinnerGoalID     *string    `json:"winnerGoalId,omitempty" url:"winnerGoalId,omitempty"`
+	WinnerSelectedAt *time.Time `json:"winnerSelectedAt,omitempty" url:"winnerSelectedAt,omitempty"`
 	// Effective sequence recipient threshold. Present for sequence tests.
 	WinnerThreshold  *int    `json:"winnerThreshold,omitempty" url:"winnerThreshold,omitempty"`
 	WinningVariantID *string `json:"winningVariantId,omitempty" url:"winningVariantId,omitempty"`
@@ -833,11 +859,25 @@ func (a *AbTest) GetVariants() []*AbTestVariant {
 	return a.Variants
 }
 
-func (a *AbTest) GetWinnerCriteria() *string {
+func (a *AbTest) GetWinnerCriteria() *AbTestWinnerCriteria {
 	if a == nil {
 		return nil
 	}
 	return a.WinnerCriteria
+}
+
+func (a *AbTest) GetWinnerEventName() *string {
+	if a == nil {
+		return nil
+	}
+	return a.WinnerEventName
+}
+
+func (a *AbTest) GetWinnerGoalID() *string {
+	if a == nil {
+		return nil
+	}
+	return a.WinnerGoalID
 }
 
 func (a *AbTest) GetWinnerSelectedAt() *time.Time {
@@ -1010,9 +1050,23 @@ func (a *AbTest) SetVariants(variants []*AbTestVariant) {
 
 // SetWinnerCriteria sets the WinnerCriteria field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AbTest) SetWinnerCriteria(winnerCriteria *string) {
+func (a *AbTest) SetWinnerCriteria(winnerCriteria *AbTestWinnerCriteria) {
 	a.WinnerCriteria = winnerCriteria
 	a.require(abTestFieldWinnerCriteria)
+}
+
+// SetWinnerEventName sets the WinnerEventName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AbTest) SetWinnerEventName(winnerEventName *string) {
+	a.WinnerEventName = winnerEventName
+	a.require(abTestFieldWinnerEventName)
+}
+
+// SetWinnerGoalID sets the WinnerGoalID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AbTest) SetWinnerGoalID(winnerGoalID *string) {
+	a.WinnerGoalID = winnerGoalID
+	a.require(abTestFieldWinnerGoalID)
 }
 
 // SetWinnerSelectedAt sets the WinnerSelectedAt field and marks it as non-optional;
@@ -1658,7 +1712,7 @@ type AbTestSignificance struct {
 	// Variant with the highest rate, or null when the top variants are tied.
 	LeaderVariantID    *string `json:"leaderVariantId,omitempty" url:"leaderVariantId,omitempty"`
 	LeaderVariantLabel *string `json:"leaderVariantLabel,omitempty" url:"leaderVariantLabel,omitempty"`
-	// Metric compared, taken from the test's winner criteria.
+	// Metric compared, taken from the test's winner criteria. Goal and event criteria compare whether recipients converted; `goal_value` does too, since value has no yes/no outcome per recipient.
 	Metric AbTestSignificanceMetric `json:"metric" url:"metric"`
 	// Corrected two-sided p-value of the weakest leader comparison. Very strong results can round to exactly 0. Null while data is insufficient.
 	PValue *float64 `json:"pValue,omitempty" url:"pValue,omitempty"`
@@ -1842,12 +1896,15 @@ func (a *AbTestSignificance) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-// Metric compared, taken from the test's winner criteria.
+// Metric compared, taken from the test's winner criteria. Goal and event criteria compare whether recipients converted; `goal_value` does too, since value has no yes/no outcome per recipient.
 type AbTestSignificanceMetric string
 
 const (
-	AbTestSignificanceMetricOpenRate  AbTestSignificanceMetric = "open_rate"
-	AbTestSignificanceMetricClickRate AbTestSignificanceMetric = "click_rate"
+	AbTestSignificanceMetricOpenRate           AbTestSignificanceMetric = "open_rate"
+	AbTestSignificanceMetricClickRate          AbTestSignificanceMetric = "click_rate"
+	AbTestSignificanceMetricGoalConversionRate AbTestSignificanceMetric = "goal_conversion_rate"
+	AbTestSignificanceMetricGoalValue          AbTestSignificanceMetric = "goal_value"
+	AbTestSignificanceMetricEventRate          AbTestSignificanceMetric = "event_rate"
 )
 
 func NewAbTestSignificanceMetricFromString(s string) (AbTestSignificanceMetric, error) {
@@ -1856,6 +1913,12 @@ func NewAbTestSignificanceMetricFromString(s string) (AbTestSignificanceMetric, 
 		return AbTestSignificanceMetricOpenRate, nil
 	case "click_rate":
 		return AbTestSignificanceMetricClickRate, nil
+	case "goal_conversion_rate":
+		return AbTestSignificanceMetricGoalConversionRate, nil
+	case "goal_value":
+		return AbTestSignificanceMetricGoalValue, nil
+	case "event_rate":
+		return AbTestSignificanceMetricEventRate, nil
 	}
 	var t AbTestSignificanceMetric
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -2230,6 +2293,37 @@ func (a *AbTestVariant) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
+type AbTestWinnerCriteria string
+
+const (
+	AbTestWinnerCriteriaOpenRate           AbTestWinnerCriteria = "open_rate"
+	AbTestWinnerCriteriaClickRate          AbTestWinnerCriteria = "click_rate"
+	AbTestWinnerCriteriaGoalConversionRate AbTestWinnerCriteria = "goal_conversion_rate"
+	AbTestWinnerCriteriaGoalValue          AbTestWinnerCriteria = "goal_value"
+	AbTestWinnerCriteriaEventRate          AbTestWinnerCriteria = "event_rate"
+)
+
+func NewAbTestWinnerCriteriaFromString(s string) (AbTestWinnerCriteria, error) {
+	switch s {
+	case "open_rate":
+		return AbTestWinnerCriteriaOpenRate, nil
+	case "click_rate":
+		return AbTestWinnerCriteriaClickRate, nil
+	case "goal_conversion_rate":
+		return AbTestWinnerCriteriaGoalConversionRate, nil
+	case "goal_value":
+		return AbTestWinnerCriteriaGoalValue, nil
+	case "event_rate":
+		return AbTestWinnerCriteriaEventRate, nil
+	}
+	var t AbTestWinnerCriteria
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AbTestWinnerCriteria) Ptr() *AbTestWinnerCriteria {
+	return &a
+}
+
 var (
 	addVariantAbTestsResponseFieldAbTest   = big.NewInt(1 << 0)
 	addVariantAbTestsResponseFieldSuccess  = big.NewInt(1 << 1)
@@ -2485,12 +2579,15 @@ func (c *CreateAbTestsRequestVariantsItem) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Metric used to pick the winner. For sequence tests, an explicit value overrides the testType default.
+// Metric used to pick the winner. For sequence tests, an explicit value overrides the testType default. `goal_conversion_rate` picks the variant whose recipients convert on `winnerGoalId` most often per delivered email, `goal_value` the one with the most goal value per delivered email, and `event_rate` the one whose recipients most often fire `winnerEventName` after receiving it. Goal conversions count when attributed to the email (an open or click within the goal's attribution window; for campaigns, revenue and campaign goals also credit a recipient who received the email in that window). When no variant converts, campaign tests fall back to click rate and sequence tests keep splitting contacts.
 type CreateAbTestsRequestWinnerCriteria string
 
 const (
-	CreateAbTestsRequestWinnerCriteriaOpenRate  CreateAbTestsRequestWinnerCriteria = "open_rate"
-	CreateAbTestsRequestWinnerCriteriaClickRate CreateAbTestsRequestWinnerCriteria = "click_rate"
+	CreateAbTestsRequestWinnerCriteriaOpenRate           CreateAbTestsRequestWinnerCriteria = "open_rate"
+	CreateAbTestsRequestWinnerCriteriaClickRate          CreateAbTestsRequestWinnerCriteria = "click_rate"
+	CreateAbTestsRequestWinnerCriteriaGoalConversionRate CreateAbTestsRequestWinnerCriteria = "goal_conversion_rate"
+	CreateAbTestsRequestWinnerCriteriaGoalValue          CreateAbTestsRequestWinnerCriteria = "goal_value"
+	CreateAbTestsRequestWinnerCriteriaEventRate          CreateAbTestsRequestWinnerCriteria = "event_rate"
 )
 
 func NewCreateAbTestsRequestWinnerCriteriaFromString(s string) (CreateAbTestsRequestWinnerCriteria, error) {
@@ -2499,6 +2596,12 @@ func NewCreateAbTestsRequestWinnerCriteriaFromString(s string) (CreateAbTestsReq
 		return CreateAbTestsRequestWinnerCriteriaOpenRate, nil
 	case "click_rate":
 		return CreateAbTestsRequestWinnerCriteriaClickRate, nil
+	case "goal_conversion_rate":
+		return CreateAbTestsRequestWinnerCriteriaGoalConversionRate, nil
+	case "goal_value":
+		return CreateAbTestsRequestWinnerCriteriaGoalValue, nil
+	case "event_rate":
+		return CreateAbTestsRequestWinnerCriteriaEventRate, nil
 	}
 	var t CreateAbTestsRequestWinnerCriteria
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -3184,16 +3287,19 @@ var (
 	getStatsAbTestsResponseVariantsItemFieldID       = big.NewInt(1 << 0)
 	getStatsAbTestsResponseVariantsItemFieldIsWinner = big.NewInt(1 << 1)
 	getStatsAbTestsResponseVariantsItemFieldLabel    = big.NewInt(1 << 2)
-	getStatsAbTestsResponseVariantsItemFieldStats    = big.NewInt(1 << 3)
-	getStatsAbTestsResponseVariantsItemFieldSubject  = big.NewInt(1 << 4)
+	getStatsAbTestsResponseVariantsItemFieldOutcome  = big.NewInt(1 << 3)
+	getStatsAbTestsResponseVariantsItemFieldStats    = big.NewInt(1 << 4)
+	getStatsAbTestsResponseVariantsItemFieldSubject  = big.NewInt(1 << 5)
 )
 
 type GetStatsAbTestsResponseVariantsItem struct {
-	ID       *string        `json:"id,omitempty" url:"id,omitempty"`
-	IsWinner *bool          `json:"isWinner,omitempty" url:"isWinner,omitempty"`
-	Label    *string        `json:"label,omitempty" url:"label,omitempty"`
-	Stats    map[string]any `json:"stats,omitempty" url:"stats,omitempty"`
-	Subject  *string        `json:"subject,omitempty" url:"subject,omitempty"`
+	ID       *string `json:"id,omitempty" url:"id,omitempty"`
+	IsWinner *bool   `json:"isWinner,omitempty" url:"isWinner,omitempty"`
+	Label    *string `json:"label,omitempty" url:"label,omitempty"`
+	// Present when the test is judged on a goal or event. Covers every send of the test, whatever the requested period.
+	Outcome *GetStatsAbTestsResponseVariantsItemOutcome `json:"outcome,omitempty" url:"outcome,omitempty"`
+	Stats   map[string]any                              `json:"stats,omitempty" url:"stats,omitempty"`
+	Subject *string                                     `json:"subject,omitempty" url:"subject,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -3221,6 +3327,13 @@ func (g *GetStatsAbTestsResponseVariantsItem) GetLabel() *string {
 		return nil
 	}
 	return g.Label
+}
+
+func (g *GetStatsAbTestsResponseVariantsItem) GetOutcome() *GetStatsAbTestsResponseVariantsItemOutcome {
+	if g == nil {
+		return nil
+	}
+	return g.Outcome
 }
 
 func (g *GetStatsAbTestsResponseVariantsItem) GetStats() map[string]any {
@@ -3272,6 +3385,13 @@ func (g *GetStatsAbTestsResponseVariantsItem) SetLabel(label *string) {
 	g.require(getStatsAbTestsResponseVariantsItemFieldLabel)
 }
 
+// SetOutcome sets the Outcome field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetStatsAbTestsResponseVariantsItem) SetOutcome(outcome *GetStatsAbTestsResponseVariantsItemOutcome) {
+	g.Outcome = outcome
+	g.require(getStatsAbTestsResponseVariantsItemFieldOutcome)
+}
+
 // SetStats sets the Stats field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (g *GetStatsAbTestsResponseVariantsItem) SetStats(stats map[string]any) {
@@ -3314,6 +3434,158 @@ func (g *GetStatsAbTestsResponseVariantsItem) MarshalJSON() ([]byte, error) {
 }
 
 func (g *GetStatsAbTestsResponseVariantsItem) String() string {
+	if g == nil {
+		return "<nil>"
+	}
+	if len(g.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(g.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(g); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", g)
+}
+
+// Present when the test is judged on a goal or event. Covers every send of the test, whatever the requested period.
+var (
+	getStatsAbTestsResponseVariantsItemOutcomeFieldConversionRate      = big.NewInt(1 << 0)
+	getStatsAbTestsResponseVariantsItemOutcomeFieldConvertedRecipients = big.NewInt(1 << 1)
+	getStatsAbTestsResponseVariantsItemOutcomeFieldDeliveries          = big.NewInt(1 << 2)
+	getStatsAbTestsResponseVariantsItemOutcomeFieldValue               = big.NewInt(1 << 3)
+	getStatsAbTestsResponseVariantsItemOutcomeFieldValuePerDelivery    = big.NewInt(1 << 4)
+)
+
+type GetStatsAbTestsResponseVariantsItemOutcome struct {
+	// convertedRecipients per delivered email, as a percentage.
+	ConversionRate *float64 `json:"conversionRate,omitempty" url:"conversionRate,omitempty"`
+	// Recipients with an attributed goal conversion, or who fired the event after their send.
+	ConvertedRecipients *int `json:"convertedRecipients,omitempty" url:"convertedRecipients,omitempty"`
+	Deliveries          *int `json:"deliveries,omitempty" url:"deliveries,omitempty"`
+	// Summed tracked goal value, such as revenue in cents. Refunds lower it. 0 for events.
+	Value            *float64 `json:"value,omitempty" url:"value,omitempty"`
+	ValuePerDelivery *float64 `json:"valuePerDelivery,omitempty" url:"valuePerDelivery,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (g *GetStatsAbTestsResponseVariantsItemOutcome) GetConversionRate() *float64 {
+	if g == nil {
+		return nil
+	}
+	return g.ConversionRate
+}
+
+func (g *GetStatsAbTestsResponseVariantsItemOutcome) GetConvertedRecipients() *int {
+	if g == nil {
+		return nil
+	}
+	return g.ConvertedRecipients
+}
+
+func (g *GetStatsAbTestsResponseVariantsItemOutcome) GetDeliveries() *int {
+	if g == nil {
+		return nil
+	}
+	return g.Deliveries
+}
+
+func (g *GetStatsAbTestsResponseVariantsItemOutcome) GetValue() *float64 {
+	if g == nil {
+		return nil
+	}
+	return g.Value
+}
+
+func (g *GetStatsAbTestsResponseVariantsItemOutcome) GetValuePerDelivery() *float64 {
+	if g == nil {
+		return nil
+	}
+	return g.ValuePerDelivery
+}
+
+func (g *GetStatsAbTestsResponseVariantsItemOutcome) GetExtraProperties() map[string]interface{} {
+	if g == nil {
+		return nil
+	}
+	return g.extraProperties
+}
+
+func (g *GetStatsAbTestsResponseVariantsItemOutcome) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetConversionRate sets the ConversionRate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetStatsAbTestsResponseVariantsItemOutcome) SetConversionRate(conversionRate *float64) {
+	g.ConversionRate = conversionRate
+	g.require(getStatsAbTestsResponseVariantsItemOutcomeFieldConversionRate)
+}
+
+// SetConvertedRecipients sets the ConvertedRecipients field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetStatsAbTestsResponseVariantsItemOutcome) SetConvertedRecipients(convertedRecipients *int) {
+	g.ConvertedRecipients = convertedRecipients
+	g.require(getStatsAbTestsResponseVariantsItemOutcomeFieldConvertedRecipients)
+}
+
+// SetDeliveries sets the Deliveries field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetStatsAbTestsResponseVariantsItemOutcome) SetDeliveries(deliveries *int) {
+	g.Deliveries = deliveries
+	g.require(getStatsAbTestsResponseVariantsItemOutcomeFieldDeliveries)
+}
+
+// SetValue sets the Value field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetStatsAbTestsResponseVariantsItemOutcome) SetValue(value *float64) {
+	g.Value = value
+	g.require(getStatsAbTestsResponseVariantsItemOutcomeFieldValue)
+}
+
+// SetValuePerDelivery sets the ValuePerDelivery field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetStatsAbTestsResponseVariantsItemOutcome) SetValuePerDelivery(valuePerDelivery *float64) {
+	g.ValuePerDelivery = valuePerDelivery
+	g.require(getStatsAbTestsResponseVariantsItemOutcomeFieldValuePerDelivery)
+}
+
+func (g *GetStatsAbTestsResponseVariantsItemOutcome) UnmarshalJSON(data []byte) error {
+	type unmarshaler GetStatsAbTestsResponseVariantsItemOutcome
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*g = GetStatsAbTestsResponseVariantsItemOutcome(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *g)
+	if err != nil {
+		return err
+	}
+	g.extraProperties = extraProperties
+	g.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (g *GetStatsAbTestsResponseVariantsItemOutcome) MarshalJSON() ([]byte, error) {
+	type embed GetStatsAbTestsResponseVariantsItemOutcome
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*g),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (g *GetStatsAbTestsResponseVariantsItemOutcome) String() string {
 	if g == nil {
 		return "<nil>"
 	}
@@ -3822,12 +4094,15 @@ func (u UpdateAbTestsRequestTestType) Ptr() *UpdateAbTestsRequestTestType {
 	return &u
 }
 
-// Winner metric for campaign or sequence tests; immutable once campaign testing starts.
+// Winner metric for campaign or sequence tests; immutable once campaign testing starts, together with winnerGoalId and winnerEventName. Changing the criterion clears a goal or event the new criterion does not use.
 type UpdateAbTestsRequestWinnerCriteria string
 
 const (
-	UpdateAbTestsRequestWinnerCriteriaOpenRate  UpdateAbTestsRequestWinnerCriteria = "open_rate"
-	UpdateAbTestsRequestWinnerCriteriaClickRate UpdateAbTestsRequestWinnerCriteria = "click_rate"
+	UpdateAbTestsRequestWinnerCriteriaOpenRate           UpdateAbTestsRequestWinnerCriteria = "open_rate"
+	UpdateAbTestsRequestWinnerCriteriaClickRate          UpdateAbTestsRequestWinnerCriteria = "click_rate"
+	UpdateAbTestsRequestWinnerCriteriaGoalConversionRate UpdateAbTestsRequestWinnerCriteria = "goal_conversion_rate"
+	UpdateAbTestsRequestWinnerCriteriaGoalValue          UpdateAbTestsRequestWinnerCriteria = "goal_value"
+	UpdateAbTestsRequestWinnerCriteriaEventRate          UpdateAbTestsRequestWinnerCriteria = "event_rate"
 )
 
 func NewUpdateAbTestsRequestWinnerCriteriaFromString(s string) (UpdateAbTestsRequestWinnerCriteria, error) {
@@ -3836,6 +4111,12 @@ func NewUpdateAbTestsRequestWinnerCriteriaFromString(s string) (UpdateAbTestsReq
 		return UpdateAbTestsRequestWinnerCriteriaOpenRate, nil
 	case "click_rate":
 		return UpdateAbTestsRequestWinnerCriteriaClickRate, nil
+	case "goal_conversion_rate":
+		return UpdateAbTestsRequestWinnerCriteriaGoalConversionRate, nil
+	case "goal_value":
+		return UpdateAbTestsRequestWinnerCriteriaGoalValue, nil
+	case "event_rate":
+		return UpdateAbTestsRequestWinnerCriteriaEventRate, nil
 	}
 	var t UpdateAbTestsRequestWinnerCriteria
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -4066,13 +4347,16 @@ var (
 	updateAbTestsRequestFieldAutoSelectWinner    = big.NewInt(1 << 1)
 	updateAbTestsRequestFieldCancelSampleUpdate  = big.NewInt(1 << 2)
 	updateAbTestsRequestFieldConfirmLiveChange   = big.NewInt(1 << 3)
-	updateAbTestsRequestFieldExpectedUpdatedAt   = big.NewInt(1 << 4)
-	updateAbTestsRequestFieldName                = big.NewInt(1 << 5)
-	updateAbTestsRequestFieldTestDurationMinutes = big.NewInt(1 << 6)
-	updateAbTestsRequestFieldTestPercentage      = big.NewInt(1 << 7)
-	updateAbTestsRequestFieldTestType            = big.NewInt(1 << 8)
-	updateAbTestsRequestFieldWinnerCriteria      = big.NewInt(1 << 9)
-	updateAbTestsRequestFieldWinnerThreshold     = big.NewInt(1 << 10)
+	updateAbTestsRequestFieldEndTestNow          = big.NewInt(1 << 4)
+	updateAbTestsRequestFieldExpectedUpdatedAt   = big.NewInt(1 << 5)
+	updateAbTestsRequestFieldName                = big.NewInt(1 << 6)
+	updateAbTestsRequestFieldTestDurationMinutes = big.NewInt(1 << 7)
+	updateAbTestsRequestFieldTestPercentage      = big.NewInt(1 << 8)
+	updateAbTestsRequestFieldTestType            = big.NewInt(1 << 9)
+	updateAbTestsRequestFieldWinnerCriteria      = big.NewInt(1 << 10)
+	updateAbTestsRequestFieldWinnerEventName     = big.NewInt(1 << 11)
+	updateAbTestsRequestFieldWinnerGoalID        = big.NewInt(1 << 12)
+	updateAbTestsRequestFieldWinnerThreshold     = big.NewInt(1 << 13)
 )
 
 type UpdateAbTestsRequest struct {
@@ -4084,6 +4368,8 @@ type UpdateAbTestsRequest struct {
 	CancelSampleUpdate *bool `json:"cancelSampleUpdate,omitempty" url:"-"`
 	// Required when sequence settings affect an active test or a test with recorded activity.
 	ConfirmLiveChange *bool `json:"confirmLiveChange,omitempty" url:"-"`
+	// Campaign-only. End a running test now: the winner is picked by winnerCriteria from the results so far and sent to the remaining audience. Requires campaigns:send. Cannot be combined with testDurationMinutes; returns 400 for tests that are not running and 409 while a sample change is pending.
+	EndTestNow *bool `json:"endTestNow,omitempty" url:"-"`
 	// Optional campaign revision from GET; stale values return 409. Omit to preserve existing unconditional update behavior.
 	ExpectedUpdatedAt *time.Time `json:"expectedUpdatedAt,omitempty" url:"-"`
 	Name              *string    `json:"name,omitempty" url:"-"`
@@ -4093,8 +4379,12 @@ type UpdateAbTestsRequest struct {
 	TestPercentage *int `json:"testPercentage,omitempty" url:"-"`
 	// Sequence-only variant strategy.
 	TestType *UpdateAbTestsRequestTestType `json:"testType,omitempty" url:"-"`
-	// Winner metric for campaign or sequence tests; immutable once campaign testing starts.
+	// Winner metric for campaign or sequence tests; immutable once campaign testing starts, together with winnerGoalId and winnerEventName. Changing the criterion clears a goal or event the new criterion does not use.
 	WinnerCriteria *UpdateAbTestsRequestWinnerCriteria `json:"winnerCriteria,omitempty" url:"-"`
+	// Required for `event_rate`. The event a recipient must fire after receiving the variant.
+	WinnerEventName *string `json:"winnerEventName,omitempty" url:"-"`
+	// Required for `goal_conversion_rate` and `goal_value`. A goal ID that is active and company-wide or scoped to this campaign or sequence, or `default-revenue` for built-in purchase revenue (SaaS purchases and commerce orders, in cents). Other goals return 400.
+	WinnerGoalID *string `json:"winnerGoalId,omitempty" url:"-"`
 	// Sequence-only recipient threshold.
 	WinnerThreshold *int `json:"winnerThreshold,omitempty" url:"-"`
 
@@ -4137,6 +4427,13 @@ func (u *UpdateAbTestsRequest) SetConfirmLiveChange(confirmLiveChange *bool) {
 	u.require(updateAbTestsRequestFieldConfirmLiveChange)
 }
 
+// SetEndTestNow sets the EndTestNow field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAbTestsRequest) SetEndTestNow(endTestNow *bool) {
+	u.EndTestNow = endTestNow
+	u.require(updateAbTestsRequestFieldEndTestNow)
+}
+
 // SetExpectedUpdatedAt sets the ExpectedUpdatedAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateAbTestsRequest) SetExpectedUpdatedAt(expectedUpdatedAt *time.Time) {
@@ -4177,6 +4474,20 @@ func (u *UpdateAbTestsRequest) SetTestType(testType *UpdateAbTestsRequestTestTyp
 func (u *UpdateAbTestsRequest) SetWinnerCriteria(winnerCriteria *UpdateAbTestsRequestWinnerCriteria) {
 	u.WinnerCriteria = winnerCriteria
 	u.require(updateAbTestsRequestFieldWinnerCriteria)
+}
+
+// SetWinnerEventName sets the WinnerEventName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAbTestsRequest) SetWinnerEventName(winnerEventName *string) {
+	u.WinnerEventName = winnerEventName
+	u.require(updateAbTestsRequestFieldWinnerEventName)
+}
+
+// SetWinnerGoalID sets the WinnerGoalID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAbTestsRequest) SetWinnerGoalID(winnerGoalID *string) {
+	u.WinnerGoalID = winnerGoalID
+	u.require(updateAbTestsRequestFieldWinnerGoalID)
 }
 
 // SetWinnerThreshold sets the WinnerThreshold field and marks it as non-optional;

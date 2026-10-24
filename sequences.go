@@ -303,48 +303,51 @@ func (c *ConfigureInboundWebhookSequencesRequest) MarshalJSON() ([]byte, error) 
 }
 
 var (
-	sequenceCreateRequestFieldBccEmails           = big.NewInt(1 << 0)
-	sequenceCreateRequestFieldCustomIntegration   = big.NewInt(1 << 1)
-	sequenceCreateRequestFieldDescription         = big.NewInt(1 << 2)
-	sequenceCreateRequestFieldDurationDays        = big.NewInt(1 << 3)
-	sequenceCreateRequestFieldEmailCount          = big.NewInt(1 << 4)
-	sequenceCreateRequestFieldEmailStyle          = big.NewInt(1 << 5)
-	sequenceCreateRequestFieldEnrollmentFieldPath = big.NewInt(1 << 6)
-	sequenceCreateRequestFieldEnrollmentMode      = big.NewInt(1 << 7)
-	sequenceCreateRequestFieldEventName           = big.NewInt(1 << 8)
-	sequenceCreateRequestFieldFrequencyCapEnabled = big.NewInt(1 << 9)
-	sequenceCreateRequestFieldFromEmail           = big.NewInt(1 << 10)
-	sequenceCreateRequestFieldFromName            = big.NewInt(1 << 11)
-	sequenceCreateRequestFieldGoal                = big.NewInt(1 << 12)
-	sequenceCreateRequestFieldInactiveDays        = big.NewInt(1 << 13)
-	sequenceCreateRequestFieldInactivityBaseline  = big.NewInt(1 << 14)
-	sequenceCreateRequestFieldIntegrationEventKey = big.NewInt(1 << 15)
-	sequenceCreateRequestFieldIntegrationSlug     = big.NewInt(1 << 16)
-	sequenceCreateRequestFieldKeyDates            = big.NewInt(1 << 17)
-	sequenceCreateRequestFieldLabels              = big.NewInt(1 << 18)
-	sequenceCreateRequestFieldListID              = big.NewInt(1 << 19)
-	sequenceCreateRequestFieldListIDs             = big.NewInt(1 << 20)
-	sequenceCreateRequestFieldListScope           = big.NewInt(1 << 21)
-	sequenceCreateRequestFieldMinCount            = big.NewInt(1 << 22)
-	sequenceCreateRequestFieldName                = big.NewInt(1 << 23)
-	sequenceCreateRequestFieldPropertyFilters     = big.NewInt(1 << 24)
-	sequenceCreateRequestFieldReplyProfileID      = big.NewInt(1 << 25)
-	sequenceCreateRequestFieldReplyTo             = big.NewInt(1 << 26)
-	sequenceCreateRequestFieldReplyToName         = big.NewInt(1 << 27)
-	sequenceCreateRequestFieldSegmentID           = big.NewInt(1 << 28)
-	sequenceCreateRequestFieldSenderProfileID     = big.NewInt(1 << 29)
-	sequenceCreateRequestFieldSendingWindow       = big.NewInt(1 << 30)
-	sequenceCreateRequestFieldSteps               = big.NewInt(1 << 31)
-	sequenceCreateRequestFieldStopCondition       = big.NewInt(1 << 32)
-	sequenceCreateRequestFieldStopOnSegmentExit   = big.NewInt(1 << 33)
-	sequenceCreateRequestFieldTagName             = big.NewInt(1 << 34)
-	sequenceCreateRequestFieldTagNames            = big.NewInt(1 << 35)
-	sequenceCreateRequestFieldTimeWindowDays      = big.NewInt(1 << 36)
-	sequenceCreateRequestFieldTrigger             = big.NewInt(1 << 37)
-	sequenceCreateRequestFieldUserCancellable     = big.NewInt(1 << 38)
+	sequenceCreateRequestFieldActiveSubscribersOnly = big.NewInt(1 << 0)
+	sequenceCreateRequestFieldBccEmails             = big.NewInt(1 << 1)
+	sequenceCreateRequestFieldCustomIntegration     = big.NewInt(1 << 2)
+	sequenceCreateRequestFieldDescription           = big.NewInt(1 << 3)
+	sequenceCreateRequestFieldDurationDays          = big.NewInt(1 << 4)
+	sequenceCreateRequestFieldEmailCount            = big.NewInt(1 << 5)
+	sequenceCreateRequestFieldEmailStyle            = big.NewInt(1 << 6)
+	sequenceCreateRequestFieldEnrollmentFieldPath   = big.NewInt(1 << 7)
+	sequenceCreateRequestFieldEnrollmentMode        = big.NewInt(1 << 8)
+	sequenceCreateRequestFieldEventName             = big.NewInt(1 << 9)
+	sequenceCreateRequestFieldFrequencyCapEnabled   = big.NewInt(1 << 10)
+	sequenceCreateRequestFieldFromEmail             = big.NewInt(1 << 11)
+	sequenceCreateRequestFieldFromName              = big.NewInt(1 << 12)
+	sequenceCreateRequestFieldGoal                  = big.NewInt(1 << 13)
+	sequenceCreateRequestFieldInactiveDays          = big.NewInt(1 << 14)
+	sequenceCreateRequestFieldInactivityBaseline    = big.NewInt(1 << 15)
+	sequenceCreateRequestFieldIntegrationEventKey   = big.NewInt(1 << 16)
+	sequenceCreateRequestFieldIntegrationSlug       = big.NewInt(1 << 17)
+	sequenceCreateRequestFieldKeyDates              = big.NewInt(1 << 18)
+	sequenceCreateRequestFieldLabels                = big.NewInt(1 << 19)
+	sequenceCreateRequestFieldListID                = big.NewInt(1 << 20)
+	sequenceCreateRequestFieldListIDs               = big.NewInt(1 << 21)
+	sequenceCreateRequestFieldListScope             = big.NewInt(1 << 22)
+	sequenceCreateRequestFieldMinCount              = big.NewInt(1 << 23)
+	sequenceCreateRequestFieldName                  = big.NewInt(1 << 24)
+	sequenceCreateRequestFieldPropertyFilters       = big.NewInt(1 << 25)
+	sequenceCreateRequestFieldReplyProfileID        = big.NewInt(1 << 26)
+	sequenceCreateRequestFieldReplyTo               = big.NewInt(1 << 27)
+	sequenceCreateRequestFieldReplyToName           = big.NewInt(1 << 28)
+	sequenceCreateRequestFieldSegmentID             = big.NewInt(1 << 29)
+	sequenceCreateRequestFieldSenderProfileID       = big.NewInt(1 << 30)
+	sequenceCreateRequestFieldSendingWindow         = big.NewInt(1 << 31)
+	sequenceCreateRequestFieldSteps                 = big.NewInt(1 << 32)
+	sequenceCreateRequestFieldStopCondition         = big.NewInt(1 << 33)
+	sequenceCreateRequestFieldStopOnSegmentExit     = big.NewInt(1 << 34)
+	sequenceCreateRequestFieldTagName               = big.NewInt(1 << 35)
+	sequenceCreateRequestFieldTagNames              = big.NewInt(1 << 36)
+	sequenceCreateRequestFieldTimeWindowDays        = big.NewInt(1 << 37)
+	sequenceCreateRequestFieldTrigger               = big.NewInt(1 << 38)
+	sequenceCreateRequestFieldUserCancellable       = big.NewInt(1 << 39)
 )
 
 type SequenceCreateRequest struct {
+	// Only enroll contacts whose status is `active`. Defaults to `false`: unsubscribed and bounced contacts still enter on tag, event, list and contact triggers so non-marketing steps run for them, and their marketing emails are skipped at send time. Pending double opt-in contacts still wait for confirmation.
+	ActiveSubscribersOnly *bool `json:"activeSubscribersOnly,omitempty" url:"-"`
 	// Addresses blind-copied on every sequence email.
 	BccEmails []string `json:"bccEmails,omitempty" url:"-"`
 	// Custom inbound-webhook integration metadata.
@@ -429,6 +432,13 @@ func (s *SequenceCreateRequest) require(field *big.Int) {
 		s.explicitFields = big.NewInt(0)
 	}
 	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetActiveSubscribersOnly sets the ActiveSubscribersOnly field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceCreateRequest) SetActiveSubscribersOnly(activeSubscribersOnly *bool) {
+	s.ActiveSubscribersOnly = activeSubscribersOnly
+	s.require(sequenceCreateRequestFieldActiveSubscribersOnly)
 }
 
 // SetBccEmails sets the BccEmails field and marks it as non-optional;
@@ -7408,28 +7418,31 @@ func (s *SequenceCreateResponseEventTrackingPayloadContract) String() string {
 
 var (
 	sequenceCreateResponseSequenceFieldAcceptsNewEnrollments        = big.NewInt(1 << 0)
-	sequenceCreateResponseSequenceFieldDiscountCount                = big.NewInt(1 << 1)
-	sequenceCreateResponseSequenceFieldEffectiveStatus              = big.NewInt(1 << 2)
-	sequenceCreateResponseSequenceFieldEffectiveStatusSummary       = big.NewInt(1 << 3)
-	sequenceCreateResponseSequenceFieldEmailCount                   = big.NewInt(1 << 4)
-	sequenceCreateResponseSequenceFieldEnrichmentStatus             = big.NewInt(1 << 5)
-	sequenceCreateResponseSequenceFieldEnrollmentPaused             = big.NewInt(1 << 6)
-	sequenceCreateResponseSequenceFieldFrequencyCapEnabled          = big.NewInt(1 << 7)
-	sequenceCreateResponseSequenceFieldID                           = big.NewInt(1 << 8)
-	sequenceCreateResponseSequenceFieldKeyDates                     = big.NewInt(1 << 9)
-	sequenceCreateResponseSequenceFieldName                         = big.NewInt(1 << 10)
-	sequenceCreateResponseSequenceFieldNodeCount                    = big.NewInt(1 << 11)
-	sequenceCreateResponseSequenceFieldProcessesExistingEnrollments = big.NewInt(1 << 12)
-	sequenceCreateResponseSequenceFieldSendingWindow                = big.NewInt(1 << 13)
-	sequenceCreateResponseSequenceFieldStatus                       = big.NewInt(1 << 14)
-	sequenceCreateResponseSequenceFieldStopCondition                = big.NewInt(1 << 15)
-	sequenceCreateResponseSequenceFieldSubscriberUpdateCount        = big.NewInt(1 << 16)
-	sequenceCreateResponseSequenceFieldTrigger                      = big.NewInt(1 << 17)
+	sequenceCreateResponseSequenceFieldActiveSubscribersOnly        = big.NewInt(1 << 1)
+	sequenceCreateResponseSequenceFieldDiscountCount                = big.NewInt(1 << 2)
+	sequenceCreateResponseSequenceFieldEffectiveStatus              = big.NewInt(1 << 3)
+	sequenceCreateResponseSequenceFieldEffectiveStatusSummary       = big.NewInt(1 << 4)
+	sequenceCreateResponseSequenceFieldEmailCount                   = big.NewInt(1 << 5)
+	sequenceCreateResponseSequenceFieldEnrichmentStatus             = big.NewInt(1 << 6)
+	sequenceCreateResponseSequenceFieldEnrollmentPaused             = big.NewInt(1 << 7)
+	sequenceCreateResponseSequenceFieldFrequencyCapEnabled          = big.NewInt(1 << 8)
+	sequenceCreateResponseSequenceFieldID                           = big.NewInt(1 << 9)
+	sequenceCreateResponseSequenceFieldKeyDates                     = big.NewInt(1 << 10)
+	sequenceCreateResponseSequenceFieldName                         = big.NewInt(1 << 11)
+	sequenceCreateResponseSequenceFieldNodeCount                    = big.NewInt(1 << 12)
+	sequenceCreateResponseSequenceFieldProcessesExistingEnrollments = big.NewInt(1 << 13)
+	sequenceCreateResponseSequenceFieldSendingWindow                = big.NewInt(1 << 14)
+	sequenceCreateResponseSequenceFieldStatus                       = big.NewInt(1 << 15)
+	sequenceCreateResponseSequenceFieldStopCondition                = big.NewInt(1 << 16)
+	sequenceCreateResponseSequenceFieldSubscriberUpdateCount        = big.NewInt(1 << 17)
+	sequenceCreateResponseSequenceFieldTrigger                      = big.NewInt(1 << 18)
 )
 
 type SequenceCreateResponseSequence struct {
 	// Whether new subscribers can enter the sequence right now.
-	AcceptsNewEnrollments *bool                    `json:"acceptsNewEnrollments,omitempty" url:"acceptsNewEnrollments,omitempty"`
+	AcceptsNewEnrollments *bool `json:"acceptsNewEnrollments,omitempty" url:"acceptsNewEnrollments,omitempty"`
+	// Whether only active contacts can enter. When `false`, unsubscribed and bounced contacts still enter and only their marketing emails are skipped.
+	ActiveSubscribersOnly *bool                    `json:"activeSubscribersOnly,omitempty" url:"activeSubscribersOnly,omitempty"`
 	DiscountCount         *float64                 `json:"discountCount,omitempty" url:"discountCount,omitempty"`
 	EffectiveStatus       *SequenceEffectiveStatus `json:"effectiveStatus,omitempty" url:"effectiveStatus,omitempty"`
 	// One plain-language sentence describing the run state, safe to show a user verbatim.
@@ -7464,6 +7477,13 @@ func (s *SequenceCreateResponseSequence) GetAcceptsNewEnrollments() *bool {
 		return nil
 	}
 	return s.AcceptsNewEnrollments
+}
+
+func (s *SequenceCreateResponseSequence) GetActiveSubscribersOnly() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.ActiveSubscribersOnly
 }
 
 func (s *SequenceCreateResponseSequence) GetDiscountCount() *float64 {
@@ -7604,6 +7624,13 @@ func (s *SequenceCreateResponseSequence) require(field *big.Int) {
 func (s *SequenceCreateResponseSequence) SetAcceptsNewEnrollments(acceptsNewEnrollments *bool) {
 	s.AcceptsNewEnrollments = acceptsNewEnrollments
 	s.require(sequenceCreateResponseSequenceFieldAcceptsNewEnrollments)
+}
+
+// SetActiveSubscribersOnly sets the ActiveSubscribersOnly field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceCreateResponseSequence) SetActiveSubscribersOnly(activeSubscribersOnly *bool) {
+	s.ActiveSubscribersOnly = activeSubscribersOnly
+	s.require(sequenceCreateResponseSequenceFieldActiveSubscribersOnly)
 }
 
 // SetDiscountCount sets the DiscountCount field and marks it as non-optional;
@@ -8551,53 +8578,56 @@ func (s *SequenceDelayOffsetInput) String() string {
 
 var (
 	sequenceDetailsFieldAcceptsNewEnrollments        = big.NewInt(1 << 0)
-	sequenceDetailsFieldAudienceAutoEnroll           = big.NewInt(1 << 1)
-	sequenceDetailsFieldBccEmails                    = big.NewInt(1 << 2)
-	sequenceDetailsFieldCreatedAt                    = big.NewInt(1 << 3)
-	sequenceDetailsFieldDescription                  = big.NewInt(1 << 4)
-	sequenceDetailsFieldEffectiveStatus              = big.NewInt(1 << 5)
-	sequenceDetailsFieldEffectiveStatusSummary       = big.NewInt(1 << 6)
-	sequenceDetailsFieldEnrollmentPaused             = big.NewInt(1 << 7)
-	sequenceDetailsFieldFrequencyCapEnabled          = big.NewInt(1 << 8)
-	sequenceDetailsFieldFromEmail                    = big.NewInt(1 << 9)
-	sequenceDetailsFieldFromName                     = big.NewInt(1 << 10)
-	sequenceDetailsFieldID                           = big.NewInt(1 << 11)
-	sequenceDetailsFieldKeyDates                     = big.NewInt(1 << 12)
-	sequenceDetailsFieldLabelIDs                     = big.NewInt(1 << 13)
-	sequenceDetailsFieldLabels                       = big.NewInt(1 << 14)
-	sequenceDetailsFieldName                         = big.NewInt(1 << 15)
-	sequenceDetailsFieldPausedAt                     = big.NewInt(1 << 16)
-	sequenceDetailsFieldPausedByUser                 = big.NewInt(1 << 17)
-	sequenceDetailsFieldPausedByUserID               = big.NewInt(1 << 18)
-	sequenceDetailsFieldPauseReason                  = big.NewInt(1 << 19)
-	sequenceDetailsFieldPauseSource                  = big.NewInt(1 << 20)
-	sequenceDetailsFieldProcessesExistingEnrollments = big.NewInt(1 << 21)
-	sequenceDetailsFieldReplyProfileID               = big.NewInt(1 << 22)
-	sequenceDetailsFieldReplyToEmail                 = big.NewInt(1 << 23)
-	sequenceDetailsFieldReplyToName                  = big.NewInt(1 << 24)
-	sequenceDetailsFieldSenderProfileID              = big.NewInt(1 << 25)
-	sequenceDetailsFieldSendingWindow                = big.NewInt(1 << 26)
-	sequenceDetailsFieldStatus                       = big.NewInt(1 << 27)
-	sequenceDetailsFieldTrigger                      = big.NewInt(1 << 28)
-	sequenceDetailsFieldTriggerConfig                = big.NewInt(1 << 29)
-	sequenceDetailsFieldUpdatedAt                    = big.NewInt(1 << 30)
-	sequenceDetailsFieldUserCancellable              = big.NewInt(1 << 31)
-	sequenceDetailsFieldAbTestCount                  = big.NewInt(1 << 32)
-	sequenceDetailsFieldDiscountCount                = big.NewInt(1 << 33)
-	sequenceDetailsFieldEdges                        = big.NewInt(1 << 34)
-	sequenceDetailsFieldEmailCount                   = big.NewInt(1 << 35)
-	sequenceDetailsFieldEmails                       = big.NewInt(1 << 36)
-	sequenceDetailsFieldEnrichedCount                = big.NewInt(1 << 37)
-	sequenceDetailsFieldEnrichmentStatus             = big.NewInt(1 << 38)
-	sequenceDetailsFieldGraphRevision                = big.NewInt(1 << 39)
-	sequenceDetailsFieldNodes                        = big.NewInt(1 << 40)
-	sequenceDetailsFieldStopCondition                = big.NewInt(1 << 41)
-	sequenceDetailsFieldSubscriberUpdateCount        = big.NewInt(1 << 42)
+	sequenceDetailsFieldActiveSubscribersOnly        = big.NewInt(1 << 1)
+	sequenceDetailsFieldAudienceAutoEnroll           = big.NewInt(1 << 2)
+	sequenceDetailsFieldBccEmails                    = big.NewInt(1 << 3)
+	sequenceDetailsFieldCreatedAt                    = big.NewInt(1 << 4)
+	sequenceDetailsFieldDescription                  = big.NewInt(1 << 5)
+	sequenceDetailsFieldEffectiveStatus              = big.NewInt(1 << 6)
+	sequenceDetailsFieldEffectiveStatusSummary       = big.NewInt(1 << 7)
+	sequenceDetailsFieldEnrollmentPaused             = big.NewInt(1 << 8)
+	sequenceDetailsFieldFrequencyCapEnabled          = big.NewInt(1 << 9)
+	sequenceDetailsFieldFromEmail                    = big.NewInt(1 << 10)
+	sequenceDetailsFieldFromName                     = big.NewInt(1 << 11)
+	sequenceDetailsFieldID                           = big.NewInt(1 << 12)
+	sequenceDetailsFieldKeyDates                     = big.NewInt(1 << 13)
+	sequenceDetailsFieldLabelIDs                     = big.NewInt(1 << 14)
+	sequenceDetailsFieldLabels                       = big.NewInt(1 << 15)
+	sequenceDetailsFieldName                         = big.NewInt(1 << 16)
+	sequenceDetailsFieldPausedAt                     = big.NewInt(1 << 17)
+	sequenceDetailsFieldPausedByUser                 = big.NewInt(1 << 18)
+	sequenceDetailsFieldPausedByUserID               = big.NewInt(1 << 19)
+	sequenceDetailsFieldPauseReason                  = big.NewInt(1 << 20)
+	sequenceDetailsFieldPauseSource                  = big.NewInt(1 << 21)
+	sequenceDetailsFieldProcessesExistingEnrollments = big.NewInt(1 << 22)
+	sequenceDetailsFieldReplyProfileID               = big.NewInt(1 << 23)
+	sequenceDetailsFieldReplyToEmail                 = big.NewInt(1 << 24)
+	sequenceDetailsFieldReplyToName                  = big.NewInt(1 << 25)
+	sequenceDetailsFieldSenderProfileID              = big.NewInt(1 << 26)
+	sequenceDetailsFieldSendingWindow                = big.NewInt(1 << 27)
+	sequenceDetailsFieldStatus                       = big.NewInt(1 << 28)
+	sequenceDetailsFieldTrigger                      = big.NewInt(1 << 29)
+	sequenceDetailsFieldTriggerConfig                = big.NewInt(1 << 30)
+	sequenceDetailsFieldUpdatedAt                    = big.NewInt(1 << 31)
+	sequenceDetailsFieldUserCancellable              = big.NewInt(1 << 32)
+	sequenceDetailsFieldAbTestCount                  = big.NewInt(1 << 33)
+	sequenceDetailsFieldDiscountCount                = big.NewInt(1 << 34)
+	sequenceDetailsFieldEdges                        = big.NewInt(1 << 35)
+	sequenceDetailsFieldEmailCount                   = big.NewInt(1 << 36)
+	sequenceDetailsFieldEmails                       = big.NewInt(1 << 37)
+	sequenceDetailsFieldEnrichedCount                = big.NewInt(1 << 38)
+	sequenceDetailsFieldEnrichmentStatus             = big.NewInt(1 << 39)
+	sequenceDetailsFieldGraphRevision                = big.NewInt(1 << 40)
+	sequenceDetailsFieldNodes                        = big.NewInt(1 << 41)
+	sequenceDetailsFieldStopCondition                = big.NewInt(1 << 42)
+	sequenceDetailsFieldSubscriberUpdateCount        = big.NewInt(1 << 43)
 )
 
 type SequenceDetails struct {
 	// Whether new subscribers can enter the sequence right now.
-	AcceptsNewEnrollments *bool                       `json:"acceptsNewEnrollments,omitempty" url:"acceptsNewEnrollments,omitempty"`
+	AcceptsNewEnrollments *bool `json:"acceptsNewEnrollments,omitempty" url:"acceptsNewEnrollments,omitempty"`
+	// Whether only active contacts can enter. When `false`, unsubscribed and bounced contacts still enter and only their marketing emails are skipped.
+	ActiveSubscribersOnly *bool                       `json:"activeSubscribersOnly,omitempty" url:"activeSubscribersOnly,omitempty"`
 	AudienceAutoEnroll    *SequenceAudienceAutoEnroll `json:"audienceAutoEnroll,omitempty" url:"audienceAutoEnroll,omitempty"`
 	// Email addresses blind-copied on every email this sequence sends.
 	BccEmails       []string                 `json:"bccEmails,omitempty" url:"bccEmails,omitempty"`
@@ -8662,6 +8692,13 @@ func (s *SequenceDetails) GetAcceptsNewEnrollments() *bool {
 		return nil
 	}
 	return s.AcceptsNewEnrollments
+}
+
+func (s *SequenceDetails) GetActiveSubscribersOnly() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.ActiveSubscribersOnly
 }
 
 func (s *SequenceDetails) GetAudienceAutoEnroll() *SequenceAudienceAutoEnroll {
@@ -8977,6 +9014,13 @@ func (s *SequenceDetails) require(field *big.Int) {
 func (s *SequenceDetails) SetAcceptsNewEnrollments(acceptsNewEnrollments *bool) {
 	s.AcceptsNewEnrollments = acceptsNewEnrollments
 	s.require(sequenceDetailsFieldAcceptsNewEnrollments)
+}
+
+// SetActiveSubscribersOnly sets the ActiveSubscribersOnly field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDetails) SetActiveSubscribersOnly(activeSubscribersOnly *bool) {
+	s.ActiveSubscribersOnly = activeSubscribersOnly
+	s.require(sequenceDetailsFieldActiveSubscribersOnly)
 }
 
 // SetAudienceAutoEnroll sets the AudienceAutoEnroll field and marks it as non-optional;
@@ -23001,42 +23045,45 @@ func (s *SequenceSubscriberUpdateStepUpdateInput) String() string {
 
 var (
 	sequenceSummaryFieldAcceptsNewEnrollments        = big.NewInt(1 << 0)
-	sequenceSummaryFieldAudienceAutoEnroll           = big.NewInt(1 << 1)
-	sequenceSummaryFieldBccEmails                    = big.NewInt(1 << 2)
-	sequenceSummaryFieldCreatedAt                    = big.NewInt(1 << 3)
-	sequenceSummaryFieldDescription                  = big.NewInt(1 << 4)
-	sequenceSummaryFieldEffectiveStatus              = big.NewInt(1 << 5)
-	sequenceSummaryFieldEffectiveStatusSummary       = big.NewInt(1 << 6)
-	sequenceSummaryFieldEnrollmentPaused             = big.NewInt(1 << 7)
-	sequenceSummaryFieldFrequencyCapEnabled          = big.NewInt(1 << 8)
-	sequenceSummaryFieldFromEmail                    = big.NewInt(1 << 9)
-	sequenceSummaryFieldFromName                     = big.NewInt(1 << 10)
-	sequenceSummaryFieldID                           = big.NewInt(1 << 11)
-	sequenceSummaryFieldKeyDates                     = big.NewInt(1 << 12)
-	sequenceSummaryFieldLabelIDs                     = big.NewInt(1 << 13)
-	sequenceSummaryFieldLabels                       = big.NewInt(1 << 14)
-	sequenceSummaryFieldName                         = big.NewInt(1 << 15)
-	sequenceSummaryFieldPausedAt                     = big.NewInt(1 << 16)
-	sequenceSummaryFieldPausedByUser                 = big.NewInt(1 << 17)
-	sequenceSummaryFieldPausedByUserID               = big.NewInt(1 << 18)
-	sequenceSummaryFieldPauseReason                  = big.NewInt(1 << 19)
-	sequenceSummaryFieldPauseSource                  = big.NewInt(1 << 20)
-	sequenceSummaryFieldProcessesExistingEnrollments = big.NewInt(1 << 21)
-	sequenceSummaryFieldReplyProfileID               = big.NewInt(1 << 22)
-	sequenceSummaryFieldReplyToEmail                 = big.NewInt(1 << 23)
-	sequenceSummaryFieldReplyToName                  = big.NewInt(1 << 24)
-	sequenceSummaryFieldSenderProfileID              = big.NewInt(1 << 25)
-	sequenceSummaryFieldSendingWindow                = big.NewInt(1 << 26)
-	sequenceSummaryFieldStatus                       = big.NewInt(1 << 27)
-	sequenceSummaryFieldTrigger                      = big.NewInt(1 << 28)
-	sequenceSummaryFieldTriggerConfig                = big.NewInt(1 << 29)
-	sequenceSummaryFieldUpdatedAt                    = big.NewInt(1 << 30)
-	sequenceSummaryFieldUserCancellable              = big.NewInt(1 << 31)
+	sequenceSummaryFieldActiveSubscribersOnly        = big.NewInt(1 << 1)
+	sequenceSummaryFieldAudienceAutoEnroll           = big.NewInt(1 << 2)
+	sequenceSummaryFieldBccEmails                    = big.NewInt(1 << 3)
+	sequenceSummaryFieldCreatedAt                    = big.NewInt(1 << 4)
+	sequenceSummaryFieldDescription                  = big.NewInt(1 << 5)
+	sequenceSummaryFieldEffectiveStatus              = big.NewInt(1 << 6)
+	sequenceSummaryFieldEffectiveStatusSummary       = big.NewInt(1 << 7)
+	sequenceSummaryFieldEnrollmentPaused             = big.NewInt(1 << 8)
+	sequenceSummaryFieldFrequencyCapEnabled          = big.NewInt(1 << 9)
+	sequenceSummaryFieldFromEmail                    = big.NewInt(1 << 10)
+	sequenceSummaryFieldFromName                     = big.NewInt(1 << 11)
+	sequenceSummaryFieldID                           = big.NewInt(1 << 12)
+	sequenceSummaryFieldKeyDates                     = big.NewInt(1 << 13)
+	sequenceSummaryFieldLabelIDs                     = big.NewInt(1 << 14)
+	sequenceSummaryFieldLabels                       = big.NewInt(1 << 15)
+	sequenceSummaryFieldName                         = big.NewInt(1 << 16)
+	sequenceSummaryFieldPausedAt                     = big.NewInt(1 << 17)
+	sequenceSummaryFieldPausedByUser                 = big.NewInt(1 << 18)
+	sequenceSummaryFieldPausedByUserID               = big.NewInt(1 << 19)
+	sequenceSummaryFieldPauseReason                  = big.NewInt(1 << 20)
+	sequenceSummaryFieldPauseSource                  = big.NewInt(1 << 21)
+	sequenceSummaryFieldProcessesExistingEnrollments = big.NewInt(1 << 22)
+	sequenceSummaryFieldReplyProfileID               = big.NewInt(1 << 23)
+	sequenceSummaryFieldReplyToEmail                 = big.NewInt(1 << 24)
+	sequenceSummaryFieldReplyToName                  = big.NewInt(1 << 25)
+	sequenceSummaryFieldSenderProfileID              = big.NewInt(1 << 26)
+	sequenceSummaryFieldSendingWindow                = big.NewInt(1 << 27)
+	sequenceSummaryFieldStatus                       = big.NewInt(1 << 28)
+	sequenceSummaryFieldTrigger                      = big.NewInt(1 << 29)
+	sequenceSummaryFieldTriggerConfig                = big.NewInt(1 << 30)
+	sequenceSummaryFieldUpdatedAt                    = big.NewInt(1 << 31)
+	sequenceSummaryFieldUserCancellable              = big.NewInt(1 << 32)
 )
 
 type SequenceSummary struct {
 	// Whether new subscribers can enter the sequence right now.
-	AcceptsNewEnrollments *bool                       `json:"acceptsNewEnrollments,omitempty" url:"acceptsNewEnrollments,omitempty"`
+	AcceptsNewEnrollments *bool `json:"acceptsNewEnrollments,omitempty" url:"acceptsNewEnrollments,omitempty"`
+	// Whether only active contacts can enter. When `false`, unsubscribed and bounced contacts still enter and only their marketing emails are skipped.
+	ActiveSubscribersOnly *bool                       `json:"activeSubscribersOnly,omitempty" url:"activeSubscribersOnly,omitempty"`
 	AudienceAutoEnroll    *SequenceAudienceAutoEnroll `json:"audienceAutoEnroll,omitempty" url:"audienceAutoEnroll,omitempty"`
 	// Email addresses blind-copied on every email this sequence sends.
 	BccEmails       []string                 `json:"bccEmails,omitempty" url:"bccEmails,omitempty"`
@@ -23086,6 +23133,13 @@ func (s *SequenceSummary) GetAcceptsNewEnrollments() *bool {
 		return nil
 	}
 	return s.AcceptsNewEnrollments
+}
+
+func (s *SequenceSummary) GetActiveSubscribersOnly() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.ActiveSubscribersOnly
 }
 
 func (s *SequenceSummary) GetAudienceAutoEnroll() *SequenceAudienceAutoEnroll {
@@ -23324,6 +23378,13 @@ func (s *SequenceSummary) require(field *big.Int) {
 func (s *SequenceSummary) SetAcceptsNewEnrollments(acceptsNewEnrollments *bool) {
 	s.AcceptsNewEnrollments = acceptsNewEnrollments
 	s.require(sequenceSummaryFieldAcceptsNewEnrollments)
+}
+
+// SetActiveSubscribersOnly sets the ActiveSubscribersOnly field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceSummary) SetActiveSubscribersOnly(activeSubscribersOnly *bool) {
+	s.ActiveSubscribersOnly = activeSubscribersOnly
+	s.require(sequenceSummaryFieldActiveSubscribersOnly)
 }
 
 // SetAudienceAutoEnroll sets the AudienceAutoEnroll field and marks it as non-optional;
@@ -33758,57 +33819,60 @@ func (u *UnarchiveSequencesRequest) SetSequenceID(sequenceID string) {
 
 var (
 	sequenceUpdateRequestFieldSequenceID              = big.NewInt(1 << 0)
-	sequenceUpdateRequestFieldAudienceAutoEnroll      = big.NewInt(1 << 1)
-	sequenceUpdateRequestFieldBccEmails               = big.NewInt(1 << 2)
-	sequenceUpdateRequestFieldBranch                  = big.NewInt(1 << 3)
-	sequenceUpdateRequestFieldConfirmLiveChange       = big.NewInt(1 << 4)
-	sequenceUpdateRequestFieldConfirmStructuralChange = big.NewInt(1 << 5)
-	sequenceUpdateRequestFieldCustomIntegration       = big.NewInt(1 << 6)
-	sequenceUpdateRequestFieldDescription             = big.NewInt(1 << 7)
-	sequenceUpdateRequestFieldEmails                  = big.NewInt(1 << 8)
-	sequenceUpdateRequestFieldEnrollmentFieldPath     = big.NewInt(1 << 9)
-	sequenceUpdateRequestFieldEnrollmentMode          = big.NewInt(1 << 10)
-	sequenceUpdateRequestFieldEnrollmentPaused        = big.NewInt(1 << 11)
-	sequenceUpdateRequestFieldEventName               = big.NewInt(1 << 12)
-	sequenceUpdateRequestFieldFrequencyCapEnabled     = big.NewInt(1 << 13)
-	sequenceUpdateRequestFieldFromEmail               = big.NewInt(1 << 14)
-	sequenceUpdateRequestFieldFromName                = big.NewInt(1 << 15)
-	sequenceUpdateRequestFieldGraphEdit               = big.NewInt(1 << 16)
-	sequenceUpdateRequestFieldInactiveDays            = big.NewInt(1 << 17)
-	sequenceUpdateRequestFieldInactivityBaseline      = big.NewInt(1 << 18)
-	sequenceUpdateRequestFieldInsertSteps             = big.NewInt(1 << 19)
-	sequenceUpdateRequestFieldIntegrationEventKey     = big.NewInt(1 << 20)
-	sequenceUpdateRequestFieldIntegrationSlug         = big.NewInt(1 << 21)
-	sequenceUpdateRequestFieldKeyDates                = big.NewInt(1 << 22)
-	sequenceUpdateRequestFieldLabels                  = big.NewInt(1 << 23)
-	sequenceUpdateRequestFieldListID                  = big.NewInt(1 << 24)
-	sequenceUpdateRequestFieldListIDs                 = big.NewInt(1 << 25)
-	sequenceUpdateRequestFieldListScope               = big.NewInt(1 << 26)
-	sequenceUpdateRequestFieldMinCount                = big.NewInt(1 << 27)
-	sequenceUpdateRequestFieldName                    = big.NewInt(1 << 28)
-	sequenceUpdateRequestFieldNodeUpdates             = big.NewInt(1 << 29)
-	sequenceUpdateRequestFieldPropertyFilters         = big.NewInt(1 << 30)
-	sequenceUpdateRequestFieldReplyProfileID          = big.NewInt(1 << 31)
-	sequenceUpdateRequestFieldReplyTo                 = big.NewInt(1 << 32)
-	sequenceUpdateRequestFieldReplyToName             = big.NewInt(1 << 33)
-	sequenceUpdateRequestFieldSegmentID               = big.NewInt(1 << 34)
-	sequenceUpdateRequestFieldSenderProfileID         = big.NewInt(1 << 35)
-	sequenceUpdateRequestFieldSendingWindow           = big.NewInt(1 << 36)
-	sequenceUpdateRequestFieldSmsSteps                = big.NewInt(1 << 37)
-	sequenceUpdateRequestFieldSteps                   = big.NewInt(1 << 38)
-	sequenceUpdateRequestFieldStopCondition           = big.NewInt(1 << 39)
-	sequenceUpdateRequestFieldStopOnSegmentExit       = big.NewInt(1 << 40)
-	sequenceUpdateRequestFieldSubscriberUpdateSteps   = big.NewInt(1 << 41)
-	sequenceUpdateRequestFieldTagName                 = big.NewInt(1 << 42)
-	sequenceUpdateRequestFieldTagNames                = big.NewInt(1 << 43)
-	sequenceUpdateRequestFieldTimeWindowDays          = big.NewInt(1 << 44)
-	sequenceUpdateRequestFieldTrigger                 = big.NewInt(1 << 45)
-	sequenceUpdateRequestFieldUserCancellable         = big.NewInt(1 << 46)
+	sequenceUpdateRequestFieldActiveSubscribersOnly   = big.NewInt(1 << 1)
+	sequenceUpdateRequestFieldAudienceAutoEnroll      = big.NewInt(1 << 2)
+	sequenceUpdateRequestFieldBccEmails               = big.NewInt(1 << 3)
+	sequenceUpdateRequestFieldBranch                  = big.NewInt(1 << 4)
+	sequenceUpdateRequestFieldConfirmLiveChange       = big.NewInt(1 << 5)
+	sequenceUpdateRequestFieldConfirmStructuralChange = big.NewInt(1 << 6)
+	sequenceUpdateRequestFieldCustomIntegration       = big.NewInt(1 << 7)
+	sequenceUpdateRequestFieldDescription             = big.NewInt(1 << 8)
+	sequenceUpdateRequestFieldEmails                  = big.NewInt(1 << 9)
+	sequenceUpdateRequestFieldEnrollmentFieldPath     = big.NewInt(1 << 10)
+	sequenceUpdateRequestFieldEnrollmentMode          = big.NewInt(1 << 11)
+	sequenceUpdateRequestFieldEnrollmentPaused        = big.NewInt(1 << 12)
+	sequenceUpdateRequestFieldEventName               = big.NewInt(1 << 13)
+	sequenceUpdateRequestFieldFrequencyCapEnabled     = big.NewInt(1 << 14)
+	sequenceUpdateRequestFieldFromEmail               = big.NewInt(1 << 15)
+	sequenceUpdateRequestFieldFromName                = big.NewInt(1 << 16)
+	sequenceUpdateRequestFieldGraphEdit               = big.NewInt(1 << 17)
+	sequenceUpdateRequestFieldInactiveDays            = big.NewInt(1 << 18)
+	sequenceUpdateRequestFieldInactivityBaseline      = big.NewInt(1 << 19)
+	sequenceUpdateRequestFieldInsertSteps             = big.NewInt(1 << 20)
+	sequenceUpdateRequestFieldIntegrationEventKey     = big.NewInt(1 << 21)
+	sequenceUpdateRequestFieldIntegrationSlug         = big.NewInt(1 << 22)
+	sequenceUpdateRequestFieldKeyDates                = big.NewInt(1 << 23)
+	sequenceUpdateRequestFieldLabels                  = big.NewInt(1 << 24)
+	sequenceUpdateRequestFieldListID                  = big.NewInt(1 << 25)
+	sequenceUpdateRequestFieldListIDs                 = big.NewInt(1 << 26)
+	sequenceUpdateRequestFieldListScope               = big.NewInt(1 << 27)
+	sequenceUpdateRequestFieldMinCount                = big.NewInt(1 << 28)
+	sequenceUpdateRequestFieldName                    = big.NewInt(1 << 29)
+	sequenceUpdateRequestFieldNodeUpdates             = big.NewInt(1 << 30)
+	sequenceUpdateRequestFieldPropertyFilters         = big.NewInt(1 << 31)
+	sequenceUpdateRequestFieldReplyProfileID          = big.NewInt(1 << 32)
+	sequenceUpdateRequestFieldReplyTo                 = big.NewInt(1 << 33)
+	sequenceUpdateRequestFieldReplyToName             = big.NewInt(1 << 34)
+	sequenceUpdateRequestFieldSegmentID               = big.NewInt(1 << 35)
+	sequenceUpdateRequestFieldSenderProfileID         = big.NewInt(1 << 36)
+	sequenceUpdateRequestFieldSendingWindow           = big.NewInt(1 << 37)
+	sequenceUpdateRequestFieldSmsSteps                = big.NewInt(1 << 38)
+	sequenceUpdateRequestFieldSteps                   = big.NewInt(1 << 39)
+	sequenceUpdateRequestFieldStopCondition           = big.NewInt(1 << 40)
+	sequenceUpdateRequestFieldStopOnSegmentExit       = big.NewInt(1 << 41)
+	sequenceUpdateRequestFieldSubscriberUpdateSteps   = big.NewInt(1 << 42)
+	sequenceUpdateRequestFieldTagName                 = big.NewInt(1 << 43)
+	sequenceUpdateRequestFieldTagNames                = big.NewInt(1 << 44)
+	sequenceUpdateRequestFieldTimeWindowDays          = big.NewInt(1 << 45)
+	sequenceUpdateRequestFieldTrigger                 = big.NewInt(1 << 46)
+	sequenceUpdateRequestFieldUserCancellable         = big.NewInt(1 << 47)
 )
 
 type SequenceUpdateRequest struct {
 	// Sequence ID
 	SequenceID string `json:"-" url:"-"`
+	// Only enroll contacts whose status is `active`. Defaults to `false`: unsubscribed and bounced contacts still enter on tag, event, list and contact triggers so non-marketing steps run for them, and their marketing emails are skipped at send time. Pending double opt-in contacts still wait for confirmation.
+	ActiveSubscribersOnly *bool `json:"activeSubscribersOnly,omitempty" url:"-"`
 	// Keep enrolling later joiners of an audience until the last key date. Null clears it. Changing the trigger away from manual switches it off (endedReason "disabled").
 	AudienceAutoEnroll *SequenceAudienceAutoEnroll `json:"audienceAutoEnroll,omitempty" url:"-"`
 	// Email addresses that receive a blind copy of every email this sequence sends, such as a customer support inbox (max 10). Set to null to remove them.
@@ -33907,6 +33971,13 @@ func (s *SequenceUpdateRequest) require(field *big.Int) {
 func (s *SequenceUpdateRequest) SetSequenceID(sequenceID string) {
 	s.SequenceID = sequenceID
 	s.require(sequenceUpdateRequestFieldSequenceID)
+}
+
+// SetActiveSubscribersOnly sets the ActiveSubscribersOnly field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceUpdateRequest) SetActiveSubscribersOnly(activeSubscribersOnly *bool) {
+	s.ActiveSubscribersOnly = activeSubscribersOnly
+	s.require(sequenceUpdateRequestFieldActiveSubscribersOnly)
 }
 
 // SetAudienceAutoEnroll sets the AudienceAutoEnroll field and marks it as non-optional;

@@ -203,7 +203,23 @@ client.AbTests.Create(
 <dl>
 <dd>
 
-**winnerCriteria:** `*sequenzygo.CreateAbTestsRequestWinnerCriteria` — Metric used to pick the winner. For sequence tests, an explicit value overrides the testType default.
+**winnerCriteria:** `*sequenzygo.CreateAbTestsRequestWinnerCriteria` — Metric used to pick the winner. For sequence tests, an explicit value overrides the testType default. `goal_conversion_rate` picks the variant whose recipients convert on `winnerGoalId` most often per delivered email, `goal_value` the one with the most goal value per delivered email, and `event_rate` the one whose recipients most often fire `winnerEventName` after receiving it. Goal conversions count when attributed to the email (an open or click within the goal's attribution window; for campaigns, revenue and campaign goals also credit a recipient who received the email in that window). When no variant converts, campaign tests fall back to click rate and sequence tests keep splitting contacts.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**winnerEventName:** `*string` — Required for `event_rate`. The event a recipient must fire after receiving the variant.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**winnerGoalID:** `*string` — Required for `goal_conversion_rate` and `goal_value`. A goal ID that is active and company-wide or scoped to this campaign or sequence, or `default-revenue` for built-in purchase revenue (SaaS purchases and commerce orders, in cents). Other goals return 400.
     
 </dd>
 </dl>
@@ -887,6 +903,14 @@ client.AbTests.Update(
 <dl>
 <dd>
 
+**endTestNow:** `*bool` — Campaign-only. End a running test now: the winner is picked by winnerCriteria from the results so far and sent to the remaining audience. Requires campaigns:send. Cannot be combined with testDurationMinutes; returns 400 for tests that are not running and 409 while a sample change is pending.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **expectedUpdatedAt:** `*time.Time` — Optional campaign revision from GET; stale values return 409. Omit to preserve existing unconditional update behavior.
     
 </dd>
@@ -927,7 +951,23 @@ client.AbTests.Update(
 <dl>
 <dd>
 
-**winnerCriteria:** `*sequenzygo.UpdateAbTestsRequestWinnerCriteria` — Winner metric for campaign or sequence tests; immutable once campaign testing starts.
+**winnerCriteria:** `*sequenzygo.UpdateAbTestsRequestWinnerCriteria` — Winner metric for campaign or sequence tests; immutable once campaign testing starts, together with winnerGoalId and winnerEventName. Changing the criterion clears a goal or event the new criterion does not use.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**winnerEventName:** `*string` — Required for `event_rate`. The event a recipient must fire after receiving the variant.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**winnerGoalID:** `*string` — Required for `goal_conversion_rate` and `goal_value`. A goal ID that is active and company-wide or scoped to this campaign or sequence, or `default-revenue` for built-in purchase revenue (SaaS purchases and commerce orders, in cents). Other goals return 400.
     
 </dd>
 </dl>
@@ -21129,6 +21169,14 @@ client.Sequences.Create(
 <dl>
 <dd>
 
+**activeSubscribersOnly:** `*bool` — Only enroll contacts whose status is `active`. Defaults to `false`: unsubscribed and bounced contacts still enter on tag, event, list and contact triggers so non-marketing steps run for them, and their marketing emails are skipped at send time. Pending double opt-in contacts still wait for confirmation.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **bccEmails:** `[]string` — Addresses blind-copied on every sequence email.
     
 </dd>
@@ -24567,6 +24615,14 @@ client.Sequences.Update(
 <dl>
 <dd>
 
+**activeSubscribersOnly:** `*bool` — Only enroll contacts whose status is `active`. Defaults to `false`: unsubscribed and bounced contacts still enter on tag, event, list and contact triggers so non-marketing steps run for them, and their marketing emails are skipped at send time. Pending double opt-in contacts still wait for confirmation.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **audienceAutoEnroll:** `*sequenzygo.SequenceAudienceAutoEnroll` — Keep enrolling later joiners of an audience until the last key date. Null clears it. Changing the trigger away from manual switches it off (endedReason "disabled").
     
 </dd>
@@ -27601,7 +27657,7 @@ client.Subscribers.Update(
 <dl>
 <dd>
 
-**status:** `*sequenzygo.UpdateSubscribersRequestStatus` — Setting `unsubscribed` performs a full global unsubscribe.
+**status:** `*sequenzygo.UpdateSubscribersRequestStatus` — Setting `unsubscribed` performs a full global unsubscribe. Setting `complained` records a company spam-complaint suppression (visible through the suppressions endpoints), then runs the same unsubscribe workflow; the subscriber then reads as `unsubscribed`. Repeating it is safe.
     
 </dd>
 </dl>
@@ -27757,7 +27813,7 @@ client.Subscribers.UpdateByExternalID(
 <dl>
 <dd>
 
-**status:** `*sequenzygo.UpdateByExternalIDSubscribersRequestStatus` — Setting `unsubscribed` performs the unsubscribe workflow.
+**status:** `*sequenzygo.UpdateByExternalIDSubscribersRequestStatus` — Setting `unsubscribed` performs a full global unsubscribe. Setting `complained` records a company spam-complaint suppression (visible through the suppressions endpoints), then runs the same unsubscribe workflow; the subscriber then reads as `unsubscribed`. Repeating it is safe.
     
 </dd>
 </dl>
@@ -27913,7 +27969,7 @@ client.Subscribers.UpdateByExternalIDPath(
 <dl>
 <dd>
 
-**status:** `*sequenzygo.UpdateByExternalIDPathSubscribersRequestStatus` — Setting `unsubscribed` performs the unsubscribe workflow.
+**status:** `*sequenzygo.UpdateByExternalIDPathSubscribersRequestStatus` — Setting `unsubscribed` performs a full global unsubscribe. Setting `complained` records a company spam-complaint suppression (visible through the suppressions endpoints), then runs the same unsubscribe workflow; the subscriber then reads as `unsubscribed`. Repeating it is safe.
     
 </dd>
 </dl>
