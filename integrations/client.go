@@ -271,6 +271,27 @@ func (c *Client) ListCapabilities(
 	return response.Body, nil
 }
 
+// Suggests integrations to connect next, from what Sequenzy found on the company's website during onboarding: tools on the homepage or on the sign-in page it links to (Clerk, Supabase, PostHog, Segment, Webflow, Wix, WordPress, WooCommerce) or a Shopify storefront. Connected providers are left out. Payment providers are never guessed from the site: when it lists pricing and no payment or commerce integration is connected, paymentProviders lists every payment provider. Requires the account:read scope.
+//
+// Example:
+//
+//	client.Integrations.ListSuggestions(
+//	    context.TODO(),
+//	)
+func (c *Client) ListSuggestions(
+	ctx context.Context,
+	opts ...option.RequestOption,
+) (*sequenzygo.ListSuggestionsIntegrationsResponse, error) {
+	response, err := c.WithRawResponse.ListSuggestions(
+		ctx,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Queues a manual re-sync for a connected integration - customers and revenue for a payment provider (Stripe, Polar, Paddle, Dodo, Lemon Squeezy, Creem, Chargebee, Whop), the user backfill for Supabase, or the event-history import for PostHog and Segment. The Supabase sync reads the project, schema, and table already configured for the integration and returns 400 when none is configured. PostHog and Segment re-run their event-history imports with credentials stored at connect time and are the supported retry path for failed imports; each restarts from the beginning, already-imported events dedupe, and returns 409 while queued or syncing. Segment requires a saved Unify space ID and Profile API token and covers the most recent 14 days served by the Profile API. Terminal BullMQ failures release imports for retry. Returns immediately; poll the integration to watch syncStatus. Other providers re-sync from the dashboard. Requires the integrations:manage scope.
 //
 // Example:

@@ -227,6 +227,30 @@ func TestAnalyticsGetMetricsWithWireMock(
 	VerifyRequestCount(t, "TestAnalyticsGetMetricsWithWireMock", "GET", "/metrics", nil, 1)
 }
 
+func TestAnalyticsGetMetricsBreakdownWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.GetMetricsBreakdownRequest{}
+	_, invocationErr := client.Analytics.GetMetricsBreakdown(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestAnalyticsGetMetricsBreakdownWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestAnalyticsGetMetricsBreakdownWithWireMock", "GET", "/metrics/breakdown", nil, 1)
+}
+
 func TestAnalyticsGetRecipientsWithWireMock(
 	t *testing.T,
 ) {

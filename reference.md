@@ -2356,7 +2356,7 @@ client.Accounts.GetOrganizationIDJob(
 <dl>
 <dd>
 
-Lists the B2B accounts (organizations) in the workspace. Search matches name, external ID and domain. Sort with `sort` (updatedAt, createdAt, name, memberCount, lastEventAt) and `order` (asc, desc). `withoutEventRecipients=true` keeps accounts with members but no owner or admin.
+Lists the B2B accounts (organizations) in the workspace. Search matches name, external ID and domain. Sort with `sort` (updatedAt, createdAt, name, memberCount, lastEventAt) and `order` (asc, desc). `withoutEventRecipients=true` keeps accounts with members but no owner or admin. Organizations is the dashboard name for accounts, and every `/accounts` path also works as `/organizations`, and `/account-suggestions` as `/organization-suggestions`.
 </dd>
 </dl>
 </dd>
@@ -3657,6 +3657,152 @@ client.Analytics.GetMetrics(
 <dd>
 
 **period:** `*sequenzygo.GetMetricsRequestPeriod` — Sliding time window. Ignored when start/end are provided.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**recipientDomain:** `*string` — Recipient domain filter (e.g. gmail.com). Case-insensitive.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**source:** `*string` — Email source filter as `<type>:<id>`: `campaign:<campaignId>`, `sequence:<sequenceId>`, `sequence_step:<email step id>` or `transactional:<transactional email id>`. Responses filtered by recipientDomain or source report replies as 0 and omit the commerce forecast. Returns 404 when the source is not in the company or not visible to the key.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**start:** `*time.Time` — Start of custom time range (ISO 8601). Must be used with `end`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Analytics.GetMetricsBreakdown() -> *sequenzygo.GetMetricsBreakdownResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns the delivery funnel for each value of one dimension, most sends first, so you can find the email, sequence, provider or domain behind a number and drill into it. Rows count the sends made in the window and the engagement they earned. Defaults to the last 30 days and 25 rows.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.GetMetricsBreakdownRequest{}
+client.Analytics.GetMetricsBreakdown(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**by:** `*sequenzygo.GetMetricsBreakdownRequestBy` — Dimension to group by. `email` has one row per campaign, sequence email step and transactional template.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**emailType:** `*sequenzygo.GetMetricsBreakdownRequestEmailType` — Structural email type filter. Marketer-role personal keys only see the emails their role can open and cannot request transactional.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**end:** `*time.Time` — End of custom time range (ISO 8601). Must be used with `start`. Max range: 90 days.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**includeMachineEngagement:** `*bool` — Include detected scanner, preview, and tracked asset open/click events.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `*int` — Number of rows to return.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**mailboxProvider:** `*string` — Recipient mailbox provider filter (e.g. gmail, microsoft, yahoo, icloud).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**period:** `*sequenzygo.GetMetricsBreakdownRequestPeriod` — Sliding window over send times. Ignored when start/end are provided.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**recipientDomain:** `*string` — Recipient domain filter (e.g. gmail.com). Case-insensitive.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**source:** `*string` — Email source filter as `<type>:<id>`: `campaign:<campaignId>`, `sequence:<sequenceId>`, `sequence_step:<email step id>` or `transactional:<transactional email id>`. Returns 404 when the source is not in the company or not visible to the key.
     
 </dd>
 </dl>
@@ -13180,7 +13326,7 @@ client.Integrations.Connect(
 <dl>
 <dd>
 
-**webhookSecret:** `*string` — Signing secret of the provider webhook. Optional for lemon_squeezy managed provisioning and not used by attio; required for other providers. Lemon Squeezy manual secrets use 16-40 characters. For Chargebee, pass username:password. For RevenueCat, pass at least 16 characters: the authorization header value set on the RevenueCat webhook, or its HMAC signing secret. For Superwall, pass the webhook's whsec_ signing secret, the only credential it needs. For Segment, use 16-153 UTF-8 bytes. For SparkLoop, pass the webhook authentication token from SparkLoop Settings → Integrations (sent as the SparkLoop-Token header).
+**webhookSecret:** `*string` — Signing secret of the provider webhook. Optional for lemon_squeezy managed provisioning and for sparkloop, and not used by attio; required for other providers. Lemon Squeezy manual secrets use 16-40 characters. For Chargebee, pass username:password. For RevenueCat, pass at least 16 characters: the authorization header value set on the RevenueCat webhook, or its HMAC signing secret. For Superwall, pass the webhook's whsec_ signing secret, the only credential it needs. For Segment, use 16-153 UTF-8 bytes. For SparkLoop, omit it so Sequenzy authenticates deliveries with a secret in the webhook URL it registers, or pass the account's webhook authentication token to verify the SparkLoop-Token header instead.
     
 </dd>
 </dl>
@@ -13628,6 +13774,47 @@ client.Integrations.ListCapabilities(
 
 **provider:** `*string` — Return only this provider, for example stripe.
     
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Integrations.ListSuggestions() -> *sequenzygo.ListSuggestionsIntegrationsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Suggests integrations to connect next, from what Sequenzy found on the company's website during onboarding: tools on the homepage or on the sign-in page it links to (Clerk, Supabase, PostHog, Segment, Webflow, Wix, WordPress, WooCommerce) or a Shopify storefront. Connected providers are left out. Payment providers are never guessed from the site: when it lists pricing and no payment or commerce integration is connected, paymentProviders lists every payment provider. Requires the account:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+client.Integrations.ListSuggestions(
+    context.TODO(),
+)
+```
 </dd>
 </dl>
 </dd>

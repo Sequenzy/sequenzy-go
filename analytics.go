@@ -376,7 +376,9 @@ var (
 	getMetricsRequestFieldIncludeMachineEngagement = big.NewInt(1 << 2)
 	getMetricsRequestFieldMailboxProvider          = big.NewInt(1 << 3)
 	getMetricsRequestFieldPeriod                   = big.NewInt(1 << 4)
-	getMetricsRequestFieldStart                    = big.NewInt(1 << 5)
+	getMetricsRequestFieldRecipientDomain          = big.NewInt(1 << 5)
+	getMetricsRequestFieldSource                   = big.NewInt(1 << 6)
+	getMetricsRequestFieldStart                    = big.NewInt(1 << 7)
 )
 
 type GetMetricsRequest struct {
@@ -390,6 +392,10 @@ type GetMetricsRequest struct {
 	MailboxProvider *string `json:"-" url:"mailboxProvider,omitempty"`
 	// Sliding time window. Ignored when start/end are provided.
 	Period *GetMetricsRequestPeriod `json:"-" url:"period,omitempty"`
+	// Recipient domain filter (e.g. gmail.com). Case-insensitive.
+	RecipientDomain *string `json:"-" url:"recipientDomain,omitempty"`
+	// Email source filter as `<type>:<id>`: `campaign:<campaignId>`, `sequence:<sequenceId>`, `sequence_step:<email step id>` or `transactional:<transactional email id>`. Responses filtered by recipientDomain or source report replies as 0 and omit the commerce forecast. Returns 404 when the source is not in the company or not visible to the key.
+	Source *string `json:"-" url:"source,omitempty"`
 	// Start of custom time range (ISO 8601). Must be used with `end`.
 	Start *time.Time `json:"-" url:"start,omitempty"`
 
@@ -439,11 +445,141 @@ func (g *GetMetricsRequest) SetPeriod(period *GetMetricsRequestPeriod) {
 	g.require(getMetricsRequestFieldPeriod)
 }
 
+// SetRecipientDomain sets the RecipientDomain field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsRequest) SetRecipientDomain(recipientDomain *string) {
+	g.RecipientDomain = recipientDomain
+	g.require(getMetricsRequestFieldRecipientDomain)
+}
+
+// SetSource sets the Source field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsRequest) SetSource(source *string) {
+	g.Source = source
+	g.require(getMetricsRequestFieldSource)
+}
+
 // SetStart sets the Start field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (g *GetMetricsRequest) SetStart(start *time.Time) {
 	g.Start = start
 	g.require(getMetricsRequestFieldStart)
+}
+
+var (
+	getMetricsBreakdownRequestFieldBy                       = big.NewInt(1 << 0)
+	getMetricsBreakdownRequestFieldEmailType                = big.NewInt(1 << 1)
+	getMetricsBreakdownRequestFieldEnd                      = big.NewInt(1 << 2)
+	getMetricsBreakdownRequestFieldIncludeMachineEngagement = big.NewInt(1 << 3)
+	getMetricsBreakdownRequestFieldLimit                    = big.NewInt(1 << 4)
+	getMetricsBreakdownRequestFieldMailboxProvider          = big.NewInt(1 << 5)
+	getMetricsBreakdownRequestFieldPeriod                   = big.NewInt(1 << 6)
+	getMetricsBreakdownRequestFieldRecipientDomain          = big.NewInt(1 << 7)
+	getMetricsBreakdownRequestFieldSource                   = big.NewInt(1 << 8)
+	getMetricsBreakdownRequestFieldStart                    = big.NewInt(1 << 9)
+)
+
+type GetMetricsBreakdownRequest struct {
+	// Dimension to group by. `email` has one row per campaign, sequence email step and transactional template.
+	By *GetMetricsBreakdownRequestBy `json:"-" url:"by,omitempty"`
+	// Structural email type filter. Marketer-role personal keys only see the emails their role can open and cannot request transactional.
+	EmailType *GetMetricsBreakdownRequestEmailType `json:"-" url:"emailType,omitempty"`
+	// End of custom time range (ISO 8601). Must be used with `start`. Max range: 90 days.
+	End *time.Time `json:"-" url:"end,omitempty"`
+	// Include detected scanner, preview, and tracked asset open/click events.
+	IncludeMachineEngagement *bool `json:"-" url:"includeMachineEngagement,omitempty"`
+	// Number of rows to return.
+	Limit *int `json:"-" url:"limit,omitempty"`
+	// Recipient mailbox provider filter (e.g. gmail, microsoft, yahoo, icloud).
+	MailboxProvider *string `json:"-" url:"mailboxProvider,omitempty"`
+	// Sliding window over send times. Ignored when start/end are provided.
+	Period *GetMetricsBreakdownRequestPeriod `json:"-" url:"period,omitempty"`
+	// Recipient domain filter (e.g. gmail.com). Case-insensitive.
+	RecipientDomain *string `json:"-" url:"recipientDomain,omitempty"`
+	// Email source filter as `<type>:<id>`: `campaign:<campaignId>`, `sequence:<sequenceId>`, `sequence_step:<email step id>` or `transactional:<transactional email id>`. Returns 404 when the source is not in the company or not visible to the key.
+	Source *string `json:"-" url:"source,omitempty"`
+	// Start of custom time range (ISO 8601). Must be used with `end`.
+	Start *time.Time `json:"-" url:"start,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (g *GetMetricsBreakdownRequest) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetBy sets the By field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsBreakdownRequest) SetBy(by *GetMetricsBreakdownRequestBy) {
+	g.By = by
+	g.require(getMetricsBreakdownRequestFieldBy)
+}
+
+// SetEmailType sets the EmailType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsBreakdownRequest) SetEmailType(emailType *GetMetricsBreakdownRequestEmailType) {
+	g.EmailType = emailType
+	g.require(getMetricsBreakdownRequestFieldEmailType)
+}
+
+// SetEnd sets the End field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsBreakdownRequest) SetEnd(end *time.Time) {
+	g.End = end
+	g.require(getMetricsBreakdownRequestFieldEnd)
+}
+
+// SetIncludeMachineEngagement sets the IncludeMachineEngagement field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsBreakdownRequest) SetIncludeMachineEngagement(includeMachineEngagement *bool) {
+	g.IncludeMachineEngagement = includeMachineEngagement
+	g.require(getMetricsBreakdownRequestFieldIncludeMachineEngagement)
+}
+
+// SetLimit sets the Limit field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsBreakdownRequest) SetLimit(limit *int) {
+	g.Limit = limit
+	g.require(getMetricsBreakdownRequestFieldLimit)
+}
+
+// SetMailboxProvider sets the MailboxProvider field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsBreakdownRequest) SetMailboxProvider(mailboxProvider *string) {
+	g.MailboxProvider = mailboxProvider
+	g.require(getMetricsBreakdownRequestFieldMailboxProvider)
+}
+
+// SetPeriod sets the Period field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsBreakdownRequest) SetPeriod(period *GetMetricsBreakdownRequestPeriod) {
+	g.Period = period
+	g.require(getMetricsBreakdownRequestFieldPeriod)
+}
+
+// SetRecipientDomain sets the RecipientDomain field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsBreakdownRequest) SetRecipientDomain(recipientDomain *string) {
+	g.RecipientDomain = recipientDomain
+	g.require(getMetricsBreakdownRequestFieldRecipientDomain)
+}
+
+// SetSource sets the Source field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsBreakdownRequest) SetSource(source *string) {
+	g.Source = source
+	g.require(getMetricsBreakdownRequestFieldSource)
+}
+
+// SetStart sets the Start field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsBreakdownRequest) SetStart(start *time.Time) {
+	g.Start = start
+	g.require(getMetricsBreakdownRequestFieldStart)
 }
 
 var (
@@ -7028,6 +7164,700 @@ func (g GetLinkClickMetricsResponseEmailType) Ptr() *GetLinkClickMetricsResponse
 	return &g
 }
 
+type GetMetricsBreakdownRequestBy string
+
+const (
+	GetMetricsBreakdownRequestByEmail           GetMetricsBreakdownRequestBy = "email"
+	GetMetricsBreakdownRequestBySequence        GetMetricsBreakdownRequestBy = "sequence"
+	GetMetricsBreakdownRequestByEmailType       GetMetricsBreakdownRequestBy = "email_type"
+	GetMetricsBreakdownRequestByMailboxProvider GetMetricsBreakdownRequestBy = "mailbox_provider"
+	GetMetricsBreakdownRequestByRecipientDomain GetMetricsBreakdownRequestBy = "recipient_domain"
+)
+
+func NewGetMetricsBreakdownRequestByFromString(s string) (GetMetricsBreakdownRequestBy, error) {
+	switch s {
+	case "email":
+		return GetMetricsBreakdownRequestByEmail, nil
+	case "sequence":
+		return GetMetricsBreakdownRequestBySequence, nil
+	case "email_type":
+		return GetMetricsBreakdownRequestByEmailType, nil
+	case "mailbox_provider":
+		return GetMetricsBreakdownRequestByMailboxProvider, nil
+	case "recipient_domain":
+		return GetMetricsBreakdownRequestByRecipientDomain, nil
+	}
+	var t GetMetricsBreakdownRequestBy
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (g GetMetricsBreakdownRequestBy) Ptr() *GetMetricsBreakdownRequestBy {
+	return &g
+}
+
+type GetMetricsBreakdownRequestEmailType string
+
+const (
+	GetMetricsBreakdownRequestEmailTypeCampaign      GetMetricsBreakdownRequestEmailType = "campaign"
+	GetMetricsBreakdownRequestEmailTypeTransactional GetMetricsBreakdownRequestEmailType = "transactional"
+	GetMetricsBreakdownRequestEmailTypeSequence      GetMetricsBreakdownRequestEmailType = "sequence"
+)
+
+func NewGetMetricsBreakdownRequestEmailTypeFromString(s string) (GetMetricsBreakdownRequestEmailType, error) {
+	switch s {
+	case "campaign":
+		return GetMetricsBreakdownRequestEmailTypeCampaign, nil
+	case "transactional":
+		return GetMetricsBreakdownRequestEmailTypeTransactional, nil
+	case "sequence":
+		return GetMetricsBreakdownRequestEmailTypeSequence, nil
+	}
+	var t GetMetricsBreakdownRequestEmailType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (g GetMetricsBreakdownRequestEmailType) Ptr() *GetMetricsBreakdownRequestEmailType {
+	return &g
+}
+
+type GetMetricsBreakdownRequestPeriod string
+
+const (
+	GetMetricsBreakdownRequestPeriodOneH        GetMetricsBreakdownRequestPeriod = "1h"
+	GetMetricsBreakdownRequestPeriodTwentyFourH GetMetricsBreakdownRequestPeriod = "24h"
+	GetMetricsBreakdownRequestPeriodSevenD      GetMetricsBreakdownRequestPeriod = "7d"
+	GetMetricsBreakdownRequestPeriodThirtyD     GetMetricsBreakdownRequestPeriod = "30d"
+	GetMetricsBreakdownRequestPeriodNinetyD     GetMetricsBreakdownRequestPeriod = "90d"
+)
+
+func NewGetMetricsBreakdownRequestPeriodFromString(s string) (GetMetricsBreakdownRequestPeriod, error) {
+	switch s {
+	case "1h":
+		return GetMetricsBreakdownRequestPeriodOneH, nil
+	case "24h":
+		return GetMetricsBreakdownRequestPeriodTwentyFourH, nil
+	case "7d":
+		return GetMetricsBreakdownRequestPeriodSevenD, nil
+	case "30d":
+		return GetMetricsBreakdownRequestPeriodThirtyD, nil
+	case "90d":
+		return GetMetricsBreakdownRequestPeriodNinetyD, nil
+	}
+	var t GetMetricsBreakdownRequestPeriod
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (g GetMetricsBreakdownRequestPeriod) Ptr() *GetMetricsBreakdownRequestPeriod {
+	return &g
+}
+
+var (
+	getMetricsBreakdownResponseFieldBy              = big.NewInt(1 << 0)
+	getMetricsBreakdownResponseFieldEmailType       = big.NewInt(1 << 1)
+	getMetricsBreakdownResponseFieldEnd             = big.NewInt(1 << 2)
+	getMetricsBreakdownResponseFieldMailboxProvider = big.NewInt(1 << 3)
+	getMetricsBreakdownResponseFieldPeriod          = big.NewInt(1 << 4)
+	getMetricsBreakdownResponseFieldRecipientDomain = big.NewInt(1 << 5)
+	getMetricsBreakdownResponseFieldRows            = big.NewInt(1 << 6)
+	getMetricsBreakdownResponseFieldSource          = big.NewInt(1 << 7)
+	getMetricsBreakdownResponseFieldStart           = big.NewInt(1 << 8)
+	getMetricsBreakdownResponseFieldSuccess         = big.NewInt(1 << 9)
+)
+
+type GetMetricsBreakdownResponse struct {
+	By              string    `json:"by" url:"by"`
+	EmailType       *string   `json:"emailType,omitempty" url:"emailType,omitempty"`
+	End             time.Time `json:"end" url:"end"`
+	MailboxProvider *string   `json:"mailboxProvider,omitempty" url:"mailboxProvider,omitempty"`
+	// Applied period, or `custom` when start/end were provided.
+	Period          *string                                `json:"period,omitempty" url:"period,omitempty"`
+	RecipientDomain *string                                `json:"recipientDomain,omitempty" url:"recipientDomain,omitempty"`
+	Rows            []*GetMetricsBreakdownResponseRowsItem `json:"rows" url:"rows"`
+	Source          *string                                `json:"source,omitempty" url:"source,omitempty"`
+	Start           time.Time                              `json:"start" url:"start"`
+	Success         bool                                   `json:"success" url:"success"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (g *GetMetricsBreakdownResponse) GetBy() string {
+	if g == nil {
+		return ""
+	}
+	return g.By
+}
+
+func (g *GetMetricsBreakdownResponse) GetEmailType() *string {
+	if g == nil {
+		return nil
+	}
+	return g.EmailType
+}
+
+func (g *GetMetricsBreakdownResponse) GetEnd() time.Time {
+	if g == nil {
+		return time.Time{}
+	}
+	return g.End
+}
+
+func (g *GetMetricsBreakdownResponse) GetMailboxProvider() *string {
+	if g == nil {
+		return nil
+	}
+	return g.MailboxProvider
+}
+
+func (g *GetMetricsBreakdownResponse) GetPeriod() *string {
+	if g == nil {
+		return nil
+	}
+	return g.Period
+}
+
+func (g *GetMetricsBreakdownResponse) GetRecipientDomain() *string {
+	if g == nil {
+		return nil
+	}
+	return g.RecipientDomain
+}
+
+func (g *GetMetricsBreakdownResponse) GetRows() []*GetMetricsBreakdownResponseRowsItem {
+	if g == nil {
+		return nil
+	}
+	return g.Rows
+}
+
+func (g *GetMetricsBreakdownResponse) GetSource() *string {
+	if g == nil {
+		return nil
+	}
+	return g.Source
+}
+
+func (g *GetMetricsBreakdownResponse) GetStart() time.Time {
+	if g == nil {
+		return time.Time{}
+	}
+	return g.Start
+}
+
+func (g *GetMetricsBreakdownResponse) GetSuccess() bool {
+	if g == nil {
+		return false
+	}
+	return g.Success
+}
+
+func (g *GetMetricsBreakdownResponse) GetExtraProperties() map[string]interface{} {
+	if g == nil {
+		return nil
+	}
+	return g.extraProperties
+}
+
+func (g *GetMetricsBreakdownResponse) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetBy sets the By field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsBreakdownResponse) SetBy(by string) {
+	g.By = by
+	g.require(getMetricsBreakdownResponseFieldBy)
+}
+
+// SetEmailType sets the EmailType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsBreakdownResponse) SetEmailType(emailType *string) {
+	g.EmailType = emailType
+	g.require(getMetricsBreakdownResponseFieldEmailType)
+}
+
+// SetEnd sets the End field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsBreakdownResponse) SetEnd(end time.Time) {
+	g.End = end
+	g.require(getMetricsBreakdownResponseFieldEnd)
+}
+
+// SetMailboxProvider sets the MailboxProvider field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsBreakdownResponse) SetMailboxProvider(mailboxProvider *string) {
+	g.MailboxProvider = mailboxProvider
+	g.require(getMetricsBreakdownResponseFieldMailboxProvider)
+}
+
+// SetPeriod sets the Period field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsBreakdownResponse) SetPeriod(period *string) {
+	g.Period = period
+	g.require(getMetricsBreakdownResponseFieldPeriod)
+}
+
+// SetRecipientDomain sets the RecipientDomain field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsBreakdownResponse) SetRecipientDomain(recipientDomain *string) {
+	g.RecipientDomain = recipientDomain
+	g.require(getMetricsBreakdownResponseFieldRecipientDomain)
+}
+
+// SetRows sets the Rows field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsBreakdownResponse) SetRows(rows []*GetMetricsBreakdownResponseRowsItem) {
+	g.Rows = rows
+	g.require(getMetricsBreakdownResponseFieldRows)
+}
+
+// SetSource sets the Source field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsBreakdownResponse) SetSource(source *string) {
+	g.Source = source
+	g.require(getMetricsBreakdownResponseFieldSource)
+}
+
+// SetStart sets the Start field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsBreakdownResponse) SetStart(start time.Time) {
+	g.Start = start
+	g.require(getMetricsBreakdownResponseFieldStart)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsBreakdownResponse) SetSuccess(success bool) {
+	g.Success = success
+	g.require(getMetricsBreakdownResponseFieldSuccess)
+}
+
+func (g *GetMetricsBreakdownResponse) UnmarshalJSON(data []byte) error {
+	type embed GetMetricsBreakdownResponse
+	var unmarshaler = struct {
+		embed
+		End   *internal.DateTime `json:"end"`
+		Start *internal.DateTime `json:"start"`
+	}{
+		embed: embed(*g),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*g = GetMetricsBreakdownResponse(unmarshaler.embed)
+	g.End = unmarshaler.End.Time()
+	g.Start = unmarshaler.Start.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *g)
+	if err != nil {
+		return err
+	}
+	g.extraProperties = extraProperties
+	g.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (g *GetMetricsBreakdownResponse) MarshalJSON() ([]byte, error) {
+	type embed GetMetricsBreakdownResponse
+	var marshaler = struct {
+		embed
+		End   *internal.DateTime `json:"end"`
+		Start *internal.DateTime `json:"start"`
+	}{
+		embed: embed(*g),
+		End:   internal.NewDateTime(g.End),
+		Start: internal.NewDateTime(g.Start),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (g *GetMetricsBreakdownResponse) String() string {
+	if g == nil {
+		return "<nil>"
+	}
+	if len(g.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(g.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(g); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", g)
+}
+
+var (
+	getMetricsBreakdownResponseRowsItemFieldBounced         = big.NewInt(1 << 0)
+	getMetricsBreakdownResponseRowsItemFieldBounceRate      = big.NewInt(1 << 1)
+	getMetricsBreakdownResponseRowsItemFieldClicked         = big.NewInt(1 << 2)
+	getMetricsBreakdownResponseRowsItemFieldClickRate       = big.NewInt(1 << 3)
+	getMetricsBreakdownResponseRowsItemFieldComplained      = big.NewInt(1 << 4)
+	getMetricsBreakdownResponseRowsItemFieldConversions     = big.NewInt(1 << 5)
+	getMetricsBreakdownResponseRowsItemFieldDelivered       = big.NewInt(1 << 6)
+	getMetricsBreakdownResponseRowsItemFieldDeliveryRate    = big.NewInt(1 << 7)
+	getMetricsBreakdownResponseRowsItemFieldDetail          = big.NewInt(1 << 8)
+	getMetricsBreakdownResponseRowsItemFieldFilter          = big.NewInt(1 << 9)
+	getMetricsBreakdownResponseRowsItemFieldKey             = big.NewInt(1 << 10)
+	getMetricsBreakdownResponseRowsItemFieldLabel           = big.NewInt(1 << 11)
+	getMetricsBreakdownResponseRowsItemFieldOpened          = big.NewInt(1 << 12)
+	getMetricsBreakdownResponseRowsItemFieldOpenRate        = big.NewInt(1 << 13)
+	getMetricsBreakdownResponseRowsItemFieldRevenue         = big.NewInt(1 << 14)
+	getMetricsBreakdownResponseRowsItemFieldSent            = big.NewInt(1 << 15)
+	getMetricsBreakdownResponseRowsItemFieldUnsubscribed    = big.NewInt(1 << 16)
+	getMetricsBreakdownResponseRowsItemFieldUnsubscribeRate = big.NewInt(1 << 17)
+)
+
+type GetMetricsBreakdownResponseRowsItem struct {
+	Bounced int `json:"bounced" url:"bounced"`
+	// Percentage of sent.
+	BounceRate float64 `json:"bounceRate" url:"bounceRate"`
+	Clicked    int     `json:"clicked" url:"clicked"`
+	// Percentage of delivered.
+	ClickRate  float64 `json:"clickRate" url:"clickRate"`
+	Complained int     `json:"complained" url:"complained"`
+	// Attributed goal conversions. Provider and domain come from the send each conversion is attributed to.
+	Conversions *int `json:"conversions,omitempty" url:"conversions,omitempty"`
+	Delivered   int  `json:"delivered" url:"delivered"`
+	// Percentage of sent.
+	DeliveryRate float64 `json:"deliveryRate" url:"deliveryRate"`
+	// Secondary label, such as the sequence an email step belongs to.
+	Detail *string `json:"detail,omitempty" url:"detail,omitempty"`
+	// The filter that narrows a later request to this row: `{kind: "source", source: {type, id}}` (pass as `source=<type>:<id>`), `{kind: "email_type", emailType}`, `{kind: "mailbox_provider", mailboxProvider}` or `{kind: "recipient_domain", recipientDomain}`. Null when the row cannot be drilled into.
+	Filter map[string]any `json:"filter,omitempty" url:"filter,omitempty"`
+	// Dimension value (an id, email type, provider or domain). Empty when the events predate the column.
+	Key    string `json:"key" url:"key"`
+	Label  string `json:"label" url:"label"`
+	Opened int    `json:"opened" url:"opened"`
+	// Percentage of delivered.
+	OpenRate float64 `json:"openRate" url:"openRate"`
+	// Attributed revenue in currency units.
+	Revenue      *float64 `json:"revenue,omitempty" url:"revenue,omitempty"`
+	Sent         int      `json:"sent" url:"sent"`
+	Unsubscribed int      `json:"unsubscribed" url:"unsubscribed"`
+	// Percentage of delivered.
+	UnsubscribeRate float64 `json:"unsubscribeRate" url:"unsubscribeRate"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (g *GetMetricsBreakdownResponseRowsItem) GetBounced() int {
+	if g == nil {
+		return 0
+	}
+	return g.Bounced
+}
+
+func (g *GetMetricsBreakdownResponseRowsItem) GetBounceRate() float64 {
+	if g == nil {
+		return 0
+	}
+	return g.BounceRate
+}
+
+func (g *GetMetricsBreakdownResponseRowsItem) GetClicked() int {
+	if g == nil {
+		return 0
+	}
+	return g.Clicked
+}
+
+func (g *GetMetricsBreakdownResponseRowsItem) GetClickRate() float64 {
+	if g == nil {
+		return 0
+	}
+	return g.ClickRate
+}
+
+func (g *GetMetricsBreakdownResponseRowsItem) GetComplained() int {
+	if g == nil {
+		return 0
+	}
+	return g.Complained
+}
+
+func (g *GetMetricsBreakdownResponseRowsItem) GetConversions() *int {
+	if g == nil {
+		return nil
+	}
+	return g.Conversions
+}
+
+func (g *GetMetricsBreakdownResponseRowsItem) GetDelivered() int {
+	if g == nil {
+		return 0
+	}
+	return g.Delivered
+}
+
+func (g *GetMetricsBreakdownResponseRowsItem) GetDeliveryRate() float64 {
+	if g == nil {
+		return 0
+	}
+	return g.DeliveryRate
+}
+
+func (g *GetMetricsBreakdownResponseRowsItem) GetDetail() *string {
+	if g == nil {
+		return nil
+	}
+	return g.Detail
+}
+
+func (g *GetMetricsBreakdownResponseRowsItem) GetFilter() map[string]any {
+	if g == nil {
+		return nil
+	}
+	return g.Filter
+}
+
+func (g *GetMetricsBreakdownResponseRowsItem) GetKey() string {
+	if g == nil {
+		return ""
+	}
+	return g.Key
+}
+
+func (g *GetMetricsBreakdownResponseRowsItem) GetLabel() string {
+	if g == nil {
+		return ""
+	}
+	return g.Label
+}
+
+func (g *GetMetricsBreakdownResponseRowsItem) GetOpened() int {
+	if g == nil {
+		return 0
+	}
+	return g.Opened
+}
+
+func (g *GetMetricsBreakdownResponseRowsItem) GetOpenRate() float64 {
+	if g == nil {
+		return 0
+	}
+	return g.OpenRate
+}
+
+func (g *GetMetricsBreakdownResponseRowsItem) GetRevenue() *float64 {
+	if g == nil {
+		return nil
+	}
+	return g.Revenue
+}
+
+func (g *GetMetricsBreakdownResponseRowsItem) GetSent() int {
+	if g == nil {
+		return 0
+	}
+	return g.Sent
+}
+
+func (g *GetMetricsBreakdownResponseRowsItem) GetUnsubscribed() int {
+	if g == nil {
+		return 0
+	}
+	return g.Unsubscribed
+}
+
+func (g *GetMetricsBreakdownResponseRowsItem) GetUnsubscribeRate() float64 {
+	if g == nil {
+		return 0
+	}
+	return g.UnsubscribeRate
+}
+
+func (g *GetMetricsBreakdownResponseRowsItem) GetExtraProperties() map[string]interface{} {
+	if g == nil {
+		return nil
+	}
+	return g.extraProperties
+}
+
+func (g *GetMetricsBreakdownResponseRowsItem) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetBounced sets the Bounced field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsBreakdownResponseRowsItem) SetBounced(bounced int) {
+	g.Bounced = bounced
+	g.require(getMetricsBreakdownResponseRowsItemFieldBounced)
+}
+
+// SetBounceRate sets the BounceRate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsBreakdownResponseRowsItem) SetBounceRate(bounceRate float64) {
+	g.BounceRate = bounceRate
+	g.require(getMetricsBreakdownResponseRowsItemFieldBounceRate)
+}
+
+// SetClicked sets the Clicked field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsBreakdownResponseRowsItem) SetClicked(clicked int) {
+	g.Clicked = clicked
+	g.require(getMetricsBreakdownResponseRowsItemFieldClicked)
+}
+
+// SetClickRate sets the ClickRate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsBreakdownResponseRowsItem) SetClickRate(clickRate float64) {
+	g.ClickRate = clickRate
+	g.require(getMetricsBreakdownResponseRowsItemFieldClickRate)
+}
+
+// SetComplained sets the Complained field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsBreakdownResponseRowsItem) SetComplained(complained int) {
+	g.Complained = complained
+	g.require(getMetricsBreakdownResponseRowsItemFieldComplained)
+}
+
+// SetConversions sets the Conversions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsBreakdownResponseRowsItem) SetConversions(conversions *int) {
+	g.Conversions = conversions
+	g.require(getMetricsBreakdownResponseRowsItemFieldConversions)
+}
+
+// SetDelivered sets the Delivered field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsBreakdownResponseRowsItem) SetDelivered(delivered int) {
+	g.Delivered = delivered
+	g.require(getMetricsBreakdownResponseRowsItemFieldDelivered)
+}
+
+// SetDeliveryRate sets the DeliveryRate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsBreakdownResponseRowsItem) SetDeliveryRate(deliveryRate float64) {
+	g.DeliveryRate = deliveryRate
+	g.require(getMetricsBreakdownResponseRowsItemFieldDeliveryRate)
+}
+
+// SetDetail sets the Detail field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsBreakdownResponseRowsItem) SetDetail(detail *string) {
+	g.Detail = detail
+	g.require(getMetricsBreakdownResponseRowsItemFieldDetail)
+}
+
+// SetFilter sets the Filter field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsBreakdownResponseRowsItem) SetFilter(filter map[string]any) {
+	g.Filter = filter
+	g.require(getMetricsBreakdownResponseRowsItemFieldFilter)
+}
+
+// SetKey sets the Key field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsBreakdownResponseRowsItem) SetKey(key string) {
+	g.Key = key
+	g.require(getMetricsBreakdownResponseRowsItemFieldKey)
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsBreakdownResponseRowsItem) SetLabel(label string) {
+	g.Label = label
+	g.require(getMetricsBreakdownResponseRowsItemFieldLabel)
+}
+
+// SetOpened sets the Opened field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsBreakdownResponseRowsItem) SetOpened(opened int) {
+	g.Opened = opened
+	g.require(getMetricsBreakdownResponseRowsItemFieldOpened)
+}
+
+// SetOpenRate sets the OpenRate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsBreakdownResponseRowsItem) SetOpenRate(openRate float64) {
+	g.OpenRate = openRate
+	g.require(getMetricsBreakdownResponseRowsItemFieldOpenRate)
+}
+
+// SetRevenue sets the Revenue field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsBreakdownResponseRowsItem) SetRevenue(revenue *float64) {
+	g.Revenue = revenue
+	g.require(getMetricsBreakdownResponseRowsItemFieldRevenue)
+}
+
+// SetSent sets the Sent field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsBreakdownResponseRowsItem) SetSent(sent int) {
+	g.Sent = sent
+	g.require(getMetricsBreakdownResponseRowsItemFieldSent)
+}
+
+// SetUnsubscribed sets the Unsubscribed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsBreakdownResponseRowsItem) SetUnsubscribed(unsubscribed int) {
+	g.Unsubscribed = unsubscribed
+	g.require(getMetricsBreakdownResponseRowsItemFieldUnsubscribed)
+}
+
+// SetUnsubscribeRate sets the UnsubscribeRate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsBreakdownResponseRowsItem) SetUnsubscribeRate(unsubscribeRate float64) {
+	g.UnsubscribeRate = unsubscribeRate
+	g.require(getMetricsBreakdownResponseRowsItemFieldUnsubscribeRate)
+}
+
+func (g *GetMetricsBreakdownResponseRowsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler GetMetricsBreakdownResponseRowsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*g = GetMetricsBreakdownResponseRowsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *g)
+	if err != nil {
+		return err
+	}
+	g.extraProperties = extraProperties
+	g.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (g *GetMetricsBreakdownResponseRowsItem) MarshalJSON() ([]byte, error) {
+	type embed GetMetricsBreakdownResponseRowsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*g),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (g *GetMetricsBreakdownResponseRowsItem) String() string {
+	if g == nil {
+		return "<nil>"
+	}
+	if len(g.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(g.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(g); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", g)
+}
+
 type GetMetricsRequestEmailType string
 
 const (
@@ -7090,9 +7920,11 @@ var (
 	getMetricsResponseFieldEmailType             = big.NewInt(1 << 2)
 	getMetricsResponseFieldMailboxProvider       = big.NewInt(1 << 3)
 	getMetricsResponseFieldPeriod                = big.NewInt(1 << 4)
-	getMetricsResponseFieldStats                 = big.NewInt(1 << 5)
-	getMetricsResponseFieldSubscriberCount       = big.NewInt(1 << 6)
-	getMetricsResponseFieldSuccess               = big.NewInt(1 << 7)
+	getMetricsResponseFieldRecipientDomain       = big.NewInt(1 << 5)
+	getMetricsResponseFieldSource                = big.NewInt(1 << 6)
+	getMetricsResponseFieldStats                 = big.NewInt(1 << 7)
+	getMetricsResponseFieldSubscriberCount       = big.NewInt(1 << 8)
+	getMetricsResponseFieldSuccess               = big.NewInt(1 << 9)
 )
 
 type GetMetricsResponse struct {
@@ -7102,9 +7934,13 @@ type GetMetricsResponse struct {
 	CommerceForecast *CommerceValueForecast       `json:"commerceForecast,omitempty" url:"commerceForecast,omitempty"`
 	EmailType        *GetMetricsResponseEmailType `json:"emailType,omitempty" url:"emailType,omitempty"`
 	// Echoed back when `mailboxProvider` is provided.
-	MailboxProvider *string          `json:"mailboxProvider,omitempty" url:"mailboxProvider,omitempty"`
-	Period          *string          `json:"period,omitempty" url:"period,omitempty"`
-	Stats           *EngagementStats `json:"stats,omitempty" url:"stats,omitempty"`
+	MailboxProvider *string `json:"mailboxProvider,omitempty" url:"mailboxProvider,omitempty"`
+	Period          *string `json:"period,omitempty" url:"period,omitempty"`
+	// Echoed back, lowercased, when `recipientDomain` is provided.
+	RecipientDomain *string `json:"recipientDomain,omitempty" url:"recipientDomain,omitempty"`
+	// Echoed back when `source` is provided.
+	Source *string          `json:"source,omitempty" url:"source,omitempty"`
+	Stats  *EngagementStats `json:"stats,omitempty" url:"stats,omitempty"`
 	// Live count of every stored contact in the company. Independent of the requested period.
 	SubscriberCount *int  `json:"subscriberCount,omitempty" url:"subscriberCount,omitempty"`
 	Success         *bool `json:"success,omitempty" url:"success,omitempty"`
@@ -7149,6 +7985,20 @@ func (g *GetMetricsResponse) GetPeriod() *string {
 		return nil
 	}
 	return g.Period
+}
+
+func (g *GetMetricsResponse) GetRecipientDomain() *string {
+	if g == nil {
+		return nil
+	}
+	return g.RecipientDomain
+}
+
+func (g *GetMetricsResponse) GetSource() *string {
+	if g == nil {
+		return nil
+	}
+	return g.Source
 }
 
 func (g *GetMetricsResponse) GetStats() *EngagementStats {
@@ -7219,6 +8069,20 @@ func (g *GetMetricsResponse) SetMailboxProvider(mailboxProvider *string) {
 func (g *GetMetricsResponse) SetPeriod(period *string) {
 	g.Period = period
 	g.require(getMetricsResponseFieldPeriod)
+}
+
+// SetRecipientDomain sets the RecipientDomain field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsResponse) SetRecipientDomain(recipientDomain *string) {
+	g.RecipientDomain = recipientDomain
+	g.require(getMetricsResponseFieldRecipientDomain)
+}
+
+// SetSource sets the Source field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsResponse) SetSource(source *string) {
+	g.Source = source
+	g.require(getMetricsResponseFieldSource)
 }
 
 // SetStats sets the Stats field and marks it as non-optional;

@@ -1596,12 +1596,44 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"activeSubscriberCount\": 1,\n  \"commerceForecast\": {\n    \"actual\": {\n      \"averageCustomerValueCents\": 1,\n      \"averageOrderValueCents\": 1,\n      \"repeatPurchaseRate\": 1.1\n    },\n    \"confidence\": \"low\",\n    \"currency\": \"currency\",\n    \"eligibility\": {\n      \"reasons\": [\n        {}\n      ]\n    },\n    \"forecast\": {\n      \"expectedOrders90Days\": 1.1,\n      \"expectedRevenue90DaysCents\": 1,\n      \"predictedAverageOrderValueCents\": 1,\n      \"predictedCustomerValue365DaysCents\": 1\n    },\n    \"generatedAt\": \"2024-01-15T09:30:00Z\",\n    \"history\": {\n      \"customerCount\": 1,\n      \"daysSinceLastOrder\": 1,\n      \"excludedCurrencyOrderCount\": 1,\n      \"historyDays\": 1,\n      \"orderCount\": 1,\n      \"repeatCustomerCount\": 1\n    },\n    \"isSampled\": true,\n    \"modelVersion\": \"cohort-rfm-v1\",\n    \"status\": \"ready\"\n  },\n  \"emailType\": \"campaign\",\n  \"mailboxProvider\": \"mailboxProvider\",\n  \"period\": \"period\",\n  \"stats\": {\n    \"bounced\": 1,\n    \"bounceRate\": 1.1,\n    \"clicked\": 1,\n    \"clickRate\": 1.1,\n    \"conversions\": 1,\n    \"delivered\": 1,\n    \"deliveryRate\": 1.1,\n    \"opened\": 1,\n    \"openRate\": 1.1,\n    \"rateDenominator\": 1,\n    \"rateDenominatorBasis\": \"delivered\",\n    \"replies\": 1,\n    \"replyRate\": 1.1,\n    \"revenueCents\": 1,\n    \"sent\": 1,\n    \"unsubscribed\": 1,\n    \"unsubscribeRate\": 1.1\n  },\n  \"subscriberCount\": 1,\n  \"success\": true\n}",
+        "body": "{\n  \"activeSubscriberCount\": 1,\n  \"commerceForecast\": {\n    \"actual\": {\n      \"averageCustomerValueCents\": 1,\n      \"averageOrderValueCents\": 1,\n      \"repeatPurchaseRate\": 1.1\n    },\n    \"confidence\": \"low\",\n    \"currency\": \"currency\",\n    \"eligibility\": {\n      \"reasons\": [\n        {}\n      ]\n    },\n    \"forecast\": {\n      \"expectedOrders90Days\": 1.1,\n      \"expectedRevenue90DaysCents\": 1,\n      \"predictedAverageOrderValueCents\": 1,\n      \"predictedCustomerValue365DaysCents\": 1\n    },\n    \"generatedAt\": \"2024-01-15T09:30:00Z\",\n    \"history\": {\n      \"customerCount\": 1,\n      \"daysSinceLastOrder\": 1,\n      \"excludedCurrencyOrderCount\": 1,\n      \"historyDays\": 1,\n      \"orderCount\": 1,\n      \"repeatCustomerCount\": 1\n    },\n    \"isSampled\": true,\n    \"modelVersion\": \"cohort-rfm-v1\",\n    \"status\": \"ready\"\n  },\n  \"emailType\": \"campaign\",\n  \"mailboxProvider\": \"mailboxProvider\",\n  \"period\": \"period\",\n  \"recipientDomain\": \"recipientDomain\",\n  \"source\": \"source\",\n  \"stats\": {\n    \"bounced\": 1,\n    \"bounceRate\": 1.1,\n    \"clicked\": 1,\n    \"clickRate\": 1.1,\n    \"conversions\": 1,\n    \"delivered\": 1,\n    \"deliveryRate\": 1.1,\n    \"opened\": 1,\n    \"openRate\": 1.1,\n    \"rateDenominator\": 1,\n    \"rateDenominatorBasis\": \"delivered\",\n    \"replies\": 1,\n    \"replyRate\": 1.1,\n    \"revenueCents\": 1,\n    \"sent\": 1,\n    \"unsubscribed\": 1,\n    \"unsubscribeRate\": 1.1\n  },\n  \"subscriberCount\": 1,\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
       },
       "uuid": "9c0316e7-6b07-4e8b-9d89-cf5e6e419568",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
+      "id": "2cfc2be2-ce97-45ad-b64a-eae3042b3b00",
+      "name": "Break metrics down by email, sequence or recipient - default",
+      "request": {
+        "urlPathTemplate": "/metrics/breakdown",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"by\": \"sequence\",\n  \"emailType\": \"emailType\",\n  \"end\": \"2024-01-15T09:30:00Z\",\n  \"mailboxProvider\": \"mailboxProvider\",\n  \"period\": \"period\",\n  \"recipientDomain\": \"recipientDomain\",\n  \"rows\": [\n    {\n      \"bounced\": 1,\n      \"bounceRate\": 1.1,\n      \"clicked\": 1,\n      \"clickRate\": 1.1,\n      \"complained\": 1,\n      \"conversions\": 1,\n      \"delivered\": 1,\n      \"deliveryRate\": 1.1,\n      \"detail\": \"detail\",\n      \"filter\": {\n        \"key\": \"value\"\n      },\n      \"key\": \"seq_123\",\n      \"label\": \"Abandoned Checkout Recovery\",\n      \"opened\": 1,\n      \"openRate\": 1.1,\n      \"revenue\": 1.1,\n      \"sent\": 1,\n      \"unsubscribed\": 1,\n      \"unsubscribeRate\": 1.1\n    }\n  ],\n  \"source\": \"source\",\n  \"start\": \"2024-01-15T09:30:00Z\",\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "2cfc2be2-ce97-45ad-b64a-eae3042b3b00",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -5842,6 +5874,38 @@
       "postServeActions": []
     },
     {
+      "id": "d9b04a7c-7aa1-4ce6-8747-ddedc1d37bf9",
+      "name": "List integration suggestions - default",
+      "request": {
+        "urlPathTemplate": "/integrations/suggestions",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"paymentProviders\": {\n    \"pricingPlanCount\": 2,\n    \"providers\": [\n      {\n        \"name\": \"Stripe\",\n        \"provider\": \"stripe\"\n      }\n    ],\n    \"reason\": \"pricing_found\"\n  },\n  \"scanComplete\": true,\n  \"success\": true,\n  \"suggestions\": [\n    {\n      \"category\": \"auth\",\n      \"evidence\": \"homepage\",\n      \"name\": \"Clerk\",\n      \"provider\": \"shopify\",\n      \"shopDomain\": \"shopDomain\"\n    }\n  ],\n  \"websiteUrl\": \"https://lumenhq.io\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "d9b04a7c-7aa1-4ce6-8747-ddedc1d37bf9",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
       "id": "f7f121f6-da2c-48ee-946b-5eee4b4103e5",
       "name": "Sync integration - default",
       "request": {
@@ -7001,7 +7065,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"data\": {\n    \"endpoints\": {\n      \"connectSource\": \"https://api.sequenzy.com/api/v1/migrations/run_123/connect-source\"\n    },\n    \"instructions\": [\n      \"Do not convert migrated HTML into Sequenzy blocks or recreate the email from its visible text.\"\n    ],\n    \"provider\": \"kit\",\n    \"providerLabel\": \"Kit\",\n    \"runId\": \"run_123\",\n    \"sequence\": [\n      \"POST connect-source with the provider credential.\"\n    ],\n    \"systemPrompt\": \"Preserve provider email HTML exactly...\"\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"data\": {\n    \"endpoints\": {\n      \"connectSource\": \"https://api.sequenzy.com/api/v1/migrations/run_123/connect-source\"\n    },\n    \"instructions\": [\n      \"Do not convert migrated HTML into Sequenzy blocks or recreate the email from its visible text.\"\n    ],\n    \"organizationsEnabled\": false,\n    \"provider\": \"kit\",\n    \"providerLabel\": \"Kit\",\n    \"runId\": \"run_123\",\n    \"sequence\": [\n      \"POST connect-source with the provider credential.\"\n    ],\n    \"systemPrompt\": \"Preserve provider email HTML exactly...\"\n  },\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -15411,6 +15475,6 @@
     }
   ],
   "meta": {
-    "total": 447
+    "total": 449
   }
 }

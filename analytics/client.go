@@ -190,6 +190,31 @@ func (c *Client) GetMetrics(
 	return response.Body, nil
 }
 
+// Returns the delivery funnel for each value of one dimension, most sends first, so you can find the email, sequence, provider or domain behind a number and drill into it. Rows count the sends made in the window and the engagement they earned. Defaults to the last 30 days and 25 rows.
+//
+// Example:
+//
+//	request := &sequenzygo.GetMetricsBreakdownRequest{}
+//	client.Analytics.GetMetricsBreakdown(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) GetMetricsBreakdown(
+	ctx context.Context,
+	request *sequenzygo.GetMetricsBreakdownRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.GetMetricsBreakdownResponse, error) {
+	response, err := c.WithRawResponse.GetMetricsBreakdown(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Returns a paginated list of recipients with their open, click, and unsubscribe events. Use this to sync engagement data to your own database.
 //
 // Example:

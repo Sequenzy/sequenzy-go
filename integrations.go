@@ -56,7 +56,7 @@ type ConnectIntegrationsRequest struct {
 	ProviderAccountID *string `json:"providerAccountId,omitempty" url:"-"`
 	// PostHog and Segment: event delivery scope. Attio: listMap (Sequenzy list id to Attio list id or slug) and syncCompanyFromDomain. SparkLoop: listIds for new referrals.
 	Settings *ConnectIntegrationsRequestSettings `json:"settings,omitempty" url:"-"`
-	// Signing secret of the provider webhook. Optional for lemon_squeezy managed provisioning and not used by attio; required for other providers. Lemon Squeezy manual secrets use 16-40 characters. For Chargebee, pass username:password. For RevenueCat, pass at least 16 characters: the authorization header value set on the RevenueCat webhook, or its HMAC signing secret. For Superwall, pass the webhook's whsec_ signing secret, the only credential it needs. For Segment, use 16-153 UTF-8 bytes. For SparkLoop, pass the webhook authentication token from SparkLoop Settings → Integrations (sent as the SparkLoop-Token header).
+	// Signing secret of the provider webhook. Optional for lemon_squeezy managed provisioning and for sparkloop, and not used by attio; required for other providers. Lemon Squeezy manual secrets use 16-40 characters. For Chargebee, pass username:password. For RevenueCat, pass at least 16 characters: the authorization header value set on the RevenueCat webhook, or its HMAC signing secret. For Superwall, pass the webhook's whsec_ signing secret, the only credential it needs. For Segment, use 16-153 UTF-8 bytes. For SparkLoop, omit it so Sequenzy authenticates deliveries with a secret in the webhook URL it registers, or pass the account's webhook authentication token to verify the SparkLoop-Token header instead.
 	WebhookSecret *string `json:"webhookSecret,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -7208,6 +7208,615 @@ func (l *ListIntegrationsResponse) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	listSuggestionsIntegrationsResponseFieldPaymentProviders = big.NewInt(1 << 0)
+	listSuggestionsIntegrationsResponseFieldScanComplete     = big.NewInt(1 << 1)
+	listSuggestionsIntegrationsResponseFieldSuccess          = big.NewInt(1 << 2)
+	listSuggestionsIntegrationsResponseFieldSuggestions      = big.NewInt(1 << 3)
+	listSuggestionsIntegrationsResponseFieldWebsiteURL       = big.NewInt(1 << 4)
+)
+
+type ListSuggestionsIntegrationsResponse struct {
+	// Present when the website lists pricing and no payment or commerce integration is connected; null otherwise.
+	PaymentProviders *ListSuggestionsIntegrationsResponsePaymentProviders `json:"paymentProviders,omitempty" url:"paymentProviders,omitempty"`
+	// False while onboarding is still reading the website, including the tool scan, which can finish a few seconds after the rest. An empty list then means the site has not been scanned yet, not that nothing was found.
+	ScanComplete bool `json:"scanComplete" url:"scanComplete"`
+	Success      bool `json:"success" url:"success"`
+	// Detected providers that are not connected, in suggestion order.
+	Suggestions []*ListSuggestionsIntegrationsResponseSuggestionsItem `json:"suggestions" url:"suggestions"`
+	// The company website the suggestions were read from.
+	WebsiteURL *string `json:"websiteUrl,omitempty" url:"websiteUrl,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListSuggestionsIntegrationsResponse) GetPaymentProviders() *ListSuggestionsIntegrationsResponsePaymentProviders {
+	if l == nil {
+		return nil
+	}
+	return l.PaymentProviders
+}
+
+func (l *ListSuggestionsIntegrationsResponse) GetScanComplete() bool {
+	if l == nil {
+		return false
+	}
+	return l.ScanComplete
+}
+
+func (l *ListSuggestionsIntegrationsResponse) GetSuccess() bool {
+	if l == nil {
+		return false
+	}
+	return l.Success
+}
+
+func (l *ListSuggestionsIntegrationsResponse) GetSuggestions() []*ListSuggestionsIntegrationsResponseSuggestionsItem {
+	if l == nil {
+		return nil
+	}
+	return l.Suggestions
+}
+
+func (l *ListSuggestionsIntegrationsResponse) GetWebsiteURL() *string {
+	if l == nil {
+		return nil
+	}
+	return l.WebsiteURL
+}
+
+func (l *ListSuggestionsIntegrationsResponse) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListSuggestionsIntegrationsResponse) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetPaymentProviders sets the PaymentProviders field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSuggestionsIntegrationsResponse) SetPaymentProviders(paymentProviders *ListSuggestionsIntegrationsResponsePaymentProviders) {
+	l.PaymentProviders = paymentProviders
+	l.require(listSuggestionsIntegrationsResponseFieldPaymentProviders)
+}
+
+// SetScanComplete sets the ScanComplete field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSuggestionsIntegrationsResponse) SetScanComplete(scanComplete bool) {
+	l.ScanComplete = scanComplete
+	l.require(listSuggestionsIntegrationsResponseFieldScanComplete)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSuggestionsIntegrationsResponse) SetSuccess(success bool) {
+	l.Success = success
+	l.require(listSuggestionsIntegrationsResponseFieldSuccess)
+}
+
+// SetSuggestions sets the Suggestions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSuggestionsIntegrationsResponse) SetSuggestions(suggestions []*ListSuggestionsIntegrationsResponseSuggestionsItem) {
+	l.Suggestions = suggestions
+	l.require(listSuggestionsIntegrationsResponseFieldSuggestions)
+}
+
+// SetWebsiteURL sets the WebsiteURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSuggestionsIntegrationsResponse) SetWebsiteURL(websiteURL *string) {
+	l.WebsiteURL = websiteURL
+	l.require(listSuggestionsIntegrationsResponseFieldWebsiteURL)
+}
+
+func (l *ListSuggestionsIntegrationsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListSuggestionsIntegrationsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListSuggestionsIntegrationsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListSuggestionsIntegrationsResponse) MarshalJSON() ([]byte, error) {
+	type embed ListSuggestionsIntegrationsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListSuggestionsIntegrationsResponse) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+// Present when the website lists pricing and no payment or commerce integration is connected; null otherwise.
+var (
+	listSuggestionsIntegrationsResponsePaymentProvidersFieldPricingPlanCount = big.NewInt(1 << 0)
+	listSuggestionsIntegrationsResponsePaymentProvidersFieldProviders        = big.NewInt(1 << 1)
+	listSuggestionsIntegrationsResponsePaymentProvidersFieldReason           = big.NewInt(1 << 2)
+)
+
+type ListSuggestionsIntegrationsResponsePaymentProviders struct {
+	// Pricing plans read from the website or entered in settings.
+	PricingPlanCount int `json:"pricingPlanCount" url:"pricingPlanCount"`
+	// Every available payment provider.
+	Providers []*ListSuggestionsIntegrationsResponsePaymentProvidersProvidersItem `json:"providers" url:"providers"`
+	Reason    ListSuggestionsIntegrationsResponsePaymentProvidersReason           `json:"reason" url:"reason"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListSuggestionsIntegrationsResponsePaymentProviders) GetPricingPlanCount() int {
+	if l == nil {
+		return 0
+	}
+	return l.PricingPlanCount
+}
+
+func (l *ListSuggestionsIntegrationsResponsePaymentProviders) GetProviders() []*ListSuggestionsIntegrationsResponsePaymentProvidersProvidersItem {
+	if l == nil {
+		return nil
+	}
+	return l.Providers
+}
+
+func (l *ListSuggestionsIntegrationsResponsePaymentProviders) GetReason() ListSuggestionsIntegrationsResponsePaymentProvidersReason {
+	if l == nil {
+		return ""
+	}
+	return l.Reason
+}
+
+func (l *ListSuggestionsIntegrationsResponsePaymentProviders) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListSuggestionsIntegrationsResponsePaymentProviders) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetPricingPlanCount sets the PricingPlanCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSuggestionsIntegrationsResponsePaymentProviders) SetPricingPlanCount(pricingPlanCount int) {
+	l.PricingPlanCount = pricingPlanCount
+	l.require(listSuggestionsIntegrationsResponsePaymentProvidersFieldPricingPlanCount)
+}
+
+// SetProviders sets the Providers field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSuggestionsIntegrationsResponsePaymentProviders) SetProviders(providers []*ListSuggestionsIntegrationsResponsePaymentProvidersProvidersItem) {
+	l.Providers = providers
+	l.require(listSuggestionsIntegrationsResponsePaymentProvidersFieldProviders)
+}
+
+// SetReason sets the Reason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSuggestionsIntegrationsResponsePaymentProviders) SetReason(reason ListSuggestionsIntegrationsResponsePaymentProvidersReason) {
+	l.Reason = reason
+	l.require(listSuggestionsIntegrationsResponsePaymentProvidersFieldReason)
+}
+
+func (l *ListSuggestionsIntegrationsResponsePaymentProviders) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListSuggestionsIntegrationsResponsePaymentProviders
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListSuggestionsIntegrationsResponsePaymentProviders(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListSuggestionsIntegrationsResponsePaymentProviders) MarshalJSON() ([]byte, error) {
+	type embed ListSuggestionsIntegrationsResponsePaymentProviders
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListSuggestionsIntegrationsResponsePaymentProviders) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	listSuggestionsIntegrationsResponsePaymentProvidersProvidersItemFieldName     = big.NewInt(1 << 0)
+	listSuggestionsIntegrationsResponsePaymentProvidersProvidersItemFieldProvider = big.NewInt(1 << 1)
+)
+
+type ListSuggestionsIntegrationsResponsePaymentProvidersProvidersItem struct {
+	Name     string `json:"name" url:"name"`
+	Provider string `json:"provider" url:"provider"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListSuggestionsIntegrationsResponsePaymentProvidersProvidersItem) GetName() string {
+	if l == nil {
+		return ""
+	}
+	return l.Name
+}
+
+func (l *ListSuggestionsIntegrationsResponsePaymentProvidersProvidersItem) GetProvider() string {
+	if l == nil {
+		return ""
+	}
+	return l.Provider
+}
+
+func (l *ListSuggestionsIntegrationsResponsePaymentProvidersProvidersItem) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListSuggestionsIntegrationsResponsePaymentProvidersProvidersItem) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSuggestionsIntegrationsResponsePaymentProvidersProvidersItem) SetName(name string) {
+	l.Name = name
+	l.require(listSuggestionsIntegrationsResponsePaymentProvidersProvidersItemFieldName)
+}
+
+// SetProvider sets the Provider field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSuggestionsIntegrationsResponsePaymentProvidersProvidersItem) SetProvider(provider string) {
+	l.Provider = provider
+	l.require(listSuggestionsIntegrationsResponsePaymentProvidersProvidersItemFieldProvider)
+}
+
+func (l *ListSuggestionsIntegrationsResponsePaymentProvidersProvidersItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListSuggestionsIntegrationsResponsePaymentProvidersProvidersItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListSuggestionsIntegrationsResponsePaymentProvidersProvidersItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListSuggestionsIntegrationsResponsePaymentProvidersProvidersItem) MarshalJSON() ([]byte, error) {
+	type embed ListSuggestionsIntegrationsResponsePaymentProvidersProvidersItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListSuggestionsIntegrationsResponsePaymentProvidersProvidersItem) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type ListSuggestionsIntegrationsResponsePaymentProvidersReason string
+
+const (
+	ListSuggestionsIntegrationsResponsePaymentProvidersReasonPricingFound ListSuggestionsIntegrationsResponsePaymentProvidersReason = "pricing_found"
+)
+
+func NewListSuggestionsIntegrationsResponsePaymentProvidersReasonFromString(s string) (ListSuggestionsIntegrationsResponsePaymentProvidersReason, error) {
+	switch s {
+	case "pricing_found":
+		return ListSuggestionsIntegrationsResponsePaymentProvidersReasonPricingFound, nil
+	}
+	var t ListSuggestionsIntegrationsResponsePaymentProvidersReason
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListSuggestionsIntegrationsResponsePaymentProvidersReason) Ptr() *ListSuggestionsIntegrationsResponsePaymentProvidersReason {
+	return &l
+}
+
+var (
+	listSuggestionsIntegrationsResponseSuggestionsItemFieldCategory   = big.NewInt(1 << 0)
+	listSuggestionsIntegrationsResponseSuggestionsItemFieldEvidence   = big.NewInt(1 << 1)
+	listSuggestionsIntegrationsResponseSuggestionsItemFieldName       = big.NewInt(1 << 2)
+	listSuggestionsIntegrationsResponseSuggestionsItemFieldProvider   = big.NewInt(1 << 3)
+	listSuggestionsIntegrationsResponseSuggestionsItemFieldShopDomain = big.NewInt(1 << 4)
+)
+
+type ListSuggestionsIntegrationsResponseSuggestionsItem struct {
+	Category string `json:"category" url:"category"`
+	// Where the provider was found. storefront means the site runs on Shopify.
+	Evidence ListSuggestionsIntegrationsResponseSuggestionsItemEvidence `json:"evidence" url:"evidence"`
+	Name     string                                                     `json:"name" url:"name"`
+	Provider ListSuggestionsIntegrationsResponseSuggestionsItemProvider `json:"provider" url:"provider"`
+	// The myshopify.com domain for a Shopify suggestion when one was found; null otherwise.
+	ShopDomain *string `json:"shopDomain,omitempty" url:"shopDomain,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListSuggestionsIntegrationsResponseSuggestionsItem) GetCategory() string {
+	if l == nil {
+		return ""
+	}
+	return l.Category
+}
+
+func (l *ListSuggestionsIntegrationsResponseSuggestionsItem) GetEvidence() ListSuggestionsIntegrationsResponseSuggestionsItemEvidence {
+	if l == nil {
+		return ""
+	}
+	return l.Evidence
+}
+
+func (l *ListSuggestionsIntegrationsResponseSuggestionsItem) GetName() string {
+	if l == nil {
+		return ""
+	}
+	return l.Name
+}
+
+func (l *ListSuggestionsIntegrationsResponseSuggestionsItem) GetProvider() ListSuggestionsIntegrationsResponseSuggestionsItemProvider {
+	if l == nil {
+		return ""
+	}
+	return l.Provider
+}
+
+func (l *ListSuggestionsIntegrationsResponseSuggestionsItem) GetShopDomain() *string {
+	if l == nil {
+		return nil
+	}
+	return l.ShopDomain
+}
+
+func (l *ListSuggestionsIntegrationsResponseSuggestionsItem) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListSuggestionsIntegrationsResponseSuggestionsItem) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetCategory sets the Category field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSuggestionsIntegrationsResponseSuggestionsItem) SetCategory(category string) {
+	l.Category = category
+	l.require(listSuggestionsIntegrationsResponseSuggestionsItemFieldCategory)
+}
+
+// SetEvidence sets the Evidence field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSuggestionsIntegrationsResponseSuggestionsItem) SetEvidence(evidence ListSuggestionsIntegrationsResponseSuggestionsItemEvidence) {
+	l.Evidence = evidence
+	l.require(listSuggestionsIntegrationsResponseSuggestionsItemFieldEvidence)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSuggestionsIntegrationsResponseSuggestionsItem) SetName(name string) {
+	l.Name = name
+	l.require(listSuggestionsIntegrationsResponseSuggestionsItemFieldName)
+}
+
+// SetProvider sets the Provider field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSuggestionsIntegrationsResponseSuggestionsItem) SetProvider(provider ListSuggestionsIntegrationsResponseSuggestionsItemProvider) {
+	l.Provider = provider
+	l.require(listSuggestionsIntegrationsResponseSuggestionsItemFieldProvider)
+}
+
+// SetShopDomain sets the ShopDomain field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSuggestionsIntegrationsResponseSuggestionsItem) SetShopDomain(shopDomain *string) {
+	l.ShopDomain = shopDomain
+	l.require(listSuggestionsIntegrationsResponseSuggestionsItemFieldShopDomain)
+}
+
+func (l *ListSuggestionsIntegrationsResponseSuggestionsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListSuggestionsIntegrationsResponseSuggestionsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListSuggestionsIntegrationsResponseSuggestionsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListSuggestionsIntegrationsResponseSuggestionsItem) MarshalJSON() ([]byte, error) {
+	type embed ListSuggestionsIntegrationsResponseSuggestionsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListSuggestionsIntegrationsResponseSuggestionsItem) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+// Where the provider was found. storefront means the site runs on Shopify.
+type ListSuggestionsIntegrationsResponseSuggestionsItemEvidence string
+
+const (
+	ListSuggestionsIntegrationsResponseSuggestionsItemEvidenceHomepage   ListSuggestionsIntegrationsResponseSuggestionsItemEvidence = "homepage"
+	ListSuggestionsIntegrationsResponseSuggestionsItemEvidenceSignInPage ListSuggestionsIntegrationsResponseSuggestionsItemEvidence = "sign_in_page"
+	ListSuggestionsIntegrationsResponseSuggestionsItemEvidenceStorefront ListSuggestionsIntegrationsResponseSuggestionsItemEvidence = "storefront"
+)
+
+func NewListSuggestionsIntegrationsResponseSuggestionsItemEvidenceFromString(s string) (ListSuggestionsIntegrationsResponseSuggestionsItemEvidence, error) {
+	switch s {
+	case "homepage":
+		return ListSuggestionsIntegrationsResponseSuggestionsItemEvidenceHomepage, nil
+	case "sign_in_page":
+		return ListSuggestionsIntegrationsResponseSuggestionsItemEvidenceSignInPage, nil
+	case "storefront":
+		return ListSuggestionsIntegrationsResponseSuggestionsItemEvidenceStorefront, nil
+	}
+	var t ListSuggestionsIntegrationsResponseSuggestionsItemEvidence
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListSuggestionsIntegrationsResponseSuggestionsItemEvidence) Ptr() *ListSuggestionsIntegrationsResponseSuggestionsItemEvidence {
+	return &l
+}
+
+type ListSuggestionsIntegrationsResponseSuggestionsItemProvider string
+
+const (
+	ListSuggestionsIntegrationsResponseSuggestionsItemProviderShopify     ListSuggestionsIntegrationsResponseSuggestionsItemProvider = "shopify"
+	ListSuggestionsIntegrationsResponseSuggestionsItemProviderClerk       ListSuggestionsIntegrationsResponseSuggestionsItemProvider = "clerk"
+	ListSuggestionsIntegrationsResponseSuggestionsItemProviderSupabase    ListSuggestionsIntegrationsResponseSuggestionsItemProvider = "supabase"
+	ListSuggestionsIntegrationsResponseSuggestionsItemProviderPosthog     ListSuggestionsIntegrationsResponseSuggestionsItemProvider = "posthog"
+	ListSuggestionsIntegrationsResponseSuggestionsItemProviderSegment     ListSuggestionsIntegrationsResponseSuggestionsItemProvider = "segment"
+	ListSuggestionsIntegrationsResponseSuggestionsItemProviderWoocommerce ListSuggestionsIntegrationsResponseSuggestionsItemProvider = "woocommerce"
+	ListSuggestionsIntegrationsResponseSuggestionsItemProviderWordpress   ListSuggestionsIntegrationsResponseSuggestionsItemProvider = "wordpress"
+	ListSuggestionsIntegrationsResponseSuggestionsItemProviderWebflow     ListSuggestionsIntegrationsResponseSuggestionsItemProvider = "webflow"
+	ListSuggestionsIntegrationsResponseSuggestionsItemProviderWix         ListSuggestionsIntegrationsResponseSuggestionsItemProvider = "wix"
+)
+
+func NewListSuggestionsIntegrationsResponseSuggestionsItemProviderFromString(s string) (ListSuggestionsIntegrationsResponseSuggestionsItemProvider, error) {
+	switch s {
+	case "shopify":
+		return ListSuggestionsIntegrationsResponseSuggestionsItemProviderShopify, nil
+	case "clerk":
+		return ListSuggestionsIntegrationsResponseSuggestionsItemProviderClerk, nil
+	case "supabase":
+		return ListSuggestionsIntegrationsResponseSuggestionsItemProviderSupabase, nil
+	case "posthog":
+		return ListSuggestionsIntegrationsResponseSuggestionsItemProviderPosthog, nil
+	case "segment":
+		return ListSuggestionsIntegrationsResponseSuggestionsItemProviderSegment, nil
+	case "woocommerce":
+		return ListSuggestionsIntegrationsResponseSuggestionsItemProviderWoocommerce, nil
+	case "wordpress":
+		return ListSuggestionsIntegrationsResponseSuggestionsItemProviderWordpress, nil
+	case "webflow":
+		return ListSuggestionsIntegrationsResponseSuggestionsItemProviderWebflow, nil
+	case "wix":
+		return ListSuggestionsIntegrationsResponseSuggestionsItemProviderWix, nil
+	}
+	var t ListSuggestionsIntegrationsResponseSuggestionsItemProvider
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListSuggestionsIntegrationsResponseSuggestionsItemProvider) Ptr() *ListSuggestionsIntegrationsResponseSuggestionsItemProvider {
+	return &l
 }
 
 var (

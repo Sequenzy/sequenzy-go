@@ -305,6 +305,28 @@ func TestIntegrationsListCapabilitiesWithWireMock(
 	VerifyRequestCount(t, "TestIntegrationsListCapabilitiesWithWireMock", "GET", "/integrations/catalog", nil, 1)
 }
 
+func TestIntegrationsListSuggestionsWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	_, invocationErr := client.Integrations.ListSuggestions(
+		context.TODO(),
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestIntegrationsListSuggestionsWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestIntegrationsListSuggestionsWithWireMock", "GET", "/integrations/suggestions", nil, 1)
+}
+
 func TestIntegrationsSyncWithWireMock(
 	t *testing.T,
 ) {
