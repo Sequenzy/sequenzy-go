@@ -289,6 +289,22 @@ func TestSettersCompany(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetDarkModeLogoStatus", func(t *testing.T) {
+		obj := &Company{}
+		var fernTestValueDarkModeLogoStatus *CompanyDarkModeLogoStatus
+		obj.SetDarkModeLogoStatus(fernTestValueDarkModeLogoStatus)
+		assert.Equal(t, fernTestValueDarkModeLogoStatus, obj.DarkModeLogoStatus)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetDarkModeLogoURL", func(t *testing.T) {
+		obj := &Company{}
+		var fernTestValueDarkModeLogoURL *string
+		obj.SetDarkModeLogoURL(fernTestValueDarkModeLogoURL)
+		assert.Equal(t, fernTestValueDarkModeLogoURL, obj.DarkModeLogoURL)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetDefaultFromEmail", func(t *testing.T) {
 		obj := &Company{}
 		var fernTestValueDefaultFromEmail *string
@@ -734,6 +750,72 @@ func TestGettersCompany(t *testing.T) {
 			}
 		}()
 		_ = obj.GetCreatedAt() // Should return zero value
+	})
+
+	t.Run("GetDarkModeLogoStatus", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Company{}
+		var expected *CompanyDarkModeLogoStatus
+		obj.DarkModeLogoStatus = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDarkModeLogoStatus(), "getter should return the property value")
+	})
+
+	t.Run("GetDarkModeLogoStatus_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Company{}
+		obj.DarkModeLogoStatus = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetDarkModeLogoStatus(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetDarkModeLogoStatus_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Company
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDarkModeLogoStatus() // Should return zero value
+	})
+
+	t.Run("GetDarkModeLogoURL", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Company{}
+		var expected *string
+		obj.DarkModeLogoURL = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDarkModeLogoURL(), "getter should return the property value")
+	})
+
+	t.Run("GetDarkModeLogoURL_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Company{}
+		obj.DarkModeLogoURL = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetDarkModeLogoURL(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetDarkModeLogoURL_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Company
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDarkModeLogoURL() // Should return zero value
 	})
 
 	t.Run("GetDefaultFromEmail", func(t *testing.T) {
@@ -2127,6 +2209,68 @@ func TestSettersMarkExplicitCompany(t *testing.T) {
 
 		// Act
 		obj.SetCreatedAt(fernTestValueCreatedAt)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetDarkModeLogoStatus_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Company{}
+		var fernTestValueDarkModeLogoStatus *CompanyDarkModeLogoStatus
+
+		// Act
+		obj.SetDarkModeLogoStatus(fernTestValueDarkModeLogoStatus)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetDarkModeLogoURL_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Company{}
+		var fernTestValueDarkModeLogoURL *string
+
+		// Act
+		obj.SetDarkModeLogoURL(fernTestValueDarkModeLogoURL)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -6069,6 +6213,14 @@ func TestSettersUpdateCompaniesRequestEmailThemeLayout(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetButtonRadius", func(t *testing.T) {
+		obj := &UpdateCompaniesRequestEmailThemeLayout{}
+		var fernTestValueButtonRadius *float64
+		obj.SetButtonRadius(fernTestValueButtonRadius)
+		assert.Equal(t, fernTestValueButtonRadius, obj.ButtonRadius)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetContainerPaddingX", func(t *testing.T) {
 		obj := &UpdateCompaniesRequestEmailThemeLayout{}
 		var fernTestValueContainerPaddingX *float64
@@ -6082,6 +6234,14 @@ func TestSettersUpdateCompaniesRequestEmailThemeLayout(t *testing.T) {
 		var fernTestValueContainerPaddingY *float64
 		obj.SetContainerPaddingY(fernTestValueContainerPaddingY)
 		assert.Equal(t, fernTestValueContainerPaddingY, obj.ContainerPaddingY)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetContentAlign", func(t *testing.T) {
+		obj := &UpdateCompaniesRequestEmailThemeLayout{}
+		var fernTestValueContentAlign *UpdateCompaniesRequestEmailThemeLayoutContentAlign
+		obj.SetContentAlign(fernTestValueContentAlign)
+		assert.Equal(t, fernTestValueContentAlign, obj.ContentAlign)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -6269,6 +6429,39 @@ func TestGettersUpdateCompaniesRequestEmailThemeLayout(t *testing.T) {
 		_ = obj.GetButtonPaddingY() // Should return zero value
 	})
 
+	t.Run("GetButtonRadius", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateCompaniesRequestEmailThemeLayout{}
+		var expected *float64
+		obj.ButtonRadius = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetButtonRadius(), "getter should return the property value")
+	})
+
+	t.Run("GetButtonRadius_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateCompaniesRequestEmailThemeLayout{}
+		obj.ButtonRadius = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetButtonRadius(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetButtonRadius_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateCompaniesRequestEmailThemeLayout
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetButtonRadius() // Should return zero value
+	})
+
 	t.Run("GetContainerPaddingX", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -6333,6 +6526,39 @@ func TestGettersUpdateCompaniesRequestEmailThemeLayout(t *testing.T) {
 			}
 		}()
 		_ = obj.GetContainerPaddingY() // Should return zero value
+	})
+
+	t.Run("GetContentAlign", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateCompaniesRequestEmailThemeLayout{}
+		var expected *UpdateCompaniesRequestEmailThemeLayoutContentAlign
+		obj.ContentAlign = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetContentAlign(), "getter should return the property value")
+	})
+
+	t.Run("GetContentAlign_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateCompaniesRequestEmailThemeLayout{}
+		obj.ContentAlign = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetContentAlign(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetContentAlign_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateCompaniesRequestEmailThemeLayout
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetContentAlign() // Should return zero value
 	})
 
 	t.Run("GetContentWidth", func(t *testing.T) {
@@ -6559,6 +6785,37 @@ func TestSettersMarkExplicitUpdateCompaniesRequestEmailThemeLayout(t *testing.T)
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetButtonRadius_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateCompaniesRequestEmailThemeLayout{}
+		var fernTestValueButtonRadius *float64
+
+		// Act
+		obj.SetButtonRadius(fernTestValueButtonRadius)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetContainerPaddingX_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -6598,6 +6855,37 @@ func TestSettersMarkExplicitUpdateCompaniesRequestEmailThemeLayout(t *testing.T)
 
 		// Act
 		obj.SetContainerPaddingY(fernTestValueContainerPaddingY)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetContentAlign_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateCompaniesRequestEmailThemeLayout{}
+		var fernTestValueContentAlign *UpdateCompaniesRequestEmailThemeLayoutContentAlign
+
+		// Act
+		obj.SetContentAlign(fernTestValueContentAlign)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -7672,6 +7960,14 @@ func TestSettersUpdateCompaniesRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetDarkModeLogoURL", func(t *testing.T) {
+		obj := &UpdateCompaniesRequest{}
+		var fernTestValueDarkModeLogoURL *string
+		obj.SetDarkModeLogoURL(fernTestValueDarkModeLogoURL)
+		assert.Equal(t, fernTestValueDarkModeLogoURL, obj.DarkModeLogoURL)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetDefaultSubscriberListIDs", func(t *testing.T) {
 		obj := &UpdateCompaniesRequest{}
 		var fernTestValueDefaultSubscriberListIDs []string
@@ -8040,6 +8336,37 @@ func TestSettersMarkExplicitUpdateCompaniesRequest(t *testing.T) {
 
 		// Act
 		obj.SetCompanyContext(fernTestValueCompanyContext)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetDarkModeLogoURL_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateCompaniesRequest{}
+		var fernTestValueDarkModeLogoURL *string
+
+		// Act
+		obj.SetDarkModeLogoURL(fernTestValueDarkModeLogoURL)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -9627,6 +9954,49 @@ func TestStringUpdateCompaniesResponse(t *testing.T) {
 	})
 }
 
+func TestEnumCompanyDarkModeLogoStatus(t *testing.T) {
+	t.Run("NewFromString_pending", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyDarkModeLogoStatusFromString("pending")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyDarkModeLogoStatus("pending"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_outlined", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyDarkModeLogoStatusFromString("outlined")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyDarkModeLogoStatus("outlined"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_not_needed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyDarkModeLogoStatusFromString("not_needed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyDarkModeLogoStatus("not_needed"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_custom", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyDarkModeLogoStatusFromString("custom")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyDarkModeLogoStatus("custom"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewCompanyDarkModeLogoStatusFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewCompanyDarkModeLogoStatusFromString("pending")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumCompanyEmailBrandingManagedBy(t *testing.T) {
 	t.Run("NewFromString_owner_subscription", func(t *testing.T) {
 		t.Parallel()
@@ -10216,6 +10586,35 @@ func TestEnumUpdateCompaniesRequestEmailThemeButtonStyle(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewUpdateCompaniesRequestEmailThemeButtonStyleFromString("solid")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumUpdateCompaniesRequestEmailThemeLayoutContentAlign(t *testing.T) {
+	t.Run("NewFromString_center", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateCompaniesRequestEmailThemeLayoutContentAlignFromString("center")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateCompaniesRequestEmailThemeLayoutContentAlign("center"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_left", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateCompaniesRequestEmailThemeLayoutContentAlignFromString("left")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateCompaniesRequestEmailThemeLayoutContentAlign("left"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewUpdateCompaniesRequestEmailThemeLayoutContentAlignFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewUpdateCompaniesRequestEmailThemeLayoutContentAlignFromString("center")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)

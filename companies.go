@@ -128,58 +128,64 @@ var (
 	companyFieldBrandColors              = big.NewInt(1 << 1)
 	companyFieldCompanyContext           = big.NewInt(1 << 2)
 	companyFieldCreatedAt                = big.NewInt(1 << 3)
-	companyFieldDefaultFromEmail         = big.NewInt(1 << 4)
-	companyFieldDefaultFromName          = big.NewInt(1 << 5)
-	companyFieldDefaultReplyProfileID    = big.NewInt(1 << 6)
-	companyFieldDefaultReplyToEmail      = big.NewInt(1 << 7)
-	companyFieldDefaultReplyToName       = big.NewInt(1 << 8)
-	companyFieldDefaultSenderProfileID   = big.NewInt(1 << 9)
-	companyFieldDefaultSubscriberListIDs = big.NewInt(1 << 10)
-	companyFieldDescription              = big.NewInt(1 << 11)
-	companyFieldEmailBranding            = big.NewInt(1 << 12)
-	companyFieldEmailDesignPrompt        = big.NewInt(1 << 13)
-	companyFieldEmailDirection           = big.NewInt(1 << 14)
-	companyFieldEmailLengthPreference    = big.NewInt(1 << 15)
-	companyFieldEmailLocalizationConfig  = big.NewInt(1 << 16)
-	companyFieldEmailPreset              = big.NewInt(1 << 17)
-	companyFieldEmailStylePreference     = big.NewInt(1 << 18)
-	companyFieldEmailTheme               = big.NewInt(1 << 19)
-	companyFieldFontFamily               = big.NewInt(1 << 20)
-	companyFieldFooterStyle              = big.NewInt(1 << 21)
-	companyFieldForwardReplies           = big.NewInt(1 << 22)
-	companyFieldFounderName              = big.NewInt(1 << 23)
-	companyFieldID                       = big.NewInt(1 << 24)
-	companyFieldLanguage                 = big.NewInt(1 << 25)
-	companyFieldLogoURL                  = big.NewInt(1 << 26)
-	companyFieldName                     = big.NewInt(1 << 27)
-	companyFieldPreviewURL               = big.NewInt(1 << 28)
-	companyFieldPricing                  = big.NewInt(1 << 29)
-	companyFieldPrimaryColor             = big.NewInt(1 << 30)
-	companyFieldPrivacyPolicyURL         = big.NewInt(1 << 31)
-	companyFieldReplyRetentionDays       = big.NewInt(1 << 32)
-	companyFieldReplyTrackingDomainMode  = big.NewInt(1 << 33)
-	companyFieldReplyTrackingEnabled     = big.NewInt(1 << 34)
-	companyFieldSocialLinks              = big.NewInt(1 << 35)
-	companyFieldStatus                   = big.NewInt(1 << 36)
-	companyFieldTermsURL                 = big.NewInt(1 << 37)
-	companyFieldTestimonials             = big.NewInt(1 << 38)
-	companyFieldToneVoice                = big.NewInt(1 << 39)
-	companyFieldURL                      = big.NewInt(1 << 40)
-	companyFieldValueProps               = big.NewInt(1 << 41)
-	companyFieldWebsiteURL               = big.NewInt(1 << 42)
+	companyFieldDarkModeLogoStatus       = big.NewInt(1 << 4)
+	companyFieldDarkModeLogoURL          = big.NewInt(1 << 5)
+	companyFieldDefaultFromEmail         = big.NewInt(1 << 6)
+	companyFieldDefaultFromName          = big.NewInt(1 << 7)
+	companyFieldDefaultReplyProfileID    = big.NewInt(1 << 8)
+	companyFieldDefaultReplyToEmail      = big.NewInt(1 << 9)
+	companyFieldDefaultReplyToName       = big.NewInt(1 << 10)
+	companyFieldDefaultSenderProfileID   = big.NewInt(1 << 11)
+	companyFieldDefaultSubscriberListIDs = big.NewInt(1 << 12)
+	companyFieldDescription              = big.NewInt(1 << 13)
+	companyFieldEmailBranding            = big.NewInt(1 << 14)
+	companyFieldEmailDesignPrompt        = big.NewInt(1 << 15)
+	companyFieldEmailDirection           = big.NewInt(1 << 16)
+	companyFieldEmailLengthPreference    = big.NewInt(1 << 17)
+	companyFieldEmailLocalizationConfig  = big.NewInt(1 << 18)
+	companyFieldEmailPreset              = big.NewInt(1 << 19)
+	companyFieldEmailStylePreference     = big.NewInt(1 << 20)
+	companyFieldEmailTheme               = big.NewInt(1 << 21)
+	companyFieldFontFamily               = big.NewInt(1 << 22)
+	companyFieldFooterStyle              = big.NewInt(1 << 23)
+	companyFieldForwardReplies           = big.NewInt(1 << 24)
+	companyFieldFounderName              = big.NewInt(1 << 25)
+	companyFieldID                       = big.NewInt(1 << 26)
+	companyFieldLanguage                 = big.NewInt(1 << 27)
+	companyFieldLogoURL                  = big.NewInt(1 << 28)
+	companyFieldName                     = big.NewInt(1 << 29)
+	companyFieldPreviewURL               = big.NewInt(1 << 30)
+	companyFieldPricing                  = big.NewInt(1 << 31)
+	companyFieldPrimaryColor             = big.NewInt(1 << 32)
+	companyFieldPrivacyPolicyURL         = big.NewInt(1 << 33)
+	companyFieldReplyRetentionDays       = big.NewInt(1 << 34)
+	companyFieldReplyTrackingDomainMode  = big.NewInt(1 << 35)
+	companyFieldReplyTrackingEnabled     = big.NewInt(1 << 36)
+	companyFieldSocialLinks              = big.NewInt(1 << 37)
+	companyFieldStatus                   = big.NewInt(1 << 38)
+	companyFieldTermsURL                 = big.NewInt(1 << 39)
+	companyFieldTestimonials             = big.NewInt(1 << 40)
+	companyFieldToneVoice                = big.NewInt(1 << 41)
+	companyFieldURL                      = big.NewInt(1 << 42)
+	companyFieldValueProps               = big.NewInt(1 << 43)
+	companyFieldWebsiteURL               = big.NewInt(1 << 44)
 )
 
 type Company struct {
-	Address                *string        `json:"address,omitempty" url:"address,omitempty"`
-	BrandColors            map[string]any `json:"brandColors,omitempty" url:"brandColors,omitempty"`
-	CompanyContext         *string        `json:"companyContext,omitempty" url:"companyContext,omitempty"`
-	CreatedAt              *time.Time     `json:"createdAt,omitempty" url:"createdAt,omitempty"`
-	DefaultFromEmail       *string        `json:"defaultFromEmail,omitempty" url:"defaultFromEmail,omitempty"`
-	DefaultFromName        *string        `json:"defaultFromName,omitempty" url:"defaultFromName,omitempty"`
-	DefaultReplyProfileID  *string        `json:"defaultReplyProfileId,omitempty" url:"defaultReplyProfileId,omitempty"`
-	DefaultReplyToEmail    *string        `json:"defaultReplyToEmail,omitempty" url:"defaultReplyToEmail,omitempty"`
-	DefaultReplyToName     *string        `json:"defaultReplyToName,omitempty" url:"defaultReplyToName,omitempty"`
-	DefaultSenderProfileID *string        `json:"defaultSenderProfileId,omitempty" url:"defaultSenderProfileId,omitempty"`
+	Address        *string        `json:"address,omitempty" url:"address,omitempty"`
+	BrandColors    map[string]any `json:"brandColors,omitempty" url:"brandColors,omitempty"`
+	CompanyContext *string        `json:"companyContext,omitempty" url:"companyContext,omitempty"`
+	CreatedAt      *time.Time     `json:"createdAt,omitempty" url:"createdAt,omitempty"`
+	// Read-only. How the logo is handled in dark-mode inboxes. `outlined` and `custom` emails use darkModeLogoUrl (`custom` is one you uploaded); `pending` is checked within about 10 minutes; null without a logo.
+	DarkModeLogoStatus *CompanyDarkModeLogoStatus `json:"darkModeLogoStatus,omitempty" url:"darkModeLogoStatus,omitempty"`
+	// The logo emails use instead of logoUrl when darkModeLogoStatus is `outlined` (automatic, with a thin white outline) or `custom` (uploaded, set via PATCH), otherwise null.
+	DarkModeLogoURL        *string `json:"darkModeLogoUrl,omitempty" url:"darkModeLogoUrl,omitempty"`
+	DefaultFromEmail       *string `json:"defaultFromEmail,omitempty" url:"defaultFromEmail,omitempty"`
+	DefaultFromName        *string `json:"defaultFromName,omitempty" url:"defaultFromName,omitempty"`
+	DefaultReplyProfileID  *string `json:"defaultReplyProfileId,omitempty" url:"defaultReplyProfileId,omitempty"`
+	DefaultReplyToEmail    *string `json:"defaultReplyToEmail,omitempty" url:"defaultReplyToEmail,omitempty"`
+	DefaultReplyToName     *string `json:"defaultReplyToName,omitempty" url:"defaultReplyToName,omitempty"`
+	DefaultSenderProfileID *string `json:"defaultSenderProfileId,omitempty" url:"defaultSenderProfileId,omitempty"`
 	// Workspace default lists new contacts join when nothing targets them explicitly. null means every current and future list, [] means no list at all, and an array means exactly those lists.
 	DefaultSubscriberListIDs []string `json:"defaultSubscriberListIds,omitempty" url:"defaultSubscriberListIds,omitempty"`
 	Description              *string  `json:"description,omitempty" url:"description,omitempty"`
@@ -261,6 +267,20 @@ func (c *Company) GetCreatedAt() *time.Time {
 		return nil
 	}
 	return c.CreatedAt
+}
+
+func (c *Company) GetDarkModeLogoStatus() *CompanyDarkModeLogoStatus {
+	if c == nil {
+		return nil
+	}
+	return c.DarkModeLogoStatus
+}
+
+func (c *Company) GetDarkModeLogoURL() *string {
+	if c == nil {
+		return nil
+	}
+	return c.DarkModeLogoURL
 }
 
 func (c *Company) GetDefaultFromEmail() *string {
@@ -576,6 +596,20 @@ func (c *Company) SetCompanyContext(companyContext *string) {
 func (c *Company) SetCreatedAt(createdAt *time.Time) {
 	c.CreatedAt = createdAt
 	c.require(companyFieldCreatedAt)
+}
+
+// SetDarkModeLogoStatus sets the DarkModeLogoStatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *Company) SetDarkModeLogoStatus(darkModeLogoStatus *CompanyDarkModeLogoStatus) {
+	c.DarkModeLogoStatus = darkModeLogoStatus
+	c.require(companyFieldDarkModeLogoStatus)
+}
+
+// SetDarkModeLogoURL sets the DarkModeLogoURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *Company) SetDarkModeLogoURL(darkModeLogoURL *string) {
+	c.DarkModeLogoURL = darkModeLogoURL
+	c.require(companyFieldDarkModeLogoURL)
 }
 
 // SetDefaultFromEmail sets the DefaultFromEmail field and marks it as non-optional;
@@ -899,6 +933,35 @@ func (c *Company) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", c)
+}
+
+// Read-only. How the logo is handled in dark-mode inboxes. `outlined` and `custom` emails use darkModeLogoUrl (`custom` is one you uploaded); `pending` is checked within about 10 minutes; null without a logo.
+type CompanyDarkModeLogoStatus string
+
+const (
+	CompanyDarkModeLogoStatusPending   CompanyDarkModeLogoStatus = "pending"
+	CompanyDarkModeLogoStatusOutlined  CompanyDarkModeLogoStatus = "outlined"
+	CompanyDarkModeLogoStatusNotNeeded CompanyDarkModeLogoStatus = "not_needed"
+	CompanyDarkModeLogoStatusCustom    CompanyDarkModeLogoStatus = "custom"
+)
+
+func NewCompanyDarkModeLogoStatusFromString(s string) (CompanyDarkModeLogoStatus, error) {
+	switch s {
+	case "pending":
+		return CompanyDarkModeLogoStatusPending, nil
+	case "outlined":
+		return CompanyDarkModeLogoStatusOutlined, nil
+	case "not_needed":
+		return CompanyDarkModeLogoStatusNotNeeded, nil
+	case "custom":
+		return CompanyDarkModeLogoStatusCustom, nil
+	}
+	var t CompanyDarkModeLogoStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CompanyDarkModeLogoStatus) Ptr() *CompanyDarkModeLogoStatus {
+	return &c
 }
 
 // Effective "Sent with Sequenzy" entitlement for future renders and sends. This is derived from the company owner's subscription and is not an editable footer field. Existing live sequences pick up an entitlement change without their stored email blocks changing.
@@ -1996,7 +2059,7 @@ type UpdateCompaniesRequestEmailTheme struct {
 	ButtonStyle *UpdateCompaniesRequestEmailThemeButtonStyle `json:"buttonStyle,omitempty" url:"buttonStyle,omitempty"`
 	// 6-digit hex values.
 	Colors *UpdateCompaniesRequestEmailThemeColors `json:"colors,omitempty" url:"colors,omitempty"`
-	// Numeric layout settings.
+	// Layout settings. Every field is a number except contentAlign.
 	Layout   *UpdateCompaniesRequestEmailThemeLayout   `json:"layout,omitempty" url:"layout,omitempty"`
 	PresetID *UpdateCompaniesRequestEmailThemePresetID `json:"presetId,omitempty" url:"presetId,omitempty"`
 	// Numeric type settings.
@@ -2391,17 +2454,19 @@ func (u *UpdateCompaniesRequestEmailThemeColors) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// Numeric layout settings.
+// Layout settings. Every field is a number except contentAlign.
 var (
 	updateCompaniesRequestEmailThemeLayoutFieldBaseRadius           = big.NewInt(1 << 0)
 	updateCompaniesRequestEmailThemeLayoutFieldBlockSpacing         = big.NewInt(1 << 1)
 	updateCompaniesRequestEmailThemeLayoutFieldBorderedBlockPadding = big.NewInt(1 << 2)
 	updateCompaniesRequestEmailThemeLayoutFieldButtonPaddingX       = big.NewInt(1 << 3)
 	updateCompaniesRequestEmailThemeLayoutFieldButtonPaddingY       = big.NewInt(1 << 4)
-	updateCompaniesRequestEmailThemeLayoutFieldContainerPaddingX    = big.NewInt(1 << 5)
-	updateCompaniesRequestEmailThemeLayoutFieldContainerPaddingY    = big.NewInt(1 << 6)
-	updateCompaniesRequestEmailThemeLayoutFieldContentWidth         = big.NewInt(1 << 7)
-	updateCompaniesRequestEmailThemeLayoutFieldSectionPadding       = big.NewInt(1 << 8)
+	updateCompaniesRequestEmailThemeLayoutFieldButtonRadius         = big.NewInt(1 << 5)
+	updateCompaniesRequestEmailThemeLayoutFieldContainerPaddingX    = big.NewInt(1 << 6)
+	updateCompaniesRequestEmailThemeLayoutFieldContainerPaddingY    = big.NewInt(1 << 7)
+	updateCompaniesRequestEmailThemeLayoutFieldContentAlign         = big.NewInt(1 << 8)
+	updateCompaniesRequestEmailThemeLayoutFieldContentWidth         = big.NewInt(1 << 9)
+	updateCompaniesRequestEmailThemeLayoutFieldSectionPadding       = big.NewInt(1 << 10)
 )
 
 type UpdateCompaniesRequestEmailThemeLayout struct {
@@ -2410,10 +2475,13 @@ type UpdateCompaniesRequestEmailThemeLayout struct {
 	BorderedBlockPadding *float64 `json:"borderedBlockPadding,omitempty" url:"borderedBlockPadding,omitempty"`
 	ButtonPaddingX       *float64 `json:"buttonPaddingX,omitempty" url:"buttonPaddingX,omitempty"`
 	ButtonPaddingY       *float64 `json:"buttonPaddingY,omitempty" url:"buttonPaddingY,omitempty"`
+	ButtonRadius         *float64 `json:"buttonRadius,omitempty" url:"buttonRadius,omitempty"`
 	ContainerPaddingX    *float64 `json:"containerPaddingX,omitempty" url:"containerPaddingX,omitempty"`
 	ContainerPaddingY    *float64 `json:"containerPaddingY,omitempty" url:"containerPaddingY,omitempty"`
-	ContentWidth         *float64 `json:"contentWidth,omitempty" url:"contentWidth,omitempty"`
-	SectionPadding       *float64 `json:"sectionPadding,omitempty" url:"sectionPadding,omitempty"`
+	// Where the content column sits in a wide email client. center (default) or left (flush left, like a plain personal email). With left, buttons, the logo and footers line up on the left too unless set to right, or centered with styles.keepAlign. Phones show the column full width either way.
+	ContentAlign   *UpdateCompaniesRequestEmailThemeLayoutContentAlign `json:"contentAlign,omitempty" url:"contentAlign,omitempty"`
+	ContentWidth   *float64                                            `json:"contentWidth,omitempty" url:"contentWidth,omitempty"`
+	SectionPadding *float64                                            `json:"sectionPadding,omitempty" url:"sectionPadding,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -2457,6 +2525,13 @@ func (u *UpdateCompaniesRequestEmailThemeLayout) GetButtonPaddingY() *float64 {
 	return u.ButtonPaddingY
 }
 
+func (u *UpdateCompaniesRequestEmailThemeLayout) GetButtonRadius() *float64 {
+	if u == nil {
+		return nil
+	}
+	return u.ButtonRadius
+}
+
 func (u *UpdateCompaniesRequestEmailThemeLayout) GetContainerPaddingX() *float64 {
 	if u == nil {
 		return nil
@@ -2469,6 +2544,13 @@ func (u *UpdateCompaniesRequestEmailThemeLayout) GetContainerPaddingY() *float64
 		return nil
 	}
 	return u.ContainerPaddingY
+}
+
+func (u *UpdateCompaniesRequestEmailThemeLayout) GetContentAlign() *UpdateCompaniesRequestEmailThemeLayoutContentAlign {
+	if u == nil {
+		return nil
+	}
+	return u.ContentAlign
 }
 
 func (u *UpdateCompaniesRequestEmailThemeLayout) GetContentWidth() *float64 {
@@ -2534,6 +2616,13 @@ func (u *UpdateCompaniesRequestEmailThemeLayout) SetButtonPaddingY(buttonPadding
 	u.require(updateCompaniesRequestEmailThemeLayoutFieldButtonPaddingY)
 }
 
+// SetButtonRadius sets the ButtonRadius field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateCompaniesRequestEmailThemeLayout) SetButtonRadius(buttonRadius *float64) {
+	u.ButtonRadius = buttonRadius
+	u.require(updateCompaniesRequestEmailThemeLayoutFieldButtonRadius)
+}
+
 // SetContainerPaddingX sets the ContainerPaddingX field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateCompaniesRequestEmailThemeLayout) SetContainerPaddingX(containerPaddingX *float64) {
@@ -2546,6 +2635,13 @@ func (u *UpdateCompaniesRequestEmailThemeLayout) SetContainerPaddingX(containerP
 func (u *UpdateCompaniesRequestEmailThemeLayout) SetContainerPaddingY(containerPaddingY *float64) {
 	u.ContainerPaddingY = containerPaddingY
 	u.require(updateCompaniesRequestEmailThemeLayoutFieldContainerPaddingY)
+}
+
+// SetContentAlign sets the ContentAlign field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateCompaniesRequestEmailThemeLayout) SetContentAlign(contentAlign *UpdateCompaniesRequestEmailThemeLayoutContentAlign) {
+	u.ContentAlign = contentAlign
+	u.require(updateCompaniesRequestEmailThemeLayoutFieldContentAlign)
 }
 
 // SetContentWidth sets the ContentWidth field and marks it as non-optional;
@@ -2602,6 +2698,29 @@ func (u *UpdateCompaniesRequestEmailThemeLayout) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", u)
+}
+
+// Where the content column sits in a wide email client. center (default) or left (flush left, like a plain personal email). With left, buttons, the logo and footers line up on the left too unless set to right, or centered with styles.keepAlign. Phones show the column full width either way.
+type UpdateCompaniesRequestEmailThemeLayoutContentAlign string
+
+const (
+	UpdateCompaniesRequestEmailThemeLayoutContentAlignCenter UpdateCompaniesRequestEmailThemeLayoutContentAlign = "center"
+	UpdateCompaniesRequestEmailThemeLayoutContentAlignLeft   UpdateCompaniesRequestEmailThemeLayoutContentAlign = "left"
+)
+
+func NewUpdateCompaniesRequestEmailThemeLayoutContentAlignFromString(s string) (UpdateCompaniesRequestEmailThemeLayoutContentAlign, error) {
+	switch s {
+	case "center":
+		return UpdateCompaniesRequestEmailThemeLayoutContentAlignCenter, nil
+	case "left":
+		return UpdateCompaniesRequestEmailThemeLayoutContentAlignLeft, nil
+	}
+	var t UpdateCompaniesRequestEmailThemeLayoutContentAlign
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateCompaniesRequestEmailThemeLayoutContentAlign) Ptr() *UpdateCompaniesRequestEmailThemeLayoutContentAlign {
+	return &u
 }
 
 type UpdateCompaniesRequestEmailThemePresetID string
@@ -3041,39 +3160,40 @@ var (
 	updateCompaniesRequestFieldAddress                  = big.NewInt(1 << 1)
 	updateCompaniesRequestFieldBrandColors              = big.NewInt(1 << 2)
 	updateCompaniesRequestFieldCompanyContext           = big.NewInt(1 << 3)
-	updateCompaniesRequestFieldDefaultSubscriberListIDs = big.NewInt(1 << 4)
-	updateCompaniesRequestFieldDescription              = big.NewInt(1 << 5)
-	updateCompaniesRequestFieldEmailDesignPrompt        = big.NewInt(1 << 6)
-	updateCompaniesRequestFieldEmailDirection           = big.NewInt(1 << 7)
-	updateCompaniesRequestFieldEmailLengthPreference    = big.NewInt(1 << 8)
-	updateCompaniesRequestFieldEmailPreset              = big.NewInt(1 << 9)
-	updateCompaniesRequestFieldEmailStylePreference     = big.NewInt(1 << 10)
-	updateCompaniesRequestFieldEmailTheme               = big.NewInt(1 << 11)
-	updateCompaniesRequestFieldFontFamily               = big.NewInt(1 << 12)
-	updateCompaniesRequestFieldFooterStyle              = big.NewInt(1 << 13)
-	updateCompaniesRequestFieldForwardReplies           = big.NewInt(1 << 14)
-	updateCompaniesRequestFieldFounderName              = big.NewInt(1 << 15)
-	updateCompaniesRequestFieldFromEmail                = big.NewInt(1 << 16)
-	updateCompaniesRequestFieldFromName                 = big.NewInt(1 << 17)
-	updateCompaniesRequestFieldLanguage                 = big.NewInt(1 << 18)
-	updateCompaniesRequestFieldLogoURL                  = big.NewInt(1 << 19)
-	updateCompaniesRequestFieldName                     = big.NewInt(1 << 20)
-	updateCompaniesRequestFieldPreviousCompanyName      = big.NewInt(1 << 21)
-	updateCompaniesRequestFieldPricing                  = big.NewInt(1 << 22)
-	updateCompaniesRequestFieldPrimaryColor             = big.NewInt(1 << 23)
-	updateCompaniesRequestFieldPrivacyPolicyURL         = big.NewInt(1 << 24)
-	updateCompaniesRequestFieldRenameMatchingFooters    = big.NewInt(1 << 25)
-	updateCompaniesRequestFieldReplyProfileID           = big.NewInt(1 << 26)
-	updateCompaniesRequestFieldReplyTo                  = big.NewInt(1 << 27)
-	updateCompaniesRequestFieldReplyToName              = big.NewInt(1 << 28)
-	updateCompaniesRequestFieldReplyTrackingDomainMode  = big.NewInt(1 << 29)
-	updateCompaniesRequestFieldReplyTrackingEnabled     = big.NewInt(1 << 30)
-	updateCompaniesRequestFieldSenderProfileID          = big.NewInt(1 << 31)
-	updateCompaniesRequestFieldSocialLinks              = big.NewInt(1 << 32)
-	updateCompaniesRequestFieldTermsURL                 = big.NewInt(1 << 33)
-	updateCompaniesRequestFieldTestimonials             = big.NewInt(1 << 34)
-	updateCompaniesRequestFieldToneVoice                = big.NewInt(1 << 35)
-	updateCompaniesRequestFieldValueProps               = big.NewInt(1 << 36)
+	updateCompaniesRequestFieldDarkModeLogoURL          = big.NewInt(1 << 4)
+	updateCompaniesRequestFieldDefaultSubscriberListIDs = big.NewInt(1 << 5)
+	updateCompaniesRequestFieldDescription              = big.NewInt(1 << 6)
+	updateCompaniesRequestFieldEmailDesignPrompt        = big.NewInt(1 << 7)
+	updateCompaniesRequestFieldEmailDirection           = big.NewInt(1 << 8)
+	updateCompaniesRequestFieldEmailLengthPreference    = big.NewInt(1 << 9)
+	updateCompaniesRequestFieldEmailPreset              = big.NewInt(1 << 10)
+	updateCompaniesRequestFieldEmailStylePreference     = big.NewInt(1 << 11)
+	updateCompaniesRequestFieldEmailTheme               = big.NewInt(1 << 12)
+	updateCompaniesRequestFieldFontFamily               = big.NewInt(1 << 13)
+	updateCompaniesRequestFieldFooterStyle              = big.NewInt(1 << 14)
+	updateCompaniesRequestFieldForwardReplies           = big.NewInt(1 << 15)
+	updateCompaniesRequestFieldFounderName              = big.NewInt(1 << 16)
+	updateCompaniesRequestFieldFromEmail                = big.NewInt(1 << 17)
+	updateCompaniesRequestFieldFromName                 = big.NewInt(1 << 18)
+	updateCompaniesRequestFieldLanguage                 = big.NewInt(1 << 19)
+	updateCompaniesRequestFieldLogoURL                  = big.NewInt(1 << 20)
+	updateCompaniesRequestFieldName                     = big.NewInt(1 << 21)
+	updateCompaniesRequestFieldPreviousCompanyName      = big.NewInt(1 << 22)
+	updateCompaniesRequestFieldPricing                  = big.NewInt(1 << 23)
+	updateCompaniesRequestFieldPrimaryColor             = big.NewInt(1 << 24)
+	updateCompaniesRequestFieldPrivacyPolicyURL         = big.NewInt(1 << 25)
+	updateCompaniesRequestFieldRenameMatchingFooters    = big.NewInt(1 << 26)
+	updateCompaniesRequestFieldReplyProfileID           = big.NewInt(1 << 27)
+	updateCompaniesRequestFieldReplyTo                  = big.NewInt(1 << 28)
+	updateCompaniesRequestFieldReplyToName              = big.NewInt(1 << 29)
+	updateCompaniesRequestFieldReplyTrackingDomainMode  = big.NewInt(1 << 30)
+	updateCompaniesRequestFieldReplyTrackingEnabled     = big.NewInt(1 << 31)
+	updateCompaniesRequestFieldSenderProfileID          = big.NewInt(1 << 32)
+	updateCompaniesRequestFieldSocialLinks              = big.NewInt(1 << 33)
+	updateCompaniesRequestFieldTermsURL                 = big.NewInt(1 << 34)
+	updateCompaniesRequestFieldTestimonials             = big.NewInt(1 << 35)
+	updateCompaniesRequestFieldToneVoice                = big.NewInt(1 << 36)
+	updateCompaniesRequestFieldValueProps               = big.NewInt(1 << 37)
 )
 
 type UpdateCompaniesRequest struct {
@@ -3082,6 +3202,8 @@ type UpdateCompaniesRequest struct {
 	Address        *string        `json:"address,omitempty" url:"-"`
 	BrandColors    map[string]any `json:"brandColors,omitempty" url:"-"`
 	CompanyContext *string        `json:"companyContext,omitempty" url:"-"`
+	// Your own dark-mode version of the logo. Every email uses it instead of the automatic outlined copy, in light and dark inboxes, so it must read on both. Requires a logo (here or already saved); changing the logo later drops it. Send null to go back to the automatic one.
+	DarkModeLogoURL *string `json:"darkModeLogoUrl,omitempty" url:"-"`
 	// Which lists new contacts join when something creates a subscriber without explicit list targeting - forms, API writes, events, tag actions, imports, and any integration without its own list targeting. null means every current and future list, [] means no list at all, and an array means exactly those lists. Unknown or foreign list IDs are rejected rather than skipped. Applies only to later writes; nobody is moved or removed retroactively. Requires the companies:manage scope.
 	DefaultSubscriberListIDs []string `json:"defaultSubscriberListIds,omitempty" url:"-"`
 	Description              *string  `json:"description,omitempty" url:"-"`
@@ -3172,6 +3294,13 @@ func (u *UpdateCompaniesRequest) SetBrandColors(brandColors map[string]any) {
 func (u *UpdateCompaniesRequest) SetCompanyContext(companyContext *string) {
 	u.CompanyContext = companyContext
 	u.require(updateCompaniesRequestFieldCompanyContext)
+}
+
+// SetDarkModeLogoURL sets the DarkModeLogoURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateCompaniesRequest) SetDarkModeLogoURL(darkModeLogoURL *string) {
+	u.DarkModeLogoURL = darkModeLogoURL
+	u.require(updateCompaniesRequestFieldDarkModeLogoURL)
 }
 
 // SetDefaultSubscriberListIDs sets the DefaultSubscriberListIDs field and marks it as non-optional;

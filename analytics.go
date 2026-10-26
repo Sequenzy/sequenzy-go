@@ -375,10 +375,11 @@ var (
 	getMetricsRequestFieldEnd                      = big.NewInt(1 << 1)
 	getMetricsRequestFieldIncludeMachineEngagement = big.NewInt(1 << 2)
 	getMetricsRequestFieldMailboxProvider          = big.NewInt(1 << 3)
-	getMetricsRequestFieldPeriod                   = big.NewInt(1 << 4)
-	getMetricsRequestFieldRecipientDomain          = big.NewInt(1 << 5)
-	getMetricsRequestFieldSource                   = big.NewInt(1 << 6)
-	getMetricsRequestFieldStart                    = big.NewInt(1 << 7)
+	getMetricsRequestFieldOutcome                  = big.NewInt(1 << 4)
+	getMetricsRequestFieldPeriod                   = big.NewInt(1 << 5)
+	getMetricsRequestFieldRecipientDomain          = big.NewInt(1 << 6)
+	getMetricsRequestFieldSource                   = big.NewInt(1 << 7)
+	getMetricsRequestFieldStart                    = big.NewInt(1 << 8)
 )
 
 type GetMetricsRequest struct {
@@ -390,6 +391,8 @@ type GetMetricsRequest struct {
 	IncludeMachineEngagement *bool `json:"-" url:"includeMachineEngagement,omitempty"`
 	// Recipient mailbox provider filter (e.g. gmail, microsoft, yahoo, icloud). Scopes engagement metrics to recipients of that provider. Provider-filtered responses report replies as 0 (replies cannot be segmented per provider) and omit the commerce forecast.
 	MailboxProvider *string `json:"-" url:"mailboxProvider,omitempty"`
+	// Only sends that had this outcome: a permanent bounce, a temporary bounce, a blocked bounce (the receiver refused it over content, policy or reputation) or a spam complaint. Matches the dashboard's Sender Quality cards. Filtered responses report replies as 0 and omit the commerce forecast.
+	Outcome *GetMetricsRequestOutcome `json:"-" url:"outcome,omitempty"`
 	// Sliding time window. Ignored when start/end are provided.
 	Period *GetMetricsRequestPeriod `json:"-" url:"period,omitempty"`
 	// Recipient domain filter (e.g. gmail.com). Case-insensitive.
@@ -438,6 +441,13 @@ func (g *GetMetricsRequest) SetMailboxProvider(mailboxProvider *string) {
 	g.require(getMetricsRequestFieldMailboxProvider)
 }
 
+// SetOutcome sets the Outcome field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsRequest) SetOutcome(outcome *GetMetricsRequestOutcome) {
+	g.Outcome = outcome
+	g.require(getMetricsRequestFieldOutcome)
+}
+
 // SetPeriod sets the Period field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (g *GetMetricsRequest) SetPeriod(period *GetMetricsRequestPeriod) {
@@ -473,10 +483,11 @@ var (
 	getMetricsBreakdownRequestFieldIncludeMachineEngagement = big.NewInt(1 << 3)
 	getMetricsBreakdownRequestFieldLimit                    = big.NewInt(1 << 4)
 	getMetricsBreakdownRequestFieldMailboxProvider          = big.NewInt(1 << 5)
-	getMetricsBreakdownRequestFieldPeriod                   = big.NewInt(1 << 6)
-	getMetricsBreakdownRequestFieldRecipientDomain          = big.NewInt(1 << 7)
-	getMetricsBreakdownRequestFieldSource                   = big.NewInt(1 << 8)
-	getMetricsBreakdownRequestFieldStart                    = big.NewInt(1 << 9)
+	getMetricsBreakdownRequestFieldOutcome                  = big.NewInt(1 << 6)
+	getMetricsBreakdownRequestFieldPeriod                   = big.NewInt(1 << 7)
+	getMetricsBreakdownRequestFieldRecipientDomain          = big.NewInt(1 << 8)
+	getMetricsBreakdownRequestFieldSource                   = big.NewInt(1 << 9)
+	getMetricsBreakdownRequestFieldStart                    = big.NewInt(1 << 10)
 )
 
 type GetMetricsBreakdownRequest struct {
@@ -492,6 +503,8 @@ type GetMetricsBreakdownRequest struct {
 	Limit *int `json:"-" url:"limit,omitempty"`
 	// Recipient mailbox provider filter (e.g. gmail, microsoft, yahoo, icloud).
 	MailboxProvider *string `json:"-" url:"mailboxProvider,omitempty"`
+	// Only sends that had this outcome: a permanent bounce, a temporary bounce, a blocked bounce (the receiver refused it over content, policy or reputation) or a spam complaint. Matches the dashboard's Sender Quality cards. Filtered responses report replies as 0 and omit the commerce forecast.
+	Outcome *GetMetricsBreakdownRequestOutcome `json:"-" url:"outcome,omitempty"`
 	// Sliding window over send times. Ignored when start/end are provided.
 	Period *GetMetricsBreakdownRequestPeriod `json:"-" url:"period,omitempty"`
 	// Recipient domain filter (e.g. gmail.com). Case-insensitive.
@@ -552,6 +565,13 @@ func (g *GetMetricsBreakdownRequest) SetLimit(limit *int) {
 func (g *GetMetricsBreakdownRequest) SetMailboxProvider(mailboxProvider *string) {
 	g.MailboxProvider = mailboxProvider
 	g.require(getMetricsBreakdownRequestFieldMailboxProvider)
+}
+
+// SetOutcome sets the Outcome field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsBreakdownRequest) SetOutcome(outcome *GetMetricsBreakdownRequestOutcome) {
+	g.Outcome = outcome
+	g.require(getMetricsBreakdownRequestFieldOutcome)
 }
 
 // SetPeriod sets the Period field and marks it as non-optional;
@@ -7284,6 +7304,34 @@ func (g GetMetricsBreakdownRequestEmailType) Ptr() *GetMetricsBreakdownRequestEm
 	return &g
 }
 
+type GetMetricsBreakdownRequestOutcome string
+
+const (
+	GetMetricsBreakdownRequestOutcomePermanentBounce GetMetricsBreakdownRequestOutcome = "permanent_bounce"
+	GetMetricsBreakdownRequestOutcomeTemporaryBounce GetMetricsBreakdownRequestOutcome = "temporary_bounce"
+	GetMetricsBreakdownRequestOutcomeBlocked         GetMetricsBreakdownRequestOutcome = "blocked"
+	GetMetricsBreakdownRequestOutcomeComplaint       GetMetricsBreakdownRequestOutcome = "complaint"
+)
+
+func NewGetMetricsBreakdownRequestOutcomeFromString(s string) (GetMetricsBreakdownRequestOutcome, error) {
+	switch s {
+	case "permanent_bounce":
+		return GetMetricsBreakdownRequestOutcomePermanentBounce, nil
+	case "temporary_bounce":
+		return GetMetricsBreakdownRequestOutcomeTemporaryBounce, nil
+	case "blocked":
+		return GetMetricsBreakdownRequestOutcomeBlocked, nil
+	case "complaint":
+		return GetMetricsBreakdownRequestOutcomeComplaint, nil
+	}
+	var t GetMetricsBreakdownRequestOutcome
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (g GetMetricsBreakdownRequestOutcome) Ptr() *GetMetricsBreakdownRequestOutcome {
+	return &g
+}
+
 type GetMetricsBreakdownRequestPeriod string
 
 const (
@@ -7320,12 +7368,13 @@ var (
 	getMetricsBreakdownResponseFieldEmailType       = big.NewInt(1 << 1)
 	getMetricsBreakdownResponseFieldEnd             = big.NewInt(1 << 2)
 	getMetricsBreakdownResponseFieldMailboxProvider = big.NewInt(1 << 3)
-	getMetricsBreakdownResponseFieldPeriod          = big.NewInt(1 << 4)
-	getMetricsBreakdownResponseFieldRecipientDomain = big.NewInt(1 << 5)
-	getMetricsBreakdownResponseFieldRows            = big.NewInt(1 << 6)
-	getMetricsBreakdownResponseFieldSource          = big.NewInt(1 << 7)
-	getMetricsBreakdownResponseFieldStart           = big.NewInt(1 << 8)
-	getMetricsBreakdownResponseFieldSuccess         = big.NewInt(1 << 9)
+	getMetricsBreakdownResponseFieldOutcome         = big.NewInt(1 << 4)
+	getMetricsBreakdownResponseFieldPeriod          = big.NewInt(1 << 5)
+	getMetricsBreakdownResponseFieldRecipientDomain = big.NewInt(1 << 6)
+	getMetricsBreakdownResponseFieldRows            = big.NewInt(1 << 7)
+	getMetricsBreakdownResponseFieldSource          = big.NewInt(1 << 8)
+	getMetricsBreakdownResponseFieldStart           = big.NewInt(1 << 9)
+	getMetricsBreakdownResponseFieldSuccess         = big.NewInt(1 << 10)
 )
 
 type GetMetricsBreakdownResponse struct {
@@ -7333,6 +7382,7 @@ type GetMetricsBreakdownResponse struct {
 	EmailType       *string   `json:"emailType,omitempty" url:"emailType,omitempty"`
 	End             time.Time `json:"end" url:"end"`
 	MailboxProvider *string   `json:"mailboxProvider,omitempty" url:"mailboxProvider,omitempty"`
+	Outcome         *string   `json:"outcome,omitempty" url:"outcome,omitempty"`
 	// Applied period, or `custom` when start/end were provided.
 	Period          *string                                `json:"period,omitempty" url:"period,omitempty"`
 	RecipientDomain *string                                `json:"recipientDomain,omitempty" url:"recipientDomain,omitempty"`
@@ -7374,6 +7424,13 @@ func (g *GetMetricsBreakdownResponse) GetMailboxProvider() *string {
 		return nil
 	}
 	return g.MailboxProvider
+}
+
+func (g *GetMetricsBreakdownResponse) GetOutcome() *string {
+	if g == nil {
+		return nil
+	}
+	return g.Outcome
 }
 
 func (g *GetMetricsBreakdownResponse) GetPeriod() *string {
@@ -7458,6 +7515,13 @@ func (g *GetMetricsBreakdownResponse) SetEnd(end time.Time) {
 func (g *GetMetricsBreakdownResponse) SetMailboxProvider(mailboxProvider *string) {
 	g.MailboxProvider = mailboxProvider
 	g.require(getMetricsBreakdownResponseFieldMailboxProvider)
+}
+
+// SetOutcome sets the Outcome field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsBreakdownResponse) SetOutcome(outcome *string) {
+	g.Outcome = outcome
+	g.require(getMetricsBreakdownResponseFieldOutcome)
 }
 
 // SetPeriod sets the Period field and marks it as non-optional;
@@ -7947,6 +8011,34 @@ func (g GetMetricsRequestEmailType) Ptr() *GetMetricsRequestEmailType {
 	return &g
 }
 
+type GetMetricsRequestOutcome string
+
+const (
+	GetMetricsRequestOutcomePermanentBounce GetMetricsRequestOutcome = "permanent_bounce"
+	GetMetricsRequestOutcomeTemporaryBounce GetMetricsRequestOutcome = "temporary_bounce"
+	GetMetricsRequestOutcomeBlocked         GetMetricsRequestOutcome = "blocked"
+	GetMetricsRequestOutcomeComplaint       GetMetricsRequestOutcome = "complaint"
+)
+
+func NewGetMetricsRequestOutcomeFromString(s string) (GetMetricsRequestOutcome, error) {
+	switch s {
+	case "permanent_bounce":
+		return GetMetricsRequestOutcomePermanentBounce, nil
+	case "temporary_bounce":
+		return GetMetricsRequestOutcomeTemporaryBounce, nil
+	case "blocked":
+		return GetMetricsRequestOutcomeBlocked, nil
+	case "complaint":
+		return GetMetricsRequestOutcomeComplaint, nil
+	}
+	var t GetMetricsRequestOutcome
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (g GetMetricsRequestOutcome) Ptr() *GetMetricsRequestOutcome {
+	return &g
+}
+
 type GetMetricsRequestPeriod string
 
 const (
@@ -7983,12 +8075,13 @@ var (
 	getMetricsResponseFieldCommerceForecast      = big.NewInt(1 << 1)
 	getMetricsResponseFieldEmailType             = big.NewInt(1 << 2)
 	getMetricsResponseFieldMailboxProvider       = big.NewInt(1 << 3)
-	getMetricsResponseFieldPeriod                = big.NewInt(1 << 4)
-	getMetricsResponseFieldRecipientDomain       = big.NewInt(1 << 5)
-	getMetricsResponseFieldSource                = big.NewInt(1 << 6)
-	getMetricsResponseFieldStats                 = big.NewInt(1 << 7)
-	getMetricsResponseFieldSubscriberCount       = big.NewInt(1 << 8)
-	getMetricsResponseFieldSuccess               = big.NewInt(1 << 9)
+	getMetricsResponseFieldOutcome               = big.NewInt(1 << 4)
+	getMetricsResponseFieldPeriod                = big.NewInt(1 << 5)
+	getMetricsResponseFieldRecipientDomain       = big.NewInt(1 << 6)
+	getMetricsResponseFieldSource                = big.NewInt(1 << 7)
+	getMetricsResponseFieldStats                 = big.NewInt(1 << 8)
+	getMetricsResponseFieldSubscriberCount       = big.NewInt(1 << 9)
+	getMetricsResponseFieldSuccess               = big.NewInt(1 << 10)
 )
 
 type GetMetricsResponse struct {
@@ -7999,7 +8092,9 @@ type GetMetricsResponse struct {
 	EmailType        *GetMetricsResponseEmailType `json:"emailType,omitempty" url:"emailType,omitempty"`
 	// Echoed back when `mailboxProvider` is provided.
 	MailboxProvider *string `json:"mailboxProvider,omitempty" url:"mailboxProvider,omitempty"`
-	Period          *string `json:"period,omitempty" url:"period,omitempty"`
+	// Echoed back when `outcome` is provided.
+	Outcome *string `json:"outcome,omitempty" url:"outcome,omitempty"`
+	Period  *string `json:"period,omitempty" url:"period,omitempty"`
 	// Echoed back, lowercased, when `recipientDomain` is provided.
 	RecipientDomain *string `json:"recipientDomain,omitempty" url:"recipientDomain,omitempty"`
 	// Echoed back when `source` is provided.
@@ -8042,6 +8137,13 @@ func (g *GetMetricsResponse) GetMailboxProvider() *string {
 		return nil
 	}
 	return g.MailboxProvider
+}
+
+func (g *GetMetricsResponse) GetOutcome() *string {
+	if g == nil {
+		return nil
+	}
+	return g.Outcome
 }
 
 func (g *GetMetricsResponse) GetPeriod() *string {
@@ -8126,6 +8228,13 @@ func (g *GetMetricsResponse) SetEmailType(emailType *GetMetricsResponseEmailType
 func (g *GetMetricsResponse) SetMailboxProvider(mailboxProvider *string) {
 	g.MailboxProvider = mailboxProvider
 	g.require(getMetricsResponseFieldMailboxProvider)
+}
+
+// SetOutcome sets the Outcome field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMetricsResponse) SetOutcome(outcome *string) {
+	g.Outcome = outcome
+	g.require(getMetricsResponseFieldOutcome)
 }
 
 // SetPeriod sets the Period field and marks it as non-optional;

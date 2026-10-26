@@ -331,6 +331,7 @@ var (
 )
 
 type AddTagsResponseOptIn struct {
+	// False when no confirmation email was queued because the last one went out less than 24 hours ago, the contact already got three, or it unsubscribed or complained. The latest link keeps working.
 	EmailQueued *bool `json:"emailQueued,omitempty" url:"emailQueued,omitempty"`
 	Required    *bool `json:"required,omitempty" url:"required,omitempty"`
 

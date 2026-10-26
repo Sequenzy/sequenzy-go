@@ -155,7 +155,7 @@ type EmailAiStyleCanvas struct {
 	Blocks      []map[string]any              `json:"blocks" url:"blocks"`
 	EmailPreset EmailAiStyleCanvasEmailPreset `json:"emailPreset" url:"emailPreset"`
 	FontFamily  string                        `json:"fontFamily" url:"fontFamily"`
-	// Complete editor theme. Required color keys are primary, background, surface, text, mutedText, heading, border and link. Required typography keys are baseFontSize, leadFontSize, baseLineHeight, heading1Size, heading2Size, heading3Size and buttonFontSize. Required layout keys are contentWidth, containerPaddingX, containerPaddingY, blockSpacing, baseRadius, sectionPadding, buttonPaddingX, buttonPaddingY and borderedBlockPadding. Optional theme fields match the editor, including content color, heading font, button radius and weight.
+	// Complete editor theme. Required color keys are primary, background, surface, text, mutedText, heading, border and link. Required typography keys are baseFontSize, leadFontSize, baseLineHeight, heading1Size, heading2Size, heading3Size and buttonFontSize. Required layout keys are contentWidth, containerPaddingX, containerPaddingY, blockSpacing, baseRadius, sectionPadding, buttonPaddingX, buttonPaddingY and borderedBlockPadding. Optional theme fields match the editor, including content color, heading font, button radius and weight, and layout.contentAlign (center or left).
 	Theme *EmailAiStyleCanvasTheme `json:"theme" url:"theme"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -299,7 +299,7 @@ func (e EmailAiStyleCanvasEmailPreset) Ptr() *EmailAiStyleCanvasEmailPreset {
 	return &e
 }
 
-// Complete editor theme. Required color keys are primary, background, surface, text, mutedText, heading, border and link. Required typography keys are baseFontSize, leadFontSize, baseLineHeight, heading1Size, heading2Size, heading3Size and buttonFontSize. Required layout keys are contentWidth, containerPaddingX, containerPaddingY, blockSpacing, baseRadius, sectionPadding, buttonPaddingX, buttonPaddingY and borderedBlockPadding. Optional theme fields match the editor, including content color, heading font, button radius and weight.
+// Complete editor theme. Required color keys are primary, background, surface, text, mutedText, heading, border and link. Required typography keys are baseFontSize, leadFontSize, baseLineHeight, heading1Size, heading2Size, heading3Size and buttonFontSize. Required layout keys are contentWidth, containerPaddingX, containerPaddingY, blockSpacing, baseRadius, sectionPadding, buttonPaddingX, buttonPaddingY and borderedBlockPadding. Optional theme fields match the editor, including content color, heading font, button radius and weight, and layout.contentAlign (center or left).
 var (
 	emailAiStyleCanvasThemeFieldColors     = big.NewInt(1 << 0)
 	emailAiStyleCanvasThemeFieldLayout     = big.NewInt(1 << 1)
@@ -309,7 +309,7 @@ var (
 
 type EmailAiStyleCanvasTheme struct {
 	Colors     map[string]string               `json:"colors" url:"colors"`
-	Layout     map[string]float64              `json:"layout" url:"layout"`
+	Layout     *EmailAiStyleCanvasThemeLayout  `json:"layout" url:"layout"`
 	PresetID   EmailAiStyleCanvasThemePresetID `json:"presetId" url:"presetId"`
 	Typography map[string]any                  `json:"typography" url:"typography"`
 
@@ -328,7 +328,7 @@ func (e *EmailAiStyleCanvasTheme) GetColors() map[string]string {
 	return e.Colors
 }
 
-func (e *EmailAiStyleCanvasTheme) GetLayout() map[string]float64 {
+func (e *EmailAiStyleCanvasTheme) GetLayout() *EmailAiStyleCanvasThemeLayout {
 	if e == nil {
 		return nil
 	}
@@ -372,7 +372,7 @@ func (e *EmailAiStyleCanvasTheme) SetColors(colors map[string]string) {
 
 // SetLayout sets the Layout field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (e *EmailAiStyleCanvasTheme) SetLayout(layout map[string]float64) {
+func (e *EmailAiStyleCanvasTheme) SetLayout(layout *EmailAiStyleCanvasThemeLayout) {
 	e.Layout = layout
 	e.require(emailAiStyleCanvasThemeFieldLayout)
 }
@@ -435,6 +435,112 @@ func (e *EmailAiStyleCanvasTheme) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", e)
+}
+
+var (
+	emailAiStyleCanvasThemeLayoutFieldContentAlign = big.NewInt(1 << 0)
+)
+
+type EmailAiStyleCanvasThemeLayout struct {
+	ContentAlign *EmailAiStyleCanvasThemeLayoutContentAlign `json:"contentAlign,omitempty" url:"contentAlign,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (e *EmailAiStyleCanvasThemeLayout) GetContentAlign() *EmailAiStyleCanvasThemeLayoutContentAlign {
+	if e == nil {
+		return nil
+	}
+	return e.ContentAlign
+}
+
+func (e *EmailAiStyleCanvasThemeLayout) GetExtraProperties() map[string]interface{} {
+	if e == nil {
+		return nil
+	}
+	return e.extraProperties
+}
+
+func (e *EmailAiStyleCanvasThemeLayout) require(field *big.Int) {
+	if e.explicitFields == nil {
+		e.explicitFields = big.NewInt(0)
+	}
+	e.explicitFields.Or(e.explicitFields, field)
+}
+
+// SetContentAlign sets the ContentAlign field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailAiStyleCanvasThemeLayout) SetContentAlign(contentAlign *EmailAiStyleCanvasThemeLayoutContentAlign) {
+	e.ContentAlign = contentAlign
+	e.require(emailAiStyleCanvasThemeLayoutFieldContentAlign)
+}
+
+func (e *EmailAiStyleCanvasThemeLayout) UnmarshalJSON(data []byte) error {
+	type unmarshaler EmailAiStyleCanvasThemeLayout
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EmailAiStyleCanvasThemeLayout(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+	e.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EmailAiStyleCanvasThemeLayout) MarshalJSON() ([]byte, error) {
+	type embed EmailAiStyleCanvasThemeLayout
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*e),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (e *EmailAiStyleCanvasThemeLayout) String() string {
+	if e == nil {
+		return "<nil>"
+	}
+	if len(e.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(e.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+type EmailAiStyleCanvasThemeLayoutContentAlign string
+
+const (
+	EmailAiStyleCanvasThemeLayoutContentAlignCenter EmailAiStyleCanvasThemeLayoutContentAlign = "center"
+	EmailAiStyleCanvasThemeLayoutContentAlignLeft   EmailAiStyleCanvasThemeLayoutContentAlign = "left"
+)
+
+func NewEmailAiStyleCanvasThemeLayoutContentAlignFromString(s string) (EmailAiStyleCanvasThemeLayoutContentAlign, error) {
+	switch s {
+	case "center":
+		return EmailAiStyleCanvasThemeLayoutContentAlignCenter, nil
+	case "left":
+		return EmailAiStyleCanvasThemeLayoutContentAlignLeft, nil
+	}
+	var t EmailAiStyleCanvasThemeLayoutContentAlign
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (e EmailAiStyleCanvasThemeLayoutContentAlign) Ptr() *EmailAiStyleCanvasThemeLayoutContentAlign {
+	return &e
 }
 
 type EmailAiStyleCanvasThemePresetID string

@@ -12948,6 +12948,30 @@ func TestSettersSavedFormEmbed(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetPlaceholder", func(t *testing.T) {
+		obj := &SavedFormEmbed{}
+		var fernTestValuePlaceholder *string
+		obj.SetPlaceholder(fernTestValuePlaceholder)
+		assert.Equal(t, fernTestValuePlaceholder, obj.Placeholder)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetRecommendedSnippet", func(t *testing.T) {
+		obj := &SavedFormEmbed{}
+		var fernTestValueRecommendedSnippet *SavedFormEmbedRecommendedSnippet
+		obj.SetRecommendedSnippet(fernTestValueRecommendedSnippet)
+		assert.Equal(t, fernTestValueRecommendedSnippet, obj.RecommendedSnippet)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetReducedProtectionWarning", func(t *testing.T) {
+		obj := &SavedFormEmbed{}
+		var fernTestValueReducedProtectionWarning *string
+		obj.SetReducedProtectionWarning(fernTestValueReducedProtectionWarning)
+		assert.Equal(t, fernTestValueReducedProtectionWarning, obj.ReducedProtectionWarning)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetScriptURL", func(t *testing.T) {
 		obj := &SavedFormEmbed{}
 		var fernTestValueScriptURL string
@@ -13057,6 +13081,105 @@ func TestGettersSavedFormEmbed(t *testing.T) {
 			}
 		}()
 		_ = obj.GetNativeForm() // Should return zero value
+	})
+
+	t.Run("GetPlaceholder", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SavedFormEmbed{}
+		var expected *string
+		obj.Placeholder = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPlaceholder(), "getter should return the property value")
+	})
+
+	t.Run("GetPlaceholder_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SavedFormEmbed{}
+		obj.Placeholder = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetPlaceholder(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetPlaceholder_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SavedFormEmbed
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPlaceholder() // Should return zero value
+	})
+
+	t.Run("GetRecommendedSnippet", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SavedFormEmbed{}
+		var expected *SavedFormEmbedRecommendedSnippet
+		obj.RecommendedSnippet = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetRecommendedSnippet(), "getter should return the property value")
+	})
+
+	t.Run("GetRecommendedSnippet_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SavedFormEmbed{}
+		obj.RecommendedSnippet = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetRecommendedSnippet(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetRecommendedSnippet_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SavedFormEmbed
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetRecommendedSnippet() // Should return zero value
+	})
+
+	t.Run("GetReducedProtectionWarning", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SavedFormEmbed{}
+		var expected *string
+		obj.ReducedProtectionWarning = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetReducedProtectionWarning(), "getter should return the property value")
+	})
+
+	t.Run("GetReducedProtectionWarning_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SavedFormEmbed{}
+		obj.ReducedProtectionWarning = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetReducedProtectionWarning(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetReducedProtectionWarning_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SavedFormEmbed
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetReducedProtectionWarning() // Should return zero value
 	})
 
 	t.Run("GetScriptURL", func(t *testing.T) {
@@ -13219,6 +13342,99 @@ func TestSettersMarkExplicitSavedFormEmbed(t *testing.T) {
 
 		// Act
 		obj.SetNativeForm(fernTestValueNativeForm)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPlaceholder_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SavedFormEmbed{}
+		var fernTestValuePlaceholder *string
+
+		// Act
+		obj.SetPlaceholder(fernTestValuePlaceholder)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetRecommendedSnippet_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SavedFormEmbed{}
+		var fernTestValueRecommendedSnippet *SavedFormEmbedRecommendedSnippet
+
+		// Act
+		obj.SetRecommendedSnippet(fernTestValueRecommendedSnippet)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetReducedProtectionWarning_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SavedFormEmbed{}
+		var fernTestValueReducedProtectionWarning *string
+
+		// Act
+		obj.SetReducedProtectionWarning(fernTestValueReducedProtectionWarning)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -33745,6 +33961,28 @@ func TestEnumSavedFormContentSurface(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewSavedFormContentSurfaceFromString("form")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumSavedFormEmbedRecommendedSnippet(t *testing.T) {
+	t.Run("NewFromString_javascript", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSavedFormEmbedRecommendedSnippetFromString("javascript")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SavedFormEmbedRecommendedSnippet("javascript"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewSavedFormEmbedRecommendedSnippetFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewSavedFormEmbedRecommendedSnippetFromString("javascript")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)

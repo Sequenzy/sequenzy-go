@@ -3322,8 +3322,9 @@ var (
 	emailThemePatchLayoutFieldButtonRadius         = big.NewInt(1 << 5)
 	emailThemePatchLayoutFieldContainerPaddingX    = big.NewInt(1 << 6)
 	emailThemePatchLayoutFieldContainerPaddingY    = big.NewInt(1 << 7)
-	emailThemePatchLayoutFieldContentWidth         = big.NewInt(1 << 8)
-	emailThemePatchLayoutFieldSectionPadding       = big.NewInt(1 << 9)
+	emailThemePatchLayoutFieldContentAlign         = big.NewInt(1 << 8)
+	emailThemePatchLayoutFieldContentWidth         = big.NewInt(1 << 9)
+	emailThemePatchLayoutFieldSectionPadding       = big.NewInt(1 << 10)
 )
 
 type EmailThemePatchLayout struct {
@@ -3335,8 +3336,10 @@ type EmailThemePatchLayout struct {
 	ButtonRadius         *float64 `json:"buttonRadius,omitempty" url:"buttonRadius,omitempty"`
 	ContainerPaddingX    *float64 `json:"containerPaddingX,omitempty" url:"containerPaddingX,omitempty"`
 	ContainerPaddingY    *float64 `json:"containerPaddingY,omitempty" url:"containerPaddingY,omitempty"`
-	ContentWidth         *float64 `json:"contentWidth,omitempty" url:"contentWidth,omitempty"`
-	SectionPadding       *float64 `json:"sectionPadding,omitempty" url:"sectionPadding,omitempty"`
+	// Where the content column sits in a wide email client. center (default) or left (flush left, like a plain personal email). With left, buttons, the logo and footers line up on the left too unless set to right, or centered with styles.keepAlign. Phones show the column full width either way.
+	ContentAlign   *EmailThemePatchLayoutContentAlign `json:"contentAlign,omitempty" url:"contentAlign,omitempty"`
+	ContentWidth   *float64                           `json:"contentWidth,omitempty" url:"contentWidth,omitempty"`
+	SectionPadding *float64                           `json:"sectionPadding,omitempty" url:"sectionPadding,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -3399,6 +3402,13 @@ func (e *EmailThemePatchLayout) GetContainerPaddingY() *float64 {
 		return nil
 	}
 	return e.ContainerPaddingY
+}
+
+func (e *EmailThemePatchLayout) GetContentAlign() *EmailThemePatchLayoutContentAlign {
+	if e == nil {
+		return nil
+	}
+	return e.ContentAlign
 }
 
 func (e *EmailThemePatchLayout) GetContentWidth() *float64 {
@@ -3485,6 +3495,13 @@ func (e *EmailThemePatchLayout) SetContainerPaddingY(containerPaddingY *float64)
 	e.require(emailThemePatchLayoutFieldContainerPaddingY)
 }
 
+// SetContentAlign sets the ContentAlign field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailThemePatchLayout) SetContentAlign(contentAlign *EmailThemePatchLayoutContentAlign) {
+	e.ContentAlign = contentAlign
+	e.require(emailThemePatchLayoutFieldContentAlign)
+}
+
 // SetContentWidth sets the ContentWidth field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (e *EmailThemePatchLayout) SetContentWidth(contentWidth *float64) {
@@ -3539,6 +3556,29 @@ func (e *EmailThemePatchLayout) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", e)
+}
+
+// Where the content column sits in a wide email client. center (default) or left (flush left, like a plain personal email). With left, buttons, the logo and footers line up on the left too unless set to right, or centered with styles.keepAlign. Phones show the column full width either way.
+type EmailThemePatchLayoutContentAlign string
+
+const (
+	EmailThemePatchLayoutContentAlignCenter EmailThemePatchLayoutContentAlign = "center"
+	EmailThemePatchLayoutContentAlignLeft   EmailThemePatchLayoutContentAlign = "left"
+)
+
+func NewEmailThemePatchLayoutContentAlignFromString(s string) (EmailThemePatchLayoutContentAlign, error) {
+	switch s {
+	case "center":
+		return EmailThemePatchLayoutContentAlignCenter, nil
+	case "left":
+		return EmailThemePatchLayoutContentAlignLeft, nil
+	}
+	var t EmailThemePatchLayoutContentAlign
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (e EmailThemePatchLayoutContentAlign) Ptr() *EmailThemePatchLayoutContentAlign {
+	return &e
 }
 
 type EmailThemePatchPresetID string

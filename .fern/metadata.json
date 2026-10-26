@@ -7,7 +7,7 @@
       "path": "github.com/sequenzy/sequenzy-go"
     }
   },
-  "originGitCommit": "4804b95e74993ad9ba723b89aa3e579f5c135bf0",
+  "originGitCommit": "87c33fc8e632c05a05c6cd306166ce76efadbebd",
   "originGitCommitIsDirty": false,
   "invokedBy": "ci",
   "ciProvider": "github"

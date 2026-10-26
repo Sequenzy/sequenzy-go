@@ -3206,12 +3206,13 @@ var (
 	emailBlockStylesFieldBorderColor       = big.NewInt(1 << 3)
 	emailBlockStylesFieldBorderRadius      = big.NewInt(1 << 4)
 	emailBlockStylesFieldBorderWidth       = big.NewInt(1 << 5)
-	emailBlockStylesFieldPaddingBottom     = big.NewInt(1 << 6)
-	emailBlockStylesFieldPaddingLeft       = big.NewInt(1 << 7)
-	emailBlockStylesFieldPaddingRight      = big.NewInt(1 << 8)
-	emailBlockStylesFieldPaddingTop        = big.NewInt(1 << 9)
-	emailBlockStylesFieldTextAlign         = big.NewInt(1 << 10)
-	emailBlockStylesFieldTextColor         = big.NewInt(1 << 11)
+	emailBlockStylesFieldKeepAlign         = big.NewInt(1 << 6)
+	emailBlockStylesFieldPaddingBottom     = big.NewInt(1 << 7)
+	emailBlockStylesFieldPaddingLeft       = big.NewInt(1 << 8)
+	emailBlockStylesFieldPaddingRight      = big.NewInt(1 << 9)
+	emailBlockStylesFieldPaddingTop        = big.NewInt(1 << 10)
+	emailBlockStylesFieldTextAlign         = big.NewInt(1 << 11)
+	emailBlockStylesFieldTextColor         = big.NewInt(1 << 12)
 )
 
 type EmailBlockStyles struct {
@@ -3219,10 +3220,12 @@ type EmailBlockStyles struct {
 	// Background opacity percentage from 0 to 100.
 	BackgroundOpacity *float64 `json:"backgroundOpacity,omitempty" url:"backgroundOpacity,omitempty"`
 	// Stretch the block edge-to-edge across the email container. Top-level blocks only.
-	Bleed         *bool                      `json:"bleed,omitempty" url:"bleed,omitempty"`
-	BorderColor   *string                    `json:"borderColor,omitempty" url:"borderColor,omitempty"`
-	BorderRadius  *float64                   `json:"borderRadius,omitempty" url:"borderRadius,omitempty"`
-	BorderWidth   *float64                   `json:"borderWidth,omitempty" url:"borderWidth,omitempty"`
+	Bleed        *bool    `json:"bleed,omitempty" url:"bleed,omitempty"`
+	BorderColor  *string  `json:"borderColor,omitempty" url:"borderColor,omitempty"`
+	BorderRadius *float64 `json:"borderRadius,omitempty" url:"borderRadius,omitempty"`
+	BorderWidth  *float64 `json:"borderWidth,omitempty" url:"borderWidth,omitempty"`
+	// Keep a centered button, logo or footer centered when the email is left-aligned (layout.contentAlign left). Without it a left email moves these blocks left; right always stays.
+	KeepAlign     *bool                      `json:"keepAlign,omitempty" url:"keepAlign,omitempty"`
 	PaddingBottom *float64                   `json:"paddingBottom,omitempty" url:"paddingBottom,omitempty"`
 	PaddingLeft   *float64                   `json:"paddingLeft,omitempty" url:"paddingLeft,omitempty"`
 	PaddingRight  *float64                   `json:"paddingRight,omitempty" url:"paddingRight,omitempty"`
@@ -3277,6 +3280,13 @@ func (e *EmailBlockStyles) GetBorderWidth() *float64 {
 		return nil
 	}
 	return e.BorderWidth
+}
+
+func (e *EmailBlockStyles) GetKeepAlign() *bool {
+	if e == nil {
+		return nil
+	}
+	return e.KeepAlign
 }
 
 func (e *EmailBlockStyles) GetPaddingBottom() *float64 {
@@ -3375,6 +3385,13 @@ func (e *EmailBlockStyles) SetBorderRadius(borderRadius *float64) {
 func (e *EmailBlockStyles) SetBorderWidth(borderWidth *float64) {
 	e.BorderWidth = borderWidth
 	e.require(emailBlockStylesFieldBorderWidth)
+}
+
+// SetKeepAlign sets the KeepAlign field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailBlockStyles) SetKeepAlign(keepAlign *bool) {
+	e.KeepAlign = keepAlign
+	e.require(emailBlockStylesFieldKeepAlign)
 }
 
 // SetPaddingBottom sets the PaddingBottom field and marks it as non-optional;

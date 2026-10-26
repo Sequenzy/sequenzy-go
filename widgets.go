@@ -5870,24 +5870,33 @@ func (s SavedFormContentSurface) Ptr() *SavedFormContentSurface {
 }
 
 var (
-	savedFormEmbedFieldActionURL          = big.NewInt(1 << 0)
-	savedFormEmbedFieldFetch              = big.NewInt(1 << 1)
-	savedFormEmbedFieldJavascript         = big.NewInt(1 << 2)
-	savedFormEmbedFieldNativeForm         = big.NewInt(1 << 3)
-	savedFormEmbedFieldScriptURL          = big.NewInt(1 << 4)
-	savedFormEmbedFieldSupportedPlatforms = big.NewInt(1 << 5)
+	savedFormEmbedFieldActionURL                = big.NewInt(1 << 0)
+	savedFormEmbedFieldFetch                    = big.NewInt(1 << 1)
+	savedFormEmbedFieldJavascript               = big.NewInt(1 << 2)
+	savedFormEmbedFieldNativeForm               = big.NewInt(1 << 3)
+	savedFormEmbedFieldPlaceholder              = big.NewInt(1 << 4)
+	savedFormEmbedFieldRecommendedSnippet       = big.NewInt(1 << 5)
+	savedFormEmbedFieldReducedProtectionWarning = big.NewInt(1 << 6)
+	savedFormEmbedFieldScriptURL                = big.NewInt(1 << 7)
+	savedFormEmbedFieldSupportedPlatforms       = big.NewInt(1 << 8)
 )
 
 type SavedFormEmbed struct {
 	ActionURL string `json:"actionUrl" url:"actionUrl"`
-	// Fetch-enhanced embed markup.
+	// Fetch-enhanced embed markup. Has weaker spam protection; use only on pages that cannot run scripts.
 	Fetch string `json:"fetch" url:"fetch"`
-	// Hosted JavaScript embed markup.
+	// Hosted JavaScript embed markup. The recommended install, and the only one that carries Sequenzy's spam protection (signed submit token and, with bot protection on, the bot check). The form appears right after the script tag, unless the page has a placeholder for it.
 	Javascript string `json:"javascript" url:"javascript"`
-	// Native HTML form embed markup.
-	NativeForm         string   `json:"nativeForm" url:"nativeForm"`
-	ScriptURL          string   `json:"scriptUrl" url:"scriptUrl"`
-	SupportedPlatforms []string `json:"supportedPlatforms" url:"supportedPlatforms"`
+	// Native HTML form embed markup. Has weaker spam protection; use only on pages that cannot run scripts.
+	NativeForm string `json:"nativeForm" url:"nativeForm"`
+	// Optional placeholder for the javascript embed, such as `<div data-sequenzy-form="form_123"></div>`. Put it where the form should appear when the script has to load elsewhere (the page head, a tag manager or a site-wide footer); the script fills it. Each script tag fills one placeholder.
+	Placeholder *string `json:"placeholder,omitempty" url:"placeholder,omitempty"`
+	// The snippet to install unless the page cannot run scripts.
+	RecommendedSnippet *SavedFormEmbedRecommendedSnippet `json:"recommendedSnippet,omitempty" url:"recommendedSnippet,omitempty"`
+	// What changes when nativeForm or fetch is used instead of javascript, worded for the form's current bot protection setting. Show it to the person installing the form.
+	ReducedProtectionWarning *string  `json:"reducedProtectionWarning,omitempty" url:"reducedProtectionWarning,omitempty"`
+	ScriptURL                string   `json:"scriptUrl" url:"scriptUrl"`
+	SupportedPlatforms       []string `json:"supportedPlatforms" url:"supportedPlatforms"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -5922,6 +5931,27 @@ func (s *SavedFormEmbed) GetNativeForm() string {
 		return ""
 	}
 	return s.NativeForm
+}
+
+func (s *SavedFormEmbed) GetPlaceholder() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Placeholder
+}
+
+func (s *SavedFormEmbed) GetRecommendedSnippet() *SavedFormEmbedRecommendedSnippet {
+	if s == nil {
+		return nil
+	}
+	return s.RecommendedSnippet
+}
+
+func (s *SavedFormEmbed) GetReducedProtectionWarning() *string {
+	if s == nil {
+		return nil
+	}
+	return s.ReducedProtectionWarning
 }
 
 func (s *SavedFormEmbed) GetScriptURL() string {
@@ -5980,6 +6010,27 @@ func (s *SavedFormEmbed) SetNativeForm(nativeForm string) {
 	s.require(savedFormEmbedFieldNativeForm)
 }
 
+// SetPlaceholder sets the Placeholder field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormEmbed) SetPlaceholder(placeholder *string) {
+	s.Placeholder = placeholder
+	s.require(savedFormEmbedFieldPlaceholder)
+}
+
+// SetRecommendedSnippet sets the RecommendedSnippet field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormEmbed) SetRecommendedSnippet(recommendedSnippet *SavedFormEmbedRecommendedSnippet) {
+	s.RecommendedSnippet = recommendedSnippet
+	s.require(savedFormEmbedFieldRecommendedSnippet)
+}
+
+// SetReducedProtectionWarning sets the ReducedProtectionWarning field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormEmbed) SetReducedProtectionWarning(reducedProtectionWarning *string) {
+	s.ReducedProtectionWarning = reducedProtectionWarning
+	s.require(savedFormEmbedFieldReducedProtectionWarning)
+}
+
 // SetScriptURL sets the ScriptURL field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *SavedFormEmbed) SetScriptURL(scriptURL string) {
@@ -6034,6 +6085,26 @@ func (s *SavedFormEmbed) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", s)
+}
+
+// The snippet to install unless the page cannot run scripts.
+type SavedFormEmbedRecommendedSnippet string
+
+const (
+	SavedFormEmbedRecommendedSnippetJavascript SavedFormEmbedRecommendedSnippet = "javascript"
+)
+
+func NewSavedFormEmbedRecommendedSnippetFromString(s string) (SavedFormEmbedRecommendedSnippet, error) {
+	switch s {
+	case "javascript":
+		return SavedFormEmbedRecommendedSnippetJavascript, nil
+	}
+	var t SavedFormEmbedRecommendedSnippet
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SavedFormEmbedRecommendedSnippet) Ptr() *SavedFormEmbedRecommendedSnippet {
+	return &s
 }
 
 var (

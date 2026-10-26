@@ -8379,6 +8379,14 @@ func TestSettersEmailThemePatchLayout(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetContentAlign", func(t *testing.T) {
+		obj := &EmailThemePatchLayout{}
+		var fernTestValueContentAlign *EmailThemePatchLayoutContentAlign
+		obj.SetContentAlign(fernTestValueContentAlign)
+		assert.Equal(t, fernTestValueContentAlign, obj.ContentAlign)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetContentWidth", func(t *testing.T) {
 		obj := &EmailThemePatchLayout{}
 		var fernTestValueContentWidth *float64
@@ -8660,6 +8668,39 @@ func TestGettersEmailThemePatchLayout(t *testing.T) {
 			}
 		}()
 		_ = obj.GetContainerPaddingY() // Should return zero value
+	})
+
+	t.Run("GetContentAlign", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &EmailThemePatchLayout{}
+		var expected *EmailThemePatchLayoutContentAlign
+		obj.ContentAlign = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetContentAlign(), "getter should return the property value")
+	})
+
+	t.Run("GetContentAlign_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &EmailThemePatchLayout{}
+		obj.ContentAlign = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetContentAlign(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetContentAlign_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *EmailThemePatchLayout
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetContentAlign() // Should return zero value
 	})
 
 	t.Run("GetContentWidth", func(t *testing.T) {
@@ -8956,6 +8997,37 @@ func TestSettersMarkExplicitEmailThemePatchLayout(t *testing.T) {
 
 		// Act
 		obj.SetContainerPaddingY(fernTestValueContainerPaddingY)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetContentAlign_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &EmailThemePatchLayout{}
+		var fernTestValueContentAlign *EmailThemePatchLayoutContentAlign
+
+		// Act
+		obj.SetContentAlign(fernTestValueContentAlign)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -94660,6 +94732,35 @@ func TestEnumEmailThemePatchButtonStyle(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewEmailThemePatchButtonStyleFromString("solid")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumEmailThemePatchLayoutContentAlign(t *testing.T) {
+	t.Run("NewFromString_center", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewEmailThemePatchLayoutContentAlignFromString("center")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, EmailThemePatchLayoutContentAlign("center"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_left", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewEmailThemePatchLayoutContentAlignFromString("left")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, EmailThemePatchLayoutContentAlign("left"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewEmailThemePatchLayoutContentAlignFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewEmailThemePatchLayoutContentAlignFromString("center")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
