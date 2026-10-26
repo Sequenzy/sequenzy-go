@@ -67,7 +67,7 @@ var (
 type SenderHealthMetric struct {
 	Count          *int                        `json:"count,omitempty" url:"count,omitempty"`
 	PauseThreshold *SenderHealthThresholdBound `json:"pauseThreshold,omitempty" url:"pauseThreshold,omitempty"`
-	// Percentage of the applicable bounceScopedSent or complaintScopedSent denominator.
+	// Percentage of the applicable bounceScopedSent, blockScopedSent or complaintScopedSent denominator.
 	Rate          *float64                    `json:"rate,omitempty" url:"rate,omitempty"`
 	WarnThreshold *SenderHealthThresholdBound `json:"warnThreshold,omitempty" url:"warnThreshold,omitempty"`
 
@@ -702,6 +702,7 @@ type SendingStatusPauseReasonKind string
 const (
 	SendingStatusPauseReasonKindHighHardBounceRate SendingStatusPauseReasonKind = "high_hard_bounce_rate"
 	SendingStatusPauseReasonKindHighSoftBounceRate SendingStatusPauseReasonKind = "high_soft_bounce_rate"
+	SendingStatusPauseReasonKindHighBlockRate      SendingStatusPauseReasonKind = "high_block_rate"
 	SendingStatusPauseReasonKindHighComplaintRate  SendingStatusPauseReasonKind = "high_complaint_rate"
 	SendingStatusPauseReasonKindPhishingGuard      SendingStatusPauseReasonKind = "phishing_guard"
 	SendingStatusPauseReasonKindOverEmailLimit     SendingStatusPauseReasonKind = "over_email_limit"
@@ -715,6 +716,8 @@ func NewSendingStatusPauseReasonKindFromString(s string) (SendingStatusPauseReas
 		return SendingStatusPauseReasonKindHighHardBounceRate, nil
 	case "high_soft_bounce_rate":
 		return SendingStatusPauseReasonKindHighSoftBounceRate, nil
+	case "high_block_rate":
+		return SendingStatusPauseReasonKindHighBlockRate, nil
 	case "high_complaint_rate":
 		return SendingStatusPauseReasonKindHighComplaintRate, nil
 	case "phishing_guard":
@@ -1177,16 +1180,22 @@ func (s SendingStatusSelfResumeUnavailableReason) Ptr() *SendingStatusSelfResume
 
 // Null when the workspace has no metrics record yet or sender-health analytics are temporarily unavailable. Pause state and remediation remain available during an analytics outage.
 var (
-	sendingStatusSenderHealthFieldBounceScopedSent    = big.NewInt(1 << 0)
-	sendingStatusSenderHealthFieldComplaint           = big.NewInt(1 << 1)
-	sendingStatusSenderHealthFieldComplaintScopedSent = big.NewInt(1 << 2)
-	sendingStatusSenderHealthFieldEnforcementMode     = big.NewInt(1 << 3)
-	sendingStatusSenderHealthFieldHardBounce          = big.NewInt(1 << 4)
-	sendingStatusSenderHealthFieldScopedSent          = big.NewInt(1 << 5)
-	sendingStatusSenderHealthFieldSoftBounce          = big.NewInt(1 << 6)
+	sendingStatusSenderHealthFieldBlock               = big.NewInt(1 << 0)
+	sendingStatusSenderHealthFieldBlockScopedSent     = big.NewInt(1 << 1)
+	sendingStatusSenderHealthFieldBounceScopedSent    = big.NewInt(1 << 2)
+	sendingStatusSenderHealthFieldComplaint           = big.NewInt(1 << 3)
+	sendingStatusSenderHealthFieldComplaintScopedSent = big.NewInt(1 << 4)
+	sendingStatusSenderHealthFieldEnforcementMode     = big.NewInt(1 << 5)
+	sendingStatusSenderHealthFieldHardBounce          = big.NewInt(1 << 6)
+	sendingStatusSenderHealthFieldScopedSent          = big.NewInt(1 << 7)
+	sendingStatusSenderHealthFieldSoftBounce          = big.NewInt(1 << 8)
 )
 
 type SendingStatusSenderHealth struct {
+	// Refusals the sender caused - spam or content, the sending domain's reputation, policy, or failed SPF, DKIM or DMARC. Refusals caused by our infrastructure never count.
+	Block *SenderHealthMetric `json:"block,omitempty" url:"block,omitempty"`
+	// Sends, test sends included, counted from the bounce reset watermark - the denominator for the block rate.
+	BlockScopedSent *int `json:"blockScopedSent,omitempty" url:"blockScopedSent,omitempty"`
 	// Non-test sends counted from the bounce reset watermark - the denominator for hard- and soft-bounce rates.
 	BounceScopedSent *int                `json:"bounceScopedSent,omitempty" url:"bounceScopedSent,omitempty"`
 	Complaint        *SenderHealthMetric `json:"complaint,omitempty" url:"complaint,omitempty"`
@@ -1203,6 +1212,20 @@ type SendingStatusSenderHealth struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (s *SendingStatusSenderHealth) GetBlock() *SenderHealthMetric {
+	if s == nil {
+		return nil
+	}
+	return s.Block
+}
+
+func (s *SendingStatusSenderHealth) GetBlockScopedSent() *int {
+	if s == nil {
+		return nil
+	}
+	return s.BlockScopedSent
 }
 
 func (s *SendingStatusSenderHealth) GetBounceScopedSent() *int {
@@ -1266,6 +1289,20 @@ func (s *SendingStatusSenderHealth) require(field *big.Int) {
 		s.explicitFields = big.NewInt(0)
 	}
 	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetBlock sets the Block field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendingStatusSenderHealth) SetBlock(block *SenderHealthMetric) {
+	s.Block = block
+	s.require(sendingStatusSenderHealthFieldBlock)
+}
+
+// SetBlockScopedSent sets the BlockScopedSent field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendingStatusSenderHealth) SetBlockScopedSent(blockScopedSent *int) {
+	s.BlockScopedSent = blockScopedSent
+	s.require(sendingStatusSenderHealthFieldBlockScopedSent)
 }
 
 // SetBounceScopedSent sets the BounceScopedSent field and marks it as non-optional;

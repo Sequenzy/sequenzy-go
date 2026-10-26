@@ -3232,9 +3232,11 @@ var (
 	emailEventFieldID                   = big.NewInt(1 << 15)
 	emailEventFieldIPAddress            = big.NewInt(1 << 16)
 	emailEventFieldMetadata             = big.NewInt(1 << 17)
-	emailEventFieldSubscriberID         = big.NewInt(1 << 18)
-	emailEventFieldTransactionalEmailID = big.NewInt(1 << 19)
-	emailEventFieldUserAgent            = big.NewInt(1 << 20)
+	emailEventFieldOutcome              = big.NewInt(1 << 18)
+	emailEventFieldReason               = big.NewInt(1 << 19)
+	emailEventFieldSubscriberID         = big.NewInt(1 << 20)
+	emailEventFieldTransactionalEmailID = big.NewInt(1 << 21)
+	emailEventFieldUserAgent            = big.NewInt(1 << 22)
 )
 
 type EmailEvent struct {
@@ -3243,23 +3245,28 @@ type EmailEvent struct {
 	BounceSubType   *string `json:"bounceSubType,omitempty" url:"bounceSubType,omitempty"`
 	BounceType      *string `json:"bounceType,omitempty" url:"bounceType,omitempty"`
 	// Campaign ID for campaigns, or automation email node ID for sequence events.
-	CampaignID           *string              `json:"campaignId,omitempty" url:"campaignId,omitempty"`
-	ClickedURL           *string              `json:"clickedUrl,omitempty" url:"clickedUrl,omitempty"`
-	CompanyID            *string              `json:"companyId,omitempty" url:"companyId,omitempty"`
-	ComplaintType        *string              `json:"complaintType,omitempty" url:"complaintType,omitempty"`
-	CountryCode          *string              `json:"countryCode,omitempty" url:"countryCode,omitempty"`
-	Email                *string              `json:"email,omitempty" url:"email,omitempty"`
-	EmailName            *string              `json:"emailName,omitempty" url:"emailName,omitempty"`
-	EmailSendID          *string              `json:"emailSendId,omitempty" url:"emailSendId,omitempty"`
-	EmailType            *EmailEventEmailType `json:"emailType,omitempty" url:"emailType,omitempty"`
-	EventTime            *time.Time           `json:"eventTime,omitempty" url:"eventTime,omitempty"`
-	EventType            *EmailEventEventType `json:"eventType,omitempty" url:"eventType,omitempty"`
-	ID                   *string              `json:"id,omitempty" url:"id,omitempty"`
-	IPAddress            *string              `json:"ipAddress,omitempty" url:"ipAddress,omitempty"`
-	Metadata             map[string]any       `json:"metadata,omitempty" url:"metadata,omitempty"`
-	SubscriberID         *string              `json:"subscriberId,omitempty" url:"subscriberId,omitempty"`
-	TransactionalEmailID *string              `json:"transactionalEmailId,omitempty" url:"transactionalEmailId,omitempty"`
-	UserAgent            *string              `json:"userAgent,omitempty" url:"userAgent,omitempty"`
+	CampaignID    *string              `json:"campaignId,omitempty" url:"campaignId,omitempty"`
+	ClickedURL    *string              `json:"clickedUrl,omitempty" url:"clickedUrl,omitempty"`
+	CompanyID     *string              `json:"companyId,omitempty" url:"companyId,omitempty"`
+	ComplaintType *string              `json:"complaintType,omitempty" url:"complaintType,omitempty"`
+	CountryCode   *string              `json:"countryCode,omitempty" url:"countryCode,omitempty"`
+	Email         *string              `json:"email,omitempty" url:"email,omitempty"`
+	EmailName     *string              `json:"emailName,omitempty" url:"emailName,omitempty"`
+	EmailSendID   *string              `json:"emailSendId,omitempty" url:"emailSendId,omitempty"`
+	EmailType     *EmailEventEmailType `json:"emailType,omitempty" url:"emailType,omitempty"`
+	EventTime     *time.Time           `json:"eventTime,omitempty" url:"eventTime,omitempty"`
+	EventType     *EmailEventEventType `json:"eventType,omitempty" url:"eventType,omitempty"`
+	ID            *string              `json:"id,omitempty" url:"id,omitempty"`
+	IPAddress     *string              `json:"ipAddress,omitempty" url:"ipAddress,omitempty"`
+	// Event details. Receiver replies (recipients[].diagnosticCode) are masked for bounced and blocked outcomes, generic for failed ones, and kept for delays only when the sender caused them. Sending infrastructure is never included.
+	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
+	// Why the email did not arrive. "bounced": the address cannot take mail. "blocked": the receiver refused because of the sender (spam or content, the sending domain, policy, or its SPF, DKIM or DMARC). "delayed": still retrying. "failed": we could not deliver it. Null for emails that arrived or have not finished.
+	Outcome *EmailEventOutcome `json:"outcome,omitempty" url:"outcome,omitempty"`
+	// One plain sentence about the outcome, with the receiver's status code when there is one. Null when outcome is null.
+	Reason               *string `json:"reason,omitempty" url:"reason,omitempty"`
+	SubscriberID         *string `json:"subscriberId,omitempty" url:"subscriberId,omitempty"`
+	TransactionalEmailID *string `json:"transactionalEmailId,omitempty" url:"transactionalEmailId,omitempty"`
+	UserAgent            *string `json:"userAgent,omitempty" url:"userAgent,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -3392,6 +3399,20 @@ func (e *EmailEvent) GetMetadata() map[string]any {
 		return nil
 	}
 	return e.Metadata
+}
+
+func (e *EmailEvent) GetOutcome() *EmailEventOutcome {
+	if e == nil {
+		return nil
+	}
+	return e.Outcome
+}
+
+func (e *EmailEvent) GetReason() *string {
+	if e == nil {
+		return nil
+	}
+	return e.Reason
 }
 
 func (e *EmailEvent) GetSubscriberID() *string {
@@ -3555,6 +3576,20 @@ func (e *EmailEvent) SetMetadata(metadata map[string]any) {
 	e.require(emailEventFieldMetadata)
 }
 
+// SetOutcome sets the Outcome field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailEvent) SetOutcome(outcome *EmailEventOutcome) {
+	e.Outcome = outcome
+	e.require(emailEventFieldOutcome)
+}
+
+// SetReason sets the Reason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailEvent) SetReason(reason *string) {
+	e.Reason = reason
+	e.require(emailEventFieldReason)
+}
+
 // SetSubscriberID sets the SubscriberID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (e *EmailEvent) SetSubscriberID(subscriberID *string) {
@@ -3691,6 +3726,35 @@ func NewEmailEventEventTypeFromString(s string) (EmailEventEventType, error) {
 }
 
 func (e EmailEventEventType) Ptr() *EmailEventEventType {
+	return &e
+}
+
+// Why the email did not arrive. "bounced": the address cannot take mail. "blocked": the receiver refused because of the sender (spam or content, the sending domain, policy, or its SPF, DKIM or DMARC). "delayed": still retrying. "failed": we could not deliver it. Null for emails that arrived or have not finished.
+type EmailEventOutcome string
+
+const (
+	EmailEventOutcomeBounced EmailEventOutcome = "bounced"
+	EmailEventOutcomeBlocked EmailEventOutcome = "blocked"
+	EmailEventOutcomeDelayed EmailEventOutcome = "delayed"
+	EmailEventOutcomeFailed  EmailEventOutcome = "failed"
+)
+
+func NewEmailEventOutcomeFromString(s string) (EmailEventOutcome, error) {
+	switch s {
+	case "bounced":
+		return EmailEventOutcomeBounced, nil
+	case "blocked":
+		return EmailEventOutcomeBlocked, nil
+	case "delayed":
+		return EmailEventOutcomeDelayed, nil
+	case "failed":
+		return EmailEventOutcomeFailed, nil
+	}
+	var t EmailEventOutcome
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (e EmailEventOutcome) Ptr() *EmailEventOutcome {
 	return &e
 }
 

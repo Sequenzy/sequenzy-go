@@ -262,23 +262,25 @@ var (
 	emailSendFieldObservedSendingIPAddress = big.NewInt(1 << 25)
 	emailSendFieldOpenedAt                 = big.NewInt(1 << 26)
 	emailSendFieldOriginalReplyTo          = big.NewInt(1 << 27)
-	emailSendFieldPrimaryEmailSendID       = big.NewInt(1 << 28)
-	emailSendFieldRecipientEmail           = big.NewInt(1 << 29)
-	emailSendFieldSenderEmail              = big.NewInt(1 << 30)
-	emailSendFieldSenderName               = big.NewInt(1 << 31)
-	emailSendFieldSendingIPAddress         = big.NewInt(1 << 32)
-	emailSendFieldSentAt                   = big.NewInt(1 << 33)
-	emailSendFieldSesMessageID             = big.NewInt(1 << 34)
-	emailSendFieldStatus                   = big.NewInt(1 << 35)
-	emailSendFieldSubject                  = big.NewInt(1 << 36)
-	emailSendFieldSubscriber               = big.NewInt(1 << 37)
-	emailSendFieldSubscriberExternalID     = big.NewInt(1 << 38)
-	emailSendFieldSubscriberID             = big.NewInt(1 << 39)
-	emailSendFieldSuppressedAt             = big.NewInt(1 << 40)
-	emailSendFieldSuppressionReason        = big.NewInt(1 << 41)
-	emailSendFieldTransactionalEmailID     = big.NewInt(1 << 42)
-	emailSendFieldType                     = big.NewInt(1 << 43)
-	emailSendFieldUnsubscribedAt           = big.NewInt(1 << 44)
+	emailSendFieldOutcome                  = big.NewInt(1 << 28)
+	emailSendFieldPrimaryEmailSendID       = big.NewInt(1 << 29)
+	emailSendFieldReason                   = big.NewInt(1 << 30)
+	emailSendFieldRecipientEmail           = big.NewInt(1 << 31)
+	emailSendFieldSenderEmail              = big.NewInt(1 << 32)
+	emailSendFieldSenderName               = big.NewInt(1 << 33)
+	emailSendFieldSendingIPAddress         = big.NewInt(1 << 34)
+	emailSendFieldSentAt                   = big.NewInt(1 << 35)
+	emailSendFieldSesMessageID             = big.NewInt(1 << 36)
+	emailSendFieldStatus                   = big.NewInt(1 << 37)
+	emailSendFieldSubject                  = big.NewInt(1 << 38)
+	emailSendFieldSubscriber               = big.NewInt(1 << 39)
+	emailSendFieldSubscriberExternalID     = big.NewInt(1 << 40)
+	emailSendFieldSubscriberID             = big.NewInt(1 << 41)
+	emailSendFieldSuppressedAt             = big.NewInt(1 << 42)
+	emailSendFieldSuppressionReason        = big.NewInt(1 << 43)
+	emailSendFieldTransactionalEmailID     = big.NewInt(1 << 44)
+	emailSendFieldType                     = big.NewInt(1 << 45)
+	emailSendFieldUnsubscribedAt           = big.NewInt(1 << 46)
 )
 
 type EmailSend struct {
@@ -306,29 +308,35 @@ type EmailSend struct {
 	EmailType    *EmailSendEmailType `json:"emailType,omitempty" url:"emailType,omitempty"`
 	ErrorMessage *string             `json:"errorMessage,omitempty" url:"errorMessage,omitempty"`
 	ID           *string             `json:"id,omitempty" url:"id,omitempty"`
-	// Why a send reached status "failed". Present only for terminal delivery failures. "transport_exhausted" means every available delivery route was refused by the recipient provider; "admin_bounce" means an operator removed the message from the delivery queue; "crash_orphaned_claim" means the sending worker stopped between claiming the send and recording a transport outcome, so the message was never confirmed as reaching the provider. None of them is a bounce: the address is still valid, stays subscribed, and is not suppressed. New codes can be added over time, so treat an unrecognized value as a generic failure rather than rejecting the response.
+	// Why a send reached status "failed". Present only for terminal delivery failures, each of which has outcome "failed": "transport_exhausted" means we could not deliver the email; "admin_bounce" means the message was withdrawn before delivery; "crash_orphaned_claim" means sending stopped before the message was confirmed as handed off. None of them is a bounce: the address is still valid, stays subscribed, and is not suppressed. New codes can be added over time, so treat an unrecognized value as a generic failure rather than rejecting the response.
 	InternalFailureCode *EmailSendInternalFailureCode `json:"internalFailureCode,omitempty" url:"internalFailureCode,omitempty"`
 	// Whether this is an auxiliary CC/BCC delivery record whose content and engagement belong to a primary email send.
 	IsCopiedRecipient *bool `json:"isCopiedRecipient,omitempty" url:"isCopiedRecipient,omitempty"`
 	// Whether this delivery was a test send hidden from normal sent-email history.
 	IsTestEmail *bool `json:"isTestEmail,omitempty" url:"isTestEmail,omitempty"`
 	// Stored delivery-policy snapshot. Prefer emailType for a normalized value.
-	IsTransactional          *bool      `json:"isTransactional,omitempty" url:"isTransactional,omitempty"`
+	IsTransactional *bool `json:"isTransactional,omitempty" url:"isTransactional,omitempty"`
+	// Always null. Sending IPs are not shared with customers.
 	ObservedSendingIPAddress *string    `json:"observedSendingIpAddress,omitempty" url:"observedSendingIpAddress,omitempty"`
 	OpenedAt                 *time.Time `json:"openedAt,omitempty" url:"openedAt,omitempty"`
 	// Resolved reply destination, optionally including a display name. When reply tracking is disabled, this is the sent Reply-To header. When reply tracking is enabled, the sent header is a unique trackable address and this value is the forwarding destination.
 	OriginalReplyTo *string `json:"originalReplyTo,omitempty" url:"originalReplyTo,omitempty"`
+	// Why the email did not arrive. "bounced": the address cannot take mail. "blocked": the receiver refused because of the sender (spam or content, the sending domain, policy, or its SPF, DKIM or DMARC). "delayed": still retrying. "failed": we could not deliver it. Null for emails that arrived or have not finished.
+	Outcome *EmailSendOutcome `json:"outcome,omitempty" url:"outcome,omitempty"`
 	// Primary email send ID for a copied-recipient delivery, or null for ordinary sends and when the primary record is unavailable.
-	PrimaryEmailSendID *string              `json:"primaryEmailSendId,omitempty" url:"primaryEmailSendId,omitempty"`
-	RecipientEmail     *string              `json:"recipientEmail,omitempty" url:"recipientEmail,omitempty"`
-	SenderEmail        *string              `json:"senderEmail,omitempty" url:"senderEmail,omitempty"`
-	SenderName         *string              `json:"senderName,omitempty" url:"senderName,omitempty"`
-	SendingIPAddress   *string              `json:"sendingIpAddress,omitempty" url:"sendingIpAddress,omitempty"`
-	SentAt             *time.Time           `json:"sentAt,omitempty" url:"sentAt,omitempty"`
-	SesMessageID       *string              `json:"sesMessageId,omitempty" url:"sesMessageId,omitempty"`
-	Status             *EmailSendStatus     `json:"status,omitempty" url:"status,omitempty"`
-	Subject            *string              `json:"subject,omitempty" url:"subject,omitempty"`
-	Subscriber         *EmailSendSubscriber `json:"subscriber,omitempty" url:"subscriber,omitempty"`
+	PrimaryEmailSendID *string `json:"primaryEmailSendId,omitempty" url:"primaryEmailSendId,omitempty"`
+	// One plain sentence about the outcome, with the receiver's status code when there is one. Null when outcome is null.
+	Reason         *string `json:"reason,omitempty" url:"reason,omitempty"`
+	RecipientEmail *string `json:"recipientEmail,omitempty" url:"recipientEmail,omitempty"`
+	SenderEmail    *string `json:"senderEmail,omitempty" url:"senderEmail,omitempty"`
+	SenderName     *string `json:"senderName,omitempty" url:"senderName,omitempty"`
+	// Always null. Sending IPs are not shared with customers.
+	SendingIPAddress *string              `json:"sendingIpAddress,omitempty" url:"sendingIpAddress,omitempty"`
+	SentAt           *time.Time           `json:"sentAt,omitempty" url:"sentAt,omitempty"`
+	SesMessageID     *string              `json:"sesMessageId,omitempty" url:"sesMessageId,omitempty"`
+	Status           *EmailSendStatus     `json:"status,omitempty" url:"status,omitempty"`
+	Subject          *string              `json:"subject,omitempty" url:"subject,omitempty"`
+	Subscriber       *EmailSendSubscriber `json:"subscriber,omitempty" url:"subscriber,omitempty"`
 	// Customer-owned subscriber ID captured from a single-recipient transactional send.
 	SubscriberExternalID *string                     `json:"subscriberExternalId,omitempty" url:"subscriberExternalId,omitempty"`
 	SubscriberID         *string                     `json:"subscriberId,omitempty" url:"subscriberId,omitempty"`
@@ -542,11 +550,25 @@ func (e *EmailSend) GetOriginalReplyTo() *string {
 	return e.OriginalReplyTo
 }
 
+func (e *EmailSend) GetOutcome() *EmailSendOutcome {
+	if e == nil {
+		return nil
+	}
+	return e.Outcome
+}
+
 func (e *EmailSend) GetPrimaryEmailSendID() *string {
 	if e == nil {
 		return nil
 	}
 	return e.PrimaryEmailSendID
+}
+
+func (e *EmailSend) GetReason() *string {
+	if e == nil {
+		return nil
+	}
+	return e.Reason
 }
 
 func (e *EmailSend) GetRecipientEmail() *string {
@@ -871,11 +893,25 @@ func (e *EmailSend) SetOriginalReplyTo(originalReplyTo *string) {
 	e.require(emailSendFieldOriginalReplyTo)
 }
 
+// SetOutcome sets the Outcome field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailSend) SetOutcome(outcome *EmailSendOutcome) {
+	e.Outcome = outcome
+	e.require(emailSendFieldOutcome)
+}
+
 // SetPrimaryEmailSendID sets the PrimaryEmailSendID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (e *EmailSend) SetPrimaryEmailSendID(primaryEmailSendID *string) {
 	e.PrimaryEmailSendID = primaryEmailSendID
 	e.require(emailSendFieldPrimaryEmailSendID)
+}
+
+// SetReason sets the Reason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailSend) SetReason(reason *string) {
+	e.Reason = reason
+	e.require(emailSendFieldReason)
 }
 
 // SetRecipientEmail sets the RecipientEmail field and marks it as non-optional;
@@ -1453,15 +1489,16 @@ type EmailSendEvent struct {
 	EmailName      *string                       `json:"emailName,omitempty" url:"emailName,omitempty"`
 	EmailSendID    *string                       `json:"emailSendId,omitempty" url:"emailSendId,omitempty"`
 	// Send-source category retained for analytics compatibility. Use deliveryPolicy for the actual marketing or transactional policy.
-	EmailType            *EmailSendEventEmailType `json:"emailType,omitempty" url:"emailType,omitempty"`
-	EventTime            *time.Time               `json:"eventTime,omitempty" url:"eventTime,omitempty"`
-	EventType            *string                  `json:"eventType,omitempty" url:"eventType,omitempty"`
-	ID                   *string                  `json:"id,omitempty" url:"id,omitempty"`
-	IPAddress            *string                  `json:"ipAddress,omitempty" url:"ipAddress,omitempty"`
-	Metadata             map[string]any           `json:"metadata,omitempty" url:"metadata,omitempty"`
-	SubscriberID         *string                  `json:"subscriberId,omitempty" url:"subscriberId,omitempty"`
-	TransactionalEmailID *string                  `json:"transactionalEmailId,omitempty" url:"transactionalEmailId,omitempty"`
-	UserAgent            *string                  `json:"userAgent,omitempty" url:"userAgent,omitempty"`
+	EmailType *EmailSendEventEmailType `json:"emailType,omitempty" url:"emailType,omitempty"`
+	EventTime *time.Time               `json:"eventTime,omitempty" url:"eventTime,omitempty"`
+	EventType *string                  `json:"eventType,omitempty" url:"eventType,omitempty"`
+	ID        *string                  `json:"id,omitempty" url:"id,omitempty"`
+	IPAddress *string                  `json:"ipAddress,omitempty" url:"ipAddress,omitempty"`
+	// Event details. Receiver replies (recipients[].diagnosticCode) are masked for bounced and blocked outcomes, generic for failed ones, and kept for delays only when the sender caused them. Sending infrastructure is never included.
+	Metadata             map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
+	SubscriberID         *string        `json:"subscriberId,omitempty" url:"subscriberId,omitempty"`
+	TransactionalEmailID *string        `json:"transactionalEmailId,omitempty" url:"transactionalEmailId,omitempty"`
+	UserAgent            *string        `json:"userAgent,omitempty" url:"userAgent,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1891,7 +1928,7 @@ func (e EmailSendEventEmailType) Ptr() *EmailSendEventEmailType {
 	return &e
 }
 
-// Why a send reached status "failed". Present only for terminal delivery failures. "transport_exhausted" means every available delivery route was refused by the recipient provider; "admin_bounce" means an operator removed the message from the delivery queue; "crash_orphaned_claim" means the sending worker stopped between claiming the send and recording a transport outcome, so the message was never confirmed as reaching the provider. None of them is a bounce: the address is still valid, stays subscribed, and is not suppressed. New codes can be added over time, so treat an unrecognized value as a generic failure rather than rejecting the response.
+// Why a send reached status "failed". Present only for terminal delivery failures, each of which has outcome "failed": "transport_exhausted" means we could not deliver the email; "admin_bounce" means the message was withdrawn before delivery; "crash_orphaned_claim" means sending stopped before the message was confirmed as handed off. None of them is a bounce: the address is still valid, stays subscribed, and is not suppressed. New codes can be added over time, so treat an unrecognized value as a generic failure rather than rejecting the response.
 type EmailSendInternalFailureCode string
 
 const (
@@ -1914,6 +1951,35 @@ func NewEmailSendInternalFailureCodeFromString(s string) (EmailSendInternalFailu
 }
 
 func (e EmailSendInternalFailureCode) Ptr() *EmailSendInternalFailureCode {
+	return &e
+}
+
+// Why the email did not arrive. "bounced": the address cannot take mail. "blocked": the receiver refused because of the sender (spam or content, the sending domain, policy, or its SPF, DKIM or DMARC). "delayed": still retrying. "failed": we could not deliver it. Null for emails that arrived or have not finished.
+type EmailSendOutcome string
+
+const (
+	EmailSendOutcomeBounced EmailSendOutcome = "bounced"
+	EmailSendOutcomeBlocked EmailSendOutcome = "blocked"
+	EmailSendOutcomeDelayed EmailSendOutcome = "delayed"
+	EmailSendOutcomeFailed  EmailSendOutcome = "failed"
+)
+
+func NewEmailSendOutcomeFromString(s string) (EmailSendOutcome, error) {
+	switch s {
+	case "bounced":
+		return EmailSendOutcomeBounced, nil
+	case "blocked":
+		return EmailSendOutcomeBlocked, nil
+	case "delayed":
+		return EmailSendOutcomeDelayed, nil
+	case "failed":
+		return EmailSendOutcomeFailed, nil
+	}
+	var t EmailSendOutcome
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (e EmailSendOutcome) Ptr() *EmailSendOutcome {
 	return &e
 }
 
@@ -2626,26 +2692,28 @@ var (
 	listEmailSendsResponseEmailSendsItemFieldObservedSendingIPAddress = big.NewInt(1 << 25)
 	listEmailSendsResponseEmailSendsItemFieldOpenedAt                 = big.NewInt(1 << 26)
 	listEmailSendsResponseEmailSendsItemFieldOriginalReplyTo          = big.NewInt(1 << 27)
-	listEmailSendsResponseEmailSendsItemFieldPrimaryEmailSendID       = big.NewInt(1 << 28)
-	listEmailSendsResponseEmailSendsItemFieldRecipientEmail           = big.NewInt(1 << 29)
-	listEmailSendsResponseEmailSendsItemFieldSenderEmail              = big.NewInt(1 << 30)
-	listEmailSendsResponseEmailSendsItemFieldSenderName               = big.NewInt(1 << 31)
-	listEmailSendsResponseEmailSendsItemFieldSendingIPAddress         = big.NewInt(1 << 32)
-	listEmailSendsResponseEmailSendsItemFieldSentAt                   = big.NewInt(1 << 33)
-	listEmailSendsResponseEmailSendsItemFieldSesMessageID             = big.NewInt(1 << 34)
-	listEmailSendsResponseEmailSendsItemFieldStatus                   = big.NewInt(1 << 35)
-	listEmailSendsResponseEmailSendsItemFieldSubject                  = big.NewInt(1 << 36)
-	listEmailSendsResponseEmailSendsItemFieldSubscriber               = big.NewInt(1 << 37)
-	listEmailSendsResponseEmailSendsItemFieldSubscriberExternalID     = big.NewInt(1 << 38)
-	listEmailSendsResponseEmailSendsItemFieldSubscriberID             = big.NewInt(1 << 39)
-	listEmailSendsResponseEmailSendsItemFieldSuppressedAt             = big.NewInt(1 << 40)
-	listEmailSendsResponseEmailSendsItemFieldSuppressionReason        = big.NewInt(1 << 41)
-	listEmailSendsResponseEmailSendsItemFieldTransactionalEmailID     = big.NewInt(1 << 42)
-	listEmailSendsResponseEmailSendsItemFieldType                     = big.NewInt(1 << 43)
-	listEmailSendsResponseEmailSendsItemFieldUnsubscribedAt           = big.NewInt(1 << 44)
-	listEmailSendsResponseEmailSendsItemFieldClicked                  = big.NewInt(1 << 45)
-	listEmailSendsResponseEmailSendsItemFieldEventAt                  = big.NewInt(1 << 46)
-	listEmailSendsResponseEmailSendsItemFieldOpened                   = big.NewInt(1 << 47)
+	listEmailSendsResponseEmailSendsItemFieldOutcome                  = big.NewInt(1 << 28)
+	listEmailSendsResponseEmailSendsItemFieldPrimaryEmailSendID       = big.NewInt(1 << 29)
+	listEmailSendsResponseEmailSendsItemFieldReason                   = big.NewInt(1 << 30)
+	listEmailSendsResponseEmailSendsItemFieldRecipientEmail           = big.NewInt(1 << 31)
+	listEmailSendsResponseEmailSendsItemFieldSenderEmail              = big.NewInt(1 << 32)
+	listEmailSendsResponseEmailSendsItemFieldSenderName               = big.NewInt(1 << 33)
+	listEmailSendsResponseEmailSendsItemFieldSendingIPAddress         = big.NewInt(1 << 34)
+	listEmailSendsResponseEmailSendsItemFieldSentAt                   = big.NewInt(1 << 35)
+	listEmailSendsResponseEmailSendsItemFieldSesMessageID             = big.NewInt(1 << 36)
+	listEmailSendsResponseEmailSendsItemFieldStatus                   = big.NewInt(1 << 37)
+	listEmailSendsResponseEmailSendsItemFieldSubject                  = big.NewInt(1 << 38)
+	listEmailSendsResponseEmailSendsItemFieldSubscriber               = big.NewInt(1 << 39)
+	listEmailSendsResponseEmailSendsItemFieldSubscriberExternalID     = big.NewInt(1 << 40)
+	listEmailSendsResponseEmailSendsItemFieldSubscriberID             = big.NewInt(1 << 41)
+	listEmailSendsResponseEmailSendsItemFieldSuppressedAt             = big.NewInt(1 << 42)
+	listEmailSendsResponseEmailSendsItemFieldSuppressionReason        = big.NewInt(1 << 43)
+	listEmailSendsResponseEmailSendsItemFieldTransactionalEmailID     = big.NewInt(1 << 44)
+	listEmailSendsResponseEmailSendsItemFieldType                     = big.NewInt(1 << 45)
+	listEmailSendsResponseEmailSendsItemFieldUnsubscribedAt           = big.NewInt(1 << 46)
+	listEmailSendsResponseEmailSendsItemFieldClicked                  = big.NewInt(1 << 47)
+	listEmailSendsResponseEmailSendsItemFieldEventAt                  = big.NewInt(1 << 48)
+	listEmailSendsResponseEmailSendsItemFieldOpened                   = big.NewInt(1 << 49)
 )
 
 type ListEmailSendsResponseEmailSendsItem struct {
@@ -2673,29 +2741,35 @@ type ListEmailSendsResponseEmailSendsItem struct {
 	EmailType    *EmailSendEmailType `json:"emailType,omitempty" url:"emailType,omitempty"`
 	ErrorMessage *string             `json:"errorMessage,omitempty" url:"errorMessage,omitempty"`
 	ID           *string             `json:"id,omitempty" url:"id,omitempty"`
-	// Why a send reached status "failed". Present only for terminal delivery failures. "transport_exhausted" means every available delivery route was refused by the recipient provider; "admin_bounce" means an operator removed the message from the delivery queue; "crash_orphaned_claim" means the sending worker stopped between claiming the send and recording a transport outcome, so the message was never confirmed as reaching the provider. None of them is a bounce: the address is still valid, stays subscribed, and is not suppressed. New codes can be added over time, so treat an unrecognized value as a generic failure rather than rejecting the response.
+	// Why a send reached status "failed". Present only for terminal delivery failures, each of which has outcome "failed": "transport_exhausted" means we could not deliver the email; "admin_bounce" means the message was withdrawn before delivery; "crash_orphaned_claim" means sending stopped before the message was confirmed as handed off. None of them is a bounce: the address is still valid, stays subscribed, and is not suppressed. New codes can be added over time, so treat an unrecognized value as a generic failure rather than rejecting the response.
 	InternalFailureCode *EmailSendInternalFailureCode `json:"internalFailureCode,omitempty" url:"internalFailureCode,omitempty"`
 	// Whether this is an auxiliary CC/BCC delivery record whose content and engagement belong to a primary email send.
 	IsCopiedRecipient *bool `json:"isCopiedRecipient,omitempty" url:"isCopiedRecipient,omitempty"`
 	// Whether this delivery was a test send hidden from normal sent-email history.
 	IsTestEmail *bool `json:"isTestEmail,omitempty" url:"isTestEmail,omitempty"`
 	// Stored delivery-policy snapshot. Prefer emailType for a normalized value.
-	IsTransactional          *bool      `json:"isTransactional,omitempty" url:"isTransactional,omitempty"`
+	IsTransactional *bool `json:"isTransactional,omitempty" url:"isTransactional,omitempty"`
+	// Always null. Sending IPs are not shared with customers.
 	ObservedSendingIPAddress *string    `json:"observedSendingIpAddress,omitempty" url:"observedSendingIpAddress,omitempty"`
 	OpenedAt                 *time.Time `json:"openedAt,omitempty" url:"openedAt,omitempty"`
 	// Resolved reply destination, optionally including a display name. When reply tracking is disabled, this is the sent Reply-To header. When reply tracking is enabled, the sent header is a unique trackable address and this value is the forwarding destination.
 	OriginalReplyTo *string `json:"originalReplyTo,omitempty" url:"originalReplyTo,omitempty"`
+	// Why the email did not arrive. "bounced": the address cannot take mail. "blocked": the receiver refused because of the sender (spam or content, the sending domain, policy, or its SPF, DKIM or DMARC). "delayed": still retrying. "failed": we could not deliver it. Null for emails that arrived or have not finished.
+	Outcome *EmailSendOutcome `json:"outcome,omitempty" url:"outcome,omitempty"`
 	// Primary email send ID for a copied-recipient delivery, or null for ordinary sends and when the primary record is unavailable.
-	PrimaryEmailSendID *string              `json:"primaryEmailSendId,omitempty" url:"primaryEmailSendId,omitempty"`
-	RecipientEmail     *string              `json:"recipientEmail,omitempty" url:"recipientEmail,omitempty"`
-	SenderEmail        *string              `json:"senderEmail,omitempty" url:"senderEmail,omitempty"`
-	SenderName         *string              `json:"senderName,omitempty" url:"senderName,omitempty"`
-	SendingIPAddress   *string              `json:"sendingIpAddress,omitempty" url:"sendingIpAddress,omitempty"`
-	SentAt             *time.Time           `json:"sentAt,omitempty" url:"sentAt,omitempty"`
-	SesMessageID       *string              `json:"sesMessageId,omitempty" url:"sesMessageId,omitempty"`
-	Status             *EmailSendStatus     `json:"status,omitempty" url:"status,omitempty"`
-	Subject            *string              `json:"subject,omitempty" url:"subject,omitempty"`
-	Subscriber         *EmailSendSubscriber `json:"subscriber,omitempty" url:"subscriber,omitempty"`
+	PrimaryEmailSendID *string `json:"primaryEmailSendId,omitempty" url:"primaryEmailSendId,omitempty"`
+	// One plain sentence about the outcome, with the receiver's status code when there is one. Null when outcome is null.
+	Reason         *string `json:"reason,omitempty" url:"reason,omitempty"`
+	RecipientEmail *string `json:"recipientEmail,omitempty" url:"recipientEmail,omitempty"`
+	SenderEmail    *string `json:"senderEmail,omitempty" url:"senderEmail,omitempty"`
+	SenderName     *string `json:"senderName,omitempty" url:"senderName,omitempty"`
+	// Always null. Sending IPs are not shared with customers.
+	SendingIPAddress *string              `json:"sendingIpAddress,omitempty" url:"sendingIpAddress,omitempty"`
+	SentAt           *time.Time           `json:"sentAt,omitempty" url:"sentAt,omitempty"`
+	SesMessageID     *string              `json:"sesMessageId,omitempty" url:"sesMessageId,omitempty"`
+	Status           *EmailSendStatus     `json:"status,omitempty" url:"status,omitempty"`
+	Subject          *string              `json:"subject,omitempty" url:"subject,omitempty"`
+	Subscriber       *EmailSendSubscriber `json:"subscriber,omitempty" url:"subscriber,omitempty"`
 	// Customer-owned subscriber ID captured from a single-recipient transactional send.
 	SubscriberExternalID *string                     `json:"subscriberExternalId,omitempty" url:"subscriberExternalId,omitempty"`
 	SubscriberID         *string                     `json:"subscriberId,omitempty" url:"subscriberId,omitempty"`
@@ -2912,11 +2986,25 @@ func (l *ListEmailSendsResponseEmailSendsItem) GetOriginalReplyTo() *string {
 	return l.OriginalReplyTo
 }
 
+func (l *ListEmailSendsResponseEmailSendsItem) GetOutcome() *EmailSendOutcome {
+	if l == nil {
+		return nil
+	}
+	return l.Outcome
+}
+
 func (l *ListEmailSendsResponseEmailSendsItem) GetPrimaryEmailSendID() *string {
 	if l == nil {
 		return nil
 	}
 	return l.PrimaryEmailSendID
+}
+
+func (l *ListEmailSendsResponseEmailSendsItem) GetReason() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Reason
 }
 
 func (l *ListEmailSendsResponseEmailSendsItem) GetRecipientEmail() *string {
@@ -3262,11 +3350,25 @@ func (l *ListEmailSendsResponseEmailSendsItem) SetOriginalReplyTo(originalReplyT
 	l.require(listEmailSendsResponseEmailSendsItemFieldOriginalReplyTo)
 }
 
+// SetOutcome sets the Outcome field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEmailSendsResponseEmailSendsItem) SetOutcome(outcome *EmailSendOutcome) {
+	l.Outcome = outcome
+	l.require(listEmailSendsResponseEmailSendsItemFieldOutcome)
+}
+
 // SetPrimaryEmailSendID sets the PrimaryEmailSendID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *ListEmailSendsResponseEmailSendsItem) SetPrimaryEmailSendID(primaryEmailSendID *string) {
 	l.PrimaryEmailSendID = primaryEmailSendID
 	l.require(listEmailSendsResponseEmailSendsItemFieldPrimaryEmailSendID)
+}
+
+// SetReason sets the Reason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEmailSendsResponseEmailSendsItem) SetReason(reason *string) {
+	l.Reason = reason
+	l.require(listEmailSendsResponseEmailSendsItemFieldReason)
 }
 
 // SetRecipientEmail sets the RecipientEmail field and marks it as non-optional;
