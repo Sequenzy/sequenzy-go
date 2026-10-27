@@ -8378,6 +8378,13 @@ func TestEnumAccountHealthActionKind(t *testing.T) {
 		assert.Equal(t, AccountHealthActionKind("apply_frequency_cap"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_review_subscribers", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountHealthActionKindFromString("review_subscribers")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountHealthActionKind("review_subscribers"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewAccountHealthActionKindFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -8490,6 +8497,13 @@ func TestEnumAccountHealthInsightDetector(t *testing.T) {
 		val, err := NewAccountHealthInsightDetectorFromString("neglected_subscribers")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, AccountHealthInsightDetector("neglected_subscribers"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_unengaged_signups", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountHealthInsightDetectorFromString("unengaged_signups")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountHealthInsightDetector("unengaged_signups"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {

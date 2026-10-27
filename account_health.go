@@ -568,6 +568,7 @@ const (
 	AccountHealthActionKindReviewDeliverability     AccountHealthActionKind = "review_deliverability"
 	AccountHealthActionKindOpenFrequencyCapSettings AccountHealthActionKind = "open_frequency_cap_settings"
 	AccountHealthActionKindApplyFrequencyCap        AccountHealthActionKind = "apply_frequency_cap"
+	AccountHealthActionKindReviewSubscribers        AccountHealthActionKind = "review_subscribers"
 )
 
 func NewAccountHealthActionKindFromString(s string) (AccountHealthActionKind, error) {
@@ -596,6 +597,8 @@ func NewAccountHealthActionKindFromString(s string) (AccountHealthActionKind, er
 		return AccountHealthActionKindOpenFrequencyCapSettings, nil
 	case "apply_frequency_cap":
 		return AccountHealthActionKindApplyFrequencyCap, nil
+	case "review_subscribers":
+		return AccountHealthActionKindReviewSubscribers, nil
 	}
 	var t AccountHealthActionKind
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -789,7 +792,7 @@ type AccountHealthInsight struct {
 	Actions  []*AccountHealthAction        `json:"actions,omitempty" url:"actions,omitempty"`
 	Detail   *string                       `json:"detail,omitempty" url:"detail,omitempty"`
 	Detector *AccountHealthInsightDetector `json:"detector,omitempty" url:"detector,omitempty"`
-	// Detector-specific numbers behind the finding. Event findings carry `monthlyRevenue` (USD a month the people behind the event pay) when a payment integration syncs revenue to contacts. A missing_sequence finding carries the suggested `playbook`, `name`, `goal`, `trigger` and `steps`. An over_emailing finding carries `overloadedSubscribers`, `recipients`, `peakPerDay`, `dailyThreshold`, `windowDays`, `frequencyCap` (null when off) and `sources` (type campaign, sequence or api, id, name, sends, and respectsFrequencyCap for sequences, plus enrollsEveryTime when the sequence uses unlimited re-entry and peakEnrollmentsPerPerson, the most times one person entered it in the window; the api source has an empty id and stands for marketing Send API email, which the frequency cap does not limit). A neglected_subscribers finding carries `neglectedSubscribers`, `eligibleSubscribers`, `days`, `estimated` and `sampled`.
+	// Detector-specific numbers behind the finding. Event findings carry `monthlyRevenue` (USD a month the people behind the event pay) when a payment integration syncs revenue to contacts. A missing_sequence finding carries the suggested `playbook`, `name`, `goal`, `trigger` and `steps`. An over_emailing finding carries `overloadedSubscribers`, `recipients`, `peakPerDay`, `dailyThreshold`, `windowDays`, `frequencyCap` (null when off) and `sources` (type campaign, sequence or api, id, name, sends, and respectsFrequencyCap for sequences, plus enrollsEveryTime when the sequence uses unlimited re-entry and peakEnrollmentsPerPerson, the most times one person entered it in the window; the api source has an empty id and stands for marketing Send API email, which the frequency cap does not limit). A neglected_subscribers finding carries `neglectedSubscribers`, `eligibleSubscribers`, `days`, `estimated` and `sampled`. An unengaged_signups finding carries `provider` and `providerLabel` (a consumer mailbox provider such as gmail or yahoo; business domains are never reported), `listId` and `listName` (the list these contacts joined first, null for none), `subscribers`, `emailed` (how many got at least two emails), `sends`, `engaged` (how many of them opened or clicked), `baselineEmailed` and `baselineEngaged` (the same for the other new signups), `windowDays`, `sampled` and `capped` (`true` when more people joined than were checked).
 	Evidence map[string]any `json:"evidence,omitempty" url:"evidence,omitempty"`
 	// Included in Get Account Health only. Your own answer to "was this useful?" for this finding (the API key owner's), or null when you have not answered. Other responses that return an insight leave it out.
 	Feedback    *AccountHealthInsightFeedback `json:"feedback,omitempty" url:"feedback,omitempty"`
@@ -1156,6 +1159,7 @@ const (
 	AccountHealthInsightDetectorMissingSequence              AccountHealthInsightDetector = "missing_sequence"
 	AccountHealthInsightDetectorOverEmailing                 AccountHealthInsightDetector = "over_emailing"
 	AccountHealthInsightDetectorNeglectedSubscribers         AccountHealthInsightDetector = "neglected_subscribers"
+	AccountHealthInsightDetectorUnengagedSignups             AccountHealthInsightDetector = "unengaged_signups"
 )
 
 func NewAccountHealthInsightDetectorFromString(s string) (AccountHealthInsightDetector, error) {
@@ -1180,6 +1184,8 @@ func NewAccountHealthInsightDetectorFromString(s string) (AccountHealthInsightDe
 		return AccountHealthInsightDetectorOverEmailing, nil
 	case "neglected_subscribers":
 		return AccountHealthInsightDetectorNeglectedSubscribers, nil
+	case "unengaged_signups":
+		return AccountHealthInsightDetectorUnengagedSignups, nil
 	}
 	var t AccountHealthInsightDetector
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
