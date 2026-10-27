@@ -21,7 +21,7 @@ type AddWebsitesRequest struct {
 	Domain string `json:"domain" url:"-"`
 	// Return-path (MAIL FROM) subdomain label. Defaults to rp. New domains also get a second return path, usually <label>2 (rp2 by default); publish the returned names. One DNS label of 1 to 63 letters, numbers or hyphens; inbound is reserved. Applies only when the domain is created; re-adding an existing domain returns its stored records.
 	MailFromPrefix *string `json:"mailFromPrefix,omitempty" url:"-"`
-	// Label of the company tracking domain created on the domain's root (<label>.<root>) when the company has none yet; ignored otherwise. Defaults to links. When the hostname is taken, the label followed by 2 to 5 is tried (for example links2); when none is free, the domain is added without a tracking domain. A label that would land on the bounce hostname returns 400. Change the tracking domain later with PUT /tracking-domain.
+	// Label of the company tracking domain created under the domain (<label>.<domain>, or <label>.<root> when it equals mailFromPrefix) when the company has none yet; ignored otherwise. Defaults to links. When the hostname is taken, the label followed by 2 to 5 is tried (for example links2); when none is free, the domain is added without a tracking domain. A label that would land on the bounce hostname returns 400. Change the tracking domain later with PUT /tracking-domain.
 	TrackingPrefix *string `json:"trackingPrefix,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
