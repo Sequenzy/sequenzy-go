@@ -101,6 +101,14 @@ func TestSettersMarkExplicitCheckCampaignsRequest(t *testing.T) {
 }
 
 func TestSettersCreateCampaignsRequest(t *testing.T) {
+	t.Run("SetAttachments", func(t *testing.T) {
+		obj := &CreateCampaignsRequest{}
+		var fernTestValueAttachments []*CampaignAttachmentInput
+		obj.SetAttachments(fernTestValueAttachments)
+		assert.Equal(t, fernTestValueAttachments, obj.Attachments)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetBlocks", func(t *testing.T) {
 		obj := &CreateCampaignsRequest{}
 		var fernTestValueBlocks []map[string]any
@@ -320,6 +328,37 @@ func TestSettersCreateCampaignsRequest(t *testing.T) {
 }
 
 func TestSettersMarkExplicitCreateCampaignsRequest(t *testing.T) {
+	t.Run("SetAttachments_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateCampaignsRequest{}
+		var fernTestValueAttachments []*CampaignAttachmentInput
+
+		// Act
+		obj.SetAttachments(fernTestValueAttachments)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetBlocks_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -4084,6 +4123,293 @@ func TestSettersMarkExplicitSendTestCampaignsRequest(t *testing.T) {
 
 }
 
+func TestSettersCampaignAttachmentInput(t *testing.T) {
+	t.Run("SetContent", func(t *testing.T) {
+		obj := &CampaignAttachmentInput{}
+		var fernTestValueContent *string
+		obj.SetContent(fernTestValueContent)
+		assert.Equal(t, fernTestValueContent, obj.Content)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetContentType", func(t *testing.T) {
+		obj := &CampaignAttachmentInput{}
+		var fernTestValueContentType *string
+		obj.SetContentType(fernTestValueContentType)
+		assert.Equal(t, fernTestValueContentType, obj.ContentType)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetFilename", func(t *testing.T) {
+		obj := &CampaignAttachmentInput{}
+		var fernTestValueFilename string
+		obj.SetFilename(fernTestValueFilename)
+		assert.Equal(t, fernTestValueFilename, obj.Filename)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetPath", func(t *testing.T) {
+		obj := &CampaignAttachmentInput{}
+		var fernTestValuePath *string
+		obj.SetPath(fernTestValuePath)
+		assert.Equal(t, fernTestValuePath, obj.Path)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersCampaignAttachmentInput(t *testing.T) {
+	t.Run("GetContent", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CampaignAttachmentInput{}
+		var expected *string
+		obj.Content = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetContent(), "getter should return the property value")
+	})
+
+	t.Run("GetContent_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CampaignAttachmentInput{}
+		obj.Content = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetContent(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetContent_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CampaignAttachmentInput
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetContent() // Should return zero value
+	})
+
+	t.Run("GetContentType", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CampaignAttachmentInput{}
+		var expected *string
+		obj.ContentType = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetContentType(), "getter should return the property value")
+	})
+
+	t.Run("GetContentType_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CampaignAttachmentInput{}
+		obj.ContentType = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetContentType(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetContentType_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CampaignAttachmentInput
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetContentType() // Should return zero value
+	})
+
+	t.Run("GetFilename", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CampaignAttachmentInput{}
+		var expected string
+		obj.Filename = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetFilename(), "getter should return the property value")
+	})
+
+	t.Run("GetFilename_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CampaignAttachmentInput
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetFilename() // Should return zero value
+	})
+
+	t.Run("GetPath", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CampaignAttachmentInput{}
+		var expected *string
+		obj.Path = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPath(), "getter should return the property value")
+	})
+
+	t.Run("GetPath_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CampaignAttachmentInput{}
+		obj.Path = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetPath(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetPath_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CampaignAttachmentInput
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPath() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitCampaignAttachmentInput(t *testing.T) {
+	t.Run("SetContent_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CampaignAttachmentInput{}
+		var fernTestValueContent *string
+
+		// Act
+		obj.SetContent(fernTestValueContent)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetContentType_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CampaignAttachmentInput{}
+		var fernTestValueContentType *string
+
+		// Act
+		obj.SetContentType(fernTestValueContentType)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetFilename_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CampaignAttachmentInput{}
+		var fernTestValueFilename string
+
+		// Act
+		obj.SetFilename(fernTestValueFilename)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPath_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CampaignAttachmentInput{}
+		var fernTestValuePath *string
+
+		// Act
+		obj.SetPath(fernTestValuePath)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
 func TestSettersCampaignDetail(t *testing.T) {
 	t.Run("SetCreatedAt", func(t *testing.T) {
 		obj := &CampaignDetail{}
@@ -4242,6 +4568,14 @@ func TestSettersCampaignDetail(t *testing.T) {
 		var fernTestValueType *CampaignChannel
 		obj.SetType(fernTestValueType)
 		assert.Equal(t, fernTestValueType, obj.Type)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetAttachments", func(t *testing.T) {
+		obj := &CampaignDetail{}
+		var fernTestValueAttachments []*StoredCampaignAttachment
+		obj.SetAttachments(fernTestValueAttachments)
+		assert.Equal(t, fernTestValueAttachments, obj.Attachments)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -5026,6 +5360,39 @@ func TestGettersCampaignDetail(t *testing.T) {
 			}
 		}()
 		_ = obj.GetType() // Should return zero value
+	})
+
+	t.Run("GetAttachments", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CampaignDetail{}
+		var expected []*StoredCampaignAttachment
+		obj.Attachments = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAttachments(), "getter should return the property value")
+	})
+
+	t.Run("GetAttachments_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CampaignDetail{}
+		obj.Attachments = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetAttachments(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetAttachments_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CampaignDetail
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAttachments() // Should return zero value
 	})
 
 	t.Run("GetBccEmails", func(t *testing.T) {
@@ -6123,6 +6490,37 @@ func TestSettersMarkExplicitCampaignDetail(t *testing.T) {
 
 		// Act
 		obj.SetType(fernTestValueType)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetAttachments_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CampaignDetail{}
+		var fernTestValueAttachments []*StoredCampaignAttachment
+
+		// Act
+		obj.SetAttachments(fernTestValueAttachments)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -11769,6 +12167,139 @@ func TestSettersMarkExplicitEmailVariationResponse(t *testing.T) {
 
 }
 
+func TestSettersIgnoredFieldsItem(t *testing.T) {
+	t.Run("SetPath", func(t *testing.T) {
+		obj := &IgnoredFieldsItem{}
+		var fernTestValuePath string
+		obj.SetPath(fernTestValuePath)
+		assert.Equal(t, fernTestValuePath, obj.Path)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetReason", func(t *testing.T) {
+		obj := &IgnoredFieldsItem{}
+		var fernTestValueReason IgnoredFieldsItemReason
+		obj.SetReason(fernTestValueReason)
+		assert.Equal(t, fernTestValueReason, obj.Reason)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersIgnoredFieldsItem(t *testing.T) {
+	t.Run("GetPath", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &IgnoredFieldsItem{}
+		var expected string
+		obj.Path = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPath(), "getter should return the property value")
+	})
+
+	t.Run("GetPath_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *IgnoredFieldsItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPath() // Should return zero value
+	})
+
+	t.Run("GetReason", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &IgnoredFieldsItem{}
+		var expected IgnoredFieldsItemReason
+		obj.Reason = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetReason(), "getter should return the property value")
+	})
+
+	t.Run("GetReason_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *IgnoredFieldsItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetReason() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitIgnoredFieldsItem(t *testing.T) {
+	t.Run("SetPath_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &IgnoredFieldsItem{}
+		var fernTestValuePath string
+
+		// Act
+		obj.SetPath(fernTestValuePath)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetReason_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &IgnoredFieldsItem{}
+		var fernTestValueReason IgnoredFieldsItemReason
+
+		// Act
+		obj.SetReason(fernTestValueReason)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
 func TestSettersResolvedAudienceEntity(t *testing.T) {
 	t.Run("SetID", func(t *testing.T) {
 		obj := &ResolvedAudienceEntity{}
@@ -13164,6 +13695,139 @@ func TestSettersMarkExplicitResolvedCampaignAudience(t *testing.T) {
 
 }
 
+func TestSettersStoredCampaignAttachment(t *testing.T) {
+	t.Run("SetFilename", func(t *testing.T) {
+		obj := &StoredCampaignAttachment{}
+		var fernTestValueFilename string
+		obj.SetFilename(fernTestValueFilename)
+		assert.Equal(t, fernTestValueFilename, obj.Filename)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetPath", func(t *testing.T) {
+		obj := &StoredCampaignAttachment{}
+		var fernTestValuePath string
+		obj.SetPath(fernTestValuePath)
+		assert.Equal(t, fernTestValuePath, obj.Path)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersStoredCampaignAttachment(t *testing.T) {
+	t.Run("GetFilename", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &StoredCampaignAttachment{}
+		var expected string
+		obj.Filename = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetFilename(), "getter should return the property value")
+	})
+
+	t.Run("GetFilename_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *StoredCampaignAttachment
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetFilename() // Should return zero value
+	})
+
+	t.Run("GetPath", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &StoredCampaignAttachment{}
+		var expected string
+		obj.Path = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPath(), "getter should return the property value")
+	})
+
+	t.Run("GetPath_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *StoredCampaignAttachment
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPath() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitStoredCampaignAttachment(t *testing.T) {
+	t.Run("SetFilename_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &StoredCampaignAttachment{}
+		var fernTestValueFilename string
+
+		// Act
+		obj.SetFilename(fernTestValueFilename)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPath_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &StoredCampaignAttachment{}
+		var fernTestValuePath string
+
+		// Act
+		obj.SetPath(fernTestValuePath)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
 func TestSettersCancelCampaignsResponse(t *testing.T) {
 	t.Run("SetCampaign", func(t *testing.T) {
 		obj := &CancelCampaignsResponse{}
@@ -13326,6 +13990,14 @@ func TestSettersCreateCampaignsResponse(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetIgnoredFields", func(t *testing.T) {
+		obj := &CreateCampaignsResponse{}
+		var fernTestValueIgnoredFields *IgnoredFields
+		obj.SetIgnoredFields(fernTestValueIgnoredFields)
+		assert.Equal(t, fernTestValueIgnoredFields, obj.IgnoredFields)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetSuccess", func(t *testing.T) {
 		obj := &CreateCampaignsResponse{}
 		var fernTestValueSuccess *bool
@@ -13376,6 +14048,39 @@ func TestGettersCreateCampaignsResponse(t *testing.T) {
 			}
 		}()
 		_ = obj.GetCampaign() // Should return zero value
+	})
+
+	t.Run("GetIgnoredFields", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateCampaignsResponse{}
+		var expected *IgnoredFields
+		obj.IgnoredFields = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetIgnoredFields(), "getter should return the property value")
+	})
+
+	t.Run("GetIgnoredFields_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateCampaignsResponse{}
+		obj.IgnoredFields = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetIgnoredFields(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetIgnoredFields_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateCampaignsResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetIgnoredFields() // Should return zero value
 	})
 
 	t.Run("GetSuccess", func(t *testing.T) {
@@ -13478,6 +14183,37 @@ func TestSettersMarkExplicitCreateCampaignsResponse(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetIgnoredFields_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateCampaignsResponse{}
+		var fernTestValueIgnoredFields *IgnoredFields
+
+		// Act
+		obj.SetIgnoredFields(fernTestValueIgnoredFields)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetSuccess_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -13543,6 +14279,14 @@ func TestSettersMarkExplicitCreateCampaignsResponse(t *testing.T) {
 }
 
 func TestSettersCreateCampaignsResponseCampaign(t *testing.T) {
+	t.Run("SetAttachments", func(t *testing.T) {
+		obj := &CreateCampaignsResponseCampaign{}
+		var fernTestValueAttachments []*StoredCampaignAttachment
+		obj.SetAttachments(fernTestValueAttachments)
+		assert.Equal(t, fernTestValueAttachments, obj.Attachments)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetEmailID", func(t *testing.T) {
 		obj := &CreateCampaignsResponseCampaign{}
 		var fernTestValueEmailID *string
@@ -13690,6 +14434,39 @@ func TestSettersCreateCampaignsResponseCampaign(t *testing.T) {
 }
 
 func TestGettersCreateCampaignsResponseCampaign(t *testing.T) {
+	t.Run("GetAttachments", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateCampaignsResponseCampaign{}
+		var expected []*StoredCampaignAttachment
+		obj.Attachments = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAttachments(), "getter should return the property value")
+	})
+
+	t.Run("GetAttachments_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateCampaignsResponseCampaign{}
+		obj.Attachments = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetAttachments(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetAttachments_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateCampaignsResponseCampaign
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAttachments() // Should return zero value
+	})
+
 	t.Run("GetEmailID", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -14287,6 +15064,37 @@ func TestGettersCreateCampaignsResponseCampaign(t *testing.T) {
 }
 
 func TestSettersMarkExplicitCreateCampaignsResponseCampaign(t *testing.T) {
+	t.Run("SetAttachments_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateCampaignsResponseCampaign{}
+		var fernTestValueAttachments []*StoredCampaignAttachment
+
+		// Act
+		obj.SetAttachments(fernTestValueAttachments)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetEmailID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -19318,6 +20126,14 @@ func TestSettersMarkExplicitDuplicateCampaignsResponse(t *testing.T) {
 }
 
 func TestSettersDuplicateCampaignsResponseCampaign(t *testing.T) {
+	t.Run("SetAttachments", func(t *testing.T) {
+		obj := &DuplicateCampaignsResponseCampaign{}
+		var fernTestValueAttachments []*StoredCampaignAttachment
+		obj.SetAttachments(fernTestValueAttachments)
+		assert.Equal(t, fernTestValueAttachments, obj.Attachments)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetBccEmails", func(t *testing.T) {
 		obj := &DuplicateCampaignsResponseCampaign{}
 		var fernTestValueBccEmails []string
@@ -19601,6 +20417,39 @@ func TestSettersDuplicateCampaignsResponseCampaign(t *testing.T) {
 }
 
 func TestGettersDuplicateCampaignsResponseCampaign(t *testing.T) {
+	t.Run("GetAttachments", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &DuplicateCampaignsResponseCampaign{}
+		var expected []*StoredCampaignAttachment
+		obj.Attachments = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAttachments(), "getter should return the property value")
+	})
+
+	t.Run("GetAttachments_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &DuplicateCampaignsResponseCampaign{}
+		obj.Attachments = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetAttachments(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetAttachments_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *DuplicateCampaignsResponseCampaign
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAttachments() // Should return zero value
+	})
+
 	t.Run("GetBccEmails", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -20759,6 +21608,37 @@ func TestGettersDuplicateCampaignsResponseCampaign(t *testing.T) {
 }
 
 func TestSettersMarkExplicitDuplicateCampaignsResponseCampaign(t *testing.T) {
+	t.Run("SetAttachments_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &DuplicateCampaignsResponseCampaign{}
+		var fernTestValueAttachments []*StoredCampaignAttachment
+
+		// Act
+		obj.SetAttachments(fernTestValueAttachments)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetBccEmails_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -25193,6 +26073,14 @@ func TestSettersMarkExplicitResendToNonOpenersCampaignsResponse(t *testing.T) {
 }
 
 func TestSettersResendToNonOpenersCampaignsResponseCampaign(t *testing.T) {
+	t.Run("SetAttachments", func(t *testing.T) {
+		obj := &ResendToNonOpenersCampaignsResponseCampaign{}
+		var fernTestValueAttachments []*StoredCampaignAttachment
+		obj.SetAttachments(fernTestValueAttachments)
+		assert.Equal(t, fernTestValueAttachments, obj.Attachments)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetBccEmails", func(t *testing.T) {
 		obj := &ResendToNonOpenersCampaignsResponseCampaign{}
 		var fernTestValueBccEmails []string
@@ -25476,6 +26364,39 @@ func TestSettersResendToNonOpenersCampaignsResponseCampaign(t *testing.T) {
 }
 
 func TestGettersResendToNonOpenersCampaignsResponseCampaign(t *testing.T) {
+	t.Run("GetAttachments", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ResendToNonOpenersCampaignsResponseCampaign{}
+		var expected []*StoredCampaignAttachment
+		obj.Attachments = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAttachments(), "getter should return the property value")
+	})
+
+	t.Run("GetAttachments_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ResendToNonOpenersCampaignsResponseCampaign{}
+		obj.Attachments = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetAttachments(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetAttachments_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ResendToNonOpenersCampaignsResponseCampaign
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAttachments() // Should return zero value
+	})
+
 	t.Run("GetBccEmails", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -26634,6 +27555,37 @@ func TestGettersResendToNonOpenersCampaignsResponseCampaign(t *testing.T) {
 }
 
 func TestSettersMarkExplicitResendToNonOpenersCampaignsResponseCampaign(t *testing.T) {
+	t.Run("SetAttachments_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ResendToNonOpenersCampaignsResponseCampaign{}
+		var fernTestValueAttachments []*StoredCampaignAttachment
+
+		// Act
+		obj.SetAttachments(fernTestValueAttachments)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetBccEmails_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -29914,6 +30866,14 @@ func TestSettersUpdateCampaignsResponse(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetIgnoredFields", func(t *testing.T) {
+		obj := &UpdateCampaignsResponse{}
+		var fernTestValueIgnoredFields *IgnoredFields
+		obj.SetIgnoredFields(fernTestValueIgnoredFields)
+		assert.Equal(t, fernTestValueIgnoredFields, obj.IgnoredFields)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetSuccess", func(t *testing.T) {
 		obj := &UpdateCampaignsResponse{}
 		var fernTestValueSuccess bool
@@ -29964,6 +30924,39 @@ func TestGettersUpdateCampaignsResponse(t *testing.T) {
 			}
 		}()
 		_ = obj.GetCampaign() // Should return zero value
+	})
+
+	t.Run("GetIgnoredFields", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateCampaignsResponse{}
+		var expected *IgnoredFields
+		obj.IgnoredFields = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetIgnoredFields(), "getter should return the property value")
+	})
+
+	t.Run("GetIgnoredFields_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateCampaignsResponse{}
+		obj.IgnoredFields = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetIgnoredFields(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetIgnoredFields_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateCampaignsResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetIgnoredFields() // Should return zero value
 	})
 
 	t.Run("GetSuccess", func(t *testing.T) {
@@ -30056,6 +31049,37 @@ func TestSettersMarkExplicitUpdateCampaignsResponse(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetIgnoredFields_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateCampaignsResponse{}
+		var fernTestValueIgnoredFields *IgnoredFields
+
+		// Act
+		obj.SetIgnoredFields(fernTestValueIgnoredFields)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetSuccess_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -30121,6 +31145,14 @@ func TestSettersMarkExplicitUpdateCampaignsResponse(t *testing.T) {
 }
 
 func TestSettersUpdateCampaignsResponseCampaign(t *testing.T) {
+	t.Run("SetAttachments", func(t *testing.T) {
+		obj := &UpdateCampaignsResponseCampaign{}
+		var fernTestValueAttachments []*StoredCampaignAttachment
+		obj.SetAttachments(fernTestValueAttachments)
+		assert.Equal(t, fernTestValueAttachments, obj.Attachments)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetBccEmails", func(t *testing.T) {
 		obj := &UpdateCampaignsResponseCampaign{}
 		var fernTestValueBccEmails []string
@@ -30252,6 +31284,39 @@ func TestSettersUpdateCampaignsResponseCampaign(t *testing.T) {
 }
 
 func TestGettersUpdateCampaignsResponseCampaign(t *testing.T) {
+	t.Run("GetAttachments", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateCampaignsResponseCampaign{}
+		var expected []*StoredCampaignAttachment
+		obj.Attachments = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAttachments(), "getter should return the property value")
+	})
+
+	t.Run("GetAttachments_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateCampaignsResponseCampaign{}
+		obj.Attachments = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetAttachments(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetAttachments_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateCampaignsResponseCampaign
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAttachments() // Should return zero value
+	})
+
 	t.Run("GetBccEmails", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -30783,6 +31848,37 @@ func TestGettersUpdateCampaignsResponseCampaign(t *testing.T) {
 }
 
 func TestSettersMarkExplicitUpdateCampaignsResponseCampaign(t *testing.T) {
+	t.Run("SetAttachments_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateCampaignsResponseCampaign{}
+		var fernTestValueAttachments []*StoredCampaignAttachment
+
+		// Act
+		obj.SetAttachments(fernTestValueAttachments)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetBccEmails_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -31866,6 +32962,14 @@ func TestSettersUpdateCampaignsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetAttachments", func(t *testing.T) {
+		obj := &UpdateCampaignsRequest{}
+		var fernTestValueAttachments []*CampaignAttachmentInput
+		obj.SetAttachments(fernTestValueAttachments)
+		assert.Equal(t, fernTestValueAttachments, obj.Attachments)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetBccEmails", func(t *testing.T) {
 		obj := &UpdateCampaignsRequest{}
 		var fernTestValueBccEmails []string
@@ -32085,6 +33189,37 @@ func TestSettersMarkExplicitUpdateCampaignsRequest(t *testing.T) {
 
 		// Act
 		obj.SetCampaignID(fernTestValueCampaignID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetAttachments_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateCampaignsRequest{}
+		var fernTestValueAttachments []*CampaignAttachmentInput
+
+		// Act
+		obj.SetAttachments(fernTestValueAttachments)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -33519,6 +34654,39 @@ func TestSettersMarkExplicitUseVariationCampaignsRequest(t *testing.T) {
 
 }
 
+func TestJSONMarshalingCampaignAttachmentInput(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CampaignAttachmentInput{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled CampaignAttachmentInput
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj CampaignAttachmentInput
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj CampaignAttachmentInput
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingCampaignDetail(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -34575,6 +35743,39 @@ func TestJSONMarshalingGetCampaignsResponse(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingIgnoredFieldsItem(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &IgnoredFieldsItem{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled IgnoredFieldsItem
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj IgnoredFieldsItem
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj IgnoredFieldsItem
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingListCampaignsResponse(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -35169,6 +36370,39 @@ func TestJSONMarshalingSendTestCampaignsResponse(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingStoredCampaignAttachment(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &StoredCampaignAttachment{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled StoredCampaignAttachment
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj StoredCampaignAttachment
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj StoredCampaignAttachment
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingUnscheduleCampaignsResponse(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -35364,6 +36598,22 @@ func TestJSONMarshalingUseVariationCampaignsResponse(t *testing.T) {
 		var obj UseVariationCampaignsResponse
 		err := json.Unmarshal([]byte(`{}`), &obj)
 		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestStringCampaignAttachmentInput(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &CampaignAttachmentInput{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CampaignAttachmentInput
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
 }
 
@@ -35879,6 +37129,22 @@ func TestStringGetCampaignsResponse(t *testing.T) {
 	})
 }
 
+func TestStringIgnoredFieldsItem(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &IgnoredFieldsItem{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *IgnoredFieldsItem
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
 func TestStringListCampaignsResponse(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
@@ -36162,6 +37428,22 @@ func TestStringSendTestCampaignsResponse(t *testing.T) {
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *SendTestCampaignsResponse
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringStoredCampaignAttachment(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &StoredCampaignAttachment{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *StoredCampaignAttachment
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -37164,6 +38446,35 @@ func TestEnumGenerateVariationsCampaignsRequestStyle(t *testing.T) {
 	})
 }
 
+func TestEnumIgnoredFieldsItemReason(t *testing.T) {
+	t.Run("NewFromString_unknown_field", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewIgnoredFieldsItemReasonFromString("unknown_field")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, IgnoredFieldsItemReason("unknown_field"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_not_an_object", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewIgnoredFieldsItemReasonFromString("not_an_object")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, IgnoredFieldsItemReason("not_an_object"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewIgnoredFieldsItemReasonFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewIgnoredFieldsItemReasonFromString("unknown_field")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumListCampaignsRequestStatus(t *testing.T) {
 	t.Run("NewFromString_draft", func(t *testing.T) {
 		t.Parallel()
@@ -37448,6 +38759,29 @@ func TestEnumUpdateCampaignsRequestEmailPreset(t *testing.T) {
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
 		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestExtraPropertiesCampaignAttachmentInput(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &CampaignAttachmentInput{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CampaignAttachmentInput
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})
 }
 
@@ -38187,6 +39521,29 @@ func TestExtraPropertiesGetCampaignsResponse(t *testing.T) {
 	})
 }
 
+func TestExtraPropertiesIgnoredFieldsItem(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &IgnoredFieldsItem{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *IgnoredFieldsItem
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
 func TestExtraPropertiesListCampaignsResponse(t *testing.T) {
 	t.Run("GetExtraProperties", func(t *testing.T) {
 		t.Parallel()
@@ -38596,6 +39953,29 @@ func TestExtraPropertiesSendTestCampaignsResponse(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *SendTestCampaignsResponse
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesStoredCampaignAttachment(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &StoredCampaignAttachment{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *StoredCampaignAttachment
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})

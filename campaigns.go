@@ -77,36 +77,39 @@ func (c *CheckCampaignsRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
-	createCampaignsRequestFieldBlocks          = big.NewInt(1 << 0)
-	createCampaignsRequestFieldCampaignData    = big.NewInt(1 << 1)
-	createCampaignsRequestFieldComputedLists   = big.NewInt(1 << 2)
-	createCampaignsRequestFieldEmailPreset     = big.NewInt(1 << 3)
-	createCampaignsRequestFieldFromEmail       = big.NewInt(1 << 4)
-	createCampaignsRequestFieldFromName        = big.NewInt(1 << 5)
-	createCampaignsRequestFieldHTML            = big.NewInt(1 << 6)
-	createCampaignsRequestFieldLabel           = big.NewInt(1 << 7)
-	createCampaignsRequestFieldLabels          = big.NewInt(1 << 8)
-	createCampaignsRequestFieldListIDs         = big.NewInt(1 << 9)
-	createCampaignsRequestFieldName            = big.NewInt(1 << 10)
-	createCampaignsRequestFieldPreheaderText   = big.NewInt(1 << 11)
-	createCampaignsRequestFieldPreviewText     = big.NewInt(1 << 12)
-	createCampaignsRequestFieldPrompt          = big.NewInt(1 << 13)
-	createCampaignsRequestFieldReplyProfileID  = big.NewInt(1 << 14)
-	createCampaignsRequestFieldReplyTo         = big.NewInt(1 << 15)
-	createCampaignsRequestFieldReplyToName     = big.NewInt(1 << 16)
-	createCampaignsRequestFieldSegmentID       = big.NewInt(1 << 17)
-	createCampaignsRequestFieldSenderProfileID = big.NewInt(1 << 18)
-	createCampaignsRequestFieldSentAt          = big.NewInt(1 << 19)
-	createCampaignsRequestFieldStatus          = big.NewInt(1 << 20)
-	createCampaignsRequestFieldStyle           = big.NewInt(1 << 21)
-	createCampaignsRequestFieldSubject         = big.NewInt(1 << 22)
-	createCampaignsRequestFieldTargetLists     = big.NewInt(1 << 23)
-	createCampaignsRequestFieldTemplateID      = big.NewInt(1 << 24)
-	createCampaignsRequestFieldTone            = big.NewInt(1 << 25)
-	createCampaignsRequestFieldTrackingCode    = big.NewInt(1 << 26)
+	createCampaignsRequestFieldAttachments     = big.NewInt(1 << 0)
+	createCampaignsRequestFieldBlocks          = big.NewInt(1 << 1)
+	createCampaignsRequestFieldCampaignData    = big.NewInt(1 << 2)
+	createCampaignsRequestFieldComputedLists   = big.NewInt(1 << 3)
+	createCampaignsRequestFieldEmailPreset     = big.NewInt(1 << 4)
+	createCampaignsRequestFieldFromEmail       = big.NewInt(1 << 5)
+	createCampaignsRequestFieldFromName        = big.NewInt(1 << 6)
+	createCampaignsRequestFieldHTML            = big.NewInt(1 << 7)
+	createCampaignsRequestFieldLabel           = big.NewInt(1 << 8)
+	createCampaignsRequestFieldLabels          = big.NewInt(1 << 9)
+	createCampaignsRequestFieldListIDs         = big.NewInt(1 << 10)
+	createCampaignsRequestFieldName            = big.NewInt(1 << 11)
+	createCampaignsRequestFieldPreheaderText   = big.NewInt(1 << 12)
+	createCampaignsRequestFieldPreviewText     = big.NewInt(1 << 13)
+	createCampaignsRequestFieldPrompt          = big.NewInt(1 << 14)
+	createCampaignsRequestFieldReplyProfileID  = big.NewInt(1 << 15)
+	createCampaignsRequestFieldReplyTo         = big.NewInt(1 << 16)
+	createCampaignsRequestFieldReplyToName     = big.NewInt(1 << 17)
+	createCampaignsRequestFieldSegmentID       = big.NewInt(1 << 18)
+	createCampaignsRequestFieldSenderProfileID = big.NewInt(1 << 19)
+	createCampaignsRequestFieldSentAt          = big.NewInt(1 << 20)
+	createCampaignsRequestFieldStatus          = big.NewInt(1 << 21)
+	createCampaignsRequestFieldStyle           = big.NewInt(1 << 22)
+	createCampaignsRequestFieldSubject         = big.NewInt(1 << 23)
+	createCampaignsRequestFieldTargetLists     = big.NewInt(1 << 24)
+	createCampaignsRequestFieldTemplateID      = big.NewInt(1 << 25)
+	createCampaignsRequestFieldTone            = big.NewInt(1 << 26)
+	createCampaignsRequestFieldTrackingCode    = big.NewInt(1 << 27)
 )
 
 type CreateCampaignsRequest struct {
+	// Files sent with every recipient's email, including CC/BCC copies and test sends. Up to 10 files and 5MB in total. Every entry is validated before any Base64 content is stored. URL files are fetched and size-checked when sending starts; if one cannot be loaded, nothing is sent and the campaign returns to draft.
+	Attachments []*CampaignAttachmentInput `json:"attachments,omitempty" url:"-"`
 	// Sequenzy email blocks. Mutually exclusive with html. Put visual styling under styles; top-level style keys such as backgroundColor, backgroundOpacity, borderColor, borderWidth, and borderRadius are normalized into styles.
 	Blocks        []map[string]any `json:"blocks,omitempty" url:"-"`
 	CampaignData  map[string]any   `json:"campaignData,omitempty" url:"-"`
@@ -168,6 +171,13 @@ func (c *CreateCampaignsRequest) require(field *big.Int) {
 		c.explicitFields = big.NewInt(0)
 	}
 	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetAttachments sets the Attachments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateCampaignsRequest) SetAttachments(attachments []*CampaignAttachmentInput) {
+	c.Attachments = attachments
+	c.require(createCampaignsRequestFieldAttachments)
 }
 
 // SetBlocks sets the Blocks field and marks it as non-optional;
@@ -1757,6 +1767,143 @@ func (s *SendTestCampaignsRequest) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
+// A file sent with every recipient's campaign email. Provide Base64 `content` or a public `path` URL, not both. Base64 content is stored by Sequenzy and returned as a `path`. Inline images (`contentId`) are not supported on campaigns.
+var (
+	campaignAttachmentInputFieldContent     = big.NewInt(1 << 0)
+	campaignAttachmentInputFieldContentType = big.NewInt(1 << 1)
+	campaignAttachmentInputFieldFilename    = big.NewInt(1 << 2)
+	campaignAttachmentInputFieldPath        = big.NewInt(1 << 3)
+)
+
+type CampaignAttachmentInput struct {
+	// Base64-encoded file content (mutually exclusive with path). Counts toward the 5MB campaign total.
+	Content *string `json:"content,omitempty" url:"content,omitempty"`
+	// MIME type for Base64 content. Defaults to the type implied by the filename extension. PDF, Office documents, ZIP, image, audio, video and text files are accepted; HTML and SVG are not. Not accepted with path.
+	ContentType *string `json:"contentType,omitempty" url:"contentType,omitempty"`
+	// Filename shown in the recipient's email client, including the extension. Merge tags are not supported.
+	Filename string `json:"filename" url:"filename"`
+	// Public HTTP(S) URL fetched when the campaign starts sending (mutually exclusive with content).
+	Path *string `json:"path,omitempty" url:"path,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CampaignAttachmentInput) GetContent() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Content
+}
+
+func (c *CampaignAttachmentInput) GetContentType() *string {
+	if c == nil {
+		return nil
+	}
+	return c.ContentType
+}
+
+func (c *CampaignAttachmentInput) GetFilename() string {
+	if c == nil {
+		return ""
+	}
+	return c.Filename
+}
+
+func (c *CampaignAttachmentInput) GetPath() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Path
+}
+
+func (c *CampaignAttachmentInput) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CampaignAttachmentInput) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetContent sets the Content field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CampaignAttachmentInput) SetContent(content *string) {
+	c.Content = content
+	c.require(campaignAttachmentInputFieldContent)
+}
+
+// SetContentType sets the ContentType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CampaignAttachmentInput) SetContentType(contentType *string) {
+	c.ContentType = contentType
+	c.require(campaignAttachmentInputFieldContentType)
+}
+
+// SetFilename sets the Filename field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CampaignAttachmentInput) SetFilename(filename string) {
+	c.Filename = filename
+	c.require(campaignAttachmentInputFieldFilename)
+}
+
+// SetPath sets the Path field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CampaignAttachmentInput) SetPath(path *string) {
+	c.Path = path
+	c.require(campaignAttachmentInputFieldPath)
+}
+
+func (c *CampaignAttachmentInput) UnmarshalJSON(data []byte) error {
+	type unmarshaler CampaignAttachmentInput
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CampaignAttachmentInput(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CampaignAttachmentInput) MarshalJSON() ([]byte, error) {
+	type embed CampaignAttachmentInput
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CampaignAttachmentInput) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
 // Delivery channel. SMS campaigns are created and managed from the dashboard, and push campaigns through the /push/campaigns endpoints: they carry no email, so `subject` and `blocks` come back empty, and the email-only endpoints (update, schedule, pause, resume, duplicate, resend to non-openers) reject them. Campaign stats and campaign events reject them too, since both read email engagement. Cancelling a push campaign through POST /campaigns/{campaignId}/cancel uses the push lifecycle.
 type CampaignChannel string
 
@@ -1804,21 +1951,22 @@ var (
 	campaignDetailFieldSubject                 = big.NewInt(1 << 17)
 	campaignDetailFieldTrackingCode            = big.NewInt(1 << 18)
 	campaignDetailFieldType                    = big.NewInt(1 << 19)
-	campaignDetailFieldBccEmails               = big.NewInt(1 << 20)
-	campaignDetailFieldBlocks                  = big.NewInt(1 << 21)
-	campaignDetailFieldCampaignData            = big.NewInt(1 << 22)
-	campaignDetailFieldCcEmails                = big.NewInt(1 << 23)
-	campaignDetailFieldComputedLists           = big.NewInt(1 << 24)
-	campaignDetailFieldFromEmail               = big.NewInt(1 << 25)
-	campaignDetailFieldFromName                = big.NewInt(1 << 26)
-	campaignDetailFieldPreheader               = big.NewInt(1 << 27)
-	campaignDetailFieldPreheaderText           = big.NewInt(1 << 28)
-	campaignDetailFieldReplyProfileID          = big.NewInt(1 << 29)
-	campaignDetailFieldReplyToEmail            = big.NewInt(1 << 30)
-	campaignDetailFieldReplyToName             = big.NewInt(1 << 31)
-	campaignDetailFieldSenderProfileID         = big.NewInt(1 << 32)
-	campaignDetailFieldShareURL                = big.NewInt(1 << 33)
-	campaignDetailFieldTargetLists             = big.NewInt(1 << 34)
+	campaignDetailFieldAttachments             = big.NewInt(1 << 20)
+	campaignDetailFieldBccEmails               = big.NewInt(1 << 21)
+	campaignDetailFieldBlocks                  = big.NewInt(1 << 22)
+	campaignDetailFieldCampaignData            = big.NewInt(1 << 23)
+	campaignDetailFieldCcEmails                = big.NewInt(1 << 24)
+	campaignDetailFieldComputedLists           = big.NewInt(1 << 25)
+	campaignDetailFieldFromEmail               = big.NewInt(1 << 26)
+	campaignDetailFieldFromName                = big.NewInt(1 << 27)
+	campaignDetailFieldPreheader               = big.NewInt(1 << 28)
+	campaignDetailFieldPreheaderText           = big.NewInt(1 << 29)
+	campaignDetailFieldReplyProfileID          = big.NewInt(1 << 30)
+	campaignDetailFieldReplyToEmail            = big.NewInt(1 << 31)
+	campaignDetailFieldReplyToName             = big.NewInt(1 << 32)
+	campaignDetailFieldSenderProfileID         = big.NewInt(1 << 33)
+	campaignDetailFieldShareURL                = big.NewInt(1 << 34)
+	campaignDetailFieldTargetLists             = big.NewInt(1 << 35)
 )
 
 type CampaignDetail struct {
@@ -1855,6 +2003,8 @@ type CampaignDetail struct {
 	// Campaign tracking code available to UTM templates as `{{campaign.trackingCode}}`.
 	TrackingCode *string          `json:"trackingCode,omitempty" url:"trackingCode,omitempty"`
 	Type         *CampaignChannel `json:"type,omitempty" url:"type,omitempty"`
+	// Files sent with every recipient's email for this campaign, or null when there are none.
+	Attachments []*StoredCampaignAttachment `json:"attachments,omitempty" url:"attachments,omitempty"`
 	// Addresses BCC'd on every recipient's email for this campaign.
 	BccEmails    []string       `json:"bccEmails,omitempty" url:"bccEmails,omitempty"`
 	Blocks       []*EmailBlock  `json:"blocks,omitempty" url:"blocks,omitempty"`
@@ -2021,6 +2171,13 @@ func (c *CampaignDetail) GetType() *CampaignChannel {
 		return nil
 	}
 	return c.Type
+}
+
+func (c *CampaignDetail) GetAttachments() []*StoredCampaignAttachment {
+	if c == nil {
+		return nil
+	}
+	return c.Attachments
 }
 
 func (c *CampaignDetail) GetBccEmails() []string {
@@ -2280,6 +2437,13 @@ func (c *CampaignDetail) SetTrackingCode(trackingCode *string) {
 func (c *CampaignDetail) SetType(type_ *CampaignChannel) {
 	c.Type = type_
 	c.require(campaignDetailFieldType)
+}
+
+// SetAttachments sets the Attachments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CampaignDetail) SetAttachments(attachments []*StoredCampaignAttachment) {
+	c.Attachments = attachments
+	c.require(campaignDetailFieldAttachments)
 }
 
 // SetBccEmails sets the BccEmails field and marks it as non-optional;
@@ -4249,6 +4413,134 @@ func (e *EmailVariationResponse) String() string {
 	return fmt.Sprintf("%#v", e)
 }
 
+// Request body fields the endpoint did not recognize and ignored. The request still succeeded; nothing was stored for these fields. Present only when at least one field was ignored, on successful JSON object responses of every v1 endpoint. Lists up to 25 fields.
+type IgnoredFields = []*IgnoredFieldsItem
+
+var (
+	ignoredFieldsItemFieldPath   = big.NewInt(1 << 0)
+	ignoredFieldsItemFieldReason = big.NewInt(1 << 1)
+)
+
+type IgnoredFieldsItem struct {
+	// Dotted path with array indexes, such as `sendAt` or `steps[1].delayDays`. Empty when the whole body was not a JSON object.
+	Path string `json:"path" url:"path"`
+	// `unknown_field`: the endpoint does not accept this field. `not_an_object`: an object was expected, so the value was replaced with an empty object.
+	Reason IgnoredFieldsItemReason `json:"reason" url:"reason"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (i *IgnoredFieldsItem) GetPath() string {
+	if i == nil {
+		return ""
+	}
+	return i.Path
+}
+
+func (i *IgnoredFieldsItem) GetReason() IgnoredFieldsItemReason {
+	if i == nil {
+		return ""
+	}
+	return i.Reason
+}
+
+func (i *IgnoredFieldsItem) GetExtraProperties() map[string]interface{} {
+	if i == nil {
+		return nil
+	}
+	return i.extraProperties
+}
+
+func (i *IgnoredFieldsItem) require(field *big.Int) {
+	if i.explicitFields == nil {
+		i.explicitFields = big.NewInt(0)
+	}
+	i.explicitFields.Or(i.explicitFields, field)
+}
+
+// SetPath sets the Path field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IgnoredFieldsItem) SetPath(path string) {
+	i.Path = path
+	i.require(ignoredFieldsItemFieldPath)
+}
+
+// SetReason sets the Reason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IgnoredFieldsItem) SetReason(reason IgnoredFieldsItemReason) {
+	i.Reason = reason
+	i.require(ignoredFieldsItemFieldReason)
+}
+
+func (i *IgnoredFieldsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler IgnoredFieldsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*i = IgnoredFieldsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+	i.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *IgnoredFieldsItem) MarshalJSON() ([]byte, error) {
+	type embed IgnoredFieldsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*i),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (i *IgnoredFieldsItem) String() string {
+	if i == nil {
+		return "<nil>"
+	}
+	if len(i.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
+// `unknown_field`: the endpoint does not accept this field. `not_an_object`: an object was expected, so the value was replaced with an empty object.
+type IgnoredFieldsItemReason string
+
+const (
+	IgnoredFieldsItemReasonUnknownField IgnoredFieldsItemReason = "unknown_field"
+	IgnoredFieldsItemReasonNotAnObject  IgnoredFieldsItemReason = "not_an_object"
+)
+
+func NewIgnoredFieldsItemReasonFromString(s string) (IgnoredFieldsItemReason, error) {
+	switch s {
+	case "unknown_field":
+		return IgnoredFieldsItemReasonUnknownField, nil
+	case "not_an_object":
+		return IgnoredFieldsItemReasonNotAnObject, nil
+	}
+	var t IgnoredFieldsItemReason
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (i IgnoredFieldsItemReason) Ptr() *IgnoredFieldsItemReason {
+	return &i
+}
+
 var (
 	resolvedAudienceEntityFieldID      = big.NewInt(1 << 0)
 	resolvedAudienceEntityFieldMissing = big.NewInt(1 << 1)
@@ -4845,6 +5137,107 @@ func (r ResolvedCampaignAudienceType) Ptr() *ResolvedCampaignAudienceType {
 	return &r
 }
 
+// A campaign attachment as stored. Uploaded Base64 content is returned as the URL Sequenzy stores it under.
+var (
+	storedCampaignAttachmentFieldFilename = big.NewInt(1 << 0)
+	storedCampaignAttachmentFieldPath     = big.NewInt(1 << 1)
+)
+
+type StoredCampaignAttachment struct {
+	Filename string `json:"filename" url:"filename"`
+	Path     string `json:"path" url:"path"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *StoredCampaignAttachment) GetFilename() string {
+	if s == nil {
+		return ""
+	}
+	return s.Filename
+}
+
+func (s *StoredCampaignAttachment) GetPath() string {
+	if s == nil {
+		return ""
+	}
+	return s.Path
+}
+
+func (s *StoredCampaignAttachment) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *StoredCampaignAttachment) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetFilename sets the Filename field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *StoredCampaignAttachment) SetFilename(filename string) {
+	s.Filename = filename
+	s.require(storedCampaignAttachmentFieldFilename)
+}
+
+// SetPath sets the Path field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *StoredCampaignAttachment) SetPath(path string) {
+	s.Path = path
+	s.require(storedCampaignAttachmentFieldPath)
+}
+
+func (s *StoredCampaignAttachment) UnmarshalJSON(data []byte) error {
+	type unmarshaler StoredCampaignAttachment
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = StoredCampaignAttachment(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *StoredCampaignAttachment) MarshalJSON() ([]byte, error) {
+	type embed StoredCampaignAttachment
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *StoredCampaignAttachment) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
 var (
 	cancelCampaignsResponseFieldCampaign = big.NewInt(1 << 0)
 	cancelCampaignsResponseFieldSuccess  = big.NewInt(1 << 1)
@@ -4992,15 +5385,17 @@ func (c CreateCampaignsRequestStatus) Ptr() *CreateCampaignsRequestStatus {
 }
 
 var (
-	createCampaignsResponseFieldCampaign = big.NewInt(1 << 0)
-	createCampaignsResponseFieldSuccess  = big.NewInt(1 << 1)
-	createCampaignsResponseFieldWarnings = big.NewInt(1 << 2)
+	createCampaignsResponseFieldCampaign      = big.NewInt(1 << 0)
+	createCampaignsResponseFieldIgnoredFields = big.NewInt(1 << 1)
+	createCampaignsResponseFieldSuccess       = big.NewInt(1 << 2)
+	createCampaignsResponseFieldWarnings      = big.NewInt(1 << 3)
 )
 
 type CreateCampaignsResponse struct {
-	Campaign *CreateCampaignsResponseCampaign `json:"campaign,omitempty" url:"campaign,omitempty"`
-	Success  *bool                            `json:"success,omitempty" url:"success,omitempty"`
-	Warnings *BlockFieldWarnings              `json:"warnings,omitempty" url:"warnings,omitempty"`
+	Campaign      *CreateCampaignsResponseCampaign `json:"campaign,omitempty" url:"campaign,omitempty"`
+	IgnoredFields *IgnoredFields                   `json:"ignoredFields,omitempty" url:"ignoredFields,omitempty"`
+	Success       *bool                            `json:"success,omitempty" url:"success,omitempty"`
+	Warnings      *BlockFieldWarnings              `json:"warnings,omitempty" url:"warnings,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -5014,6 +5409,13 @@ func (c *CreateCampaignsResponse) GetCampaign() *CreateCampaignsResponseCampaign
 		return nil
 	}
 	return c.Campaign
+}
+
+func (c *CreateCampaignsResponse) GetIgnoredFields() *IgnoredFields {
+	if c == nil {
+		return nil
+	}
+	return c.IgnoredFields
 }
 
 func (c *CreateCampaignsResponse) GetSuccess() *bool {
@@ -5049,6 +5451,13 @@ func (c *CreateCampaignsResponse) require(field *big.Int) {
 func (c *CreateCampaignsResponse) SetCampaign(campaign *CreateCampaignsResponseCampaign) {
 	c.Campaign = campaign
 	c.require(createCampaignsResponseFieldCampaign)
+}
+
+// SetIgnoredFields sets the IgnoredFields field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateCampaignsResponse) SetIgnoredFields(ignoredFields *IgnoredFields) {
+	c.IgnoredFields = ignoredFields
+	c.require(createCampaignsResponseFieldIgnoredFields)
 }
 
 // SetSuccess sets the Success field and marks it as non-optional;
@@ -5108,27 +5517,29 @@ func (c *CreateCampaignsResponse) String() string {
 }
 
 var (
-	createCampaignsResponseCampaignFieldEmailID         = big.NewInt(1 << 0)
-	createCampaignsResponseCampaignFieldEmailPreset     = big.NewInt(1 << 1)
-	createCampaignsResponseCampaignFieldFromEmail       = big.NewInt(1 << 2)
-	createCampaignsResponseCampaignFieldFromName        = big.NewInt(1 << 3)
-	createCampaignsResponseCampaignFieldID              = big.NewInt(1 << 4)
-	createCampaignsResponseCampaignFieldLabels          = big.NewInt(1 << 5)
-	createCampaignsResponseCampaignFieldName            = big.NewInt(1 << 6)
-	createCampaignsResponseCampaignFieldPreviewURL      = big.NewInt(1 << 7)
-	createCampaignsResponseCampaignFieldReplyProfileID  = big.NewInt(1 << 8)
-	createCampaignsResponseCampaignFieldReplyToEmail    = big.NewInt(1 << 9)
-	createCampaignsResponseCampaignFieldReplyToName     = big.NewInt(1 << 10)
-	createCampaignsResponseCampaignFieldSenderProfileID = big.NewInt(1 << 11)
-	createCampaignsResponseCampaignFieldSentAt          = big.NewInt(1 << 12)
-	createCampaignsResponseCampaignFieldStatus          = big.NewInt(1 << 13)
-	createCampaignsResponseCampaignFieldSubject         = big.NewInt(1 << 14)
-	createCampaignsResponseCampaignFieldTargetLists     = big.NewInt(1 << 15)
-	createCampaignsResponseCampaignFieldTrackingCode    = big.NewInt(1 << 16)
-	createCampaignsResponseCampaignFieldURL             = big.NewInt(1 << 17)
+	createCampaignsResponseCampaignFieldAttachments     = big.NewInt(1 << 0)
+	createCampaignsResponseCampaignFieldEmailID         = big.NewInt(1 << 1)
+	createCampaignsResponseCampaignFieldEmailPreset     = big.NewInt(1 << 2)
+	createCampaignsResponseCampaignFieldFromEmail       = big.NewInt(1 << 3)
+	createCampaignsResponseCampaignFieldFromName        = big.NewInt(1 << 4)
+	createCampaignsResponseCampaignFieldID              = big.NewInt(1 << 5)
+	createCampaignsResponseCampaignFieldLabels          = big.NewInt(1 << 6)
+	createCampaignsResponseCampaignFieldName            = big.NewInt(1 << 7)
+	createCampaignsResponseCampaignFieldPreviewURL      = big.NewInt(1 << 8)
+	createCampaignsResponseCampaignFieldReplyProfileID  = big.NewInt(1 << 9)
+	createCampaignsResponseCampaignFieldReplyToEmail    = big.NewInt(1 << 10)
+	createCampaignsResponseCampaignFieldReplyToName     = big.NewInt(1 << 11)
+	createCampaignsResponseCampaignFieldSenderProfileID = big.NewInt(1 << 12)
+	createCampaignsResponseCampaignFieldSentAt          = big.NewInt(1 << 13)
+	createCampaignsResponseCampaignFieldStatus          = big.NewInt(1 << 14)
+	createCampaignsResponseCampaignFieldSubject         = big.NewInt(1 << 15)
+	createCampaignsResponseCampaignFieldTargetLists     = big.NewInt(1 << 16)
+	createCampaignsResponseCampaignFieldTrackingCode    = big.NewInt(1 << 17)
+	createCampaignsResponseCampaignFieldURL             = big.NewInt(1 << 18)
 )
 
 type CreateCampaignsResponseCampaign struct {
+	Attachments []*StoredCampaignAttachment `json:"attachments,omitempty" url:"attachments,omitempty"`
 	// The linked email body, reusable as `templateId` when creating later campaigns.
 	EmailID         *string      `json:"emailId,omitempty" url:"emailId,omitempty"`
 	EmailPreset     *EmailPreset `json:"emailPreset,omitempty" url:"emailPreset,omitempty"`
@@ -5157,6 +5568,13 @@ type CreateCampaignsResponseCampaign struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (c *CreateCampaignsResponseCampaign) GetAttachments() []*StoredCampaignAttachment {
+	if c == nil {
+		return nil
+	}
+	return c.Attachments
 }
 
 func (c *CreateCampaignsResponseCampaign) GetEmailID() *string {
@@ -5297,6 +5715,13 @@ func (c *CreateCampaignsResponseCampaign) require(field *big.Int) {
 		c.explicitFields = big.NewInt(0)
 	}
 	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetAttachments sets the Attachments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateCampaignsResponseCampaign) SetAttachments(attachments []*StoredCampaignAttachment) {
+	c.Attachments = attachments
+	c.require(createCampaignsResponseCampaignFieldAttachments)
 }
 
 // SetEmailID sets the EmailID field and marks it as non-optional;
@@ -7885,44 +8310,47 @@ func (d *DuplicateCampaignsResponse) String() string {
 }
 
 var (
-	duplicateCampaignsResponseCampaignFieldBccEmails               = big.NewInt(1 << 0)
-	duplicateCampaignsResponseCampaignFieldBlocks                  = big.NewInt(1 << 1)
-	duplicateCampaignsResponseCampaignFieldCampaignData            = big.NewInt(1 << 2)
-	duplicateCampaignsResponseCampaignFieldCcEmails                = big.NewInt(1 << 3)
-	duplicateCampaignsResponseCampaignFieldComputedLists           = big.NewInt(1 << 4)
-	duplicateCampaignsResponseCampaignFieldCreatedAt               = big.NewInt(1 << 5)
-	duplicateCampaignsResponseCampaignFieldEmailID                 = big.NewInt(1 << 6)
-	duplicateCampaignsResponseCampaignFieldEmailPreset             = big.NewInt(1 << 7)
-	duplicateCampaignsResponseCampaignFieldFromEmail               = big.NewInt(1 << 8)
-	duplicateCampaignsResponseCampaignFieldFromName                = big.NewInt(1 << 9)
-	duplicateCampaignsResponseCampaignFieldHasAudience             = big.NewInt(1 << 10)
-	duplicateCampaignsResponseCampaignFieldID                      = big.NewInt(1 << 11)
-	duplicateCampaignsResponseCampaignFieldLabels                  = big.NewInt(1 << 12)
-	duplicateCampaignsResponseCampaignFieldMaxRecipients           = big.NewInt(1 << 13)
-	duplicateCampaignsResponseCampaignFieldName                    = big.NewInt(1 << 14)
-	duplicateCampaignsResponseCampaignFieldPreheader               = big.NewInt(1 << 15)
-	duplicateCampaignsResponseCampaignFieldPreheaderText           = big.NewInt(1 << 16)
-	duplicateCampaignsResponseCampaignFieldRejectionComment        = big.NewInt(1 << 17)
-	duplicateCampaignsResponseCampaignFieldReplyProfileID          = big.NewInt(1 << 18)
-	duplicateCampaignsResponseCampaignFieldReplyToEmail            = big.NewInt(1 << 19)
-	duplicateCampaignsResponseCampaignFieldReplyToName             = big.NewInt(1 << 20)
-	duplicateCampaignsResponseCampaignFieldScheduledAt             = big.NewInt(1 << 21)
-	duplicateCampaignsResponseCampaignFieldScheduledTimezone       = big.NewInt(1 << 22)
-	duplicateCampaignsResponseCampaignFieldSenderProfileID         = big.NewInt(1 << 23)
-	duplicateCampaignsResponseCampaignFieldSendInRecipientTimezone = big.NewInt(1 << 24)
-	duplicateCampaignsResponseCampaignFieldSendTimeOptimization    = big.NewInt(1 << 25)
-	duplicateCampaignsResponseCampaignFieldSendTimeWindowHours     = big.NewInt(1 << 26)
-	duplicateCampaignsResponseCampaignFieldSentAt                  = big.NewInt(1 << 27)
-	duplicateCampaignsResponseCampaignFieldShareURL                = big.NewInt(1 << 28)
-	duplicateCampaignsResponseCampaignFieldSpreadOverHours         = big.NewInt(1 << 29)
-	duplicateCampaignsResponseCampaignFieldStatus                  = big.NewInt(1 << 30)
-	duplicateCampaignsResponseCampaignFieldSubject                 = big.NewInt(1 << 31)
-	duplicateCampaignsResponseCampaignFieldTargetLists             = big.NewInt(1 << 32)
-	duplicateCampaignsResponseCampaignFieldTrackingCode            = big.NewInt(1 << 33)
-	duplicateCampaignsResponseCampaignFieldType                    = big.NewInt(1 << 34)
+	duplicateCampaignsResponseCampaignFieldAttachments             = big.NewInt(1 << 0)
+	duplicateCampaignsResponseCampaignFieldBccEmails               = big.NewInt(1 << 1)
+	duplicateCampaignsResponseCampaignFieldBlocks                  = big.NewInt(1 << 2)
+	duplicateCampaignsResponseCampaignFieldCampaignData            = big.NewInt(1 << 3)
+	duplicateCampaignsResponseCampaignFieldCcEmails                = big.NewInt(1 << 4)
+	duplicateCampaignsResponseCampaignFieldComputedLists           = big.NewInt(1 << 5)
+	duplicateCampaignsResponseCampaignFieldCreatedAt               = big.NewInt(1 << 6)
+	duplicateCampaignsResponseCampaignFieldEmailID                 = big.NewInt(1 << 7)
+	duplicateCampaignsResponseCampaignFieldEmailPreset             = big.NewInt(1 << 8)
+	duplicateCampaignsResponseCampaignFieldFromEmail               = big.NewInt(1 << 9)
+	duplicateCampaignsResponseCampaignFieldFromName                = big.NewInt(1 << 10)
+	duplicateCampaignsResponseCampaignFieldHasAudience             = big.NewInt(1 << 11)
+	duplicateCampaignsResponseCampaignFieldID                      = big.NewInt(1 << 12)
+	duplicateCampaignsResponseCampaignFieldLabels                  = big.NewInt(1 << 13)
+	duplicateCampaignsResponseCampaignFieldMaxRecipients           = big.NewInt(1 << 14)
+	duplicateCampaignsResponseCampaignFieldName                    = big.NewInt(1 << 15)
+	duplicateCampaignsResponseCampaignFieldPreheader               = big.NewInt(1 << 16)
+	duplicateCampaignsResponseCampaignFieldPreheaderText           = big.NewInt(1 << 17)
+	duplicateCampaignsResponseCampaignFieldRejectionComment        = big.NewInt(1 << 18)
+	duplicateCampaignsResponseCampaignFieldReplyProfileID          = big.NewInt(1 << 19)
+	duplicateCampaignsResponseCampaignFieldReplyToEmail            = big.NewInt(1 << 20)
+	duplicateCampaignsResponseCampaignFieldReplyToName             = big.NewInt(1 << 21)
+	duplicateCampaignsResponseCampaignFieldScheduledAt             = big.NewInt(1 << 22)
+	duplicateCampaignsResponseCampaignFieldScheduledTimezone       = big.NewInt(1 << 23)
+	duplicateCampaignsResponseCampaignFieldSenderProfileID         = big.NewInt(1 << 24)
+	duplicateCampaignsResponseCampaignFieldSendInRecipientTimezone = big.NewInt(1 << 25)
+	duplicateCampaignsResponseCampaignFieldSendTimeOptimization    = big.NewInt(1 << 26)
+	duplicateCampaignsResponseCampaignFieldSendTimeWindowHours     = big.NewInt(1 << 27)
+	duplicateCampaignsResponseCampaignFieldSentAt                  = big.NewInt(1 << 28)
+	duplicateCampaignsResponseCampaignFieldShareURL                = big.NewInt(1 << 29)
+	duplicateCampaignsResponseCampaignFieldSpreadOverHours         = big.NewInt(1 << 30)
+	duplicateCampaignsResponseCampaignFieldStatus                  = big.NewInt(1 << 31)
+	duplicateCampaignsResponseCampaignFieldSubject                 = big.NewInt(1 << 32)
+	duplicateCampaignsResponseCampaignFieldTargetLists             = big.NewInt(1 << 33)
+	duplicateCampaignsResponseCampaignFieldTrackingCode            = big.NewInt(1 << 34)
+	duplicateCampaignsResponseCampaignFieldType                    = big.NewInt(1 << 35)
 )
 
 type DuplicateCampaignsResponseCampaign struct {
+	// Files sent with every recipient's email for this campaign, or null when there are none.
+	Attachments []*StoredCampaignAttachment `json:"attachments,omitempty" url:"attachments,omitempty"`
 	// Addresses BCC'd on every recipient's email for this campaign.
 	BccEmails    []string       `json:"bccEmails,omitempty" url:"bccEmails,omitempty"`
 	Blocks       []*EmailBlock  `json:"blocks,omitempty" url:"blocks,omitempty"`
@@ -7982,6 +8410,13 @@ type DuplicateCampaignsResponseCampaign struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (d *DuplicateCampaignsResponseCampaign) GetAttachments() []*StoredCampaignAttachment {
+	if d == nil {
+		return nil
+	}
+	return d.Attachments
 }
 
 func (d *DuplicateCampaignsResponseCampaign) GetBccEmails() []string {
@@ -8241,6 +8676,13 @@ func (d *DuplicateCampaignsResponseCampaign) require(field *big.Int) {
 		d.explicitFields = big.NewInt(0)
 	}
 	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetAttachments sets the Attachments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DuplicateCampaignsResponseCampaign) SetAttachments(attachments []*StoredCampaignAttachment) {
+	d.Attachments = attachments
+	d.require(duplicateCampaignsResponseCampaignFieldAttachments)
 }
 
 // SetBccEmails sets the BccEmails field and marks it as non-optional;
@@ -10325,44 +10767,47 @@ func (r *ResendToNonOpenersCampaignsResponse) String() string {
 }
 
 var (
-	resendToNonOpenersCampaignsResponseCampaignFieldBccEmails               = big.NewInt(1 << 0)
-	resendToNonOpenersCampaignsResponseCampaignFieldBlocks                  = big.NewInt(1 << 1)
-	resendToNonOpenersCampaignsResponseCampaignFieldCampaignData            = big.NewInt(1 << 2)
-	resendToNonOpenersCampaignsResponseCampaignFieldCcEmails                = big.NewInt(1 << 3)
-	resendToNonOpenersCampaignsResponseCampaignFieldComputedLists           = big.NewInt(1 << 4)
-	resendToNonOpenersCampaignsResponseCampaignFieldCreatedAt               = big.NewInt(1 << 5)
-	resendToNonOpenersCampaignsResponseCampaignFieldEmailID                 = big.NewInt(1 << 6)
-	resendToNonOpenersCampaignsResponseCampaignFieldEmailPreset             = big.NewInt(1 << 7)
-	resendToNonOpenersCampaignsResponseCampaignFieldFromEmail               = big.NewInt(1 << 8)
-	resendToNonOpenersCampaignsResponseCampaignFieldFromName                = big.NewInt(1 << 9)
-	resendToNonOpenersCampaignsResponseCampaignFieldHasAudience             = big.NewInt(1 << 10)
-	resendToNonOpenersCampaignsResponseCampaignFieldID                      = big.NewInt(1 << 11)
-	resendToNonOpenersCampaignsResponseCampaignFieldLabels                  = big.NewInt(1 << 12)
-	resendToNonOpenersCampaignsResponseCampaignFieldMaxRecipients           = big.NewInt(1 << 13)
-	resendToNonOpenersCampaignsResponseCampaignFieldName                    = big.NewInt(1 << 14)
-	resendToNonOpenersCampaignsResponseCampaignFieldPreheader               = big.NewInt(1 << 15)
-	resendToNonOpenersCampaignsResponseCampaignFieldPreheaderText           = big.NewInt(1 << 16)
-	resendToNonOpenersCampaignsResponseCampaignFieldRejectionComment        = big.NewInt(1 << 17)
-	resendToNonOpenersCampaignsResponseCampaignFieldReplyProfileID          = big.NewInt(1 << 18)
-	resendToNonOpenersCampaignsResponseCampaignFieldReplyToEmail            = big.NewInt(1 << 19)
-	resendToNonOpenersCampaignsResponseCampaignFieldReplyToName             = big.NewInt(1 << 20)
-	resendToNonOpenersCampaignsResponseCampaignFieldScheduledAt             = big.NewInt(1 << 21)
-	resendToNonOpenersCampaignsResponseCampaignFieldScheduledTimezone       = big.NewInt(1 << 22)
-	resendToNonOpenersCampaignsResponseCampaignFieldSenderProfileID         = big.NewInt(1 << 23)
-	resendToNonOpenersCampaignsResponseCampaignFieldSendInRecipientTimezone = big.NewInt(1 << 24)
-	resendToNonOpenersCampaignsResponseCampaignFieldSendTimeOptimization    = big.NewInt(1 << 25)
-	resendToNonOpenersCampaignsResponseCampaignFieldSendTimeWindowHours     = big.NewInt(1 << 26)
-	resendToNonOpenersCampaignsResponseCampaignFieldSentAt                  = big.NewInt(1 << 27)
-	resendToNonOpenersCampaignsResponseCampaignFieldShareURL                = big.NewInt(1 << 28)
-	resendToNonOpenersCampaignsResponseCampaignFieldSpreadOverHours         = big.NewInt(1 << 29)
-	resendToNonOpenersCampaignsResponseCampaignFieldStatus                  = big.NewInt(1 << 30)
-	resendToNonOpenersCampaignsResponseCampaignFieldSubject                 = big.NewInt(1 << 31)
-	resendToNonOpenersCampaignsResponseCampaignFieldTargetLists             = big.NewInt(1 << 32)
-	resendToNonOpenersCampaignsResponseCampaignFieldTrackingCode            = big.NewInt(1 << 33)
-	resendToNonOpenersCampaignsResponseCampaignFieldType                    = big.NewInt(1 << 34)
+	resendToNonOpenersCampaignsResponseCampaignFieldAttachments             = big.NewInt(1 << 0)
+	resendToNonOpenersCampaignsResponseCampaignFieldBccEmails               = big.NewInt(1 << 1)
+	resendToNonOpenersCampaignsResponseCampaignFieldBlocks                  = big.NewInt(1 << 2)
+	resendToNonOpenersCampaignsResponseCampaignFieldCampaignData            = big.NewInt(1 << 3)
+	resendToNonOpenersCampaignsResponseCampaignFieldCcEmails                = big.NewInt(1 << 4)
+	resendToNonOpenersCampaignsResponseCampaignFieldComputedLists           = big.NewInt(1 << 5)
+	resendToNonOpenersCampaignsResponseCampaignFieldCreatedAt               = big.NewInt(1 << 6)
+	resendToNonOpenersCampaignsResponseCampaignFieldEmailID                 = big.NewInt(1 << 7)
+	resendToNonOpenersCampaignsResponseCampaignFieldEmailPreset             = big.NewInt(1 << 8)
+	resendToNonOpenersCampaignsResponseCampaignFieldFromEmail               = big.NewInt(1 << 9)
+	resendToNonOpenersCampaignsResponseCampaignFieldFromName                = big.NewInt(1 << 10)
+	resendToNonOpenersCampaignsResponseCampaignFieldHasAudience             = big.NewInt(1 << 11)
+	resendToNonOpenersCampaignsResponseCampaignFieldID                      = big.NewInt(1 << 12)
+	resendToNonOpenersCampaignsResponseCampaignFieldLabels                  = big.NewInt(1 << 13)
+	resendToNonOpenersCampaignsResponseCampaignFieldMaxRecipients           = big.NewInt(1 << 14)
+	resendToNonOpenersCampaignsResponseCampaignFieldName                    = big.NewInt(1 << 15)
+	resendToNonOpenersCampaignsResponseCampaignFieldPreheader               = big.NewInt(1 << 16)
+	resendToNonOpenersCampaignsResponseCampaignFieldPreheaderText           = big.NewInt(1 << 17)
+	resendToNonOpenersCampaignsResponseCampaignFieldRejectionComment        = big.NewInt(1 << 18)
+	resendToNonOpenersCampaignsResponseCampaignFieldReplyProfileID          = big.NewInt(1 << 19)
+	resendToNonOpenersCampaignsResponseCampaignFieldReplyToEmail            = big.NewInt(1 << 20)
+	resendToNonOpenersCampaignsResponseCampaignFieldReplyToName             = big.NewInt(1 << 21)
+	resendToNonOpenersCampaignsResponseCampaignFieldScheduledAt             = big.NewInt(1 << 22)
+	resendToNonOpenersCampaignsResponseCampaignFieldScheduledTimezone       = big.NewInt(1 << 23)
+	resendToNonOpenersCampaignsResponseCampaignFieldSenderProfileID         = big.NewInt(1 << 24)
+	resendToNonOpenersCampaignsResponseCampaignFieldSendInRecipientTimezone = big.NewInt(1 << 25)
+	resendToNonOpenersCampaignsResponseCampaignFieldSendTimeOptimization    = big.NewInt(1 << 26)
+	resendToNonOpenersCampaignsResponseCampaignFieldSendTimeWindowHours     = big.NewInt(1 << 27)
+	resendToNonOpenersCampaignsResponseCampaignFieldSentAt                  = big.NewInt(1 << 28)
+	resendToNonOpenersCampaignsResponseCampaignFieldShareURL                = big.NewInt(1 << 29)
+	resendToNonOpenersCampaignsResponseCampaignFieldSpreadOverHours         = big.NewInt(1 << 30)
+	resendToNonOpenersCampaignsResponseCampaignFieldStatus                  = big.NewInt(1 << 31)
+	resendToNonOpenersCampaignsResponseCampaignFieldSubject                 = big.NewInt(1 << 32)
+	resendToNonOpenersCampaignsResponseCampaignFieldTargetLists             = big.NewInt(1 << 33)
+	resendToNonOpenersCampaignsResponseCampaignFieldTrackingCode            = big.NewInt(1 << 34)
+	resendToNonOpenersCampaignsResponseCampaignFieldType                    = big.NewInt(1 << 35)
 )
 
 type ResendToNonOpenersCampaignsResponseCampaign struct {
+	// Files sent with every recipient's email for this campaign, or null when there are none.
+	Attachments []*StoredCampaignAttachment `json:"attachments,omitempty" url:"attachments,omitempty"`
 	// Addresses BCC'd on every recipient's email for this campaign.
 	BccEmails    []string       `json:"bccEmails,omitempty" url:"bccEmails,omitempty"`
 	Blocks       []*EmailBlock  `json:"blocks,omitempty" url:"blocks,omitempty"`
@@ -10422,6 +10867,13 @@ type ResendToNonOpenersCampaignsResponseCampaign struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (r *ResendToNonOpenersCampaignsResponseCampaign) GetAttachments() []*StoredCampaignAttachment {
+	if r == nil {
+		return nil
+	}
+	return r.Attachments
 }
 
 func (r *ResendToNonOpenersCampaignsResponseCampaign) GetBccEmails() []string {
@@ -10681,6 +11133,13 @@ func (r *ResendToNonOpenersCampaignsResponseCampaign) require(field *big.Int) {
 		r.explicitFields = big.NewInt(0)
 	}
 	r.explicitFields.Or(r.explicitFields, field)
+}
+
+// SetAttachments sets the Attachments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendToNonOpenersCampaignsResponseCampaign) SetAttachments(attachments []*StoredCampaignAttachment) {
+	r.Attachments = attachments
+	r.require(resendToNonOpenersCampaignsResponseCampaignFieldAttachments)
 }
 
 // SetBccEmails sets the BccEmails field and marks it as non-optional;
@@ -11969,15 +12428,17 @@ func (u UpdateCampaignsRequestEmailPreset) Ptr() *UpdateCampaignsRequestEmailPre
 }
 
 var (
-	updateCampaignsResponseFieldCampaign = big.NewInt(1 << 0)
-	updateCampaignsResponseFieldSuccess  = big.NewInt(1 << 1)
-	updateCampaignsResponseFieldWarnings = big.NewInt(1 << 2)
+	updateCampaignsResponseFieldCampaign      = big.NewInt(1 << 0)
+	updateCampaignsResponseFieldIgnoredFields = big.NewInt(1 << 1)
+	updateCampaignsResponseFieldSuccess       = big.NewInt(1 << 2)
+	updateCampaignsResponseFieldWarnings      = big.NewInt(1 << 3)
 )
 
 type UpdateCampaignsResponse struct {
-	Campaign *UpdateCampaignsResponseCampaign `json:"campaign" url:"campaign"`
-	Success  bool                             `json:"success" url:"success"`
-	Warnings *BlockFieldWarnings              `json:"warnings,omitempty" url:"warnings,omitempty"`
+	Campaign      *UpdateCampaignsResponseCampaign `json:"campaign" url:"campaign"`
+	IgnoredFields *IgnoredFields                   `json:"ignoredFields,omitempty" url:"ignoredFields,omitempty"`
+	Success       bool                             `json:"success" url:"success"`
+	Warnings      *BlockFieldWarnings              `json:"warnings,omitempty" url:"warnings,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -11991,6 +12452,13 @@ func (u *UpdateCampaignsResponse) GetCampaign() *UpdateCampaignsResponseCampaign
 		return nil
 	}
 	return u.Campaign
+}
+
+func (u *UpdateCampaignsResponse) GetIgnoredFields() *IgnoredFields {
+	if u == nil {
+		return nil
+	}
+	return u.IgnoredFields
 }
 
 func (u *UpdateCampaignsResponse) GetSuccess() bool {
@@ -12026,6 +12494,13 @@ func (u *UpdateCampaignsResponse) require(field *big.Int) {
 func (u *UpdateCampaignsResponse) SetCampaign(campaign *UpdateCampaignsResponseCampaign) {
 	u.Campaign = campaign
 	u.require(updateCampaignsResponseFieldCampaign)
+}
+
+// SetIgnoredFields sets the IgnoredFields field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateCampaignsResponse) SetIgnoredFields(ignoredFields *IgnoredFields) {
+	u.IgnoredFields = ignoredFields
+	u.require(updateCampaignsResponseFieldIgnoredFields)
 }
 
 // SetSuccess sets the Success field and marks it as non-optional;
@@ -12085,27 +12560,29 @@ func (u *UpdateCampaignsResponse) String() string {
 }
 
 var (
-	updateCampaignsResponseCampaignFieldBccEmails      = big.NewInt(1 << 0)
-	updateCampaignsResponseCampaignFieldCcEmails       = big.NewInt(1 << 1)
-	updateCampaignsResponseCampaignFieldEmailID        = big.NewInt(1 << 2)
-	updateCampaignsResponseCampaignFieldEmailPreset    = big.NewInt(1 << 3)
-	updateCampaignsResponseCampaignFieldID             = big.NewInt(1 << 4)
-	updateCampaignsResponseCampaignFieldLabels         = big.NewInt(1 << 5)
-	updateCampaignsResponseCampaignFieldMaxRecipients  = big.NewInt(1 << 6)
-	updateCampaignsResponseCampaignFieldName           = big.NewInt(1 << 7)
-	updateCampaignsResponseCampaignFieldPreviewURL     = big.NewInt(1 << 8)
-	updateCampaignsResponseCampaignFieldReplyProfileID = big.NewInt(1 << 9)
-	updateCampaignsResponseCampaignFieldReplyToEmail   = big.NewInt(1 << 10)
-	updateCampaignsResponseCampaignFieldReplyToName    = big.NewInt(1 << 11)
-	updateCampaignsResponseCampaignFieldStatus         = big.NewInt(1 << 12)
-	updateCampaignsResponseCampaignFieldSubject        = big.NewInt(1 << 13)
-	updateCampaignsResponseCampaignFieldTargetLists    = big.NewInt(1 << 14)
-	updateCampaignsResponseCampaignFieldURL            = big.NewInt(1 << 15)
+	updateCampaignsResponseCampaignFieldAttachments    = big.NewInt(1 << 0)
+	updateCampaignsResponseCampaignFieldBccEmails      = big.NewInt(1 << 1)
+	updateCampaignsResponseCampaignFieldCcEmails       = big.NewInt(1 << 2)
+	updateCampaignsResponseCampaignFieldEmailID        = big.NewInt(1 << 3)
+	updateCampaignsResponseCampaignFieldEmailPreset    = big.NewInt(1 << 4)
+	updateCampaignsResponseCampaignFieldID             = big.NewInt(1 << 5)
+	updateCampaignsResponseCampaignFieldLabels         = big.NewInt(1 << 6)
+	updateCampaignsResponseCampaignFieldMaxRecipients  = big.NewInt(1 << 7)
+	updateCampaignsResponseCampaignFieldName           = big.NewInt(1 << 8)
+	updateCampaignsResponseCampaignFieldPreviewURL     = big.NewInt(1 << 9)
+	updateCampaignsResponseCampaignFieldReplyProfileID = big.NewInt(1 << 10)
+	updateCampaignsResponseCampaignFieldReplyToEmail   = big.NewInt(1 << 11)
+	updateCampaignsResponseCampaignFieldReplyToName    = big.NewInt(1 << 12)
+	updateCampaignsResponseCampaignFieldStatus         = big.NewInt(1 << 13)
+	updateCampaignsResponseCampaignFieldSubject        = big.NewInt(1 << 14)
+	updateCampaignsResponseCampaignFieldTargetLists    = big.NewInt(1 << 15)
+	updateCampaignsResponseCampaignFieldURL            = big.NewInt(1 << 16)
 )
 
 type UpdateCampaignsResponseCampaign struct {
-	BccEmails []string `json:"bccEmails,omitempty" url:"bccEmails,omitempty"`
-	CcEmails  []string `json:"ccEmails,omitempty" url:"ccEmails,omitempty"`
+	Attachments []*StoredCampaignAttachment `json:"attachments,omitempty" url:"attachments,omitempty"`
+	BccEmails   []string                    `json:"bccEmails,omitempty" url:"bccEmails,omitempty"`
+	CcEmails    []string                    `json:"ccEmails,omitempty" url:"ccEmails,omitempty"`
 	// The linked email body, reusable as `templateId` when creating later campaigns.
 	EmailID     *string      `json:"emailId,omitempty" url:"emailId,omitempty"`
 	EmailPreset *EmailPreset `json:"emailPreset,omitempty" url:"emailPreset,omitempty"`
@@ -12129,6 +12606,13 @@ type UpdateCampaignsResponseCampaign struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (u *UpdateCampaignsResponseCampaign) GetAttachments() []*StoredCampaignAttachment {
+	if u == nil {
+		return nil
+	}
+	return u.Attachments
 }
 
 func (u *UpdateCampaignsResponseCampaign) GetBccEmails() []string {
@@ -12255,6 +12739,13 @@ func (u *UpdateCampaignsResponseCampaign) require(field *big.Int) {
 		u.explicitFields = big.NewInt(0)
 	}
 	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetAttachments sets the Attachments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateCampaignsResponseCampaign) SetAttachments(attachments []*StoredCampaignAttachment) {
+	u.Attachments = attachments
+	u.require(updateCampaignsResponseCampaignFieldAttachments)
 }
 
 // SetBccEmails sets the BccEmails field and marks it as non-optional;
@@ -12757,37 +13248,40 @@ func (u *UnscheduleCampaignsRequest) SetCampaignID(campaignID string) {
 
 var (
 	updateCampaignsRequestFieldCampaignID           = big.NewInt(1 << 0)
-	updateCampaignsRequestFieldBccEmails            = big.NewInt(1 << 1)
-	updateCampaignsRequestFieldBlocks               = big.NewInt(1 << 2)
-	updateCampaignsRequestFieldCampaignData         = big.NewInt(1 << 3)
-	updateCampaignsRequestFieldCcEmails             = big.NewInt(1 << 4)
-	updateCampaignsRequestFieldComputedLists        = big.NewInt(1 << 5)
-	updateCampaignsRequestFieldEmailPreset          = big.NewInt(1 << 6)
-	updateCampaignsRequestFieldFromEmail            = big.NewInt(1 << 7)
-	updateCampaignsRequestFieldFromName             = big.NewInt(1 << 8)
-	updateCampaignsRequestFieldHTML                 = big.NewInt(1 << 9)
-	updateCampaignsRequestFieldLabel                = big.NewInt(1 << 10)
-	updateCampaignsRequestFieldLabels               = big.NewInt(1 << 11)
-	updateCampaignsRequestFieldListIDs              = big.NewInt(1 << 12)
-	updateCampaignsRequestFieldMaxRecipients        = big.NewInt(1 << 13)
-	updateCampaignsRequestFieldName                 = big.NewInt(1 << 14)
-	updateCampaignsRequestFieldPreheaderText        = big.NewInt(1 << 15)
-	updateCampaignsRequestFieldPreviewText          = big.NewInt(1 << 16)
-	updateCampaignsRequestFieldReplyProfileID       = big.NewInt(1 << 17)
-	updateCampaignsRequestFieldReplyTo              = big.NewInt(1 << 18)
-	updateCampaignsRequestFieldReplyToName          = big.NewInt(1 << 19)
-	updateCampaignsRequestFieldSegmentID            = big.NewInt(1 << 20)
-	updateCampaignsRequestFieldSenderProfileID      = big.NewInt(1 << 21)
-	updateCampaignsRequestFieldSendTimeOptimization = big.NewInt(1 << 22)
-	updateCampaignsRequestFieldSendTimeWindowHours  = big.NewInt(1 << 23)
-	updateCampaignsRequestFieldSubject              = big.NewInt(1 << 24)
-	updateCampaignsRequestFieldTargetLists          = big.NewInt(1 << 25)
-	updateCampaignsRequestFieldTrackingCode         = big.NewInt(1 << 26)
+	updateCampaignsRequestFieldAttachments          = big.NewInt(1 << 1)
+	updateCampaignsRequestFieldBccEmails            = big.NewInt(1 << 2)
+	updateCampaignsRequestFieldBlocks               = big.NewInt(1 << 3)
+	updateCampaignsRequestFieldCampaignData         = big.NewInt(1 << 4)
+	updateCampaignsRequestFieldCcEmails             = big.NewInt(1 << 5)
+	updateCampaignsRequestFieldComputedLists        = big.NewInt(1 << 6)
+	updateCampaignsRequestFieldEmailPreset          = big.NewInt(1 << 7)
+	updateCampaignsRequestFieldFromEmail            = big.NewInt(1 << 8)
+	updateCampaignsRequestFieldFromName             = big.NewInt(1 << 9)
+	updateCampaignsRequestFieldHTML                 = big.NewInt(1 << 10)
+	updateCampaignsRequestFieldLabel                = big.NewInt(1 << 11)
+	updateCampaignsRequestFieldLabels               = big.NewInt(1 << 12)
+	updateCampaignsRequestFieldListIDs              = big.NewInt(1 << 13)
+	updateCampaignsRequestFieldMaxRecipients        = big.NewInt(1 << 14)
+	updateCampaignsRequestFieldName                 = big.NewInt(1 << 15)
+	updateCampaignsRequestFieldPreheaderText        = big.NewInt(1 << 16)
+	updateCampaignsRequestFieldPreviewText          = big.NewInt(1 << 17)
+	updateCampaignsRequestFieldReplyProfileID       = big.NewInt(1 << 18)
+	updateCampaignsRequestFieldReplyTo              = big.NewInt(1 << 19)
+	updateCampaignsRequestFieldReplyToName          = big.NewInt(1 << 20)
+	updateCampaignsRequestFieldSegmentID            = big.NewInt(1 << 21)
+	updateCampaignsRequestFieldSenderProfileID      = big.NewInt(1 << 22)
+	updateCampaignsRequestFieldSendTimeOptimization = big.NewInt(1 << 23)
+	updateCampaignsRequestFieldSendTimeWindowHours  = big.NewInt(1 << 24)
+	updateCampaignsRequestFieldSubject              = big.NewInt(1 << 25)
+	updateCampaignsRequestFieldTargetLists          = big.NewInt(1 << 26)
+	updateCampaignsRequestFieldTrackingCode         = big.NewInt(1 << 27)
 )
 
 type UpdateCampaignsRequest struct {
 	// Campaign ID
 	CampaignID string `json:"-" url:"-"`
+	// Replaces the files sent with every recipient's email (up to 10 files, 5MB in total). Send an empty array or null to remove them; omit to leave them unchanged. Base64 content is stored only after every other field in the request has been validated; if storing fails, the response is 503 and the campaign is unchanged.
+	Attachments []*CampaignAttachmentInput `json:"attachments,omitempty" url:"-"`
 	// Addresses BCC'd on every recipient's email for this campaign. Send an empty array or null to clear them.
 	BccEmails []string `json:"bccEmails,omitempty" url:"-"`
 	// Updated Sequenzy email blocks. Mutually exclusive with `html`. Put visual styling under styles; top-level style keys such as backgroundColor, backgroundOpacity, borderColor, borderWidth, and borderRadius are normalized into styles.
@@ -12857,6 +13351,13 @@ func (u *UpdateCampaignsRequest) require(field *big.Int) {
 func (u *UpdateCampaignsRequest) SetCampaignID(campaignID string) {
 	u.CampaignID = campaignID
 	u.require(updateCampaignsRequestFieldCampaignID)
+}
+
+// SetAttachments sets the Attachments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateCampaignsRequest) SetAttachments(attachments []*CampaignAttachmentInput) {
+	u.Attachments = attachments
+	u.require(updateCampaignsRequestFieldAttachments)
 }
 
 // SetBccEmails sets the BccEmails field and marks it as non-optional;
