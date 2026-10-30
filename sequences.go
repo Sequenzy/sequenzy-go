@@ -18616,13 +18616,16 @@ func (s *SequenceKeyDate) String() string {
 
 // Named absolute moments the sequence counts down to. Delay steps with waitUntilKeyDate wait relative to one of them, so the whole countdown is re-timed by editing these dates. Changing a key date on a live sequence re-schedules contacts already waiting on it. Send null to clear.
 var (
-	sequenceKeyDatesFieldDates    = big.NewInt(1 << 0)
-	sequenceKeyDatesFieldTimezone = big.NewInt(1 << 1)
+	sequenceKeyDatesFieldDates      = big.NewInt(1 << 0)
+	sequenceKeyDatesFieldSendWindow = big.NewInt(1 << 1)
+	sequenceKeyDatesFieldTimezone   = big.NewInt(1 << 2)
 )
 
 type SequenceKeyDates struct {
 	// Sorted by time when returned.
 	Dates []*SequenceKeyDate `json:"dates" url:"dates"`
+	// How sends timed from these moments are spread out, so a whole audience is not emailed in the same second. Each contact gets their own stable send time within the spread, after the moment for steps at or after it and in the hours leading up to the step's time for steps timed before it, so a "1 hour before Black Friday ends" email never lands after the sale ended. Omit it on update to keep the current spread, and send null to reset it to the default. Responses always include the effective value.
+	SendWindow *SequenceKeyDatesSendWindow `json:"sendWindow,omitempty" url:"sendWindow,omitempty"`
 	// IANA timezone the dates are shown and edited in. Required when dates is non-empty.
 	Timezone *string `json:"timezone,omitempty" url:"timezone,omitempty"`
 
@@ -18638,6 +18641,13 @@ func (s *SequenceKeyDates) GetDates() []*SequenceKeyDate {
 		return nil
 	}
 	return s.Dates
+}
+
+func (s *SequenceKeyDates) GetSendWindow() *SequenceKeyDatesSendWindow {
+	if s == nil {
+		return nil
+	}
+	return s.SendWindow
 }
 
 func (s *SequenceKeyDates) GetTimezone() *string {
@@ -18666,6 +18676,13 @@ func (s *SequenceKeyDates) require(field *big.Int) {
 func (s *SequenceKeyDates) SetDates(dates []*SequenceKeyDate) {
 	s.Dates = dates
 	s.require(sequenceKeyDatesFieldDates)
+}
+
+// SetSendWindow sets the SendWindow field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceKeyDates) SetSendWindow(sendWindow *SequenceKeyDatesSendWindow) {
+	s.SendWindow = sendWindow
+	s.require(sequenceKeyDatesFieldSendWindow)
 }
 
 // SetTimezone sets the Timezone field and marks it as non-optional;
@@ -18703,6 +18720,92 @@ func (s *SequenceKeyDates) MarshalJSON() ([]byte, error) {
 }
 
 func (s *SequenceKeyDates) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+// How sends timed from these moments are spread out, so a whole audience is not emailed in the same second. Each contact gets their own stable send time within the spread, after the moment for steps at or after it and in the hours leading up to the step's time for steps timed before it, so a "1 hour before Black Friday ends" email never lands after the sale ended. Omit it on update to keep the current spread, and send null to reset it to the default. Responses always include the effective value.
+var (
+	sequenceKeyDatesSendWindowFieldSpreadOverHours = big.NewInt(1 << 0)
+)
+
+type SequenceKeyDatesSendWindow struct {
+	// Spread each email over this many hours. 0 sends everyone at the exact time.
+	SpreadOverHours *float64 `json:"spreadOverHours,omitempty" url:"spreadOverHours,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequenceKeyDatesSendWindow) GetSpreadOverHours() *float64 {
+	if s == nil {
+		return nil
+	}
+	return s.SpreadOverHours
+}
+
+func (s *SequenceKeyDatesSendWindow) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequenceKeyDatesSendWindow) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetSpreadOverHours sets the SpreadOverHours field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceKeyDatesSendWindow) SetSpreadOverHours(spreadOverHours *float64) {
+	s.SpreadOverHours = spreadOverHours
+	s.require(sequenceKeyDatesSendWindowFieldSpreadOverHours)
+}
+
+func (s *SequenceKeyDatesSendWindow) UnmarshalJSON(data []byte) error {
+	type unmarshaler SequenceKeyDatesSendWindow
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SequenceKeyDatesSendWindow(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceKeyDatesSendWindow) MarshalJSON() ([]byte, error) {
+	type embed SequenceKeyDatesSendWindow
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequenceKeyDatesSendWindow) String() string {
 	if s == nil {
 		return "<nil>"
 	}

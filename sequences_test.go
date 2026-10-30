@@ -51451,6 +51451,14 @@ func TestSettersSequenceKeyDates(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetSendWindow", func(t *testing.T) {
+		obj := &SequenceKeyDates{}
+		var fernTestValueSendWindow *SequenceKeyDatesSendWindow
+		obj.SetSendWindow(fernTestValueSendWindow)
+		assert.Equal(t, fernTestValueSendWindow, obj.SendWindow)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetTimezone", func(t *testing.T) {
 		obj := &SequenceKeyDates{}
 		var fernTestValueTimezone *string
@@ -51493,6 +51501,39 @@ func TestGettersSequenceKeyDates(t *testing.T) {
 			}
 		}()
 		_ = obj.GetDates() // Should return zero value
+	})
+
+	t.Run("GetSendWindow", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceKeyDates{}
+		var expected *SequenceKeyDatesSendWindow
+		obj.SendWindow = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSendWindow(), "getter should return the property value")
+	})
+
+	t.Run("GetSendWindow_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceKeyDates{}
+		obj.SendWindow = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSendWindow(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSendWindow_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequenceKeyDates
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSendWindow() // Should return zero value
 	})
 
 	t.Run("GetTimezone", func(t *testing.T) {
@@ -51562,6 +51603,37 @@ func TestSettersMarkExplicitSequenceKeyDates(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetSendWindow_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceKeyDates{}
+		var fernTestValueSendWindow *SequenceKeyDatesSendWindow
+
+		// Act
+		obj.SetSendWindow(fernTestValueSendWindow)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetTimezone_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -51570,6 +51642,87 @@ func TestSettersMarkExplicitSequenceKeyDates(t *testing.T) {
 
 		// Act
 		obj.SetTimezone(fernTestValueTimezone)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersSequenceKeyDatesSendWindow(t *testing.T) {
+	t.Run("SetSpreadOverHours", func(t *testing.T) {
+		obj := &SequenceKeyDatesSendWindow{}
+		var fernTestValueSpreadOverHours *float64
+		obj.SetSpreadOverHours(fernTestValueSpreadOverHours)
+		assert.Equal(t, fernTestValueSpreadOverHours, obj.SpreadOverHours)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersSequenceKeyDatesSendWindow(t *testing.T) {
+	t.Run("GetSpreadOverHours", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceKeyDatesSendWindow{}
+		var expected *float64
+		obj.SpreadOverHours = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSpreadOverHours(), "getter should return the property value")
+	})
+
+	t.Run("GetSpreadOverHours_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceKeyDatesSendWindow{}
+		obj.SpreadOverHours = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSpreadOverHours(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSpreadOverHours_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequenceKeyDatesSendWindow
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSpreadOverHours() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitSequenceKeyDatesSendWindow(t *testing.T) {
+	t.Run("SetSpreadOverHours_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceKeyDatesSendWindow{}
+		var fernTestValueSpreadOverHours *float64
+
+		// Act
+		obj.SetSpreadOverHours(fernTestValueSpreadOverHours)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -91069,6 +91222,39 @@ func TestJSONMarshalingSequenceKeyDates(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingSequenceKeyDatesSendWindow(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceKeyDatesSendWindow{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled SequenceKeyDatesSendWindow
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj SequenceKeyDatesSendWindow
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj SequenceKeyDatesSendWindow
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingSequenceLinearStepInsertionInput(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -93951,6 +94137,22 @@ func TestStringSequenceKeyDates(t *testing.T) {
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *SequenceKeyDates
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringSequenceKeyDatesSendWindow(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &SequenceKeyDatesSendWindow{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequenceKeyDatesSendWindow
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -101326,6 +101528,29 @@ func TestExtraPropertiesSequenceKeyDates(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *SequenceKeyDates
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesSequenceKeyDatesSendWindow(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &SequenceKeyDatesSendWindow{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequenceKeyDatesSendWindow
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})
