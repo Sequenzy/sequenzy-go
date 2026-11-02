@@ -195,6 +195,27 @@ func (c *Client) Get(
 	return response.Body, nil
 }
 
+// Counts, per enabled non-primary language, how many emails that keep sending are translated. Covers every email step and A/B variant in sequences that are not archived, plus enabled transactional emails. Personal API keys with the marketer role do not see transactional emails, so they are left out of the counts. Campaigns are not counted.
+//
+// Example:
+//
+//	client.Templates.GetLocalizationCoverage(
+//	    context.TODO(),
+//	)
+func (c *Client) GetLocalizationCoverage(
+	ctx context.Context,
+	opts ...option.RequestOption,
+) (*sequenzygo.GetLocalizationCoverageTemplatesResponse, error) {
+	response, err := c.WithRawResponse.GetLocalizationCoverage(
+		ctx,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Lists saved email templates for the authenticated company, optionally filtered by label. Templates are the company's saved email bodies: standalone templates plus the bodies behind campaigns and transactional emails, so dashboard-designed emails appear here too. A campaign's `emailId` points at its entry in this list, and any template ID can be passed as `templateId` when creating a campaign. Bodies are kept when their campaign or transactional email is deleted. Content snapshots of code-managed transactional emails (created by sends with `trackAs`) are not listed and cannot be used as `templateId`. Results are newest first and paginated: 50 per page by default, up to 100. Page with `offset` while `pagination.hasMore` is true.
 //
 // Example:
@@ -346,6 +367,31 @@ func (c *Client) SyncLocalizations(
 	opts ...option.RequestOption,
 ) (*sequenzygo.SyncLocalizationsTemplatesResponse, error) {
 	response, err := c.WithRawResponse.SyncLocalizations(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Queues AI translation for every sequence email (including sequence A/B variants) and enabled transactional email that has no translation in a language yet, or whose last translation failed. Translations someone edited, up-to-date translations and outdated ones are left alone; use Sync template localizations to retranslate one template. Adding a language in the dashboard already does this for the new language. Personal API keys with the marketer role only translate sequence emails.
+//
+// Example:
+//
+//	request := &sequenzygo.TranslateMissingLocalizationsTemplatesRequest{}
+//	client.Templates.TranslateMissingLocalizations(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) TranslateMissingLocalizations(
+	ctx context.Context,
+	request *sequenzygo.TranslateMissingLocalizationsTemplatesRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.TranslateMissingLocalizationsTemplatesResponse, error) {
+	response, err := c.WithRawResponse.TranslateMissingLocalizations(
 		ctx,
 		request,
 		opts...,

@@ -1,6 +1,33 @@
 {
   "mappings": [
     {
+      "id": "5f1c15e6-c9ac-4014-9a63-1463f5f5ade8",
+      "name": "Get public MCP discovery metadata - default",
+      "request": {
+        "urlPathTemplate": "/.well-known/mcp.json",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"description\": \"Email marketing for SaaS and ecommerce\",\n  \"documentation\": \"https://docs.sequenzy.com/concepts/mcp\",\n  \"name\": \"Sequenzy\",\n  \"repository\": \"https://github.com/Sequenzy/mcp\",\n  \"transport\": \"streamable-http\",\n  \"url\": \"https://api.sequenzy.com/v1/mcp\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "5f1c15e6-c9ac-4014-9a63-1463f5f5ade8",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
       "id": "fb1fe055-c727-4e26-8db5-a85c92bf0e46",
       "name": "Add A/B test variant - default",
       "request": {
@@ -10180,7 +10207,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"pagination\": {\n    \"count\": 1,\n    \"hasMore\": true,\n    \"limit\": 1,\n    \"offset\": 1,\n    \"total\": 1\n  },\n  \"sequences\": [\n    {\n      \"acceptsNewEnrollments\": true,\n      \"activeSubscribersOnly\": true,\n      \"audienceAutoEnroll\": {\n        \"audience\": {\n          \"includedSubscriberIds\": [\n            \"sub_abc123\",\n            \"sub_def456\"\n          ],\n          \"listIds\": [\n            \"list_abc123\"\n          ],\n          \"segmentId\": \"seg_abc123\",\n          \"type\": \"all\"\n        },\n        \"enabled\": true\n      },\n      \"bccEmails\": [\n        \"cs-team@example.com\"\n      ],\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"description\": \"description\",\n      \"effectiveStatus\": \"draft\",\n      \"effectiveStatusSummary\": \"effectiveStatusSummary\",\n      \"enrollmentPaused\": true,\n      \"frequencyCapEnabled\": true,\n      \"fromEmail\": \"fromEmail\",\n      \"fromName\": \"fromName\",\n      \"id\": \"seq_abc123\",\n      \"keyDates\": {\n        \"dates\": [\n          {\n            \"at\": \"2024-01-15T09:30:00Z\",\n            \"key\": \"black_friday_starts\",\n            \"label\": \"Black Friday starts\"\n          }\n        ],\n        \"timezone\": \"America/New_York\"\n      },\n      \"labelIds\": [\n        \"labelIds\"\n      ],\n      \"labels\": [\n        \"labels\"\n      ],\n      \"name\": \"Welcome Sequence\",\n      \"pausedAt\": \"2024-01-15T09:30:00Z\",\n      \"pausedByUserId\": \"pausedByUserId\",\n      \"pauseReason\": \"pauseReason\",\n      \"pauseSource\": \"pauseSource\",\n      \"processesExistingEnrollments\": true,\n      \"replyProfileId\": \"replyProfileId\",\n      \"replyToEmail\": \"replyToEmail\",\n      \"replyToName\": \"replyToName\",\n      \"senderProfileId\": \"senderProfileId\",\n      \"sendingWindow\": {\n        \"days\": [\n          \"monday\",\n          \"tuesday\",\n          \"wednesday\",\n          \"thursday\",\n          \"friday\"\n        ],\n        \"enabled\": true,\n        \"endTime\": \"20:00\",\n        \"startTime\": \"08:00\",\n        \"timezone\": \"Europe/Kiev\"\n      },\n      \"status\": \"draft\",\n      \"trigger\": \"trigger_list\",\n      \"triggerConfig\": {\n        \"key\": \"value\"\n      },\n      \"updatedAt\": \"2024-01-15T09:30:00Z\",\n      \"userCancellable\": true\n    }\n  ],\n  \"success\": true\n}",
+        "body": "{\n  \"pagination\": {\n    \"count\": 1,\n    \"hasMore\": true,\n    \"limit\": 1,\n    \"offset\": 1,\n    \"total\": 1\n  },\n  \"sequences\": [\n    {\n      \"acceptsNewEnrollments\": true,\n      \"activeSubscribersOnly\": true,\n      \"audienceAutoEnroll\": {\n        \"audience\": {\n          \"includedSubscriberIds\": [\n            \"sub_abc123\",\n            \"sub_def456\"\n          ],\n          \"listIds\": [\n            \"list_abc123\"\n          ],\n          \"segmentId\": \"seg_abc123\",\n          \"type\": \"all\"\n        },\n        \"enabled\": true\n      },\n      \"bccEmails\": [\n        \"cs-team@example.com\"\n      ],\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"description\": \"description\",\n      \"effectiveStatus\": \"draft\",\n      \"effectiveStatusSummary\": \"effectiveStatusSummary\",\n      \"emailCount\": 5,\n      \"enrollmentPaused\": true,\n      \"frequencyCapEnabled\": true,\n      \"fromEmail\": \"fromEmail\",\n      \"fromName\": \"fromName\",\n      \"id\": \"seq_abc123\",\n      \"keyDates\": {\n        \"dates\": [\n          {\n            \"at\": \"2024-01-15T09:30:00Z\",\n            \"key\": \"black_friday_starts\",\n            \"label\": \"Black Friday starts\"\n          }\n        ],\n        \"timezone\": \"America/New_York\"\n      },\n      \"labelIds\": [\n        \"labelIds\"\n      ],\n      \"labels\": [\n        \"labels\"\n      ],\n      \"name\": \"Welcome Sequence\",\n      \"pausedAt\": \"2024-01-15T09:30:00Z\",\n      \"pausedByUserId\": \"pausedByUserId\",\n      \"pauseReason\": \"pauseReason\",\n      \"pauseSource\": \"pauseSource\",\n      \"processesExistingEnrollments\": true,\n      \"replyProfileId\": \"replyProfileId\",\n      \"replyToEmail\": \"replyToEmail\",\n      \"replyToName\": \"replyToName\",\n      \"senderProfileId\": \"senderProfileId\",\n      \"sendingWindow\": {\n        \"days\": [\n          \"monday\",\n          \"tuesday\",\n          \"wednesday\",\n          \"thursday\",\n          \"friday\"\n        ],\n        \"enabled\": true,\n        \"endTime\": \"20:00\",\n        \"startTime\": \"08:00\",\n        \"timezone\": \"Europe/Kiev\"\n      },\n      \"status\": \"draft\",\n      \"trigger\": \"trigger_list\",\n      \"triggerConfig\": {\n        \"key\": \"value\"\n      },\n      \"updatedAt\": \"2024-01-15T09:30:00Z\",\n      \"userCancellable\": true\n    }\n  ],\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -12876,6 +12903,38 @@
       }
     },
     {
+      "id": "973222dc-a286-4346-a4fb-6c105abd86a1",
+      "name": "Get translation coverage - default",
+      "request": {
+        "urlPathTemplate": "/templates/localizations/coverage",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"locales\": [\n    {\n      \"edited\": 1,\n      \"failed\": 1,\n      \"locale\": \"locale\",\n      \"missing\": 1,\n      \"outdated\": 1,\n      \"total\": 1,\n      \"translating\": 1,\n      \"upToDate\": 1\n    }\n  ],\n  \"primaryLocale\": \"primaryLocale\",\n  \"sequenceEmails\": 1,\n  \"success\": true,\n  \"totalEmails\": 1,\n  \"transactionalEmails\": 1\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "973222dc-a286-4346-a4fb-6c105abd86a1",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
       "id": "04cc8a08-fb5b-4842-93c9-521bdc3b439d",
       "name": "List templates - default",
       "request": {
@@ -13074,6 +13133,37 @@
         }
       },
       "uuid": "a429a18c-2e90-4054-a7b2-c5c846ba2679",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "33576946-2cc0-4caf-abc7-611c25d4634e",
+      "name": "Translate missing emails - default",
+      "request": {
+        "urlPathTemplate": "/templates/localizations/translate-missing",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"locales\": [\n    \"locales\"\n  ],\n  \"queuedEmails\": 1,\n  \"queuedTranslations\": 1,\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "33576946-2cc0-4caf-abc7-611c25d4634e",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -15475,6 +15565,6 @@
     }
   ],
   "meta": {
-    "total": 449
+    "total": 452
   }
 }

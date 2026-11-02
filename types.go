@@ -6771,6 +6771,284 @@ func (f FilterLeafOperator) Ptr() *FilterLeafOperator {
 }
 
 var (
+	getMcpDiscoveryResponseFieldDescription   = big.NewInt(1 << 0)
+	getMcpDiscoveryResponseFieldDocumentation = big.NewInt(1 << 1)
+	getMcpDiscoveryResponseFieldName          = big.NewInt(1 << 2)
+	getMcpDiscoveryResponseFieldRepository    = big.NewInt(1 << 3)
+	getMcpDiscoveryResponseFieldTransport     = big.NewInt(1 << 4)
+	getMcpDiscoveryResponseFieldURL           = big.NewInt(1 << 5)
+)
+
+type GetMcpDiscoveryResponse struct {
+	Description   GetMcpDiscoveryResponseDescription   `json:"description" url:"description"`
+	Documentation GetMcpDiscoveryResponseDocumentation `json:"documentation" url:"documentation"`
+	Name          GetMcpDiscoveryResponseName          `json:"name" url:"name"`
+	Repository    GetMcpDiscoveryResponseRepository    `json:"repository" url:"repository"`
+	Transport     GetMcpDiscoveryResponseTransport     `json:"transport" url:"transport"`
+	URL           GetMcpDiscoveryResponseURL           `json:"url" url:"url"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (g *GetMcpDiscoveryResponse) GetDescription() GetMcpDiscoveryResponseDescription {
+	if g == nil {
+		return ""
+	}
+	return g.Description
+}
+
+func (g *GetMcpDiscoveryResponse) GetDocumentation() GetMcpDiscoveryResponseDocumentation {
+	if g == nil {
+		return ""
+	}
+	return g.Documentation
+}
+
+func (g *GetMcpDiscoveryResponse) GetName() GetMcpDiscoveryResponseName {
+	if g == nil {
+		return ""
+	}
+	return g.Name
+}
+
+func (g *GetMcpDiscoveryResponse) GetRepository() GetMcpDiscoveryResponseRepository {
+	if g == nil {
+		return ""
+	}
+	return g.Repository
+}
+
+func (g *GetMcpDiscoveryResponse) GetTransport() GetMcpDiscoveryResponseTransport {
+	if g == nil {
+		return ""
+	}
+	return g.Transport
+}
+
+func (g *GetMcpDiscoveryResponse) GetURL() GetMcpDiscoveryResponseURL {
+	if g == nil {
+		return ""
+	}
+	return g.URL
+}
+
+func (g *GetMcpDiscoveryResponse) GetExtraProperties() map[string]interface{} {
+	if g == nil {
+		return nil
+	}
+	return g.extraProperties
+}
+
+func (g *GetMcpDiscoveryResponse) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetDescription sets the Description field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMcpDiscoveryResponse) SetDescription(description GetMcpDiscoveryResponseDescription) {
+	g.Description = description
+	g.require(getMcpDiscoveryResponseFieldDescription)
+}
+
+// SetDocumentation sets the Documentation field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMcpDiscoveryResponse) SetDocumentation(documentation GetMcpDiscoveryResponseDocumentation) {
+	g.Documentation = documentation
+	g.require(getMcpDiscoveryResponseFieldDocumentation)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMcpDiscoveryResponse) SetName(name GetMcpDiscoveryResponseName) {
+	g.Name = name
+	g.require(getMcpDiscoveryResponseFieldName)
+}
+
+// SetRepository sets the Repository field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMcpDiscoveryResponse) SetRepository(repository GetMcpDiscoveryResponseRepository) {
+	g.Repository = repository
+	g.require(getMcpDiscoveryResponseFieldRepository)
+}
+
+// SetTransport sets the Transport field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMcpDiscoveryResponse) SetTransport(transport GetMcpDiscoveryResponseTransport) {
+	g.Transport = transport
+	g.require(getMcpDiscoveryResponseFieldTransport)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetMcpDiscoveryResponse) SetURL(url GetMcpDiscoveryResponseURL) {
+	g.URL = url
+	g.require(getMcpDiscoveryResponseFieldURL)
+}
+
+func (g *GetMcpDiscoveryResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler GetMcpDiscoveryResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*g = GetMcpDiscoveryResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *g)
+	if err != nil {
+		return err
+	}
+	g.extraProperties = extraProperties
+	g.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (g *GetMcpDiscoveryResponse) MarshalJSON() ([]byte, error) {
+	type embed GetMcpDiscoveryResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*g),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (g *GetMcpDiscoveryResponse) String() string {
+	if g == nil {
+		return "<nil>"
+	}
+	if len(g.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(g.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(g); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", g)
+}
+
+type GetMcpDiscoveryResponseDescription string
+
+const (
+	GetMcpDiscoveryResponseDescriptionEmailMarketingForSaaSAndEcommerce GetMcpDiscoveryResponseDescription = "Email marketing for SaaS and ecommerce"
+)
+
+func NewGetMcpDiscoveryResponseDescriptionFromString(s string) (GetMcpDiscoveryResponseDescription, error) {
+	switch s {
+	case "Email marketing for SaaS and ecommerce":
+		return GetMcpDiscoveryResponseDescriptionEmailMarketingForSaaSAndEcommerce, nil
+	}
+	var t GetMcpDiscoveryResponseDescription
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (g GetMcpDiscoveryResponseDescription) Ptr() *GetMcpDiscoveryResponseDescription {
+	return &g
+}
+
+type GetMcpDiscoveryResponseDocumentation string
+
+const (
+	GetMcpDiscoveryResponseDocumentationHTTPSDocsSequenzyComConceptsMcp GetMcpDiscoveryResponseDocumentation = "https://docs.sequenzy.com/concepts/mcp"
+)
+
+func NewGetMcpDiscoveryResponseDocumentationFromString(s string) (GetMcpDiscoveryResponseDocumentation, error) {
+	switch s {
+	case "https://docs.sequenzy.com/concepts/mcp":
+		return GetMcpDiscoveryResponseDocumentationHTTPSDocsSequenzyComConceptsMcp, nil
+	}
+	var t GetMcpDiscoveryResponseDocumentation
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (g GetMcpDiscoveryResponseDocumentation) Ptr() *GetMcpDiscoveryResponseDocumentation {
+	return &g
+}
+
+type GetMcpDiscoveryResponseName string
+
+const (
+	GetMcpDiscoveryResponseNameSequenzy GetMcpDiscoveryResponseName = "Sequenzy"
+)
+
+func NewGetMcpDiscoveryResponseNameFromString(s string) (GetMcpDiscoveryResponseName, error) {
+	switch s {
+	case "Sequenzy":
+		return GetMcpDiscoveryResponseNameSequenzy, nil
+	}
+	var t GetMcpDiscoveryResponseName
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (g GetMcpDiscoveryResponseName) Ptr() *GetMcpDiscoveryResponseName {
+	return &g
+}
+
+type GetMcpDiscoveryResponseRepository string
+
+const (
+	GetMcpDiscoveryResponseRepositoryHTTPSGithubComSequenzyMcp GetMcpDiscoveryResponseRepository = "https://github.com/Sequenzy/mcp"
+)
+
+func NewGetMcpDiscoveryResponseRepositoryFromString(s string) (GetMcpDiscoveryResponseRepository, error) {
+	switch s {
+	case "https://github.com/Sequenzy/mcp":
+		return GetMcpDiscoveryResponseRepositoryHTTPSGithubComSequenzyMcp, nil
+	}
+	var t GetMcpDiscoveryResponseRepository
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (g GetMcpDiscoveryResponseRepository) Ptr() *GetMcpDiscoveryResponseRepository {
+	return &g
+}
+
+type GetMcpDiscoveryResponseTransport string
+
+const (
+	GetMcpDiscoveryResponseTransportStreamableHTTP GetMcpDiscoveryResponseTransport = "streamable-http"
+)
+
+func NewGetMcpDiscoveryResponseTransportFromString(s string) (GetMcpDiscoveryResponseTransport, error) {
+	switch s {
+	case "streamable-http":
+		return GetMcpDiscoveryResponseTransportStreamableHTTP, nil
+	}
+	var t GetMcpDiscoveryResponseTransport
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (g GetMcpDiscoveryResponseTransport) Ptr() *GetMcpDiscoveryResponseTransport {
+	return &g
+}
+
+type GetMcpDiscoveryResponseURL string
+
+const (
+	GetMcpDiscoveryResponseURLHttpsApiSequenzyComV1Mcp GetMcpDiscoveryResponseURL = "https://api.sequenzy.com/v1/mcp"
+)
+
+func NewGetMcpDiscoveryResponseURLFromString(s string) (GetMcpDiscoveryResponseURL, error) {
+	switch s {
+	case "https://api.sequenzy.com/v1/mcp":
+		return GetMcpDiscoveryResponseURLHttpsApiSequenzyComV1Mcp, nil
+	}
+	var t GetMcpDiscoveryResponseURL
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (g GetMcpDiscoveryResponseURL) Ptr() *GetMcpDiscoveryResponseURL {
+	return &g
+}
+
+var (
 	inputIssueFieldAllowedValues = big.NewInt(1 << 0)
 	inputIssueFieldMessage       = big.NewInt(1 << 1)
 	inputIssueFieldPath          = big.NewInt(1 << 2)

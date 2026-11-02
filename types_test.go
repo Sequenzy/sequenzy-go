@@ -14542,6 +14542,387 @@ func TestSettersMarkExplicitFilterLeaf(t *testing.T) {
 
 }
 
+func TestSettersGetMcpDiscoveryResponse(t *testing.T) {
+	t.Run("SetDescription", func(t *testing.T) {
+		obj := &GetMcpDiscoveryResponse{}
+		var fernTestValueDescription GetMcpDiscoveryResponseDescription
+		obj.SetDescription(fernTestValueDescription)
+		assert.Equal(t, fernTestValueDescription, obj.Description)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetDocumentation", func(t *testing.T) {
+		obj := &GetMcpDiscoveryResponse{}
+		var fernTestValueDocumentation GetMcpDiscoveryResponseDocumentation
+		obj.SetDocumentation(fernTestValueDocumentation)
+		assert.Equal(t, fernTestValueDocumentation, obj.Documentation)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetName", func(t *testing.T) {
+		obj := &GetMcpDiscoveryResponse{}
+		var fernTestValueName GetMcpDiscoveryResponseName
+		obj.SetName(fernTestValueName)
+		assert.Equal(t, fernTestValueName, obj.Name)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetRepository", func(t *testing.T) {
+		obj := &GetMcpDiscoveryResponse{}
+		var fernTestValueRepository GetMcpDiscoveryResponseRepository
+		obj.SetRepository(fernTestValueRepository)
+		assert.Equal(t, fernTestValueRepository, obj.Repository)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetTransport", func(t *testing.T) {
+		obj := &GetMcpDiscoveryResponse{}
+		var fernTestValueTransport GetMcpDiscoveryResponseTransport
+		obj.SetTransport(fernTestValueTransport)
+		assert.Equal(t, fernTestValueTransport, obj.Transport)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetURL", func(t *testing.T) {
+		obj := &GetMcpDiscoveryResponse{}
+		var fernTestValueURL GetMcpDiscoveryResponseURL
+		obj.SetURL(fernTestValueURL)
+		assert.Equal(t, fernTestValueURL, obj.URL)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersGetMcpDiscoveryResponse(t *testing.T) {
+	t.Run("GetDescription", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetMcpDiscoveryResponse{}
+		var expected GetMcpDiscoveryResponseDescription
+		obj.Description = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDescription(), "getter should return the property value")
+	})
+
+	t.Run("GetDescription_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *GetMcpDiscoveryResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDescription() // Should return zero value
+	})
+
+	t.Run("GetDocumentation", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetMcpDiscoveryResponse{}
+		var expected GetMcpDiscoveryResponseDocumentation
+		obj.Documentation = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDocumentation(), "getter should return the property value")
+	})
+
+	t.Run("GetDocumentation_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *GetMcpDiscoveryResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDocumentation() // Should return zero value
+	})
+
+	t.Run("GetName", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetMcpDiscoveryResponse{}
+		var expected GetMcpDiscoveryResponseName
+		obj.Name = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetName(), "getter should return the property value")
+	})
+
+	t.Run("GetName_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *GetMcpDiscoveryResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetName() // Should return zero value
+	})
+
+	t.Run("GetRepository", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetMcpDiscoveryResponse{}
+		var expected GetMcpDiscoveryResponseRepository
+		obj.Repository = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetRepository(), "getter should return the property value")
+	})
+
+	t.Run("GetRepository_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *GetMcpDiscoveryResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetRepository() // Should return zero value
+	})
+
+	t.Run("GetTransport", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetMcpDiscoveryResponse{}
+		var expected GetMcpDiscoveryResponseTransport
+		obj.Transport = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetTransport(), "getter should return the property value")
+	})
+
+	t.Run("GetTransport_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *GetMcpDiscoveryResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetTransport() // Should return zero value
+	})
+
+	t.Run("GetURL", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetMcpDiscoveryResponse{}
+		var expected GetMcpDiscoveryResponseURL
+		obj.URL = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetURL(), "getter should return the property value")
+	})
+
+	t.Run("GetURL_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *GetMcpDiscoveryResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetURL() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitGetMcpDiscoveryResponse(t *testing.T) {
+	t.Run("SetDescription_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetMcpDiscoveryResponse{}
+		var fernTestValueDescription GetMcpDiscoveryResponseDescription
+
+		// Act
+		obj.SetDescription(fernTestValueDescription)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetDocumentation_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetMcpDiscoveryResponse{}
+		var fernTestValueDocumentation GetMcpDiscoveryResponseDocumentation
+
+		// Act
+		obj.SetDocumentation(fernTestValueDocumentation)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetName_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetMcpDiscoveryResponse{}
+		var fernTestValueName GetMcpDiscoveryResponseName
+
+		// Act
+		obj.SetName(fernTestValueName)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetRepository_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetMcpDiscoveryResponse{}
+		var fernTestValueRepository GetMcpDiscoveryResponseRepository
+
+		// Act
+		obj.SetRepository(fernTestValueRepository)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetTransport_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetMcpDiscoveryResponse{}
+		var fernTestValueTransport GetMcpDiscoveryResponseTransport
+
+		// Act
+		obj.SetTransport(fernTestValueTransport)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetURL_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetMcpDiscoveryResponse{}
+		var fernTestValueURL GetMcpDiscoveryResponseURL
+
+		// Act
+		obj.SetURL(fernTestValueURL)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
 func TestSettersInputIssue(t *testing.T) {
 	t.Run("SetAllowedValues", func(t *testing.T) {
 		obj := &InputIssue{}
@@ -24949,6 +25330,39 @@ func TestJSONMarshalingFilterLeaf(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingGetMcpDiscoveryResponse(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetMcpDiscoveryResponse{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled GetMcpDiscoveryResponse
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj GetMcpDiscoveryResponse
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj GetMcpDiscoveryResponse
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingInputIssue(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -26430,6 +26844,22 @@ func TestStringFilterLeaf(t *testing.T) {
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *FilterLeaf
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringGetMcpDiscoveryResponse(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &GetMcpDiscoveryResponse{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *GetMcpDiscoveryResponse
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -28678,6 +29108,138 @@ func TestEnumFilterLeafOperator(t *testing.T) {
 	})
 }
 
+func TestEnumGetMcpDiscoveryResponseDescription(t *testing.T) {
+	t.Run("NewFromString_Email_marketing_for_SaaS_and_ecommerce", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewGetMcpDiscoveryResponseDescriptionFromString("Email marketing for SaaS and ecommerce")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, GetMcpDiscoveryResponseDescription("Email marketing for SaaS and ecommerce"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewGetMcpDiscoveryResponseDescriptionFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewGetMcpDiscoveryResponseDescriptionFromString("Email marketing for SaaS and ecommerce")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumGetMcpDiscoveryResponseDocumentation(t *testing.T) {
+	t.Run("NewFromString_https___docs_sequenzy_com_concepts_mcp", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewGetMcpDiscoveryResponseDocumentationFromString("https://docs.sequenzy.com/concepts/mcp")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, GetMcpDiscoveryResponseDocumentation("https://docs.sequenzy.com/concepts/mcp"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewGetMcpDiscoveryResponseDocumentationFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewGetMcpDiscoveryResponseDocumentationFromString("https://docs.sequenzy.com/concepts/mcp")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumGetMcpDiscoveryResponseName(t *testing.T) {
+	t.Run("NewFromString_Sequenzy", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewGetMcpDiscoveryResponseNameFromString("Sequenzy")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, GetMcpDiscoveryResponseName("Sequenzy"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewGetMcpDiscoveryResponseNameFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewGetMcpDiscoveryResponseNameFromString("Sequenzy")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumGetMcpDiscoveryResponseRepository(t *testing.T) {
+	t.Run("NewFromString_https___github_com_Sequenzy_mcp", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewGetMcpDiscoveryResponseRepositoryFromString("https://github.com/Sequenzy/mcp")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, GetMcpDiscoveryResponseRepository("https://github.com/Sequenzy/mcp"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewGetMcpDiscoveryResponseRepositoryFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewGetMcpDiscoveryResponseRepositoryFromString("https://github.com/Sequenzy/mcp")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumGetMcpDiscoveryResponseTransport(t *testing.T) {
+	t.Run("NewFromString_streamable_http", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewGetMcpDiscoveryResponseTransportFromString("streamable-http")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, GetMcpDiscoveryResponseTransport("streamable-http"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewGetMcpDiscoveryResponseTransportFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewGetMcpDiscoveryResponseTransportFromString("streamable-http")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumGetMcpDiscoveryResponseURL(t *testing.T) {
+	t.Run("NewFromString_https___api_sequenzy_com_v1_mcp", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewGetMcpDiscoveryResponseURLFromString("https://api.sequenzy.com/v1/mcp")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, GetMcpDiscoveryResponseURL("https://api.sequenzy.com/v1/mcp"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewGetMcpDiscoveryResponseURLFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewGetMcpDiscoveryResponseURLFromString("https://api.sequenzy.com/v1/mcp")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumPollResultsSummaryVariant(t *testing.T) {
 	t.Run("NewFromString_options", func(t *testing.T) {
 		t.Parallel()
@@ -29538,6 +30100,29 @@ func TestExtraPropertiesFilterLeaf(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *FilterLeaf
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesGetMcpDiscoveryResponse(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &GetMcpDiscoveryResponse{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *GetMcpDiscoveryResponse
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})

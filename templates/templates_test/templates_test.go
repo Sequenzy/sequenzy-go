@@ -232,6 +232,28 @@ func TestTemplatesGetWithWireMock(
 	VerifyRequestCount(t, "TestTemplatesGetWithWireMock", "GET", "/templates/templateId", nil, 1)
 }
 
+func TestTemplatesGetLocalizationCoverageWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	_, invocationErr := client.Templates.GetLocalizationCoverage(
+		context.TODO(),
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestTemplatesGetLocalizationCoverageWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestTemplatesGetLocalizationCoverageWithWireMock", "GET", "/templates/localizations/coverage", nil, 1)
+}
+
 func TestTemplatesListWithWireMock(
 	t *testing.T,
 ) {
@@ -385,6 +407,30 @@ func TestTemplatesSyncLocalizationsWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestTemplatesSyncLocalizationsWithWireMock", "POST", "/templates/templateId/localizations/sync", nil, 1)
+}
+
+func TestTemplatesTranslateMissingLocalizationsWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.TranslateMissingLocalizationsTemplatesRequest{}
+	_, invocationErr := client.Templates.TranslateMissingLocalizations(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestTemplatesTranslateMissingLocalizationsWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestTemplatesTranslateMissingLocalizationsWithWireMock", "POST", "/templates/localizations/translate-missing", nil, 1)
 }
 
 func TestTemplatesUpdateWithWireMock(

@@ -1681,6 +1681,51 @@ func TestSettersMarkExplicitSyncLocalizationsTemplatesRequest(t *testing.T) {
 
 }
 
+func TestSettersTranslateMissingLocalizationsTemplatesRequest(t *testing.T) {
+	t.Run("SetLocales", func(t *testing.T) {
+		obj := &TranslateMissingLocalizationsTemplatesRequest{}
+		var fernTestValueLocales []string
+		obj.SetLocales(fernTestValueLocales)
+		assert.Equal(t, fernTestValueLocales, obj.Locales)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestSettersMarkExplicitTranslateMissingLocalizationsTemplatesRequest(t *testing.T) {
+	t.Run("SetLocales_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TranslateMissingLocalizationsTemplatesRequest{}
+		var fernTestValueLocales []string
+
+		// Act
+		obj.SetLocales(fernTestValueLocales)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
 func TestSettersTemplateAbTestReference(t *testing.T) {
 	t.Run("SetAbTestID", func(t *testing.T) {
 		obj := &TemplateAbTestReference{}
@@ -6727,6 +6772,1032 @@ func TestSettersMarkExplicitDeleteTemplatesResponse(t *testing.T) {
 
 }
 
+func TestSettersGetLocalizationCoverageTemplatesResponse(t *testing.T) {
+	t.Run("SetLocales", func(t *testing.T) {
+		obj := &GetLocalizationCoverageTemplatesResponse{}
+		var fernTestValueLocales []*GetLocalizationCoverageTemplatesResponseLocalesItem
+		obj.SetLocales(fernTestValueLocales)
+		assert.Equal(t, fernTestValueLocales, obj.Locales)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetPrimaryLocale", func(t *testing.T) {
+		obj := &GetLocalizationCoverageTemplatesResponse{}
+		var fernTestValuePrimaryLocale *string
+		obj.SetPrimaryLocale(fernTestValuePrimaryLocale)
+		assert.Equal(t, fernTestValuePrimaryLocale, obj.PrimaryLocale)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetSequenceEmails", func(t *testing.T) {
+		obj := &GetLocalizationCoverageTemplatesResponse{}
+		var fernTestValueSequenceEmails *int
+		obj.SetSequenceEmails(fernTestValueSequenceEmails)
+		assert.Equal(t, fernTestValueSequenceEmails, obj.SequenceEmails)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetSuccess", func(t *testing.T) {
+		obj := &GetLocalizationCoverageTemplatesResponse{}
+		var fernTestValueSuccess *bool
+		obj.SetSuccess(fernTestValueSuccess)
+		assert.Equal(t, fernTestValueSuccess, obj.Success)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetTotalEmails", func(t *testing.T) {
+		obj := &GetLocalizationCoverageTemplatesResponse{}
+		var fernTestValueTotalEmails *int
+		obj.SetTotalEmails(fernTestValueTotalEmails)
+		assert.Equal(t, fernTestValueTotalEmails, obj.TotalEmails)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetTransactionalEmails", func(t *testing.T) {
+		obj := &GetLocalizationCoverageTemplatesResponse{}
+		var fernTestValueTransactionalEmails *int
+		obj.SetTransactionalEmails(fernTestValueTransactionalEmails)
+		assert.Equal(t, fernTestValueTransactionalEmails, obj.TransactionalEmails)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersGetLocalizationCoverageTemplatesResponse(t *testing.T) {
+	t.Run("GetLocales", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetLocalizationCoverageTemplatesResponse{}
+		var expected []*GetLocalizationCoverageTemplatesResponseLocalesItem
+		obj.Locales = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetLocales(), "getter should return the property value")
+	})
+
+	t.Run("GetLocales_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetLocalizationCoverageTemplatesResponse{}
+		obj.Locales = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetLocales(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetLocales_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *GetLocalizationCoverageTemplatesResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetLocales() // Should return zero value
+	})
+
+	t.Run("GetPrimaryLocale", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetLocalizationCoverageTemplatesResponse{}
+		var expected *string
+		obj.PrimaryLocale = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPrimaryLocale(), "getter should return the property value")
+	})
+
+	t.Run("GetPrimaryLocale_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetLocalizationCoverageTemplatesResponse{}
+		obj.PrimaryLocale = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetPrimaryLocale(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetPrimaryLocale_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *GetLocalizationCoverageTemplatesResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPrimaryLocale() // Should return zero value
+	})
+
+	t.Run("GetSequenceEmails", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetLocalizationCoverageTemplatesResponse{}
+		var expected *int
+		obj.SequenceEmails = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSequenceEmails(), "getter should return the property value")
+	})
+
+	t.Run("GetSequenceEmails_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetLocalizationCoverageTemplatesResponse{}
+		obj.SequenceEmails = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSequenceEmails(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSequenceEmails_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *GetLocalizationCoverageTemplatesResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSequenceEmails() // Should return zero value
+	})
+
+	t.Run("GetSuccess", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetLocalizationCoverageTemplatesResponse{}
+		var expected *bool
+		obj.Success = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSuccess(), "getter should return the property value")
+	})
+
+	t.Run("GetSuccess_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetLocalizationCoverageTemplatesResponse{}
+		obj.Success = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSuccess(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSuccess_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *GetLocalizationCoverageTemplatesResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSuccess() // Should return zero value
+	})
+
+	t.Run("GetTotalEmails", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetLocalizationCoverageTemplatesResponse{}
+		var expected *int
+		obj.TotalEmails = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetTotalEmails(), "getter should return the property value")
+	})
+
+	t.Run("GetTotalEmails_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetLocalizationCoverageTemplatesResponse{}
+		obj.TotalEmails = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetTotalEmails(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetTotalEmails_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *GetLocalizationCoverageTemplatesResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetTotalEmails() // Should return zero value
+	})
+
+	t.Run("GetTransactionalEmails", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetLocalizationCoverageTemplatesResponse{}
+		var expected *int
+		obj.TransactionalEmails = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetTransactionalEmails(), "getter should return the property value")
+	})
+
+	t.Run("GetTransactionalEmails_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetLocalizationCoverageTemplatesResponse{}
+		obj.TransactionalEmails = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetTransactionalEmails(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetTransactionalEmails_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *GetLocalizationCoverageTemplatesResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetTransactionalEmails() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitGetLocalizationCoverageTemplatesResponse(t *testing.T) {
+	t.Run("SetLocales_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetLocalizationCoverageTemplatesResponse{}
+		var fernTestValueLocales []*GetLocalizationCoverageTemplatesResponseLocalesItem
+
+		// Act
+		obj.SetLocales(fernTestValueLocales)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPrimaryLocale_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetLocalizationCoverageTemplatesResponse{}
+		var fernTestValuePrimaryLocale *string
+
+		// Act
+		obj.SetPrimaryLocale(fernTestValuePrimaryLocale)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSequenceEmails_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetLocalizationCoverageTemplatesResponse{}
+		var fernTestValueSequenceEmails *int
+
+		// Act
+		obj.SetSequenceEmails(fernTestValueSequenceEmails)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSuccess_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetLocalizationCoverageTemplatesResponse{}
+		var fernTestValueSuccess *bool
+
+		// Act
+		obj.SetSuccess(fernTestValueSuccess)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetTotalEmails_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetLocalizationCoverageTemplatesResponse{}
+		var fernTestValueTotalEmails *int
+
+		// Act
+		obj.SetTotalEmails(fernTestValueTotalEmails)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetTransactionalEmails_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetLocalizationCoverageTemplatesResponse{}
+		var fernTestValueTransactionalEmails *int
+
+		// Act
+		obj.SetTransactionalEmails(fernTestValueTransactionalEmails)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersGetLocalizationCoverageTemplatesResponseLocalesItem(t *testing.T) {
+	t.Run("SetEdited", func(t *testing.T) {
+		obj := &GetLocalizationCoverageTemplatesResponseLocalesItem{}
+		var fernTestValueEdited *int
+		obj.SetEdited(fernTestValueEdited)
+		assert.Equal(t, fernTestValueEdited, obj.Edited)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetFailed", func(t *testing.T) {
+		obj := &GetLocalizationCoverageTemplatesResponseLocalesItem{}
+		var fernTestValueFailed *int
+		obj.SetFailed(fernTestValueFailed)
+		assert.Equal(t, fernTestValueFailed, obj.Failed)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetLocale", func(t *testing.T) {
+		obj := &GetLocalizationCoverageTemplatesResponseLocalesItem{}
+		var fernTestValueLocale *string
+		obj.SetLocale(fernTestValueLocale)
+		assert.Equal(t, fernTestValueLocale, obj.Locale)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetMissing", func(t *testing.T) {
+		obj := &GetLocalizationCoverageTemplatesResponseLocalesItem{}
+		var fernTestValueMissing *int
+		obj.SetMissing(fernTestValueMissing)
+		assert.Equal(t, fernTestValueMissing, obj.Missing)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetOutdated", func(t *testing.T) {
+		obj := &GetLocalizationCoverageTemplatesResponseLocalesItem{}
+		var fernTestValueOutdated *int
+		obj.SetOutdated(fernTestValueOutdated)
+		assert.Equal(t, fernTestValueOutdated, obj.Outdated)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetTotal", func(t *testing.T) {
+		obj := &GetLocalizationCoverageTemplatesResponseLocalesItem{}
+		var fernTestValueTotal *int
+		obj.SetTotal(fernTestValueTotal)
+		assert.Equal(t, fernTestValueTotal, obj.Total)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetTranslating", func(t *testing.T) {
+		obj := &GetLocalizationCoverageTemplatesResponseLocalesItem{}
+		var fernTestValueTranslating *int
+		obj.SetTranslating(fernTestValueTranslating)
+		assert.Equal(t, fernTestValueTranslating, obj.Translating)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetUpToDate", func(t *testing.T) {
+		obj := &GetLocalizationCoverageTemplatesResponseLocalesItem{}
+		var fernTestValueUpToDate *int
+		obj.SetUpToDate(fernTestValueUpToDate)
+		assert.Equal(t, fernTestValueUpToDate, obj.UpToDate)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersGetLocalizationCoverageTemplatesResponseLocalesItem(t *testing.T) {
+	t.Run("GetEdited", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetLocalizationCoverageTemplatesResponseLocalesItem{}
+		var expected *int
+		obj.Edited = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetEdited(), "getter should return the property value")
+	})
+
+	t.Run("GetEdited_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetLocalizationCoverageTemplatesResponseLocalesItem{}
+		obj.Edited = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetEdited(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetEdited_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *GetLocalizationCoverageTemplatesResponseLocalesItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetEdited() // Should return zero value
+	})
+
+	t.Run("GetFailed", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetLocalizationCoverageTemplatesResponseLocalesItem{}
+		var expected *int
+		obj.Failed = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetFailed(), "getter should return the property value")
+	})
+
+	t.Run("GetFailed_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetLocalizationCoverageTemplatesResponseLocalesItem{}
+		obj.Failed = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetFailed(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetFailed_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *GetLocalizationCoverageTemplatesResponseLocalesItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetFailed() // Should return zero value
+	})
+
+	t.Run("GetLocale", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetLocalizationCoverageTemplatesResponseLocalesItem{}
+		var expected *string
+		obj.Locale = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetLocale(), "getter should return the property value")
+	})
+
+	t.Run("GetLocale_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetLocalizationCoverageTemplatesResponseLocalesItem{}
+		obj.Locale = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetLocale(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetLocale_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *GetLocalizationCoverageTemplatesResponseLocalesItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetLocale() // Should return zero value
+	})
+
+	t.Run("GetMissing", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetLocalizationCoverageTemplatesResponseLocalesItem{}
+		var expected *int
+		obj.Missing = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetMissing(), "getter should return the property value")
+	})
+
+	t.Run("GetMissing_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetLocalizationCoverageTemplatesResponseLocalesItem{}
+		obj.Missing = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetMissing(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetMissing_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *GetLocalizationCoverageTemplatesResponseLocalesItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetMissing() // Should return zero value
+	})
+
+	t.Run("GetOutdated", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetLocalizationCoverageTemplatesResponseLocalesItem{}
+		var expected *int
+		obj.Outdated = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetOutdated(), "getter should return the property value")
+	})
+
+	t.Run("GetOutdated_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetLocalizationCoverageTemplatesResponseLocalesItem{}
+		obj.Outdated = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetOutdated(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetOutdated_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *GetLocalizationCoverageTemplatesResponseLocalesItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetOutdated() // Should return zero value
+	})
+
+	t.Run("GetTotal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetLocalizationCoverageTemplatesResponseLocalesItem{}
+		var expected *int
+		obj.Total = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetTotal(), "getter should return the property value")
+	})
+
+	t.Run("GetTotal_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetLocalizationCoverageTemplatesResponseLocalesItem{}
+		obj.Total = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetTotal(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetTotal_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *GetLocalizationCoverageTemplatesResponseLocalesItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetTotal() // Should return zero value
+	})
+
+	t.Run("GetTranslating", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetLocalizationCoverageTemplatesResponseLocalesItem{}
+		var expected *int
+		obj.Translating = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetTranslating(), "getter should return the property value")
+	})
+
+	t.Run("GetTranslating_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetLocalizationCoverageTemplatesResponseLocalesItem{}
+		obj.Translating = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetTranslating(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetTranslating_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *GetLocalizationCoverageTemplatesResponseLocalesItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetTranslating() // Should return zero value
+	})
+
+	t.Run("GetUpToDate", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetLocalizationCoverageTemplatesResponseLocalesItem{}
+		var expected *int
+		obj.UpToDate = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetUpToDate(), "getter should return the property value")
+	})
+
+	t.Run("GetUpToDate_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetLocalizationCoverageTemplatesResponseLocalesItem{}
+		obj.UpToDate = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetUpToDate(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetUpToDate_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *GetLocalizationCoverageTemplatesResponseLocalesItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetUpToDate() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitGetLocalizationCoverageTemplatesResponseLocalesItem(t *testing.T) {
+	t.Run("SetEdited_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetLocalizationCoverageTemplatesResponseLocalesItem{}
+		var fernTestValueEdited *int
+
+		// Act
+		obj.SetEdited(fernTestValueEdited)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetFailed_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetLocalizationCoverageTemplatesResponseLocalesItem{}
+		var fernTestValueFailed *int
+
+		// Act
+		obj.SetFailed(fernTestValueFailed)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetLocale_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetLocalizationCoverageTemplatesResponseLocalesItem{}
+		var fernTestValueLocale *string
+
+		// Act
+		obj.SetLocale(fernTestValueLocale)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetMissing_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetLocalizationCoverageTemplatesResponseLocalesItem{}
+		var fernTestValueMissing *int
+
+		// Act
+		obj.SetMissing(fernTestValueMissing)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetOutdated_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetLocalizationCoverageTemplatesResponseLocalesItem{}
+		var fernTestValueOutdated *int
+
+		// Act
+		obj.SetOutdated(fernTestValueOutdated)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetTotal_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetLocalizationCoverageTemplatesResponseLocalesItem{}
+		var fernTestValueTotal *int
+
+		// Act
+		obj.SetTotal(fernTestValueTotal)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetTranslating_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetLocalizationCoverageTemplatesResponseLocalesItem{}
+		var fernTestValueTranslating *int
+
+		// Act
+		obj.SetTranslating(fernTestValueTranslating)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetUpToDate_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetLocalizationCoverageTemplatesResponseLocalesItem{}
+		var fernTestValueUpToDate *int
+
+		// Act
+		obj.SetUpToDate(fernTestValueUpToDate)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
 func TestSettersGetTemplatesResponse(t *testing.T) {
 	t.Run("SetSuccess", func(t *testing.T) {
 		obj := &GetTemplatesResponse{}
@@ -9400,6 +10471,303 @@ func TestSettersMarkExplicitSyncLocalizationsTemplatesResponse(t *testing.T) {
 
 }
 
+func TestSettersTranslateMissingLocalizationsTemplatesResponse(t *testing.T) {
+	t.Run("SetLocales", func(t *testing.T) {
+		obj := &TranslateMissingLocalizationsTemplatesResponse{}
+		var fernTestValueLocales []string
+		obj.SetLocales(fernTestValueLocales)
+		assert.Equal(t, fernTestValueLocales, obj.Locales)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetQueuedEmails", func(t *testing.T) {
+		obj := &TranslateMissingLocalizationsTemplatesResponse{}
+		var fernTestValueQueuedEmails *int
+		obj.SetQueuedEmails(fernTestValueQueuedEmails)
+		assert.Equal(t, fernTestValueQueuedEmails, obj.QueuedEmails)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetQueuedTranslations", func(t *testing.T) {
+		obj := &TranslateMissingLocalizationsTemplatesResponse{}
+		var fernTestValueQueuedTranslations *int
+		obj.SetQueuedTranslations(fernTestValueQueuedTranslations)
+		assert.Equal(t, fernTestValueQueuedTranslations, obj.QueuedTranslations)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetSuccess", func(t *testing.T) {
+		obj := &TranslateMissingLocalizationsTemplatesResponse{}
+		var fernTestValueSuccess *bool
+		obj.SetSuccess(fernTestValueSuccess)
+		assert.Equal(t, fernTestValueSuccess, obj.Success)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersTranslateMissingLocalizationsTemplatesResponse(t *testing.T) {
+	t.Run("GetLocales", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TranslateMissingLocalizationsTemplatesResponse{}
+		var expected []string
+		obj.Locales = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetLocales(), "getter should return the property value")
+	})
+
+	t.Run("GetLocales_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TranslateMissingLocalizationsTemplatesResponse{}
+		obj.Locales = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetLocales(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetLocales_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *TranslateMissingLocalizationsTemplatesResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetLocales() // Should return zero value
+	})
+
+	t.Run("GetQueuedEmails", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TranslateMissingLocalizationsTemplatesResponse{}
+		var expected *int
+		obj.QueuedEmails = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetQueuedEmails(), "getter should return the property value")
+	})
+
+	t.Run("GetQueuedEmails_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TranslateMissingLocalizationsTemplatesResponse{}
+		obj.QueuedEmails = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetQueuedEmails(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetQueuedEmails_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *TranslateMissingLocalizationsTemplatesResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetQueuedEmails() // Should return zero value
+	})
+
+	t.Run("GetQueuedTranslations", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TranslateMissingLocalizationsTemplatesResponse{}
+		var expected *int
+		obj.QueuedTranslations = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetQueuedTranslations(), "getter should return the property value")
+	})
+
+	t.Run("GetQueuedTranslations_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TranslateMissingLocalizationsTemplatesResponse{}
+		obj.QueuedTranslations = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetQueuedTranslations(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetQueuedTranslations_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *TranslateMissingLocalizationsTemplatesResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetQueuedTranslations() // Should return zero value
+	})
+
+	t.Run("GetSuccess", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TranslateMissingLocalizationsTemplatesResponse{}
+		var expected *bool
+		obj.Success = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSuccess(), "getter should return the property value")
+	})
+
+	t.Run("GetSuccess_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TranslateMissingLocalizationsTemplatesResponse{}
+		obj.Success = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSuccess(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSuccess_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *TranslateMissingLocalizationsTemplatesResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSuccess() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitTranslateMissingLocalizationsTemplatesResponse(t *testing.T) {
+	t.Run("SetLocales_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TranslateMissingLocalizationsTemplatesResponse{}
+		var fernTestValueLocales []string
+
+		// Act
+		obj.SetLocales(fernTestValueLocales)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetQueuedEmails_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TranslateMissingLocalizationsTemplatesResponse{}
+		var fernTestValueQueuedEmails *int
+
+		// Act
+		obj.SetQueuedEmails(fernTestValueQueuedEmails)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetQueuedTranslations_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TranslateMissingLocalizationsTemplatesResponse{}
+		var fernTestValueQueuedTranslations *int
+
+		// Act
+		obj.SetQueuedTranslations(fernTestValueQueuedTranslations)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSuccess_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TranslateMissingLocalizationsTemplatesResponse{}
+		var fernTestValueSuccess *bool
+
+		// Act
+		obj.SetSuccess(fernTestValueSuccess)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
 func TestSettersUpdateTemplatesResponse(t *testing.T) {
 	t.Run("SetSuccess", func(t *testing.T) {
 		obj := &UpdateTemplatesResponse{}
@@ -10765,6 +12133,72 @@ func TestJSONMarshalingDeleteTemplatesResponse(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingGetLocalizationCoverageTemplatesResponse(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetLocalizationCoverageTemplatesResponse{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled GetLocalizationCoverageTemplatesResponse
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj GetLocalizationCoverageTemplatesResponse
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj GetLocalizationCoverageTemplatesResponse
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestJSONMarshalingGetLocalizationCoverageTemplatesResponseLocalesItem(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetLocalizationCoverageTemplatesResponseLocalesItem{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled GetLocalizationCoverageTemplatesResponseLocalesItem
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj GetLocalizationCoverageTemplatesResponseLocalesItem
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj GetLocalizationCoverageTemplatesResponseLocalesItem
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingGetTemplatesResponse(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -11227,6 +12661,39 @@ func TestJSONMarshalingTemplateSummary(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingTranslateMissingLocalizationsTemplatesResponse(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TranslateMissingLocalizationsTemplatesResponse{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled TranslateMissingLocalizationsTemplatesResponse
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj TranslateMissingLocalizationsTemplatesResponse
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj TranslateMissingLocalizationsTemplatesResponse
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingUpdateTemplatesResponse(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -11400,6 +12867,38 @@ func TestStringDeleteTemplatesResponse(t *testing.T) {
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *DeleteTemplatesResponse
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringGetLocalizationCoverageTemplatesResponse(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &GetLocalizationCoverageTemplatesResponse{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *GetLocalizationCoverageTemplatesResponse
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringGetLocalizationCoverageTemplatesResponseLocalesItem(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &GetLocalizationCoverageTemplatesResponseLocalesItem{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *GetLocalizationCoverageTemplatesResponseLocalesItem
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -11624,6 +13123,22 @@ func TestStringTemplateSummary(t *testing.T) {
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *TemplateSummary
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringTranslateMissingLocalizationsTemplatesResponse(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &TranslateMissingLocalizationsTemplatesResponse{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *TranslateMissingLocalizationsTemplatesResponse
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -11860,6 +13375,52 @@ func TestExtraPropertiesDeleteTemplatesResponse(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *DeleteTemplatesResponse
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesGetLocalizationCoverageTemplatesResponse(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &GetLocalizationCoverageTemplatesResponse{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *GetLocalizationCoverageTemplatesResponse
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesGetLocalizationCoverageTemplatesResponseLocalesItem(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &GetLocalizationCoverageTemplatesResponseLocalesItem{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *GetLocalizationCoverageTemplatesResponseLocalesItem
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})
@@ -12182,6 +13743,29 @@ func TestExtraPropertiesTemplateSummary(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *TemplateSummary
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesTranslateMissingLocalizationsTemplatesResponse(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &TranslateMissingLocalizationsTemplatesResponse{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *TranslateMissingLocalizationsTemplatesResponse
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})

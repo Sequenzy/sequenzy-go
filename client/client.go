@@ -3,6 +3,9 @@
 package client
 
 import (
+	context "context"
+
+	sequenzygo "github.com/sequenzy/sequenzy-go"
 	abtests "github.com/sequenzy/sequenzy-go/abtests"
 	account "github.com/sequenzy/sequenzy-go/account"
 	accounthealth "github.com/sequenzy/sequenzy-go/accounthealth"
@@ -62,6 +65,7 @@ import (
 )
 
 type Client struct {
+	WithRawResponse         *RawClient
 	AbTests                 *abtests.Client
 	Account                 *account.Client
 	AccountHealth           *accounthealth.Client
@@ -177,6 +181,7 @@ func NewClient(opts ...option.RequestOption) *Client {
 		Websites:                websites.NewClient(options),
 		WebTrackingKeys:         webtrackingkeys.NewClient(options),
 		Widgets:                 widgetsclient.NewClient(options),
+		WithRawResponse:         NewRawClient(options),
 		options:                 options,
 		baseURL:                 options.BaseURL,
 		caller: internal.NewCaller(
@@ -187,4 +192,25 @@ func NewClient(opts ...option.RequestOption) *Client {
 			},
 		),
 	}
+}
+
+// Static public metadata for directory crawlers. This is not an MCP transport. No credentials or parameters are required.
+//
+// Example:
+//
+//	client.GetMcpDiscovery(
+//	    context.TODO(),
+//	)
+func (c *Client) GetMcpDiscovery(
+	ctx context.Context,
+	opts ...option.RequestOption,
+) (*sequenzygo.GetMcpDiscoveryResponse, error) {
+	response, err := c.WithRawResponse.GetMcpDiscovery(
+		ctx,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
 }

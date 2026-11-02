@@ -18923,6 +18923,642 @@ func (s *SequenceLinearStepInsertionInput) String() string {
 }
 
 var (
+	sequenceListItemFieldAcceptsNewEnrollments        = big.NewInt(1 << 0)
+	sequenceListItemFieldActiveSubscribersOnly        = big.NewInt(1 << 1)
+	sequenceListItemFieldAudienceAutoEnroll           = big.NewInt(1 << 2)
+	sequenceListItemFieldBccEmails                    = big.NewInt(1 << 3)
+	sequenceListItemFieldCreatedAt                    = big.NewInt(1 << 4)
+	sequenceListItemFieldDescription                  = big.NewInt(1 << 5)
+	sequenceListItemFieldEffectiveStatus              = big.NewInt(1 << 6)
+	sequenceListItemFieldEffectiveStatusSummary       = big.NewInt(1 << 7)
+	sequenceListItemFieldEnrollmentPaused             = big.NewInt(1 << 8)
+	sequenceListItemFieldFrequencyCapEnabled          = big.NewInt(1 << 9)
+	sequenceListItemFieldFromEmail                    = big.NewInt(1 << 10)
+	sequenceListItemFieldFromName                     = big.NewInt(1 << 11)
+	sequenceListItemFieldID                           = big.NewInt(1 << 12)
+	sequenceListItemFieldKeyDates                     = big.NewInt(1 << 13)
+	sequenceListItemFieldLabelIDs                     = big.NewInt(1 << 14)
+	sequenceListItemFieldLabels                       = big.NewInt(1 << 15)
+	sequenceListItemFieldName                         = big.NewInt(1 << 16)
+	sequenceListItemFieldPausedAt                     = big.NewInt(1 << 17)
+	sequenceListItemFieldPausedByUser                 = big.NewInt(1 << 18)
+	sequenceListItemFieldPausedByUserID               = big.NewInt(1 << 19)
+	sequenceListItemFieldPauseReason                  = big.NewInt(1 << 20)
+	sequenceListItemFieldPauseSource                  = big.NewInt(1 << 21)
+	sequenceListItemFieldProcessesExistingEnrollments = big.NewInt(1 << 22)
+	sequenceListItemFieldReplyProfileID               = big.NewInt(1 << 23)
+	sequenceListItemFieldReplyToEmail                 = big.NewInt(1 << 24)
+	sequenceListItemFieldReplyToName                  = big.NewInt(1 << 25)
+	sequenceListItemFieldSenderProfileID              = big.NewInt(1 << 26)
+	sequenceListItemFieldSendingWindow                = big.NewInt(1 << 27)
+	sequenceListItemFieldStatus                       = big.NewInt(1 << 28)
+	sequenceListItemFieldTrigger                      = big.NewInt(1 << 29)
+	sequenceListItemFieldTriggerConfig                = big.NewInt(1 << 30)
+	sequenceListItemFieldUpdatedAt                    = big.NewInt(1 << 31)
+	sequenceListItemFieldUserCancellable              = big.NewInt(1 << 32)
+	sequenceListItemFieldEmailCount                   = big.NewInt(1 << 33)
+)
+
+type SequenceListItem struct {
+	// Whether new subscribers can enter the sequence right now.
+	AcceptsNewEnrollments *bool `json:"acceptsNewEnrollments,omitempty" url:"acceptsNewEnrollments,omitempty"`
+	// Whether only active contacts can enter. When `false`, unsubscribed and bounced contacts still enter and only their marketing emails are skipped.
+	ActiveSubscribersOnly *bool                       `json:"activeSubscribersOnly,omitempty" url:"activeSubscribersOnly,omitempty"`
+	AudienceAutoEnroll    *SequenceAudienceAutoEnroll `json:"audienceAutoEnroll,omitempty" url:"audienceAutoEnroll,omitempty"`
+	// Email addresses blind-copied on every email this sequence sends.
+	BccEmails       []string                 `json:"bccEmails,omitempty" url:"bccEmails,omitempty"`
+	CreatedAt       *time.Time               `json:"createdAt,omitempty" url:"createdAt,omitempty"`
+	Description     *string                  `json:"description,omitempty" url:"description,omitempty"`
+	EffectiveStatus *SequenceEffectiveStatus `json:"effectiveStatus,omitempty" url:"effectiveStatus,omitempty"`
+	// One plain-language sentence describing the run state, safe to show a user verbatim.
+	EffectiveStatusSummary *string `json:"effectiveStatusSummary,omitempty" url:"effectiveStatusSummary,omitempty"`
+	// Whether new enrollments are paused while current recipients continue.
+	EnrollmentPaused *bool `json:"enrollmentPaused,omitempty" url:"enrollmentPaused,omitempty"`
+	// Whether email steps respect the company frequency cap.
+	FrequencyCapEnabled *bool                        `json:"frequencyCapEnabled,omitempty" url:"frequencyCapEnabled,omitempty"`
+	FromEmail           *string                      `json:"fromEmail,omitempty" url:"fromEmail,omitempty"`
+	FromName            *string                      `json:"fromName,omitempty" url:"fromName,omitempty"`
+	ID                  *string                      `json:"id,omitempty" url:"id,omitempty"`
+	KeyDates            *SequenceKeyDates            `json:"keyDates,omitempty" url:"keyDates,omitempty"`
+	LabelIDs            []string                     `json:"labelIds,omitempty" url:"labelIds,omitempty"`
+	Labels              []string                     `json:"labels,omitempty" url:"labels,omitempty"`
+	Name                *string                      `json:"name,omitempty" url:"name,omitempty"`
+	PausedAt            *time.Time                   `json:"pausedAt,omitempty" url:"pausedAt,omitempty"`
+	PausedByUser        *SequenceSummaryPausedByUser `json:"pausedByUser,omitempty" url:"pausedByUser,omitempty"`
+	PausedByUserID      *string                      `json:"pausedByUserId,omitempty" url:"pausedByUserId,omitempty"`
+	PauseReason         *string                      `json:"pauseReason,omitempty" url:"pauseReason,omitempty"`
+	PauseSource         *string                      `json:"pauseSource,omitempty" url:"pauseSource,omitempty"`
+	// Whether subscribers already inside the sequence keep advancing and receiving steps.
+	ProcessesExistingEnrollments *bool                  `json:"processesExistingEnrollments,omitempty" url:"processesExistingEnrollments,omitempty"`
+	ReplyProfileID               *string                `json:"replyProfileId,omitempty" url:"replyProfileId,omitempty"`
+	ReplyToEmail                 *string                `json:"replyToEmail,omitempty" url:"replyToEmail,omitempty"`
+	ReplyToName                  *string                `json:"replyToName,omitempty" url:"replyToName,omitempty"`
+	SenderProfileID              *string                `json:"senderProfileId,omitempty" url:"senderProfileId,omitempty"`
+	SendingWindow                *SequenceSendingWindow `json:"sendingWindow,omitempty" url:"sendingWindow,omitempty"`
+	Status                       *SequenceStatus        `json:"status,omitempty" url:"status,omitempty"`
+	Trigger                      *string                `json:"trigger,omitempty" url:"trigger,omitempty"`
+	TriggerConfig                map[string]any         `json:"triggerConfig,omitempty" url:"triggerConfig,omitempty"`
+	UpdatedAt                    *time.Time             `json:"updatedAt,omitempty" url:"updatedAt,omitempty"`
+	UserCancellable              *bool                  `json:"userCancellable,omitempty" url:"userCancellable,omitempty"`
+	// Number of email-sending steps. An A/B test step counts once. Includes steps not yet connected to the flow, so a draft shows every email it has.
+	EmailCount *int `json:"emailCount,omitempty" url:"emailCount,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequenceListItem) GetAcceptsNewEnrollments() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.AcceptsNewEnrollments
+}
+
+func (s *SequenceListItem) GetActiveSubscribersOnly() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.ActiveSubscribersOnly
+}
+
+func (s *SequenceListItem) GetAudienceAutoEnroll() *SequenceAudienceAutoEnroll {
+	if s == nil {
+		return nil
+	}
+	return s.AudienceAutoEnroll
+}
+
+func (s *SequenceListItem) GetBccEmails() []string {
+	if s == nil {
+		return nil
+	}
+	return s.BccEmails
+}
+
+func (s *SequenceListItem) GetCreatedAt() *time.Time {
+	if s == nil {
+		return nil
+	}
+	return s.CreatedAt
+}
+
+func (s *SequenceListItem) GetDescription() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Description
+}
+
+func (s *SequenceListItem) GetEffectiveStatus() *SequenceEffectiveStatus {
+	if s == nil {
+		return nil
+	}
+	return s.EffectiveStatus
+}
+
+func (s *SequenceListItem) GetEffectiveStatusSummary() *string {
+	if s == nil {
+		return nil
+	}
+	return s.EffectiveStatusSummary
+}
+
+func (s *SequenceListItem) GetEnrollmentPaused() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.EnrollmentPaused
+}
+
+func (s *SequenceListItem) GetFrequencyCapEnabled() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.FrequencyCapEnabled
+}
+
+func (s *SequenceListItem) GetFromEmail() *string {
+	if s == nil {
+		return nil
+	}
+	return s.FromEmail
+}
+
+func (s *SequenceListItem) GetFromName() *string {
+	if s == nil {
+		return nil
+	}
+	return s.FromName
+}
+
+func (s *SequenceListItem) GetID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.ID
+}
+
+func (s *SequenceListItem) GetKeyDates() *SequenceKeyDates {
+	if s == nil {
+		return nil
+	}
+	return s.KeyDates
+}
+
+func (s *SequenceListItem) GetLabelIDs() []string {
+	if s == nil {
+		return nil
+	}
+	return s.LabelIDs
+}
+
+func (s *SequenceListItem) GetLabels() []string {
+	if s == nil {
+		return nil
+	}
+	return s.Labels
+}
+
+func (s *SequenceListItem) GetName() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Name
+}
+
+func (s *SequenceListItem) GetPausedAt() *time.Time {
+	if s == nil {
+		return nil
+	}
+	return s.PausedAt
+}
+
+func (s *SequenceListItem) GetPausedByUser() *SequenceSummaryPausedByUser {
+	if s == nil {
+		return nil
+	}
+	return s.PausedByUser
+}
+
+func (s *SequenceListItem) GetPausedByUserID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.PausedByUserID
+}
+
+func (s *SequenceListItem) GetPauseReason() *string {
+	if s == nil {
+		return nil
+	}
+	return s.PauseReason
+}
+
+func (s *SequenceListItem) GetPauseSource() *string {
+	if s == nil {
+		return nil
+	}
+	return s.PauseSource
+}
+
+func (s *SequenceListItem) GetProcessesExistingEnrollments() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.ProcessesExistingEnrollments
+}
+
+func (s *SequenceListItem) GetReplyProfileID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.ReplyProfileID
+}
+
+func (s *SequenceListItem) GetReplyToEmail() *string {
+	if s == nil {
+		return nil
+	}
+	return s.ReplyToEmail
+}
+
+func (s *SequenceListItem) GetReplyToName() *string {
+	if s == nil {
+		return nil
+	}
+	return s.ReplyToName
+}
+
+func (s *SequenceListItem) GetSenderProfileID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.SenderProfileID
+}
+
+func (s *SequenceListItem) GetSendingWindow() *SequenceSendingWindow {
+	if s == nil {
+		return nil
+	}
+	return s.SendingWindow
+}
+
+func (s *SequenceListItem) GetStatus() *SequenceStatus {
+	if s == nil {
+		return nil
+	}
+	return s.Status
+}
+
+func (s *SequenceListItem) GetTrigger() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Trigger
+}
+
+func (s *SequenceListItem) GetTriggerConfig() map[string]any {
+	if s == nil {
+		return nil
+	}
+	return s.TriggerConfig
+}
+
+func (s *SequenceListItem) GetUpdatedAt() *time.Time {
+	if s == nil {
+		return nil
+	}
+	return s.UpdatedAt
+}
+
+func (s *SequenceListItem) GetUserCancellable() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.UserCancellable
+}
+
+func (s *SequenceListItem) GetEmailCount() *int {
+	if s == nil {
+		return nil
+	}
+	return s.EmailCount
+}
+
+func (s *SequenceListItem) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequenceListItem) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetAcceptsNewEnrollments sets the AcceptsNewEnrollments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceListItem) SetAcceptsNewEnrollments(acceptsNewEnrollments *bool) {
+	s.AcceptsNewEnrollments = acceptsNewEnrollments
+	s.require(sequenceListItemFieldAcceptsNewEnrollments)
+}
+
+// SetActiveSubscribersOnly sets the ActiveSubscribersOnly field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceListItem) SetActiveSubscribersOnly(activeSubscribersOnly *bool) {
+	s.ActiveSubscribersOnly = activeSubscribersOnly
+	s.require(sequenceListItemFieldActiveSubscribersOnly)
+}
+
+// SetAudienceAutoEnroll sets the AudienceAutoEnroll field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceListItem) SetAudienceAutoEnroll(audienceAutoEnroll *SequenceAudienceAutoEnroll) {
+	s.AudienceAutoEnroll = audienceAutoEnroll
+	s.require(sequenceListItemFieldAudienceAutoEnroll)
+}
+
+// SetBccEmails sets the BccEmails field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceListItem) SetBccEmails(bccEmails []string) {
+	s.BccEmails = bccEmails
+	s.require(sequenceListItemFieldBccEmails)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceListItem) SetCreatedAt(createdAt *time.Time) {
+	s.CreatedAt = createdAt
+	s.require(sequenceListItemFieldCreatedAt)
+}
+
+// SetDescription sets the Description field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceListItem) SetDescription(description *string) {
+	s.Description = description
+	s.require(sequenceListItemFieldDescription)
+}
+
+// SetEffectiveStatus sets the EffectiveStatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceListItem) SetEffectiveStatus(effectiveStatus *SequenceEffectiveStatus) {
+	s.EffectiveStatus = effectiveStatus
+	s.require(sequenceListItemFieldEffectiveStatus)
+}
+
+// SetEffectiveStatusSummary sets the EffectiveStatusSummary field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceListItem) SetEffectiveStatusSummary(effectiveStatusSummary *string) {
+	s.EffectiveStatusSummary = effectiveStatusSummary
+	s.require(sequenceListItemFieldEffectiveStatusSummary)
+}
+
+// SetEnrollmentPaused sets the EnrollmentPaused field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceListItem) SetEnrollmentPaused(enrollmentPaused *bool) {
+	s.EnrollmentPaused = enrollmentPaused
+	s.require(sequenceListItemFieldEnrollmentPaused)
+}
+
+// SetFrequencyCapEnabled sets the FrequencyCapEnabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceListItem) SetFrequencyCapEnabled(frequencyCapEnabled *bool) {
+	s.FrequencyCapEnabled = frequencyCapEnabled
+	s.require(sequenceListItemFieldFrequencyCapEnabled)
+}
+
+// SetFromEmail sets the FromEmail field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceListItem) SetFromEmail(fromEmail *string) {
+	s.FromEmail = fromEmail
+	s.require(sequenceListItemFieldFromEmail)
+}
+
+// SetFromName sets the FromName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceListItem) SetFromName(fromName *string) {
+	s.FromName = fromName
+	s.require(sequenceListItemFieldFromName)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceListItem) SetID(id *string) {
+	s.ID = id
+	s.require(sequenceListItemFieldID)
+}
+
+// SetKeyDates sets the KeyDates field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceListItem) SetKeyDates(keyDates *SequenceKeyDates) {
+	s.KeyDates = keyDates
+	s.require(sequenceListItemFieldKeyDates)
+}
+
+// SetLabelIDs sets the LabelIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceListItem) SetLabelIDs(labelIDs []string) {
+	s.LabelIDs = labelIDs
+	s.require(sequenceListItemFieldLabelIDs)
+}
+
+// SetLabels sets the Labels field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceListItem) SetLabels(labels []string) {
+	s.Labels = labels
+	s.require(sequenceListItemFieldLabels)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceListItem) SetName(name *string) {
+	s.Name = name
+	s.require(sequenceListItemFieldName)
+}
+
+// SetPausedAt sets the PausedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceListItem) SetPausedAt(pausedAt *time.Time) {
+	s.PausedAt = pausedAt
+	s.require(sequenceListItemFieldPausedAt)
+}
+
+// SetPausedByUser sets the PausedByUser field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceListItem) SetPausedByUser(pausedByUser *SequenceSummaryPausedByUser) {
+	s.PausedByUser = pausedByUser
+	s.require(sequenceListItemFieldPausedByUser)
+}
+
+// SetPausedByUserID sets the PausedByUserID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceListItem) SetPausedByUserID(pausedByUserID *string) {
+	s.PausedByUserID = pausedByUserID
+	s.require(sequenceListItemFieldPausedByUserID)
+}
+
+// SetPauseReason sets the PauseReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceListItem) SetPauseReason(pauseReason *string) {
+	s.PauseReason = pauseReason
+	s.require(sequenceListItemFieldPauseReason)
+}
+
+// SetPauseSource sets the PauseSource field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceListItem) SetPauseSource(pauseSource *string) {
+	s.PauseSource = pauseSource
+	s.require(sequenceListItemFieldPauseSource)
+}
+
+// SetProcessesExistingEnrollments sets the ProcessesExistingEnrollments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceListItem) SetProcessesExistingEnrollments(processesExistingEnrollments *bool) {
+	s.ProcessesExistingEnrollments = processesExistingEnrollments
+	s.require(sequenceListItemFieldProcessesExistingEnrollments)
+}
+
+// SetReplyProfileID sets the ReplyProfileID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceListItem) SetReplyProfileID(replyProfileID *string) {
+	s.ReplyProfileID = replyProfileID
+	s.require(sequenceListItemFieldReplyProfileID)
+}
+
+// SetReplyToEmail sets the ReplyToEmail field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceListItem) SetReplyToEmail(replyToEmail *string) {
+	s.ReplyToEmail = replyToEmail
+	s.require(sequenceListItemFieldReplyToEmail)
+}
+
+// SetReplyToName sets the ReplyToName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceListItem) SetReplyToName(replyToName *string) {
+	s.ReplyToName = replyToName
+	s.require(sequenceListItemFieldReplyToName)
+}
+
+// SetSenderProfileID sets the SenderProfileID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceListItem) SetSenderProfileID(senderProfileID *string) {
+	s.SenderProfileID = senderProfileID
+	s.require(sequenceListItemFieldSenderProfileID)
+}
+
+// SetSendingWindow sets the SendingWindow field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceListItem) SetSendingWindow(sendingWindow *SequenceSendingWindow) {
+	s.SendingWindow = sendingWindow
+	s.require(sequenceListItemFieldSendingWindow)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceListItem) SetStatus(status *SequenceStatus) {
+	s.Status = status
+	s.require(sequenceListItemFieldStatus)
+}
+
+// SetTrigger sets the Trigger field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceListItem) SetTrigger(trigger *string) {
+	s.Trigger = trigger
+	s.require(sequenceListItemFieldTrigger)
+}
+
+// SetTriggerConfig sets the TriggerConfig field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceListItem) SetTriggerConfig(triggerConfig map[string]any) {
+	s.TriggerConfig = triggerConfig
+	s.require(sequenceListItemFieldTriggerConfig)
+}
+
+// SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceListItem) SetUpdatedAt(updatedAt *time.Time) {
+	s.UpdatedAt = updatedAt
+	s.require(sequenceListItemFieldUpdatedAt)
+}
+
+// SetUserCancellable sets the UserCancellable field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceListItem) SetUserCancellable(userCancellable *bool) {
+	s.UserCancellable = userCancellable
+	s.require(sequenceListItemFieldUserCancellable)
+}
+
+// SetEmailCount sets the EmailCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceListItem) SetEmailCount(emailCount *int) {
+	s.EmailCount = emailCount
+	s.require(sequenceListItemFieldEmailCount)
+}
+
+func (s *SequenceListItem) UnmarshalJSON(data []byte) error {
+	type embed SequenceListItem
+	var unmarshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"createdAt,omitempty"`
+		PausedAt  *internal.DateTime `json:"pausedAt,omitempty"`
+		UpdatedAt *internal.DateTime `json:"updatedAt,omitempty"`
+	}{
+		embed: embed(*s),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*s = SequenceListItem(unmarshaler.embed)
+	s.CreatedAt = unmarshaler.CreatedAt.TimePtr()
+	s.PausedAt = unmarshaler.PausedAt.TimePtr()
+	s.UpdatedAt = unmarshaler.UpdatedAt.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceListItem) MarshalJSON() ([]byte, error) {
+	type embed SequenceListItem
+	var marshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"createdAt,omitempty"`
+		PausedAt  *internal.DateTime `json:"pausedAt,omitempty"`
+		UpdatedAt *internal.DateTime `json:"updatedAt,omitempty"`
+	}{
+		embed:     embed(*s),
+		CreatedAt: internal.NewOptionalDateTime(s.CreatedAt),
+		PausedAt:  internal.NewOptionalDateTime(s.PausedAt),
+		UpdatedAt: internal.NewOptionalDateTime(s.UpdatedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequenceListItem) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
 	sequenceNodeFieldAutomationID         = big.NewInt(1 << 0)
 	sequenceNodeFieldConfig               = big.NewInt(1 << 1)
 	sequenceNodeFieldID                   = big.NewInt(1 << 2)
@@ -31098,7 +31734,7 @@ var (
 
 type ListSequencesResponse struct {
 	Pagination *ListSequencesResponsePagination `json:"pagination,omitempty" url:"pagination,omitempty"`
-	Sequences  []*SequenceSummary               `json:"sequences,omitempty" url:"sequences,omitempty"`
+	Sequences  []*SequenceListItem              `json:"sequences,omitempty" url:"sequences,omitempty"`
 	Success    *bool                            `json:"success,omitempty" url:"success,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -31115,7 +31751,7 @@ func (l *ListSequencesResponse) GetPagination() *ListSequencesResponsePagination
 	return l.Pagination
 }
 
-func (l *ListSequencesResponse) GetSequences() []*SequenceSummary {
+func (l *ListSequencesResponse) GetSequences() []*SequenceListItem {
 	if l == nil {
 		return nil
 	}
@@ -31152,7 +31788,7 @@ func (l *ListSequencesResponse) SetPagination(pagination *ListSequencesResponseP
 
 // SetSequences sets the Sequences field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListSequencesResponse) SetSequences(sequences []*SequenceSummary) {
+func (l *ListSequencesResponse) SetSequences(sequences []*SequenceListItem) {
 	l.Sequences = sequences
 	l.require(listSequencesResponseFieldSequences)
 }
