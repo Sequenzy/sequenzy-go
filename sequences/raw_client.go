@@ -353,6 +353,50 @@ func (r *RawClient) CreateFromExample(
 	}, nil
 }
 
+func (r *RawClient) CreateFromTemplate(
+	ctx context.Context,
+	request *sequenzygo.CreateFromTemplateSequencesRequest,
+	opts ...option.RequestOption,
+) (*core.Response[*sequenzygo.CreateFromTemplateSequencesResponse], error) {
+	options := core.NewRequestOptions(opts...)
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		r.baseURL,
+		"https://api.sequenzy.com/api/v1",
+	)
+	endpointURL := baseURL + "/sequences/from-template"
+	headers := internal.MergeHeaders(
+		r.options.ToHeader(),
+		options.ToHeader(),
+	)
+	headers.Add("Content-Type", "application/json")
+	var response *sequenzygo.CreateFromTemplateSequencesResponse
+	raw, err := r.caller.Call(
+		ctx,
+		&internal.CallParams{
+			URL:             endpointURL,
+			Method:          http.MethodPost,
+			Headers:         headers,
+			MaxAttempts:     options.MaxAttempts,
+			DisableRetries:  options.DisableRetries,
+			BodyProperties:  options.BodyProperties,
+			QueryParameters: options.QueryParameters,
+			Client:          options.HTTPClient,
+			Request:         request,
+			Response:        &response,
+			ErrorDecoder:    internal.NewErrorDecoder(sequenzygo.ErrorCodes),
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &core.Response[*sequenzygo.CreateFromTemplateSequencesResponse]{
+		StatusCode: raw.StatusCode,
+		Header:     raw.Header,
+		Body:       response,
+	}, nil
+}
+
 func (r *RawClient) CreateGoal(
 	ctx context.Context,
 	request *sequenzygo.CreateGoalSequencesRequest,
@@ -485,6 +529,51 @@ func (r *RawClient) DeleteGoal(
 		return nil, err
 	}
 	return &core.Response[*sequenzygo.DeleteGoalSequencesResponse]{
+		StatusCode: raw.StatusCode,
+		Header:     raw.Header,
+		Body:       response,
+	}, nil
+}
+
+func (r *RawClient) DeleteRecurringEnrollment(
+	ctx context.Context,
+	request *sequenzygo.DeleteRecurringEnrollmentSequencesRequest,
+	opts ...option.RequestOption,
+) (*core.Response[*sequenzygo.SequenceRecurringEnrollmentResponse], error) {
+	options := core.NewRequestOptions(opts...)
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		r.baseURL,
+		"https://api.sequenzy.com/api/v1",
+	)
+	endpointURL := internal.EncodeURL(
+		baseURL+"/sequences/%v/recurring-enrollment",
+		request.SequenceID,
+	)
+	headers := internal.MergeHeaders(
+		r.options.ToHeader(),
+		options.ToHeader(),
+	)
+	var response *sequenzygo.SequenceRecurringEnrollmentResponse
+	raw, err := r.caller.Call(
+		ctx,
+		&internal.CallParams{
+			URL:             endpointURL,
+			Method:          http.MethodDelete,
+			Headers:         headers,
+			MaxAttempts:     options.MaxAttempts,
+			DisableRetries:  options.DisableRetries,
+			BodyProperties:  options.BodyProperties,
+			QueryParameters: options.QueryParameters,
+			Client:          options.HTTPClient,
+			Response:        &response,
+			ErrorDecoder:    internal.NewErrorDecoder(sequenzygo.ErrorCodes),
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &core.Response[*sequenzygo.SequenceRecurringEnrollmentResponse]{
 		StatusCode: raw.StatusCode,
 		Header:     raw.Header,
 		Body:       response,
@@ -1183,6 +1272,51 @@ func (r *RawClient) GetInboundWebhook(
 	}, nil
 }
 
+func (r *RawClient) GetRecurringEnrollment(
+	ctx context.Context,
+	request *sequenzygo.GetRecurringEnrollmentSequencesRequest,
+	opts ...option.RequestOption,
+) (*core.Response[*sequenzygo.SequenceRecurringEnrollmentResponse], error) {
+	options := core.NewRequestOptions(opts...)
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		r.baseURL,
+		"https://api.sequenzy.com/api/v1",
+	)
+	endpointURL := internal.EncodeURL(
+		baseURL+"/sequences/%v/recurring-enrollment",
+		request.SequenceID,
+	)
+	headers := internal.MergeHeaders(
+		r.options.ToHeader(),
+		options.ToHeader(),
+	)
+	var response *sequenzygo.SequenceRecurringEnrollmentResponse
+	raw, err := r.caller.Call(
+		ctx,
+		&internal.CallParams{
+			URL:             endpointURL,
+			Method:          http.MethodGet,
+			Headers:         headers,
+			MaxAttempts:     options.MaxAttempts,
+			DisableRetries:  options.DisableRetries,
+			BodyProperties:  options.BodyProperties,
+			QueryParameters: options.QueryParameters,
+			Client:          options.HTTPClient,
+			Response:        &response,
+			ErrorDecoder:    internal.NewErrorDecoder(sequenzygo.ErrorCodes),
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &core.Response[*sequenzygo.SequenceRecurringEnrollmentResponse]{
+		StatusCode: raw.StatusCode,
+		Header:     raw.Header,
+		Body:       response,
+	}, nil
+}
+
 func (r *RawClient) GetStats(
 	ctx context.Context,
 	request *sequenzygo.GetStatsSequencesRequest,
@@ -1519,6 +1653,55 @@ func (r *RawClient) ListGoals(
 		return nil, err
 	}
 	return &core.Response[*sequenzygo.ListGoalsSequencesResponse]{
+		StatusCode: raw.StatusCode,
+		Header:     raw.Header,
+		Body:       response,
+	}, nil
+}
+
+func (r *RawClient) ListTemplates(
+	ctx context.Context,
+	request *sequenzygo.ListTemplatesSequencesRequest,
+	opts ...option.RequestOption,
+) (*core.Response[*sequenzygo.ListTemplatesSequencesResponse], error) {
+	options := core.NewRequestOptions(opts...)
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		r.baseURL,
+		"https://api.sequenzy.com/api/v1",
+	)
+	endpointURL := baseURL + "/sequences/templates"
+	queryParams, err := internal.QueryValues(request)
+	if err != nil {
+		return nil, err
+	}
+	if len(queryParams) > 0 {
+		endpointURL += "?" + queryParams.Encode()
+	}
+	headers := internal.MergeHeaders(
+		r.options.ToHeader(),
+		options.ToHeader(),
+	)
+	var response *sequenzygo.ListTemplatesSequencesResponse
+	raw, err := r.caller.Call(
+		ctx,
+		&internal.CallParams{
+			URL:             endpointURL,
+			Method:          http.MethodGet,
+			Headers:         headers,
+			MaxAttempts:     options.MaxAttempts,
+			DisableRetries:  options.DisableRetries,
+			BodyProperties:  options.BodyProperties,
+			QueryParameters: options.QueryParameters,
+			Client:          options.HTTPClient,
+			Response:        &response,
+			ErrorDecoder:    internal.NewErrorDecoder(sequenzygo.ErrorCodes),
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &core.Response[*sequenzygo.ListTemplatesSequencesResponse]{
 		StatusCode: raw.StatusCode,
 		Header:     raw.Header,
 		Body:       response,
@@ -1982,6 +2165,53 @@ func (r *RawClient) SendTestEmail(
 		return nil, err
 	}
 	return &core.Response[*sequenzygo.SendTestEmailSequencesResponse]{
+		StatusCode: raw.StatusCode,
+		Header:     raw.Header,
+		Body:       response,
+	}, nil
+}
+
+func (r *RawClient) SetRecurringEnrollment(
+	ctx context.Context,
+	request *sequenzygo.SetRecurringEnrollmentSequencesRequest,
+	opts ...option.RequestOption,
+) (*core.Response[*sequenzygo.SequenceRecurringEnrollmentResponse], error) {
+	options := core.NewRequestOptions(opts...)
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		r.baseURL,
+		"https://api.sequenzy.com/api/v1",
+	)
+	endpointURL := internal.EncodeURL(
+		baseURL+"/sequences/%v/recurring-enrollment",
+		request.SequenceID,
+	)
+	headers := internal.MergeHeaders(
+		r.options.ToHeader(),
+		options.ToHeader(),
+	)
+	headers.Add("Content-Type", "application/json")
+	var response *sequenzygo.SequenceRecurringEnrollmentResponse
+	raw, err := r.caller.Call(
+		ctx,
+		&internal.CallParams{
+			URL:             endpointURL,
+			Method:          http.MethodPut,
+			Headers:         headers,
+			MaxAttempts:     options.MaxAttempts,
+			DisableRetries:  options.DisableRetries,
+			BodyProperties:  options.BodyProperties,
+			QueryParameters: options.QueryParameters,
+			Client:          options.HTTPClient,
+			Request:         request,
+			Response:        &response,
+			ErrorDecoder:    internal.NewErrorDecoder(sequenzygo.ErrorCodes),
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &core.Response[*sequenzygo.SequenceRecurringEnrollmentResponse]{
 		StatusCode: raw.StatusCode,
 		Header:     raw.Header,
 		Body:       response,

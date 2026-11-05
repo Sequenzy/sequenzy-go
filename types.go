@@ -7273,8 +7273,8 @@ var (
 )
 
 type NotFoundErrorBody struct {
-	Error   *NotFoundErrorBodyError `json:"error,omitempty" url:"error,omitempty"`
-	Success *bool                   `json:"success,omitempty" url:"success,omitempty"`
+	Error   *string `json:"error,omitempty" url:"error,omitempty"`
+	Success *bool   `json:"success,omitempty" url:"success,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -7283,7 +7283,7 @@ type NotFoundErrorBody struct {
 	rawJSON         json.RawMessage
 }
 
-func (n *NotFoundErrorBody) GetError() *NotFoundErrorBodyError {
+func (n *NotFoundErrorBody) GetError() *string {
 	if n == nil {
 		return nil
 	}
@@ -7313,7 +7313,7 @@ func (n *NotFoundErrorBody) require(field *big.Int) {
 
 // SetError sets the Error field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (n *NotFoundErrorBody) SetError(error_ *NotFoundErrorBodyError) {
+func (n *NotFoundErrorBody) SetError(error_ *string) {
 	n.Error = error_
 	n.require(notFoundErrorBodyFieldError)
 }
@@ -11099,8 +11099,8 @@ var (
 )
 
 type UnauthorizedErrorBody struct {
-	Error   *UnauthorizedErrorBodyError `json:"error,omitempty" url:"error,omitempty"`
-	Success *bool                       `json:"success,omitempty" url:"success,omitempty"`
+	Error   *string `json:"error,omitempty" url:"error,omitempty"`
+	Success *bool   `json:"success,omitempty" url:"success,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -11109,7 +11109,7 @@ type UnauthorizedErrorBody struct {
 	rawJSON         json.RawMessage
 }
 
-func (u *UnauthorizedErrorBody) GetError() *UnauthorizedErrorBodyError {
+func (u *UnauthorizedErrorBody) GetError() *string {
 	if u == nil {
 		return nil
 	}
@@ -11139,7 +11139,7 @@ func (u *UnauthorizedErrorBody) require(field *big.Int) {
 
 // SetError sets the Error field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UnauthorizedErrorBody) SetError(error_ *UnauthorizedErrorBodyError) {
+func (u *UnauthorizedErrorBody) SetError(error_ *string) {
 	u.Error = error_
 	u.require(unauthorizedErrorBodyFieldError)
 }

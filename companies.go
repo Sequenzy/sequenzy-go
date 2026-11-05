@@ -15,7 +15,8 @@ var (
 	createCompaniesRequestFieldDomain              = big.NewInt(1 << 1)
 	createCompaniesRequestFieldName                = big.NewInt(1 << 2)
 	createCompaniesRequestFieldNoWebsite           = big.NewInt(1 << 3)
-	createCompaniesRequestFieldWithWelcomeSequence = big.NewInt(1 << 4)
+	createCompaniesRequestFieldWebsiteType         = big.NewInt(1 << 4)
+	createCompaniesRequestFieldWithWelcomeSequence = big.NewInt(1 << 5)
 )
 
 type CreateCompaniesRequest struct {
@@ -27,6 +28,8 @@ type CreateCompaniesRequest struct {
 	Name *string `json:"name,omitempty" url:"-"`
 	// Create a ready workspace without a website. Requires name when no domain is sent. Ignored when a non-blank domain is sent.
 	NoWebsite *bool `json:"noWebsite,omitempty" url:"-"`
+	// Optional company category, recorded as your choice. Omit it to let website processing detect it. Unknown values are ignored, as fields this endpoint did not know always were.
+	WebsiteType *CreateCompaniesRequestWebsiteType `json:"websiteType,omitempty" url:"-"`
 	// Set true to create a draft four-email welcome sequence and queue its generation. Defaults to false; any other value is treated as false.
 	WithWelcomeSequence *bool `json:"withWelcomeSequence,omitempty" url:"-"`
 
@@ -67,6 +70,13 @@ func (c *CreateCompaniesRequest) SetName(name *string) {
 func (c *CreateCompaniesRequest) SetNoWebsite(noWebsite *bool) {
 	c.NoWebsite = noWebsite
 	c.require(createCompaniesRequestFieldNoWebsite)
+}
+
+// SetWebsiteType sets the WebsiteType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateCompaniesRequest) SetWebsiteType(websiteType *CreateCompaniesRequestWebsiteType) {
+	c.WebsiteType = websiteType
+	c.require(createCompaniesRequestFieldWebsiteType)
 }
 
 // SetWithWelcomeSequence sets the WithWelcomeSequence field and marks it as non-optional;
@@ -168,7 +178,9 @@ var (
 	companyFieldToneVoice                = big.NewInt(1 << 41)
 	companyFieldURL                      = big.NewInt(1 << 42)
 	companyFieldValueProps               = big.NewInt(1 << 43)
-	companyFieldWebsiteURL               = big.NewInt(1 << 44)
+	companyFieldWebsiteType              = big.NewInt(1 << 44)
+	companyFieldWebsiteTypeSource        = big.NewInt(1 << 45)
+	companyFieldWebsiteURL               = big.NewInt(1 << 46)
 )
 
 type Company struct {
@@ -232,7 +244,11 @@ type Company struct {
 	// Dashboard edit URL for this campaign.
 	URL        *string          `json:"url,omitempty" url:"url,omitempty"`
 	ValueProps []map[string]any `json:"valueProps,omitempty" url:"valueProps,omitempty"`
-	WebsiteURL *string          `json:"websiteUrl,omitempty" url:"websiteUrl,omitempty"`
+	// Company category. It decides which sequence templates are recommended (see [List Sequence Templates](/api-reference/sequences/templates)) and steers AI writing; `mobile_app` recommends push-first mobile journeys. `null` means not classified yet.
+	WebsiteType *CompanyWebsiteType `json:"websiteType,omitempty" url:"websiteType,omitempty"`
+	// `user` when the category was chosen (dashboard, API, CLI or MCP), `detected` when website processing set it. Detection never overwrites a `user` category. `null` when unset, or for categories set before the source was recorded.
+	WebsiteTypeSource *CompanyWebsiteTypeSource `json:"websiteTypeSource,omitempty" url:"websiteTypeSource,omitempty"`
+	WebsiteURL        *string                   `json:"websiteUrl,omitempty" url:"websiteUrl,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -547,6 +563,20 @@ func (c *Company) GetValueProps() []map[string]any {
 		return nil
 	}
 	return c.ValueProps
+}
+
+func (c *Company) GetWebsiteType() *CompanyWebsiteType {
+	if c == nil {
+		return nil
+	}
+	return c.WebsiteType
+}
+
+func (c *Company) GetWebsiteTypeSource() *CompanyWebsiteTypeSource {
+	if c == nil {
+		return nil
+	}
+	return c.WebsiteTypeSource
 }
 
 func (c *Company) GetWebsiteURL() *string {
@@ -876,6 +906,20 @@ func (c *Company) SetURL(url *string) {
 func (c *Company) SetValueProps(valueProps []map[string]any) {
 	c.ValueProps = valueProps
 	c.require(companyFieldValueProps)
+}
+
+// SetWebsiteType sets the WebsiteType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *Company) SetWebsiteType(websiteType *CompanyWebsiteType) {
+	c.WebsiteType = websiteType
+	c.require(companyFieldWebsiteType)
+}
+
+// SetWebsiteTypeSource sets the WebsiteTypeSource field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *Company) SetWebsiteTypeSource(websiteTypeSource *CompanyWebsiteTypeSource) {
+	c.WebsiteTypeSource = websiteTypeSource
+	c.require(companyFieldWebsiteTypeSource)
 }
 
 // SetWebsiteURL sets the WebsiteURL field and marks it as non-optional;
@@ -1452,6 +1496,99 @@ func NewCompanyReplyTrackingDomainModeFromString(s string) (CompanyReplyTracking
 }
 
 func (c CompanyReplyTrackingDomainMode) Ptr() *CompanyReplyTrackingDomainMode {
+	return &c
+}
+
+// Company category. It decides which sequence templates are recommended (see [List Sequence Templates](/api-reference/sequences/templates)) and steers AI writing; `mobile_app` recommends push-first mobile journeys. `null` means not classified yet.
+type CompanyWebsiteType string
+
+const (
+	CompanyWebsiteTypeSaas      CompanyWebsiteType = "saas"
+	CompanyWebsiteTypeContent   CompanyWebsiteType = "content"
+	CompanyWebsiteTypeEcommerce CompanyWebsiteType = "ecommerce"
+	CompanyWebsiteTypeOffline   CompanyWebsiteType = "offline"
+	CompanyWebsiteTypeMobileApp CompanyWebsiteType = "mobile_app"
+	CompanyWebsiteTypeOther     CompanyWebsiteType = "other"
+)
+
+func NewCompanyWebsiteTypeFromString(s string) (CompanyWebsiteType, error) {
+	switch s {
+	case "saas":
+		return CompanyWebsiteTypeSaas, nil
+	case "content":
+		return CompanyWebsiteTypeContent, nil
+	case "ecommerce":
+		return CompanyWebsiteTypeEcommerce, nil
+	case "offline":
+		return CompanyWebsiteTypeOffline, nil
+	case "mobile_app":
+		return CompanyWebsiteTypeMobileApp, nil
+	case "other":
+		return CompanyWebsiteTypeOther, nil
+	}
+	var t CompanyWebsiteType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CompanyWebsiteType) Ptr() *CompanyWebsiteType {
+	return &c
+}
+
+// `user` when the category was chosen (dashboard, API, CLI or MCP), `detected` when website processing set it. Detection never overwrites a `user` category. `null` when unset, or for categories set before the source was recorded.
+type CompanyWebsiteTypeSource string
+
+const (
+	CompanyWebsiteTypeSourceUser     CompanyWebsiteTypeSource = "user"
+	CompanyWebsiteTypeSourceDetected CompanyWebsiteTypeSource = "detected"
+)
+
+func NewCompanyWebsiteTypeSourceFromString(s string) (CompanyWebsiteTypeSource, error) {
+	switch s {
+	case "user":
+		return CompanyWebsiteTypeSourceUser, nil
+	case "detected":
+		return CompanyWebsiteTypeSourceDetected, nil
+	}
+	var t CompanyWebsiteTypeSource
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CompanyWebsiteTypeSource) Ptr() *CompanyWebsiteTypeSource {
+	return &c
+}
+
+// Optional company category, recorded as your choice. Omit it to let website processing detect it. Unknown values are ignored, as fields this endpoint did not know always were.
+type CreateCompaniesRequestWebsiteType string
+
+const (
+	CreateCompaniesRequestWebsiteTypeSaas      CreateCompaniesRequestWebsiteType = "saas"
+	CreateCompaniesRequestWebsiteTypeContent   CreateCompaniesRequestWebsiteType = "content"
+	CreateCompaniesRequestWebsiteTypeEcommerce CreateCompaniesRequestWebsiteType = "ecommerce"
+	CreateCompaniesRequestWebsiteTypeOffline   CreateCompaniesRequestWebsiteType = "offline"
+	CreateCompaniesRequestWebsiteTypeMobileApp CreateCompaniesRequestWebsiteType = "mobile_app"
+	CreateCompaniesRequestWebsiteTypeOther     CreateCompaniesRequestWebsiteType = "other"
+)
+
+func NewCreateCompaniesRequestWebsiteTypeFromString(s string) (CreateCompaniesRequestWebsiteType, error) {
+	switch s {
+	case "saas":
+		return CreateCompaniesRequestWebsiteTypeSaas, nil
+	case "content":
+		return CreateCompaniesRequestWebsiteTypeContent, nil
+	case "ecommerce":
+		return CreateCompaniesRequestWebsiteTypeEcommerce, nil
+	case "offline":
+		return CreateCompaniesRequestWebsiteTypeOffline, nil
+	case "mobile_app":
+		return CreateCompaniesRequestWebsiteTypeMobileApp, nil
+	case "other":
+		return CreateCompaniesRequestWebsiteTypeOther, nil
+	}
+	var t CreateCompaniesRequestWebsiteType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateCompaniesRequestWebsiteType) Ptr() *CreateCompaniesRequestWebsiteType {
 	return &c
 }
 
@@ -3055,6 +3192,41 @@ func (u UpdateCompaniesRequestReplyTrackingDomainMode) Ptr() *UpdateCompaniesReq
 	return &u
 }
 
+// Company category, recorded as your choice: website detection never overwrites it. `null` clears it so detection may classify the company again. Other values return 400.
+type UpdateCompaniesRequestWebsiteType string
+
+const (
+	UpdateCompaniesRequestWebsiteTypeSaas      UpdateCompaniesRequestWebsiteType = "saas"
+	UpdateCompaniesRequestWebsiteTypeContent   UpdateCompaniesRequestWebsiteType = "content"
+	UpdateCompaniesRequestWebsiteTypeEcommerce UpdateCompaniesRequestWebsiteType = "ecommerce"
+	UpdateCompaniesRequestWebsiteTypeOffline   UpdateCompaniesRequestWebsiteType = "offline"
+	UpdateCompaniesRequestWebsiteTypeMobileApp UpdateCompaniesRequestWebsiteType = "mobile_app"
+	UpdateCompaniesRequestWebsiteTypeOther     UpdateCompaniesRequestWebsiteType = "other"
+)
+
+func NewUpdateCompaniesRequestWebsiteTypeFromString(s string) (UpdateCompaniesRequestWebsiteType, error) {
+	switch s {
+	case "saas":
+		return UpdateCompaniesRequestWebsiteTypeSaas, nil
+	case "content":
+		return UpdateCompaniesRequestWebsiteTypeContent, nil
+	case "ecommerce":
+		return UpdateCompaniesRequestWebsiteTypeEcommerce, nil
+	case "offline":
+		return UpdateCompaniesRequestWebsiteTypeOffline, nil
+	case "mobile_app":
+		return UpdateCompaniesRequestWebsiteTypeMobileApp, nil
+	case "other":
+		return UpdateCompaniesRequestWebsiteTypeOther, nil
+	}
+	var t UpdateCompaniesRequestWebsiteType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateCompaniesRequestWebsiteType) Ptr() *UpdateCompaniesRequestWebsiteType {
+	return &u
+}
+
 var (
 	updateCompaniesResponseFieldCompany = big.NewInt(1 << 0)
 	updateCompaniesResponseFieldSuccess = big.NewInt(1 << 1)
@@ -3194,6 +3366,7 @@ var (
 	updateCompaniesRequestFieldTestimonials             = big.NewInt(1 << 35)
 	updateCompaniesRequestFieldToneVoice                = big.NewInt(1 << 36)
 	updateCompaniesRequestFieldValueProps               = big.NewInt(1 << 37)
+	updateCompaniesRequestFieldWebsiteType              = big.NewInt(1 << 38)
 )
 
 type UpdateCompaniesRequest struct {
@@ -3256,6 +3429,8 @@ type UpdateCompaniesRequest struct {
 	Testimonials    []map[string]any   `json:"testimonials,omitempty" url:"-"`
 	ToneVoice       *string            `json:"toneVoice,omitempty" url:"-"`
 	ValueProps      []map[string]any   `json:"valueProps,omitempty" url:"-"`
+	// Company category, recorded as your choice: website detection never overwrites it. `null` clears it so detection may classify the company again. Other values return 400.
+	WebsiteType *UpdateCompaniesRequestWebsiteType `json:"websiteType,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -3532,6 +3707,13 @@ func (u *UpdateCompaniesRequest) SetToneVoice(toneVoice *string) {
 func (u *UpdateCompaniesRequest) SetValueProps(valueProps []map[string]any) {
 	u.ValueProps = valueProps
 	u.require(updateCompaniesRequestFieldValueProps)
+}
+
+// SetWebsiteType sets the WebsiteType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateCompaniesRequest) SetWebsiteType(websiteType *UpdateCompaniesRequestWebsiteType) {
+	u.WebsiteType = websiteType
+	u.require(updateCompaniesRequestFieldWebsiteType)
 }
 
 func (u *UpdateCompaniesRequest) UnmarshalJSON(data []byte) error {

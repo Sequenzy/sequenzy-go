@@ -202,6 +202,32 @@ func TestInAppRecordInAppEventWithWireMock(
 	VerifyRequestCount(t, "TestInAppRecordInAppEventWithWireMock", "POST", "/in-app/messages/messageId/events", nil, 1)
 }
 
+func TestInAppValidateInAppHTMLWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.ValidateInAppHTMLRequest{
+		HTML: "html",
+	}
+	_, invocationErr := client.InApp.ValidateInAppHTML(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestInAppValidateInAppHTMLWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestInAppValidateInAppHTMLWithWireMock", "POST", "/in-app/html/validate", nil, 1)
+}
+
 func TestInAppWriteInAppCopyWithWireMock(
 	t *testing.T,
 ) {

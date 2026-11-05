@@ -15814,6 +15814,14 @@ func TestSettersConnectIntegrationsResponse(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetWebsiteTypeSuggestion", func(t *testing.T) {
+		obj := &ConnectIntegrationsResponse{}
+		var fernTestValueWebsiteTypeSuggestion *ConnectIntegrationsResponseWebsiteTypeSuggestion
+		obj.SetWebsiteTypeSuggestion(fernTestValueWebsiteTypeSuggestion)
+		assert.Equal(t, fernTestValueWebsiteTypeSuggestion, obj.WebsiteTypeSuggestion)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 }
 
 func TestGettersConnectIntegrationsResponse(t *testing.T) {
@@ -16114,6 +16122,39 @@ func TestGettersConnectIntegrationsResponse(t *testing.T) {
 		_ = obj.GetWebhookURL() // Should return zero value
 	})
 
+	t.Run("GetWebsiteTypeSuggestion", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ConnectIntegrationsResponse{}
+		var expected *ConnectIntegrationsResponseWebsiteTypeSuggestion
+		obj.WebsiteTypeSuggestion = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetWebsiteTypeSuggestion(), "getter should return the property value")
+	})
+
+	t.Run("GetWebsiteTypeSuggestion_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ConnectIntegrationsResponse{}
+		obj.WebsiteTypeSuggestion = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetWebsiteTypeSuggestion(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetWebsiteTypeSuggestion_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ConnectIntegrationsResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetWebsiteTypeSuggestion() // Should return zero value
+	})
+
 }
 
 func TestSettersMarkExplicitConnectIntegrationsResponse(t *testing.T) {
@@ -16373,6 +16414,37 @@ func TestSettersMarkExplicitConnectIntegrationsResponse(t *testing.T) {
 
 		// Act
 		obj.SetWebhookURL(fernTestValueWebhookURL)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetWebsiteTypeSuggestion_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ConnectIntegrationsResponse{}
+		var fernTestValueWebsiteTypeSuggestion *ConnectIntegrationsResponseWebsiteTypeSuggestion
+
+		// Act
+		obj.SetWebsiteTypeSuggestion(fernTestValueWebsiteTypeSuggestion)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -16751,6 +16823,159 @@ func TestSettersMarkExplicitConnectIntegrationsResponsePublication(t *testing.T)
 
 		// Act
 		obj.SetName(fernTestValueName)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersConnectIntegrationsResponseWebsiteTypeSuggestion(t *testing.T) {
+	t.Run("SetReason", func(t *testing.T) {
+		obj := &ConnectIntegrationsResponseWebsiteTypeSuggestion{}
+		var fernTestValueReason *string
+		obj.SetReason(fernTestValueReason)
+		assert.Equal(t, fernTestValueReason, obj.Reason)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetWebsiteType", func(t *testing.T) {
+		obj := &ConnectIntegrationsResponseWebsiteTypeSuggestion{}
+		var fernTestValueWebsiteType *ConnectIntegrationsResponseWebsiteTypeSuggestionWebsiteType
+		obj.SetWebsiteType(fernTestValueWebsiteType)
+		assert.Equal(t, fernTestValueWebsiteType, obj.WebsiteType)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersConnectIntegrationsResponseWebsiteTypeSuggestion(t *testing.T) {
+	t.Run("GetReason", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ConnectIntegrationsResponseWebsiteTypeSuggestion{}
+		var expected *string
+		obj.Reason = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetReason(), "getter should return the property value")
+	})
+
+	t.Run("GetReason_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ConnectIntegrationsResponseWebsiteTypeSuggestion{}
+		obj.Reason = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetReason(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetReason_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ConnectIntegrationsResponseWebsiteTypeSuggestion
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetReason() // Should return zero value
+	})
+
+	t.Run("GetWebsiteType", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ConnectIntegrationsResponseWebsiteTypeSuggestion{}
+		var expected *ConnectIntegrationsResponseWebsiteTypeSuggestionWebsiteType
+		obj.WebsiteType = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetWebsiteType(), "getter should return the property value")
+	})
+
+	t.Run("GetWebsiteType_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ConnectIntegrationsResponseWebsiteTypeSuggestion{}
+		obj.WebsiteType = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetWebsiteType(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetWebsiteType_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ConnectIntegrationsResponseWebsiteTypeSuggestion
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetWebsiteType() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitConnectIntegrationsResponseWebsiteTypeSuggestion(t *testing.T) {
+	t.Run("SetReason_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ConnectIntegrationsResponseWebsiteTypeSuggestion{}
+		var fernTestValueReason *string
+
+		// Act
+		obj.SetReason(fernTestValueReason)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetWebsiteType_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ConnectIntegrationsResponseWebsiteTypeSuggestion{}
+		var fernTestValueWebsiteType *ConnectIntegrationsResponseWebsiteTypeSuggestionWebsiteType
+
+		// Act
+		obj.SetWebsiteType(fernTestValueWebsiteType)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -20719,6 +20944,39 @@ func TestJSONMarshalingConnectIntegrationsResponsePublication(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingConnectIntegrationsResponseWebsiteTypeSuggestion(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ConnectIntegrationsResponseWebsiteTypeSuggestion{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled ConnectIntegrationsResponseWebsiteTypeSuggestion
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj ConnectIntegrationsResponseWebsiteTypeSuggestion
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj ConnectIntegrationsResponseWebsiteTypeSuggestion
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingDisconnectIntegrationsResponse(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -22003,6 +22261,22 @@ func TestStringConnectIntegrationsResponsePublication(t *testing.T) {
 	})
 }
 
+func TestStringConnectIntegrationsResponseWebsiteTypeSuggestion(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &ConnectIntegrationsResponseWebsiteTypeSuggestion{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ConnectIntegrationsResponseWebsiteTypeSuggestion
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
 func TestStringDisconnectIntegrationsResponse(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
@@ -22757,6 +23031,28 @@ func TestEnumConnectIntegrationsResponseWebhookProvisioning(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewConnectIntegrationsResponseWebhookProvisioningFromString("managed")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumConnectIntegrationsResponseWebsiteTypeSuggestionWebsiteType(t *testing.T) {
+	t.Run("NewFromString_mobile_app", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewConnectIntegrationsResponseWebsiteTypeSuggestionWebsiteTypeFromString("mobile_app")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ConnectIntegrationsResponseWebsiteTypeSuggestionWebsiteType("mobile_app"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewConnectIntegrationsResponseWebsiteTypeSuggestionWebsiteTypeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewConnectIntegrationsResponseWebsiteTypeSuggestionWebsiteTypeFromString("mobile_app")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -23819,6 +24115,29 @@ func TestExtraPropertiesConnectIntegrationsResponsePublication(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *ConnectIntegrationsResponsePublication
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesConnectIntegrationsResponseWebsiteTypeSuggestion(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &ConnectIntegrationsResponseWebsiteTypeSuggestion{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ConnectIntegrationsResponseWebsiteTypeSuggestion
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})

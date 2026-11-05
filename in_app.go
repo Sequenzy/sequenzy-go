@@ -64,17 +64,20 @@ func (g *GetInAppStepStatsRequest) SetStepID(stepID string) {
 var (
 	listInAppMessagesRequestFieldEmail        = big.NewInt(1 << 0)
 	listInAppMessagesRequestFieldExternalID   = big.NewInt(1 << 1)
-	listInAppMessagesRequestFieldKind         = big.NewInt(1 << 2)
-	listInAppMessagesRequestFieldLimit        = big.NewInt(1 << 3)
-	listInAppMessagesRequestFieldStatus       = big.NewInt(1 << 4)
-	listInAppMessagesRequestFieldSubscriberID = big.NewInt(1 << 5)
+	listInAppMessagesRequestFieldFormats      = big.NewInt(1 << 2)
+	listInAppMessagesRequestFieldKind         = big.NewInt(1 << 3)
+	listInAppMessagesRequestFieldLimit        = big.NewInt(1 << 4)
+	listInAppMessagesRequestFieldStatus       = big.NewInt(1 << 5)
+	listInAppMessagesRequestFieldSubscriberID = big.NewInt(1 << 6)
 )
 
 type ListInAppMessagesRequest struct {
 	// Contact email (case-insensitive).
 	Email *string `json:"-" url:"email,omitempty"`
 	// Contact external ID.
-	ExternalID   *string                         `json:"-" url:"externalId,omitempty"`
+	ExternalID *string `json:"-" url:"externalId,omitempty"`
+	// Comma-separated message formats your app renders: modal, banner, fullscreen, html. With status open, messages in other formats are left out (cards are unaffected), so custom HTML messages appear only when html is listed. With status all, every format is listed and html adds the documents of the first 3 custom HTML messages. Unknown names return 400.
+	Formats      *string                         `json:"-" url:"formats,omitempty"`
 	Kind         *ListInAppMessagesRequestKind   `json:"-" url:"kind,omitempty"`
 	Limit        *int                            `json:"-" url:"limit,omitempty"`
 	Status       *ListInAppMessagesRequestStatus `json:"-" url:"status,omitempty"`
@@ -103,6 +106,13 @@ func (l *ListInAppMessagesRequest) SetEmail(email *string) {
 func (l *ListInAppMessagesRequest) SetExternalID(externalID *string) {
 	l.ExternalID = externalID
 	l.require(listInAppMessagesRequestFieldExternalID)
+}
+
+// SetFormats sets the Formats field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListInAppMessagesRequest) SetFormats(formats *string) {
+	l.Formats = formats
+	l.require(listInAppMessagesRequestFieldFormats)
 }
 
 // SetKind sets the Kind field and marks it as non-optional;
@@ -135,12 +145,15 @@ func (l *ListInAppMessagesRequest) SetSubscriberID(subscriberID *string) {
 
 var (
 	recordInAppEventRequestFieldMessageID = big.NewInt(1 << 0)
-	recordInAppEventRequestFieldType      = big.NewInt(1 << 1)
+	recordInAppEventRequestFieldButtonID  = big.NewInt(1 << 1)
+	recordInAppEventRequestFieldType      = big.NewInt(1 << 2)
 )
 
 type RecordInAppEventRequest struct {
-	MessageID string                      `json:"-" url:"-"`
-	Type      RecordInAppEventRequestType `json:"type" url:"-"`
+	MessageID string `json:"-" url:"-"`
+	// Clicks in custom HTML messages: which control was clicked. Recorded on the first click's in_app.clicked activity.
+	ButtonID *string                     `json:"buttonId,omitempty" url:"-"`
+	Type     RecordInAppEventRequestType `json:"type" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -158,6 +171,13 @@ func (r *RecordInAppEventRequest) require(field *big.Int) {
 func (r *RecordInAppEventRequest) SetMessageID(messageID string) {
 	r.MessageID = messageID
 	r.require(recordInAppEventRequestFieldMessageID)
+}
+
+// SetButtonID sets the ButtonID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RecordInAppEventRequest) SetButtonID(buttonID *string) {
+	r.ButtonID = buttonID
+	r.require(recordInAppEventRequestFieldButtonID)
 }
 
 // SetType sets the Type field and marks it as non-optional;
@@ -190,28 +210,30 @@ func (r *RecordInAppEventRequest) MarshalJSON() ([]byte, error) {
 
 // One item in a contact's in-app feed, with merge tags already resolved.
 var (
-	inAppMessageFieldBody           = big.NewInt(1 << 0)
-	inAppMessageFieldButtons        = big.NewInt(1 << 1)
-	inAppMessageFieldClickCount     = big.NewInt(1 << 2)
-	inAppMessageFieldClickedAt      = big.NewInt(1 << 3)
-	inAppMessageFieldCreatedAt      = big.NewInt(1 << 4)
-	inAppMessageFieldData           = big.NewInt(1 << 5)
-	inAppMessageFieldDismissedAt    = big.NewInt(1 << 6)
-	inAppMessageFieldDisplayedAt    = big.NewInt(1 << 7)
-	inAppMessageFieldExpiresAt      = big.NewInt(1 << 8)
-	inAppMessageFieldEyebrow        = big.NewInt(1 << 9)
-	inAppMessageFieldFormat         = big.NewInt(1 << 10)
-	inAppMessageFieldID             = big.NewInt(1 << 11)
-	inAppMessageFieldImagePlacement = big.NewInt(1 << 12)
-	inAppMessageFieldImageURL       = big.NewInt(1 << 13)
-	inAppMessageFieldKind           = big.NewInt(1 << 14)
-	inAppMessageFieldPinned         = big.NewInt(1 << 15)
-	inAppMessageFieldPosition       = big.NewInt(1 << 16)
-	inAppMessageFieldReadAt         = big.NewInt(1 << 17)
-	inAppMessageFieldSequenceID     = big.NewInt(1 << 18)
-	inAppMessageFieldStepID         = big.NewInt(1 << 19)
-	inAppMessageFieldStyle          = big.NewInt(1 << 20)
-	inAppMessageFieldTitle          = big.NewInt(1 << 21)
+	inAppMessageFieldBody            = big.NewInt(1 << 0)
+	inAppMessageFieldButtons         = big.NewInt(1 << 1)
+	inAppMessageFieldClickCount      = big.NewInt(1 << 2)
+	inAppMessageFieldClickedAt       = big.NewInt(1 << 3)
+	inAppMessageFieldCreatedAt       = big.NewInt(1 << 4)
+	inAppMessageFieldData            = big.NewInt(1 << 5)
+	inAppMessageFieldDismissedAt     = big.NewInt(1 << 6)
+	inAppMessageFieldDisplayedAt     = big.NewInt(1 << 7)
+	inAppMessageFieldExpiresAt       = big.NewInt(1 << 8)
+	inAppMessageFieldEyebrow         = big.NewInt(1 << 9)
+	inAppMessageFieldFormat          = big.NewInt(1 << 10)
+	inAppMessageFieldHTML            = big.NewInt(1 << 11)
+	inAppMessageFieldID              = big.NewInt(1 << 12)
+	inAppMessageFieldImagePlacement  = big.NewInt(1 << 13)
+	inAppMessageFieldImageURL        = big.NewInt(1 << 14)
+	inAppMessageFieldKind            = big.NewInt(1 << 15)
+	inAppMessageFieldPinned          = big.NewInt(1 << 16)
+	inAppMessageFieldPosition        = big.NewInt(1 << 17)
+	inAppMessageFieldReadAt          = big.NewInt(1 << 18)
+	inAppMessageFieldSequenceID      = big.NewInt(1 << 19)
+	inAppMessageFieldShowCloseButton = big.NewInt(1 << 20)
+	inAppMessageFieldStepID          = big.NewInt(1 << 21)
+	inAppMessageFieldStyle           = big.NewInt(1 << 22)
+	inAppMessageFieldTitle           = big.NewInt(1 << 23)
 )
 
 type InAppMessage struct {
@@ -229,9 +251,11 @@ type InAppMessage struct {
 	ExpiresAt *time.Time `json:"expiresAt,omitempty" url:"expiresAt,omitempty"`
 	// Short line above the title, such as "3 days left"; empty when the step has none.
 	Eyebrow *string `json:"eyebrow,omitempty" url:"eyebrow,omitempty"`
-	// How a message is shown; null for cards.
+	// How a message is shown; null for cards. html: a custom HTML message, returned only when the caller lists html in formats.
 	Format *InAppMessageFormat `json:"format,omitempty" url:"format,omitempty"`
-	ID     *string             `json:"id,omitempty" url:"id,omitempty"`
+	// html messages when html was requested in formats: the document to render, with the Sequenzy JS bridge already added. Null otherwise.
+	HTML *string `json:"html,omitempty" url:"html,omitempty"`
+	ID   *string `json:"id,omitempty" url:"id,omitempty"`
 	// Modals and full screens with an image: top (image above the text) or background (image fills the message, text on a dark scrim over it). Null otherwise.
 	ImagePlacement *InAppMessageImagePlacement `json:"imagePlacement,omitempty" url:"imagePlacement,omitempty"`
 	ImageURL       *string                     `json:"imageUrl,omitempty" url:"imageUrl,omitempty"`
@@ -243,6 +267,8 @@ type InAppMessage struct {
 	Position   *InAppMessagePosition `json:"position,omitempty" url:"position,omitempty"`
 	ReadAt     *time.Time            `json:"readAt,omitempty" url:"readAt,omitempty"`
 	SequenceID *string               `json:"sequenceId,omitempty" url:"sequenceId,omitempty"`
+	// html messages: draw a close control over the document. False for other formats.
+	ShowCloseButton *bool `json:"showCloseButton,omitempty" url:"showCloseButton,omitempty"`
 	// The sequence step (node) that created it.
 	StepID *string     `json:"stepId,omitempty" url:"stepId,omitempty"`
 	Style  *InAppStyle `json:"style,omitempty" url:"style,omitempty"`
@@ -332,6 +358,13 @@ func (i *InAppMessage) GetFormat() *InAppMessageFormat {
 	return i.Format
 }
 
+func (i *InAppMessage) GetHTML() *string {
+	if i == nil {
+		return nil
+	}
+	return i.HTML
+}
+
 func (i *InAppMessage) GetID() *string {
 	if i == nil {
 		return nil
@@ -386,6 +419,13 @@ func (i *InAppMessage) GetSequenceID() *string {
 		return nil
 	}
 	return i.SequenceID
+}
+
+func (i *InAppMessage) GetShowCloseButton() *bool {
+	if i == nil {
+		return nil
+	}
+	return i.ShowCloseButton
 }
 
 func (i *InAppMessage) GetStepID() *string {
@@ -500,6 +540,13 @@ func (i *InAppMessage) SetFormat(format *InAppMessageFormat) {
 	i.require(inAppMessageFieldFormat)
 }
 
+// SetHTML sets the HTML field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppMessage) SetHTML(html *string) {
+	i.HTML = html
+	i.require(inAppMessageFieldHTML)
+}
+
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (i *InAppMessage) SetID(id *string) {
@@ -554,6 +601,13 @@ func (i *InAppMessage) SetReadAt(readAt *time.Time) {
 func (i *InAppMessage) SetSequenceID(sequenceID *string) {
 	i.SequenceID = sequenceID
 	i.require(inAppMessageFieldSequenceID)
+}
+
+// SetShowCloseButton sets the ShowCloseButton field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppMessage) SetShowCloseButton(showCloseButton *bool) {
+	i.ShowCloseButton = showCloseButton
+	i.require(inAppMessageFieldShowCloseButton)
 }
 
 // SetStepID sets the StepID field and marks it as non-optional;
@@ -786,13 +840,14 @@ func (i InAppMessageButtonsItemAction) Ptr() *InAppMessageButtonsItemAction {
 	return &i
 }
 
-// How a message is shown; null for cards.
+// How a message is shown; null for cards. html: a custom HTML message, returned only when the caller lists html in formats.
 type InAppMessageFormat string
 
 const (
 	InAppMessageFormatModal      InAppMessageFormat = "modal"
 	InAppMessageFormatBanner     InAppMessageFormat = "banner"
 	InAppMessageFormatFullscreen InAppMessageFormat = "fullscreen"
+	InAppMessageFormatHTML       InAppMessageFormat = "html"
 )
 
 func NewInAppMessageFormatFromString(s string) (InAppMessageFormat, error) {
@@ -803,6 +858,8 @@ func NewInAppMessageFormatFromString(s string) (InAppMessageFormat, error) {
 		return InAppMessageFormatBanner, nil
 	case "fullscreen":
 		return InAppMessageFormatFullscreen, nil
+	case "html":
+		return InAppMessageFormatHTML, nil
 	}
 	var t InAppMessageFormat
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -2129,6 +2186,464 @@ func (r *RecordInAppEventResponse) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
+var (
+	validateInAppHTMLResponseFieldBytes        = big.NewInt(1 << 0)
+	validateInAppHTMLResponseFieldClosesItself = big.NewInt(1 << 1)
+	validateInAppHTMLResponseFieldConversions  = big.NewInt(1 << 2)
+	validateInAppHTMLResponseFieldErrors       = big.NewInt(1 << 3)
+	validateInAppHTMLResponseFieldMaxBytes     = big.NewInt(1 << 4)
+	validateInAppHTMLResponseFieldScriptHosts  = big.NewInt(1 << 5)
+	validateInAppHTMLResponseFieldSuccess      = big.NewInt(1 << 6)
+	validateInAppHTMLResponseFieldValid        = big.NewInt(1 << 7)
+	validateInAppHTMLResponseFieldWarnings     = big.NewInt(1 << 8)
+)
+
+type ValidateInAppHTMLResponse struct {
+	// UTF-8 size after Braze Liquid conversion.
+	Bytes        *int                                        `json:"bytes,omitempty" url:"bytes,omitempty"`
+	ClosesItself *bool                                       `json:"closesItself,omitempty" url:"closesItself,omitempty"`
+	Conversions  []*ValidateInAppHTMLResponseConversionsItem `json:"conversions,omitempty" url:"conversions,omitempty"`
+	Errors       []string                                    `json:"errors,omitempty" url:"errors,omitempty"`
+	MaxBytes     *int                                        `json:"maxBytes,omitempty" url:"maxBytes,omitempty"`
+	ScriptHosts  []string                                    `json:"scriptHosts,omitempty" url:"scriptHosts,omitempty"`
+	Success      *bool                                       `json:"success,omitempty" url:"success,omitempty"`
+	// True when the document can be saved.
+	Valid    *bool                                    `json:"valid,omitempty" url:"valid,omitempty"`
+	Warnings []*ValidateInAppHTMLResponseWarningsItem `json:"warnings,omitempty" url:"warnings,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (v *ValidateInAppHTMLResponse) GetBytes() *int {
+	if v == nil {
+		return nil
+	}
+	return v.Bytes
+}
+
+func (v *ValidateInAppHTMLResponse) GetClosesItself() *bool {
+	if v == nil {
+		return nil
+	}
+	return v.ClosesItself
+}
+
+func (v *ValidateInAppHTMLResponse) GetConversions() []*ValidateInAppHTMLResponseConversionsItem {
+	if v == nil {
+		return nil
+	}
+	return v.Conversions
+}
+
+func (v *ValidateInAppHTMLResponse) GetErrors() []string {
+	if v == nil {
+		return nil
+	}
+	return v.Errors
+}
+
+func (v *ValidateInAppHTMLResponse) GetMaxBytes() *int {
+	if v == nil {
+		return nil
+	}
+	return v.MaxBytes
+}
+
+func (v *ValidateInAppHTMLResponse) GetScriptHosts() []string {
+	if v == nil {
+		return nil
+	}
+	return v.ScriptHosts
+}
+
+func (v *ValidateInAppHTMLResponse) GetSuccess() *bool {
+	if v == nil {
+		return nil
+	}
+	return v.Success
+}
+
+func (v *ValidateInAppHTMLResponse) GetValid() *bool {
+	if v == nil {
+		return nil
+	}
+	return v.Valid
+}
+
+func (v *ValidateInAppHTMLResponse) GetWarnings() []*ValidateInAppHTMLResponseWarningsItem {
+	if v == nil {
+		return nil
+	}
+	return v.Warnings
+}
+
+func (v *ValidateInAppHTMLResponse) GetExtraProperties() map[string]interface{} {
+	if v == nil {
+		return nil
+	}
+	return v.extraProperties
+}
+
+func (v *ValidateInAppHTMLResponse) require(field *big.Int) {
+	if v.explicitFields == nil {
+		v.explicitFields = big.NewInt(0)
+	}
+	v.explicitFields.Or(v.explicitFields, field)
+}
+
+// SetBytes sets the Bytes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (v *ValidateInAppHTMLResponse) SetBytes(bytes *int) {
+	v.Bytes = bytes
+	v.require(validateInAppHTMLResponseFieldBytes)
+}
+
+// SetClosesItself sets the ClosesItself field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (v *ValidateInAppHTMLResponse) SetClosesItself(closesItself *bool) {
+	v.ClosesItself = closesItself
+	v.require(validateInAppHTMLResponseFieldClosesItself)
+}
+
+// SetConversions sets the Conversions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (v *ValidateInAppHTMLResponse) SetConversions(conversions []*ValidateInAppHTMLResponseConversionsItem) {
+	v.Conversions = conversions
+	v.require(validateInAppHTMLResponseFieldConversions)
+}
+
+// SetErrors sets the Errors field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (v *ValidateInAppHTMLResponse) SetErrors(errors []string) {
+	v.Errors = errors
+	v.require(validateInAppHTMLResponseFieldErrors)
+}
+
+// SetMaxBytes sets the MaxBytes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (v *ValidateInAppHTMLResponse) SetMaxBytes(maxBytes *int) {
+	v.MaxBytes = maxBytes
+	v.require(validateInAppHTMLResponseFieldMaxBytes)
+}
+
+// SetScriptHosts sets the ScriptHosts field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (v *ValidateInAppHTMLResponse) SetScriptHosts(scriptHosts []string) {
+	v.ScriptHosts = scriptHosts
+	v.require(validateInAppHTMLResponseFieldScriptHosts)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (v *ValidateInAppHTMLResponse) SetSuccess(success *bool) {
+	v.Success = success
+	v.require(validateInAppHTMLResponseFieldSuccess)
+}
+
+// SetValid sets the Valid field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (v *ValidateInAppHTMLResponse) SetValid(valid *bool) {
+	v.Valid = valid
+	v.require(validateInAppHTMLResponseFieldValid)
+}
+
+// SetWarnings sets the Warnings field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (v *ValidateInAppHTMLResponse) SetWarnings(warnings []*ValidateInAppHTMLResponseWarningsItem) {
+	v.Warnings = warnings
+	v.require(validateInAppHTMLResponseFieldWarnings)
+}
+
+func (v *ValidateInAppHTMLResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler ValidateInAppHTMLResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*v = ValidateInAppHTMLResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *v)
+	if err != nil {
+		return err
+	}
+	v.extraProperties = extraProperties
+	v.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (v *ValidateInAppHTMLResponse) MarshalJSON() ([]byte, error) {
+	type embed ValidateInAppHTMLResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*v),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, v.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (v *ValidateInAppHTMLResponse) String() string {
+	if v == nil {
+		return "<nil>"
+	}
+	if len(v.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(v.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(v); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", v)
+}
+
+var (
+	validateInAppHTMLResponseConversionsItemFieldCount = big.NewInt(1 << 0)
+	validateInAppHTMLResponseConversionsItemFieldFrom  = big.NewInt(1 << 1)
+	validateInAppHTMLResponseConversionsItemFieldTo    = big.NewInt(1 << 2)
+)
+
+type ValidateInAppHTMLResponseConversionsItem struct {
+	Count *int    `json:"count,omitempty" url:"count,omitempty"`
+	From  *string `json:"from,omitempty" url:"from,omitempty"`
+	To    *string `json:"to,omitempty" url:"to,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (v *ValidateInAppHTMLResponseConversionsItem) GetCount() *int {
+	if v == nil {
+		return nil
+	}
+	return v.Count
+}
+
+func (v *ValidateInAppHTMLResponseConversionsItem) GetFrom() *string {
+	if v == nil {
+		return nil
+	}
+	return v.From
+}
+
+func (v *ValidateInAppHTMLResponseConversionsItem) GetTo() *string {
+	if v == nil {
+		return nil
+	}
+	return v.To
+}
+
+func (v *ValidateInAppHTMLResponseConversionsItem) GetExtraProperties() map[string]interface{} {
+	if v == nil {
+		return nil
+	}
+	return v.extraProperties
+}
+
+func (v *ValidateInAppHTMLResponseConversionsItem) require(field *big.Int) {
+	if v.explicitFields == nil {
+		v.explicitFields = big.NewInt(0)
+	}
+	v.explicitFields.Or(v.explicitFields, field)
+}
+
+// SetCount sets the Count field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (v *ValidateInAppHTMLResponseConversionsItem) SetCount(count *int) {
+	v.Count = count
+	v.require(validateInAppHTMLResponseConversionsItemFieldCount)
+}
+
+// SetFrom sets the From field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (v *ValidateInAppHTMLResponseConversionsItem) SetFrom(from *string) {
+	v.From = from
+	v.require(validateInAppHTMLResponseConversionsItemFieldFrom)
+}
+
+// SetTo sets the To field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (v *ValidateInAppHTMLResponseConversionsItem) SetTo(to *string) {
+	v.To = to
+	v.require(validateInAppHTMLResponseConversionsItemFieldTo)
+}
+
+func (v *ValidateInAppHTMLResponseConversionsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler ValidateInAppHTMLResponseConversionsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*v = ValidateInAppHTMLResponseConversionsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *v)
+	if err != nil {
+		return err
+	}
+	v.extraProperties = extraProperties
+	v.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (v *ValidateInAppHTMLResponseConversionsItem) MarshalJSON() ([]byte, error) {
+	type embed ValidateInAppHTMLResponseConversionsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*v),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, v.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (v *ValidateInAppHTMLResponseConversionsItem) String() string {
+	if v == nil {
+		return "<nil>"
+	}
+	if len(v.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(v.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(v); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", v)
+}
+
+var (
+	validateInAppHTMLResponseWarningsItemFieldCode    = big.NewInt(1 << 0)
+	validateInAppHTMLResponseWarningsItemFieldMessage = big.NewInt(1 << 1)
+)
+
+type ValidateInAppHTMLResponseWarningsItem struct {
+	Code    *ValidateInAppHTMLResponseWarningsItemCode `json:"code,omitempty" url:"code,omitempty"`
+	Message *string                                    `json:"message,omitempty" url:"message,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (v *ValidateInAppHTMLResponseWarningsItem) GetCode() *ValidateInAppHTMLResponseWarningsItemCode {
+	if v == nil {
+		return nil
+	}
+	return v.Code
+}
+
+func (v *ValidateInAppHTMLResponseWarningsItem) GetMessage() *string {
+	if v == nil {
+		return nil
+	}
+	return v.Message
+}
+
+func (v *ValidateInAppHTMLResponseWarningsItem) GetExtraProperties() map[string]interface{} {
+	if v == nil {
+		return nil
+	}
+	return v.extraProperties
+}
+
+func (v *ValidateInAppHTMLResponseWarningsItem) require(field *big.Int) {
+	if v.explicitFields == nil {
+		v.explicitFields = big.NewInt(0)
+	}
+	v.explicitFields.Or(v.explicitFields, field)
+}
+
+// SetCode sets the Code field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (v *ValidateInAppHTMLResponseWarningsItem) SetCode(code *ValidateInAppHTMLResponseWarningsItemCode) {
+	v.Code = code
+	v.require(validateInAppHTMLResponseWarningsItemFieldCode)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (v *ValidateInAppHTMLResponseWarningsItem) SetMessage(message *string) {
+	v.Message = message
+	v.require(validateInAppHTMLResponseWarningsItemFieldMessage)
+}
+
+func (v *ValidateInAppHTMLResponseWarningsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler ValidateInAppHTMLResponseWarningsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*v = ValidateInAppHTMLResponseWarningsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *v)
+	if err != nil {
+		return err
+	}
+	v.extraProperties = extraProperties
+	v.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (v *ValidateInAppHTMLResponseWarningsItem) MarshalJSON() ([]byte, error) {
+	type embed ValidateInAppHTMLResponseWarningsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*v),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, v.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (v *ValidateInAppHTMLResponseWarningsItem) String() string {
+	if v == nil {
+		return "<nil>"
+	}
+	if len(v.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(v.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(v); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", v)
+}
+
+type ValidateInAppHTMLResponseWarningsItemCode string
+
+const (
+	ValidateInAppHTMLResponseWarningsItemCodeNoClose                 ValidateInAppHTMLResponseWarningsItemCode = "no_close"
+	ValidateInAppHTMLResponseWarningsItemCodeExternalScripts         ValidateInAppHTMLResponseWarningsItemCode = "external_scripts"
+	ValidateInAppHTMLResponseWarningsItemCodeBrazeConverted          ValidateInAppHTMLResponseWarningsItemCode = "braze_converted"
+	ValidateInAppHTMLResponseWarningsItemCodeUnsupportedBridgeMethod ValidateInAppHTMLResponseWarningsItemCode = "unsupported_bridge_method"
+)
+
+func NewValidateInAppHTMLResponseWarningsItemCodeFromString(s string) (ValidateInAppHTMLResponseWarningsItemCode, error) {
+	switch s {
+	case "no_close":
+		return ValidateInAppHTMLResponseWarningsItemCodeNoClose, nil
+	case "external_scripts":
+		return ValidateInAppHTMLResponseWarningsItemCodeExternalScripts, nil
+	case "braze_converted":
+		return ValidateInAppHTMLResponseWarningsItemCodeBrazeConverted, nil
+	case "unsupported_bridge_method":
+		return ValidateInAppHTMLResponseWarningsItemCodeUnsupportedBridgeMethod, nil
+	}
+	var t ValidateInAppHTMLResponseWarningsItemCode
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (v ValidateInAppHTMLResponseWarningsItemCode) Ptr() *ValidateInAppHTMLResponseWarningsItemCode {
+	return &v
+}
+
 type WriteInAppCopyRequestFormat string
 
 const (
@@ -2528,6 +3043,53 @@ func NewWriteInAppCopyResponseCopyButtonsItemActionFromString(s string) (WriteIn
 
 func (w WriteInAppCopyResponseCopyButtonsItemAction) Ptr() *WriteInAppCopyResponseCopyButtonsItemAction {
 	return &w
+}
+
+var (
+	validateInAppHTMLRequestFieldHTML = big.NewInt(1 << 0)
+)
+
+type ValidateInAppHTMLRequest struct {
+	// The document (HTML, CSS and JavaScript).
+	HTML string `json:"html" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (v *ValidateInAppHTMLRequest) require(field *big.Int) {
+	if v.explicitFields == nil {
+		v.explicitFields = big.NewInt(0)
+	}
+	v.explicitFields.Or(v.explicitFields, field)
+}
+
+// SetHTML sets the HTML field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (v *ValidateInAppHTMLRequest) SetHTML(html string) {
+	v.HTML = html
+	v.require(validateInAppHTMLRequestFieldHTML)
+}
+
+func (v *ValidateInAppHTMLRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler ValidateInAppHTMLRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*v = ValidateInAppHTMLRequest(body)
+	return nil
+}
+
+func (v *ValidateInAppHTMLRequest) MarshalJSON() ([]byte, error) {
+	type embed ValidateInAppHTMLRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*v),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, v.explicitFields)
+	return json.Marshal(explicitMarshaler)
 }
 
 var (

@@ -6220,15 +6220,16 @@ func (c *ConnectIntegrationsRequestSettings) String() string {
 }
 
 var (
-	connectIntegrationsResponseFieldBackfillQueued      = big.NewInt(1 << 0)
-	connectIntegrationsResponseFieldHistory             = big.NewInt(1 << 1)
-	connectIntegrationsResponseFieldIntegration         = big.NewInt(1 << 2)
-	connectIntegrationsResponseFieldPublication         = big.NewInt(1 << 3)
-	connectIntegrationsResponseFieldRevenueSyncQueued   = big.NewInt(1 << 4)
-	connectIntegrationsResponseFieldSuccess             = big.NewInt(1 << 5)
-	connectIntegrationsResponseFieldTestMode            = big.NewInt(1 << 6)
-	connectIntegrationsResponseFieldWebhookProvisioning = big.NewInt(1 << 7)
-	connectIntegrationsResponseFieldWebhookURL          = big.NewInt(1 << 8)
+	connectIntegrationsResponseFieldBackfillQueued        = big.NewInt(1 << 0)
+	connectIntegrationsResponseFieldHistory               = big.NewInt(1 << 1)
+	connectIntegrationsResponseFieldIntegration           = big.NewInt(1 << 2)
+	connectIntegrationsResponseFieldPublication           = big.NewInt(1 << 3)
+	connectIntegrationsResponseFieldRevenueSyncQueued     = big.NewInt(1 << 4)
+	connectIntegrationsResponseFieldSuccess               = big.NewInt(1 << 5)
+	connectIntegrationsResponseFieldTestMode              = big.NewInt(1 << 6)
+	connectIntegrationsResponseFieldWebhookProvisioning   = big.NewInt(1 << 7)
+	connectIntegrationsResponseFieldWebhookURL            = big.NewInt(1 << 8)
+	connectIntegrationsResponseFieldWebsiteTypeSuggestion = big.NewInt(1 << 9)
 )
 
 type ConnectIntegrationsResponse struct {
@@ -6248,6 +6249,8 @@ type ConnectIntegrationsResponse struct {
 	WebhookProvisioning *ConnectIntegrationsResponseWebhookProvisioning `json:"webhookProvisioning,omitempty" url:"webhookProvisioning,omitempty"`
 	// Provider webhook URL. Lemon Squeezy managed mode installs it automatically; manual mode uses the supplied secret. SparkLoop's is already registered in SparkLoop. Empty for Attio.
 	WebhookURL *string `json:"webhookUrl,omitempty" url:"webhookUrl,omitempty"`
+	// RevenueCat, Superwall and Adapty only, when the company category is not already `mobile_app` and was not chosen by a user (`websiteTypeSource` is not `user`). A suggestion to apply with [Update Company](/api-reference/companies/update) (`websiteType`); nothing is changed.
+	WebsiteTypeSuggestion *ConnectIntegrationsResponseWebsiteTypeSuggestion `json:"websiteTypeSuggestion,omitempty" url:"websiteTypeSuggestion,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -6317,6 +6320,13 @@ func (c *ConnectIntegrationsResponse) GetWebhookURL() *string {
 		return nil
 	}
 	return c.WebhookURL
+}
+
+func (c *ConnectIntegrationsResponse) GetWebsiteTypeSuggestion() *ConnectIntegrationsResponseWebsiteTypeSuggestion {
+	if c == nil {
+		return nil
+	}
+	return c.WebsiteTypeSuggestion
 }
 
 func (c *ConnectIntegrationsResponse) GetExtraProperties() map[string]interface{} {
@@ -6394,6 +6404,13 @@ func (c *ConnectIntegrationsResponse) SetWebhookProvisioning(webhookProvisioning
 func (c *ConnectIntegrationsResponse) SetWebhookURL(webhookURL *string) {
 	c.WebhookURL = webhookURL
 	c.require(connectIntegrationsResponseFieldWebhookURL)
+}
+
+// SetWebsiteTypeSuggestion sets the WebsiteTypeSuggestion field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ConnectIntegrationsResponse) SetWebsiteTypeSuggestion(websiteTypeSuggestion *ConnectIntegrationsResponseWebsiteTypeSuggestion) {
+	c.WebsiteTypeSuggestion = websiteTypeSuggestion
+	c.require(connectIntegrationsResponseFieldWebsiteTypeSuggestion)
 }
 
 func (c *ConnectIntegrationsResponse) UnmarshalJSON(data []byte) error {
@@ -6676,6 +6693,126 @@ func NewConnectIntegrationsResponseWebhookProvisioningFromString(s string) (Conn
 }
 
 func (c ConnectIntegrationsResponseWebhookProvisioning) Ptr() *ConnectIntegrationsResponseWebhookProvisioning {
+	return &c
+}
+
+// RevenueCat, Superwall and Adapty only, when the company category is not already `mobile_app` and was not chosen by a user (`websiteTypeSource` is not `user`). A suggestion to apply with [Update Company](/api-reference/companies/update) (`websiteType`); nothing is changed.
+var (
+	connectIntegrationsResponseWebsiteTypeSuggestionFieldReason      = big.NewInt(1 << 0)
+	connectIntegrationsResponseWebsiteTypeSuggestionFieldWebsiteType = big.NewInt(1 << 1)
+)
+
+type ConnectIntegrationsResponseWebsiteTypeSuggestion struct {
+	Reason      *string                                                      `json:"reason,omitempty" url:"reason,omitempty"`
+	WebsiteType *ConnectIntegrationsResponseWebsiteTypeSuggestionWebsiteType `json:"websiteType,omitempty" url:"websiteType,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *ConnectIntegrationsResponseWebsiteTypeSuggestion) GetReason() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Reason
+}
+
+func (c *ConnectIntegrationsResponseWebsiteTypeSuggestion) GetWebsiteType() *ConnectIntegrationsResponseWebsiteTypeSuggestionWebsiteType {
+	if c == nil {
+		return nil
+	}
+	return c.WebsiteType
+}
+
+func (c *ConnectIntegrationsResponseWebsiteTypeSuggestion) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *ConnectIntegrationsResponseWebsiteTypeSuggestion) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetReason sets the Reason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ConnectIntegrationsResponseWebsiteTypeSuggestion) SetReason(reason *string) {
+	c.Reason = reason
+	c.require(connectIntegrationsResponseWebsiteTypeSuggestionFieldReason)
+}
+
+// SetWebsiteType sets the WebsiteType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ConnectIntegrationsResponseWebsiteTypeSuggestion) SetWebsiteType(websiteType *ConnectIntegrationsResponseWebsiteTypeSuggestionWebsiteType) {
+	c.WebsiteType = websiteType
+	c.require(connectIntegrationsResponseWebsiteTypeSuggestionFieldWebsiteType)
+}
+
+func (c *ConnectIntegrationsResponseWebsiteTypeSuggestion) UnmarshalJSON(data []byte) error {
+	type unmarshaler ConnectIntegrationsResponseWebsiteTypeSuggestion
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = ConnectIntegrationsResponseWebsiteTypeSuggestion(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *ConnectIntegrationsResponseWebsiteTypeSuggestion) MarshalJSON() ([]byte, error) {
+	type embed ConnectIntegrationsResponseWebsiteTypeSuggestion
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *ConnectIntegrationsResponseWebsiteTypeSuggestion) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+type ConnectIntegrationsResponseWebsiteTypeSuggestionWebsiteType string
+
+const (
+	ConnectIntegrationsResponseWebsiteTypeSuggestionWebsiteTypeMobileApp ConnectIntegrationsResponseWebsiteTypeSuggestionWebsiteType = "mobile_app"
+)
+
+func NewConnectIntegrationsResponseWebsiteTypeSuggestionWebsiteTypeFromString(s string) (ConnectIntegrationsResponseWebsiteTypeSuggestionWebsiteType, error) {
+	switch s {
+	case "mobile_app":
+		return ConnectIntegrationsResponseWebsiteTypeSuggestionWebsiteTypeMobileApp, nil
+	}
+	var t ConnectIntegrationsResponseWebsiteTypeSuggestionWebsiteType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c ConnectIntegrationsResponseWebsiteTypeSuggestionWebsiteType) Ptr() *ConnectIntegrationsResponseWebsiteTypeSuggestionWebsiteType {
 	return &c
 }
 

@@ -43,6 +43,14 @@ func TestSettersCreateCompaniesRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetWebsiteType", func(t *testing.T) {
+		obj := &CreateCompaniesRequest{}
+		var fernTestValueWebsiteType *CreateCompaniesRequestWebsiteType
+		obj.SetWebsiteType(fernTestValueWebsiteType)
+		assert.Equal(t, fernTestValueWebsiteType, obj.WebsiteType)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetWithWelcomeSequence", func(t *testing.T) {
 		obj := &CreateCompaniesRequest{}
 		var fernTestValueWithWelcomeSequence *bool
@@ -155,6 +163,37 @@ func TestSettersMarkExplicitCreateCompaniesRequest(t *testing.T) {
 
 		// Act
 		obj.SetNoWebsite(fernTestValueNoWebsite)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetWebsiteType_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateCompaniesRequest{}
+		var fernTestValueWebsiteType *CreateCompaniesRequestWebsiteType
+
+		// Act
+		obj.SetWebsiteType(fernTestValueWebsiteType)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -606,6 +645,22 @@ func TestSettersCompany(t *testing.T) {
 		var fernTestValueValueProps []map[string]any
 		obj.SetValueProps(fernTestValueValueProps)
 		assert.Equal(t, fernTestValueValueProps, obj.ValueProps)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetWebsiteType", func(t *testing.T) {
+		obj := &Company{}
+		var fernTestValueWebsiteType *CompanyWebsiteType
+		obj.SetWebsiteType(fernTestValueWebsiteType)
+		assert.Equal(t, fernTestValueWebsiteType, obj.WebsiteType)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetWebsiteTypeSource", func(t *testing.T) {
+		obj := &Company{}
+		var fernTestValueWebsiteTypeSource *CompanyWebsiteTypeSource
+		obj.SetWebsiteTypeSource(fernTestValueWebsiteTypeSource)
+		assert.Equal(t, fernTestValueWebsiteTypeSource, obj.WebsiteTypeSource)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -2072,6 +2127,72 @@ func TestGettersCompany(t *testing.T) {
 		_ = obj.GetValueProps() // Should return zero value
 	})
 
+	t.Run("GetWebsiteType", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Company{}
+		var expected *CompanyWebsiteType
+		obj.WebsiteType = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetWebsiteType(), "getter should return the property value")
+	})
+
+	t.Run("GetWebsiteType_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Company{}
+		obj.WebsiteType = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetWebsiteType(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetWebsiteType_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Company
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetWebsiteType() // Should return zero value
+	})
+
+	t.Run("GetWebsiteTypeSource", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Company{}
+		var expected *CompanyWebsiteTypeSource
+		obj.WebsiteTypeSource = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetWebsiteTypeSource(), "getter should return the property value")
+	})
+
+	t.Run("GetWebsiteTypeSource_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Company{}
+		obj.WebsiteTypeSource = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetWebsiteTypeSource(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetWebsiteTypeSource_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Company
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetWebsiteTypeSource() // Should return zero value
+	})
+
 	t.Run("GetWebsiteURL", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -3449,6 +3570,68 @@ func TestSettersMarkExplicitCompany(t *testing.T) {
 
 		// Act
 		obj.SetValueProps(fernTestValueValueProps)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetWebsiteType_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Company{}
+		var fernTestValueWebsiteType *CompanyWebsiteType
+
+		// Act
+		obj.SetWebsiteType(fernTestValueWebsiteType)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetWebsiteTypeSource_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Company{}
+		var fernTestValueWebsiteTypeSource *CompanyWebsiteTypeSource
+
+		// Act
+		obj.SetWebsiteTypeSource(fernTestValueWebsiteTypeSource)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -8232,6 +8415,14 @@ func TestSettersUpdateCompaniesRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetWebsiteType", func(t *testing.T) {
+		obj := &UpdateCompaniesRequest{}
+		var fernTestValueWebsiteType *UpdateCompaniesRequestWebsiteType
+		obj.SetWebsiteType(fernTestValueWebsiteType)
+		assert.Equal(t, fernTestValueWebsiteType, obj.WebsiteType)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 }
 
 func TestSettersMarkExplicitUpdateCompaniesRequest(t *testing.T) {
@@ -9413,6 +9604,37 @@ func TestSettersMarkExplicitUpdateCompaniesRequest(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetWebsiteType_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateCompaniesRequest{}
+		var fernTestValueWebsiteType *UpdateCompaniesRequestWebsiteType
+
+		// Act
+		obj.SetWebsiteType(fernTestValueWebsiteType)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 }
 
 func TestJSONMarshalingCompany(t *testing.T) {
@@ -10441,6 +10663,149 @@ func TestEnumCompanyReplyTrackingDomainMode(t *testing.T) {
 	})
 }
 
+func TestEnumCompanyWebsiteType(t *testing.T) {
+	t.Run("NewFromString_saas", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyWebsiteTypeFromString("saas")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyWebsiteType("saas"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_content", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyWebsiteTypeFromString("content")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyWebsiteType("content"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ecommerce", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyWebsiteTypeFromString("ecommerce")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyWebsiteType("ecommerce"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_offline", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyWebsiteTypeFromString("offline")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyWebsiteType("offline"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_mobile_app", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyWebsiteTypeFromString("mobile_app")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyWebsiteType("mobile_app"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_other", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyWebsiteTypeFromString("other")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyWebsiteType("other"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewCompanyWebsiteTypeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewCompanyWebsiteTypeFromString("saas")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumCompanyWebsiteTypeSource(t *testing.T) {
+	t.Run("NewFromString_user", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyWebsiteTypeSourceFromString("user")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyWebsiteTypeSource("user"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_detected", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyWebsiteTypeSourceFromString("detected")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyWebsiteTypeSource("detected"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewCompanyWebsiteTypeSourceFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewCompanyWebsiteTypeSourceFromString("user")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumCreateCompaniesRequestWebsiteType(t *testing.T) {
+	t.Run("NewFromString_saas", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateCompaniesRequestWebsiteTypeFromString("saas")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateCompaniesRequestWebsiteType("saas"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_content", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateCompaniesRequestWebsiteTypeFromString("content")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateCompaniesRequestWebsiteType("content"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ecommerce", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateCompaniesRequestWebsiteTypeFromString("ecommerce")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateCompaniesRequestWebsiteType("ecommerce"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_offline", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateCompaniesRequestWebsiteTypeFromString("offline")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateCompaniesRequestWebsiteType("offline"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_mobile_app", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateCompaniesRequestWebsiteTypeFromString("mobile_app")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateCompaniesRequestWebsiteType("mobile_app"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_other", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateCompaniesRequestWebsiteTypeFromString("other")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateCompaniesRequestWebsiteType("other"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewCreateCompaniesRequestWebsiteTypeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewCreateCompaniesRequestWebsiteTypeFromString("saas")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumUpdateCompaniesRequestEmailDirection(t *testing.T) {
 	t.Run("NewFromString_ltr", func(t *testing.T) {
 		t.Parallel()
@@ -10737,6 +11102,63 @@ func TestEnumUpdateCompaniesRequestReplyTrackingDomainMode(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewUpdateCompaniesRequestReplyTrackingDomainModeFromString("sequenzy")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumUpdateCompaniesRequestWebsiteType(t *testing.T) {
+	t.Run("NewFromString_saas", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateCompaniesRequestWebsiteTypeFromString("saas")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateCompaniesRequestWebsiteType("saas"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_content", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateCompaniesRequestWebsiteTypeFromString("content")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateCompaniesRequestWebsiteType("content"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ecommerce", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateCompaniesRequestWebsiteTypeFromString("ecommerce")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateCompaniesRequestWebsiteType("ecommerce"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_offline", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateCompaniesRequestWebsiteTypeFromString("offline")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateCompaniesRequestWebsiteType("offline"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_mobile_app", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateCompaniesRequestWebsiteTypeFromString("mobile_app")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateCompaniesRequestWebsiteType("mobile_app"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_other", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateCompaniesRequestWebsiteTypeFromString("other")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateCompaniesRequestWebsiteType("other"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewUpdateCompaniesRequestWebsiteTypeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewUpdateCompaniesRequestWebsiteTypeFromString("saas")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)

@@ -8382,6 +8382,14 @@ client.Companies.Create(
 <dl>
 <dd>
 
+**websiteType:** `*sequenzygo.CreateCompaniesRequestWebsiteType` — Optional company category, recorded as your choice. Omit it to let website processing detect it. Unknown values are ignored, as fields this endpoint did not know always were.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **withWelcomeSequence:** `*bool` — Set true to create a draft four-email welcome sequence and queue its generation. Defaults to false; any other value is treated as false.
     
 </dd>
@@ -8840,6 +8848,14 @@ client.Companies.Update(
 <dd>
 
 **valueProps:** `[]map[string]any` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**websiteType:** `*sequenzygo.UpdateCompaniesRequestWebsiteType` — Company category, recorded as your choice: website detection never overwrites it. `null` clears it so detection may classify the company again. Other values return 400.
     
 </dd>
 </dl>
@@ -13028,6 +13044,14 @@ client.InApp.ListInAppMessages(
 <dl>
 <dd>
 
+**formats:** `*string` — Comma-separated message formats your app renders: modal, banner, fullscreen, html. With status open, messages in other formats are left out (cards are unaffected), so custom HTML messages appear only when html is listed. With status all, every format is listed and html adds the documents of the first 3 custom HTML messages. Unknown names return 400.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **kind:** `*sequenzygo.ListInAppMessagesRequestKind` 
     
 </dd>
@@ -13162,7 +13186,75 @@ client.InApp.RecordInAppEvent(
 <dl>
 <dd>
 
+**buttonID:** `*string` — Clicks in custom HTML messages: which control was clicked. Recorded on the first click's in_app.clicked activity.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **type_:** `*sequenzygo.RecordInAppEventRequestType` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.InApp.ValidateInAppHTML(request) -> *sequenzygo.ValidateInAppHTMLResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Checks a custom HTML in-app message document without saving anything: size against the 100 KB limit, Braze Liquid converted to Sequenzy merge tags, script hosts a website CSP must allow, whether it closes itself, warnings and blocking errors. Requires the sequences:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.ValidateInAppHTMLRequest{
+    HTML: "html",
+}
+client.InApp.ValidateInAppHTML(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**html:** `string` — The document (HTML, CSS and JavaScript).
     
 </dd>
 </dl>
@@ -21867,6 +21959,74 @@ client.Sequences.CreateFromExample(
 </dl>
 </details>
 
+<details><summary><code>client.Sequences.CreateFromTemplate(request) -> *sequenzygo.CreateFromTemplateSequencesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Creates a draft sequence from a template returned by List Sequence Templates, exactly as the dashboard does. Push-first templates start with a branch on whether the contact is reachable by push (an active device on a platform with APNs, FCM or web push set up); those contacts get push and in-app, everyone else gets email. Waits land between 09:00 and 21:00 in each contact's own timezone, email steps respect the company frequency cap when the template enables it, the template's continue condition becomes the stop condition, and its attribution goal is created on the sequence. Email steps are written by AI in the background; push and in-app copy comes from the template. Every successful call creates another sequence. Requires `sequences:write`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.CreateFromTemplateSequencesRequest{
+    TemplateID: "templateId",
+}
+client.Sequences.CreateFromTemplate(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**name:** `*string` — Sequence name. Defaults to the template name.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**templateID:** `string` — Template id, such as `mobile-trial-conversion`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Sequences.CreateGoal(SequenceID, request) -> *sequenzygo.CreateGoalSequencesResponse</code></summary>
 <dl>
 <dd>
@@ -22045,6 +22205,66 @@ client.Sequences.DeleteGoal(
 <dd>
 
 **goalID:** `string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Sequences.DeleteRecurringEnrollment(SequenceID) -> *sequenzygo.SequenceRecurringEnrollmentResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Stops future runs. Runs already started and contacts already enrolled are not affected. Removing a schedule that does not exist succeeds. Requires `sequences:write`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.DeleteRecurringEnrollmentSequencesRequest{
+    SequenceID: "sequenceId",
+}
+client.Sequences.DeleteRecurringEnrollment(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**sequenceID:** `string` — Sequence ID.
     
 </dd>
 </dl>
@@ -23178,6 +23398,66 @@ client.Sequences.GetInboundWebhook(
 </dl>
 </details>
 
+<details><summary><code>client.Sequences.GetRecurringEnrollment(SequenceID) -> *sequenzygo.SequenceRecurringEnrollmentResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+The schedule that re-enrolls an audience into a manual-trigger sequence, with a readable summary and the next run times. `recurringEnrollment` is null when the sequence has no schedule. Requires `sequences:read`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.GetRecurringEnrollmentSequencesRequest{
+    SequenceID: "sequenceId",
+}
+client.Sequences.GetRecurringEnrollment(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**sequenceID:** `string` — Sequence ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Sequences.GetStats(SequenceID) -> *sequenzygo.GetStatsSequencesResponse</code></summary>
 <dl>
 <dd>
@@ -23759,6 +24039,64 @@ client.Sequences.ListGoals(
 <dd>
 
 **sequenceID:** `string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Sequences.ListTemplates() -> *sequenzygo.ListTemplatesSequencesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists the ready-made sequence templates the dashboard offers, including push-first journeys for mobile apps. Filtered to the company's category (`websiteType` on the company) by default, with templates built for that category first and general ones after. Requires `sequences:read`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.ListTemplatesSequencesRequest{}
+client.Sequences.ListTemplates(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**websiteType:** `*sequenzygo.ListTemplatesSequencesRequestWebsiteType` — `company` uses the company's own category, `all` lists every template. Other values return 400.
     
 </dd>
 </dl>
@@ -24584,6 +24922,114 @@ client.Sequences.SendTestEmail(
 <dd>
 
 **recipients:** `[]string` — Internal reviewer email addresses. Duplicate addresses are sent only once.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Sequences.SetRecurringEnrollment(SequenceID, request) -> *sequenzygo.SequenceRecurringEnrollmentResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Re-enrolls an audience into a manual-trigger sequence daily, on chosen weekdays, or on chosen days of the month (including the last day) at a time in an IANA timezone. Each run is an audience enrollment run with source `recurring`. Contacts who finished an earlier run enter again, contacts still in the sequence are skipped, one_time sequences never re-enroll anyone, and unsubscribed or bounced contacts never join. Nothing is enrolled until the first scheduled time. Occurrences while the sequence is paused, disabled or closed to new entrants are skipped, and a run that cannot start within 6 hours of its time is skipped (see `lastSkipReason`). A run waits while another audience enrollment is in progress. Replaces any existing schedule; an unchanged save keeps the pending next run. Changing the trigger away from manual switches the schedule off. Requires `sequences:write`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.SetRecurringEnrollmentSequencesRequest{
+    SequenceID: "sequenceId",
+    Audience: &sequenzygo.SequenceAudience{
+        Type: sequenzygo.SequenceAudienceTypeAll,
+    },
+    Schedule: &sequenzygo.SequenceRecurringSchedule{
+        Frequency: sequenzygo.SequenceRecurringScheduleFrequencyDaily,
+        Time: "10:00",
+        Timezone: "Europe/London",
+    },
+}
+client.Sequences.SetRecurringEnrollment(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**sequenceID:** `string` — Sequence ID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**audience:** `*sequenzygo.SequenceAudience` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**enabled:** `*bool` — Defaults to true. False keeps the schedule but stops its runs.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**endsAt:** `*time.Time` — Optional. No run starts after this instant; omitted or null means no end date. Rejected when no run would happen before it.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**enrollmentMode:** `*sequenzygo.SetRecurringEnrollmentSequencesRequestEnrollmentMode` — Optional. Sets the sequence's enrollment mode in the same save. unlimited re-enrolls everyone who matches at each run; one_time only adds people who never entered. This mode also applies to enrollments started by hand. Omit to keep the current mode.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**schedule:** `*sequenzygo.SequenceRecurringSchedule` 
     
 </dd>
 </dl>

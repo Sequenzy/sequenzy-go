@@ -269,6 +269,32 @@ func TestSequencesCreateFromExampleWithWireMock(
 	VerifyRequestCount(t, "TestSequencesCreateFromExampleWithWireMock", "POST", "/sequences/from-example", nil, 1)
 }
 
+func TestSequencesCreateFromTemplateWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.CreateFromTemplateSequencesRequest{
+		TemplateID: "templateId",
+	}
+	_, invocationErr := client.Sequences.CreateFromTemplate(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestSequencesCreateFromTemplateWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestSequencesCreateFromTemplateWithWireMock", "POST", "/sequences/from-template", nil, 1)
+}
+
 func TestSequencesCreateGoalWithWireMock(
 	t *testing.T,
 ) {
@@ -346,6 +372,32 @@ func TestSequencesDeleteGoalWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestSequencesDeleteGoalWithWireMock", "DELETE", "/sequences/sequenceId/goals/goalId", nil, 1)
+}
+
+func TestSequencesDeleteRecurringEnrollmentWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.DeleteRecurringEnrollmentSequencesRequest{
+		SequenceID: "sequenceId",
+	}
+	_, invocationErr := client.Sequences.DeleteRecurringEnrollment(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestSequencesDeleteRecurringEnrollmentWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestSequencesDeleteRecurringEnrollmentWithWireMock", "DELETE", "/sequences/sequenceId/recurring-enrollment", nil, 1)
 }
 
 func TestSequencesDisableWithWireMock(
@@ -752,6 +804,32 @@ func TestSequencesGetInboundWebhookWithWireMock(
 	VerifyRequestCount(t, "TestSequencesGetInboundWebhookWithWireMock", "GET", "/sequences/sequenceId/inbound-webhook", nil, 1)
 }
 
+func TestSequencesGetRecurringEnrollmentWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.GetRecurringEnrollmentSequencesRequest{
+		SequenceID: "sequenceId",
+	}
+	_, invocationErr := client.Sequences.GetRecurringEnrollment(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestSequencesGetRecurringEnrollmentWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestSequencesGetRecurringEnrollmentWithWireMock", "GET", "/sequences/sequenceId/recurring-enrollment", nil, 1)
+}
+
 func TestSequencesGetStatsWithWireMock(
 	t *testing.T,
 ) {
@@ -944,6 +1022,30 @@ func TestSequencesListGoalsWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestSequencesListGoalsWithWireMock", "GET", "/sequences/sequenceId/goals", nil, 1)
+}
+
+func TestSequencesListTemplatesWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.ListTemplatesSequencesRequest{}
+	_, invocationErr := client.Sequences.ListTemplates(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestSequencesListTemplatesWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestSequencesListTemplatesWithWireMock", "GET", "/sequences/templates", nil, 1)
 }
 
 func TestSequencesMoveEnrollmentsWithWireMock(
@@ -1221,6 +1323,40 @@ func TestSequencesSendTestEmailWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestSequencesSendTestEmailWithWireMock", "POST", "/sequences/sequenceId/nodes/nodeId/test", nil, 1)
+}
+
+func TestSequencesSetRecurringEnrollmentWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.SetRecurringEnrollmentSequencesRequest{
+		SequenceID: "sequenceId",
+		Audience: &sequenzygo.SequenceAudience{
+			Type: sequenzygo.SequenceAudienceTypeAll,
+		},
+		Schedule: &sequenzygo.SequenceRecurringSchedule{
+			Frequency: sequenzygo.SequenceRecurringScheduleFrequencyDaily,
+			Time:      "10:00",
+			Timezone:  "Europe/London",
+		},
+	}
+	_, invocationErr := client.Sequences.SetRecurringEnrollment(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestSequencesSetRecurringEnrollmentWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestSequencesSetRecurringEnrollmentWithWireMock", "PUT", "/sequences/sequenceId/recurring-enrollment", nil, 1)
 }
 
 func TestSequencesSimulateWithWireMock(

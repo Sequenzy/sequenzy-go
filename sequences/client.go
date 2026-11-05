@@ -233,6 +233,33 @@ func (c *Client) CreateFromExample(
 	return response.Body, nil
 }
 
+// Creates a draft sequence from a template returned by List Sequence Templates, exactly as the dashboard does. Push-first templates start with a branch on whether the contact is reachable by push (an active device on a platform with APNs, FCM or web push set up); those contacts get push and in-app, everyone else gets email. Waits land between 09:00 and 21:00 in each contact's own timezone, email steps respect the company frequency cap when the template enables it, the template's continue condition becomes the stop condition, and its attribution goal is created on the sequence. Email steps are written by AI in the background; push and in-app copy comes from the template. Every successful call creates another sequence. Requires `sequences:write`.
+//
+// Example:
+//
+//	request := &sequenzygo.CreateFromTemplateSequencesRequest{
+//	    TemplateID: "templateId",
+//	}
+//	client.Sequences.CreateFromTemplate(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) CreateFromTemplate(
+	ctx context.Context,
+	request *sequenzygo.CreateFromTemplateSequencesRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.CreateFromTemplateSequencesResponse, error) {
+	response, err := c.WithRawResponse.CreateFromTemplate(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Creates a conversion goal for an event, subscriber attribute change, or applied tag.
 //
 // Example:
@@ -305,6 +332,33 @@ func (c *Client) DeleteGoal(
 	opts ...option.RequestOption,
 ) (*sequenzygo.DeleteGoalSequencesResponse, error) {
 	response, err := c.WithRawResponse.DeleteGoal(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Stops future runs. Runs already started and contacts already enrolled are not affected. Removing a schedule that does not exist succeeds. Requires `sequences:write`.
+//
+// Example:
+//
+//	request := &sequenzygo.DeleteRecurringEnrollmentSequencesRequest{
+//	    SequenceID: "sequenceId",
+//	}
+//	client.Sequences.DeleteRecurringEnrollment(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) DeleteRecurringEnrollment(
+	ctx context.Context,
+	request *sequenzygo.DeleteRecurringEnrollmentSequencesRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.SequenceRecurringEnrollmentResponse, error) {
+	response, err := c.WithRawResponse.DeleteRecurringEnrollment(
 		ctx,
 		request,
 		opts...,
@@ -734,6 +788,33 @@ func (c *Client) GetInboundWebhook(
 	return response.Body, nil
 }
 
+// The schedule that re-enrolls an audience into a manual-trigger sequence, with a readable summary and the next run times. `recurringEnrollment` is null when the sequence has no schedule. Requires `sequences:read`.
+//
+// Example:
+//
+//	request := &sequenzygo.GetRecurringEnrollmentSequencesRequest{
+//	    SequenceID: "sequenceId",
+//	}
+//	client.Sequences.GetRecurringEnrollment(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) GetRecurringEnrollment(
+	ctx context.Context,
+	request *sequenzygo.GetRecurringEnrollmentSequencesRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.SequenceRecurringEnrollmentResponse, error) {
+	response, err := c.WithRawResponse.GetRecurringEnrollment(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Returns aggregated engagement metrics plus a live active/waiting enrollment breakdown by current node for a specific sequence. This is an alias for /metrics/sequences/{sequenceId}.
 //
 // Example:
@@ -925,6 +1006,31 @@ func (c *Client) ListGoals(
 	opts ...option.RequestOption,
 ) (*sequenzygo.ListGoalsSequencesResponse, error) {
 	response, err := c.WithRawResponse.ListGoals(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Lists the ready-made sequence templates the dashboard offers, including push-first journeys for mobile apps. Filtered to the company's category (`websiteType` on the company) by default, with templates built for that category first and general ones after. Requires `sequences:read`.
+//
+// Example:
+//
+//	request := &sequenzygo.ListTemplatesSequencesRequest{}
+//	client.Sequences.ListTemplates(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) ListTemplates(
+	ctx context.Context,
+	request *sequenzygo.ListTemplatesSequencesRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.ListTemplatesSequencesResponse, error) {
+	response, err := c.WithRawResponse.ListTemplates(
 		ctx,
 		request,
 		opts...,
@@ -1212,6 +1318,41 @@ func (c *Client) SendTestEmail(
 	opts ...option.RequestOption,
 ) (*sequenzygo.SendTestEmailSequencesResponse, error) {
 	response, err := c.WithRawResponse.SendTestEmail(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Re-enrolls an audience into a manual-trigger sequence daily, on chosen weekdays, or on chosen days of the month (including the last day) at a time in an IANA timezone. Each run is an audience enrollment run with source `recurring`. Contacts who finished an earlier run enter again, contacts still in the sequence are skipped, one_time sequences never re-enroll anyone, and unsubscribed or bounced contacts never join. Nothing is enrolled until the first scheduled time. Occurrences while the sequence is paused, disabled or closed to new entrants are skipped, and a run that cannot start within 6 hours of its time is skipped (see `lastSkipReason`). A run waits while another audience enrollment is in progress. Replaces any existing schedule; an unchanged save keeps the pending next run. Changing the trigger away from manual switches the schedule off. Requires `sequences:write`.
+//
+// Example:
+//
+//	request := &sequenzygo.SetRecurringEnrollmentSequencesRequest{
+//	    SequenceID: "sequenceId",
+//	    Audience: &sequenzygo.SequenceAudience{
+//	        Type: sequenzygo.SequenceAudienceTypeAll,
+//	    },
+//	    Schedule: &sequenzygo.SequenceRecurringSchedule{
+//	        Frequency: sequenzygo.SequenceRecurringScheduleFrequencyDaily,
+//	        Time: "10:00",
+//	        Timezone: "Europe/London",
+//	    },
+//	}
+//	client.Sequences.SetRecurringEnrollment(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) SetRecurringEnrollment(
+	ctx context.Context,
+	request *sequenzygo.SetRecurringEnrollmentSequencesRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.SequenceRecurringEnrollmentResponse, error) {
+	response, err := c.WithRawResponse.SetRecurringEnrollment(
 		ctx,
 		request,
 		opts...,

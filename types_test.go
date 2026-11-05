@@ -15284,7 +15284,7 @@ func TestSettersMarkExplicitInternalServerErrorBody(t *testing.T) {
 func TestSettersNotFoundErrorBody(t *testing.T) {
 	t.Run("SetError", func(t *testing.T) {
 		obj := &NotFoundErrorBody{}
-		var fernTestValueError *NotFoundErrorBodyError
+		var fernTestValueError *string
 		obj.SetError(fernTestValueError)
 		assert.Equal(t, fernTestValueError, obj.Error)
 		assert.NotNil(t, obj.explicitFields)
@@ -15305,7 +15305,7 @@ func TestGettersNotFoundErrorBody(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &NotFoundErrorBody{}
-		var expected *NotFoundErrorBodyError
+		var expected *string
 		obj.Error = expected
 
 		// Act & Assert
@@ -15374,7 +15374,7 @@ func TestSettersMarkExplicitNotFoundErrorBody(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &NotFoundErrorBody{}
-		var fernTestValueError *NotFoundErrorBodyError
+		var fernTestValueError *string
 
 		// Act
 		obj.SetError(fernTestValueError)
@@ -23851,7 +23851,7 @@ func TestSettersMarkExplicitTooManyRequestsErrorBody(t *testing.T) {
 func TestSettersUnauthorizedErrorBody(t *testing.T) {
 	t.Run("SetError", func(t *testing.T) {
 		obj := &UnauthorizedErrorBody{}
-		var fernTestValueError *UnauthorizedErrorBodyError
+		var fernTestValueError *string
 		obj.SetError(fernTestValueError)
 		assert.Equal(t, fernTestValueError, obj.Error)
 		assert.NotNil(t, obj.explicitFields)
@@ -23872,7 +23872,7 @@ func TestGettersUnauthorizedErrorBody(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &UnauthorizedErrorBody{}
-		var expected *UnauthorizedErrorBodyError
+		var expected *string
 		obj.Error = expected
 
 		// Act & Assert
@@ -23941,7 +23941,7 @@ func TestSettersMarkExplicitUnauthorizedErrorBody(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &UnauthorizedErrorBody{}
-		var fernTestValueError *UnauthorizedErrorBodyError
+		var fernTestValueError *string
 
 		// Act
 		obj.SetError(fernTestValueError)

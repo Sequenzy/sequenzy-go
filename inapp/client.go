@@ -162,6 +162,33 @@ func (c *Client) RecordInAppEvent(
 	return response.Body, nil
 }
 
+// Checks a custom HTML in-app message document without saving anything: size against the 100 KB limit, Braze Liquid converted to Sequenzy merge tags, script hosts a website CSP must allow, whether it closes itself, warnings and blocking errors. Requires the sequences:read scope.
+//
+// Example:
+//
+//	request := &sequenzygo.ValidateInAppHTMLRequest{
+//	    HTML: "html",
+//	}
+//	client.InApp.ValidateInAppHTML(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) ValidateInAppHTML(
+	ctx context.Context,
+	request *sequenzygo.ValidateInAppHTMLRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.ValidateInAppHTMLResponse, error) {
+	response, err := c.WithRawResponse.ValidateInAppHTML(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Writes an in-app message's eyebrow, title, message and button labels with AI from a brief. Nothing is saved. Requires the sequences:write scope; limited to 20 requests a minute per workspace.
 //
 // Example:
