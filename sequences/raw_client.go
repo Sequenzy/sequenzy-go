@@ -1135,6 +1135,110 @@ func (r *RawClient) GetAudienceEnrollment(
 	}, nil
 }
 
+func (r *RawClient) GetDefinition(
+	ctx context.Context,
+	request *sequenzygo.GetDefinitionSequencesRequest,
+	opts ...option.RequestOption,
+) (*core.Response[*sequenzygo.GetDefinitionSequencesResponse], error) {
+	options := core.NewRequestOptions(opts...)
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		r.baseURL,
+		"https://api.sequenzy.com/api/v1",
+	)
+	endpointURL := internal.EncodeURL(
+		baseURL+"/sequences/definitions/%v",
+		request.Key,
+	)
+	queryParams, err := internal.QueryValues(request)
+	if err != nil {
+		return nil, err
+	}
+	if len(queryParams) > 0 {
+		endpointURL += "?" + queryParams.Encode()
+	}
+	headers := internal.MergeHeaders(
+		r.options.ToHeader(),
+		options.ToHeader(),
+	)
+	var response *sequenzygo.GetDefinitionSequencesResponse
+	raw, err := r.caller.Call(
+		ctx,
+		&internal.CallParams{
+			URL:             endpointURL,
+			Method:          http.MethodGet,
+			Headers:         headers,
+			MaxAttempts:     options.MaxAttempts,
+			DisableRetries:  options.DisableRetries,
+			BodyProperties:  options.BodyProperties,
+			QueryParameters: options.QueryParameters,
+			Client:          options.HTTPClient,
+			Response:        &response,
+			ErrorDecoder:    internal.NewErrorDecoder(sequenzygo.ErrorCodes),
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &core.Response[*sequenzygo.GetDefinitionSequencesResponse]{
+		StatusCode: raw.StatusCode,
+		Header:     raw.Header,
+		Body:       response,
+	}, nil
+}
+
+func (r *RawClient) GetDefinitionByID(
+	ctx context.Context,
+	request *sequenzygo.GetDefinitionByIDSequencesRequest,
+	opts ...option.RequestOption,
+) (*core.Response[*sequenzygo.GetDefinitionByIDSequencesResponse], error) {
+	options := core.NewRequestOptions(opts...)
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		r.baseURL,
+		"https://api.sequenzy.com/api/v1",
+	)
+	endpointURL := internal.EncodeURL(
+		baseURL+"/sequences/%v/definition",
+		request.SequenceID,
+	)
+	queryParams, err := internal.QueryValues(request)
+	if err != nil {
+		return nil, err
+	}
+	if len(queryParams) > 0 {
+		endpointURL += "?" + queryParams.Encode()
+	}
+	headers := internal.MergeHeaders(
+		r.options.ToHeader(),
+		options.ToHeader(),
+	)
+	var response *sequenzygo.GetDefinitionByIDSequencesResponse
+	raw, err := r.caller.Call(
+		ctx,
+		&internal.CallParams{
+			URL:             endpointURL,
+			Method:          http.MethodGet,
+			Headers:         headers,
+			MaxAttempts:     options.MaxAttempts,
+			DisableRetries:  options.DisableRetries,
+			BodyProperties:  options.BodyProperties,
+			QueryParameters: options.QueryParameters,
+			Client:          options.HTTPClient,
+			Response:        &response,
+			ErrorDecoder:    internal.NewErrorDecoder(sequenzygo.ErrorCodes),
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &core.Response[*sequenzygo.GetDefinitionByIDSequencesResponse]{
+		StatusCode: raw.StatusCode,
+		Header:     raw.Header,
+		Body:       response,
+	}, nil
+}
+
 func (r *RawClient) GetEnrollment(
 	ctx context.Context,
 	request *sequenzygo.GetEnrollmentSequencesRequest,
@@ -1885,6 +1989,60 @@ func (r *RawClient) PreviewFromExample(
 		return nil, err
 	}
 	return &core.Response[*sequenzygo.PreviewFromExampleSequencesResponse]{
+		StatusCode: raw.StatusCode,
+		Header:     raw.Header,
+		Body:       response,
+	}, nil
+}
+
+func (r *RawClient) PushDefinition(
+	ctx context.Context,
+	request *sequenzygo.PushDefinitionSequencesRequest,
+	opts ...option.RequestOption,
+) (*core.Response[*sequenzygo.SequenceDefinitionPushResult], error) {
+	options := core.NewRequestOptions(opts...)
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		r.baseURL,
+		"https://api.sequenzy.com/api/v1",
+	)
+	endpointURL := internal.EncodeURL(
+		baseURL+"/sequences/definitions/%v",
+		request.Key,
+	)
+	queryParams, err := internal.QueryValues(request)
+	if err != nil {
+		return nil, err
+	}
+	if len(queryParams) > 0 {
+		endpointURL += "?" + queryParams.Encode()
+	}
+	headers := internal.MergeHeaders(
+		r.options.ToHeader(),
+		options.ToHeader(),
+	)
+	headers.Add("Content-Type", "application/json")
+	var response *sequenzygo.SequenceDefinitionPushResult
+	raw, err := r.caller.Call(
+		ctx,
+		&internal.CallParams{
+			URL:             endpointURL,
+			Method:          http.MethodPut,
+			Headers:         headers,
+			MaxAttempts:     options.MaxAttempts,
+			DisableRetries:  options.DisableRetries,
+			BodyProperties:  options.BodyProperties,
+			QueryParameters: options.QueryParameters,
+			Client:          options.HTTPClient,
+			Request:         request,
+			Response:        &response,
+			ErrorDecoder:    internal.NewErrorDecoder(sequenzygo.ErrorCodes),
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &core.Response[*sequenzygo.SequenceDefinitionPushResult]{
 		StatusCode: raw.StatusCode,
 		Header:     raw.Header,
 		Body:       response,

@@ -62,16 +62,19 @@ func (g *GetInAppStepStatsRequest) SetStepID(stepID string) {
 }
 
 var (
-	listInAppMessagesRequestFieldEmail        = big.NewInt(1 << 0)
-	listInAppMessagesRequestFieldExternalID   = big.NewInt(1 << 1)
-	listInAppMessagesRequestFieldFormats      = big.NewInt(1 << 2)
-	listInAppMessagesRequestFieldKind         = big.NewInt(1 << 3)
-	listInAppMessagesRequestFieldLimit        = big.NewInt(1 << 4)
-	listInAppMessagesRequestFieldStatus       = big.NewInt(1 << 5)
-	listInAppMessagesRequestFieldSubscriberID = big.NewInt(1 << 6)
+	listInAppMessagesRequestFieldActions      = big.NewInt(1 << 0)
+	listInAppMessagesRequestFieldEmail        = big.NewInt(1 << 1)
+	listInAppMessagesRequestFieldExternalID   = big.NewInt(1 << 2)
+	listInAppMessagesRequestFieldFormats      = big.NewInt(1 << 3)
+	listInAppMessagesRequestFieldKind         = big.NewInt(1 << 4)
+	listInAppMessagesRequestFieldLimit        = big.NewInt(1 << 5)
+	listInAppMessagesRequestFieldStatus       = big.NewInt(1 << 6)
+	listInAppMessagesRequestFieldSubscriberID = big.NewInt(1 << 7)
 )
 
 type ListInAppMessagesRequest struct {
+	// Open items only: comma-separated button actions your app handles beyond open_url and dismiss, such as request_push_permission. Items with an action you don't list stay in the inbox but are left out, so an app that can't handle them never shows them. The mobile SDKs send this themselves.
+	Actions *string `json:"-" url:"actions,omitempty"`
 	// Contact email (case-insensitive).
 	Email *string `json:"-" url:"email,omitempty"`
 	// Contact external ID.
@@ -92,6 +95,13 @@ func (l *ListInAppMessagesRequest) require(field *big.Int) {
 		l.explicitFields = big.NewInt(0)
 	}
 	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetActions sets the Actions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListInAppMessagesRequest) SetActions(actions *string) {
+	l.Actions = actions
+	l.require(listInAppMessagesRequestFieldActions)
 }
 
 // SetEmail sets the Email field and marks it as non-optional;
@@ -144,16 +154,19 @@ func (l *ListInAppMessagesRequest) SetSubscriberID(subscriberID *string) {
 }
 
 var (
-	recordInAppEventRequestFieldMessageID = big.NewInt(1 << 0)
-	recordInAppEventRequestFieldButtonID  = big.NewInt(1 << 1)
-	recordInAppEventRequestFieldType      = big.NewInt(1 << 2)
+	recordInAppEventRequestFieldMessageID      = big.NewInt(1 << 0)
+	recordInAppEventRequestFieldButtonID       = big.NewInt(1 << 1)
+	recordInAppEventRequestFieldPushPermission = big.NewInt(1 << 2)
+	recordInAppEventRequestFieldType           = big.NewInt(1 << 3)
 )
 
 type RecordInAppEventRequest struct {
 	MessageID string `json:"-" url:"-"`
 	// Clicks in custom HTML messages: which control was clicked. Recorded on the first click's in_app.clicked activity.
-	ButtonID *string                     `json:"buttonId,omitempty" url:"-"`
-	Type     RecordInAppEventRequestType `json:"type" url:"-"`
+	ButtonID *string `json:"buttonId,omitempty" url:"-"`
+	// With type clicked on an item that has a request_push_permission button: the notification permission your app read after asking. The first result is kept for the step's stats and written to the contact's pushPermission attribute; ignored otherwise.
+	PushPermission *RecordInAppEventRequestPushPermission `json:"pushPermission,omitempty" url:"-"`
+	Type           RecordInAppEventRequestType            `json:"type" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -178,6 +191,13 @@ func (r *RecordInAppEventRequest) SetMessageID(messageID string) {
 func (r *RecordInAppEventRequest) SetButtonID(buttonID *string) {
 	r.ButtonID = buttonID
 	r.require(recordInAppEventRequestFieldButtonID)
+}
+
+// SetPushPermission sets the PushPermission field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RecordInAppEventRequest) SetPushPermission(pushPermission *RecordInAppEventRequestPushPermission) {
+	r.PushPermission = pushPermission
+	r.require(recordInAppEventRequestFieldPushPermission)
 }
 
 // SetType sets the Type field and marks it as non-optional;
@@ -708,9 +728,10 @@ var (
 )
 
 type InAppMessageButtonsItem struct {
+	// request_push_permission: a push primer button. The app asks the OS for notification permission, or opens its notification settings when the contact turned them off, then records a clicked event with pushPermission. Open feeds include such items only when the caller lists the action in actions.
 	Action *InAppMessageButtonsItemAction `json:"action,omitempty" url:"action,omitempty"`
 	Label  *string                        `json:"label,omitempty" url:"label,omitempty"`
-	// https URL or app deep link for open_url buttons; null for dismiss.
+	// https URL or app deep link for open_url buttons; null otherwise.
 	URL *string `json:"url,omitempty" url:"url,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -818,11 +839,13 @@ func (i *InAppMessageButtonsItem) String() string {
 	return fmt.Sprintf("%#v", i)
 }
 
+// request_push_permission: a push primer button. The app asks the OS for notification permission, or opens its notification settings when the contact turned them off, then records a clicked event with pushPermission. Open feeds include such items only when the caller lists the action in actions.
 type InAppMessageButtonsItemAction string
 
 const (
-	InAppMessageButtonsItemActionOpenURL InAppMessageButtonsItemAction = "open_url"
-	InAppMessageButtonsItemActionDismiss InAppMessageButtonsItemAction = "dismiss"
+	InAppMessageButtonsItemActionOpenURL               InAppMessageButtonsItemAction = "open_url"
+	InAppMessageButtonsItemActionDismiss               InAppMessageButtonsItemAction = "dismiss"
+	InAppMessageButtonsItemActionRequestPushPermission InAppMessageButtonsItemAction = "request_push_permission"
 )
 
 func NewInAppMessageButtonsItemActionFromString(s string) (InAppMessageButtonsItemAction, error) {
@@ -831,6 +854,8 @@ func NewInAppMessageButtonsItemActionFromString(s string) (InAppMessageButtonsIt
 		return InAppMessageButtonsItemActionOpenURL, nil
 	case "dismiss":
 		return InAppMessageButtonsItemActionDismiss, nil
+	case "request_push_permission":
+		return InAppMessageButtonsItemActionRequestPushPermission, nil
 	}
 	var t InAppMessageButtonsItemAction
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -1435,10 +1460,12 @@ func (g *GetInAppStepStatsResponse) String() string {
 }
 
 var (
-	getInAppStepStatsResponseStatsFieldClicked   = big.NewInt(1 << 0)
-	getInAppStepStatsResponseStatsFieldCreated   = big.NewInt(1 << 1)
-	getInAppStepStatsResponseStatsFieldDismissed = big.NewInt(1 << 2)
-	getInAppStepStatsResponseStatsFieldDisplayed = big.NewInt(1 << 3)
+	getInAppStepStatsResponseStatsFieldClicked               = big.NewInt(1 << 0)
+	getInAppStepStatsResponseStatsFieldCreated               = big.NewInt(1 << 1)
+	getInAppStepStatsResponseStatsFieldDismissed             = big.NewInt(1 << 2)
+	getInAppStepStatsResponseStatsFieldDisplayed             = big.NewInt(1 << 3)
+	getInAppStepStatsResponseStatsFieldPushPermissionDenied  = big.NewInt(1 << 4)
+	getInAppStepStatsResponseStatsFieldPushPermissionGranted = big.NewInt(1 << 5)
 )
 
 type GetInAppStepStatsResponseStats struct {
@@ -1446,6 +1473,10 @@ type GetInAppStepStatsResponseStats struct {
 	Created   *int `json:"created,omitempty" url:"created,omitempty"`
 	Dismissed *int `json:"dismissed,omitempty" url:"dismissed,omitempty"`
 	Displayed *int `json:"displayed,omitempty" url:"displayed,omitempty"`
+	// Push primers. Contacts who declined, or had notifications turned off.
+	PushPermissionDenied *int `json:"pushPermissionDenied,omitempty" url:"pushPermissionDenied,omitempty"`
+	// Push primers. Contacts who allowed notifications (granted, provisional or ephemeral) from this step's message.
+	PushPermissionGranted *int `json:"pushPermissionGranted,omitempty" url:"pushPermissionGranted,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1480,6 +1511,20 @@ func (g *GetInAppStepStatsResponseStats) GetDisplayed() *int {
 		return nil
 	}
 	return g.Displayed
+}
+
+func (g *GetInAppStepStatsResponseStats) GetPushPermissionDenied() *int {
+	if g == nil {
+		return nil
+	}
+	return g.PushPermissionDenied
+}
+
+func (g *GetInAppStepStatsResponseStats) GetPushPermissionGranted() *int {
+	if g == nil {
+		return nil
+	}
+	return g.PushPermissionGranted
 }
 
 func (g *GetInAppStepStatsResponseStats) GetExtraProperties() map[string]interface{} {
@@ -1522,6 +1567,20 @@ func (g *GetInAppStepStatsResponseStats) SetDismissed(dismissed *int) {
 func (g *GetInAppStepStatsResponseStats) SetDisplayed(displayed *int) {
 	g.Displayed = displayed
 	g.require(getInAppStepStatsResponseStatsFieldDisplayed)
+}
+
+// SetPushPermissionDenied sets the PushPermissionDenied field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetInAppStepStatsResponseStats) SetPushPermissionDenied(pushPermissionDenied *int) {
+	g.PushPermissionDenied = pushPermissionDenied
+	g.require(getInAppStepStatsResponseStatsFieldPushPermissionDenied)
+}
+
+// SetPushPermissionGranted sets the PushPermissionGranted field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetInAppStepStatsResponseStats) SetPushPermissionGranted(pushPermissionGranted *int) {
+	g.PushPermissionGranted = pushPermissionGranted
+	g.require(getInAppStepStatsResponseStatsFieldPushPermissionGranted)
 }
 
 func (g *GetInAppStepStatsResponseStats) UnmarshalJSON(data []byte) error {
@@ -2039,6 +2098,38 @@ func NewListInAppTemplatesResponseTemplatesItemCategoryFromString(s string) (Lis
 
 func (l ListInAppTemplatesResponseTemplatesItemCategory) Ptr() *ListInAppTemplatesResponseTemplatesItemCategory {
 	return &l
+}
+
+// With type clicked on an item that has a request_push_permission button: the notification permission your app read after asking. The first result is kept for the step's stats and written to the contact's pushPermission attribute; ignored otherwise.
+type RecordInAppEventRequestPushPermission string
+
+const (
+	RecordInAppEventRequestPushPermissionGranted       RecordInAppEventRequestPushPermission = "granted"
+	RecordInAppEventRequestPushPermissionProvisional   RecordInAppEventRequestPushPermission = "provisional"
+	RecordInAppEventRequestPushPermissionEphemeral     RecordInAppEventRequestPushPermission = "ephemeral"
+	RecordInAppEventRequestPushPermissionDenied        RecordInAppEventRequestPushPermission = "denied"
+	RecordInAppEventRequestPushPermissionNotDetermined RecordInAppEventRequestPushPermission = "not_determined"
+)
+
+func NewRecordInAppEventRequestPushPermissionFromString(s string) (RecordInAppEventRequestPushPermission, error) {
+	switch s {
+	case "granted":
+		return RecordInAppEventRequestPushPermissionGranted, nil
+	case "provisional":
+		return RecordInAppEventRequestPushPermissionProvisional, nil
+	case "ephemeral":
+		return RecordInAppEventRequestPushPermissionEphemeral, nil
+	case "denied":
+		return RecordInAppEventRequestPushPermissionDenied, nil
+	case "not_determined":
+		return RecordInAppEventRequestPushPermissionNotDetermined, nil
+	}
+	var t RecordInAppEventRequestPushPermission
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r RecordInAppEventRequestPushPermission) Ptr() *RecordInAppEventRequestPushPermission {
+	return &r
 }
 
 type RecordInAppEventRequestType string
@@ -3026,8 +3117,9 @@ func (w *WriteInAppCopyResponseCopyButtonsItem) String() string {
 type WriteInAppCopyResponseCopyButtonsItemAction string
 
 const (
-	WriteInAppCopyResponseCopyButtonsItemActionOpenURL WriteInAppCopyResponseCopyButtonsItemAction = "open_url"
-	WriteInAppCopyResponseCopyButtonsItemActionDismiss WriteInAppCopyResponseCopyButtonsItemAction = "dismiss"
+	WriteInAppCopyResponseCopyButtonsItemActionOpenURL               WriteInAppCopyResponseCopyButtonsItemAction = "open_url"
+	WriteInAppCopyResponseCopyButtonsItemActionDismiss               WriteInAppCopyResponseCopyButtonsItemAction = "dismiss"
+	WriteInAppCopyResponseCopyButtonsItemActionRequestPushPermission WriteInAppCopyResponseCopyButtonsItemAction = "request_push_permission"
 )
 
 func NewWriteInAppCopyResponseCopyButtonsItemActionFromString(s string) (WriteInAppCopyResponseCopyButtonsItemAction, error) {
@@ -3036,6 +3128,8 @@ func NewWriteInAppCopyResponseCopyButtonsItemActionFromString(s string) (WriteIn
 		return WriteInAppCopyResponseCopyButtonsItemActionOpenURL, nil
 	case "dismiss":
 		return WriteInAppCopyResponseCopyButtonsItemActionDismiss, nil
+	case "request_push_permission":
+		return WriteInAppCopyResponseCopyButtonsItemActionRequestPushPermission, nil
 	}
 	var t WriteInAppCopyResponseCopyButtonsItemAction
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

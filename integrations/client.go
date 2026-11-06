@@ -61,7 +61,7 @@ func (c *Client) ActivatePixel(
 	return response.Body, nil
 }
 
-// Connects an API-key / webhook-secret integration: polar, paddle, dodo, lemon_squeezy, whop, revenuecat, superwall, adapty, creem, chargebee, clerk, posthog, segment, affonso, attio, or sparkloop. Credentials are validated, stored encrypted, and never returned. Lemon Squeezy creates a managed signed webhook when webhookSecret is omitted, or uses a caller-managed secret as fallback. Payment providers queue their initial revenue backfill, except RevenueCat, Superwall, and Adapty, which are webhook-only; Affonso queues its affiliate backfill; PostHog and Segment can optionally import event history. Attio registers its own webhook when inbound mappings are saved, so it takes no webhookSecret. SparkLoop registers its webhook in SparkLoop during connect and receives partner referrals for one publication (providerAccountId, required only when the account has several). Reconnecting replaces stored credentials. OAuth and app-install providers require the dashboard. Requires the integrations:manage scope.
+// Connects an API-key / webhook-secret integration: polar, paddle, dodo, lemon_squeezy, whop, revenuecat, superwall, adapty, creem, chargebee, clerk, posthog, segment, mixpanel, amplitude, affonso, attio, or sparkloop. Credentials are validated, stored encrypted, and never returned. Lemon Squeezy creates a managed signed webhook when webhookSecret is omitted, or uses a caller-managed secret as fallback. Payment providers queue their initial revenue backfill, except RevenueCat, Superwall, and Adapty, which are webhook-only; Affonso queues its affiliate backfill; PostHog and Segment can optionally import event history. Mixpanel and Amplitude take only webhookSecret: Mixpanel syncs exported cohorts as mixpanel-<cohort> tags, and Amplitude streams events, user properties, and cohorts (amplitude-<cohort> tags). Attio registers its own webhook when inbound mappings are saved, so it takes no webhookSecret. SparkLoop registers its webhook in SparkLoop during connect and receives partner referrals for one publication (providerAccountId, required only when the account has several). Reconnecting replaces stored credentials. OAuth and app-install providers require the dashboard. Requires the integrations:manage scope.
 //
 // Example:
 //
@@ -271,7 +271,7 @@ func (c *Client) ListCapabilities(
 	return response.Body, nil
 }
 
-// Suggests integrations to connect next, from what Sequenzy found on the company's website during onboarding: tools on the homepage or on the sign-in page it links to (Clerk, Supabase, PostHog, Segment, Webflow, Wix, WordPress, WooCommerce) or a Shopify storefront. Connected providers are left out. Payment providers are never guessed from the site: when it lists pricing and no payment or commerce integration is connected, paymentProviders lists every payment provider. Requires the account:read scope.
+// Suggests integrations to connect next, from what Sequenzy found on the company's website during onboarding: tools on the homepage or on the sign-in page it links to (Clerk, Supabase, PostHog, Segment, Mixpanel, Amplitude, Webflow, Wix, WordPress, WooCommerce) or a Shopify storefront. Connected providers are left out. Payment providers are never guessed from the site: when it lists pricing and no payment or commerce integration is connected, paymentProviders lists every payment provider. Requires the account:read scope.
 //
 // Example:
 //
@@ -309,6 +309,33 @@ func (c *Client) Sync(
 	opts ...option.RequestOption,
 ) (*sequenzygo.SyncIntegrationsResponse, error) {
 	response, err := c.WithRawResponse.Sync(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Changes which streamed events a connected Amplitude integration records, without the webhook secret. Reconnecting would replace the secret, so use this to change events. syncAllEvents false with an eventAllowlist records only those event types. skipInternalEvents drops session_start, session_end, [Amplitude] autocapture, and other $ events unless allowlisted; identify calls always pass. Applies to deliveries processed after saving; dropped events are not replayed. Provide at least one field. Amplitude only. Requires the integrations:manage scope.
+//
+// Example:
+//
+//	request := &sequenzygo.UpdateAmplitudeSettingsRequest{
+//	    ID: "id",
+//	}
+//	client.Integrations.UpdateAmplitudeSettings(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) UpdateAmplitudeSettings(
+	ctx context.Context,
+	request *sequenzygo.UpdateAmplitudeSettingsRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.UpdateAmplitudeSettingsResponse, error) {
+	response, err := c.WithRawResponse.UpdateAmplitudeSettings(
 		ctx,
 		request,
 		opts...,

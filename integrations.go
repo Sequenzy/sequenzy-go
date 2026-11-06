@@ -52,11 +52,11 @@ type ConnectIntegrationsRequest struct {
 	HistoryImport *ConnectIntegrationsRequestHistoryImport `json:"historyImport,omitempty" url:"-"`
 	// Provider to connect.
 	Provider ConnectIntegrationsRequestProvider `json:"provider" url:"-"`
-	// Provider account id: Paddle seller ID, Dodo business ID, Lemon Squeezy numeric store ID, Whop company ID, Creem store ID, or Chargebee site name. Polar resolves it from the API key. RevenueCat resolves its project ID from the API key; pass it only when the key can access several projects. Superwall and Adapty do not use one. SparkLoop: the publication ID (pub_...), required only when the account has several publications.
+	// Provider account id: Paddle seller ID, Dodo business ID, Lemon Squeezy numeric store ID, Whop company ID, Creem store ID, or Chargebee site name. Polar resolves it from the API key. RevenueCat resolves its project ID from the API key; pass it only when the key can access several projects. Superwall, Adapty, Mixpanel, and Amplitude do not use one. SparkLoop: the publication ID (pub_...), required only when the account has several publications.
 	ProviderAccountID *string `json:"providerAccountId,omitempty" url:"-"`
-	// PostHog and Segment: event delivery scope. Attio: listMap (Sequenzy list id to Attio list id or slug) and syncCompanyFromDomain. SparkLoop: listIds for new referrals.
+	// PostHog, Segment, and Amplitude: event delivery scope. PostHog also takes matchByDistinctId. Mixpanel takes no settings. Attio: listMap (Sequenzy list id to Attio list id or slug) and syncCompanyFromDomain. SparkLoop: listIds for new referrals. On a PostHog reconnect, the settings you pass merge onto the stored ones.
 	Settings *ConnectIntegrationsRequestSettings `json:"settings,omitempty" url:"-"`
-	// Signing secret of the provider webhook. Optional for lemon_squeezy managed provisioning and for sparkloop, and not used by attio; required for other providers. Lemon Squeezy manual secrets use 16-40 characters. For Chargebee, pass username:password. For RevenueCat, pass at least 16 characters: the authorization header value set on the RevenueCat webhook, or its HMAC signing secret. For Superwall, pass the webhook's whsec_ signing secret, the only credential it needs. For Adapty, pass at least 16 characters: the authorization header value set on the Adapty webhook. For Segment, use 16-153 UTF-8 bytes. For SparkLoop, omit it so Sequenzy authenticates deliveries with a secret in the webhook URL it registers, or pass the account's webhook authentication token to verify the SparkLoop-Token header instead.
+	// Signing secret of the provider webhook. Optional for lemon_squeezy managed provisioning and for sparkloop, and not used by attio; required for other providers. Lemon Squeezy manual secrets use 16-40 characters. For Chargebee, pass username:password. For RevenueCat, pass at least 16 characters: the authorization header value set on the RevenueCat webhook, or its HMAC signing secret. For Superwall, pass the webhook's whsec_ signing secret, the only credential it needs. For Adapty, pass at least 16 characters: the authorization header value set on the Adapty webhook. For Segment, use 16-153 UTF-8 bytes. For Mixpanel and Amplitude, choose a random value of 16-153 characters without spaces or colons: Mixpanel sends it as the Basic auth password of its webhook destination (any username), Amplitude in an X-Webhook-Secret header. For SparkLoop, omit it so Sequenzy authenticates deliveries with a secret in the webhook URL it registers, or pass the account's webhook authentication token to verify the SparkLoop-Token header instead.
 	WebhookSecret *string `json:"webhookSecret,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -2497,34 +2497,40 @@ func (i *IntegrationDetailIngestionListsItem) String() string {
 
 var (
 	integrationDetailIntegrationFieldCategory             = big.NewInt(1 << 0)
-	integrationDetailIntegrationFieldConnectedAt          = big.NewInt(1 << 1)
-	integrationDetailIntegrationFieldDetails              = big.NewInt(1 << 2)
-	integrationDetailIntegrationFieldDisconnectedAt       = big.NewInt(1 << 3)
-	integrationDetailIntegrationFieldID                   = big.NewInt(1 << 4)
-	integrationDetailIntegrationFieldIsActive             = big.NewInt(1 << 5)
-	integrationDetailIntegrationFieldLastSyncAt           = big.NewInt(1 << 6)
-	integrationDetailIntegrationFieldLastSyncError        = big.NewInt(1 << 7)
-	integrationDetailIntegrationFieldLastSyncSkipped      = big.NewInt(1 << 8)
-	integrationDetailIntegrationFieldName                 = big.NewInt(1 << 9)
-	integrationDetailIntegrationFieldProvider             = big.NewInt(1 << 10)
-	integrationDetailIntegrationFieldProviderAccountID    = big.NewInt(1 << 11)
-	integrationDetailIntegrationFieldSyncEnabled          = big.NewInt(1 << 12)
-	integrationDetailIntegrationFieldSyncStatus           = big.NewInt(1 << 13)
-	integrationDetailIntegrationFieldTotalCustomersSynced = big.NewInt(1 << 14)
-	integrationDetailIntegrationFieldTotalEventsSynced    = big.NewInt(1 << 15)
+	integrationDetailIntegrationFieldCohorts              = big.NewInt(1 << 1)
+	integrationDetailIntegrationFieldConnectedAt          = big.NewInt(1 << 2)
+	integrationDetailIntegrationFieldDetails              = big.NewInt(1 << 3)
+	integrationDetailIntegrationFieldDisconnectedAt       = big.NewInt(1 << 4)
+	integrationDetailIntegrationFieldEventSettings        = big.NewInt(1 << 5)
+	integrationDetailIntegrationFieldID                   = big.NewInt(1 << 6)
+	integrationDetailIntegrationFieldIsActive             = big.NewInt(1 << 7)
+	integrationDetailIntegrationFieldLastSyncAt           = big.NewInt(1 << 8)
+	integrationDetailIntegrationFieldLastSyncError        = big.NewInt(1 << 9)
+	integrationDetailIntegrationFieldLastSyncSkipped      = big.NewInt(1 << 10)
+	integrationDetailIntegrationFieldName                 = big.NewInt(1 << 11)
+	integrationDetailIntegrationFieldProvider             = big.NewInt(1 << 12)
+	integrationDetailIntegrationFieldProviderAccountID    = big.NewInt(1 << 13)
+	integrationDetailIntegrationFieldSyncEnabled          = big.NewInt(1 << 14)
+	integrationDetailIntegrationFieldSyncStatus           = big.NewInt(1 << 15)
+	integrationDetailIntegrationFieldTotalCustomersSynced = big.NewInt(1 << 16)
+	integrationDetailIntegrationFieldTotalEventsSynced    = big.NewInt(1 << 17)
 )
 
 type IntegrationDetailIntegration struct {
 	// Provider category, or null for a provider with no catalog entry.
-	Category    *IntegrationDetailIntegrationCategory `json:"category,omitempty" url:"category,omitempty"`
-	ConnectedAt *time.Time                            `json:"connectedAt,omitempty" url:"connectedAt,omitempty"`
+	Category *IntegrationDetailIntegrationCategory `json:"category,omitempty" url:"category,omitempty"`
+	// Mixpanel and Amplitude only. The cohorts received so far, most recently synced first, and the tag each one is mirrored to. The tag is fixed when a cohort first syncs and survives renames. Absent for other providers.
+	Cohorts     []*IntegrationSummaryCohortsItem `json:"cohorts,omitempty" url:"cohorts,omitempty"`
+	ConnectedAt *time.Time                       `json:"connectedAt,omitempty" url:"connectedAt,omitempty"`
 	// Allowlisted non-secret metadata. Never contains credentials. Attio includes listMap, mappedListCount, syncCompanyFromDomain, tagMap, inboundListMap, inboundTagMap, syncRemovals, and inboundSyncStatus (off, active, or error) for configuration diagnostics.
 	Details        map[string]any `json:"details,omitempty" url:"details,omitempty"`
 	DisconnectedAt *time.Time     `json:"disconnectedAt,omitempty" url:"disconnectedAt,omitempty"`
-	ID             *string        `json:"id,omitempty" url:"id,omitempty"`
-	IsActive       *bool          `json:"isActive,omitempty" url:"isActive,omitempty"`
-	LastSyncAt     *time.Time     `json:"lastSyncAt,omitempty" url:"lastSyncAt,omitempty"`
-	LastSyncError  *string        `json:"lastSyncError,omitempty" url:"lastSyncError,omitempty"`
+	// Amplitude only. Which streamed events are synced. Absent for other providers.
+	EventSettings *IntegrationSummaryEventSettings `json:"eventSettings,omitempty" url:"eventSettings,omitempty"`
+	ID            *string                          `json:"id,omitempty" url:"id,omitempty"`
+	IsActive      *bool                            `json:"isActive,omitempty" url:"isActive,omitempty"`
+	LastSyncAt    *time.Time                       `json:"lastSyncAt,omitempty" url:"lastSyncAt,omitempty"`
+	LastSyncError *string                          `json:"lastSyncError,omitempty" url:"lastSyncError,omitempty"`
 	// Records the last sync could not import normally. Null when the sync was clean or the provider does not report skips.
 	LastSyncSkipped *IntegrationSyncSkipSummary `json:"lastSyncSkipped,omitempty" url:"lastSyncSkipped,omitempty"`
 	// Provider display name.
@@ -2551,6 +2557,13 @@ func (i *IntegrationDetailIntegration) GetCategory() *IntegrationDetailIntegrati
 	return i.Category
 }
 
+func (i *IntegrationDetailIntegration) GetCohorts() []*IntegrationSummaryCohortsItem {
+	if i == nil {
+		return nil
+	}
+	return i.Cohorts
+}
+
 func (i *IntegrationDetailIntegration) GetConnectedAt() *time.Time {
 	if i == nil {
 		return nil
@@ -2570,6 +2583,13 @@ func (i *IntegrationDetailIntegration) GetDisconnectedAt() *time.Time {
 		return nil
 	}
 	return i.DisconnectedAt
+}
+
+func (i *IntegrationDetailIntegration) GetEventSettings() *IntegrationSummaryEventSettings {
+	if i == nil {
+		return nil
+	}
+	return i.EventSettings
 }
 
 func (i *IntegrationDetailIntegration) GetID() *string {
@@ -2677,6 +2697,13 @@ func (i *IntegrationDetailIntegration) SetCategory(category *IntegrationDetailIn
 	i.require(integrationDetailIntegrationFieldCategory)
 }
 
+// SetCohorts sets the Cohorts field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IntegrationDetailIntegration) SetCohorts(cohorts []*IntegrationSummaryCohortsItem) {
+	i.Cohorts = cohorts
+	i.require(integrationDetailIntegrationFieldCohorts)
+}
+
 // SetConnectedAt sets the ConnectedAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (i *IntegrationDetailIntegration) SetConnectedAt(connectedAt *time.Time) {
@@ -2696,6 +2723,13 @@ func (i *IntegrationDetailIntegration) SetDetails(details map[string]any) {
 func (i *IntegrationDetailIntegration) SetDisconnectedAt(disconnectedAt *time.Time) {
 	i.DisconnectedAt = disconnectedAt
 	i.require(integrationDetailIntegrationFieldDisconnectedAt)
+}
+
+// SetEventSettings sets the EventSettings field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IntegrationDetailIntegration) SetEventSettings(eventSettings *IntegrationSummaryEventSettings) {
+	i.EventSettings = eventSettings
+	i.require(integrationDetailIntegrationFieldEventSettings)
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -4392,15 +4426,16 @@ func (i *IntegrationProviderCapability) String() string {
 type IntegrationProviderCapabilityActionsItem string
 
 const (
-	IntegrationProviderCapabilityActionsItemConnect             IntegrationProviderCapabilityActionsItem = "connect"
-	IntegrationProviderCapabilityActionsItemDisconnect          IntegrationProviderCapabilityActionsItem = "disconnect"
-	IntegrationProviderCapabilityActionsItemEnableSync          IntegrationProviderCapabilityActionsItem = "enable_sync"
-	IntegrationProviderCapabilityActionsItemDisableSync         IntegrationProviderCapabilityActionsItem = "disable_sync"
-	IntegrationProviderCapabilityActionsItemSyncNow             IntegrationProviderCapabilityActionsItem = "sync_now"
-	IntegrationProviderCapabilityActionsItemSyncProducts        IntegrationProviderCapabilityActionsItem = "sync_products"
-	IntegrationProviderCapabilityActionsItemSetListTargeting    IntegrationProviderCapabilityActionsItem = "set_list_targeting"
-	IntegrationProviderCapabilityActionsItemActivatePixel       IntegrationProviderCapabilityActionsItem = "activate_pixel"
-	IntegrationProviderCapabilityActionsItemUpdateAttioSettings IntegrationProviderCapabilityActionsItem = "update_attio_settings"
+	IntegrationProviderCapabilityActionsItemConnect                 IntegrationProviderCapabilityActionsItem = "connect"
+	IntegrationProviderCapabilityActionsItemDisconnect              IntegrationProviderCapabilityActionsItem = "disconnect"
+	IntegrationProviderCapabilityActionsItemEnableSync              IntegrationProviderCapabilityActionsItem = "enable_sync"
+	IntegrationProviderCapabilityActionsItemDisableSync             IntegrationProviderCapabilityActionsItem = "disable_sync"
+	IntegrationProviderCapabilityActionsItemSyncNow                 IntegrationProviderCapabilityActionsItem = "sync_now"
+	IntegrationProviderCapabilityActionsItemSyncProducts            IntegrationProviderCapabilityActionsItem = "sync_products"
+	IntegrationProviderCapabilityActionsItemSetListTargeting        IntegrationProviderCapabilityActionsItem = "set_list_targeting"
+	IntegrationProviderCapabilityActionsItemActivatePixel           IntegrationProviderCapabilityActionsItem = "activate_pixel"
+	IntegrationProviderCapabilityActionsItemUpdateAttioSettings     IntegrationProviderCapabilityActionsItem = "update_attio_settings"
+	IntegrationProviderCapabilityActionsItemUpdateAmplitudeSettings IntegrationProviderCapabilityActionsItem = "update_amplitude_settings"
 )
 
 func NewIntegrationProviderCapabilityActionsItemFromString(s string) (IntegrationProviderCapabilityActionsItem, error) {
@@ -4423,6 +4458,8 @@ func NewIntegrationProviderCapabilityActionsItemFromString(s string) (Integratio
 		return IntegrationProviderCapabilityActionsItemActivatePixel, nil
 	case "update_attio_settings":
 		return IntegrationProviderCapabilityActionsItemUpdateAttioSettings, nil
+	case "update_amplitude_settings":
+		return IntegrationProviderCapabilityActionsItemUpdateAmplitudeSettings, nil
 	}
 	var t IntegrationProviderCapabilityActionsItem
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -4900,34 +4937,40 @@ func (i *IntegrationProviderCapabilityWritesAttributesItem) String() string {
 
 var (
 	integrationSummaryFieldCategory             = big.NewInt(1 << 0)
-	integrationSummaryFieldConnectedAt          = big.NewInt(1 << 1)
-	integrationSummaryFieldDetails              = big.NewInt(1 << 2)
-	integrationSummaryFieldDisconnectedAt       = big.NewInt(1 << 3)
-	integrationSummaryFieldID                   = big.NewInt(1 << 4)
-	integrationSummaryFieldIsActive             = big.NewInt(1 << 5)
-	integrationSummaryFieldLastSyncAt           = big.NewInt(1 << 6)
-	integrationSummaryFieldLastSyncError        = big.NewInt(1 << 7)
-	integrationSummaryFieldLastSyncSkipped      = big.NewInt(1 << 8)
-	integrationSummaryFieldName                 = big.NewInt(1 << 9)
-	integrationSummaryFieldProvider             = big.NewInt(1 << 10)
-	integrationSummaryFieldProviderAccountID    = big.NewInt(1 << 11)
-	integrationSummaryFieldSyncEnabled          = big.NewInt(1 << 12)
-	integrationSummaryFieldSyncStatus           = big.NewInt(1 << 13)
-	integrationSummaryFieldTotalCustomersSynced = big.NewInt(1 << 14)
-	integrationSummaryFieldTotalEventsSynced    = big.NewInt(1 << 15)
+	integrationSummaryFieldCohorts              = big.NewInt(1 << 1)
+	integrationSummaryFieldConnectedAt          = big.NewInt(1 << 2)
+	integrationSummaryFieldDetails              = big.NewInt(1 << 3)
+	integrationSummaryFieldDisconnectedAt       = big.NewInt(1 << 4)
+	integrationSummaryFieldEventSettings        = big.NewInt(1 << 5)
+	integrationSummaryFieldID                   = big.NewInt(1 << 6)
+	integrationSummaryFieldIsActive             = big.NewInt(1 << 7)
+	integrationSummaryFieldLastSyncAt           = big.NewInt(1 << 8)
+	integrationSummaryFieldLastSyncError        = big.NewInt(1 << 9)
+	integrationSummaryFieldLastSyncSkipped      = big.NewInt(1 << 10)
+	integrationSummaryFieldName                 = big.NewInt(1 << 11)
+	integrationSummaryFieldProvider             = big.NewInt(1 << 12)
+	integrationSummaryFieldProviderAccountID    = big.NewInt(1 << 13)
+	integrationSummaryFieldSyncEnabled          = big.NewInt(1 << 14)
+	integrationSummaryFieldSyncStatus           = big.NewInt(1 << 15)
+	integrationSummaryFieldTotalCustomersSynced = big.NewInt(1 << 16)
+	integrationSummaryFieldTotalEventsSynced    = big.NewInt(1 << 17)
 )
 
 type IntegrationSummary struct {
 	// Provider category, or null for a provider with no catalog entry.
-	Category    *IntegrationSummaryCategory `json:"category,omitempty" url:"category,omitempty"`
-	ConnectedAt *time.Time                  `json:"connectedAt,omitempty" url:"connectedAt,omitempty"`
+	Category *IntegrationSummaryCategory `json:"category,omitempty" url:"category,omitempty"`
+	// Mixpanel and Amplitude only. The cohorts received so far, most recently synced first, and the tag each one is mirrored to. The tag is fixed when a cohort first syncs and survives renames. Absent for other providers.
+	Cohorts     []*IntegrationSummaryCohortsItem `json:"cohorts,omitempty" url:"cohorts,omitempty"`
+	ConnectedAt *time.Time                       `json:"connectedAt,omitempty" url:"connectedAt,omitempty"`
 	// Allowlisted non-secret metadata. Never contains credentials. Attio includes listMap, mappedListCount, syncCompanyFromDomain, tagMap, inboundListMap, inboundTagMap, syncRemovals, and inboundSyncStatus (off, active, or error) for configuration diagnostics.
 	Details        map[string]any `json:"details,omitempty" url:"details,omitempty"`
 	DisconnectedAt *time.Time     `json:"disconnectedAt,omitempty" url:"disconnectedAt,omitempty"`
-	ID             *string        `json:"id,omitempty" url:"id,omitempty"`
-	IsActive       *bool          `json:"isActive,omitempty" url:"isActive,omitempty"`
-	LastSyncAt     *time.Time     `json:"lastSyncAt,omitempty" url:"lastSyncAt,omitempty"`
-	LastSyncError  *string        `json:"lastSyncError,omitempty" url:"lastSyncError,omitempty"`
+	// Amplitude only. Which streamed events are synced. Absent for other providers.
+	EventSettings *IntegrationSummaryEventSettings `json:"eventSettings,omitempty" url:"eventSettings,omitempty"`
+	ID            *string                          `json:"id,omitempty" url:"id,omitempty"`
+	IsActive      *bool                            `json:"isActive,omitempty" url:"isActive,omitempty"`
+	LastSyncAt    *time.Time                       `json:"lastSyncAt,omitempty" url:"lastSyncAt,omitempty"`
+	LastSyncError *string                          `json:"lastSyncError,omitempty" url:"lastSyncError,omitempty"`
 	// Records the last sync could not import normally. Null when the sync was clean or the provider does not report skips.
 	LastSyncSkipped *IntegrationSyncSkipSummary `json:"lastSyncSkipped,omitempty" url:"lastSyncSkipped,omitempty"`
 	// Display name for the provider, falling back to the raw provider id.
@@ -4954,6 +4997,13 @@ func (i *IntegrationSummary) GetCategory() *IntegrationSummaryCategory {
 	return i.Category
 }
 
+func (i *IntegrationSummary) GetCohorts() []*IntegrationSummaryCohortsItem {
+	if i == nil {
+		return nil
+	}
+	return i.Cohorts
+}
+
 func (i *IntegrationSummary) GetConnectedAt() *time.Time {
 	if i == nil {
 		return nil
@@ -4973,6 +5023,13 @@ func (i *IntegrationSummary) GetDisconnectedAt() *time.Time {
 		return nil
 	}
 	return i.DisconnectedAt
+}
+
+func (i *IntegrationSummary) GetEventSettings() *IntegrationSummaryEventSettings {
+	if i == nil {
+		return nil
+	}
+	return i.EventSettings
 }
 
 func (i *IntegrationSummary) GetID() *string {
@@ -5080,6 +5137,13 @@ func (i *IntegrationSummary) SetCategory(category *IntegrationSummaryCategory) {
 	i.require(integrationSummaryFieldCategory)
 }
 
+// SetCohorts sets the Cohorts field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IntegrationSummary) SetCohorts(cohorts []*IntegrationSummaryCohortsItem) {
+	i.Cohorts = cohorts
+	i.require(integrationSummaryFieldCohorts)
+}
+
 // SetConnectedAt sets the ConnectedAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (i *IntegrationSummary) SetConnectedAt(connectedAt *time.Time) {
@@ -5099,6 +5163,13 @@ func (i *IntegrationSummary) SetDetails(details map[string]any) {
 func (i *IntegrationSummary) SetDisconnectedAt(disconnectedAt *time.Time) {
 	i.DisconnectedAt = disconnectedAt
 	i.require(integrationSummaryFieldDisconnectedAt)
+}
+
+// SetEventSettings sets the EventSettings field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IntegrationSummary) SetEventSettings(eventSettings *IntegrationSummaryEventSettings) {
+	i.EventSettings = eventSettings
+	i.require(integrationSummaryFieldEventSettings)
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -5285,6 +5356,285 @@ func NewIntegrationSummaryCategoryFromString(s string) (IntegrationSummaryCatego
 
 func (i IntegrationSummaryCategory) Ptr() *IntegrationSummaryCategory {
 	return &i
+}
+
+var (
+	integrationSummaryCohortsItemFieldFirstSyncedAt = big.NewInt(1 << 0)
+	integrationSummaryCohortsItemFieldID            = big.NewInt(1 << 1)
+	integrationSummaryCohortsItemFieldLastSyncedAt  = big.NewInt(1 << 2)
+	integrationSummaryCohortsItemFieldName          = big.NewInt(1 << 3)
+	integrationSummaryCohortsItemFieldTag           = big.NewInt(1 << 4)
+)
+
+type IntegrationSummaryCohortsItem struct {
+	FirstSyncedAt *time.Time `json:"firstSyncedAt,omitempty" url:"firstSyncedAt,omitempty"`
+	// The Mixpanel or Amplitude cohort ID.
+	ID           string     `json:"id" url:"id"`
+	LastSyncedAt *time.Time `json:"lastSyncedAt,omitempty" url:"lastSyncedAt,omitempty"`
+	// The cohort name as last reported by the provider.
+	Name string `json:"name" url:"name"`
+	Tag  string `json:"tag" url:"tag"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (i *IntegrationSummaryCohortsItem) GetFirstSyncedAt() *time.Time {
+	if i == nil {
+		return nil
+	}
+	return i.FirstSyncedAt
+}
+
+func (i *IntegrationSummaryCohortsItem) GetID() string {
+	if i == nil {
+		return ""
+	}
+	return i.ID
+}
+
+func (i *IntegrationSummaryCohortsItem) GetLastSyncedAt() *time.Time {
+	if i == nil {
+		return nil
+	}
+	return i.LastSyncedAt
+}
+
+func (i *IntegrationSummaryCohortsItem) GetName() string {
+	if i == nil {
+		return ""
+	}
+	return i.Name
+}
+
+func (i *IntegrationSummaryCohortsItem) GetTag() string {
+	if i == nil {
+		return ""
+	}
+	return i.Tag
+}
+
+func (i *IntegrationSummaryCohortsItem) GetExtraProperties() map[string]interface{} {
+	if i == nil {
+		return nil
+	}
+	return i.extraProperties
+}
+
+func (i *IntegrationSummaryCohortsItem) require(field *big.Int) {
+	if i.explicitFields == nil {
+		i.explicitFields = big.NewInt(0)
+	}
+	i.explicitFields.Or(i.explicitFields, field)
+}
+
+// SetFirstSyncedAt sets the FirstSyncedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IntegrationSummaryCohortsItem) SetFirstSyncedAt(firstSyncedAt *time.Time) {
+	i.FirstSyncedAt = firstSyncedAt
+	i.require(integrationSummaryCohortsItemFieldFirstSyncedAt)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IntegrationSummaryCohortsItem) SetID(id string) {
+	i.ID = id
+	i.require(integrationSummaryCohortsItemFieldID)
+}
+
+// SetLastSyncedAt sets the LastSyncedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IntegrationSummaryCohortsItem) SetLastSyncedAt(lastSyncedAt *time.Time) {
+	i.LastSyncedAt = lastSyncedAt
+	i.require(integrationSummaryCohortsItemFieldLastSyncedAt)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IntegrationSummaryCohortsItem) SetName(name string) {
+	i.Name = name
+	i.require(integrationSummaryCohortsItemFieldName)
+}
+
+// SetTag sets the Tag field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IntegrationSummaryCohortsItem) SetTag(tag string) {
+	i.Tag = tag
+	i.require(integrationSummaryCohortsItemFieldTag)
+}
+
+func (i *IntegrationSummaryCohortsItem) UnmarshalJSON(data []byte) error {
+	type embed IntegrationSummaryCohortsItem
+	var unmarshaler = struct {
+		embed
+		FirstSyncedAt *internal.DateTime `json:"firstSyncedAt,omitempty"`
+		LastSyncedAt  *internal.DateTime `json:"lastSyncedAt,omitempty"`
+	}{
+		embed: embed(*i),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*i = IntegrationSummaryCohortsItem(unmarshaler.embed)
+	i.FirstSyncedAt = unmarshaler.FirstSyncedAt.TimePtr()
+	i.LastSyncedAt = unmarshaler.LastSyncedAt.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+	i.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *IntegrationSummaryCohortsItem) MarshalJSON() ([]byte, error) {
+	type embed IntegrationSummaryCohortsItem
+	var marshaler = struct {
+		embed
+		FirstSyncedAt *internal.DateTime `json:"firstSyncedAt,omitempty"`
+		LastSyncedAt  *internal.DateTime `json:"lastSyncedAt,omitempty"`
+	}{
+		embed:         embed(*i),
+		FirstSyncedAt: internal.NewOptionalDateTime(i.FirstSyncedAt),
+		LastSyncedAt:  internal.NewOptionalDateTime(i.LastSyncedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (i *IntegrationSummaryCohortsItem) String() string {
+	if i == nil {
+		return "<nil>"
+	}
+	if len(i.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
+// Amplitude only. Which streamed events are synced. Absent for other providers.
+var (
+	integrationSummaryEventSettingsFieldEventAllowlist     = big.NewInt(1 << 0)
+	integrationSummaryEventSettingsFieldSkipInternalEvents = big.NewInt(1 << 1)
+	integrationSummaryEventSettingsFieldSyncAllEvents      = big.NewInt(1 << 2)
+)
+
+type IntegrationSummaryEventSettings struct {
+	EventAllowlist     []string `json:"eventAllowlist" url:"eventAllowlist"`
+	SkipInternalEvents bool     `json:"skipInternalEvents" url:"skipInternalEvents"`
+	SyncAllEvents      bool     `json:"syncAllEvents" url:"syncAllEvents"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (i *IntegrationSummaryEventSettings) GetEventAllowlist() []string {
+	if i == nil {
+		return nil
+	}
+	return i.EventAllowlist
+}
+
+func (i *IntegrationSummaryEventSettings) GetSkipInternalEvents() bool {
+	if i == nil {
+		return false
+	}
+	return i.SkipInternalEvents
+}
+
+func (i *IntegrationSummaryEventSettings) GetSyncAllEvents() bool {
+	if i == nil {
+		return false
+	}
+	return i.SyncAllEvents
+}
+
+func (i *IntegrationSummaryEventSettings) GetExtraProperties() map[string]interface{} {
+	if i == nil {
+		return nil
+	}
+	return i.extraProperties
+}
+
+func (i *IntegrationSummaryEventSettings) require(field *big.Int) {
+	if i.explicitFields == nil {
+		i.explicitFields = big.NewInt(0)
+	}
+	i.explicitFields.Or(i.explicitFields, field)
+}
+
+// SetEventAllowlist sets the EventAllowlist field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IntegrationSummaryEventSettings) SetEventAllowlist(eventAllowlist []string) {
+	i.EventAllowlist = eventAllowlist
+	i.require(integrationSummaryEventSettingsFieldEventAllowlist)
+}
+
+// SetSkipInternalEvents sets the SkipInternalEvents field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IntegrationSummaryEventSettings) SetSkipInternalEvents(skipInternalEvents bool) {
+	i.SkipInternalEvents = skipInternalEvents
+	i.require(integrationSummaryEventSettingsFieldSkipInternalEvents)
+}
+
+// SetSyncAllEvents sets the SyncAllEvents field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IntegrationSummaryEventSettings) SetSyncAllEvents(syncAllEvents bool) {
+	i.SyncAllEvents = syncAllEvents
+	i.require(integrationSummaryEventSettingsFieldSyncAllEvents)
+}
+
+func (i *IntegrationSummaryEventSettings) UnmarshalJSON(data []byte) error {
+	type unmarshaler IntegrationSummaryEventSettings
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*i = IntegrationSummaryEventSettings(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+	i.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *IntegrationSummaryEventSettings) MarshalJSON() ([]byte, error) {
+	type embed IntegrationSummaryEventSettings
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*i),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (i *IntegrationSummaryEventSettings) String() string {
+	if i == nil {
+		return "<nil>"
+	}
+	if len(i.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
 }
 
 // Summary of records a store import could not bring in normally. A store with real order history often carries a few addresses on domains that have since been shut down; those are reported here instead of failing the whole import.
@@ -6019,6 +6369,8 @@ const (
 	ConnectIntegrationsRequestProviderClerk        ConnectIntegrationsRequestProvider = "clerk"
 	ConnectIntegrationsRequestProviderPosthog      ConnectIntegrationsRequestProvider = "posthog"
 	ConnectIntegrationsRequestProviderSegment      ConnectIntegrationsRequestProvider = "segment"
+	ConnectIntegrationsRequestProviderMixpanel     ConnectIntegrationsRequestProvider = "mixpanel"
+	ConnectIntegrationsRequestProviderAmplitude    ConnectIntegrationsRequestProvider = "amplitude"
 	ConnectIntegrationsRequestProviderAffonso      ConnectIntegrationsRequestProvider = "affonso"
 	ConnectIntegrationsRequestProviderAttio        ConnectIntegrationsRequestProvider = "attio"
 	ConnectIntegrationsRequestProviderSparkloop    ConnectIntegrationsRequestProvider = "sparkloop"
@@ -6052,6 +6404,10 @@ func NewConnectIntegrationsRequestProviderFromString(s string) (ConnectIntegrati
 		return ConnectIntegrationsRequestProviderPosthog, nil
 	case "segment":
 		return ConnectIntegrationsRequestProviderSegment, nil
+	case "mixpanel":
+		return ConnectIntegrationsRequestProviderMixpanel, nil
+	case "amplitude":
+		return ConnectIntegrationsRequestProviderAmplitude, nil
 	case "affonso":
 		return ConnectIntegrationsRequestProviderAffonso, nil
 	case "attio":
@@ -6067,13 +6423,15 @@ func (c ConnectIntegrationsRequestProvider) Ptr() *ConnectIntegrationsRequestPro
 	return &c
 }
 
-// PostHog and Segment: event delivery scope. Attio: listMap (Sequenzy list id to Attio list id or slug) and syncCompanyFromDomain. SparkLoop: listIds for new referrals.
+// PostHog, Segment, and Amplitude: event delivery scope. PostHog also takes matchByDistinctId. Mixpanel takes no settings. Attio: listMap (Sequenzy list id to Attio list id or slug) and syncCompanyFromDomain. SparkLoop: listIds for new referrals. On a PostHog reconnect, the settings you pass merge onto the stored ones.
 var (
 	connectIntegrationsRequestSettingsFieldEventAllowlist        = big.NewInt(1 << 0)
 	connectIntegrationsRequestSettingsFieldListIDs               = big.NewInt(1 << 1)
 	connectIntegrationsRequestSettingsFieldListMap               = big.NewInt(1 << 2)
-	connectIntegrationsRequestSettingsFieldSyncAllEvents         = big.NewInt(1 << 3)
-	connectIntegrationsRequestSettingsFieldSyncCompanyFromDomain = big.NewInt(1 << 4)
+	connectIntegrationsRequestSettingsFieldMatchByDistinctID     = big.NewInt(1 << 3)
+	connectIntegrationsRequestSettingsFieldSkipInternalEvents    = big.NewInt(1 << 4)
+	connectIntegrationsRequestSettingsFieldSyncAllEvents         = big.NewInt(1 << 5)
+	connectIntegrationsRequestSettingsFieldSyncCompanyFromDomain = big.NewInt(1 << 6)
 )
 
 type ConnectIntegrationsRequestSettings struct {
@@ -6081,8 +6439,12 @@ type ConnectIntegrationsRequestSettings struct {
 	// SparkLoop only. Lists new referrals join. Omit to keep the current choice (the workspace default lists on a first connect), null to reset to the workspace default lists, or an empty array for none.
 	ListIDs []string `json:"listIds,omitempty" url:"listIds,omitempty"`
 	// Attio only. Sequenzy list id to Attio list UUID or slug.
-	ListMap       map[string]string `json:"listMap,omitempty" url:"listMap,omitempty"`
-	SyncAllEvents *bool             `json:"syncAllEvents,omitempty" url:"syncAllEvents,omitempty"`
+	ListMap map[string]string `json:"listMap,omitempty" url:"listMap,omitempty"`
+	// PostHog only. Match events without an email to the existing contact whose externalId (or the posthogDistinctId a previous $identify stored) equals the event's distinct_id. Never creates contacts. New connections default to true; integrations connected earlier keep false until you turn it on.
+	MatchByDistinctID *bool `json:"matchByDistinctId,omitempty" url:"matchByDistinctId,omitempty"`
+	// Skip provider-internal events (PostHog $ events, Segment page/screen, Amplitude session_start, session_end, and [Amplitude] autocapture) unless allowlisted. Identify calls always pass. New Segment and Amplitude connections default to true, as do new PostHog connections made without settings.
+	SkipInternalEvents *bool `json:"skipInternalEvents,omitempty" url:"skipInternalEvents,omitempty"`
+	SyncAllEvents      *bool `json:"syncAllEvents,omitempty" url:"syncAllEvents,omitempty"`
 	// Attio only. Upsert a company from the person's non-free-mail email domain.
 	SyncCompanyFromDomain *bool `json:"syncCompanyFromDomain,omitempty" url:"syncCompanyFromDomain,omitempty"`
 
@@ -6112,6 +6474,20 @@ func (c *ConnectIntegrationsRequestSettings) GetListMap() map[string]string {
 		return nil
 	}
 	return c.ListMap
+}
+
+func (c *ConnectIntegrationsRequestSettings) GetMatchByDistinctID() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.MatchByDistinctID
+}
+
+func (c *ConnectIntegrationsRequestSettings) GetSkipInternalEvents() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.SkipInternalEvents
 }
 
 func (c *ConnectIntegrationsRequestSettings) GetSyncAllEvents() *bool {
@@ -6161,6 +6537,20 @@ func (c *ConnectIntegrationsRequestSettings) SetListIDs(listIDs []string) {
 func (c *ConnectIntegrationsRequestSettings) SetListMap(listMap map[string]string) {
 	c.ListMap = listMap
 	c.require(connectIntegrationsRequestSettingsFieldListMap)
+}
+
+// SetMatchByDistinctID sets the MatchByDistinctID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ConnectIntegrationsRequestSettings) SetMatchByDistinctID(matchByDistinctID *bool) {
+	c.MatchByDistinctID = matchByDistinctID
+	c.require(connectIntegrationsRequestSettingsFieldMatchByDistinctID)
+}
+
+// SetSkipInternalEvents sets the SkipInternalEvents field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ConnectIntegrationsRequestSettings) SetSkipInternalEvents(skipInternalEvents *bool) {
+	c.SkipInternalEvents = skipInternalEvents
+	c.require(connectIntegrationsRequestSettingsFieldSkipInternalEvents)
 }
 
 // SetSyncAllEvents sets the SyncAllEvents field and marks it as non-optional;
@@ -7924,6 +8314,8 @@ const (
 	ListSuggestionsIntegrationsResponseSuggestionsItemProviderSupabase    ListSuggestionsIntegrationsResponseSuggestionsItemProvider = "supabase"
 	ListSuggestionsIntegrationsResponseSuggestionsItemProviderPosthog     ListSuggestionsIntegrationsResponseSuggestionsItemProvider = "posthog"
 	ListSuggestionsIntegrationsResponseSuggestionsItemProviderSegment     ListSuggestionsIntegrationsResponseSuggestionsItemProvider = "segment"
+	ListSuggestionsIntegrationsResponseSuggestionsItemProviderMixpanel    ListSuggestionsIntegrationsResponseSuggestionsItemProvider = "mixpanel"
+	ListSuggestionsIntegrationsResponseSuggestionsItemProviderAmplitude   ListSuggestionsIntegrationsResponseSuggestionsItemProvider = "amplitude"
 	ListSuggestionsIntegrationsResponseSuggestionsItemProviderWoocommerce ListSuggestionsIntegrationsResponseSuggestionsItemProvider = "woocommerce"
 	ListSuggestionsIntegrationsResponseSuggestionsItemProviderWordpress   ListSuggestionsIntegrationsResponseSuggestionsItemProvider = "wordpress"
 	ListSuggestionsIntegrationsResponseSuggestionsItemProviderWebflow     ListSuggestionsIntegrationsResponseSuggestionsItemProvider = "webflow"
@@ -7942,6 +8334,10 @@ func NewListSuggestionsIntegrationsResponseSuggestionsItemProviderFromString(s s
 		return ListSuggestionsIntegrationsResponseSuggestionsItemProviderPosthog, nil
 	case "segment":
 		return ListSuggestionsIntegrationsResponseSuggestionsItemProviderSegment, nil
+	case "mixpanel":
+		return ListSuggestionsIntegrationsResponseSuggestionsItemProviderMixpanel, nil
+	case "amplitude":
+		return ListSuggestionsIntegrationsResponseSuggestionsItemProviderAmplitude, nil
 	case "woocommerce":
 		return ListSuggestionsIntegrationsResponseSuggestionsItemProviderWoocommerce, nil
 	case "wordpress":
@@ -8258,6 +8654,238 @@ func (s *SyncIntegrationsResponseSyncTarget) String() string {
 }
 
 var (
+	updateAmplitudeSettingsResponseFieldEventSettings = big.NewInt(1 << 0)
+	updateAmplitudeSettingsResponseFieldIntegration   = big.NewInt(1 << 1)
+	updateAmplitudeSettingsResponseFieldSuccess       = big.NewInt(1 << 2)
+)
+
+type UpdateAmplitudeSettingsResponse struct {
+	EventSettings *UpdateAmplitudeSettingsResponseEventSettings `json:"eventSettings" url:"eventSettings"`
+	Integration   *IntegrationSummary                           `json:"integration" url:"integration"`
+	Success       bool                                          `json:"success" url:"success"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateAmplitudeSettingsResponse) GetEventSettings() *UpdateAmplitudeSettingsResponseEventSettings {
+	if u == nil {
+		return nil
+	}
+	return u.EventSettings
+}
+
+func (u *UpdateAmplitudeSettingsResponse) GetIntegration() *IntegrationSummary {
+	if u == nil {
+		return nil
+	}
+	return u.Integration
+}
+
+func (u *UpdateAmplitudeSettingsResponse) GetSuccess() bool {
+	if u == nil {
+		return false
+	}
+	return u.Success
+}
+
+func (u *UpdateAmplitudeSettingsResponse) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateAmplitudeSettingsResponse) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetEventSettings sets the EventSettings field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAmplitudeSettingsResponse) SetEventSettings(eventSettings *UpdateAmplitudeSettingsResponseEventSettings) {
+	u.EventSettings = eventSettings
+	u.require(updateAmplitudeSettingsResponseFieldEventSettings)
+}
+
+// SetIntegration sets the Integration field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAmplitudeSettingsResponse) SetIntegration(integration *IntegrationSummary) {
+	u.Integration = integration
+	u.require(updateAmplitudeSettingsResponseFieldIntegration)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAmplitudeSettingsResponse) SetSuccess(success bool) {
+	u.Success = success
+	u.require(updateAmplitudeSettingsResponseFieldSuccess)
+}
+
+func (u *UpdateAmplitudeSettingsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateAmplitudeSettingsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateAmplitudeSettingsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateAmplitudeSettingsResponse) MarshalJSON() ([]byte, error) {
+	type embed UpdateAmplitudeSettingsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateAmplitudeSettingsResponse) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	updateAmplitudeSettingsResponseEventSettingsFieldEventAllowlist     = big.NewInt(1 << 0)
+	updateAmplitudeSettingsResponseEventSettingsFieldSkipInternalEvents = big.NewInt(1 << 1)
+	updateAmplitudeSettingsResponseEventSettingsFieldSyncAllEvents      = big.NewInt(1 << 2)
+)
+
+type UpdateAmplitudeSettingsResponseEventSettings struct {
+	EventAllowlist     []string `json:"eventAllowlist" url:"eventAllowlist"`
+	SkipInternalEvents bool     `json:"skipInternalEvents" url:"skipInternalEvents"`
+	SyncAllEvents      bool     `json:"syncAllEvents" url:"syncAllEvents"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateAmplitudeSettingsResponseEventSettings) GetEventAllowlist() []string {
+	if u == nil {
+		return nil
+	}
+	return u.EventAllowlist
+}
+
+func (u *UpdateAmplitudeSettingsResponseEventSettings) GetSkipInternalEvents() bool {
+	if u == nil {
+		return false
+	}
+	return u.SkipInternalEvents
+}
+
+func (u *UpdateAmplitudeSettingsResponseEventSettings) GetSyncAllEvents() bool {
+	if u == nil {
+		return false
+	}
+	return u.SyncAllEvents
+}
+
+func (u *UpdateAmplitudeSettingsResponseEventSettings) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateAmplitudeSettingsResponseEventSettings) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetEventAllowlist sets the EventAllowlist field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAmplitudeSettingsResponseEventSettings) SetEventAllowlist(eventAllowlist []string) {
+	u.EventAllowlist = eventAllowlist
+	u.require(updateAmplitudeSettingsResponseEventSettingsFieldEventAllowlist)
+}
+
+// SetSkipInternalEvents sets the SkipInternalEvents field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAmplitudeSettingsResponseEventSettings) SetSkipInternalEvents(skipInternalEvents bool) {
+	u.SkipInternalEvents = skipInternalEvents
+	u.require(updateAmplitudeSettingsResponseEventSettingsFieldSkipInternalEvents)
+}
+
+// SetSyncAllEvents sets the SyncAllEvents field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAmplitudeSettingsResponseEventSettings) SetSyncAllEvents(syncAllEvents bool) {
+	u.SyncAllEvents = syncAllEvents
+	u.require(updateAmplitudeSettingsResponseEventSettingsFieldSyncAllEvents)
+}
+
+func (u *UpdateAmplitudeSettingsResponseEventSettings) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateAmplitudeSettingsResponseEventSettings
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateAmplitudeSettingsResponseEventSettings(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateAmplitudeSettingsResponseEventSettings) MarshalJSON() ([]byte, error) {
+	type embed UpdateAmplitudeSettingsResponseEventSettings
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateAmplitudeSettingsResponseEventSettings) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
 	updateSyncIntegrationsResponseFieldChanged       = big.NewInt(1 << 0)
 	updateSyncIntegrationsResponseFieldChangedFields = big.NewInt(1 << 1)
 	updateSyncIntegrationsResponseFieldIntegrationID = big.NewInt(1 << 2)
@@ -8498,6 +9126,83 @@ func NewUpdateSyncIntegrationsResponseListTargetingFromString(s string) (UpdateS
 
 func (u UpdateSyncIntegrationsResponseListTargeting) Ptr() *UpdateSyncIntegrationsResponseListTargeting {
 	return &u
+}
+
+var (
+	updateAmplitudeSettingsRequestFieldID                 = big.NewInt(1 << 0)
+	updateAmplitudeSettingsRequestFieldEventAllowlist     = big.NewInt(1 << 1)
+	updateAmplitudeSettingsRequestFieldSkipInternalEvents = big.NewInt(1 << 2)
+	updateAmplitudeSettingsRequestFieldSyncAllEvents      = big.NewInt(1 << 3)
+)
+
+type UpdateAmplitudeSettingsRequest struct {
+	// Amplitude integration ID.
+	ID string `json:"-" url:"-"`
+	// Amplitude event types to record when syncAllEvents is false. Replaces the saved list. Names are trimmed and deduplicated; an empty list with syncAllEvents false is rejected.
+	EventAllowlist []string `json:"eventAllowlist,omitempty" url:"-"`
+	// Skip session, [Amplitude] autocapture, and other $ events unless allowlisted.
+	SkipInternalEvents *bool `json:"skipInternalEvents,omitempty" url:"-"`
+	// true records every event type; false records only eventAllowlist.
+	SyncAllEvents *bool `json:"syncAllEvents,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (u *UpdateAmplitudeSettingsRequest) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAmplitudeSettingsRequest) SetID(id string) {
+	u.ID = id
+	u.require(updateAmplitudeSettingsRequestFieldID)
+}
+
+// SetEventAllowlist sets the EventAllowlist field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAmplitudeSettingsRequest) SetEventAllowlist(eventAllowlist []string) {
+	u.EventAllowlist = eventAllowlist
+	u.require(updateAmplitudeSettingsRequestFieldEventAllowlist)
+}
+
+// SetSkipInternalEvents sets the SkipInternalEvents field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAmplitudeSettingsRequest) SetSkipInternalEvents(skipInternalEvents *bool) {
+	u.SkipInternalEvents = skipInternalEvents
+	u.require(updateAmplitudeSettingsRequestFieldSkipInternalEvents)
+}
+
+// SetSyncAllEvents sets the SyncAllEvents field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAmplitudeSettingsRequest) SetSyncAllEvents(syncAllEvents *bool) {
+	u.SyncAllEvents = syncAllEvents
+	u.require(updateAmplitudeSettingsRequestFieldSyncAllEvents)
+}
+
+func (u *UpdateAmplitudeSettingsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateAmplitudeSettingsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*u = UpdateAmplitudeSettingsRequest(body)
+	return nil
+}
+
+func (u *UpdateAmplitudeSettingsRequest) MarshalJSON() ([]byte, error) {
+	type embed UpdateAmplitudeSettingsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
 }
 
 var (

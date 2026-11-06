@@ -61,7 +61,7 @@ func (c *Client) DeleteInAppMessage(
 	return response.Body, nil
 }
 
-// Created, displayed, clicked and dismissed counts for one in_app sequence step. Requires the sequences:read scope.
+// Created, displayed, clicked and dismissed counts for one in_app sequence step, plus push primer permission results. Requires the sequences:read scope.
 //
 // Example:
 //
@@ -92,7 +92,11 @@ func (c *Client) GetInAppStepStats(
 //
 // Example:
 //
-//	request := &sequenzygo.ListInAppMessagesRequest{}
+//	request := &sequenzygo.ListInAppMessagesRequest{
+//	    Actions: sequenzygo.String(
+//	        "request_push_permission",
+//	    ),
+//	}
 //	client.InApp.ListInAppMessages(
 //	    context.TODO(),
 //	    request,

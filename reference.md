@@ -8671,6 +8671,14 @@ client.Companies.Update(
 <dl>
 <dd>
 
+**footerTheme:** `*sequenzygo.UpdateCompaniesRequestFooterTheme` — Colors and copy of the auto-added footer, the compliance footer Sequenzy appends when an email has no footer block. Merged into the stored theme: omitted fields keep their value, `null` (or `""`, and `"transparent"` for `backgroundColor`, the values get returns for defaults) resets one field to its default, and `footerTheme: null` resets them all. Other brandColors keys are kept. Malformed values and unknown fields return 400, as does a `style` that differs from `footerStyle` in the same request; a value that is not an object or null returns 422. Footer font, size and line height are set in `emailTheme.typography`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **forwardReplies:** `*bool` — Enable or disable forwarding captured replies to the configured mailbox.
     
 </dd>
@@ -11817,7 +11825,7 @@ client.Emails.Create(
 <dl>
 <dd>
 
-Updates email metadata or replaces the email body.
+Updates email metadata or replaces the email body. The double opt-in confirmation email (`consent.doubleOptInEmailId` from `GET /tracking-settings`) is edited here too; new content for it must keep `{{DOUBLE_OPT_IN_URL}}`, otherwise the request returns 400 and nothing is saved.
 </dd>
 </dl>
 </dd>
@@ -11901,7 +11909,7 @@ client.Emails.Update(
 <dl>
 <dd>
 
-Replaces an email body or mutates an existing block type.
+Replaces an email body or mutates an existing block type. The double opt-in confirmation email (`consent.doubleOptInEmailId` from `GET /tracking-settings`) is edited here too; new content for it must keep `{{DOUBLE_OPT_IN_URL}}`, otherwise the request returns 400 and nothing is saved.
 </dd>
 </dl>
 </dd>
@@ -12861,6 +12869,398 @@ client.Generation.GenerateSubjectLines(
 </dl>
 </details>
 
+## Geofences
+<details><summary><code>client.Geofences.CreateGeofence(request) -> *sequenzygo.CreateGeofenceResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Creates a geofence the mobile SDKs watch. A workspace holds at most 10,000. Requires geofences:write. Unknown fields are ignored.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.GeofenceInput{}
+client.Geofences.CreateGeofence(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**request:** `*sequenzygo.GeofenceInput` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Geofences.DeleteGeofence(ID) -> *sequenzygo.DeleteGeofenceResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Deletes a geofence. Past visits stay in contact history. Requires geofences:delete.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.DeleteGeofenceRequest{
+    ID: "id",
+}
+client.Geofences.DeleteGeofence(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Geofence ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Geofences.GetGeofence(ID) -> *sequenzygo.GetGeofenceResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns one geofence. Requires geofences:read.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.GetGeofenceRequest{
+    ID: "id",
+}
+client.Geofences.GetGeofence(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Geofence ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Geofences.ImportGeofences(request) -> *sequenzygo.ImportGeofencesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Creates or updates up to 1,000 geofences matched by externalId, which every row needs. Invalid rows are skipped and listed in errors. Requires geofences:write.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.ImportGeofencesRequest{
+    Geofences: []*sequenzygo.GeofenceInput{
+        &sequenzygo.GeofenceInput{},
+    },
+}
+client.Geofences.ImportGeofences(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**geofences:** `[]*sequenzygo.GeofenceInput` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Geofences.ListGeofences() -> *sequenzygo.ListGeofencesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists geofences in ID order, one page at a time. Requires geofences:read.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.ListGeofencesRequest{}
+client.Geofences.ListGeofences(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**active:** `*sequenzygo.ListGeofencesRequestActive` — true for active geofences only, false for paused ones only.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**cursor:** `*string` — nextCursor from the previous page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**group:** `*string` — Only geofences in this group.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `*int` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Geofences.UpdateGeofence(ID, request) -> *sequenzygo.UpdateGeofenceResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Changes only the fields sent; null clears dwellSeconds, group and externalId. Requires geofences:write.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.UpdateGeofenceRequest{
+    ID: "id",
+    Body: &sequenzygo.GeofenceInput{},
+}
+client.Geofences.UpdateGeofence(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Geofence ID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request:** `*sequenzygo.GeofenceInput` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## In-app
 <details><summary><code>client.InApp.DeleteInAppMessage(MessageID) -> *sequenzygo.DeleteInAppMessageResponse</code></summary>
 <dl>
@@ -12934,7 +13334,7 @@ client.InApp.DeleteInAppMessage(
 <dl>
 <dd>
 
-Created, displayed, clicked and dismissed counts for one in_app sequence step. Requires the sequences:read scope.
+Created, displayed, clicked and dismissed counts for one in_app sequence step, plus push primer permission results. Requires the sequences:read scope.
 </dd>
 </dl>
 </dd>
@@ -13009,7 +13409,11 @@ Lists a contact's in-app messages and content cards, created by in_app sequence 
 <dd>
 
 ```go
-request := &sequenzygo.ListInAppMessagesRequest{}
+request := &sequenzygo.ListInAppMessagesRequest{
+    Actions: sequenzygo.String(
+        "request_push_permission",
+    ),
+}
 client.InApp.ListInAppMessages(
     context.TODO(),
     request,
@@ -13024,6 +13428,14 @@ client.InApp.ListInAppMessages(
 
 <dl>
 <dd>
+
+<dl>
+<dd>
+
+**actions:** `*string` — Open items only: comma-separated button actions your app handles beyond open_url and dismiss, such as request_push_permission. Items with an action you don't list stay in the inbox but are left out, so an app that can't handle them never shows them. The mobile SDKs send this themselves.
+    
+</dd>
+</dl>
 
 <dl>
 <dd>
@@ -13187,6 +13599,14 @@ client.InApp.RecordInAppEvent(
 <dd>
 
 **buttonID:** `*string` — Clicks in custom HTML messages: which control was clicked. Recorded on the first click's in_app.clicked activity.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**pushPermission:** `*sequenzygo.RecordInAppEventRequestPushPermission` — With type clicked on an item that has a request_push_permission button: the notification permission your app read after asking. The first result is kept for the step's stats and written to the contact's pushPermission attribute; ignored otherwise.
     
 </dd>
 </dl>
@@ -13423,7 +13843,7 @@ client.Integrations.ActivatePixel(
 <dl>
 <dd>
 
-Connects an API-key / webhook-secret integration: polar, paddle, dodo, lemon_squeezy, whop, revenuecat, superwall, adapty, creem, chargebee, clerk, posthog, segment, affonso, attio, or sparkloop. Credentials are validated, stored encrypted, and never returned. Lemon Squeezy creates a managed signed webhook when webhookSecret is omitted, or uses a caller-managed secret as fallback. Payment providers queue their initial revenue backfill, except RevenueCat, Superwall, and Adapty, which are webhook-only; Affonso queues its affiliate backfill; PostHog and Segment can optionally import event history. Attio registers its own webhook when inbound mappings are saved, so it takes no webhookSecret. SparkLoop registers its webhook in SparkLoop during connect and receives partner referrals for one publication (providerAccountId, required only when the account has several). Reconnecting replaces stored credentials. OAuth and app-install providers require the dashboard. Requires the integrations:manage scope.
+Connects an API-key / webhook-secret integration: polar, paddle, dodo, lemon_squeezy, whop, revenuecat, superwall, adapty, creem, chargebee, clerk, posthog, segment, mixpanel, amplitude, affonso, attio, or sparkloop. Credentials are validated, stored encrypted, and never returned. Lemon Squeezy creates a managed signed webhook when webhookSecret is omitted, or uses a caller-managed secret as fallback. Payment providers queue their initial revenue backfill, except RevenueCat, Superwall, and Adapty, which are webhook-only; Affonso queues its affiliate backfill; PostHog and Segment can optionally import event history. Mixpanel and Amplitude take only webhookSecret: Mixpanel syncs exported cohorts as mixpanel-<cohort> tags, and Amplitude streams events, user properties, and cohorts (amplitude-<cohort> tags). Attio registers its own webhook when inbound mappings are saved, so it takes no webhookSecret. SparkLoop registers its webhook in SparkLoop during connect and receives partner referrals for one publication (providerAccountId, required only when the account has several). Reconnecting replaces stored credentials. OAuth and app-install providers require the dashboard. Requires the integrations:manage scope.
 </dd>
 </dl>
 </dd>
@@ -13483,7 +13903,7 @@ client.Integrations.Connect(
 <dl>
 <dd>
 
-**providerAccountID:** `*string` — Provider account id: Paddle seller ID, Dodo business ID, Lemon Squeezy numeric store ID, Whop company ID, Creem store ID, or Chargebee site name. Polar resolves it from the API key. RevenueCat resolves its project ID from the API key; pass it only when the key can access several projects. Superwall and Adapty do not use one. SparkLoop: the publication ID (pub_...), required only when the account has several publications.
+**providerAccountID:** `*string` — Provider account id: Paddle seller ID, Dodo business ID, Lemon Squeezy numeric store ID, Whop company ID, Creem store ID, or Chargebee site name. Polar resolves it from the API key. RevenueCat resolves its project ID from the API key; pass it only when the key can access several projects. Superwall, Adapty, Mixpanel, and Amplitude do not use one. SparkLoop: the publication ID (pub_...), required only when the account has several publications.
     
 </dd>
 </dl>
@@ -13491,7 +13911,7 @@ client.Integrations.Connect(
 <dl>
 <dd>
 
-**settings:** `*sequenzygo.ConnectIntegrationsRequestSettings` — PostHog and Segment: event delivery scope. Attio: listMap (Sequenzy list id to Attio list id or slug) and syncCompanyFromDomain. SparkLoop: listIds for new referrals.
+**settings:** `*sequenzygo.ConnectIntegrationsRequestSettings` — PostHog, Segment, and Amplitude: event delivery scope. PostHog also takes matchByDistinctId. Mixpanel takes no settings. Attio: listMap (Sequenzy list id to Attio list id or slug) and syncCompanyFromDomain. SparkLoop: listIds for new referrals. On a PostHog reconnect, the settings you pass merge onto the stored ones.
     
 </dd>
 </dl>
@@ -13499,7 +13919,7 @@ client.Integrations.Connect(
 <dl>
 <dd>
 
-**webhookSecret:** `*string` — Signing secret of the provider webhook. Optional for lemon_squeezy managed provisioning and for sparkloop, and not used by attio; required for other providers. Lemon Squeezy manual secrets use 16-40 characters. For Chargebee, pass username:password. For RevenueCat, pass at least 16 characters: the authorization header value set on the RevenueCat webhook, or its HMAC signing secret. For Superwall, pass the webhook's whsec_ signing secret, the only credential it needs. For Adapty, pass at least 16 characters: the authorization header value set on the Adapty webhook. For Segment, use 16-153 UTF-8 bytes. For SparkLoop, omit it so Sequenzy authenticates deliveries with a secret in the webhook URL it registers, or pass the account's webhook authentication token to verify the SparkLoop-Token header instead.
+**webhookSecret:** `*string` — Signing secret of the provider webhook. Optional for lemon_squeezy managed provisioning and for sparkloop, and not used by attio; required for other providers. Lemon Squeezy manual secrets use 16-40 characters. For Chargebee, pass username:password. For RevenueCat, pass at least 16 characters: the authorization header value set on the RevenueCat webhook, or its HMAC signing secret. For Superwall, pass the webhook's whsec_ signing secret, the only credential it needs. For Adapty, pass at least 16 characters: the authorization header value set on the Adapty webhook. For Segment, use 16-153 UTF-8 bytes. For Mixpanel and Amplitude, choose a random value of 16-153 characters without spaces or colons: Mixpanel sends it as the Basic auth password of its webhook destination (any username), Amplitude in an X-Webhook-Secret header. For SparkLoop, omit it so Sequenzy authenticates deliveries with a secret in the webhook URL it registers, or pass the account's webhook authentication token to verify the SparkLoop-Token header instead.
     
 </dd>
 </dl>
@@ -13969,7 +14389,7 @@ client.Integrations.ListCapabilities(
 <dl>
 <dd>
 
-Suggests integrations to connect next, from what Sequenzy found on the company's website during onboarding: tools on the homepage or on the sign-in page it links to (Clerk, Supabase, PostHog, Segment, Webflow, Wix, WordPress, WooCommerce) or a Shopify storefront. Connected providers are left out. Payment providers are never guessed from the site: when it lists pricing and no payment or commerce integration is connected, paymentProviders lists every payment provider. Requires the account:read scope.
+Suggests integrations to connect next, from what Sequenzy found on the company's website during onboarding: tools on the homepage or on the sign-in page it links to (Clerk, Supabase, PostHog, Segment, Mixpanel, Amplitude, Webflow, Wix, WordPress, WooCommerce) or a Shopify storefront. Connected providers are left out. Payment providers are never guessed from the site: when it lists pricing and no payment or commerce integration is connected, paymentProviders lists every payment provider. Requires the account:read scope.
 </dd>
 </dl>
 </dd>
@@ -14047,6 +14467,90 @@ client.Integrations.Sync(
 <dd>
 
 **id:** `string` — Integration ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Integrations.UpdateAmplitudeSettings(ID, request) -> *sequenzygo.UpdateAmplitudeSettingsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Changes which streamed events a connected Amplitude integration records, without the webhook secret. Reconnecting would replace the secret, so use this to change events. syncAllEvents false with an eventAllowlist records only those event types. skipInternalEvents drops session_start, session_end, [Amplitude] autocapture, and other $ events unless allowlisted; identify calls always pass. Applies to deliveries processed after saving; dropped events are not replayed. Provide at least one field. Amplitude only. Requires the integrations:manage scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.UpdateAmplitudeSettingsRequest{
+    ID: "id",
+}
+client.Integrations.UpdateAmplitudeSettings(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Amplitude integration ID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**eventAllowlist:** `[]string` — Amplitude event types to record when syncAllEvents is false. Replaces the saved list. Names are trimmed and deduplicated; an empty list with syncAllEvents false is rejected.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**skipInternalEvents:** `*bool` — Skip session, [Amplitude] autocapture, and other $ events unless allowlisted.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**syncAllEvents:** `*bool` — true records every event type; false records only eventAllowlist.
     
 </dd>
 </dl>
@@ -17603,6 +18107,75 @@ client.Products.Upsert(
 </details>
 
 ## Push
+<details><summary><code>client.Push.AddPushImportRows(ImportID, request) -> *sequenzygo.AddPushImportRowsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Stages another part of a CSV file (at most 5 MB, header row required) on a draft csv import. Requires the subscribers:write scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.AddPushImportRowsRequest{
+    ImportID: "importId",
+    Csv: "csv",
+}
+client.Push.AddPushImportRows(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**importID:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**csv:** `string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Push.CancelPushCampaign(CampaignID) -> *sequenzygo.CancelPushCampaignResponse</code></summary>
 <dl>
 <dd>
@@ -17652,6 +18225,66 @@ client.Push.CancelPushCampaign(
 <dd>
 
 **campaignID:** `string` — Push campaign ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Push.CancelPushImport(ImportID) -> *sequenzygo.PushImportResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Stops an import, or discards a draft or failed one. Devices already imported stay; staged rows and the stored source key are deleted. Canceling a canceled import returns it unchanged. Requires the subscribers:write scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.CancelPushImportRequest{
+    ImportID: "importId",
+}
+client.Push.CancelPushImport(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**importID:** `string` 
     
 </dd>
 </dl>
@@ -17848,6 +18481,154 @@ client.Push.CreatePushCampaign(
 <dd>
 
 **url:** `*string` — Link opened on tap. An https URL, an app deep link (myapp://...), or a merge tag. Browsers only open https links. null clears it.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Push.CreatePushImport(request) -> *sequenzygo.PushImportResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Creates a draft import of iOS (APNs) and Android (FCM) devices from OneSignal, Braze, Customer.io or a CSV, with its push settings warnings. Nothing is read from the source until the import is started. Web push subscriptions are never imported. Requires the subscribers:write scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.CreatePushImportRequest{
+    Source: sequenzygo.CreatePushImportRequestSourceOnesignal,
+}
+client.Push.CreatePushImport(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**apiKey:** `*string` — Source API key, required except for csv. OneSignal App API key, Braze REST API key with users.export.segment, or Customer.io App API key. Stored encrypted and never returned. Deleted once the devices are read, or when the import is canceled; a failed import keeps it so it can be resumed.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**appIDs:** `[]string` — Only import devices of these source apps (Braze app name, Customer.io app_identifier, CSV app_id). Devices without an app are kept.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**brazeRestEndpoint:** `*string` — Required for braze. Your instance's REST endpoint, such as rest.iad-01.braze.com. Only Braze REST hosts are accepted.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**brazeSegmentID:** `*string` — Required for braze. API identifier of a segment containing the users to import.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**csv:** `*string` — csv source only. The file or its first part, at most 5 MB, with a header row. Needs token and platform columns plus external_id or email.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**csvParts:** `*int` — csv source only, with csv. How many parts you will send, including the first. When set, starting is refused until every part has been added, so an interrupted upload is never imported partially. More parts than declared are rejected.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**customerIoRegion:** `*sequenzygo.CreatePushImportRequestCustomerIoRegion` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**customerIoSegmentID:** `*string` — Required for customer_io. ID of a segment containing the people to import.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**importAttributes:** `*bool` — Copy source tags and custom attributes onto contacts, only for keys a contact does not have yet.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**onesignalAppID:** `*string` — Required for onesignal. The OneSignal App ID (UUID).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**platforms:** `[]*sequenzygo.CreatePushImportRequestPlatformsItem` — Default both.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**source:** `*sequenzygo.CreatePushImportRequestSource` 
     
 </dd>
 </dl>
@@ -18304,6 +19085,134 @@ client.Push.GetPushCampaignStats(
 </dl>
 </details>
 
+<details><summary><code>client.Push.GetPushImport(ImportID) -> *sequenzygo.PushImportResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Status, progress, counts, skip and invalid reasons, and warnings. Requires the subscribers:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.GetPushImportRequest{
+    ImportID: "importId",
+}
+client.Push.GetPushImport(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**importID:** `string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Push.GetPushImportPreflight() -> *sequenzygo.GetPushImportPreflightResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Warns when APNs or Firebase is not set up (imported tokens only work with the same bundle ID, Apple team and Firebase project the app used before) and notes that web push is not imported. Requires the subscribers:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.GetPushImportPreflightRequest{
+    Source: sequenzygo.GetPushImportPreflightRequestSourceOnesignal,
+}
+client.Push.GetPushImportPreflight(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**platforms:** `*string` — Comma-separated ios,android (default both). Unknown values return 400.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**source:** `*sequenzygo.GetPushImportPreflightRequestSource` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Push.GetPushSettings() -> *sequenzygo.GetPushSettingsResponse</code></summary>
 <dl>
 <dd>
@@ -18631,6 +19540,64 @@ client.Push.ListPushDevices(
 </dl>
 </details>
 
+<details><summary><code>client.Push.ListPushImports() -> *sequenzygo.ListPushImportsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Recent push subscription imports, newest first, with progress and counts. Requires the subscribers:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.ListPushImportsRequest{}
+client.Push.ListPushImports(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**limit:** `*int` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Push.RegisterPushDevice(request) -> *sequenzygo.RegisterPushDeviceResponse</code></summary>
 <dl>
 <dd>
@@ -18721,6 +19688,14 @@ client.Push.RegisterPushDevice(
 <dd>
 
 **osVersion:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**permissionStatus:** `*sequenzygo.RegisterPushDeviceRequestPermissionStatus` — iOS/Android only (ignored for web). The notification permission your app read. Feeds the push opt-in rate and the contact's pushPermission attribute (the best status across their app devices). Omit it to keep the stored one.
     
 </dd>
 </dl>
@@ -19230,6 +20205,66 @@ client.Push.StartLiveActivity(
 <dd>
 
 **subscriberID:** `*string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Push.StartPushImport(ImportID) -> *sequenzygo.PushImportResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Starts a draft, or resumes a failed or stalled import from its last checkpoint. The import runs in the background; poll GET /push/imports/{importId}. Starting a running import returns it unchanged. One import runs per workspace at a time. Requires the subscribers:write scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.StartPushImportRequest{
+    ImportID: "importId",
+}
+client.Push.StartPushImport(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**importID:** `string` 
     
 </dd>
 </dl>
@@ -23200,6 +24235,142 @@ client.Sequences.GetAudienceEnrollment(
 </dl>
 </details>
 
+<details><summary><code>client.Sequences.GetDefinition(Key) -> *sequenzygo.GetDefinitionSequencesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns the sequence with this key as one definition document, in the readable format unless format=raw. Pushing the document back unchanged changes nothing.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.GetDefinitionSequencesRequest{
+    Key: "key",
+}
+client.Sequences.GetDefinition(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**key:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**format:** `*sequenzygo.GetDefinitionSequencesRequestFormat` — raw returns the explicit format. A sequence that nesting cannot describe is returned in the explicit format either way.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Sequences.GetDefinitionByID(SequenceID) -> *sequenzygo.GetDefinitionByIDSequencesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns any sequence as a definition document, including one with no key yet (its key is empty). Set a key and push it to adopt the sequence.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.GetDefinitionByIDSequencesRequest{
+    SequenceID: "sequenceId",
+}
+client.Sequences.GetDefinitionByID(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**sequenceID:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**format:** `*sequenzygo.GetDefinitionByIDSequencesRequestFormat` — raw returns the explicit format. A sequence that nesting cannot describe is returned in the explicit format either way.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Sequences.GetEnrollment(SequenceID, EnrollmentID) -> *sequenzygo.SequenceEnrollmentGetResponse</code></summary>
 <dl>
 <dd>
@@ -24473,6 +25644,98 @@ client.Sequences.PreviewFromExample(
 <dd>
 
 **website:** `*string` — Optional site or domain, such as `acme.com`, to write the preview for instead of your own brand. Its registrable domain is looked up like the public gallery preview. Omit it to use your company's brand profile.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Sequences.PushDefinition(Key, request) -> *sequenzygo.SequenceDefinitionPushResult</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Creates the sequence with this key, or updates it to match the document. Steps are matched by key: new keys are added, changed steps are updated in place, and missing steps are removed, with waiting contacts moved to the following step (or completed when nothing follows). A push never turns a sequence on or off or pauses it; new sequences start as drafts.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.PushDefinitionSequencesRequest{
+    Key: "key",
+    Body: &sequenzygo.SequenceDefinition{
+        Name: "name",
+        Steps: []*sequenzygo.SequenceDefinitionStep{
+            &sequenzygo.SequenceDefinitionStep{
+                Key: "key",
+            },
+        },
+    },
+}
+client.Sequences.PushDefinition(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**key:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**confirmLiveChange:** `*bool` — Required when the change affects an active sequence.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**dryRun:** `*bool` — Return the changes without saving them.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request:** `*sequenzygo.SequenceDefinition` 
     
 </dd>
 </dl>
@@ -31004,7 +32267,7 @@ client.Templates.TranslateMissingLocalizations(
 <dl>
 <dd>
 
-Updates template metadata, labels, or content. Transactional email IDs and slugs are also resolved for compatibility.
+Updates template metadata, labels, or content. Transactional email IDs and slugs are also resolved for compatibility. The double opt-in confirmation email (`consent.doubleOptInEmailId` from `GET /tracking-settings`) is edited here too; new content for it must keep `{{DOUBLE_OPT_IN_URL}}`, otherwise the request returns 400 and nothing is saved.
 </dd>
 </dl>
 </dd>

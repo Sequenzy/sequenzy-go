@@ -778,7 +778,7 @@ var (
 
 type TriggerBulkEventsResponseSubscriber struct {
 	Created *bool `json:"created,omitempty" url:"created,omitempty"`
-	// Null for phone-only (SMS) contacts.
+	// Null for phone-only (SMS) and push-only contacts.
 	Email *string `json:"email,omitempty" url:"email,omitempty"`
 	ID    *string `json:"id,omitempty" url:"id,omitempty"`
 
@@ -2007,7 +2007,7 @@ var (
 
 type TriggerEventsResponseSubscriber struct {
 	Created *bool `json:"created,omitempty" url:"created,omitempty"`
-	// Null for phone-only (SMS) contacts.
+	// Null for phone-only (SMS) and push-only contacts.
 	Email *string `json:"email,omitempty" url:"email,omitempty"`
 	ID    *string `json:"id,omitempty" url:"id,omitempty"`
 

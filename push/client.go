@@ -34,6 +34,34 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
+// Stages another part of a CSV file (at most 5 MB, header row required) on a draft csv import. Requires the subscribers:write scope.
+//
+// Example:
+//
+//	request := &sequenzygo.AddPushImportRowsRequest{
+//	    ImportID: "importId",
+//	    Csv: "csv",
+//	}
+//	client.Push.AddPushImportRows(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) AddPushImportRows(
+	ctx context.Context,
+	request *sequenzygo.AddPushImportRowsRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.AddPushImportRowsResponse, error) {
+	response, err := c.WithRawResponse.AddPushImportRows(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Stops a scheduled or sending push campaign. Contacts who have not been sent the push yet are skipped; delivered notifications cannot be recalled. Requires the campaigns:send scope.
 //
 // Example:
@@ -51,6 +79,33 @@ func (c *Client) CancelPushCampaign(
 	opts ...option.RequestOption,
 ) (*sequenzygo.CancelPushCampaignResponse, error) {
 	response, err := c.WithRawResponse.CancelPushCampaign(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Stops an import, or discards a draft or failed one. Devices already imported stay; staged rows and the stored source key are deleted. Canceling a canceled import returns it unchanged. Requires the subscribers:write scope.
+//
+// Example:
+//
+//	request := &sequenzygo.CancelPushImportRequest{
+//	    ImportID: "importId",
+//	}
+//	client.Push.CancelPushImport(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) CancelPushImport(
+	ctx context.Context,
+	request *sequenzygo.CancelPushImportRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.PushImportResponse, error) {
+	response, err := c.WithRawResponse.CancelPushImport(
 		ctx,
 		request,
 		opts...,
@@ -118,6 +173,33 @@ func (c *Client) CreatePushCampaign(
 	opts ...option.RequestOption,
 ) (*sequenzygo.CreatePushCampaignResponse, error) {
 	response, err := c.WithRawResponse.CreatePushCampaign(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Creates a draft import of iOS (APNs) and Android (FCM) devices from OneSignal, Braze, Customer.io or a CSV, with its push settings warnings. Nothing is read from the source until the import is started. Web push subscriptions are never imported. Requires the subscribers:write scope.
+//
+// Example:
+//
+//	request := &sequenzygo.CreatePushImportRequest{
+//	    Source: sequenzygo.CreatePushImportRequestSourceOnesignal,
+//	}
+//	client.Push.CreatePushImport(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) CreatePushImport(
+	ctx context.Context,
+	request *sequenzygo.CreatePushImportRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.PushImportResponse, error) {
+	response, err := c.WithRawResponse.CreatePushImport(
 		ctx,
 		request,
 		opts...,
@@ -295,6 +377,60 @@ func (c *Client) GetPushCampaignStats(
 	return response.Body, nil
 }
 
+// Status, progress, counts, skip and invalid reasons, and warnings. Requires the subscribers:read scope.
+//
+// Example:
+//
+//	request := &sequenzygo.GetPushImportRequest{
+//	    ImportID: "importId",
+//	}
+//	client.Push.GetPushImport(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) GetPushImport(
+	ctx context.Context,
+	request *sequenzygo.GetPushImportRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.PushImportResponse, error) {
+	response, err := c.WithRawResponse.GetPushImport(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Warns when APNs or Firebase is not set up (imported tokens only work with the same bundle ID, Apple team and Firebase project the app used before) and notes that web push is not imported. Requires the subscribers:read scope.
+//
+// Example:
+//
+//	request := &sequenzygo.GetPushImportPreflightRequest{
+//	    Source: sequenzygo.GetPushImportPreflightRequestSourceOnesignal,
+//	}
+//	client.Push.GetPushImportPreflight(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) GetPushImportPreflight(
+	ctx context.Context,
+	request *sequenzygo.GetPushImportPreflightRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.GetPushImportPreflightResponse, error) {
+	response, err := c.WithRawResponse.GetPushImportPreflight(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Returns web push, APNs (iOS) and Firebase (Android) readiness, the last credential error for each platform, the default icon and active device counts. Secrets are never returned. Requires the account:read scope.
 //
 // Example:
@@ -381,6 +517,31 @@ func (c *Client) ListPushDevices(
 	opts ...option.RequestOption,
 ) (*sequenzygo.ListPushDevicesResponse, error) {
 	response, err := c.WithRawResponse.ListPushDevices(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Recent push subscription imports, newest first, with progress and counts. Requires the subscribers:read scope.
+//
+// Example:
+//
+//	request := &sequenzygo.ListPushImportsRequest{}
+//	client.Push.ListPushImports(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) ListPushImports(
+	ctx context.Context,
+	request *sequenzygo.ListPushImportsRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.ListPushImportsResponse, error) {
+	response, err := c.WithRawResponse.ListPushImports(
 		ctx,
 		request,
 		opts...,
@@ -553,6 +714,33 @@ func (c *Client) StartLiveActivity(
 	opts ...option.RequestOption,
 ) (*sequenzygo.LiveActivityDispatch, error) {
 	response, err := c.WithRawResponse.StartLiveActivity(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Starts a draft, or resumes a failed or stalled import from its last checkpoint. The import runs in the background; poll GET /push/imports/{importId}. Starting a running import returns it unchanged. One import runs per workspace at a time. Requires the subscribers:write scope.
+//
+// Example:
+//
+//	request := &sequenzygo.StartPushImportRequest{
+//	    ImportID: "importId",
+//	}
+//	client.Push.StartPushImport(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) StartPushImport(
+	ctx context.Context,
+	request *sequenzygo.StartPushImportRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.PushImportResponse, error) {
+	response, err := c.WithRawResponse.StartPushImport(
 		ctx,
 		request,
 		opts...,

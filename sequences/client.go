@@ -705,6 +705,60 @@ func (c *Client) GetAudienceEnrollment(
 	return response.Body, nil
 }
 
+// Returns the sequence with this key as one definition document, in the readable format unless format=raw. Pushing the document back unchanged changes nothing.
+//
+// Example:
+//
+//	request := &sequenzygo.GetDefinitionSequencesRequest{
+//	    Key: "key",
+//	}
+//	client.Sequences.GetDefinition(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) GetDefinition(
+	ctx context.Context,
+	request *sequenzygo.GetDefinitionSequencesRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.GetDefinitionSequencesResponse, error) {
+	response, err := c.WithRawResponse.GetDefinition(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Returns any sequence as a definition document, including one with no key yet (its key is empty). Set a key and push it to adopt the sequence.
+//
+// Example:
+//
+//	request := &sequenzygo.GetDefinitionByIDSequencesRequest{
+//	    SequenceID: "sequenceId",
+//	}
+//	client.Sequences.GetDefinitionByID(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) GetDefinitionByID(
+	ctx context.Context,
+	request *sequenzygo.GetDefinitionByIDSequencesRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.GetDefinitionByIDSequencesResponse, error) {
+	response, err := c.WithRawResponse.GetDefinitionByID(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Reads one enrollment token, including how it entered, which branches it already took, and the bounded recorded graph walk from ClickHouse. Use this when list enrollments shows a completed token with enteredVia unknown or sitting on the completion node and you need to know why the first branch took its else path. Compared values are summaries (missing, empty, nonempty, equals_expected), never the raw field or event-property value. Legacy node-completion metadata that stored an unredacted evaluation reason is redacted on read. Check nodeHistoryTruncated and branchDecisionsTruncated before treating either history as complete.
 //
 // Example:
@@ -1147,6 +1201,41 @@ func (c *Client) PreviewFromExample(
 	opts ...option.RequestOption,
 ) (*sequenzygo.PreviewFromExampleSequencesResponse, error) {
 	response, err := c.WithRawResponse.PreviewFromExample(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Creates the sequence with this key, or updates it to match the document. Steps are matched by key: new keys are added, changed steps are updated in place, and missing steps are removed, with waiting contacts moved to the following step (or completed when nothing follows). A push never turns a sequence on or off or pauses it; new sequences start as drafts.
+//
+// Example:
+//
+//	request := &sequenzygo.PushDefinitionSequencesRequest{
+//	    Key: "key",
+//	    Body: &sequenzygo.SequenceDefinition{
+//	        Name: "name",
+//	        Steps: []*sequenzygo.SequenceDefinitionStep{
+//	            &sequenzygo.SequenceDefinitionStep{
+//	                Key: "key",
+//	            },
+//	        },
+//	    },
+//	}
+//	client.Sequences.PushDefinition(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) PushDefinition(
+	ctx context.Context,
+	request *sequenzygo.PushDefinitionSequencesRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.SequenceDefinitionPushResult, error) {
+	response, err := c.WithRawResponse.PushDefinition(
 		ctx,
 		request,
 		opts...,

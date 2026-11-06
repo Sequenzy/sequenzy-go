@@ -77,6 +77,33 @@ func VerifyRequestCount(
 	require.Equal(t, expected, len(result.Requests))
 }
 
+func TestPushAddPushImportRowsWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.AddPushImportRowsRequest{
+		ImportID: "importId",
+		Csv:      "csv",
+	}
+	_, invocationErr := client.Push.AddPushImportRows(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestPushAddPushImportRowsWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestPushAddPushImportRowsWithWireMock", "POST", "/push/imports/importId/rows", nil, 1)
+}
+
 func TestPushCancelPushCampaignWithWireMock(
 	t *testing.T,
 ) {
@@ -101,6 +128,32 @@ func TestPushCancelPushCampaignWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestPushCancelPushCampaignWithWireMock", "POST", "/push/campaigns/campaignId/cancel", nil, 1)
+}
+
+func TestPushCancelPushImportWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.CancelPushImportRequest{
+		ImportID: "importId",
+	}
+	_, invocationErr := client.Push.CancelPushImport(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestPushCancelPushImportWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestPushCancelPushImportWithWireMock", "POST", "/push/imports/importId/cancel", nil, 1)
 }
 
 func TestPushClearApnsCredentialsWithWireMock(
@@ -169,6 +222,32 @@ func TestPushCreatePushCampaignWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestPushCreatePushCampaignWithWireMock", "POST", "/push/campaigns", nil, 1)
+}
+
+func TestPushCreatePushImportWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.CreatePushImportRequest{
+		Source: sequenzygo.CreatePushImportRequestSourceOnesignal,
+	}
+	_, invocationErr := client.Push.CreatePushImport(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestPushCreatePushImportWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestPushCreatePushImportWithWireMock", "POST", "/push/imports", nil, 1)
 }
 
 func TestPushDeletePushDeviceWithWireMock(
@@ -332,6 +411,58 @@ func TestPushGetPushCampaignStatsWithWireMock(
 	VerifyRequestCount(t, "TestPushGetPushCampaignStatsWithWireMock", "GET", "/push/campaigns/campaignId/stats", nil, 1)
 }
 
+func TestPushGetPushImportWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.GetPushImportRequest{
+		ImportID: "importId",
+	}
+	_, invocationErr := client.Push.GetPushImport(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestPushGetPushImportWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestPushGetPushImportWithWireMock", "GET", "/push/imports/importId", nil, 1)
+}
+
+func TestPushGetPushImportPreflightWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.GetPushImportPreflightRequest{
+		Source: sequenzygo.GetPushImportPreflightRequestSourceOnesignal,
+	}
+	_, invocationErr := client.Push.GetPushImportPreflight(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestPushGetPushImportPreflightWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestPushGetPushImportPreflightWithWireMock", "GET", "/push/imports/preflight", map[string]interface{}{"source": "onesignal"}, 1)
+}
+
 func TestPushGetPushSettingsWithWireMock(
 	t *testing.T,
 ) {
@@ -424,6 +555,30 @@ func TestPushListPushDevicesWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestPushListPushDevicesWithWireMock", "GET", "/push/devices", nil, 1)
+}
+
+func TestPushListPushImportsWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.ListPushImportsRequest{}
+	_, invocationErr := client.Push.ListPushImports(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestPushListPushImportsWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestPushListPushImportsWithWireMock", "GET", "/push/imports", nil, 1)
 }
 
 func TestPushRegisterPushDeviceWithWireMock(
@@ -590,6 +745,32 @@ func TestPushStartLiveActivityWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestPushStartLiveActivityWithWireMock", "POST", "/push/live-activities/start", nil, 1)
+}
+
+func TestPushStartPushImportWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.StartPushImportRequest{
+		ImportID: "importId",
+	}
+	_, invocationErr := client.Push.StartPushImport(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestPushStartPushImportWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestPushStartPushImportWithWireMock", "POST", "/push/imports/importId/start", nil, 1)
 }
 
 func TestPushUnschedulePushCampaignWithWireMock(

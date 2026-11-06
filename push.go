@@ -11,6 +11,61 @@ import (
 )
 
 var (
+	addPushImportRowsRequestFieldImportID = big.NewInt(1 << 0)
+	addPushImportRowsRequestFieldCsv      = big.NewInt(1 << 1)
+)
+
+type AddPushImportRowsRequest struct {
+	ImportID string `json:"-" url:"-"`
+	Csv      string `json:"csv" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (a *AddPushImportRowsRequest) require(field *big.Int) {
+	if a.explicitFields == nil {
+		a.explicitFields = big.NewInt(0)
+	}
+	a.explicitFields.Or(a.explicitFields, field)
+}
+
+// SetImportID sets the ImportID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AddPushImportRowsRequest) SetImportID(importID string) {
+	a.ImportID = importID
+	a.require(addPushImportRowsRequestFieldImportID)
+}
+
+// SetCsv sets the Csv field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AddPushImportRowsRequest) SetCsv(csv string) {
+	a.Csv = csv
+	a.require(addPushImportRowsRequestFieldCsv)
+}
+
+func (a *AddPushImportRowsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler AddPushImportRowsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*a = AddPushImportRowsRequest(body)
+	return nil
+}
+
+func (a *AddPushImportRowsRequest) MarshalJSON() ([]byte, error) {
+	type embed AddPushImportRowsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
 	cancelPushCampaignRequestFieldCampaignID = big.NewInt(1 << 0)
 )
 
@@ -34,6 +89,31 @@ func (c *CancelPushCampaignRequest) require(field *big.Int) {
 func (c *CancelPushCampaignRequest) SetCampaignID(campaignID string) {
 	c.CampaignID = campaignID
 	c.require(cancelPushCampaignRequestFieldCampaignID)
+}
+
+var (
+	cancelPushImportRequestFieldImportID = big.NewInt(1 << 0)
+)
+
+type CancelPushImportRequest struct {
+	ImportID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (c *CancelPushImportRequest) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetImportID sets the ImportID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelPushImportRequest) SetImportID(importID string) {
+	c.ImportID = importID
+	c.require(cancelPushImportRequestFieldImportID)
 }
 
 var (
@@ -143,6 +223,161 @@ func (c *CreatePushCampaignRequest) UnmarshalJSON(data []byte) error {
 
 func (c *CreatePushCampaignRequest) MarshalJSON() ([]byte, error) {
 	type embed CreatePushCampaignRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
+	createPushImportRequestFieldAPIKey              = big.NewInt(1 << 0)
+	createPushImportRequestFieldAppIDs              = big.NewInt(1 << 1)
+	createPushImportRequestFieldBrazeRestEndpoint   = big.NewInt(1 << 2)
+	createPushImportRequestFieldBrazeSegmentID      = big.NewInt(1 << 3)
+	createPushImportRequestFieldCsv                 = big.NewInt(1 << 4)
+	createPushImportRequestFieldCsvParts            = big.NewInt(1 << 5)
+	createPushImportRequestFieldCustomerIoRegion    = big.NewInt(1 << 6)
+	createPushImportRequestFieldCustomerIoSegmentID = big.NewInt(1 << 7)
+	createPushImportRequestFieldImportAttributes    = big.NewInt(1 << 8)
+	createPushImportRequestFieldOnesignalAppID      = big.NewInt(1 << 9)
+	createPushImportRequestFieldPlatforms           = big.NewInt(1 << 10)
+	createPushImportRequestFieldSource              = big.NewInt(1 << 11)
+)
+
+type CreatePushImportRequest struct {
+	// Source API key, required except for csv. OneSignal App API key, Braze REST API key with users.export.segment, or Customer.io App API key. Stored encrypted and never returned. Deleted once the devices are read, or when the import is canceled; a failed import keeps it so it can be resumed.
+	APIKey *string `json:"apiKey,omitempty" url:"-"`
+	// Only import devices of these source apps (Braze app name, Customer.io app_identifier, CSV app_id). Devices without an app are kept.
+	AppIDs []string `json:"appIds,omitempty" url:"-"`
+	// Required for braze. Your instance's REST endpoint, such as rest.iad-01.braze.com. Only Braze REST hosts are accepted.
+	BrazeRestEndpoint *string `json:"brazeRestEndpoint,omitempty" url:"-"`
+	// Required for braze. API identifier of a segment containing the users to import.
+	BrazeSegmentID *string `json:"brazeSegmentId,omitempty" url:"-"`
+	// csv source only. The file or its first part, at most 5 MB, with a header row. Needs token and platform columns plus external_id or email.
+	Csv *string `json:"csv,omitempty" url:"-"`
+	// csv source only, with csv. How many parts you will send, including the first. When set, starting is refused until every part has been added, so an interrupted upload is never imported partially. More parts than declared are rejected.
+	CsvParts         *int                                     `json:"csvParts,omitempty" url:"-"`
+	CustomerIoRegion *CreatePushImportRequestCustomerIoRegion `json:"customerIoRegion,omitempty" url:"-"`
+	// Required for customer_io. ID of a segment containing the people to import.
+	CustomerIoSegmentID *string `json:"customerIoSegmentId,omitempty" url:"-"`
+	// Copy source tags and custom attributes onto contacts, only for keys a contact does not have yet.
+	ImportAttributes *bool `json:"importAttributes,omitempty" url:"-"`
+	// Required for onesignal. The OneSignal App ID (UUID).
+	OnesignalAppID *string `json:"onesignalAppId,omitempty" url:"-"`
+	// Default both.
+	Platforms []CreatePushImportRequestPlatformsItem `json:"platforms,omitempty" url:"-"`
+	Source    CreatePushImportRequestSource          `json:"source" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (c *CreatePushImportRequest) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetAPIKey sets the APIKey field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePushImportRequest) SetAPIKey(apiKey *string) {
+	c.APIKey = apiKey
+	c.require(createPushImportRequestFieldAPIKey)
+}
+
+// SetAppIDs sets the AppIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePushImportRequest) SetAppIDs(appIDs []string) {
+	c.AppIDs = appIDs
+	c.require(createPushImportRequestFieldAppIDs)
+}
+
+// SetBrazeRestEndpoint sets the BrazeRestEndpoint field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePushImportRequest) SetBrazeRestEndpoint(brazeRestEndpoint *string) {
+	c.BrazeRestEndpoint = brazeRestEndpoint
+	c.require(createPushImportRequestFieldBrazeRestEndpoint)
+}
+
+// SetBrazeSegmentID sets the BrazeSegmentID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePushImportRequest) SetBrazeSegmentID(brazeSegmentID *string) {
+	c.BrazeSegmentID = brazeSegmentID
+	c.require(createPushImportRequestFieldBrazeSegmentID)
+}
+
+// SetCsv sets the Csv field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePushImportRequest) SetCsv(csv *string) {
+	c.Csv = csv
+	c.require(createPushImportRequestFieldCsv)
+}
+
+// SetCsvParts sets the CsvParts field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePushImportRequest) SetCsvParts(csvParts *int) {
+	c.CsvParts = csvParts
+	c.require(createPushImportRequestFieldCsvParts)
+}
+
+// SetCustomerIoRegion sets the CustomerIoRegion field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePushImportRequest) SetCustomerIoRegion(customerIoRegion *CreatePushImportRequestCustomerIoRegion) {
+	c.CustomerIoRegion = customerIoRegion
+	c.require(createPushImportRequestFieldCustomerIoRegion)
+}
+
+// SetCustomerIoSegmentID sets the CustomerIoSegmentID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePushImportRequest) SetCustomerIoSegmentID(customerIoSegmentID *string) {
+	c.CustomerIoSegmentID = customerIoSegmentID
+	c.require(createPushImportRequestFieldCustomerIoSegmentID)
+}
+
+// SetImportAttributes sets the ImportAttributes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePushImportRequest) SetImportAttributes(importAttributes *bool) {
+	c.ImportAttributes = importAttributes
+	c.require(createPushImportRequestFieldImportAttributes)
+}
+
+// SetOnesignalAppID sets the OnesignalAppID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePushImportRequest) SetOnesignalAppID(onesignalAppID *string) {
+	c.OnesignalAppID = onesignalAppID
+	c.require(createPushImportRequestFieldOnesignalAppID)
+}
+
+// SetPlatforms sets the Platforms field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePushImportRequest) SetPlatforms(platforms []CreatePushImportRequestPlatformsItem) {
+	c.Platforms = platforms
+	c.require(createPushImportRequestFieldPlatforms)
+}
+
+// SetSource sets the Source field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePushImportRequest) SetSource(source CreatePushImportRequestSource) {
+	c.Source = source
+	c.require(createPushImportRequestFieldSource)
+}
+
+func (c *CreatePushImportRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreatePushImportRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*c = CreatePushImportRequest(body)
+	return nil
+}
+
+func (c *CreatePushImportRequest) MarshalJSON() ([]byte, error) {
+	type embed CreatePushImportRequest
 	var marshaler = struct {
 		embed
 	}{
@@ -467,6 +702,66 @@ func (g *GetPushCampaignStatsRequest) SetCampaignID(campaignID string) {
 }
 
 var (
+	getPushImportRequestFieldImportID = big.NewInt(1 << 0)
+)
+
+type GetPushImportRequest struct {
+	ImportID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (g *GetPushImportRequest) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetImportID sets the ImportID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetPushImportRequest) SetImportID(importID string) {
+	g.ImportID = importID
+	g.require(getPushImportRequestFieldImportID)
+}
+
+var (
+	getPushImportPreflightRequestFieldPlatforms = big.NewInt(1 << 0)
+	getPushImportPreflightRequestFieldSource    = big.NewInt(1 << 1)
+)
+
+type GetPushImportPreflightRequest struct {
+	// Comma-separated ios,android (default both). Unknown values return 400.
+	Platforms *string                             `json:"-" url:"platforms,omitempty"`
+	Source    GetPushImportPreflightRequestSource `json:"-" url:"source"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (g *GetPushImportPreflightRequest) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetPlatforms sets the Platforms field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetPushImportPreflightRequest) SetPlatforms(platforms *string) {
+	g.Platforms = platforms
+	g.require(getPushImportPreflightRequestFieldPlatforms)
+}
+
+// SetSource sets the Source field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetPushImportPreflightRequest) SetSource(source GetPushImportPreflightRequestSource) {
+	g.Source = source
+	g.require(getPushImportPreflightRequestFieldSource)
+}
+
+var (
 	listLiveActivitiesRequestFieldActivityID   = big.NewInt(1 << 0)
 	listLiveActivitiesRequestFieldActivityType = big.NewInt(1 << 1)
 	listLiveActivitiesRequestFieldCursor       = big.NewInt(1 << 2)
@@ -673,16 +968,42 @@ func (l *ListPushDevicesRequest) SetSubscriberID(subscriberID *string) {
 }
 
 var (
-	registerPushDeviceRequestFieldAppVersion   = big.NewInt(1 << 0)
-	registerPushDeviceRequestFieldDeviceName   = big.NewInt(1 << 1)
-	registerPushDeviceRequestFieldEmail        = big.NewInt(1 << 2)
-	registerPushDeviceRequestFieldKeys         = big.NewInt(1 << 3)
-	registerPushDeviceRequestFieldLocale       = big.NewInt(1 << 4)
-	registerPushDeviceRequestFieldOsVersion    = big.NewInt(1 << 5)
-	registerPushDeviceRequestFieldPlatform     = big.NewInt(1 << 6)
-	registerPushDeviceRequestFieldSubscriberID = big.NewInt(1 << 7)
-	registerPushDeviceRequestFieldTimezone     = big.NewInt(1 << 8)
-	registerPushDeviceRequestFieldToken        = big.NewInt(1 << 9)
+	listPushImportsRequestFieldLimit = big.NewInt(1 << 0)
+)
+
+type ListPushImportsRequest struct {
+	Limit *int `json:"-" url:"limit,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (l *ListPushImportsRequest) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetLimit sets the Limit field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPushImportsRequest) SetLimit(limit *int) {
+	l.Limit = limit
+	l.require(listPushImportsRequestFieldLimit)
+}
+
+var (
+	registerPushDeviceRequestFieldAppVersion       = big.NewInt(1 << 0)
+	registerPushDeviceRequestFieldDeviceName       = big.NewInt(1 << 1)
+	registerPushDeviceRequestFieldEmail            = big.NewInt(1 << 2)
+	registerPushDeviceRequestFieldKeys             = big.NewInt(1 << 3)
+	registerPushDeviceRequestFieldLocale           = big.NewInt(1 << 4)
+	registerPushDeviceRequestFieldOsVersion        = big.NewInt(1 << 5)
+	registerPushDeviceRequestFieldPermissionStatus = big.NewInt(1 << 6)
+	registerPushDeviceRequestFieldPlatform         = big.NewInt(1 << 7)
+	registerPushDeviceRequestFieldSubscriberID     = big.NewInt(1 << 8)
+	registerPushDeviceRequestFieldTimezone         = big.NewInt(1 << 9)
+	registerPushDeviceRequestFieldToken            = big.NewInt(1 << 10)
 )
 
 type RegisterPushDeviceRequest struct {
@@ -691,10 +1012,12 @@ type RegisterPushDeviceRequest struct {
 	// Contact to link. Created quietly when new.
 	Email *string `json:"email,omitempty" url:"-"`
 	// Web only. PushSubscription.toJSON().keys.
-	Keys      *RegisterPushDeviceRequestKeys    `json:"keys,omitempty" url:"-"`
-	Locale    *string                           `json:"locale,omitempty" url:"-"`
-	OsVersion *string                           `json:"osVersion,omitempty" url:"-"`
-	Platform  RegisterPushDeviceRequestPlatform `json:"platform" url:"-"`
+	Keys      *RegisterPushDeviceRequestKeys `json:"keys,omitempty" url:"-"`
+	Locale    *string                        `json:"locale,omitempty" url:"-"`
+	OsVersion *string                        `json:"osVersion,omitempty" url:"-"`
+	// iOS/Android only (ignored for web). The notification permission your app read. Feeds the push opt-in rate and the contact's pushPermission attribute (the best status across their app devices). Omit it to keep the stored one.
+	PermissionStatus *RegisterPushDeviceRequestPermissionStatus `json:"permissionStatus,omitempty" url:"-"`
+	Platform         RegisterPushDeviceRequestPlatform          `json:"platform" url:"-"`
 	// Existing subscriber to link instead of email.
 	SubscriberID *string `json:"subscriberId,omitempty" url:"-"`
 	// IANA timezone.
@@ -753,6 +1076,13 @@ func (r *RegisterPushDeviceRequest) SetLocale(locale *string) {
 func (r *RegisterPushDeviceRequest) SetOsVersion(osVersion *string) {
 	r.OsVersion = osVersion
 	r.require(registerPushDeviceRequestFieldOsVersion)
+}
+
+// SetPermissionStatus sets the PermissionStatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RegisterPushDeviceRequest) SetPermissionStatus(permissionStatus *RegisterPushDeviceRequestPermissionStatus) {
+	r.PermissionStatus = permissionStatus
+	r.require(registerPushDeviceRequestFieldPermissionStatus)
 }
 
 // SetPlatform sets the Platform field and marks it as non-optional;
@@ -1246,6 +1576,31 @@ func (s *StartLiveActivityRequest) MarshalJSON() ([]byte, error) {
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
 	return json.Marshal(explicitMarshaler)
+}
+
+var (
+	startPushImportRequestFieldImportID = big.NewInt(1 << 0)
+)
+
+type StartPushImportRequest struct {
+	ImportID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (s *StartPushImportRequest) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetImportID sets the ImportID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *StartPushImportRequest) SetImportID(importID string) {
+	s.ImportID = importID
+	s.require(startPushImportRequestFieldImportID)
 }
 
 // Alert shown with the push. Provide a title, a body, or both.
@@ -2977,21 +3332,23 @@ func (p PushCampaignType) Ptr() *PushCampaignType {
 }
 
 var (
-	pushDeviceFieldAppVersion    = big.NewInt(1 << 0)
-	pushDeviceFieldCreatedAt     = big.NewInt(1 << 1)
-	pushDeviceFieldDeviceName    = big.NewInt(1 << 2)
-	pushDeviceFieldID            = big.NewInt(1 << 3)
-	pushDeviceFieldInvalidReason = big.NewInt(1 << 4)
-	pushDeviceFieldLastSeenAt    = big.NewInt(1 << 5)
-	pushDeviceFieldLocale        = big.NewInt(1 << 6)
-	pushDeviceFieldOsVersion     = big.NewInt(1 << 7)
-	pushDeviceFieldPlatform      = big.NewInt(1 << 8)
-	pushDeviceFieldSource        = big.NewInt(1 << 9)
-	pushDeviceFieldStatus        = big.NewInt(1 << 10)
-	pushDeviceFieldSubscriberID  = big.NewInt(1 << 11)
-	pushDeviceFieldTimezone      = big.NewInt(1 << 12)
-	pushDeviceFieldTokenPreview  = big.NewInt(1 << 13)
-	pushDeviceFieldUserAgent     = big.NewInt(1 << 14)
+	pushDeviceFieldAppVersion          = big.NewInt(1 << 0)
+	pushDeviceFieldCreatedAt           = big.NewInt(1 << 1)
+	pushDeviceFieldDeviceName          = big.NewInt(1 << 2)
+	pushDeviceFieldID                  = big.NewInt(1 << 3)
+	pushDeviceFieldInvalidReason       = big.NewInt(1 << 4)
+	pushDeviceFieldLastSeenAt          = big.NewInt(1 << 5)
+	pushDeviceFieldLocale              = big.NewInt(1 << 6)
+	pushDeviceFieldOsVersion           = big.NewInt(1 << 7)
+	pushDeviceFieldPermissionStatus    = big.NewInt(1 << 8)
+	pushDeviceFieldPermissionUpdatedAt = big.NewInt(1 << 9)
+	pushDeviceFieldPlatform            = big.NewInt(1 << 10)
+	pushDeviceFieldSource              = big.NewInt(1 << 11)
+	pushDeviceFieldStatus              = big.NewInt(1 << 12)
+	pushDeviceFieldSubscriberID        = big.NewInt(1 << 13)
+	pushDeviceFieldTimezone            = big.NewInt(1 << 14)
+	pushDeviceFieldTokenPreview        = big.NewInt(1 << 15)
+	pushDeviceFieldUserAgent           = big.NewInt(1 << 16)
 )
 
 type PushDevice struct {
@@ -3000,12 +3357,15 @@ type PushDevice struct {
 	DeviceName *string    `json:"deviceName,omitempty" url:"deviceName,omitempty"`
 	ID         *string    `json:"id,omitempty" url:"id,omitempty"`
 	// Why the push service rejected the token, for invalid devices.
-	InvalidReason *string             `json:"invalidReason,omitempty" url:"invalidReason,omitempty"`
-	LastSeenAt    *time.Time          `json:"lastSeenAt,omitempty" url:"lastSeenAt,omitempty"`
-	Locale        *string             `json:"locale,omitempty" url:"locale,omitempty"`
-	OsVersion     *string             `json:"osVersion,omitempty" url:"osVersion,omitempty"`
-	Platform      *PushDevicePlatform `json:"platform,omitempty" url:"platform,omitempty"`
-	// web_sdk for browsers, mobile_sdk for devices the iOS, Android, React Native and Flutter SDKs registered, api for devices registered with a secret key.
+	InvalidReason *string    `json:"invalidReason,omitempty" url:"invalidReason,omitempty"`
+	LastSeenAt    *time.Time `json:"lastSeenAt,omitempty" url:"lastSeenAt,omitempty"`
+	Locale        *string    `json:"locale,omitempty" url:"locale,omitempty"`
+	OsVersion     *string    `json:"osVersion,omitempty" url:"osVersion,omitempty"`
+	// iOS/Android notification permission the SDK or API caller last reported. Null when unknown (web subscriptions and SDK versions that do not report it).
+	PermissionStatus    *PushDevicePermissionStatus `json:"permissionStatus,omitempty" url:"permissionStatus,omitempty"`
+	PermissionUpdatedAt *time.Time                  `json:"permissionUpdatedAt,omitempty" url:"permissionUpdatedAt,omitempty"`
+	Platform            *PushDevicePlatform         `json:"platform,omitempty" url:"platform,omitempty"`
+	// web_sdk for browsers, mobile_sdk for devices the iOS, Android, React Native and Flutter SDKs registered, api for devices registered with a secret key, import for devices a push import wrote (an SDK registration of the same token takes the device over).
 	Source *PushDeviceSource `json:"source,omitempty" url:"source,omitempty"`
 	Status *PushDeviceStatus `json:"status,omitempty" url:"status,omitempty"`
 	// Linked contact, or null for anonymous browsers.
@@ -3076,6 +3436,20 @@ func (p *PushDevice) GetOsVersion() *string {
 		return nil
 	}
 	return p.OsVersion
+}
+
+func (p *PushDevice) GetPermissionStatus() *PushDevicePermissionStatus {
+	if p == nil {
+		return nil
+	}
+	return p.PermissionStatus
+}
+
+func (p *PushDevice) GetPermissionUpdatedAt() *time.Time {
+	if p == nil {
+		return nil
+	}
+	return p.PermissionUpdatedAt
 }
 
 func (p *PushDevice) GetPlatform() *PushDevicePlatform {
@@ -3197,6 +3571,20 @@ func (p *PushDevice) SetOsVersion(osVersion *string) {
 	p.require(pushDeviceFieldOsVersion)
 }
 
+// SetPermissionStatus sets the PermissionStatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushDevice) SetPermissionStatus(permissionStatus *PushDevicePermissionStatus) {
+	p.PermissionStatus = permissionStatus
+	p.require(pushDeviceFieldPermissionStatus)
+}
+
+// SetPermissionUpdatedAt sets the PermissionUpdatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushDevice) SetPermissionUpdatedAt(permissionUpdatedAt *time.Time) {
+	p.PermissionUpdatedAt = permissionUpdatedAt
+	p.require(pushDeviceFieldPermissionUpdatedAt)
+}
+
 // SetPlatform sets the Platform field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (p *PushDevice) SetPlatform(platform *PushDevicePlatform) {
@@ -3250,8 +3638,9 @@ func (p *PushDevice) UnmarshalJSON(data []byte) error {
 	type embed PushDevice
 	var unmarshaler = struct {
 		embed
-		CreatedAt  *internal.DateTime `json:"createdAt,omitempty"`
-		LastSeenAt *internal.DateTime `json:"lastSeenAt,omitempty"`
+		CreatedAt           *internal.DateTime `json:"createdAt,omitempty"`
+		LastSeenAt          *internal.DateTime `json:"lastSeenAt,omitempty"`
+		PermissionUpdatedAt *internal.DateTime `json:"permissionUpdatedAt,omitempty"`
 	}{
 		embed: embed(*p),
 	}
@@ -3261,6 +3650,7 @@ func (p *PushDevice) UnmarshalJSON(data []byte) error {
 	*p = PushDevice(unmarshaler.embed)
 	p.CreatedAt = unmarshaler.CreatedAt.TimePtr()
 	p.LastSeenAt = unmarshaler.LastSeenAt.TimePtr()
+	p.PermissionUpdatedAt = unmarshaler.PermissionUpdatedAt.TimePtr()
 	extraProperties, err := internal.ExtractExtraProperties(data, *p)
 	if err != nil {
 		return err
@@ -3274,12 +3664,14 @@ func (p *PushDevice) MarshalJSON() ([]byte, error) {
 	type embed PushDevice
 	var marshaler = struct {
 		embed
-		CreatedAt  *internal.DateTime `json:"createdAt,omitempty"`
-		LastSeenAt *internal.DateTime `json:"lastSeenAt,omitempty"`
+		CreatedAt           *internal.DateTime `json:"createdAt,omitempty"`
+		LastSeenAt          *internal.DateTime `json:"lastSeenAt,omitempty"`
+		PermissionUpdatedAt *internal.DateTime `json:"permissionUpdatedAt,omitempty"`
 	}{
-		embed:      embed(*p),
-		CreatedAt:  internal.NewOptionalDateTime(p.CreatedAt),
-		LastSeenAt: internal.NewOptionalDateTime(p.LastSeenAt),
+		embed:               embed(*p),
+		CreatedAt:           internal.NewOptionalDateTime(p.CreatedAt),
+		LastSeenAt:          internal.NewOptionalDateTime(p.LastSeenAt),
+		PermissionUpdatedAt: internal.NewOptionalDateTime(p.PermissionUpdatedAt),
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
 	return json.Marshal(explicitMarshaler)
@@ -3303,14 +3695,17 @@ func (p *PushDevice) String() string {
 var (
 	pushDeviceCountsFieldActive           = big.NewInt(1 << 0)
 	pushDeviceCountsFieldIdentifiedActive = big.NewInt(1 << 1)
-	pushDeviceCountsFieldTotalActive      = big.NewInt(1 << 2)
+	pushDeviceCountsFieldPermissions      = big.NewInt(1 << 2)
+	pushDeviceCountsFieldTotalActive      = big.NewInt(1 << 3)
 )
 
 type PushDeviceCounts struct {
 	Active *PushDeviceCountsActive `json:"active,omitempty" url:"active,omitempty"`
 	// Active devices linked to a contact.
 	IdentifiedActive *int `json:"identifiedActive,omitempty" url:"identifiedActive,omitempty"`
-	TotalActive      *int `json:"totalActive,omitempty" url:"totalActive,omitempty"`
+	// Active iOS and Android devices by the notification permission the mobile SDK (or an API caller) last reported.
+	Permissions *PushDeviceCountsPermissions `json:"permissions,omitempty" url:"permissions,omitempty"`
+	TotalActive *int                         `json:"totalActive,omitempty" url:"totalActive,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -3331,6 +3726,13 @@ func (p *PushDeviceCounts) GetIdentifiedActive() *int {
 		return nil
 	}
 	return p.IdentifiedActive
+}
+
+func (p *PushDeviceCounts) GetPermissions() *PushDeviceCountsPermissions {
+	if p == nil {
+		return nil
+	}
+	return p.Permissions
 }
 
 func (p *PushDeviceCounts) GetTotalActive() *int {
@@ -3366,6 +3768,13 @@ func (p *PushDeviceCounts) SetActive(active *PushDeviceCountsActive) {
 func (p *PushDeviceCounts) SetIdentifiedActive(identifiedActive *int) {
 	p.IdentifiedActive = identifiedActive
 	p.require(pushDeviceCountsFieldIdentifiedActive)
+}
+
+// SetPermissions sets the Permissions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushDeviceCounts) SetPermissions(permissions *PushDeviceCountsPermissions) {
+	p.Permissions = permissions
+	p.require(pushDeviceCountsFieldPermissions)
 }
 
 // SetTotalActive sets the TotalActive field and marks it as non-optional;
@@ -3533,6 +3942,224 @@ func (p *PushDeviceCountsActive) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
+// Active iOS and Android devices by the notification permission the mobile SDK (or an API caller) last reported.
+var (
+	pushDeviceCountsPermissionsFieldDenied        = big.NewInt(1 << 0)
+	pushDeviceCountsPermissionsFieldEphemeral     = big.NewInt(1 << 1)
+	pushDeviceCountsPermissionsFieldGranted       = big.NewInt(1 << 2)
+	pushDeviceCountsPermissionsFieldNotDetermined = big.NewInt(1 << 3)
+	pushDeviceCountsPermissionsFieldOptInRate     = big.NewInt(1 << 4)
+	pushDeviceCountsPermissionsFieldProvisional   = big.NewInt(1 << 5)
+	pushDeviceCountsPermissionsFieldUnknown       = big.NewInt(1 << 6)
+)
+
+type PushDeviceCountsPermissions struct {
+	Denied *int `json:"denied,omitempty" url:"denied,omitempty"`
+	// iOS App Clip temporary permission.
+	Ephemeral *int `json:"ephemeral,omitempty" url:"ephemeral,omitempty"`
+	Granted   *int `json:"granted,omitempty" url:"granted,omitempty"`
+	// The app has not asked yet.
+	NotDetermined *int `json:"notDetermined,omitempty" url:"notDetermined,omitempty"`
+	// Share of devices with a known permission that can show notifications (granted, provisional or ephemeral), from 0 to 1. Null when none reported one.
+	OptInRate *float64 `json:"optInRate,omitempty" url:"optInRate,omitempty"`
+	// iOS provisional permission (notifications arrive quietly in Notification Center).
+	Provisional *int `json:"provisional,omitempty" url:"provisional,omitempty"`
+	// Devices whose SDK version does not report permission.
+	Unknown *int `json:"unknown,omitempty" url:"unknown,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PushDeviceCountsPermissions) GetDenied() *int {
+	if p == nil {
+		return nil
+	}
+	return p.Denied
+}
+
+func (p *PushDeviceCountsPermissions) GetEphemeral() *int {
+	if p == nil {
+		return nil
+	}
+	return p.Ephemeral
+}
+
+func (p *PushDeviceCountsPermissions) GetGranted() *int {
+	if p == nil {
+		return nil
+	}
+	return p.Granted
+}
+
+func (p *PushDeviceCountsPermissions) GetNotDetermined() *int {
+	if p == nil {
+		return nil
+	}
+	return p.NotDetermined
+}
+
+func (p *PushDeviceCountsPermissions) GetOptInRate() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.OptInRate
+}
+
+func (p *PushDeviceCountsPermissions) GetProvisional() *int {
+	if p == nil {
+		return nil
+	}
+	return p.Provisional
+}
+
+func (p *PushDeviceCountsPermissions) GetUnknown() *int {
+	if p == nil {
+		return nil
+	}
+	return p.Unknown
+}
+
+func (p *PushDeviceCountsPermissions) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PushDeviceCountsPermissions) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetDenied sets the Denied field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushDeviceCountsPermissions) SetDenied(denied *int) {
+	p.Denied = denied
+	p.require(pushDeviceCountsPermissionsFieldDenied)
+}
+
+// SetEphemeral sets the Ephemeral field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushDeviceCountsPermissions) SetEphemeral(ephemeral *int) {
+	p.Ephemeral = ephemeral
+	p.require(pushDeviceCountsPermissionsFieldEphemeral)
+}
+
+// SetGranted sets the Granted field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushDeviceCountsPermissions) SetGranted(granted *int) {
+	p.Granted = granted
+	p.require(pushDeviceCountsPermissionsFieldGranted)
+}
+
+// SetNotDetermined sets the NotDetermined field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushDeviceCountsPermissions) SetNotDetermined(notDetermined *int) {
+	p.NotDetermined = notDetermined
+	p.require(pushDeviceCountsPermissionsFieldNotDetermined)
+}
+
+// SetOptInRate sets the OptInRate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushDeviceCountsPermissions) SetOptInRate(optInRate *float64) {
+	p.OptInRate = optInRate
+	p.require(pushDeviceCountsPermissionsFieldOptInRate)
+}
+
+// SetProvisional sets the Provisional field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushDeviceCountsPermissions) SetProvisional(provisional *int) {
+	p.Provisional = provisional
+	p.require(pushDeviceCountsPermissionsFieldProvisional)
+}
+
+// SetUnknown sets the Unknown field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushDeviceCountsPermissions) SetUnknown(unknown *int) {
+	p.Unknown = unknown
+	p.require(pushDeviceCountsPermissionsFieldUnknown)
+}
+
+func (p *PushDeviceCountsPermissions) UnmarshalJSON(data []byte) error {
+	type unmarshaler PushDeviceCountsPermissions
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PushDeviceCountsPermissions(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PushDeviceCountsPermissions) MarshalJSON() ([]byte, error) {
+	type embed PushDeviceCountsPermissions
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PushDeviceCountsPermissions) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// iOS/Android notification permission the SDK or API caller last reported. Null when unknown (web subscriptions and SDK versions that do not report it).
+type PushDevicePermissionStatus string
+
+const (
+	PushDevicePermissionStatusGranted       PushDevicePermissionStatus = "granted"
+	PushDevicePermissionStatusProvisional   PushDevicePermissionStatus = "provisional"
+	PushDevicePermissionStatusEphemeral     PushDevicePermissionStatus = "ephemeral"
+	PushDevicePermissionStatusDenied        PushDevicePermissionStatus = "denied"
+	PushDevicePermissionStatusNotDetermined PushDevicePermissionStatus = "not_determined"
+)
+
+func NewPushDevicePermissionStatusFromString(s string) (PushDevicePermissionStatus, error) {
+	switch s {
+	case "granted":
+		return PushDevicePermissionStatusGranted, nil
+	case "provisional":
+		return PushDevicePermissionStatusProvisional, nil
+	case "ephemeral":
+		return PushDevicePermissionStatusEphemeral, nil
+	case "denied":
+		return PushDevicePermissionStatusDenied, nil
+	case "not_determined":
+		return PushDevicePermissionStatusNotDetermined, nil
+	}
+	var t PushDevicePermissionStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PushDevicePermissionStatus) Ptr() *PushDevicePermissionStatus {
+	return &p
+}
+
 type PushDevicePlatform string
 
 const (
@@ -3558,13 +4185,14 @@ func (p PushDevicePlatform) Ptr() *PushDevicePlatform {
 	return &p
 }
 
-// web_sdk for browsers, mobile_sdk for devices the iOS, Android, React Native and Flutter SDKs registered, api for devices registered with a secret key.
+// web_sdk for browsers, mobile_sdk for devices the iOS, Android, React Native and Flutter SDKs registered, api for devices registered with a secret key, import for devices a push import wrote (an SDK registration of the same token takes the device over).
 type PushDeviceSource string
 
 const (
 	PushDeviceSourceWebSdk    PushDeviceSource = "web_sdk"
 	PushDeviceSourceMobileSdk PushDeviceSource = "mobile_sdk"
 	PushDeviceSourceAPI       PushDeviceSource = "api"
+	PushDeviceSourceImport    PushDeviceSource = "import"
 )
 
 func NewPushDeviceSourceFromString(s string) (PushDeviceSource, error) {
@@ -3575,6 +4203,8 @@ func NewPushDeviceSourceFromString(s string) (PushDeviceSource, error) {
 		return PushDeviceSourceMobileSdk, nil
 	case "api":
 		return PushDeviceSourceAPI, nil
+	case "import":
+		return PushDeviceSourceImport, nil
 	}
 	var t PushDeviceSource
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -3606,6 +4236,1144 @@ func NewPushDeviceStatusFromString(s string) (PushDeviceStatus, error) {
 }
 
 func (p PushDeviceStatus) Ptr() *PushDeviceStatus {
+	return &p
+}
+
+// A push subscription import. Never includes the source API key or the staged devices.
+var (
+	pushImportFieldCanResume      = big.NewInt(1 << 0)
+	pushImportFieldCompletedAt    = big.NewInt(1 << 1)
+	pushImportFieldConfig         = big.NewInt(1 << 2)
+	pushImportFieldCounts         = big.NewInt(1 << 3)
+	pushImportFieldCreatedAt      = big.NewInt(1 << 4)
+	pushImportFieldError          = big.NewInt(1 << 5)
+	pushImportFieldID             = big.NewInt(1 << 6)
+	pushImportFieldInvalidReasons = big.NewInt(1 << 7)
+	pushImportFieldProgress       = big.NewInt(1 << 8)
+	pushImportFieldSkippedReasons = big.NewInt(1 << 9)
+	pushImportFieldSource         = big.NewInt(1 << 10)
+	pushImportFieldSourceLabel    = big.NewInt(1 << 11)
+	pushImportFieldStalled        = big.NewInt(1 << 12)
+	pushImportFieldStartedAt      = big.NewInt(1 << 13)
+	pushImportFieldStatus         = big.NewInt(1 << 14)
+	pushImportFieldUpdatedAt      = big.NewInt(1 << 15)
+	pushImportFieldWarnings       = big.NewInt(1 << 16)
+)
+
+type PushImport struct {
+	// True for failed or stalled imports; POST start resumes from the last checkpoint.
+	CanResume   *bool      `json:"canResume,omitempty" url:"canResume,omitempty"`
+	CompletedAt *time.Time `json:"completedAt,omitempty" url:"completedAt,omitempty"`
+	// Source settings (app ID, REST endpoint, segment, region), platforms, importAttributes and appIds. Never the API key.
+	Config    map[string]any    `json:"config,omitempty" url:"config,omitempty"`
+	Counts    *PushImportCounts `json:"counts,omitempty" url:"counts,omitempty"`
+	CreatedAt *time.Time        `json:"createdAt,omitempty" url:"createdAt,omitempty"`
+	Error     *string           `json:"error,omitempty" url:"error,omitempty"`
+	ID        *string           `json:"id,omitempty" url:"id,omitempty"`
+	// Counts by reason: unknown_platform, invalid_token, ios_token_not_apns, firebase_installation_id.
+	InvalidReasons map[string]int      `json:"invalidReasons,omitempty" url:"invalidReasons,omitempty"`
+	Progress       *PushImportProgress `json:"progress,omitempty" url:"progress,omitempty"`
+	// Counts by reason: web_push_not_portable, unsupported_platform, not_push_subscription, platform_not_selected, other_app, no_contact_identity, contact_not_found (only on imports run before push-only contacts were supported), identity_conflict (the email belongs to a contact with another external ID), contact_not_created, contact_deleted (the contact was deleted while the import ran), duplicate_token.
+	SkippedReasons map[string]int    `json:"skippedReasons,omitempty" url:"skippedReasons,omitempty"`
+	Source         *PushImportSource `json:"source,omitempty" url:"source,omitempty"`
+	SourceLabel    *string           `json:"sourceLabel,omitempty" url:"sourceLabel,omitempty"`
+	// True when a running import has not reported progress for 15 minutes.
+	Stalled   *bool      `json:"stalled,omitempty" url:"stalled,omitempty"`
+	StartedAt *time.Time `json:"startedAt,omitempty" url:"startedAt,omitempty"`
+	// draft until started; exporting while devices are read from the source; importing while they are written.
+	Status    *PushImportStatus    `json:"status,omitempty" url:"status,omitempty"`
+	UpdatedAt *time.Time           `json:"updatedAt,omitempty" url:"updatedAt,omitempty"`
+	Warnings  []*PushImportWarning `json:"warnings,omitempty" url:"warnings,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PushImport) GetCanResume() *bool {
+	if p == nil {
+		return nil
+	}
+	return p.CanResume
+}
+
+func (p *PushImport) GetCompletedAt() *time.Time {
+	if p == nil {
+		return nil
+	}
+	return p.CompletedAt
+}
+
+func (p *PushImport) GetConfig() map[string]any {
+	if p == nil {
+		return nil
+	}
+	return p.Config
+}
+
+func (p *PushImport) GetCounts() *PushImportCounts {
+	if p == nil {
+		return nil
+	}
+	return p.Counts
+}
+
+func (p *PushImport) GetCreatedAt() *time.Time {
+	if p == nil {
+		return nil
+	}
+	return p.CreatedAt
+}
+
+func (p *PushImport) GetError() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Error
+}
+
+func (p *PushImport) GetID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.ID
+}
+
+func (p *PushImport) GetInvalidReasons() map[string]int {
+	if p == nil {
+		return nil
+	}
+	return p.InvalidReasons
+}
+
+func (p *PushImport) GetProgress() *PushImportProgress {
+	if p == nil {
+		return nil
+	}
+	return p.Progress
+}
+
+func (p *PushImport) GetSkippedReasons() map[string]int {
+	if p == nil {
+		return nil
+	}
+	return p.SkippedReasons
+}
+
+func (p *PushImport) GetSource() *PushImportSource {
+	if p == nil {
+		return nil
+	}
+	return p.Source
+}
+
+func (p *PushImport) GetSourceLabel() *string {
+	if p == nil {
+		return nil
+	}
+	return p.SourceLabel
+}
+
+func (p *PushImport) GetStalled() *bool {
+	if p == nil {
+		return nil
+	}
+	return p.Stalled
+}
+
+func (p *PushImport) GetStartedAt() *time.Time {
+	if p == nil {
+		return nil
+	}
+	return p.StartedAt
+}
+
+func (p *PushImport) GetStatus() *PushImportStatus {
+	if p == nil {
+		return nil
+	}
+	return p.Status
+}
+
+func (p *PushImport) GetUpdatedAt() *time.Time {
+	if p == nil {
+		return nil
+	}
+	return p.UpdatedAt
+}
+
+func (p *PushImport) GetWarnings() []*PushImportWarning {
+	if p == nil {
+		return nil
+	}
+	return p.Warnings
+}
+
+func (p *PushImport) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PushImport) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetCanResume sets the CanResume field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushImport) SetCanResume(canResume *bool) {
+	p.CanResume = canResume
+	p.require(pushImportFieldCanResume)
+}
+
+// SetCompletedAt sets the CompletedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushImport) SetCompletedAt(completedAt *time.Time) {
+	p.CompletedAt = completedAt
+	p.require(pushImportFieldCompletedAt)
+}
+
+// SetConfig sets the Config field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushImport) SetConfig(config map[string]any) {
+	p.Config = config
+	p.require(pushImportFieldConfig)
+}
+
+// SetCounts sets the Counts field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushImport) SetCounts(counts *PushImportCounts) {
+	p.Counts = counts
+	p.require(pushImportFieldCounts)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushImport) SetCreatedAt(createdAt *time.Time) {
+	p.CreatedAt = createdAt
+	p.require(pushImportFieldCreatedAt)
+}
+
+// SetError sets the Error field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushImport) SetError(error_ *string) {
+	p.Error = error_
+	p.require(pushImportFieldError)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushImport) SetID(id *string) {
+	p.ID = id
+	p.require(pushImportFieldID)
+}
+
+// SetInvalidReasons sets the InvalidReasons field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushImport) SetInvalidReasons(invalidReasons map[string]int) {
+	p.InvalidReasons = invalidReasons
+	p.require(pushImportFieldInvalidReasons)
+}
+
+// SetProgress sets the Progress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushImport) SetProgress(progress *PushImportProgress) {
+	p.Progress = progress
+	p.require(pushImportFieldProgress)
+}
+
+// SetSkippedReasons sets the SkippedReasons field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushImport) SetSkippedReasons(skippedReasons map[string]int) {
+	p.SkippedReasons = skippedReasons
+	p.require(pushImportFieldSkippedReasons)
+}
+
+// SetSource sets the Source field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushImport) SetSource(source *PushImportSource) {
+	p.Source = source
+	p.require(pushImportFieldSource)
+}
+
+// SetSourceLabel sets the SourceLabel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushImport) SetSourceLabel(sourceLabel *string) {
+	p.SourceLabel = sourceLabel
+	p.require(pushImportFieldSourceLabel)
+}
+
+// SetStalled sets the Stalled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushImport) SetStalled(stalled *bool) {
+	p.Stalled = stalled
+	p.require(pushImportFieldStalled)
+}
+
+// SetStartedAt sets the StartedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushImport) SetStartedAt(startedAt *time.Time) {
+	p.StartedAt = startedAt
+	p.require(pushImportFieldStartedAt)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushImport) SetStatus(status *PushImportStatus) {
+	p.Status = status
+	p.require(pushImportFieldStatus)
+}
+
+// SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushImport) SetUpdatedAt(updatedAt *time.Time) {
+	p.UpdatedAt = updatedAt
+	p.require(pushImportFieldUpdatedAt)
+}
+
+// SetWarnings sets the Warnings field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushImport) SetWarnings(warnings []*PushImportWarning) {
+	p.Warnings = warnings
+	p.require(pushImportFieldWarnings)
+}
+
+func (p *PushImport) UnmarshalJSON(data []byte) error {
+	type embed PushImport
+	var unmarshaler = struct {
+		embed
+		CompletedAt *internal.DateTime `json:"completedAt,omitempty"`
+		CreatedAt   *internal.DateTime `json:"createdAt,omitempty"`
+		StartedAt   *internal.DateTime `json:"startedAt,omitempty"`
+		UpdatedAt   *internal.DateTime `json:"updatedAt,omitempty"`
+	}{
+		embed: embed(*p),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*p = PushImport(unmarshaler.embed)
+	p.CompletedAt = unmarshaler.CompletedAt.TimePtr()
+	p.CreatedAt = unmarshaler.CreatedAt.TimePtr()
+	p.StartedAt = unmarshaler.StartedAt.TimePtr()
+	p.UpdatedAt = unmarshaler.UpdatedAt.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PushImport) MarshalJSON() ([]byte, error) {
+	type embed PushImport
+	var marshaler = struct {
+		embed
+		CompletedAt *internal.DateTime `json:"completedAt,omitempty"`
+		CreatedAt   *internal.DateTime `json:"createdAt,omitempty"`
+		StartedAt   *internal.DateTime `json:"startedAt,omitempty"`
+		UpdatedAt   *internal.DateTime `json:"updatedAt,omitempty"`
+	}{
+		embed:       embed(*p),
+		CompletedAt: internal.NewOptionalDateTime(p.CompletedAt),
+		CreatedAt:   internal.NewOptionalDateTime(p.CreatedAt),
+		StartedAt:   internal.NewOptionalDateTime(p.StartedAt),
+		UpdatedAt:   internal.NewOptionalDateTime(p.UpdatedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PushImport) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	pushImportCountsFieldImported           = big.NewInt(1 << 0)
+	pushImportCountsFieldInvalid            = big.NewInt(1 << 1)
+	pushImportCountsFieldMatched            = big.NewInt(1 << 2)
+	pushImportCountsFieldSkipped            = big.NewInt(1 << 3)
+	pushImportCountsFieldSubscribersCreated = big.NewInt(1 << 4)
+	pushImportCountsFieldUnsubscribed       = big.NewInt(1 << 5)
+)
+
+type PushImportCounts struct {
+	// New active devices written.
+	Imported *int `json:"imported,omitempty" url:"imported,omitempty"`
+	Invalid  *int `json:"invalid,omitempty" url:"invalid,omitempty"`
+	// Opted-in devices Sequenzy already had (for example registered by an SDK). They are left as they are, except that a device without a contact is linked to one.
+	Matched            *int `json:"matched,omitempty" url:"matched,omitempty"`
+	Skipped            *int `json:"skipped,omitempty" url:"skipped,omitempty"`
+	SubscribersCreated *int `json:"subscribersCreated,omitempty" url:"subscribersCreated,omitempty"`
+	// Devices the source reports as opted out. New ones are stored as unsubscribed and never receive push.
+	Unsubscribed *int `json:"unsubscribed,omitempty" url:"unsubscribed,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PushImportCounts) GetImported() *int {
+	if p == nil {
+		return nil
+	}
+	return p.Imported
+}
+
+func (p *PushImportCounts) GetInvalid() *int {
+	if p == nil {
+		return nil
+	}
+	return p.Invalid
+}
+
+func (p *PushImportCounts) GetMatched() *int {
+	if p == nil {
+		return nil
+	}
+	return p.Matched
+}
+
+func (p *PushImportCounts) GetSkipped() *int {
+	if p == nil {
+		return nil
+	}
+	return p.Skipped
+}
+
+func (p *PushImportCounts) GetSubscribersCreated() *int {
+	if p == nil {
+		return nil
+	}
+	return p.SubscribersCreated
+}
+
+func (p *PushImportCounts) GetUnsubscribed() *int {
+	if p == nil {
+		return nil
+	}
+	return p.Unsubscribed
+}
+
+func (p *PushImportCounts) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PushImportCounts) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetImported sets the Imported field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushImportCounts) SetImported(imported *int) {
+	p.Imported = imported
+	p.require(pushImportCountsFieldImported)
+}
+
+// SetInvalid sets the Invalid field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushImportCounts) SetInvalid(invalid *int) {
+	p.Invalid = invalid
+	p.require(pushImportCountsFieldInvalid)
+}
+
+// SetMatched sets the Matched field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushImportCounts) SetMatched(matched *int) {
+	p.Matched = matched
+	p.require(pushImportCountsFieldMatched)
+}
+
+// SetSkipped sets the Skipped field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushImportCounts) SetSkipped(skipped *int) {
+	p.Skipped = skipped
+	p.require(pushImportCountsFieldSkipped)
+}
+
+// SetSubscribersCreated sets the SubscribersCreated field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushImportCounts) SetSubscribersCreated(subscribersCreated *int) {
+	p.SubscribersCreated = subscribersCreated
+	p.require(pushImportCountsFieldSubscribersCreated)
+}
+
+// SetUnsubscribed sets the Unsubscribed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushImportCounts) SetUnsubscribed(unsubscribed *int) {
+	p.Unsubscribed = unsubscribed
+	p.require(pushImportCountsFieldUnsubscribed)
+}
+
+func (p *PushImportCounts) UnmarshalJSON(data []byte) error {
+	type unmarshaler PushImportCounts
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PushImportCounts(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PushImportCounts) MarshalJSON() ([]byte, error) {
+	type embed PushImportCounts
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PushImportCounts) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	pushImportProgressFieldCsvParts      = big.NewInt(1 << 0)
+	pushImportProgressFieldPercent       = big.NewInt(1 << 1)
+	pushImportProgressFieldProcessedRows = big.NewInt(1 << 2)
+	pushImportProgressFieldRecordsRead   = big.NewInt(1 << 3)
+	pushImportProgressFieldTotalRows     = big.NewInt(1 << 4)
+)
+
+type PushImportProgress struct {
+	// CSV drafts created with csvParts, the parts received so far and declared. The import cannot start while received is lower than expected. Null otherwise.
+	CsvParts *PushImportProgressCsvParts `json:"csvParts,omitempty" url:"csvParts,omitempty"`
+	// 0-100, or null while the source is still exporting.
+	Percent       *int `json:"percent,omitempty" url:"percent,omitempty"`
+	ProcessedRows *int `json:"processedRows,omitempty" url:"processedRows,omitempty"`
+	// Source records read so far.
+	RecordsRead *int `json:"recordsRead,omitempty" url:"recordsRead,omitempty"`
+	// Devices staged for import.
+	TotalRows *int `json:"totalRows,omitempty" url:"totalRows,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PushImportProgress) GetCsvParts() *PushImportProgressCsvParts {
+	if p == nil {
+		return nil
+	}
+	return p.CsvParts
+}
+
+func (p *PushImportProgress) GetPercent() *int {
+	if p == nil {
+		return nil
+	}
+	return p.Percent
+}
+
+func (p *PushImportProgress) GetProcessedRows() *int {
+	if p == nil {
+		return nil
+	}
+	return p.ProcessedRows
+}
+
+func (p *PushImportProgress) GetRecordsRead() *int {
+	if p == nil {
+		return nil
+	}
+	return p.RecordsRead
+}
+
+func (p *PushImportProgress) GetTotalRows() *int {
+	if p == nil {
+		return nil
+	}
+	return p.TotalRows
+}
+
+func (p *PushImportProgress) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PushImportProgress) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetCsvParts sets the CsvParts field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushImportProgress) SetCsvParts(csvParts *PushImportProgressCsvParts) {
+	p.CsvParts = csvParts
+	p.require(pushImportProgressFieldCsvParts)
+}
+
+// SetPercent sets the Percent field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushImportProgress) SetPercent(percent *int) {
+	p.Percent = percent
+	p.require(pushImportProgressFieldPercent)
+}
+
+// SetProcessedRows sets the ProcessedRows field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushImportProgress) SetProcessedRows(processedRows *int) {
+	p.ProcessedRows = processedRows
+	p.require(pushImportProgressFieldProcessedRows)
+}
+
+// SetRecordsRead sets the RecordsRead field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushImportProgress) SetRecordsRead(recordsRead *int) {
+	p.RecordsRead = recordsRead
+	p.require(pushImportProgressFieldRecordsRead)
+}
+
+// SetTotalRows sets the TotalRows field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushImportProgress) SetTotalRows(totalRows *int) {
+	p.TotalRows = totalRows
+	p.require(pushImportProgressFieldTotalRows)
+}
+
+func (p *PushImportProgress) UnmarshalJSON(data []byte) error {
+	type unmarshaler PushImportProgress
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PushImportProgress(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PushImportProgress) MarshalJSON() ([]byte, error) {
+	type embed PushImportProgress
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PushImportProgress) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// CSV drafts created with csvParts, the parts received so far and declared. The import cannot start while received is lower than expected. Null otherwise.
+var (
+	pushImportProgressCsvPartsFieldExpected = big.NewInt(1 << 0)
+	pushImportProgressCsvPartsFieldReceived = big.NewInt(1 << 1)
+)
+
+type PushImportProgressCsvParts struct {
+	Expected *int `json:"expected,omitempty" url:"expected,omitempty"`
+	Received *int `json:"received,omitempty" url:"received,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PushImportProgressCsvParts) GetExpected() *int {
+	if p == nil {
+		return nil
+	}
+	return p.Expected
+}
+
+func (p *PushImportProgressCsvParts) GetReceived() *int {
+	if p == nil {
+		return nil
+	}
+	return p.Received
+}
+
+func (p *PushImportProgressCsvParts) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PushImportProgressCsvParts) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetExpected sets the Expected field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushImportProgressCsvParts) SetExpected(expected *int) {
+	p.Expected = expected
+	p.require(pushImportProgressCsvPartsFieldExpected)
+}
+
+// SetReceived sets the Received field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushImportProgressCsvParts) SetReceived(received *int) {
+	p.Received = received
+	p.require(pushImportProgressCsvPartsFieldReceived)
+}
+
+func (p *PushImportProgressCsvParts) UnmarshalJSON(data []byte) error {
+	type unmarshaler PushImportProgressCsvParts
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PushImportProgressCsvParts(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PushImportProgressCsvParts) MarshalJSON() ([]byte, error) {
+	type embed PushImportProgressCsvParts
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PushImportProgressCsvParts) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	pushImportResponseFieldImport  = big.NewInt(1 << 0)
+	pushImportResponseFieldMessage = big.NewInt(1 << 1)
+	pushImportResponseFieldSuccess = big.NewInt(1 << 2)
+)
+
+type PushImportResponse struct {
+	Import  *PushImport `json:"import,omitempty" url:"import,omitempty"`
+	Message *string     `json:"message,omitempty" url:"message,omitempty"`
+	Success *bool       `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PushImportResponse) GetImport() *PushImport {
+	if p == nil {
+		return nil
+	}
+	return p.Import
+}
+
+func (p *PushImportResponse) GetMessage() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Message
+}
+
+func (p *PushImportResponse) GetSuccess() *bool {
+	if p == nil {
+		return nil
+	}
+	return p.Success
+}
+
+func (p *PushImportResponse) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PushImportResponse) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetImport sets the Import field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushImportResponse) SetImport(import_ *PushImport) {
+	p.Import = import_
+	p.require(pushImportResponseFieldImport)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushImportResponse) SetMessage(message *string) {
+	p.Message = message
+	p.require(pushImportResponseFieldMessage)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushImportResponse) SetSuccess(success *bool) {
+	p.Success = success
+	p.require(pushImportResponseFieldSuccess)
+}
+
+func (p *PushImportResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler PushImportResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PushImportResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PushImportResponse) MarshalJSON() ([]byte, error) {
+	type embed PushImportResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PushImportResponse) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+type PushImportSource string
+
+const (
+	PushImportSourceOnesignal  PushImportSource = "onesignal"
+	PushImportSourceBraze      PushImportSource = "braze"
+	PushImportSourceCustomerIo PushImportSource = "customer_io"
+	PushImportSourceCsv        PushImportSource = "csv"
+)
+
+func NewPushImportSourceFromString(s string) (PushImportSource, error) {
+	switch s {
+	case "onesignal":
+		return PushImportSourceOnesignal, nil
+	case "braze":
+		return PushImportSourceBraze, nil
+	case "customer_io":
+		return PushImportSourceCustomerIo, nil
+	case "csv":
+		return PushImportSourceCsv, nil
+	}
+	var t PushImportSource
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PushImportSource) Ptr() *PushImportSource {
+	return &p
+}
+
+// draft until started; exporting while devices are read from the source; importing while they are written.
+type PushImportStatus string
+
+const (
+	PushImportStatusDraft     PushImportStatus = "draft"
+	PushImportStatusQueued    PushImportStatus = "queued"
+	PushImportStatusExporting PushImportStatus = "exporting"
+	PushImportStatusImporting PushImportStatus = "importing"
+	PushImportStatusCompleted PushImportStatus = "completed"
+	PushImportStatusFailed    PushImportStatus = "failed"
+	PushImportStatusCanceled  PushImportStatus = "canceled"
+)
+
+func NewPushImportStatusFromString(s string) (PushImportStatus, error) {
+	switch s {
+	case "draft":
+		return PushImportStatusDraft, nil
+	case "queued":
+		return PushImportStatusQueued, nil
+	case "exporting":
+		return PushImportStatusExporting, nil
+	case "importing":
+		return PushImportStatusImporting, nil
+	case "completed":
+		return PushImportStatusCompleted, nil
+	case "failed":
+		return PushImportStatusFailed, nil
+	case "canceled":
+		return PushImportStatusCanceled, nil
+	}
+	var t PushImportStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PushImportStatus) Ptr() *PushImportStatus {
+	return &p
+}
+
+var (
+	pushImportWarningFieldCode     = big.NewInt(1 << 0)
+	pushImportWarningFieldMessage  = big.NewInt(1 << 1)
+	pushImportWarningFieldSeverity = big.NewInt(1 << 2)
+)
+
+type PushImportWarning struct {
+	Code     *PushImportWarningCode     `json:"code,omitempty" url:"code,omitempty"`
+	Message  *string                    `json:"message,omitempty" url:"message,omitempty"`
+	Severity *PushImportWarningSeverity `json:"severity,omitempty" url:"severity,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PushImportWarning) GetCode() *PushImportWarningCode {
+	if p == nil {
+		return nil
+	}
+	return p.Code
+}
+
+func (p *PushImportWarning) GetMessage() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Message
+}
+
+func (p *PushImportWarning) GetSeverity() *PushImportWarningSeverity {
+	if p == nil {
+		return nil
+	}
+	return p.Severity
+}
+
+func (p *PushImportWarning) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PushImportWarning) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetCode sets the Code field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushImportWarning) SetCode(code *PushImportWarningCode) {
+	p.Code = code
+	p.require(pushImportWarningFieldCode)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushImportWarning) SetMessage(message *string) {
+	p.Message = message
+	p.require(pushImportWarningFieldMessage)
+}
+
+// SetSeverity sets the Severity field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushImportWarning) SetSeverity(severity *PushImportWarningSeverity) {
+	p.Severity = severity
+	p.require(pushImportWarningFieldSeverity)
+}
+
+func (p *PushImportWarning) UnmarshalJSON(data []byte) error {
+	type unmarshaler PushImportWarning
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PushImportWarning(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PushImportWarning) MarshalJSON() ([]byte, error) {
+	type embed PushImportWarning
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PushImportWarning) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+type PushImportWarningCode string
+
+const (
+	PushImportWarningCodeIosNotConfigured      PushImportWarningCode = "ios_not_configured"
+	PushImportWarningCodeAndroidNotConfigured  PushImportWarningCode = "android_not_configured"
+	PushImportWarningCodeIosSandboxEnvironment PushImportWarningCode = "ios_sandbox_environment"
+	PushImportWarningCodeCredentialsMustMatch  PushImportWarningCode = "credentials_must_match"
+	PushImportWarningCodeWebPushExcluded       PushImportWarningCode = "web_push_excluded"
+)
+
+func NewPushImportWarningCodeFromString(s string) (PushImportWarningCode, error) {
+	switch s {
+	case "ios_not_configured":
+		return PushImportWarningCodeIosNotConfigured, nil
+	case "android_not_configured":
+		return PushImportWarningCodeAndroidNotConfigured, nil
+	case "ios_sandbox_environment":
+		return PushImportWarningCodeIosSandboxEnvironment, nil
+	case "credentials_must_match":
+		return PushImportWarningCodeCredentialsMustMatch, nil
+	case "web_push_excluded":
+		return PushImportWarningCodeWebPushExcluded, nil
+	}
+	var t PushImportWarningCode
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PushImportWarningCode) Ptr() *PushImportWarningCode {
+	return &p
+}
+
+type PushImportWarningSeverity string
+
+const (
+	PushImportWarningSeverityWarning PushImportWarningSeverity = "warning"
+	PushImportWarningSeverityInfo    PushImportWarningSeverity = "info"
+)
+
+func NewPushImportWarningSeverityFromString(s string) (PushImportWarningSeverity, error) {
+	switch s {
+	case "warning":
+		return PushImportWarningSeverityWarning, nil
+	case "info":
+		return PushImportWarningSeverityInfo, nil
+	}
+	var t PushImportWarningSeverity
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PushImportWarningSeverity) Ptr() *PushImportWarningSeverity {
 	return &p
 }
 
@@ -4212,6 +5980,138 @@ func (p *PushSettingsWeb) String() string {
 }
 
 var (
+	addPushImportRowsResponseFieldMessage   = big.NewInt(1 << 0)
+	addPushImportRowsResponseFieldRowsAdded = big.NewInt(1 << 1)
+	addPushImportRowsResponseFieldSuccess   = big.NewInt(1 << 2)
+	addPushImportRowsResponseFieldTotalRows = big.NewInt(1 << 3)
+)
+
+type AddPushImportRowsResponse struct {
+	Message   *string `json:"message,omitempty" url:"message,omitempty"`
+	RowsAdded *int    `json:"rowsAdded,omitempty" url:"rowsAdded,omitempty"`
+	Success   *bool   `json:"success,omitempty" url:"success,omitempty"`
+	TotalRows *int    `json:"totalRows,omitempty" url:"totalRows,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AddPushImportRowsResponse) GetMessage() *string {
+	if a == nil {
+		return nil
+	}
+	return a.Message
+}
+
+func (a *AddPushImportRowsResponse) GetRowsAdded() *int {
+	if a == nil {
+		return nil
+	}
+	return a.RowsAdded
+}
+
+func (a *AddPushImportRowsResponse) GetSuccess() *bool {
+	if a == nil {
+		return nil
+	}
+	return a.Success
+}
+
+func (a *AddPushImportRowsResponse) GetTotalRows() *int {
+	if a == nil {
+		return nil
+	}
+	return a.TotalRows
+}
+
+func (a *AddPushImportRowsResponse) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AddPushImportRowsResponse) require(field *big.Int) {
+	if a.explicitFields == nil {
+		a.explicitFields = big.NewInt(0)
+	}
+	a.explicitFields.Or(a.explicitFields, field)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AddPushImportRowsResponse) SetMessage(message *string) {
+	a.Message = message
+	a.require(addPushImportRowsResponseFieldMessage)
+}
+
+// SetRowsAdded sets the RowsAdded field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AddPushImportRowsResponse) SetRowsAdded(rowsAdded *int) {
+	a.RowsAdded = rowsAdded
+	a.require(addPushImportRowsResponseFieldRowsAdded)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AddPushImportRowsResponse) SetSuccess(success *bool) {
+	a.Success = success
+	a.require(addPushImportRowsResponseFieldSuccess)
+}
+
+// SetTotalRows sets the TotalRows field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AddPushImportRowsResponse) SetTotalRows(totalRows *int) {
+	a.TotalRows = totalRows
+	a.require(addPushImportRowsResponseFieldTotalRows)
+}
+
+func (a *AddPushImportRowsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler AddPushImportRowsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AddPushImportRowsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AddPushImportRowsResponse) MarshalJSON() ([]byte, error) {
+	type embed AddPushImportRowsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AddPushImportRowsResponse) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+var (
 	cancelPushCampaignResponseFieldCampaign = big.NewInt(1 << 0)
 	cancelPushCampaignResponseFieldSuccess  = big.NewInt(1 << 1)
 )
@@ -4666,6 +6566,78 @@ func (c *CreatePushCampaignResponse) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", c)
+}
+
+type CreatePushImportRequestCustomerIoRegion string
+
+const (
+	CreatePushImportRequestCustomerIoRegionUs CreatePushImportRequestCustomerIoRegion = "us"
+	CreatePushImportRequestCustomerIoRegionEu CreatePushImportRequestCustomerIoRegion = "eu"
+)
+
+func NewCreatePushImportRequestCustomerIoRegionFromString(s string) (CreatePushImportRequestCustomerIoRegion, error) {
+	switch s {
+	case "us":
+		return CreatePushImportRequestCustomerIoRegionUs, nil
+	case "eu":
+		return CreatePushImportRequestCustomerIoRegionEu, nil
+	}
+	var t CreatePushImportRequestCustomerIoRegion
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreatePushImportRequestCustomerIoRegion) Ptr() *CreatePushImportRequestCustomerIoRegion {
+	return &c
+}
+
+type CreatePushImportRequestPlatformsItem string
+
+const (
+	CreatePushImportRequestPlatformsItemIos     CreatePushImportRequestPlatformsItem = "ios"
+	CreatePushImportRequestPlatformsItemAndroid CreatePushImportRequestPlatformsItem = "android"
+)
+
+func NewCreatePushImportRequestPlatformsItemFromString(s string) (CreatePushImportRequestPlatformsItem, error) {
+	switch s {
+	case "ios":
+		return CreatePushImportRequestPlatformsItemIos, nil
+	case "android":
+		return CreatePushImportRequestPlatformsItemAndroid, nil
+	}
+	var t CreatePushImportRequestPlatformsItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreatePushImportRequestPlatformsItem) Ptr() *CreatePushImportRequestPlatformsItem {
+	return &c
+}
+
+type CreatePushImportRequestSource string
+
+const (
+	CreatePushImportRequestSourceOnesignal  CreatePushImportRequestSource = "onesignal"
+	CreatePushImportRequestSourceBraze      CreatePushImportRequestSource = "braze"
+	CreatePushImportRequestSourceCustomerIo CreatePushImportRequestSource = "customer_io"
+	CreatePushImportRequestSourceCsv        CreatePushImportRequestSource = "csv"
+)
+
+func NewCreatePushImportRequestSourceFromString(s string) (CreatePushImportRequestSource, error) {
+	switch s {
+	case "onesignal":
+		return CreatePushImportRequestSourceOnesignal, nil
+	case "braze":
+		return CreatePushImportRequestSourceBraze, nil
+	case "customer_io":
+		return CreatePushImportRequestSourceCustomerIo, nil
+	case "csv":
+		return CreatePushImportRequestSourceCsv, nil
+	}
+	var t CreatePushImportRequestSource
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreatePushImportRequestSource) Ptr() *CreatePushImportRequestSource {
+	return &c
 }
 
 var (
@@ -5282,6 +7254,134 @@ func (g *GetPushCampaignStatsResponse) MarshalJSON() ([]byte, error) {
 }
 
 func (g *GetPushCampaignStatsResponse) String() string {
+	if g == nil {
+		return "<nil>"
+	}
+	if len(g.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(g.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(g); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", g)
+}
+
+type GetPushImportPreflightRequestSource string
+
+const (
+	GetPushImportPreflightRequestSourceOnesignal  GetPushImportPreflightRequestSource = "onesignal"
+	GetPushImportPreflightRequestSourceBraze      GetPushImportPreflightRequestSource = "braze"
+	GetPushImportPreflightRequestSourceCustomerIo GetPushImportPreflightRequestSource = "customer_io"
+	GetPushImportPreflightRequestSourceCsv        GetPushImportPreflightRequestSource = "csv"
+)
+
+func NewGetPushImportPreflightRequestSourceFromString(s string) (GetPushImportPreflightRequestSource, error) {
+	switch s {
+	case "onesignal":
+		return GetPushImportPreflightRequestSourceOnesignal, nil
+	case "braze":
+		return GetPushImportPreflightRequestSourceBraze, nil
+	case "customer_io":
+		return GetPushImportPreflightRequestSourceCustomerIo, nil
+	case "csv":
+		return GetPushImportPreflightRequestSourceCsv, nil
+	}
+	var t GetPushImportPreflightRequestSource
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (g GetPushImportPreflightRequestSource) Ptr() *GetPushImportPreflightRequestSource {
+	return &g
+}
+
+var (
+	getPushImportPreflightResponseFieldSuccess  = big.NewInt(1 << 0)
+	getPushImportPreflightResponseFieldWarnings = big.NewInt(1 << 1)
+)
+
+type GetPushImportPreflightResponse struct {
+	Success  *bool                `json:"success,omitempty" url:"success,omitempty"`
+	Warnings []*PushImportWarning `json:"warnings,omitempty" url:"warnings,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (g *GetPushImportPreflightResponse) GetSuccess() *bool {
+	if g == nil {
+		return nil
+	}
+	return g.Success
+}
+
+func (g *GetPushImportPreflightResponse) GetWarnings() []*PushImportWarning {
+	if g == nil {
+		return nil
+	}
+	return g.Warnings
+}
+
+func (g *GetPushImportPreflightResponse) GetExtraProperties() map[string]interface{} {
+	if g == nil {
+		return nil
+	}
+	return g.extraProperties
+}
+
+func (g *GetPushImportPreflightResponse) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetPushImportPreflightResponse) SetSuccess(success *bool) {
+	g.Success = success
+	g.require(getPushImportPreflightResponseFieldSuccess)
+}
+
+// SetWarnings sets the Warnings field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetPushImportPreflightResponse) SetWarnings(warnings []*PushImportWarning) {
+	g.Warnings = warnings
+	g.require(getPushImportPreflightResponseFieldWarnings)
+}
+
+func (g *GetPushImportPreflightResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler GetPushImportPreflightResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*g = GetPushImportPreflightResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *g)
+	if err != nil {
+		return err
+	}
+	g.extraProperties = extraProperties
+	g.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (g *GetPushImportPreflightResponse) MarshalJSON() ([]byte, error) {
+	type embed GetPushImportPreflightResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*g),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (g *GetPushImportPreflightResponse) String() string {
 	if g == nil {
 		return "<nil>"
 	}
@@ -6305,6 +8405,106 @@ func (l *ListPushDevicesResponse) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
+var (
+	listPushImportsResponseFieldImports = big.NewInt(1 << 0)
+	listPushImportsResponseFieldSuccess = big.NewInt(1 << 1)
+)
+
+type ListPushImportsResponse struct {
+	Imports []*PushImport `json:"imports,omitempty" url:"imports,omitempty"`
+	Success *bool         `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListPushImportsResponse) GetImports() []*PushImport {
+	if l == nil {
+		return nil
+	}
+	return l.Imports
+}
+
+func (l *ListPushImportsResponse) GetSuccess() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.Success
+}
+
+func (l *ListPushImportsResponse) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListPushImportsResponse) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetImports sets the Imports field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPushImportsResponse) SetImports(imports []*PushImport) {
+	l.Imports = imports
+	l.require(listPushImportsResponseFieldImports)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPushImportsResponse) SetSuccess(success *bool) {
+	l.Success = success
+	l.require(listPushImportsResponseFieldSuccess)
+}
+
+func (l *ListPushImportsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListPushImportsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListPushImportsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListPushImportsResponse) MarshalJSON() ([]byte, error) {
+	type embed ListPushImportsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListPushImportsResponse) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
 // Web only. PushSubscription.toJSON().keys.
 var (
 	registerPushDeviceRequestKeysFieldAuth   = big.NewInt(1 << 0)
@@ -6404,6 +8604,38 @@ func (r *RegisterPushDeviceRequestKeys) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", r)
+}
+
+// iOS/Android only (ignored for web). The notification permission your app read. Feeds the push opt-in rate and the contact's pushPermission attribute (the best status across their app devices). Omit it to keep the stored one.
+type RegisterPushDeviceRequestPermissionStatus string
+
+const (
+	RegisterPushDeviceRequestPermissionStatusGranted       RegisterPushDeviceRequestPermissionStatus = "granted"
+	RegisterPushDeviceRequestPermissionStatusProvisional   RegisterPushDeviceRequestPermissionStatus = "provisional"
+	RegisterPushDeviceRequestPermissionStatusEphemeral     RegisterPushDeviceRequestPermissionStatus = "ephemeral"
+	RegisterPushDeviceRequestPermissionStatusDenied        RegisterPushDeviceRequestPermissionStatus = "denied"
+	RegisterPushDeviceRequestPermissionStatusNotDetermined RegisterPushDeviceRequestPermissionStatus = "not_determined"
+)
+
+func NewRegisterPushDeviceRequestPermissionStatusFromString(s string) (RegisterPushDeviceRequestPermissionStatus, error) {
+	switch s {
+	case "granted":
+		return RegisterPushDeviceRequestPermissionStatusGranted, nil
+	case "provisional":
+		return RegisterPushDeviceRequestPermissionStatusProvisional, nil
+	case "ephemeral":
+		return RegisterPushDeviceRequestPermissionStatusEphemeral, nil
+	case "denied":
+		return RegisterPushDeviceRequestPermissionStatusDenied, nil
+	case "not_determined":
+		return RegisterPushDeviceRequestPermissionStatusNotDetermined, nil
+	}
+	var t RegisterPushDeviceRequestPermissionStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r RegisterPushDeviceRequestPermissionStatus) Ptr() *RegisterPushDeviceRequestPermissionStatus {
+	return &r
 }
 
 type RegisterPushDeviceRequestPlatform string

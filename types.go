@@ -345,172 +345,66 @@ func (a *AgentFriendlyError) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-var (
-	badRequestErrorBodyFieldCode         = big.NewInt(1 << 0)
-	badRequestErrorBodyFieldError        = big.NewInt(1 << 1)
-	badRequestErrorBodyFieldIssues       = big.NewInt(1 << 2)
-	badRequestErrorBodyFieldRetryable    = big.NewInt(1 << 3)
-	badRequestErrorBodyFieldSuccess      = big.NewInt(1 << 4)
-	badRequestErrorBodyFieldPublications = big.NewInt(1 << 5)
-)
-
 type BadRequestErrorBody struct {
-	// Optional stable machine-readable error discriminator when available.
-	Code  *string `json:"code,omitempty" url:"code,omitempty"`
-	Error string  `json:"error" url:"error"`
-	// Field-level problems with the request, when the endpoint reports them. Up to ten entries; `error` summarizes the first three.
-	Issues []*InputIssue `json:"issues,omitempty" url:"issues,omitempty"`
-	// Whether retrying the request can recover from the error.
-	Retryable *bool `json:"retryable,omitempty" url:"retryable,omitempty"`
-	Success   *bool `json:"success,omitempty" url:"success,omitempty"`
-	// SparkLoop only, with code sparkloop_publication_required. The publications to pass as providerAccountId.
-	Publications []*BadRequestErrorBodyPublicationsItem `json:"publications,omitempty" url:"publications,omitempty"`
+	Error                        *Error
+	SequenceDefinitionPushResult *SequenceDefinitionPushResult
 
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
+	typ string
 }
 
-func (b *BadRequestErrorBody) GetCode() *string {
+func (b *BadRequestErrorBody) GetError() *Error {
 	if b == nil {
 		return nil
-	}
-	return b.Code
-}
-
-func (b *BadRequestErrorBody) GetError() string {
-	if b == nil {
-		return ""
 	}
 	return b.Error
 }
 
-func (b *BadRequestErrorBody) GetIssues() []*InputIssue {
+func (b *BadRequestErrorBody) GetSequenceDefinitionPushResult() *SequenceDefinitionPushResult {
 	if b == nil {
 		return nil
 	}
-	return b.Issues
-}
-
-func (b *BadRequestErrorBody) GetRetryable() *bool {
-	if b == nil {
-		return nil
-	}
-	return b.Retryable
-}
-
-func (b *BadRequestErrorBody) GetSuccess() *bool {
-	if b == nil {
-		return nil
-	}
-	return b.Success
-}
-
-func (b *BadRequestErrorBody) GetPublications() []*BadRequestErrorBodyPublicationsItem {
-	if b == nil {
-		return nil
-	}
-	return b.Publications
-}
-
-func (b *BadRequestErrorBody) GetExtraProperties() map[string]interface{} {
-	if b == nil {
-		return nil
-	}
-	return b.extraProperties
-}
-
-func (b *BadRequestErrorBody) require(field *big.Int) {
-	if b.explicitFields == nil {
-		b.explicitFields = big.NewInt(0)
-	}
-	b.explicitFields.Or(b.explicitFields, field)
-}
-
-// SetCode sets the Code field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (b *BadRequestErrorBody) SetCode(code *string) {
-	b.Code = code
-	b.require(badRequestErrorBodyFieldCode)
-}
-
-// SetError sets the Error field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (b *BadRequestErrorBody) SetError(error_ string) {
-	b.Error = error_
-	b.require(badRequestErrorBodyFieldError)
-}
-
-// SetIssues sets the Issues field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (b *BadRequestErrorBody) SetIssues(issues []*InputIssue) {
-	b.Issues = issues
-	b.require(badRequestErrorBodyFieldIssues)
-}
-
-// SetRetryable sets the Retryable field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (b *BadRequestErrorBody) SetRetryable(retryable *bool) {
-	b.Retryable = retryable
-	b.require(badRequestErrorBodyFieldRetryable)
-}
-
-// SetSuccess sets the Success field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (b *BadRequestErrorBody) SetSuccess(success *bool) {
-	b.Success = success
-	b.require(badRequestErrorBodyFieldSuccess)
-}
-
-// SetPublications sets the Publications field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (b *BadRequestErrorBody) SetPublications(publications []*BadRequestErrorBodyPublicationsItem) {
-	b.Publications = publications
-	b.require(badRequestErrorBodyFieldPublications)
+	return b.SequenceDefinitionPushResult
 }
 
 func (b *BadRequestErrorBody) UnmarshalJSON(data []byte) error {
-	type unmarshaler BadRequestErrorBody
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
+	valueError := new(Error)
+	if err := json.Unmarshal(data, &valueError); err == nil {
+		b.typ = "Error"
+		b.Error = valueError
+		return nil
 	}
-	*b = BadRequestErrorBody(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *b)
-	if err != nil {
-		return err
+	valueSequenceDefinitionPushResult := new(SequenceDefinitionPushResult)
+	if err := json.Unmarshal(data, &valueSequenceDefinitionPushResult); err == nil {
+		b.typ = "SequenceDefinitionPushResult"
+		b.SequenceDefinitionPushResult = valueSequenceDefinitionPushResult
+		return nil
 	}
-	b.extraProperties = extraProperties
-	b.rawJSON = json.RawMessage(data)
-	return nil
+	return fmt.Errorf("%s cannot be deserialized as a %T", data, b)
 }
 
-func (b *BadRequestErrorBody) MarshalJSON() ([]byte, error) {
-	type embed BadRequestErrorBody
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*b),
+func (b BadRequestErrorBody) MarshalJSON() ([]byte, error) {
+	if b.typ == "Error" || b.Error != nil {
+		return json.Marshal(b.Error)
 	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, b.explicitFields)
-	return json.Marshal(explicitMarshaler)
+	if b.typ == "SequenceDefinitionPushResult" || b.SequenceDefinitionPushResult != nil {
+		return json.Marshal(b.SequenceDefinitionPushResult)
+	}
+	return nil, fmt.Errorf("type %T does not include a non-empty union type", b)
 }
 
-func (b *BadRequestErrorBody) String() string {
-	if b == nil {
-		return "<nil>"
+type BadRequestErrorBodyVisitor interface {
+	VisitError(*Error) error
+	VisitSequenceDefinitionPushResult(*SequenceDefinitionPushResult) error
+}
+
+func (b *BadRequestErrorBody) Accept(visitor BadRequestErrorBodyVisitor) error {
+	if b.typ == "Error" || b.Error != nil {
+		return visitor.VisitError(b.Error)
 	}
-	if len(b.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(b.rawJSON); err == nil {
-			return value
-		}
+	if b.typ == "SequenceDefinitionPushResult" || b.SequenceDefinitionPushResult != nil {
+		return visitor.VisitSequenceDefinitionPushResult(b.SequenceDefinitionPushResult)
 	}
-	if value, err := internal.StringifyJSON(b); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", b)
+	return fmt.Errorf("type %T does not include a non-empty union type", b)
 }
 
 // Optional stable machine-readable error discriminator when available.

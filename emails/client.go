@@ -62,7 +62,7 @@ func (c *Client) Create(
 	return response.Body, nil
 }
 
-// Updates email metadata or replaces the email body.
+// Updates email metadata or replaces the email body. The double opt-in confirmation email (`consent.doubleOptInEmailId` from `GET /tracking-settings`) is edited here too; new content for it must keep `{{DOUBLE_OPT_IN_URL}}`, otherwise the request returns 400 and nothing is saved.
 //
 // Example:
 //
@@ -89,7 +89,7 @@ func (c *Client) Update(
 	return response.Body, nil
 }
 
-// Replaces an email body or mutates an existing block type.
+// Replaces an email body or mutates an existing block type. The double opt-in confirmation email (`consent.doubleOptInEmailId` from `GET /tracking-settings`) is edited here too; new content for it must keep `{{DOUBLE_OPT_IN_URL}}`, otherwise the request returns 400 and nothing is saved.
 //
 // Example:
 //

@@ -353,6 +353,32 @@ func TestIntegrationsSyncWithWireMock(
 	VerifyRequestCount(t, "TestIntegrationsSyncWithWireMock", "POST", "/integrations/id/sync", nil, 1)
 }
 
+func TestIntegrationsUpdateAmplitudeSettingsWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.UpdateAmplitudeSettingsRequest{
+		ID: "id",
+	}
+	_, invocationErr := client.Integrations.UpdateAmplitudeSettings(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestIntegrationsUpdateAmplitudeSettingsWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestIntegrationsUpdateAmplitudeSettingsWithWireMock", "PATCH", "/integrations/id/amplitude", nil, 1)
+}
+
 func TestIntegrationsUpdateAttioSettingsWithWireMock(
 	t *testing.T,
 ) {

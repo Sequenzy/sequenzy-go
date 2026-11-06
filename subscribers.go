@@ -1880,7 +1880,7 @@ var (
 type DetailedSubscriber struct {
 	CreatedAt        *time.Time     `json:"createdAt,omitempty" url:"createdAt,omitempty"`
 	CustomAttributes map[string]any `json:"customAttributes,omitempty" url:"customAttributes,omitempty"`
-	// Null for phone-only (SMS) contacts, which are identified by their phone number instead.
+	// Null for phone-only (SMS) contacts, which are identified by their phone number instead, and for push-only contacts created by a push import, which have only an external ID.
 	Email         *string `json:"email,omitempty" url:"email,omitempty"`
 	EmailProvider *string `json:"emailProvider,omitempty" url:"emailProvider,omitempty"`
 	// Customer-owned app/customer/user ID for this subscriber
@@ -2302,7 +2302,7 @@ var (
 type Subscriber struct {
 	CreatedAt        *time.Time     `json:"createdAt,omitempty" url:"createdAt,omitempty"`
 	CustomAttributes map[string]any `json:"customAttributes,omitempty" url:"customAttributes,omitempty"`
-	// Null for phone-only (SMS) contacts, which are identified by their phone number instead.
+	// Null for phone-only (SMS) contacts, which are identified by their phone number instead, and for push-only contacts created by a push import, which have only an external ID.
 	Email         *string `json:"email,omitempty" url:"email,omitempty"`
 	EmailProvider *string `json:"emailProvider,omitempty" url:"emailProvider,omitempty"`
 	// Customer-owned app/customer/user ID for this subscriber
@@ -5861,7 +5861,7 @@ var (
 
 type AddTagsBulkResponseSubscriber struct {
 	Created *bool `json:"created,omitempty" url:"created,omitempty"`
-	// Null for phone-only (SMS) contacts.
+	// Null for phone-only (SMS) and push-only contacts.
 	Email *string  `json:"email,omitempty" url:"email,omitempty"`
 	ID    *string  `json:"id,omitempty" url:"id,omitempty"`
 	Tags  []string `json:"tags,omitempty" url:"tags,omitempty"`
@@ -6797,7 +6797,7 @@ var (
 type CreateSubscribersResponseSubscriber struct {
 	CreatedAt        *time.Time     `json:"createdAt,omitempty" url:"createdAt,omitempty"`
 	CustomAttributes map[string]any `json:"customAttributes,omitempty" url:"customAttributes,omitempty"`
-	// Null for phone-only (SMS) contacts, which are identified by their phone number instead.
+	// Null for phone-only (SMS) contacts, which are identified by their phone number instead, and for push-only contacts created by a push import, which have only an external ID.
 	Email         *string `json:"email,omitempty" url:"email,omitempty"`
 	EmailProvider *string `json:"emailProvider,omitempty" url:"emailProvider,omitempty"`
 	// Customer-owned app/customer/user ID for this subscriber

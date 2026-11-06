@@ -724,6 +724,58 @@ func TestSequencesGetAudienceEnrollmentWithWireMock(
 	VerifyRequestCount(t, "TestSequencesGetAudienceEnrollmentWithWireMock", "GET", "/sequences/sequenceId/audience-enrollments/runId", nil, 1)
 }
 
+func TestSequencesGetDefinitionWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.GetDefinitionSequencesRequest{
+		Key: "key",
+	}
+	_, invocationErr := client.Sequences.GetDefinition(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestSequencesGetDefinitionWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestSequencesGetDefinitionWithWireMock", "GET", "/sequences/definitions/key", nil, 1)
+}
+
+func TestSequencesGetDefinitionByIDWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.GetDefinitionByIDSequencesRequest{
+		SequenceID: "sequenceId",
+	}
+	_, invocationErr := client.Sequences.GetDefinitionByID(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestSequencesGetDefinitionByIDWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestSequencesGetDefinitionByIDWithWireMock", "GET", "/sequences/sequenceId/definition", nil, 1)
+}
+
 func TestSequencesGetEnrollmentWithWireMock(
 	t *testing.T,
 ) {
@@ -1158,6 +1210,40 @@ func TestSequencesPreviewFromExampleWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestSequencesPreviewFromExampleWithWireMock", "POST", "/sequences/from-example/preview", nil, 1)
+}
+
+func TestSequencesPushDefinitionWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.PushDefinitionSequencesRequest{
+		Key: "key",
+		Body: &sequenzygo.SequenceDefinition{
+			Name: "name",
+			Steps: []*sequenzygo.SequenceDefinitionStep{
+				&sequenzygo.SequenceDefinitionStep{
+					Key: "key",
+				},
+			},
+		},
+	}
+	_, invocationErr := client.Sequences.PushDefinition(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestSequencesPushDefinitionWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestSequencesPushDefinitionWithWireMock", "PUT", "/sequences/definitions/key", nil, 1)
 }
 
 func TestSequencesRealignEnrollmentsWithWireMock(

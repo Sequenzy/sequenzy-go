@@ -1742,6 +1742,76 @@ func (g *GetAudienceEnrollmentSequencesRequest) SetRunID(runID string) {
 }
 
 var (
+	getDefinitionSequencesRequestFieldKey    = big.NewInt(1 << 0)
+	getDefinitionSequencesRequestFieldFormat = big.NewInt(1 << 1)
+)
+
+type GetDefinitionSequencesRequest struct {
+	Key string `json:"-" url:"-"`
+	// raw returns the explicit format. A sequence that nesting cannot describe is returned in the explicit format either way.
+	Format *GetDefinitionSequencesRequestFormat `json:"-" url:"format,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (g *GetDefinitionSequencesRequest) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetKey sets the Key field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetDefinitionSequencesRequest) SetKey(key string) {
+	g.Key = key
+	g.require(getDefinitionSequencesRequestFieldKey)
+}
+
+// SetFormat sets the Format field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetDefinitionSequencesRequest) SetFormat(format *GetDefinitionSequencesRequestFormat) {
+	g.Format = format
+	g.require(getDefinitionSequencesRequestFieldFormat)
+}
+
+var (
+	getDefinitionByIDSequencesRequestFieldSequenceID = big.NewInt(1 << 0)
+	getDefinitionByIDSequencesRequestFieldFormat     = big.NewInt(1 << 1)
+)
+
+type GetDefinitionByIDSequencesRequest struct {
+	SequenceID string `json:"-" url:"-"`
+	// raw returns the explicit format. A sequence that nesting cannot describe is returned in the explicit format either way.
+	Format *GetDefinitionByIDSequencesRequestFormat `json:"-" url:"format,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (g *GetDefinitionByIDSequencesRequest) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetSequenceID sets the SequenceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetDefinitionByIDSequencesRequest) SetSequenceID(sequenceID string) {
+	g.SequenceID = sequenceID
+	g.require(getDefinitionByIDSequencesRequestFieldSequenceID)
+}
+
+// SetFormat sets the Format field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetDefinitionByIDSequencesRequest) SetFormat(format *GetDefinitionByIDSequencesRequestFormat) {
+	g.Format = format
+	g.require(getDefinitionByIDSequencesRequestFieldFormat)
+}
+
+var (
 	getEnrollmentSequencesRequestFieldSequenceID   = big.NewInt(1 << 0)
 	getEnrollmentSequencesRequestFieldEnrollmentID = big.NewInt(1 << 1)
 )
@@ -2590,6 +2660,65 @@ func (p *PreviewFromExampleSequencesRequest) MarshalJSON() ([]byte, error) {
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
 	return json.Marshal(explicitMarshaler)
+}
+
+var (
+	pushDefinitionSequencesRequestFieldKey               = big.NewInt(1 << 0)
+	pushDefinitionSequencesRequestFieldConfirmLiveChange = big.NewInt(1 << 1)
+	pushDefinitionSequencesRequestFieldDryRun            = big.NewInt(1 << 2)
+)
+
+type PushDefinitionSequencesRequest struct {
+	Key string `json:"-" url:"-"`
+	// Required when the change affects an active sequence.
+	ConfirmLiveChange *bool `json:"-" url:"confirmLiveChange,omitempty"`
+	// Return the changes without saving them.
+	DryRun *bool               `json:"-" url:"dryRun,omitempty"`
+	Body   *SequenceDefinition `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (p *PushDefinitionSequencesRequest) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetKey sets the Key field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushDefinitionSequencesRequest) SetKey(key string) {
+	p.Key = key
+	p.require(pushDefinitionSequencesRequestFieldKey)
+}
+
+// SetConfirmLiveChange sets the ConfirmLiveChange field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushDefinitionSequencesRequest) SetConfirmLiveChange(confirmLiveChange *bool) {
+	p.ConfirmLiveChange = confirmLiveChange
+	p.require(pushDefinitionSequencesRequestFieldConfirmLiveChange)
+}
+
+// SetDryRun sets the DryRun field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushDefinitionSequencesRequest) SetDryRun(dryRun *bool) {
+	p.DryRun = dryRun
+	p.require(pushDefinitionSequencesRequestFieldDryRun)
+}
+
+func (p *PushDefinitionSequencesRequest) UnmarshalJSON(data []byte) error {
+	body := new(SequenceDefinition)
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	p.Body = body
+	return nil
+}
+
+func (p *PushDefinitionSequencesRequest) MarshalJSON() ([]byte, error) {
+	return json.Marshal(p.Body)
 }
 
 var (
@@ -3846,20 +3975,29 @@ var (
 	emailThemePatchTypographyFieldBaseLineHeight       = big.NewInt(1 << 1)
 	emailThemePatchTypographyFieldButtonFontSize       = big.NewInt(1 << 2)
 	emailThemePatchTypographyFieldButtonFontWeight     = big.NewInt(1 << 3)
-	emailThemePatchTypographyFieldHeading1Size         = big.NewInt(1 << 4)
-	emailThemePatchTypographyFieldHeading2Size         = big.NewInt(1 << 5)
-	emailThemePatchTypographyFieldHeading3Size         = big.NewInt(1 << 6)
-	emailThemePatchTypographyFieldHeadingFontFamily    = big.NewInt(1 << 7)
-	emailThemePatchTypographyFieldHeadingFontWeight    = big.NewInt(1 << 8)
-	emailThemePatchTypographyFieldHeadingLetterSpacing = big.NewInt(1 << 9)
-	emailThemePatchTypographyFieldLeadFontSize         = big.NewInt(1 << 10)
+	emailThemePatchTypographyFieldFooterFontFamily     = big.NewInt(1 << 4)
+	emailThemePatchTypographyFieldFooterFontSize       = big.NewInt(1 << 5)
+	emailThemePatchTypographyFieldFooterLineHeight     = big.NewInt(1 << 6)
+	emailThemePatchTypographyFieldHeading1Size         = big.NewInt(1 << 7)
+	emailThemePatchTypographyFieldHeading2Size         = big.NewInt(1 << 8)
+	emailThemePatchTypographyFieldHeading3Size         = big.NewInt(1 << 9)
+	emailThemePatchTypographyFieldHeadingFontFamily    = big.NewInt(1 << 10)
+	emailThemePatchTypographyFieldHeadingFontWeight    = big.NewInt(1 << 11)
+	emailThemePatchTypographyFieldHeadingLetterSpacing = big.NewInt(1 << 12)
+	emailThemePatchTypographyFieldLeadFontSize         = big.NewInt(1 << 13)
 )
 
 type EmailThemePatchTypography struct {
-	BaseFontSize         *float64 `json:"baseFontSize,omitempty" url:"baseFontSize,omitempty"`
-	BaseLineHeight       *float64 `json:"baseLineHeight,omitempty" url:"baseLineHeight,omitempty"`
-	ButtonFontSize       *float64 `json:"buttonFontSize,omitempty" url:"buttonFontSize,omitempty"`
-	ButtonFontWeight     *float64 `json:"buttonFontWeight,omitempty" url:"buttonFontWeight,omitempty"`
+	BaseFontSize     *float64 `json:"baseFontSize,omitempty" url:"baseFontSize,omitempty"`
+	BaseLineHeight   *float64 `json:"baseLineHeight,omitempty" url:"baseLineHeight,omitempty"`
+	ButtonFontSize   *float64 `json:"buttonFontSize,omitempty" url:"buttonFontSize,omitempty"`
+	ButtonFontWeight *float64 `json:"buttonFontWeight,omitempty" url:"buttonFontWeight,omitempty"`
+	// Footer font stack. null removes it; on an email or sequence step that means inheriting the company theme's value.
+	FooterFontFamily *string `json:"footerFontFamily,omitempty" url:"footerFontFamily,omitempty"`
+	// Footer text size in pixels, 10-16 (default 12). null removes it; on an email or sequence step that means inheriting the company theme's value.
+	FooterFontSize *float64 `json:"footerFontSize,omitempty" url:"footerFontSize,omitempty"`
+	// Footer line height, 1-2 (default 1.333). null removes it; on an email or sequence step that means inheriting the company theme's value.
+	FooterLineHeight     *float64 `json:"footerLineHeight,omitempty" url:"footerLineHeight,omitempty"`
 	Heading1Size         *float64 `json:"heading1Size,omitempty" url:"heading1Size,omitempty"`
 	Heading2Size         *float64 `json:"heading2Size,omitempty" url:"heading2Size,omitempty"`
 	Heading3Size         *float64 `json:"heading3Size,omitempty" url:"heading3Size,omitempty"`
@@ -3901,6 +4039,27 @@ func (e *EmailThemePatchTypography) GetButtonFontWeight() *float64 {
 		return nil
 	}
 	return e.ButtonFontWeight
+}
+
+func (e *EmailThemePatchTypography) GetFooterFontFamily() *string {
+	if e == nil {
+		return nil
+	}
+	return e.FooterFontFamily
+}
+
+func (e *EmailThemePatchTypography) GetFooterFontSize() *float64 {
+	if e == nil {
+		return nil
+	}
+	return e.FooterFontSize
+}
+
+func (e *EmailThemePatchTypography) GetFooterLineHeight() *float64 {
+	if e == nil {
+		return nil
+	}
+	return e.FooterLineHeight
 }
 
 func (e *EmailThemePatchTypography) GetHeading1Size() *float64 {
@@ -3992,6 +4151,27 @@ func (e *EmailThemePatchTypography) SetButtonFontSize(buttonFontSize *float64) {
 func (e *EmailThemePatchTypography) SetButtonFontWeight(buttonFontWeight *float64) {
 	e.ButtonFontWeight = buttonFontWeight
 	e.require(emailThemePatchTypographyFieldButtonFontWeight)
+}
+
+// SetFooterFontFamily sets the FooterFontFamily field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailThemePatchTypography) SetFooterFontFamily(footerFontFamily *string) {
+	e.FooterFontFamily = footerFontFamily
+	e.require(emailThemePatchTypographyFieldFooterFontFamily)
+}
+
+// SetFooterFontSize sets the FooterFontSize field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailThemePatchTypography) SetFooterFontSize(footerFontSize *float64) {
+	e.FooterFontSize = footerFontSize
+	e.require(emailThemePatchTypographyFieldFooterFontSize)
+}
+
+// SetFooterLineHeight sets the FooterLineHeight field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailThemePatchTypography) SetFooterLineHeight(footerLineHeight *float64) {
+	e.FooterLineHeight = footerLineHeight
+	e.require(emailThemePatchTypographyFieldFooterLineHeight)
 }
 
 // SetHeading1Size sets the Heading1Size field and marks it as non-optional;
@@ -8069,6 +8249,2749 @@ func (s *SequenceCreateResponseSequence) String() string {
 	return fmt.Sprintf("%#v", s)
 }
 
+// A whole sequence as one document, addressed by keys you choose. In the readable format (no `connections`), `trigger` starts the sequence and `steps` run in order, with branch and split paths nesting their own steps and an implicit end. In the explicit format, every step has a `type` and `config` and `connections` wire them. On PUT, omitted settings keep their stored values while the steps replace the stored graph.
+var (
+	sequenceDefinitionFieldConnections = big.NewInt(1 << 0)
+	sequenceDefinitionFieldDescription = big.NewInt(1 << 1)
+	sequenceDefinitionFieldID          = big.NewInt(1 << 2)
+	sequenceDefinitionFieldKey         = big.NewInt(1 << 3)
+	sequenceDefinitionFieldManagedBy   = big.NewInt(1 << 4)
+	sequenceDefinitionFieldName        = big.NewInt(1 << 5)
+	sequenceDefinitionFieldSettings    = big.NewInt(1 << 6)
+	sequenceDefinitionFieldStatus      = big.NewInt(1 << 7)
+	sequenceDefinitionFieldSteps       = big.NewInt(1 << 8)
+	sequenceDefinitionFieldTrigger     = big.NewInt(1 << 9)
+)
+
+type SequenceDefinition struct {
+	// Explicit format only. Leave it out to use the readable format.
+	Connections []*SequenceDefinitionConnection `json:"connections,omitempty" url:"connections,omitempty"`
+	Description *string                         `json:"description,omitempty" url:"description,omitempty"`
+	// Read-only sequence ID. On PUT, adopts that existing sequence when it has no key yet.
+	ID *string `json:"id,omitempty" url:"id,omitempty"`
+	// Your key for the sequence. Optional on PUT (the URL key is used); must match the URL when present. Empty on GET for a sequence that has no key yet.
+	Key *string `json:"key,omitempty" url:"key,omitempty"`
+	// `code` makes steps and settings read-only in the dashboard while on/off, pause and test sends stay available. New sequences default to `code`; existing ones keep their value when omitted. Marketer personal keys cannot change it on an existing sequence. Not returned on GET, so a pulled document pushed back never changes it.
+	ManagedBy *SequenceDefinitionManagedBy `json:"managedBy,omitempty" url:"managedBy,omitempty"`
+	Name      string                       `json:"name" url:"name"`
+	Settings  *SequenceDefinitionSettings  `json:"settings,omitempty" url:"settings,omitempty"`
+	// Informational. Pushes accept and ignore it, and never change status.
+	Status *string                   `json:"status,omitempty" url:"status,omitempty"`
+	Steps  []*SequenceDefinitionStep `json:"steps" url:"steps"`
+	// Readable format only, and required there. Use one of event (with optional where property filters), tag, list, segment, manual: true, or type and config.
+	Trigger *SequenceDefinitionTrigger `json:"trigger,omitempty" url:"trigger,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequenceDefinition) GetConnections() []*SequenceDefinitionConnection {
+	if s == nil {
+		return nil
+	}
+	return s.Connections
+}
+
+func (s *SequenceDefinition) GetDescription() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Description
+}
+
+func (s *SequenceDefinition) GetID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.ID
+}
+
+func (s *SequenceDefinition) GetKey() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Key
+}
+
+func (s *SequenceDefinition) GetManagedBy() *SequenceDefinitionManagedBy {
+	if s == nil {
+		return nil
+	}
+	return s.ManagedBy
+}
+
+func (s *SequenceDefinition) GetName() string {
+	if s == nil {
+		return ""
+	}
+	return s.Name
+}
+
+func (s *SequenceDefinition) GetSettings() *SequenceDefinitionSettings {
+	if s == nil {
+		return nil
+	}
+	return s.Settings
+}
+
+func (s *SequenceDefinition) GetStatus() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Status
+}
+
+func (s *SequenceDefinition) GetSteps() []*SequenceDefinitionStep {
+	if s == nil {
+		return nil
+	}
+	return s.Steps
+}
+
+func (s *SequenceDefinition) GetTrigger() *SequenceDefinitionTrigger {
+	if s == nil {
+		return nil
+	}
+	return s.Trigger
+}
+
+func (s *SequenceDefinition) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequenceDefinition) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetConnections sets the Connections field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinition) SetConnections(connections []*SequenceDefinitionConnection) {
+	s.Connections = connections
+	s.require(sequenceDefinitionFieldConnections)
+}
+
+// SetDescription sets the Description field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinition) SetDescription(description *string) {
+	s.Description = description
+	s.require(sequenceDefinitionFieldDescription)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinition) SetID(id *string) {
+	s.ID = id
+	s.require(sequenceDefinitionFieldID)
+}
+
+// SetKey sets the Key field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinition) SetKey(key *string) {
+	s.Key = key
+	s.require(sequenceDefinitionFieldKey)
+}
+
+// SetManagedBy sets the ManagedBy field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinition) SetManagedBy(managedBy *SequenceDefinitionManagedBy) {
+	s.ManagedBy = managedBy
+	s.require(sequenceDefinitionFieldManagedBy)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinition) SetName(name string) {
+	s.Name = name
+	s.require(sequenceDefinitionFieldName)
+}
+
+// SetSettings sets the Settings field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinition) SetSettings(settings *SequenceDefinitionSettings) {
+	s.Settings = settings
+	s.require(sequenceDefinitionFieldSettings)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinition) SetStatus(status *string) {
+	s.Status = status
+	s.require(sequenceDefinitionFieldStatus)
+}
+
+// SetSteps sets the Steps field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinition) SetSteps(steps []*SequenceDefinitionStep) {
+	s.Steps = steps
+	s.require(sequenceDefinitionFieldSteps)
+}
+
+// SetTrigger sets the Trigger field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinition) SetTrigger(trigger *SequenceDefinitionTrigger) {
+	s.Trigger = trigger
+	s.require(sequenceDefinitionFieldTrigger)
+}
+
+func (s *SequenceDefinition) UnmarshalJSON(data []byte) error {
+	type unmarshaler SequenceDefinition
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SequenceDefinition(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceDefinition) MarshalJSON() ([]byte, error) {
+	type embed SequenceDefinition
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequenceDefinition) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+// One of tag, notTag, list, segment, event, field with equals, contains, greaterThan or lessThan, clickedLink (true or a URL fragment), hasPhone, smsSubscribed, hasPushDevice, or the stored conditionType with its fields.
+type SequenceDefinitionCondition = map[string]any
+
+var (
+	sequenceDefinitionConnectionFieldCondition = big.NewInt(1 << 0)
+	sequenceDefinitionConnectionFieldFrom      = big.NewInt(1 << 1)
+	sequenceDefinitionConnectionFieldTo        = big.NewInt(1 << 2)
+)
+
+type SequenceDefinitionConnection struct {
+	// Branch lane, for example {"branchId":"else"} on a logic_branch step.
+	Condition map[string]any `json:"condition,omitempty" url:"condition,omitempty"`
+	// Step key.
+	From string `json:"from" url:"from"`
+	// Step key.
+	To string `json:"to" url:"to"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequenceDefinitionConnection) GetCondition() map[string]any {
+	if s == nil {
+		return nil
+	}
+	return s.Condition
+}
+
+func (s *SequenceDefinitionConnection) GetFrom() string {
+	if s == nil {
+		return ""
+	}
+	return s.From
+}
+
+func (s *SequenceDefinitionConnection) GetTo() string {
+	if s == nil {
+		return ""
+	}
+	return s.To
+}
+
+func (s *SequenceDefinitionConnection) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequenceDefinitionConnection) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetCondition sets the Condition field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionConnection) SetCondition(condition map[string]any) {
+	s.Condition = condition
+	s.require(sequenceDefinitionConnectionFieldCondition)
+}
+
+// SetFrom sets the From field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionConnection) SetFrom(from string) {
+	s.From = from
+	s.require(sequenceDefinitionConnectionFieldFrom)
+}
+
+// SetTo sets the To field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionConnection) SetTo(to string) {
+	s.To = to
+	s.require(sequenceDefinitionConnectionFieldTo)
+}
+
+func (s *SequenceDefinitionConnection) UnmarshalJSON(data []byte) error {
+	type unmarshaler SequenceDefinitionConnection
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SequenceDefinitionConnection(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceDefinitionConnection) MarshalJSON() ([]byte, error) {
+	type embed SequenceDefinitionConnection
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequenceDefinitionConnection) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+// `code` makes steps and settings read-only in the dashboard while on/off, pause and test sends stay available. New sequences default to `code`; existing ones keep their value when omitted. Marketer personal keys cannot change it on an existing sequence. Not returned on GET, so a pulled document pushed back never changes it.
+type SequenceDefinitionManagedBy string
+
+const (
+	SequenceDefinitionManagedByCode      SequenceDefinitionManagedBy = "code"
+	SequenceDefinitionManagedByDashboard SequenceDefinitionManagedBy = "dashboard"
+)
+
+func NewSequenceDefinitionManagedByFromString(s string) (SequenceDefinitionManagedBy, error) {
+	switch s {
+	case "code":
+		return SequenceDefinitionManagedByCode, nil
+	case "dashboard":
+		return SequenceDefinitionManagedByDashboard, nil
+	}
+	var t SequenceDefinitionManagedBy
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SequenceDefinitionManagedBy) Ptr() *SequenceDefinitionManagedBy {
+	return &s
+}
+
+var (
+	sequenceDefinitionPathFieldID      = big.NewInt(1 << 0)
+	sequenceDefinitionPathFieldIf      = big.NewInt(1 << 1)
+	sequenceDefinitionPathFieldLabel   = big.NewInt(1 << 2)
+	sequenceDefinitionPathFieldPercent = big.NewInt(1 << 3)
+	sequenceDefinitionPathFieldSteps   = big.NewInt(1 << 4)
+)
+
+type SequenceDefinitionPath struct {
+	// Lane ID. Defaults to branch-<index>; else is reserved.
+	ID    *string                      `json:"id,omitempty" url:"id,omitempty"`
+	If    *SequenceDefinitionCondition `json:"if,omitempty" url:"if,omitempty"`
+	Label *string                      `json:"label,omitempty" url:"label,omitempty"`
+	// Split paths only.
+	Percent *float64                  `json:"percent,omitempty" url:"percent,omitempty"`
+	Steps   []*SequenceDefinitionStep `json:"steps,omitempty" url:"steps,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequenceDefinitionPath) GetID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.ID
+}
+
+func (s *SequenceDefinitionPath) GetIf() *SequenceDefinitionCondition {
+	if s == nil {
+		return nil
+	}
+	return s.If
+}
+
+func (s *SequenceDefinitionPath) GetLabel() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Label
+}
+
+func (s *SequenceDefinitionPath) GetPercent() *float64 {
+	if s == nil {
+		return nil
+	}
+	return s.Percent
+}
+
+func (s *SequenceDefinitionPath) GetSteps() []*SequenceDefinitionStep {
+	if s == nil {
+		return nil
+	}
+	return s.Steps
+}
+
+func (s *SequenceDefinitionPath) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequenceDefinitionPath) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionPath) SetID(id *string) {
+	s.ID = id
+	s.require(sequenceDefinitionPathFieldID)
+}
+
+// SetIf sets the If field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionPath) SetIf(if_ *SequenceDefinitionCondition) {
+	s.If = if_
+	s.require(sequenceDefinitionPathFieldIf)
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionPath) SetLabel(label *string) {
+	s.Label = label
+	s.require(sequenceDefinitionPathFieldLabel)
+}
+
+// SetPercent sets the Percent field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionPath) SetPercent(percent *float64) {
+	s.Percent = percent
+	s.require(sequenceDefinitionPathFieldPercent)
+}
+
+// SetSteps sets the Steps field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionPath) SetSteps(steps []*SequenceDefinitionStep) {
+	s.Steps = steps
+	s.require(sequenceDefinitionPathFieldSteps)
+}
+
+func (s *SequenceDefinitionPath) UnmarshalJSON(data []byte) error {
+	type unmarshaler SequenceDefinitionPath
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SequenceDefinitionPath(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceDefinitionPath) MarshalJSON() ([]byte, error) {
+	type embed SequenceDefinitionPath
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequenceDefinitionPath) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	sequenceDefinitionPushResultFieldChanges    = big.NewInt(1 << 0)
+	sequenceDefinitionPushResultFieldCreated    = big.NewInt(1 << 1)
+	sequenceDefinitionPushResultFieldDryRun     = big.NewInt(1 << 2)
+	sequenceDefinitionPushResultFieldError      = big.NewInt(1 << 3)
+	sequenceDefinitionPushResultFieldHasChanges = big.NewInt(1 << 4)
+	sequenceDefinitionPushResultFieldSequence   = big.NewInt(1 << 5)
+	sequenceDefinitionPushResultFieldSuccess    = big.NewInt(1 << 6)
+	sequenceDefinitionPushResultFieldWarnings   = big.NewInt(1 << 7)
+)
+
+type SequenceDefinitionPushResult struct {
+	Changes    *SequenceDefinitionPushResultChanges  `json:"changes,omitempty" url:"changes,omitempty"`
+	Created    *bool                                 `json:"created,omitempty" url:"created,omitempty"`
+	DryRun     *bool                                 `json:"dryRun,omitempty" url:"dryRun,omitempty"`
+	Error      *string                               `json:"error,omitempty" url:"error,omitempty"`
+	HasChanges *bool                                 `json:"hasChanges,omitempty" url:"hasChanges,omitempty"`
+	Sequence   *SequenceDefinitionPushResultSequence `json:"sequence,omitempty" url:"sequence,omitempty"`
+	Success    *bool                                 `json:"success,omitempty" url:"success,omitempty"`
+	Warnings   []string                              `json:"warnings,omitempty" url:"warnings,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequenceDefinitionPushResult) GetChanges() *SequenceDefinitionPushResultChanges {
+	if s == nil {
+		return nil
+	}
+	return s.Changes
+}
+
+func (s *SequenceDefinitionPushResult) GetCreated() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.Created
+}
+
+func (s *SequenceDefinitionPushResult) GetDryRun() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.DryRun
+}
+
+func (s *SequenceDefinitionPushResult) GetError() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Error
+}
+
+func (s *SequenceDefinitionPushResult) GetHasChanges() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.HasChanges
+}
+
+func (s *SequenceDefinitionPushResult) GetSequence() *SequenceDefinitionPushResultSequence {
+	if s == nil {
+		return nil
+	}
+	return s.Sequence
+}
+
+func (s *SequenceDefinitionPushResult) GetSuccess() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.Success
+}
+
+func (s *SequenceDefinitionPushResult) GetWarnings() []string {
+	if s == nil {
+		return nil
+	}
+	return s.Warnings
+}
+
+func (s *SequenceDefinitionPushResult) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequenceDefinitionPushResult) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetChanges sets the Changes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionPushResult) SetChanges(changes *SequenceDefinitionPushResultChanges) {
+	s.Changes = changes
+	s.require(sequenceDefinitionPushResultFieldChanges)
+}
+
+// SetCreated sets the Created field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionPushResult) SetCreated(created *bool) {
+	s.Created = created
+	s.require(sequenceDefinitionPushResultFieldCreated)
+}
+
+// SetDryRun sets the DryRun field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionPushResult) SetDryRun(dryRun *bool) {
+	s.DryRun = dryRun
+	s.require(sequenceDefinitionPushResultFieldDryRun)
+}
+
+// SetError sets the Error field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionPushResult) SetError(error_ *string) {
+	s.Error = error_
+	s.require(sequenceDefinitionPushResultFieldError)
+}
+
+// SetHasChanges sets the HasChanges field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionPushResult) SetHasChanges(hasChanges *bool) {
+	s.HasChanges = hasChanges
+	s.require(sequenceDefinitionPushResultFieldHasChanges)
+}
+
+// SetSequence sets the Sequence field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionPushResult) SetSequence(sequence *SequenceDefinitionPushResultSequence) {
+	s.Sequence = sequence
+	s.require(sequenceDefinitionPushResultFieldSequence)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionPushResult) SetSuccess(success *bool) {
+	s.Success = success
+	s.require(sequenceDefinitionPushResultFieldSuccess)
+}
+
+// SetWarnings sets the Warnings field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionPushResult) SetWarnings(warnings []string) {
+	s.Warnings = warnings
+	s.require(sequenceDefinitionPushResultFieldWarnings)
+}
+
+func (s *SequenceDefinitionPushResult) UnmarshalJSON(data []byte) error {
+	type unmarshaler SequenceDefinitionPushResult
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SequenceDefinitionPushResult(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceDefinitionPushResult) MarshalJSON() ([]byte, error) {
+	type embed SequenceDefinitionPushResult
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequenceDefinitionPushResult) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	sequenceDefinitionPushResultChangesFieldConnections = big.NewInt(1 << 0)
+	sequenceDefinitionPushResultChangesFieldSequence    = big.NewInt(1 << 1)
+	sequenceDefinitionPushResultChangesFieldSteps       = big.NewInt(1 << 2)
+)
+
+type SequenceDefinitionPushResultChanges struct {
+	Connections *SequenceDefinitionPushResultChangesConnections `json:"connections,omitempty" url:"connections,omitempty"`
+	// Changed sequence fields, such as name or settings.sendingWindow.
+	Sequence []string                                  `json:"sequence,omitempty" url:"sequence,omitempty"`
+	Steps    *SequenceDefinitionPushResultChangesSteps `json:"steps,omitempty" url:"steps,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequenceDefinitionPushResultChanges) GetConnections() *SequenceDefinitionPushResultChangesConnections {
+	if s == nil {
+		return nil
+	}
+	return s.Connections
+}
+
+func (s *SequenceDefinitionPushResultChanges) GetSequence() []string {
+	if s == nil {
+		return nil
+	}
+	return s.Sequence
+}
+
+func (s *SequenceDefinitionPushResultChanges) GetSteps() *SequenceDefinitionPushResultChangesSteps {
+	if s == nil {
+		return nil
+	}
+	return s.Steps
+}
+
+func (s *SequenceDefinitionPushResultChanges) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequenceDefinitionPushResultChanges) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetConnections sets the Connections field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionPushResultChanges) SetConnections(connections *SequenceDefinitionPushResultChangesConnections) {
+	s.Connections = connections
+	s.require(sequenceDefinitionPushResultChangesFieldConnections)
+}
+
+// SetSequence sets the Sequence field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionPushResultChanges) SetSequence(sequence []string) {
+	s.Sequence = sequence
+	s.require(sequenceDefinitionPushResultChangesFieldSequence)
+}
+
+// SetSteps sets the Steps field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionPushResultChanges) SetSteps(steps *SequenceDefinitionPushResultChangesSteps) {
+	s.Steps = steps
+	s.require(sequenceDefinitionPushResultChangesFieldSteps)
+}
+
+func (s *SequenceDefinitionPushResultChanges) UnmarshalJSON(data []byte) error {
+	type unmarshaler SequenceDefinitionPushResultChanges
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SequenceDefinitionPushResultChanges(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceDefinitionPushResultChanges) MarshalJSON() ([]byte, error) {
+	type embed SequenceDefinitionPushResultChanges
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequenceDefinitionPushResultChanges) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	sequenceDefinitionPushResultChangesConnectionsFieldAdded   = big.NewInt(1 << 0)
+	sequenceDefinitionPushResultChangesConnectionsFieldRemoved = big.NewInt(1 << 1)
+)
+
+type SequenceDefinitionPushResultChangesConnections struct {
+	Added   []*SequenceDefinitionPushResultChangesConnectionsAddedItem   `json:"added,omitempty" url:"added,omitempty"`
+	Removed []*SequenceDefinitionPushResultChangesConnectionsRemovedItem `json:"removed,omitempty" url:"removed,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequenceDefinitionPushResultChangesConnections) GetAdded() []*SequenceDefinitionPushResultChangesConnectionsAddedItem {
+	if s == nil {
+		return nil
+	}
+	return s.Added
+}
+
+func (s *SequenceDefinitionPushResultChangesConnections) GetRemoved() []*SequenceDefinitionPushResultChangesConnectionsRemovedItem {
+	if s == nil {
+		return nil
+	}
+	return s.Removed
+}
+
+func (s *SequenceDefinitionPushResultChangesConnections) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequenceDefinitionPushResultChangesConnections) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetAdded sets the Added field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionPushResultChangesConnections) SetAdded(added []*SequenceDefinitionPushResultChangesConnectionsAddedItem) {
+	s.Added = added
+	s.require(sequenceDefinitionPushResultChangesConnectionsFieldAdded)
+}
+
+// SetRemoved sets the Removed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionPushResultChangesConnections) SetRemoved(removed []*SequenceDefinitionPushResultChangesConnectionsRemovedItem) {
+	s.Removed = removed
+	s.require(sequenceDefinitionPushResultChangesConnectionsFieldRemoved)
+}
+
+func (s *SequenceDefinitionPushResultChangesConnections) UnmarshalJSON(data []byte) error {
+	type unmarshaler SequenceDefinitionPushResultChangesConnections
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SequenceDefinitionPushResultChangesConnections(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceDefinitionPushResultChangesConnections) MarshalJSON() ([]byte, error) {
+	type embed SequenceDefinitionPushResultChangesConnections
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequenceDefinitionPushResultChangesConnections) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	sequenceDefinitionPushResultChangesConnectionsAddedItemFieldFrom = big.NewInt(1 << 0)
+	sequenceDefinitionPushResultChangesConnectionsAddedItemFieldTo   = big.NewInt(1 << 1)
+)
+
+type SequenceDefinitionPushResultChangesConnectionsAddedItem struct {
+	From *string `json:"from,omitempty" url:"from,omitempty"`
+	To   *string `json:"to,omitempty" url:"to,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequenceDefinitionPushResultChangesConnectionsAddedItem) GetFrom() *string {
+	if s == nil {
+		return nil
+	}
+	return s.From
+}
+
+func (s *SequenceDefinitionPushResultChangesConnectionsAddedItem) GetTo() *string {
+	if s == nil {
+		return nil
+	}
+	return s.To
+}
+
+func (s *SequenceDefinitionPushResultChangesConnectionsAddedItem) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequenceDefinitionPushResultChangesConnectionsAddedItem) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetFrom sets the From field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionPushResultChangesConnectionsAddedItem) SetFrom(from *string) {
+	s.From = from
+	s.require(sequenceDefinitionPushResultChangesConnectionsAddedItemFieldFrom)
+}
+
+// SetTo sets the To field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionPushResultChangesConnectionsAddedItem) SetTo(to *string) {
+	s.To = to
+	s.require(sequenceDefinitionPushResultChangesConnectionsAddedItemFieldTo)
+}
+
+func (s *SequenceDefinitionPushResultChangesConnectionsAddedItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler SequenceDefinitionPushResultChangesConnectionsAddedItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SequenceDefinitionPushResultChangesConnectionsAddedItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceDefinitionPushResultChangesConnectionsAddedItem) MarshalJSON() ([]byte, error) {
+	type embed SequenceDefinitionPushResultChangesConnectionsAddedItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequenceDefinitionPushResultChangesConnectionsAddedItem) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	sequenceDefinitionPushResultChangesConnectionsRemovedItemFieldFrom = big.NewInt(1 << 0)
+	sequenceDefinitionPushResultChangesConnectionsRemovedItemFieldTo   = big.NewInt(1 << 1)
+)
+
+type SequenceDefinitionPushResultChangesConnectionsRemovedItem struct {
+	From *string `json:"from,omitempty" url:"from,omitempty"`
+	To   *string `json:"to,omitempty" url:"to,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequenceDefinitionPushResultChangesConnectionsRemovedItem) GetFrom() *string {
+	if s == nil {
+		return nil
+	}
+	return s.From
+}
+
+func (s *SequenceDefinitionPushResultChangesConnectionsRemovedItem) GetTo() *string {
+	if s == nil {
+		return nil
+	}
+	return s.To
+}
+
+func (s *SequenceDefinitionPushResultChangesConnectionsRemovedItem) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequenceDefinitionPushResultChangesConnectionsRemovedItem) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetFrom sets the From field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionPushResultChangesConnectionsRemovedItem) SetFrom(from *string) {
+	s.From = from
+	s.require(sequenceDefinitionPushResultChangesConnectionsRemovedItemFieldFrom)
+}
+
+// SetTo sets the To field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionPushResultChangesConnectionsRemovedItem) SetTo(to *string) {
+	s.To = to
+	s.require(sequenceDefinitionPushResultChangesConnectionsRemovedItemFieldTo)
+}
+
+func (s *SequenceDefinitionPushResultChangesConnectionsRemovedItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler SequenceDefinitionPushResultChangesConnectionsRemovedItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SequenceDefinitionPushResultChangesConnectionsRemovedItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceDefinitionPushResultChangesConnectionsRemovedItem) MarshalJSON() ([]byte, error) {
+	type embed SequenceDefinitionPushResultChangesConnectionsRemovedItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequenceDefinitionPushResultChangesConnectionsRemovedItem) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	sequenceDefinitionPushResultChangesStepsFieldAdded   = big.NewInt(1 << 0)
+	sequenceDefinitionPushResultChangesStepsFieldChanged = big.NewInt(1 << 1)
+	sequenceDefinitionPushResultChangesStepsFieldRemoved = big.NewInt(1 << 2)
+)
+
+type SequenceDefinitionPushResultChangesSteps struct {
+	Added   []string                                               `json:"added,omitempty" url:"added,omitempty"`
+	Changed []*SequenceDefinitionPushResultChangesStepsChangedItem `json:"changed,omitempty" url:"changed,omitempty"`
+	Removed []*SequenceDefinitionPushResultChangesStepsRemovedItem `json:"removed,omitempty" url:"removed,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequenceDefinitionPushResultChangesSteps) GetAdded() []string {
+	if s == nil {
+		return nil
+	}
+	return s.Added
+}
+
+func (s *SequenceDefinitionPushResultChangesSteps) GetChanged() []*SequenceDefinitionPushResultChangesStepsChangedItem {
+	if s == nil {
+		return nil
+	}
+	return s.Changed
+}
+
+func (s *SequenceDefinitionPushResultChangesSteps) GetRemoved() []*SequenceDefinitionPushResultChangesStepsRemovedItem {
+	if s == nil {
+		return nil
+	}
+	return s.Removed
+}
+
+func (s *SequenceDefinitionPushResultChangesSteps) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequenceDefinitionPushResultChangesSteps) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetAdded sets the Added field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionPushResultChangesSteps) SetAdded(added []string) {
+	s.Added = added
+	s.require(sequenceDefinitionPushResultChangesStepsFieldAdded)
+}
+
+// SetChanged sets the Changed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionPushResultChangesSteps) SetChanged(changed []*SequenceDefinitionPushResultChangesStepsChangedItem) {
+	s.Changed = changed
+	s.require(sequenceDefinitionPushResultChangesStepsFieldChanged)
+}
+
+// SetRemoved sets the Removed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionPushResultChangesSteps) SetRemoved(removed []*SequenceDefinitionPushResultChangesStepsRemovedItem) {
+	s.Removed = removed
+	s.require(sequenceDefinitionPushResultChangesStepsFieldRemoved)
+}
+
+func (s *SequenceDefinitionPushResultChangesSteps) UnmarshalJSON(data []byte) error {
+	type unmarshaler SequenceDefinitionPushResultChangesSteps
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SequenceDefinitionPushResultChangesSteps(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceDefinitionPushResultChangesSteps) MarshalJSON() ([]byte, error) {
+	type embed SequenceDefinitionPushResultChangesSteps
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequenceDefinitionPushResultChangesSteps) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	sequenceDefinitionPushResultChangesStepsChangedItemFieldFields = big.NewInt(1 << 0)
+	sequenceDefinitionPushResultChangesStepsChangedItemFieldKey    = big.NewInt(1 << 1)
+)
+
+type SequenceDefinitionPushResultChangesStepsChangedItem struct {
+	Fields []string `json:"fields,omitempty" url:"fields,omitempty"`
+	Key    *string  `json:"key,omitempty" url:"key,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequenceDefinitionPushResultChangesStepsChangedItem) GetFields() []string {
+	if s == nil {
+		return nil
+	}
+	return s.Fields
+}
+
+func (s *SequenceDefinitionPushResultChangesStepsChangedItem) GetKey() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Key
+}
+
+func (s *SequenceDefinitionPushResultChangesStepsChangedItem) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequenceDefinitionPushResultChangesStepsChangedItem) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetFields sets the Fields field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionPushResultChangesStepsChangedItem) SetFields(fields []string) {
+	s.Fields = fields
+	s.require(sequenceDefinitionPushResultChangesStepsChangedItemFieldFields)
+}
+
+// SetKey sets the Key field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionPushResultChangesStepsChangedItem) SetKey(key *string) {
+	s.Key = key
+	s.require(sequenceDefinitionPushResultChangesStepsChangedItemFieldKey)
+}
+
+func (s *SequenceDefinitionPushResultChangesStepsChangedItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler SequenceDefinitionPushResultChangesStepsChangedItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SequenceDefinitionPushResultChangesStepsChangedItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceDefinitionPushResultChangesStepsChangedItem) MarshalJSON() ([]byte, error) {
+	type embed SequenceDefinitionPushResultChangesStepsChangedItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequenceDefinitionPushResultChangesStepsChangedItem) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	sequenceDefinitionPushResultChangesStepsRemovedItemFieldContacts           = big.NewInt(1 << 0)
+	sequenceDefinitionPushResultChangesStepsRemovedItemFieldContactsContinueTo = big.NewInt(1 << 1)
+	sequenceDefinitionPushResultChangesStepsRemovedItemFieldKey                = big.NewInt(1 << 2)
+	sequenceDefinitionPushResultChangesStepsRemovedItemFieldType               = big.NewInt(1 << 3)
+)
+
+type SequenceDefinitionPushResultChangesStepsRemovedItem struct {
+	// Contacts waiting on the step.
+	Contacts *int `json:"contacts,omitempty" url:"contacts,omitempty"`
+	// Step key those contacts continue to; null when they complete.
+	ContactsContinueTo *string `json:"contactsContinueTo,omitempty" url:"contactsContinueTo,omitempty"`
+	Key                *string `json:"key,omitempty" url:"key,omitempty"`
+	Type               *string `json:"type,omitempty" url:"type,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequenceDefinitionPushResultChangesStepsRemovedItem) GetContacts() *int {
+	if s == nil {
+		return nil
+	}
+	return s.Contacts
+}
+
+func (s *SequenceDefinitionPushResultChangesStepsRemovedItem) GetContactsContinueTo() *string {
+	if s == nil {
+		return nil
+	}
+	return s.ContactsContinueTo
+}
+
+func (s *SequenceDefinitionPushResultChangesStepsRemovedItem) GetKey() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Key
+}
+
+func (s *SequenceDefinitionPushResultChangesStepsRemovedItem) GetType() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Type
+}
+
+func (s *SequenceDefinitionPushResultChangesStepsRemovedItem) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequenceDefinitionPushResultChangesStepsRemovedItem) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetContacts sets the Contacts field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionPushResultChangesStepsRemovedItem) SetContacts(contacts *int) {
+	s.Contacts = contacts
+	s.require(sequenceDefinitionPushResultChangesStepsRemovedItemFieldContacts)
+}
+
+// SetContactsContinueTo sets the ContactsContinueTo field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionPushResultChangesStepsRemovedItem) SetContactsContinueTo(contactsContinueTo *string) {
+	s.ContactsContinueTo = contactsContinueTo
+	s.require(sequenceDefinitionPushResultChangesStepsRemovedItemFieldContactsContinueTo)
+}
+
+// SetKey sets the Key field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionPushResultChangesStepsRemovedItem) SetKey(key *string) {
+	s.Key = key
+	s.require(sequenceDefinitionPushResultChangesStepsRemovedItemFieldKey)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionPushResultChangesStepsRemovedItem) SetType(type_ *string) {
+	s.Type = type_
+	s.require(sequenceDefinitionPushResultChangesStepsRemovedItemFieldType)
+}
+
+func (s *SequenceDefinitionPushResultChangesStepsRemovedItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler SequenceDefinitionPushResultChangesStepsRemovedItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SequenceDefinitionPushResultChangesStepsRemovedItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceDefinitionPushResultChangesStepsRemovedItem) MarshalJSON() ([]byte, error) {
+	type embed SequenceDefinitionPushResultChangesStepsRemovedItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequenceDefinitionPushResultChangesStepsRemovedItem) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	sequenceDefinitionPushResultSequenceFieldID        = big.NewInt(1 << 0)
+	sequenceDefinitionPushResultSequenceFieldKey       = big.NewInt(1 << 1)
+	sequenceDefinitionPushResultSequenceFieldManagedBy = big.NewInt(1 << 2)
+	sequenceDefinitionPushResultSequenceFieldName      = big.NewInt(1 << 3)
+	sequenceDefinitionPushResultSequenceFieldStatus    = big.NewInt(1 << 4)
+)
+
+type SequenceDefinitionPushResultSequence struct {
+	ID        *string                                        `json:"id,omitempty" url:"id,omitempty"`
+	Key       *string                                        `json:"key,omitempty" url:"key,omitempty"`
+	ManagedBy *SequenceDefinitionPushResultSequenceManagedBy `json:"managedBy,omitempty" url:"managedBy,omitempty"`
+	Name      *string                                        `json:"name,omitempty" url:"name,omitempty"`
+	Status    *string                                        `json:"status,omitempty" url:"status,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequenceDefinitionPushResultSequence) GetID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.ID
+}
+
+func (s *SequenceDefinitionPushResultSequence) GetKey() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Key
+}
+
+func (s *SequenceDefinitionPushResultSequence) GetManagedBy() *SequenceDefinitionPushResultSequenceManagedBy {
+	if s == nil {
+		return nil
+	}
+	return s.ManagedBy
+}
+
+func (s *SequenceDefinitionPushResultSequence) GetName() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Name
+}
+
+func (s *SequenceDefinitionPushResultSequence) GetStatus() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Status
+}
+
+func (s *SequenceDefinitionPushResultSequence) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequenceDefinitionPushResultSequence) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionPushResultSequence) SetID(id *string) {
+	s.ID = id
+	s.require(sequenceDefinitionPushResultSequenceFieldID)
+}
+
+// SetKey sets the Key field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionPushResultSequence) SetKey(key *string) {
+	s.Key = key
+	s.require(sequenceDefinitionPushResultSequenceFieldKey)
+}
+
+// SetManagedBy sets the ManagedBy field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionPushResultSequence) SetManagedBy(managedBy *SequenceDefinitionPushResultSequenceManagedBy) {
+	s.ManagedBy = managedBy
+	s.require(sequenceDefinitionPushResultSequenceFieldManagedBy)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionPushResultSequence) SetName(name *string) {
+	s.Name = name
+	s.require(sequenceDefinitionPushResultSequenceFieldName)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionPushResultSequence) SetStatus(status *string) {
+	s.Status = status
+	s.require(sequenceDefinitionPushResultSequenceFieldStatus)
+}
+
+func (s *SequenceDefinitionPushResultSequence) UnmarshalJSON(data []byte) error {
+	type unmarshaler SequenceDefinitionPushResultSequence
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SequenceDefinitionPushResultSequence(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceDefinitionPushResultSequence) MarshalJSON() ([]byte, error) {
+	type embed SequenceDefinitionPushResultSequence
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequenceDefinitionPushResultSequence) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+type SequenceDefinitionPushResultSequenceManagedBy string
+
+const (
+	SequenceDefinitionPushResultSequenceManagedByCode      SequenceDefinitionPushResultSequenceManagedBy = "code"
+	SequenceDefinitionPushResultSequenceManagedByDashboard SequenceDefinitionPushResultSequenceManagedBy = "dashboard"
+)
+
+func NewSequenceDefinitionPushResultSequenceManagedByFromString(s string) (SequenceDefinitionPushResultSequenceManagedBy, error) {
+	switch s {
+	case "code":
+		return SequenceDefinitionPushResultSequenceManagedByCode, nil
+	case "dashboard":
+		return SequenceDefinitionPushResultSequenceManagedByDashboard, nil
+	}
+	var t SequenceDefinitionPushResultSequenceManagedBy
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SequenceDefinitionPushResultSequenceManagedBy) Ptr() *SequenceDefinitionPushResultSequenceManagedBy {
+	return &s
+}
+
+var (
+	sequenceDefinitionSettingsFieldActiveSubscribersOnly = big.NewInt(1 << 0)
+	sequenceDefinitionSettingsFieldBccEmails             = big.NewInt(1 << 1)
+	sequenceDefinitionSettingsFieldEnrollmentFieldPath   = big.NewInt(1 << 2)
+	sequenceDefinitionSettingsFieldEnrollmentMode        = big.NewInt(1 << 3)
+	sequenceDefinitionSettingsFieldFrequencyCapEnabled   = big.NewInt(1 << 4)
+	sequenceDefinitionSettingsFieldReplyProfileID        = big.NewInt(1 << 5)
+	sequenceDefinitionSettingsFieldSenderProfileID       = big.NewInt(1 << 6)
+	sequenceDefinitionSettingsFieldSendingWindow         = big.NewInt(1 << 7)
+	sequenceDefinitionSettingsFieldStopCondition         = big.NewInt(1 << 8)
+	sequenceDefinitionSettingsFieldUserCancellable       = big.NewInt(1 << 9)
+)
+
+type SequenceDefinitionSettings struct {
+	ActiveSubscribersOnly *bool                                     `json:"activeSubscribersOnly,omitempty" url:"activeSubscribersOnly,omitempty"`
+	BccEmails             []string                                  `json:"bccEmails,omitempty" url:"bccEmails,omitempty"`
+	EnrollmentFieldPath   *string                                   `json:"enrollmentFieldPath,omitempty" url:"enrollmentFieldPath,omitempty"`
+	EnrollmentMode        *SequenceDefinitionSettingsEnrollmentMode `json:"enrollmentMode,omitempty" url:"enrollmentMode,omitempty"`
+	FrequencyCapEnabled   *bool                                     `json:"frequencyCapEnabled,omitempty" url:"frequencyCapEnabled,omitempty"`
+	// Must be a Reply-To profile in this company.
+	ReplyProfileID *string `json:"replyProfileId,omitempty" url:"replyProfileId,omitempty"`
+	// Must be a sender profile in this company.
+	SenderProfileID *string                                  `json:"senderProfileId,omitempty" url:"senderProfileId,omitempty"`
+	SendingWindow   map[string]any                           `json:"sendingWindow,omitempty" url:"sendingWindow,omitempty"`
+	StopCondition   *SequenceDefinitionSettingsStopCondition `json:"stopCondition,omitempty" url:"stopCondition,omitempty"`
+	UserCancellable *bool                                    `json:"userCancellable,omitempty" url:"userCancellable,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequenceDefinitionSettings) GetActiveSubscribersOnly() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.ActiveSubscribersOnly
+}
+
+func (s *SequenceDefinitionSettings) GetBccEmails() []string {
+	if s == nil {
+		return nil
+	}
+	return s.BccEmails
+}
+
+func (s *SequenceDefinitionSettings) GetEnrollmentFieldPath() *string {
+	if s == nil {
+		return nil
+	}
+	return s.EnrollmentFieldPath
+}
+
+func (s *SequenceDefinitionSettings) GetEnrollmentMode() *SequenceDefinitionSettingsEnrollmentMode {
+	if s == nil {
+		return nil
+	}
+	return s.EnrollmentMode
+}
+
+func (s *SequenceDefinitionSettings) GetFrequencyCapEnabled() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.FrequencyCapEnabled
+}
+
+func (s *SequenceDefinitionSettings) GetReplyProfileID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.ReplyProfileID
+}
+
+func (s *SequenceDefinitionSettings) GetSenderProfileID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.SenderProfileID
+}
+
+func (s *SequenceDefinitionSettings) GetSendingWindow() map[string]any {
+	if s == nil {
+		return nil
+	}
+	return s.SendingWindow
+}
+
+func (s *SequenceDefinitionSettings) GetStopCondition() *SequenceDefinitionSettingsStopCondition {
+	if s == nil {
+		return nil
+	}
+	return s.StopCondition
+}
+
+func (s *SequenceDefinitionSettings) GetUserCancellable() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.UserCancellable
+}
+
+func (s *SequenceDefinitionSettings) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequenceDefinitionSettings) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetActiveSubscribersOnly sets the ActiveSubscribersOnly field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionSettings) SetActiveSubscribersOnly(activeSubscribersOnly *bool) {
+	s.ActiveSubscribersOnly = activeSubscribersOnly
+	s.require(sequenceDefinitionSettingsFieldActiveSubscribersOnly)
+}
+
+// SetBccEmails sets the BccEmails field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionSettings) SetBccEmails(bccEmails []string) {
+	s.BccEmails = bccEmails
+	s.require(sequenceDefinitionSettingsFieldBccEmails)
+}
+
+// SetEnrollmentFieldPath sets the EnrollmentFieldPath field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionSettings) SetEnrollmentFieldPath(enrollmentFieldPath *string) {
+	s.EnrollmentFieldPath = enrollmentFieldPath
+	s.require(sequenceDefinitionSettingsFieldEnrollmentFieldPath)
+}
+
+// SetEnrollmentMode sets the EnrollmentMode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionSettings) SetEnrollmentMode(enrollmentMode *SequenceDefinitionSettingsEnrollmentMode) {
+	s.EnrollmentMode = enrollmentMode
+	s.require(sequenceDefinitionSettingsFieldEnrollmentMode)
+}
+
+// SetFrequencyCapEnabled sets the FrequencyCapEnabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionSettings) SetFrequencyCapEnabled(frequencyCapEnabled *bool) {
+	s.FrequencyCapEnabled = frequencyCapEnabled
+	s.require(sequenceDefinitionSettingsFieldFrequencyCapEnabled)
+}
+
+// SetReplyProfileID sets the ReplyProfileID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionSettings) SetReplyProfileID(replyProfileID *string) {
+	s.ReplyProfileID = replyProfileID
+	s.require(sequenceDefinitionSettingsFieldReplyProfileID)
+}
+
+// SetSenderProfileID sets the SenderProfileID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionSettings) SetSenderProfileID(senderProfileID *string) {
+	s.SenderProfileID = senderProfileID
+	s.require(sequenceDefinitionSettingsFieldSenderProfileID)
+}
+
+// SetSendingWindow sets the SendingWindow field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionSettings) SetSendingWindow(sendingWindow map[string]any) {
+	s.SendingWindow = sendingWindow
+	s.require(sequenceDefinitionSettingsFieldSendingWindow)
+}
+
+// SetStopCondition sets the StopCondition field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionSettings) SetStopCondition(stopCondition *SequenceDefinitionSettingsStopCondition) {
+	s.StopCondition = stopCondition
+	s.require(sequenceDefinitionSettingsFieldStopCondition)
+}
+
+// SetUserCancellable sets the UserCancellable field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionSettings) SetUserCancellable(userCancellable *bool) {
+	s.UserCancellable = userCancellable
+	s.require(sequenceDefinitionSettingsFieldUserCancellable)
+}
+
+func (s *SequenceDefinitionSettings) UnmarshalJSON(data []byte) error {
+	type unmarshaler SequenceDefinitionSettings
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SequenceDefinitionSettings(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceDefinitionSettings) MarshalJSON() ([]byte, error) {
+	type embed SequenceDefinitionSettings
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequenceDefinitionSettings) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+type SequenceDefinitionSettingsEnrollmentMode string
+
+const (
+	SequenceDefinitionSettingsEnrollmentModeUnlimited     SequenceDefinitionSettingsEnrollmentMode = "unlimited"
+	SequenceDefinitionSettingsEnrollmentModeOneTime       SequenceDefinitionSettingsEnrollmentMode = "one_time"
+	SequenceDefinitionSettingsEnrollmentModeMatchingField SequenceDefinitionSettingsEnrollmentMode = "matching_field"
+)
+
+func NewSequenceDefinitionSettingsEnrollmentModeFromString(s string) (SequenceDefinitionSettingsEnrollmentMode, error) {
+	switch s {
+	case "unlimited":
+		return SequenceDefinitionSettingsEnrollmentModeUnlimited, nil
+	case "one_time":
+		return SequenceDefinitionSettingsEnrollmentModeOneTime, nil
+	case "matching_field":
+		return SequenceDefinitionSettingsEnrollmentModeMatchingField, nil
+	}
+	var t SequenceDefinitionSettingsEnrollmentMode
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SequenceDefinitionSettingsEnrollmentMode) Ptr() *SequenceDefinitionSettingsEnrollmentMode {
+	return &s
+}
+
+var (
+	sequenceDefinitionSettingsStopConditionFieldMatchConfig = big.NewInt(1 << 0)
+	sequenceDefinitionSettingsStopConditionFieldType        = big.NewInt(1 << 1)
+	sequenceDefinitionSettingsStopConditionFieldValue       = big.NewInt(1 << 2)
+)
+
+type SequenceDefinitionSettingsStopCondition struct {
+	MatchConfig map[string]any `json:"matchConfig,omitempty" url:"matchConfig,omitempty"`
+	Type        string         `json:"type" url:"type"`
+	Value       *string        `json:"value,omitempty" url:"value,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	ExtraProperties map[string]interface{} `json:"-" url:"-"`
+
+	rawJSON json.RawMessage
+}
+
+func (s *SequenceDefinitionSettingsStopCondition) GetMatchConfig() map[string]any {
+	if s == nil {
+		return nil
+	}
+	return s.MatchConfig
+}
+
+func (s *SequenceDefinitionSettingsStopCondition) GetType() string {
+	if s == nil {
+		return ""
+	}
+	return s.Type
+}
+
+func (s *SequenceDefinitionSettingsStopCondition) GetValue() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Value
+}
+
+func (s *SequenceDefinitionSettingsStopCondition) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.ExtraProperties
+}
+
+func (s *SequenceDefinitionSettingsStopCondition) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetMatchConfig sets the MatchConfig field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionSettingsStopCondition) SetMatchConfig(matchConfig map[string]any) {
+	s.MatchConfig = matchConfig
+	s.require(sequenceDefinitionSettingsStopConditionFieldMatchConfig)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionSettingsStopCondition) SetType(type_ string) {
+	s.Type = type_
+	s.require(sequenceDefinitionSettingsStopConditionFieldType)
+}
+
+// SetValue sets the Value field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionSettingsStopCondition) SetValue(value *string) {
+	s.Value = value
+	s.require(sequenceDefinitionSettingsStopConditionFieldValue)
+}
+
+func (s *SequenceDefinitionSettingsStopCondition) UnmarshalJSON(data []byte) error {
+	type embed SequenceDefinitionSettingsStopCondition
+	var unmarshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*s = SequenceDefinitionSettingsStopCondition(unmarshaler.embed)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.ExtraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceDefinitionSettingsStopCondition) MarshalJSON() ([]byte, error) {
+	type embed SequenceDefinitionSettingsStopCondition
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return internal.MarshalJSONWithExtraProperties(explicitMarshaler, s.ExtraProperties)
+}
+
+func (s *SequenceDefinitionSettingsStopCondition) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+// A readable step has a key and one of wait, email, branch (with else), split, continueIf, tag, untag, end or type. An explicit step has a type and a config.
+var (
+	sequenceDefinitionStepFieldBranch     = big.NewInt(1 << 0)
+	sequenceDefinitionStepFieldConfig     = big.NewInt(1 << 1)
+	sequenceDefinitionStepFieldContinueIf = big.NewInt(1 << 2)
+	sequenceDefinitionStepFieldElse       = big.NewInt(1 << 3)
+	sequenceDefinitionStepFieldEmail      = big.NewInt(1 << 4)
+	sequenceDefinitionStepFieldEnd        = big.NewInt(1 << 5)
+	sequenceDefinitionStepFieldKey        = big.NewInt(1 << 6)
+	sequenceDefinitionStepFieldLabel      = big.NewInt(1 << 7)
+	sequenceDefinitionStepFieldNext       = big.NewInt(1 << 8)
+	sequenceDefinitionStepFieldSplit      = big.NewInt(1 << 9)
+	sequenceDefinitionStepFieldTag        = big.NewInt(1 << 10)
+	sequenceDefinitionStepFieldType       = big.NewInt(1 << 11)
+	sequenceDefinitionStepFieldUntag      = big.NewInt(1 << 12)
+	sequenceDefinitionStepFieldWait       = big.NewInt(1 << 13)
+)
+
+type SequenceDefinitionStep struct {
+	// Readable format. Paths checked in order; the first match wins.
+	Branch []*SequenceDefinitionPath `json:"branch,omitempty" url:"branch,omitempty"`
+	// The step's node config. Unknown fields are ignored with a warning; invalid values are rejected. emailId and the legacy trigger active flag are managed by Sequenzy. Webhook header values read as [REDACTED] and keep their stored value when pushed back unchanged.
+	Config     map[string]any               `json:"config,omitempty" url:"config,omitempty"`
+	ContinueIf *SequenceDefinitionCondition `json:"continueIf,omitempty" url:"continueIf,omitempty"`
+	// Readable format. Required with branch; [] continues straight on.
+	Else []*SequenceDefinitionStep `json:"else,omitempty" url:"else,omitempty"`
+	// Email steps only. Required for a new email step, with a subject or a template; omit to keep the stored content.
+	Email *SequenceDefinitionStepEmail `json:"email,omitempty" url:"email,omitempty"`
+	// Readable format. true ends the sequence at this step.
+	End *bool `json:"end,omitempty" url:"end,omitempty"`
+	// Unique within the sequence. Steps without a key get one based on their content on GET, which a push saves on the existing step.
+	Key string `json:"key" url:"key"`
+	// Readable format. Shown on the step in the dashboard.
+	Label *string `json:"label,omitempty" url:"label,omitempty"`
+	// Readable format. The key of the step that follows, instead of the next listed step.
+	Next *string `json:"next,omitempty" url:"next,omitempty"`
+	// Readable format. Random paths, each with a percent.
+	Split []*SequenceDefinitionPath `json:"split,omitempty" url:"split,omitempty"`
+	// Readable format. Adds this tag.
+	Tag *string `json:"tag,omitempty" url:"tag,omitempty"`
+	// Node type, for example trigger_event, logic_delay, action_email, logic_branch, or action_webhook with config.isEndNode true for the end. The type of an existing key cannot change, except between trigger types.
+	Type *string `json:"type,omitempty" url:"type,omitempty"`
+	// Readable format. Removes this tag.
+	Untag *string `json:"untag,omitempty" url:"untag,omitempty"`
+	// Readable format. A duration such as 1d, 2h 30m or 1w.
+	Wait *string `json:"wait,omitempty" url:"wait,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequenceDefinitionStep) GetBranch() []*SequenceDefinitionPath {
+	if s == nil {
+		return nil
+	}
+	return s.Branch
+}
+
+func (s *SequenceDefinitionStep) GetConfig() map[string]any {
+	if s == nil {
+		return nil
+	}
+	return s.Config
+}
+
+func (s *SequenceDefinitionStep) GetContinueIf() *SequenceDefinitionCondition {
+	if s == nil {
+		return nil
+	}
+	return s.ContinueIf
+}
+
+func (s *SequenceDefinitionStep) GetElse() []*SequenceDefinitionStep {
+	if s == nil {
+		return nil
+	}
+	return s.Else
+}
+
+func (s *SequenceDefinitionStep) GetEmail() *SequenceDefinitionStepEmail {
+	if s == nil {
+		return nil
+	}
+	return s.Email
+}
+
+func (s *SequenceDefinitionStep) GetEnd() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.End
+}
+
+func (s *SequenceDefinitionStep) GetKey() string {
+	if s == nil {
+		return ""
+	}
+	return s.Key
+}
+
+func (s *SequenceDefinitionStep) GetLabel() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Label
+}
+
+func (s *SequenceDefinitionStep) GetNext() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Next
+}
+
+func (s *SequenceDefinitionStep) GetSplit() []*SequenceDefinitionPath {
+	if s == nil {
+		return nil
+	}
+	return s.Split
+}
+
+func (s *SequenceDefinitionStep) GetTag() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Tag
+}
+
+func (s *SequenceDefinitionStep) GetType() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Type
+}
+
+func (s *SequenceDefinitionStep) GetUntag() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Untag
+}
+
+func (s *SequenceDefinitionStep) GetWait() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Wait
+}
+
+func (s *SequenceDefinitionStep) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequenceDefinitionStep) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetBranch sets the Branch field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionStep) SetBranch(branch []*SequenceDefinitionPath) {
+	s.Branch = branch
+	s.require(sequenceDefinitionStepFieldBranch)
+}
+
+// SetConfig sets the Config field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionStep) SetConfig(config map[string]any) {
+	s.Config = config
+	s.require(sequenceDefinitionStepFieldConfig)
+}
+
+// SetContinueIf sets the ContinueIf field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionStep) SetContinueIf(continueIf *SequenceDefinitionCondition) {
+	s.ContinueIf = continueIf
+	s.require(sequenceDefinitionStepFieldContinueIf)
+}
+
+// SetElse sets the Else field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionStep) SetElse(else_ []*SequenceDefinitionStep) {
+	s.Else = else_
+	s.require(sequenceDefinitionStepFieldElse)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionStep) SetEmail(email *SequenceDefinitionStepEmail) {
+	s.Email = email
+	s.require(sequenceDefinitionStepFieldEmail)
+}
+
+// SetEnd sets the End field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionStep) SetEnd(end *bool) {
+	s.End = end
+	s.require(sequenceDefinitionStepFieldEnd)
+}
+
+// SetKey sets the Key field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionStep) SetKey(key string) {
+	s.Key = key
+	s.require(sequenceDefinitionStepFieldKey)
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionStep) SetLabel(label *string) {
+	s.Label = label
+	s.require(sequenceDefinitionStepFieldLabel)
+}
+
+// SetNext sets the Next field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionStep) SetNext(next *string) {
+	s.Next = next
+	s.require(sequenceDefinitionStepFieldNext)
+}
+
+// SetSplit sets the Split field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionStep) SetSplit(split []*SequenceDefinitionPath) {
+	s.Split = split
+	s.require(sequenceDefinitionStepFieldSplit)
+}
+
+// SetTag sets the Tag field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionStep) SetTag(tag *string) {
+	s.Tag = tag
+	s.require(sequenceDefinitionStepFieldTag)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionStep) SetType(type_ *string) {
+	s.Type = type_
+	s.require(sequenceDefinitionStepFieldType)
+}
+
+// SetUntag sets the Untag field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionStep) SetUntag(untag *string) {
+	s.Untag = untag
+	s.require(sequenceDefinitionStepFieldUntag)
+}
+
+// SetWait sets the Wait field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionStep) SetWait(wait *string) {
+	s.Wait = wait
+	s.require(sequenceDefinitionStepFieldWait)
+}
+
+func (s *SequenceDefinitionStep) UnmarshalJSON(data []byte) error {
+	type unmarshaler SequenceDefinitionStep
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SequenceDefinitionStep(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceDefinitionStep) MarshalJSON() ([]byte, error) {
+	type embed SequenceDefinitionStep
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequenceDefinitionStep) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+// Email steps only. Required for a new email step, with a subject or a template; omit to keep the stored content.
+var (
+	sequenceDefinitionStepEmailFieldBlocks      = big.NewInt(1 << 0)
+	sequenceDefinitionStepEmailFieldHTML        = big.NewInt(1 << 1)
+	sequenceDefinitionStepEmailFieldName        = big.NewInt(1 << 2)
+	sequenceDefinitionStepEmailFieldPreviewText = big.NewInt(1 << 3)
+	sequenceDefinitionStepEmailFieldSubject     = big.NewInt(1 << 4)
+	sequenceDefinitionStepEmailFieldTemplate    = big.NewInt(1 << 5)
+)
+
+type SequenceDefinitionStepEmail struct {
+	// Email blocks. GET always returns blocks.
+	Blocks []map[string]any `json:"blocks,omitempty" url:"blocks,omitempty"`
+	// Shortcut for a single HTML block. Use either blocks or html.
+	HTML        *string `json:"html,omitempty" url:"html,omitempty"`
+	Name        *string `json:"name,omitempty" url:"name,omitempty"`
+	PreviewText *string `json:"previewText,omitempty" url:"previewText,omitempty"`
+	Subject     *string `json:"subject,omitempty" url:"subject,omitempty"`
+	// ID of an email in your company. Supplies the subject, preview text, content and style for any of those the step does not write. The step keeps its own copy, refreshed from the template on every push.
+	Template *string `json:"template,omitempty" url:"template,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequenceDefinitionStepEmail) GetBlocks() []map[string]any {
+	if s == nil {
+		return nil
+	}
+	return s.Blocks
+}
+
+func (s *SequenceDefinitionStepEmail) GetHTML() *string {
+	if s == nil {
+		return nil
+	}
+	return s.HTML
+}
+
+func (s *SequenceDefinitionStepEmail) GetName() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Name
+}
+
+func (s *SequenceDefinitionStepEmail) GetPreviewText() *string {
+	if s == nil {
+		return nil
+	}
+	return s.PreviewText
+}
+
+func (s *SequenceDefinitionStepEmail) GetSubject() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Subject
+}
+
+func (s *SequenceDefinitionStepEmail) GetTemplate() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Template
+}
+
+func (s *SequenceDefinitionStepEmail) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequenceDefinitionStepEmail) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetBlocks sets the Blocks field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionStepEmail) SetBlocks(blocks []map[string]any) {
+	s.Blocks = blocks
+	s.require(sequenceDefinitionStepEmailFieldBlocks)
+}
+
+// SetHTML sets the HTML field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionStepEmail) SetHTML(html *string) {
+	s.HTML = html
+	s.require(sequenceDefinitionStepEmailFieldHTML)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionStepEmail) SetName(name *string) {
+	s.Name = name
+	s.require(sequenceDefinitionStepEmailFieldName)
+}
+
+// SetPreviewText sets the PreviewText field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionStepEmail) SetPreviewText(previewText *string) {
+	s.PreviewText = previewText
+	s.require(sequenceDefinitionStepEmailFieldPreviewText)
+}
+
+// SetSubject sets the Subject field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionStepEmail) SetSubject(subject *string) {
+	s.Subject = subject
+	s.require(sequenceDefinitionStepEmailFieldSubject)
+}
+
+// SetTemplate sets the Template field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionStepEmail) SetTemplate(template *string) {
+	s.Template = template
+	s.require(sequenceDefinitionStepEmailFieldTemplate)
+}
+
+func (s *SequenceDefinitionStepEmail) UnmarshalJSON(data []byte) error {
+	type unmarshaler SequenceDefinitionStepEmail
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SequenceDefinitionStepEmail(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceDefinitionStepEmail) MarshalJSON() ([]byte, error) {
+	type embed SequenceDefinitionStepEmail
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequenceDefinitionStepEmail) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+// Readable format only, and required there. Use one of event (with optional where property filters), tag, list, segment, manual: true, or type and config.
+var (
+	sequenceDefinitionTriggerFieldConfig  = big.NewInt(1 << 0)
+	sequenceDefinitionTriggerFieldEvent   = big.NewInt(1 << 1)
+	sequenceDefinitionTriggerFieldKey     = big.NewInt(1 << 2)
+	sequenceDefinitionTriggerFieldLabel   = big.NewInt(1 << 3)
+	sequenceDefinitionTriggerFieldList    = big.NewInt(1 << 4)
+	sequenceDefinitionTriggerFieldManual  = big.NewInt(1 << 5)
+	sequenceDefinitionTriggerFieldSegment = big.NewInt(1 << 6)
+	sequenceDefinitionTriggerFieldTag     = big.NewInt(1 << 7)
+	sequenceDefinitionTriggerFieldType    = big.NewInt(1 << 8)
+	sequenceDefinitionTriggerFieldWhere   = big.NewInt(1 << 9)
+)
+
+type SequenceDefinitionTrigger struct {
+	Config map[string]any `json:"config,omitempty" url:"config,omitempty"`
+	Event  *string        `json:"event,omitempty" url:"event,omitempty"`
+	// Defaults to trigger.
+	Key     *string          `json:"key,omitempty" url:"key,omitempty"`
+	Label   *string          `json:"label,omitempty" url:"label,omitempty"`
+	List    *string          `json:"list,omitempty" url:"list,omitempty"`
+	Manual  *bool            `json:"manual,omitempty" url:"manual,omitempty"`
+	Segment *string          `json:"segment,omitempty" url:"segment,omitempty"`
+	Tag     *string          `json:"tag,omitempty" url:"tag,omitempty"`
+	Type    *string          `json:"type,omitempty" url:"type,omitempty"`
+	Where   []map[string]any `json:"where,omitempty" url:"where,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequenceDefinitionTrigger) GetConfig() map[string]any {
+	if s == nil {
+		return nil
+	}
+	return s.Config
+}
+
+func (s *SequenceDefinitionTrigger) GetEvent() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Event
+}
+
+func (s *SequenceDefinitionTrigger) GetKey() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Key
+}
+
+func (s *SequenceDefinitionTrigger) GetLabel() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Label
+}
+
+func (s *SequenceDefinitionTrigger) GetList() *string {
+	if s == nil {
+		return nil
+	}
+	return s.List
+}
+
+func (s *SequenceDefinitionTrigger) GetManual() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.Manual
+}
+
+func (s *SequenceDefinitionTrigger) GetSegment() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Segment
+}
+
+func (s *SequenceDefinitionTrigger) GetTag() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Tag
+}
+
+func (s *SequenceDefinitionTrigger) GetType() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Type
+}
+
+func (s *SequenceDefinitionTrigger) GetWhere() []map[string]any {
+	if s == nil {
+		return nil
+	}
+	return s.Where
+}
+
+func (s *SequenceDefinitionTrigger) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequenceDefinitionTrigger) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetConfig sets the Config field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionTrigger) SetConfig(config map[string]any) {
+	s.Config = config
+	s.require(sequenceDefinitionTriggerFieldConfig)
+}
+
+// SetEvent sets the Event field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionTrigger) SetEvent(event *string) {
+	s.Event = event
+	s.require(sequenceDefinitionTriggerFieldEvent)
+}
+
+// SetKey sets the Key field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionTrigger) SetKey(key *string) {
+	s.Key = key
+	s.require(sequenceDefinitionTriggerFieldKey)
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionTrigger) SetLabel(label *string) {
+	s.Label = label
+	s.require(sequenceDefinitionTriggerFieldLabel)
+}
+
+// SetList sets the List field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionTrigger) SetList(list *string) {
+	s.List = list
+	s.require(sequenceDefinitionTriggerFieldList)
+}
+
+// SetManual sets the Manual field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionTrigger) SetManual(manual *bool) {
+	s.Manual = manual
+	s.require(sequenceDefinitionTriggerFieldManual)
+}
+
+// SetSegment sets the Segment field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionTrigger) SetSegment(segment *string) {
+	s.Segment = segment
+	s.require(sequenceDefinitionTriggerFieldSegment)
+}
+
+// SetTag sets the Tag field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionTrigger) SetTag(tag *string) {
+	s.Tag = tag
+	s.require(sequenceDefinitionTriggerFieldTag)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionTrigger) SetType(type_ *string) {
+	s.Type = type_
+	s.require(sequenceDefinitionTriggerFieldType)
+}
+
+// SetWhere sets the Where field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionTrigger) SetWhere(where []map[string]any) {
+	s.Where = where
+	s.require(sequenceDefinitionTriggerFieldWhere)
+}
+
+func (s *SequenceDefinitionTrigger) UnmarshalJSON(data []byte) error {
+	type unmarshaler SequenceDefinitionTrigger
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SequenceDefinitionTrigger(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceDefinitionTrigger) MarshalJSON() ([]byte, error) {
+	type embed SequenceDefinitionTrigger
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequenceDefinitionTrigger) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
 // Delay before this step runs. Use duration fields for fixed waits, mode until_date with untilDateField for a date from the trigger event or a contact attribute (untilDateSource), mode until_weekday with the weekday window fields, or mode until_key_date with untilKeyDate (prefer the waitUntilKeyDate shorthand).
 var (
 	sequenceDelayInputFieldDays                 = big.NewInt(1 << 0)
@@ -8865,38 +11788,40 @@ var (
 	sequenceDetailsFieldFromEmail                    = big.NewInt(1 << 10)
 	sequenceDetailsFieldFromName                     = big.NewInt(1 << 11)
 	sequenceDetailsFieldID                           = big.NewInt(1 << 12)
-	sequenceDetailsFieldKeyDates                     = big.NewInt(1 << 13)
-	sequenceDetailsFieldLabelIDs                     = big.NewInt(1 << 14)
-	sequenceDetailsFieldLabels                       = big.NewInt(1 << 15)
-	sequenceDetailsFieldName                         = big.NewInt(1 << 16)
-	sequenceDetailsFieldPausedAt                     = big.NewInt(1 << 17)
-	sequenceDetailsFieldPausedByUser                 = big.NewInt(1 << 18)
-	sequenceDetailsFieldPausedByUserID               = big.NewInt(1 << 19)
-	sequenceDetailsFieldPauseReason                  = big.NewInt(1 << 20)
-	sequenceDetailsFieldPauseSource                  = big.NewInt(1 << 21)
-	sequenceDetailsFieldProcessesExistingEnrollments = big.NewInt(1 << 22)
-	sequenceDetailsFieldRecurringEnrollment          = big.NewInt(1 << 23)
-	sequenceDetailsFieldReplyProfileID               = big.NewInt(1 << 24)
-	sequenceDetailsFieldReplyToEmail                 = big.NewInt(1 << 25)
-	sequenceDetailsFieldReplyToName                  = big.NewInt(1 << 26)
-	sequenceDetailsFieldSenderProfileID              = big.NewInt(1 << 27)
-	sequenceDetailsFieldSendingWindow                = big.NewInt(1 << 28)
-	sequenceDetailsFieldStatus                       = big.NewInt(1 << 29)
-	sequenceDetailsFieldTrigger                      = big.NewInt(1 << 30)
-	sequenceDetailsFieldTriggerConfig                = big.NewInt(1 << 31)
-	sequenceDetailsFieldUpdatedAt                    = big.NewInt(1 << 32)
-	sequenceDetailsFieldUserCancellable              = big.NewInt(1 << 33)
-	sequenceDetailsFieldAbTestCount                  = big.NewInt(1 << 34)
-	sequenceDetailsFieldDiscountCount                = big.NewInt(1 << 35)
-	sequenceDetailsFieldEdges                        = big.NewInt(1 << 36)
-	sequenceDetailsFieldEmailCount                   = big.NewInt(1 << 37)
-	sequenceDetailsFieldEmails                       = big.NewInt(1 << 38)
-	sequenceDetailsFieldEnrichedCount                = big.NewInt(1 << 39)
-	sequenceDetailsFieldEnrichmentStatus             = big.NewInt(1 << 40)
-	sequenceDetailsFieldGraphRevision                = big.NewInt(1 << 41)
-	sequenceDetailsFieldNodes                        = big.NewInt(1 << 42)
-	sequenceDetailsFieldStopCondition                = big.NewInt(1 << 43)
-	sequenceDetailsFieldSubscriberUpdateCount        = big.NewInt(1 << 44)
+	sequenceDetailsFieldKey                          = big.NewInt(1 << 13)
+	sequenceDetailsFieldKeyDates                     = big.NewInt(1 << 14)
+	sequenceDetailsFieldLabelIDs                     = big.NewInt(1 << 15)
+	sequenceDetailsFieldLabels                       = big.NewInt(1 << 16)
+	sequenceDetailsFieldManagedBy                    = big.NewInt(1 << 17)
+	sequenceDetailsFieldName                         = big.NewInt(1 << 18)
+	sequenceDetailsFieldPausedAt                     = big.NewInt(1 << 19)
+	sequenceDetailsFieldPausedByUser                 = big.NewInt(1 << 20)
+	sequenceDetailsFieldPausedByUserID               = big.NewInt(1 << 21)
+	sequenceDetailsFieldPauseReason                  = big.NewInt(1 << 22)
+	sequenceDetailsFieldPauseSource                  = big.NewInt(1 << 23)
+	sequenceDetailsFieldProcessesExistingEnrollments = big.NewInt(1 << 24)
+	sequenceDetailsFieldRecurringEnrollment          = big.NewInt(1 << 25)
+	sequenceDetailsFieldReplyProfileID               = big.NewInt(1 << 26)
+	sequenceDetailsFieldReplyToEmail                 = big.NewInt(1 << 27)
+	sequenceDetailsFieldReplyToName                  = big.NewInt(1 << 28)
+	sequenceDetailsFieldSenderProfileID              = big.NewInt(1 << 29)
+	sequenceDetailsFieldSendingWindow                = big.NewInt(1 << 30)
+	sequenceDetailsFieldStatus                       = big.NewInt(1 << 31)
+	sequenceDetailsFieldTrigger                      = big.NewInt(1 << 32)
+	sequenceDetailsFieldTriggerConfig                = big.NewInt(1 << 33)
+	sequenceDetailsFieldUpdatedAt                    = big.NewInt(1 << 34)
+	sequenceDetailsFieldUserCancellable              = big.NewInt(1 << 35)
+	sequenceDetailsFieldAbTestCount                  = big.NewInt(1 << 36)
+	sequenceDetailsFieldDiscountCount                = big.NewInt(1 << 37)
+	sequenceDetailsFieldEdges                        = big.NewInt(1 << 38)
+	sequenceDetailsFieldEmailCount                   = big.NewInt(1 << 39)
+	sequenceDetailsFieldEmails                       = big.NewInt(1 << 40)
+	sequenceDetailsFieldEnrichedCount                = big.NewInt(1 << 41)
+	sequenceDetailsFieldEnrichmentStatus             = big.NewInt(1 << 42)
+	sequenceDetailsFieldGraphRevision                = big.NewInt(1 << 43)
+	sequenceDetailsFieldNodes                        = big.NewInt(1 << 44)
+	sequenceDetailsFieldStopCondition                = big.NewInt(1 << 45)
+	sequenceDetailsFieldSubscriberUpdateCount        = big.NewInt(1 << 46)
 )
 
 type SequenceDetails struct {
@@ -8915,19 +11840,23 @@ type SequenceDetails struct {
 	// Whether new enrollments are paused while current recipients continue.
 	EnrollmentPaused *bool `json:"enrollmentPaused,omitempty" url:"enrollmentPaused,omitempty"`
 	// Whether email steps respect the company frequency cap.
-	FrequencyCapEnabled *bool                        `json:"frequencyCapEnabled,omitempty" url:"frequencyCapEnabled,omitempty"`
-	FromEmail           *string                      `json:"fromEmail,omitempty" url:"fromEmail,omitempty"`
-	FromName            *string                      `json:"fromName,omitempty" url:"fromName,omitempty"`
-	ID                  *string                      `json:"id,omitempty" url:"id,omitempty"`
-	KeyDates            *SequenceKeyDates            `json:"keyDates,omitempty" url:"keyDates,omitempty"`
-	LabelIDs            []string                     `json:"labelIds,omitempty" url:"labelIds,omitempty"`
-	Labels              []string                     `json:"labels,omitempty" url:"labels,omitempty"`
-	Name                *string                      `json:"name,omitempty" url:"name,omitempty"`
-	PausedAt            *time.Time                   `json:"pausedAt,omitempty" url:"pausedAt,omitempty"`
-	PausedByUser        *SequenceSummaryPausedByUser `json:"pausedByUser,omitempty" url:"pausedByUser,omitempty"`
-	PausedByUserID      *string                      `json:"pausedByUserId,omitempty" url:"pausedByUserId,omitempty"`
-	PauseReason         *string                      `json:"pauseReason,omitempty" url:"pauseReason,omitempty"`
-	PauseSource         *string                      `json:"pauseSource,omitempty" url:"pauseSource,omitempty"`
+	FrequencyCapEnabled *bool   `json:"frequencyCapEnabled,omitempty" url:"frequencyCapEnabled,omitempty"`
+	FromEmail           *string `json:"fromEmail,omitempty" url:"fromEmail,omitempty"`
+	FromName            *string `json:"fromName,omitempty" url:"fromName,omitempty"`
+	ID                  *string `json:"id,omitempty" url:"id,omitempty"`
+	// Your key for the sequence, set by a definition push. Null until one is pushed.
+	Key      *string           `json:"key,omitempty" url:"key,omitempty"`
+	KeyDates *SequenceKeyDates `json:"keyDates,omitempty" url:"keyDates,omitempty"`
+	LabelIDs []string          `json:"labelIds,omitempty" url:"labelIds,omitempty"`
+	Labels   []string          `json:"labels,omitempty" url:"labels,omitempty"`
+	// `code` when steps and settings are managed by definition pushes and read-only in the dashboard.
+	ManagedBy      *SequenceSummaryManagedBy    `json:"managedBy,omitempty" url:"managedBy,omitempty"`
+	Name           *string                      `json:"name,omitempty" url:"name,omitempty"`
+	PausedAt       *time.Time                   `json:"pausedAt,omitempty" url:"pausedAt,omitempty"`
+	PausedByUser   *SequenceSummaryPausedByUser `json:"pausedByUser,omitempty" url:"pausedByUser,omitempty"`
+	PausedByUserID *string                      `json:"pausedByUserId,omitempty" url:"pausedByUserId,omitempty"`
+	PauseReason    *string                      `json:"pauseReason,omitempty" url:"pauseReason,omitempty"`
+	PauseSource    *string                      `json:"pauseSource,omitempty" url:"pauseSource,omitempty"`
 	// Whether subscribers already inside the sequence keep advancing and receiving steps.
 	ProcessesExistingEnrollments *bool `json:"processesExistingEnrollments,omitempty" url:"processesExistingEnrollments,omitempty"`
 	// Recurring schedule of a manual-trigger sequence, or null. Change it with PUT /sequences/{sequenceId}/recurring-enrollment.
@@ -9056,6 +11985,13 @@ func (s *SequenceDetails) GetID() *string {
 	return s.ID
 }
 
+func (s *SequenceDetails) GetKey() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Key
+}
+
 func (s *SequenceDetails) GetKeyDates() *SequenceKeyDates {
 	if s == nil {
 		return nil
@@ -9075,6 +12011,13 @@ func (s *SequenceDetails) GetLabels() []string {
 		return nil
 	}
 	return s.Labels
+}
+
+func (s *SequenceDetails) GetManagedBy() *SequenceSummaryManagedBy {
+	if s == nil {
+		return nil
+	}
+	return s.ManagedBy
 }
 
 func (s *SequenceDetails) GetName() *string {
@@ -9385,6 +12328,13 @@ func (s *SequenceDetails) SetID(id *string) {
 	s.require(sequenceDetailsFieldID)
 }
 
+// SetKey sets the Key field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDetails) SetKey(key *string) {
+	s.Key = key
+	s.require(sequenceDetailsFieldKey)
+}
+
 // SetKeyDates sets the KeyDates field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *SequenceDetails) SetKeyDates(keyDates *SequenceKeyDates) {
@@ -9404,6 +12354,13 @@ func (s *SequenceDetails) SetLabelIDs(labelIDs []string) {
 func (s *SequenceDetails) SetLabels(labels []string) {
 	s.Labels = labels
 	s.require(sequenceDetailsFieldLabels)
+}
+
+// SetManagedBy sets the ManagedBy field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDetails) SetManagedBy(managedBy *SequenceSummaryManagedBy) {
+	s.ManagedBy = managedBy
+	s.require(sequenceDetailsFieldManagedBy)
 }
 
 // SetName sets the Name field and marks it as non-optional;
@@ -19188,28 +22145,30 @@ var (
 	sequenceListItemFieldFromEmail                    = big.NewInt(1 << 10)
 	sequenceListItemFieldFromName                     = big.NewInt(1 << 11)
 	sequenceListItemFieldID                           = big.NewInt(1 << 12)
-	sequenceListItemFieldKeyDates                     = big.NewInt(1 << 13)
-	sequenceListItemFieldLabelIDs                     = big.NewInt(1 << 14)
-	sequenceListItemFieldLabels                       = big.NewInt(1 << 15)
-	sequenceListItemFieldName                         = big.NewInt(1 << 16)
-	sequenceListItemFieldPausedAt                     = big.NewInt(1 << 17)
-	sequenceListItemFieldPausedByUser                 = big.NewInt(1 << 18)
-	sequenceListItemFieldPausedByUserID               = big.NewInt(1 << 19)
-	sequenceListItemFieldPauseReason                  = big.NewInt(1 << 20)
-	sequenceListItemFieldPauseSource                  = big.NewInt(1 << 21)
-	sequenceListItemFieldProcessesExistingEnrollments = big.NewInt(1 << 22)
-	sequenceListItemFieldRecurringEnrollment          = big.NewInt(1 << 23)
-	sequenceListItemFieldReplyProfileID               = big.NewInt(1 << 24)
-	sequenceListItemFieldReplyToEmail                 = big.NewInt(1 << 25)
-	sequenceListItemFieldReplyToName                  = big.NewInt(1 << 26)
-	sequenceListItemFieldSenderProfileID              = big.NewInt(1 << 27)
-	sequenceListItemFieldSendingWindow                = big.NewInt(1 << 28)
-	sequenceListItemFieldStatus                       = big.NewInt(1 << 29)
-	sequenceListItemFieldTrigger                      = big.NewInt(1 << 30)
-	sequenceListItemFieldTriggerConfig                = big.NewInt(1 << 31)
-	sequenceListItemFieldUpdatedAt                    = big.NewInt(1 << 32)
-	sequenceListItemFieldUserCancellable              = big.NewInt(1 << 33)
-	sequenceListItemFieldEmailCount                   = big.NewInt(1 << 34)
+	sequenceListItemFieldKey                          = big.NewInt(1 << 13)
+	sequenceListItemFieldKeyDates                     = big.NewInt(1 << 14)
+	sequenceListItemFieldLabelIDs                     = big.NewInt(1 << 15)
+	sequenceListItemFieldLabels                       = big.NewInt(1 << 16)
+	sequenceListItemFieldManagedBy                    = big.NewInt(1 << 17)
+	sequenceListItemFieldName                         = big.NewInt(1 << 18)
+	sequenceListItemFieldPausedAt                     = big.NewInt(1 << 19)
+	sequenceListItemFieldPausedByUser                 = big.NewInt(1 << 20)
+	sequenceListItemFieldPausedByUserID               = big.NewInt(1 << 21)
+	sequenceListItemFieldPauseReason                  = big.NewInt(1 << 22)
+	sequenceListItemFieldPauseSource                  = big.NewInt(1 << 23)
+	sequenceListItemFieldProcessesExistingEnrollments = big.NewInt(1 << 24)
+	sequenceListItemFieldRecurringEnrollment          = big.NewInt(1 << 25)
+	sequenceListItemFieldReplyProfileID               = big.NewInt(1 << 26)
+	sequenceListItemFieldReplyToEmail                 = big.NewInt(1 << 27)
+	sequenceListItemFieldReplyToName                  = big.NewInt(1 << 28)
+	sequenceListItemFieldSenderProfileID              = big.NewInt(1 << 29)
+	sequenceListItemFieldSendingWindow                = big.NewInt(1 << 30)
+	sequenceListItemFieldStatus                       = big.NewInt(1 << 31)
+	sequenceListItemFieldTrigger                      = big.NewInt(1 << 32)
+	sequenceListItemFieldTriggerConfig                = big.NewInt(1 << 33)
+	sequenceListItemFieldUpdatedAt                    = big.NewInt(1 << 34)
+	sequenceListItemFieldUserCancellable              = big.NewInt(1 << 35)
+	sequenceListItemFieldEmailCount                   = big.NewInt(1 << 36)
 )
 
 type SequenceListItem struct {
@@ -19228,19 +22187,23 @@ type SequenceListItem struct {
 	// Whether new enrollments are paused while current recipients continue.
 	EnrollmentPaused *bool `json:"enrollmentPaused,omitempty" url:"enrollmentPaused,omitempty"`
 	// Whether email steps respect the company frequency cap.
-	FrequencyCapEnabled *bool                        `json:"frequencyCapEnabled,omitempty" url:"frequencyCapEnabled,omitempty"`
-	FromEmail           *string                      `json:"fromEmail,omitempty" url:"fromEmail,omitempty"`
-	FromName            *string                      `json:"fromName,omitempty" url:"fromName,omitempty"`
-	ID                  *string                      `json:"id,omitempty" url:"id,omitempty"`
-	KeyDates            *SequenceKeyDates            `json:"keyDates,omitempty" url:"keyDates,omitempty"`
-	LabelIDs            []string                     `json:"labelIds,omitempty" url:"labelIds,omitempty"`
-	Labels              []string                     `json:"labels,omitempty" url:"labels,omitempty"`
-	Name                *string                      `json:"name,omitempty" url:"name,omitempty"`
-	PausedAt            *time.Time                   `json:"pausedAt,omitempty" url:"pausedAt,omitempty"`
-	PausedByUser        *SequenceSummaryPausedByUser `json:"pausedByUser,omitempty" url:"pausedByUser,omitempty"`
-	PausedByUserID      *string                      `json:"pausedByUserId,omitempty" url:"pausedByUserId,omitempty"`
-	PauseReason         *string                      `json:"pauseReason,omitempty" url:"pauseReason,omitempty"`
-	PauseSource         *string                      `json:"pauseSource,omitempty" url:"pauseSource,omitempty"`
+	FrequencyCapEnabled *bool   `json:"frequencyCapEnabled,omitempty" url:"frequencyCapEnabled,omitempty"`
+	FromEmail           *string `json:"fromEmail,omitempty" url:"fromEmail,omitempty"`
+	FromName            *string `json:"fromName,omitempty" url:"fromName,omitempty"`
+	ID                  *string `json:"id,omitempty" url:"id,omitempty"`
+	// Your key for the sequence, set by a definition push. Null until one is pushed.
+	Key      *string           `json:"key,omitempty" url:"key,omitempty"`
+	KeyDates *SequenceKeyDates `json:"keyDates,omitempty" url:"keyDates,omitempty"`
+	LabelIDs []string          `json:"labelIds,omitempty" url:"labelIds,omitempty"`
+	Labels   []string          `json:"labels,omitempty" url:"labels,omitempty"`
+	// `code` when steps and settings are managed by definition pushes and read-only in the dashboard.
+	ManagedBy      *SequenceSummaryManagedBy    `json:"managedBy,omitempty" url:"managedBy,omitempty"`
+	Name           *string                      `json:"name,omitempty" url:"name,omitempty"`
+	PausedAt       *time.Time                   `json:"pausedAt,omitempty" url:"pausedAt,omitempty"`
+	PausedByUser   *SequenceSummaryPausedByUser `json:"pausedByUser,omitempty" url:"pausedByUser,omitempty"`
+	PausedByUserID *string                      `json:"pausedByUserId,omitempty" url:"pausedByUserId,omitempty"`
+	PauseReason    *string                      `json:"pauseReason,omitempty" url:"pauseReason,omitempty"`
+	PauseSource    *string                      `json:"pauseSource,omitempty" url:"pauseSource,omitempty"`
 	// Whether subscribers already inside the sequence keep advancing and receiving steps.
 	ProcessesExistingEnrollments *bool `json:"processesExistingEnrollments,omitempty" url:"processesExistingEnrollments,omitempty"`
 	// Recurring schedule of a manual-trigger sequence, or null. Change it with PUT /sequences/{sequenceId}/recurring-enrollment.
@@ -19356,6 +22319,13 @@ func (s *SequenceListItem) GetID() *string {
 	return s.ID
 }
 
+func (s *SequenceListItem) GetKey() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Key
+}
+
 func (s *SequenceListItem) GetKeyDates() *SequenceKeyDates {
 	if s == nil {
 		return nil
@@ -19375,6 +22345,13 @@ func (s *SequenceListItem) GetLabels() []string {
 		return nil
 	}
 	return s.Labels
+}
+
+func (s *SequenceListItem) GetManagedBy() *SequenceSummaryManagedBy {
+	if s == nil {
+		return nil
+	}
+	return s.ManagedBy
 }
 
 func (s *SequenceListItem) GetName() *string {
@@ -19615,6 +22592,13 @@ func (s *SequenceListItem) SetID(id *string) {
 	s.require(sequenceListItemFieldID)
 }
 
+// SetKey sets the Key field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceListItem) SetKey(key *string) {
+	s.Key = key
+	s.require(sequenceListItemFieldKey)
+}
+
 // SetKeyDates sets the KeyDates field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *SequenceListItem) SetKeyDates(keyDates *SequenceKeyDates) {
@@ -19634,6 +22618,13 @@ func (s *SequenceListItem) SetLabelIDs(labelIDs []string) {
 func (s *SequenceListItem) SetLabels(labels []string) {
 	s.Labels = labels
 	s.require(sequenceListItemFieldLabels)
+}
+
+// SetManagedBy sets the ManagedBy field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceListItem) SetManagedBy(managedBy *SequenceSummaryManagedBy) {
+	s.ManagedBy = managedBy
+	s.require(sequenceListItemFieldManagedBy)
 }
 
 // SetName sets the Name field and marks it as non-optional;
@@ -24852,27 +27843,29 @@ var (
 	sequenceSummaryFieldFromEmail                    = big.NewInt(1 << 10)
 	sequenceSummaryFieldFromName                     = big.NewInt(1 << 11)
 	sequenceSummaryFieldID                           = big.NewInt(1 << 12)
-	sequenceSummaryFieldKeyDates                     = big.NewInt(1 << 13)
-	sequenceSummaryFieldLabelIDs                     = big.NewInt(1 << 14)
-	sequenceSummaryFieldLabels                       = big.NewInt(1 << 15)
-	sequenceSummaryFieldName                         = big.NewInt(1 << 16)
-	sequenceSummaryFieldPausedAt                     = big.NewInt(1 << 17)
-	sequenceSummaryFieldPausedByUser                 = big.NewInt(1 << 18)
-	sequenceSummaryFieldPausedByUserID               = big.NewInt(1 << 19)
-	sequenceSummaryFieldPauseReason                  = big.NewInt(1 << 20)
-	sequenceSummaryFieldPauseSource                  = big.NewInt(1 << 21)
-	sequenceSummaryFieldProcessesExistingEnrollments = big.NewInt(1 << 22)
-	sequenceSummaryFieldRecurringEnrollment          = big.NewInt(1 << 23)
-	sequenceSummaryFieldReplyProfileID               = big.NewInt(1 << 24)
-	sequenceSummaryFieldReplyToEmail                 = big.NewInt(1 << 25)
-	sequenceSummaryFieldReplyToName                  = big.NewInt(1 << 26)
-	sequenceSummaryFieldSenderProfileID              = big.NewInt(1 << 27)
-	sequenceSummaryFieldSendingWindow                = big.NewInt(1 << 28)
-	sequenceSummaryFieldStatus                       = big.NewInt(1 << 29)
-	sequenceSummaryFieldTrigger                      = big.NewInt(1 << 30)
-	sequenceSummaryFieldTriggerConfig                = big.NewInt(1 << 31)
-	sequenceSummaryFieldUpdatedAt                    = big.NewInt(1 << 32)
-	sequenceSummaryFieldUserCancellable              = big.NewInt(1 << 33)
+	sequenceSummaryFieldKey                          = big.NewInt(1 << 13)
+	sequenceSummaryFieldKeyDates                     = big.NewInt(1 << 14)
+	sequenceSummaryFieldLabelIDs                     = big.NewInt(1 << 15)
+	sequenceSummaryFieldLabels                       = big.NewInt(1 << 16)
+	sequenceSummaryFieldManagedBy                    = big.NewInt(1 << 17)
+	sequenceSummaryFieldName                         = big.NewInt(1 << 18)
+	sequenceSummaryFieldPausedAt                     = big.NewInt(1 << 19)
+	sequenceSummaryFieldPausedByUser                 = big.NewInt(1 << 20)
+	sequenceSummaryFieldPausedByUserID               = big.NewInt(1 << 21)
+	sequenceSummaryFieldPauseReason                  = big.NewInt(1 << 22)
+	sequenceSummaryFieldPauseSource                  = big.NewInt(1 << 23)
+	sequenceSummaryFieldProcessesExistingEnrollments = big.NewInt(1 << 24)
+	sequenceSummaryFieldRecurringEnrollment          = big.NewInt(1 << 25)
+	sequenceSummaryFieldReplyProfileID               = big.NewInt(1 << 26)
+	sequenceSummaryFieldReplyToEmail                 = big.NewInt(1 << 27)
+	sequenceSummaryFieldReplyToName                  = big.NewInt(1 << 28)
+	sequenceSummaryFieldSenderProfileID              = big.NewInt(1 << 29)
+	sequenceSummaryFieldSendingWindow                = big.NewInt(1 << 30)
+	sequenceSummaryFieldStatus                       = big.NewInt(1 << 31)
+	sequenceSummaryFieldTrigger                      = big.NewInt(1 << 32)
+	sequenceSummaryFieldTriggerConfig                = big.NewInt(1 << 33)
+	sequenceSummaryFieldUpdatedAt                    = big.NewInt(1 << 34)
+	sequenceSummaryFieldUserCancellable              = big.NewInt(1 << 35)
 )
 
 type SequenceSummary struct {
@@ -24891,19 +27884,23 @@ type SequenceSummary struct {
 	// Whether new enrollments are paused while current recipients continue.
 	EnrollmentPaused *bool `json:"enrollmentPaused,omitempty" url:"enrollmentPaused,omitempty"`
 	// Whether email steps respect the company frequency cap.
-	FrequencyCapEnabled *bool                        `json:"frequencyCapEnabled,omitempty" url:"frequencyCapEnabled,omitempty"`
-	FromEmail           *string                      `json:"fromEmail,omitempty" url:"fromEmail,omitempty"`
-	FromName            *string                      `json:"fromName,omitempty" url:"fromName,omitempty"`
-	ID                  *string                      `json:"id,omitempty" url:"id,omitempty"`
-	KeyDates            *SequenceKeyDates            `json:"keyDates,omitempty" url:"keyDates,omitempty"`
-	LabelIDs            []string                     `json:"labelIds,omitempty" url:"labelIds,omitempty"`
-	Labels              []string                     `json:"labels,omitempty" url:"labels,omitempty"`
-	Name                *string                      `json:"name,omitempty" url:"name,omitempty"`
-	PausedAt            *time.Time                   `json:"pausedAt,omitempty" url:"pausedAt,omitempty"`
-	PausedByUser        *SequenceSummaryPausedByUser `json:"pausedByUser,omitempty" url:"pausedByUser,omitempty"`
-	PausedByUserID      *string                      `json:"pausedByUserId,omitempty" url:"pausedByUserId,omitempty"`
-	PauseReason         *string                      `json:"pauseReason,omitempty" url:"pauseReason,omitempty"`
-	PauseSource         *string                      `json:"pauseSource,omitempty" url:"pauseSource,omitempty"`
+	FrequencyCapEnabled *bool   `json:"frequencyCapEnabled,omitempty" url:"frequencyCapEnabled,omitempty"`
+	FromEmail           *string `json:"fromEmail,omitempty" url:"fromEmail,omitempty"`
+	FromName            *string `json:"fromName,omitempty" url:"fromName,omitempty"`
+	ID                  *string `json:"id,omitempty" url:"id,omitempty"`
+	// Your key for the sequence, set by a definition push. Null until one is pushed.
+	Key      *string           `json:"key,omitempty" url:"key,omitempty"`
+	KeyDates *SequenceKeyDates `json:"keyDates,omitempty" url:"keyDates,omitempty"`
+	LabelIDs []string          `json:"labelIds,omitempty" url:"labelIds,omitempty"`
+	Labels   []string          `json:"labels,omitempty" url:"labels,omitempty"`
+	// `code` when steps and settings are managed by definition pushes and read-only in the dashboard.
+	ManagedBy      *SequenceSummaryManagedBy    `json:"managedBy,omitempty" url:"managedBy,omitempty"`
+	Name           *string                      `json:"name,omitempty" url:"name,omitempty"`
+	PausedAt       *time.Time                   `json:"pausedAt,omitempty" url:"pausedAt,omitempty"`
+	PausedByUser   *SequenceSummaryPausedByUser `json:"pausedByUser,omitempty" url:"pausedByUser,omitempty"`
+	PausedByUserID *string                      `json:"pausedByUserId,omitempty" url:"pausedByUserId,omitempty"`
+	PauseReason    *string                      `json:"pauseReason,omitempty" url:"pauseReason,omitempty"`
+	PauseSource    *string                      `json:"pauseSource,omitempty" url:"pauseSource,omitempty"`
 	// Whether subscribers already inside the sequence keep advancing and receiving steps.
 	ProcessesExistingEnrollments *bool `json:"processesExistingEnrollments,omitempty" url:"processesExistingEnrollments,omitempty"`
 	// Recurring schedule of a manual-trigger sequence, or null. Change it with PUT /sequences/{sequenceId}/recurring-enrollment.
@@ -25017,6 +28014,13 @@ func (s *SequenceSummary) GetID() *string {
 	return s.ID
 }
 
+func (s *SequenceSummary) GetKey() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Key
+}
+
 func (s *SequenceSummary) GetKeyDates() *SequenceKeyDates {
 	if s == nil {
 		return nil
@@ -25036,6 +28040,13 @@ func (s *SequenceSummary) GetLabels() []string {
 		return nil
 	}
 	return s.Labels
+}
+
+func (s *SequenceSummary) GetManagedBy() *SequenceSummaryManagedBy {
+	if s == nil {
+		return nil
+	}
+	return s.ManagedBy
 }
 
 func (s *SequenceSummary) GetName() *string {
@@ -25269,6 +28280,13 @@ func (s *SequenceSummary) SetID(id *string) {
 	s.require(sequenceSummaryFieldID)
 }
 
+// SetKey sets the Key field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceSummary) SetKey(key *string) {
+	s.Key = key
+	s.require(sequenceSummaryFieldKey)
+}
+
 // SetKeyDates sets the KeyDates field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *SequenceSummary) SetKeyDates(keyDates *SequenceKeyDates) {
@@ -25288,6 +28306,13 @@ func (s *SequenceSummary) SetLabelIDs(labelIDs []string) {
 func (s *SequenceSummary) SetLabels(labels []string) {
 	s.Labels = labels
 	s.require(sequenceSummaryFieldLabels)
+}
+
+// SetManagedBy sets the ManagedBy field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceSummary) SetManagedBy(managedBy *SequenceSummaryManagedBy) {
+	s.ManagedBy = managedBy
+	s.require(sequenceSummaryFieldManagedBy)
 }
 
 // SetName sets the Name field and marks it as non-optional;
@@ -25472,6 +28497,29 @@ func (s *SequenceSummary) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", s)
+}
+
+// `code` when steps and settings are managed by definition pushes and read-only in the dashboard.
+type SequenceSummaryManagedBy string
+
+const (
+	SequenceSummaryManagedByDashboard SequenceSummaryManagedBy = "dashboard"
+	SequenceSummaryManagedByCode      SequenceSummaryManagedBy = "code"
+)
+
+func NewSequenceSummaryManagedByFromString(s string) (SequenceSummaryManagedBy, error) {
+	switch s {
+	case "dashboard":
+		return SequenceSummaryManagedByDashboard, nil
+	case "code":
+		return SequenceSummaryManagedByCode, nil
+	}
+	var t SequenceSummaryManagedBy
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SequenceSummaryManagedBy) Ptr() *SequenceSummaryManagedBy {
+	return &s
 }
 
 var (
@@ -33027,6 +36075,330 @@ func (g *GetAudienceEnrollmentSequencesResponse) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", g)
+}
+
+type GetDefinitionByIDSequencesRequestFormat string
+
+const (
+	GetDefinitionByIDSequencesRequestFormatReadable GetDefinitionByIDSequencesRequestFormat = "readable"
+	GetDefinitionByIDSequencesRequestFormatRaw      GetDefinitionByIDSequencesRequestFormat = "raw"
+)
+
+func NewGetDefinitionByIDSequencesRequestFormatFromString(s string) (GetDefinitionByIDSequencesRequestFormat, error) {
+	switch s {
+	case "readable":
+		return GetDefinitionByIDSequencesRequestFormatReadable, nil
+	case "raw":
+		return GetDefinitionByIDSequencesRequestFormatRaw, nil
+	}
+	var t GetDefinitionByIDSequencesRequestFormat
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (g GetDefinitionByIDSequencesRequestFormat) Ptr() *GetDefinitionByIDSequencesRequestFormat {
+	return &g
+}
+
+var (
+	getDefinitionByIDSequencesResponseFieldDefinition = big.NewInt(1 << 0)
+	getDefinitionByIDSequencesResponseFieldFormat     = big.NewInt(1 << 1)
+	getDefinitionByIDSequencesResponseFieldSuccess    = big.NewInt(1 << 2)
+)
+
+type GetDefinitionByIDSequencesResponse struct {
+	Definition *SequenceDefinition `json:"definition,omitempty" url:"definition,omitempty"`
+	// The format of definition.
+	Format  *GetDefinitionByIDSequencesResponseFormat `json:"format,omitempty" url:"format,omitempty"`
+	Success *bool                                     `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (g *GetDefinitionByIDSequencesResponse) GetDefinition() *SequenceDefinition {
+	if g == nil {
+		return nil
+	}
+	return g.Definition
+}
+
+func (g *GetDefinitionByIDSequencesResponse) GetFormat() *GetDefinitionByIDSequencesResponseFormat {
+	if g == nil {
+		return nil
+	}
+	return g.Format
+}
+
+func (g *GetDefinitionByIDSequencesResponse) GetSuccess() *bool {
+	if g == nil {
+		return nil
+	}
+	return g.Success
+}
+
+func (g *GetDefinitionByIDSequencesResponse) GetExtraProperties() map[string]interface{} {
+	if g == nil {
+		return nil
+	}
+	return g.extraProperties
+}
+
+func (g *GetDefinitionByIDSequencesResponse) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetDefinition sets the Definition field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetDefinitionByIDSequencesResponse) SetDefinition(definition *SequenceDefinition) {
+	g.Definition = definition
+	g.require(getDefinitionByIDSequencesResponseFieldDefinition)
+}
+
+// SetFormat sets the Format field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetDefinitionByIDSequencesResponse) SetFormat(format *GetDefinitionByIDSequencesResponseFormat) {
+	g.Format = format
+	g.require(getDefinitionByIDSequencesResponseFieldFormat)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetDefinitionByIDSequencesResponse) SetSuccess(success *bool) {
+	g.Success = success
+	g.require(getDefinitionByIDSequencesResponseFieldSuccess)
+}
+
+func (g *GetDefinitionByIDSequencesResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler GetDefinitionByIDSequencesResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*g = GetDefinitionByIDSequencesResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *g)
+	if err != nil {
+		return err
+	}
+	g.extraProperties = extraProperties
+	g.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (g *GetDefinitionByIDSequencesResponse) MarshalJSON() ([]byte, error) {
+	type embed GetDefinitionByIDSequencesResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*g),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (g *GetDefinitionByIDSequencesResponse) String() string {
+	if g == nil {
+		return "<nil>"
+	}
+	if len(g.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(g.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(g); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", g)
+}
+
+// The format of definition.
+type GetDefinitionByIDSequencesResponseFormat string
+
+const (
+	GetDefinitionByIDSequencesResponseFormatReadable GetDefinitionByIDSequencesResponseFormat = "readable"
+	GetDefinitionByIDSequencesResponseFormatRaw      GetDefinitionByIDSequencesResponseFormat = "raw"
+)
+
+func NewGetDefinitionByIDSequencesResponseFormatFromString(s string) (GetDefinitionByIDSequencesResponseFormat, error) {
+	switch s {
+	case "readable":
+		return GetDefinitionByIDSequencesResponseFormatReadable, nil
+	case "raw":
+		return GetDefinitionByIDSequencesResponseFormatRaw, nil
+	}
+	var t GetDefinitionByIDSequencesResponseFormat
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (g GetDefinitionByIDSequencesResponseFormat) Ptr() *GetDefinitionByIDSequencesResponseFormat {
+	return &g
+}
+
+type GetDefinitionSequencesRequestFormat string
+
+const (
+	GetDefinitionSequencesRequestFormatReadable GetDefinitionSequencesRequestFormat = "readable"
+	GetDefinitionSequencesRequestFormatRaw      GetDefinitionSequencesRequestFormat = "raw"
+)
+
+func NewGetDefinitionSequencesRequestFormatFromString(s string) (GetDefinitionSequencesRequestFormat, error) {
+	switch s {
+	case "readable":
+		return GetDefinitionSequencesRequestFormatReadable, nil
+	case "raw":
+		return GetDefinitionSequencesRequestFormatRaw, nil
+	}
+	var t GetDefinitionSequencesRequestFormat
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (g GetDefinitionSequencesRequestFormat) Ptr() *GetDefinitionSequencesRequestFormat {
+	return &g
+}
+
+var (
+	getDefinitionSequencesResponseFieldDefinition = big.NewInt(1 << 0)
+	getDefinitionSequencesResponseFieldFormat     = big.NewInt(1 << 1)
+	getDefinitionSequencesResponseFieldSuccess    = big.NewInt(1 << 2)
+)
+
+type GetDefinitionSequencesResponse struct {
+	Definition *SequenceDefinition `json:"definition,omitempty" url:"definition,omitempty"`
+	// The format of definition.
+	Format  *GetDefinitionSequencesResponseFormat `json:"format,omitempty" url:"format,omitempty"`
+	Success *bool                                 `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (g *GetDefinitionSequencesResponse) GetDefinition() *SequenceDefinition {
+	if g == nil {
+		return nil
+	}
+	return g.Definition
+}
+
+func (g *GetDefinitionSequencesResponse) GetFormat() *GetDefinitionSequencesResponseFormat {
+	if g == nil {
+		return nil
+	}
+	return g.Format
+}
+
+func (g *GetDefinitionSequencesResponse) GetSuccess() *bool {
+	if g == nil {
+		return nil
+	}
+	return g.Success
+}
+
+func (g *GetDefinitionSequencesResponse) GetExtraProperties() map[string]interface{} {
+	if g == nil {
+		return nil
+	}
+	return g.extraProperties
+}
+
+func (g *GetDefinitionSequencesResponse) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetDefinition sets the Definition field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetDefinitionSequencesResponse) SetDefinition(definition *SequenceDefinition) {
+	g.Definition = definition
+	g.require(getDefinitionSequencesResponseFieldDefinition)
+}
+
+// SetFormat sets the Format field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetDefinitionSequencesResponse) SetFormat(format *GetDefinitionSequencesResponseFormat) {
+	g.Format = format
+	g.require(getDefinitionSequencesResponseFieldFormat)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetDefinitionSequencesResponse) SetSuccess(success *bool) {
+	g.Success = success
+	g.require(getDefinitionSequencesResponseFieldSuccess)
+}
+
+func (g *GetDefinitionSequencesResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler GetDefinitionSequencesResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*g = GetDefinitionSequencesResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *g)
+	if err != nil {
+		return err
+	}
+	g.extraProperties = extraProperties
+	g.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (g *GetDefinitionSequencesResponse) MarshalJSON() ([]byte, error) {
+	type embed GetDefinitionSequencesResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*g),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (g *GetDefinitionSequencesResponse) String() string {
+	if g == nil {
+		return "<nil>"
+	}
+	if len(g.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(g.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(g); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", g)
+}
+
+// The format of definition.
+type GetDefinitionSequencesResponseFormat string
+
+const (
+	GetDefinitionSequencesResponseFormatReadable GetDefinitionSequencesResponseFormat = "readable"
+	GetDefinitionSequencesResponseFormatRaw      GetDefinitionSequencesResponseFormat = "raw"
+)
+
+func NewGetDefinitionSequencesResponseFormatFromString(s string) (GetDefinitionSequencesResponseFormat, error) {
+	switch s {
+	case "readable":
+		return GetDefinitionSequencesResponseFormatReadable, nil
+	case "raw":
+		return GetDefinitionSequencesResponseFormatRaw, nil
+	}
+	var t GetDefinitionSequencesResponseFormat
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (g GetDefinitionSequencesResponseFormat) Ptr() *GetDefinitionSequencesResponseFormat {
+	return &g
 }
 
 var (

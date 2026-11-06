@@ -140,7 +140,11 @@ func TestInAppListInAppMessagesWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithAPIKey("test-token"),
 	)
-	request := &sequenzygo.ListInAppMessagesRequest{}
+	request := &sequenzygo.ListInAppMessagesRequest{
+		Actions: sequenzygo.String(
+			"request_push_permission",
+		),
+	}
 	_, invocationErr := client.InApp.ListInAppMessages(
 		context.TODO(),
 		request,
@@ -150,7 +154,7 @@ func TestInAppListInAppMessagesWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestInAppListInAppMessagesWithWireMock", "GET", "/in-app/messages", nil, 1)
+	VerifyRequestCount(t, "TestInAppListInAppMessagesWithWireMock", "GET", "/in-app/messages", map[string]interface{}{"actions": "request_push_permission"}, 1)
 }
 
 func TestInAppListInAppTemplatesWithWireMock(

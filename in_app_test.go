@@ -101,6 +101,14 @@ func TestSettersMarkExplicitGetInAppStepStatsRequest(t *testing.T) {
 }
 
 func TestSettersListInAppMessagesRequest(t *testing.T) {
+	t.Run("SetActions", func(t *testing.T) {
+		obj := &ListInAppMessagesRequest{}
+		var fernTestValueActions *string
+		obj.SetActions(fernTestValueActions)
+		assert.Equal(t, fernTestValueActions, obj.Actions)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetEmail", func(t *testing.T) {
 		obj := &ListInAppMessagesRequest{}
 		var fernTestValueEmail *string
@@ -160,6 +168,37 @@ func TestSettersListInAppMessagesRequest(t *testing.T) {
 }
 
 func TestSettersMarkExplicitListInAppMessagesRequest(t *testing.T) {
+	t.Run("SetActions_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListInAppMessagesRequest{}
+		var fernTestValueActions *string
+
+		// Act
+		obj.SetActions(fernTestValueActions)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetEmail_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -396,6 +435,14 @@ func TestSettersRecordInAppEventRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetPushPermission", func(t *testing.T) {
+		obj := &RecordInAppEventRequest{}
+		var fernTestValuePushPermission *RecordInAppEventRequestPushPermission
+		obj.SetPushPermission(fernTestValuePushPermission)
+		assert.Equal(t, fernTestValuePushPermission, obj.PushPermission)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetType", func(t *testing.T) {
 		obj := &RecordInAppEventRequest{}
 		var fernTestValueType RecordInAppEventRequestType
@@ -446,6 +493,37 @@ func TestSettersMarkExplicitRecordInAppEventRequest(t *testing.T) {
 
 		// Act
 		obj.SetButtonID(fernTestValueButtonID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPushPermission_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RecordInAppEventRequest{}
+		var fernTestValuePushPermission *RecordInAppEventRequestPushPermission
+
+		// Act
+		obj.SetPushPermission(fernTestValuePushPermission)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -3676,6 +3754,22 @@ func TestSettersGetInAppStepStatsResponseStats(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetPushPermissionDenied", func(t *testing.T) {
+		obj := &GetInAppStepStatsResponseStats{}
+		var fernTestValuePushPermissionDenied *int
+		obj.SetPushPermissionDenied(fernTestValuePushPermissionDenied)
+		assert.Equal(t, fernTestValuePushPermissionDenied, obj.PushPermissionDenied)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetPushPermissionGranted", func(t *testing.T) {
+		obj := &GetInAppStepStatsResponseStats{}
+		var fernTestValuePushPermissionGranted *int
+		obj.SetPushPermissionGranted(fernTestValuePushPermissionGranted)
+		assert.Equal(t, fernTestValuePushPermissionGranted, obj.PushPermissionGranted)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 }
 
 func TestGettersGetInAppStepStatsResponseStats(t *testing.T) {
@@ -3811,6 +3905,72 @@ func TestGettersGetInAppStepStatsResponseStats(t *testing.T) {
 		_ = obj.GetDisplayed() // Should return zero value
 	})
 
+	t.Run("GetPushPermissionDenied", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetInAppStepStatsResponseStats{}
+		var expected *int
+		obj.PushPermissionDenied = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPushPermissionDenied(), "getter should return the property value")
+	})
+
+	t.Run("GetPushPermissionDenied_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetInAppStepStatsResponseStats{}
+		obj.PushPermissionDenied = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetPushPermissionDenied(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetPushPermissionDenied_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *GetInAppStepStatsResponseStats
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPushPermissionDenied() // Should return zero value
+	})
+
+	t.Run("GetPushPermissionGranted", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetInAppStepStatsResponseStats{}
+		var expected *int
+		obj.PushPermissionGranted = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPushPermissionGranted(), "getter should return the property value")
+	})
+
+	t.Run("GetPushPermissionGranted_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetInAppStepStatsResponseStats{}
+		obj.PushPermissionGranted = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetPushPermissionGranted(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetPushPermissionGranted_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *GetInAppStepStatsResponseStats
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPushPermissionGranted() // Should return zero value
+	})
+
 }
 
 func TestSettersMarkExplicitGetInAppStepStatsResponseStats(t *testing.T) {
@@ -3915,6 +4075,68 @@ func TestSettersMarkExplicitGetInAppStepStatsResponseStats(t *testing.T) {
 
 		// Act
 		obj.SetDisplayed(fernTestValueDisplayed)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPushPermissionDenied_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetInAppStepStatsResponseStats{}
+		var fernTestValuePushPermissionDenied *int
+
+		// Act
+		obj.SetPushPermissionDenied(fernTestValuePushPermissionDenied)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPushPermissionGranted_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetInAppStepStatsResponseStats{}
+		var fernTestValuePushPermissionGranted *int
+
+		// Act
+		obj.SetPushPermissionGranted(fernTestValuePushPermissionGranted)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -7628,6 +7850,13 @@ func TestEnumInAppMessageButtonsItemAction(t *testing.T) {
 		assert.Equal(t, InAppMessageButtonsItemAction("dismiss"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_request_push_permission", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewInAppMessageButtonsItemActionFromString("request_push_permission")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, InAppMessageButtonsItemAction("request_push_permission"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewInAppMessageButtonsItemActionFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -7952,6 +8181,56 @@ func TestEnumListInAppTemplatesResponseTemplatesItemCategory(t *testing.T) {
 	})
 }
 
+func TestEnumRecordInAppEventRequestPushPermission(t *testing.T) {
+	t.Run("NewFromString_granted", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRecordInAppEventRequestPushPermissionFromString("granted")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RecordInAppEventRequestPushPermission("granted"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_provisional", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRecordInAppEventRequestPushPermissionFromString("provisional")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RecordInAppEventRequestPushPermission("provisional"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ephemeral", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRecordInAppEventRequestPushPermissionFromString("ephemeral")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RecordInAppEventRequestPushPermission("ephemeral"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_denied", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRecordInAppEventRequestPushPermissionFromString("denied")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RecordInAppEventRequestPushPermission("denied"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_not_determined", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRecordInAppEventRequestPushPermissionFromString("not_determined")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RecordInAppEventRequestPushPermission("not_determined"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewRecordInAppEventRequestPushPermissionFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewRecordInAppEventRequestPushPermissionFromString("granted")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumRecordInAppEventRequestType(t *testing.T) {
 	t.Run("NewFromString_displayed", func(t *testing.T) {
 		t.Parallel()
@@ -8116,6 +8395,13 @@ func TestEnumWriteInAppCopyResponseCopyButtonsItemAction(t *testing.T) {
 		val, err := NewWriteInAppCopyResponseCopyButtonsItemActionFromString("dismiss")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, WriteInAppCopyResponseCopyButtonsItemAction("dismiss"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_request_push_permission", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewWriteInAppCopyResponseCopyButtonsItemActionFromString("request_push_permission")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, WriteInAppCopyResponseCopyButtonsItemAction("request_push_permission"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
