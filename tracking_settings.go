@@ -559,7 +559,7 @@ type TrackingSettingsTracking struct {
 	TransactionalClickTrackingEnabled *bool `json:"transactionalClickTrackingEnabled,omitempty" url:"transactionalClickTrackingEnabled,omitempty"`
 	// Open tracking default for sends through the Send Email API. Account-wide open tracking must also be enabled; per-send trackingSettings can only opt out.
 	TransactionalOpenTrackingEnabled *bool `json:"transactionalOpenTrackingEnabled,omitempty" url:"transactionalOpenTrackingEnabled,omitempty"`
-	// Whether to track unsubscribe link clicks. When false, Sequenzy unsubscribe links go directly to https://sequenzy.com, even with a custom tracking domain. Actual unsubscribes and their email attribution are still recorded.
+	// Whether unsubscribe links that point to other services are routed through your tracking domain. Sequenzy's own unsubscribe and preference links, including the one-click unsubscribe header, always use your tracking domain (or the shared one). Actual unsubscribes and their email attribution are recorded either way.
 	UnsubscribeTrackingEnabled *bool `json:"unsubscribeTrackingEnabled,omitempty" url:"unsubscribeTrackingEnabled,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -1283,7 +1283,7 @@ type UpdateTrackingSettingsRequest struct {
 	TransactionalClickTrackingEnabled *bool `json:"transactionalClickTrackingEnabled,omitempty" url:"-"`
 	// Open tracking default for sends through the Send Email API. Account-wide open tracking must also be enabled; per-send trackingSettings can only opt out.
 	TransactionalOpenTrackingEnabled *bool `json:"transactionalOpenTrackingEnabled,omitempty" url:"-"`
-	// Whether to track unsubscribe link clicks. When false, Sequenzy unsubscribe links go directly to https://sequenzy.com, even with a custom tracking domain. Actual unsubscribes and their email attribution are still recorded.
+	// Whether unsubscribe links that point to other services are routed through your tracking domain. Sequenzy's own unsubscribe and preference links, including the one-click unsubscribe header, always use your tracking domain (or the shared one). Actual unsubscribes and their email attribution are recorded either way.
 	UnsubscribeTrackingEnabled *bool `json:"unsubscribeTrackingEnabled,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
