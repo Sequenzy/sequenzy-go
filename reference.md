@@ -26184,6 +26184,14 @@ client.Sequences.SendTestEmail(
 <dl>
 <dd>
 
+**customAttributes:** `map[string]any` — Optional custom attributes to render the test as, for example `{"trader_type":"prop_firm"}`. They override each reviewer's stored attributes for merge tags and block conditions in this test only. No contact is created or changed. When a reviewer is a stored contact, email, first name, last name and full name keys such as `firstName` or `name` come from that contact and are ignored.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **recipients:** `[]string` — Internal reviewer email addresses. Duplicate addresses are sent only once.
     
 </dd>
@@ -30663,7 +30671,7 @@ client.Suppressions.Remove(
 <dl>
 <dd>
 
-Returns the company's effective sync rules - the automatic tag changes applied when events fire. New companies start with an empty rule set; legacy companies may inherit the optional SaaS/ecommerce platform preset. isDefault reports whether that preset is active.
+Returns the company's effective sync rules - the automatic tag changes applied when events fire. New companies start with the platform preset's payment and ecommerce rules, saved as their own rule set; older companies may inherit the SaaS/ecommerce platform preset. isDefault reports whether that preset is active.
 </dd>
 </dl>
 </dd>

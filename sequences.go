@@ -2977,9 +2977,10 @@ func (r *RotateInboundWebhookSecretSequencesRequest) SetSequenceID(sequenceID st
 }
 
 var (
-	sendTestEmailSequencesRequestFieldSequenceID = big.NewInt(1 << 0)
-	sendTestEmailSequencesRequestFieldNodeID     = big.NewInt(1 << 1)
-	sendTestEmailSequencesRequestFieldRecipients = big.NewInt(1 << 2)
+	sendTestEmailSequencesRequestFieldSequenceID       = big.NewInt(1 << 0)
+	sendTestEmailSequencesRequestFieldNodeID           = big.NewInt(1 << 1)
+	sendTestEmailSequencesRequestFieldCustomAttributes = big.NewInt(1 << 2)
+	sendTestEmailSequencesRequestFieldRecipients       = big.NewInt(1 << 3)
 )
 
 type SendTestEmailSequencesRequest struct {
@@ -2987,6 +2988,8 @@ type SendTestEmailSequencesRequest struct {
 	SequenceID string `json:"-" url:"-"`
 	// action_email step node ID returned by the sequence detail endpoint. Do not pass an action_ab_test node.
 	NodeID string `json:"-" url:"-"`
+	// Optional custom attributes to render the test as, for example `{"trader_type":"prop_firm"}`. They override each reviewer's stored attributes for merge tags and block conditions in this test only. No contact is created or changed. When a reviewer is a stored contact, email, first name, last name and full name keys such as `firstName` or `name` come from that contact and are ignored.
+	CustomAttributes map[string]any `json:"customAttributes,omitempty" url:"-"`
 	// Internal reviewer email addresses. Duplicate addresses are sent only once.
 	Recipients []string `json:"recipients" url:"-"`
 
@@ -3013,6 +3016,13 @@ func (s *SendTestEmailSequencesRequest) SetSequenceID(sequenceID string) {
 func (s *SendTestEmailSequencesRequest) SetNodeID(nodeID string) {
 	s.NodeID = nodeID
 	s.require(sendTestEmailSequencesRequestFieldNodeID)
+}
+
+// SetCustomAttributes sets the CustomAttributes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendTestEmailSequencesRequest) SetCustomAttributes(customAttributes map[string]any) {
+	s.CustomAttributes = customAttributes
+	s.require(sendTestEmailSequencesRequestFieldCustomAttributes)
 }
 
 // SetRecipients sets the Recipients field and marks it as non-optional;
