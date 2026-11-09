@@ -77,6 +77,56 @@ func VerifyRequestCount(
 	require.Equal(t, expected, len(result.Requests))
 }
 
+func TestInAppCreateInAppCampaignWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.CreateInAppCampaignRequest{}
+	_, invocationErr := client.InApp.CreateInAppCampaign(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestInAppCreateInAppCampaignWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestInAppCreateInAppCampaignWithWireMock", "POST", "/in-app/campaigns", nil, 1)
+}
+
+func TestInAppCreateInAppPlacementWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.CreateInAppPlacementRequest{
+		Key: "home_hero",
+	}
+	_, invocationErr := client.InApp.CreateInAppPlacement(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestInAppCreateInAppPlacementWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestInAppCreateInAppPlacementWithWireMock", "POST", "/in-app/placements", nil, 1)
+}
+
 func TestInAppDeleteInAppMessageWithWireMock(
 	t *testing.T,
 ) {
@@ -101,6 +151,190 @@ func TestInAppDeleteInAppMessageWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestInAppDeleteInAppMessageWithWireMock", "DELETE", "/in-app/messages/messageId", nil, 1)
+}
+
+func TestInAppDeleteInAppPlacementWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.DeleteInAppPlacementRequest{
+		Key: "key",
+	}
+	_, invocationErr := client.InApp.DeleteInAppPlacement(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestInAppDeleteInAppPlacementWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestInAppDeleteInAppPlacementWithWireMock", "DELETE", "/in-app/placements/key", nil, 1)
+}
+
+func TestInAppDuplicateInAppCampaignWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.DuplicateInAppCampaignRequest{
+		CampaignID: "campaignId",
+	}
+	_, invocationErr := client.InApp.DuplicateInAppCampaign(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestInAppDuplicateInAppCampaignWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestInAppDuplicateInAppCampaignWithWireMock", "POST", "/in-app/campaigns/campaignId/duplicate", nil, 1)
+}
+
+func TestInAppEstimateInAppCampaignRecipientsWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.EstimateInAppCampaignRecipientsRequest{
+		TargetLists: map[string]any{
+			"key": "value",
+		},
+	}
+	_, invocationErr := client.InApp.EstimateInAppCampaignRecipients(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestInAppEstimateInAppCampaignRecipientsWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestInAppEstimateInAppCampaignRecipientsWithWireMock", "POST", "/in-app/campaigns/estimate", nil, 1)
+}
+
+func TestInAppGetInAppCampaignWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.GetInAppCampaignRequest{
+		CampaignID: "campaignId",
+	}
+	_, invocationErr := client.InApp.GetInAppCampaign(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestInAppGetInAppCampaignWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestInAppGetInAppCampaignWithWireMock", "GET", "/in-app/campaigns/campaignId", nil, 1)
+}
+
+func TestInAppGetInAppCampaignStatsWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.GetInAppCampaignStatsRequest{
+		CampaignID: "campaignId",
+	}
+	_, invocationErr := client.InApp.GetInAppCampaignStats(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestInAppGetInAppCampaignStatsWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestInAppGetInAppCampaignStatsWithWireMock", "GET", "/in-app/campaigns/campaignId/stats", nil, 1)
+}
+
+func TestInAppGetInAppPlacementWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.GetInAppPlacementRequest{
+		Key: "key",
+	}
+	_, invocationErr := client.InApp.GetInAppPlacement(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestInAppGetInAppPlacementWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestInAppGetInAppPlacementWithWireMock", "GET", "/in-app/placements/key", nil, 1)
+}
+
+func TestInAppGetInAppPlacementContentWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.GetInAppPlacementContentRequest{
+		Placements: "home_hero,checkout_upsell",
+	}
+	_, invocationErr := client.InApp.GetInAppPlacementContent(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestInAppGetInAppPlacementContentWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestInAppGetInAppPlacementContentWithWireMock", "GET", "/in-app/placement-feed", map[string]interface{}{"placements": "home_hero,checkout_upsell"}, 1)
 }
 
 func TestInAppGetInAppStepStatsWithWireMock(
@@ -129,6 +363,30 @@ func TestInAppGetInAppStepStatsWithWireMock(
 	VerifyRequestCount(t, "TestInAppGetInAppStepStatsWithWireMock", "GET", "/in-app/steps/stepId/stats", nil, 1)
 }
 
+func TestInAppListInAppCampaignsWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.ListInAppCampaignsRequest{}
+	_, invocationErr := client.InApp.ListInAppCampaigns(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestInAppListInAppCampaignsWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestInAppListInAppCampaignsWithWireMock", "GET", "/in-app/campaigns", nil, 1)
+}
+
 func TestInAppListInAppMessagesWithWireMock(
 	t *testing.T,
 ) {
@@ -155,6 +413,28 @@ func TestInAppListInAppMessagesWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestInAppListInAppMessagesWithWireMock", "GET", "/in-app/messages", map[string]interface{}{"actions": "request_push_permission"}, 1)
+}
+
+func TestInAppListInAppPlacementsWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	_, invocationErr := client.InApp.ListInAppPlacements(
+		context.TODO(),
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestInAppListInAppPlacementsWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestInAppListInAppPlacementsWithWireMock", "GET", "/in-app/placements", nil, 1)
 }
 
 func TestInAppListInAppTemplatesWithWireMock(
@@ -204,6 +484,137 @@ func TestInAppRecordInAppEventWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestInAppRecordInAppEventWithWireMock", "POST", "/in-app/messages/messageId/events", nil, 1)
+}
+
+func TestInAppSendInAppCampaignWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.SendInAppCampaignRequest{
+		CampaignID: "campaignId",
+	}
+	_, invocationErr := client.InApp.SendInAppCampaign(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestInAppSendInAppCampaignWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestInAppSendInAppCampaignWithWireMock", "POST", "/in-app/campaigns/campaignId/send", nil, 1)
+}
+
+func TestInAppStopInAppCampaignWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.StopInAppCampaignRequest{
+		CampaignID: "campaignId",
+	}
+	_, invocationErr := client.InApp.StopInAppCampaign(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestInAppStopInAppCampaignWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestInAppStopInAppCampaignWithWireMock", "POST", "/in-app/campaigns/campaignId/stop", nil, 1)
+}
+
+func TestInAppUnscheduleInAppCampaignWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.UnscheduleInAppCampaignRequest{
+		CampaignID: "campaignId",
+	}
+	_, invocationErr := client.InApp.UnscheduleInAppCampaign(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestInAppUnscheduleInAppCampaignWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestInAppUnscheduleInAppCampaignWithWireMock", "POST", "/in-app/campaigns/campaignId/unschedule", nil, 1)
+}
+
+func TestInAppUpdateInAppCampaignWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.UpdateInAppCampaignRequest{
+		CampaignID: "campaignId",
+	}
+	_, invocationErr := client.InApp.UpdateInAppCampaign(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestInAppUpdateInAppCampaignWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestInAppUpdateInAppCampaignWithWireMock", "PATCH", "/in-app/campaigns/campaignId", nil, 1)
+}
+
+func TestInAppUpdateInAppPlacementWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.UpdateInAppPlacementRequest{
+		Key:  "key",
+		Body: &sequenzygo.InAppPlacementInput{},
+	}
+	_, invocationErr := client.InApp.UpdateInAppPlacement(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestInAppUpdateInAppPlacementWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestInAppUpdateInAppPlacementWithWireMock", "PATCH", "/in-app/placements/key", nil, 1)
 }
 
 func TestInAppValidateInAppHTMLWithWireMock(

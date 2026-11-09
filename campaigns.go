@@ -1486,7 +1486,7 @@ var (
 type ResumeCampaignsRequest struct {
 	// Campaign ID
 	CampaignID string `json:"-" url:"-"`
-	// Spread remaining delivery over this many hours. Pass null to clear an existing spread.
+	// Spread remaining delivery over this many hours. Pass null to clear an existing spread. With an A/B test, this sets the sending rate and the current phase's remaining recipients are spread over their share of it. If the account has a minimum spread, a lower, missing or cleared value is raised to it.
 	SpreadOverHours *int `json:"spreadOverHours,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -1594,7 +1594,7 @@ type ScheduleCampaignsRequest struct {
 	SendTimeOptimization *bool `json:"sendTimeOptimization,omitempty" url:"-"`
 	// STO delivery window in hours from scheduledAt. Defaults to 12. Only used when sendTimeOptimization is true. Recipients whose predicted hour falls outside the window are snapped to the nearest edge.
 	SendTimeWindowHours *int `json:"sendTimeWindowHours,omitempty" url:"-"`
-	// Spread delivery over this many hours. When set, spread delivery takes precedence over send-time optimization.
+	// Spread delivery over this many hours. When set, spread delivery takes precedence over send-time optimization. With an A/B test, the spread sets one sending rate for the whole audience; the test sample and the winner are each spread over their share of the window, with the test duration in between. If the account has a minimum spread, a lower or missing value is raised to it and send-time optimization is turned off.
 	SpreadOverHours *float64 `json:"spreadOverHours,omitempty" url:"-"`
 	// Optional targeting object. Omit to reuse saved targeting - or, when none is saved, ALL active subscribers. The object is a union discriminated on type: {"type":"all"}, {"type":"lists","listIds":["list_123"]}, {"type":"segment","segmentId":"seg_123"}, {"type":"filtered","filters":[],"filterJoinOperator":"and"}, {"type":"rules","include":[],"exclude":[]}. Mutually exclusive with listIds.
 	TargetLists map[string]any `json:"targetLists,omitempty" url:"-"`
@@ -1904,13 +1904,14 @@ func (c *CampaignAttachmentInput) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Delivery channel. SMS campaigns are created and managed from the dashboard, and push campaigns through the /push/campaigns endpoints: they carry no email, so `subject` and `blocks` come back empty, and the email-only endpoints (update, schedule, pause, resume, duplicate, resend to non-openers) reject them. Campaign stats and campaign events reject them too, since both read email engagement. Cancelling a push campaign through POST /campaigns/{campaignId}/cancel uses the push lifecycle.
+// Delivery channel. SMS campaigns are created and managed from the dashboard, push campaigns through the /push/campaigns endpoints and in-app campaigns through the /in-app/campaigns endpoints: they carry no email, so `subject` and `blocks` come back empty, and the email-only endpoints (update, schedule, pause, resume, duplicate, resend to non-openers) reject them. Campaign stats and campaign events reject them too, since both read email engagement. Cancelling a push or in-app campaign through POST /campaigns/{campaignId}/cancel uses that channel's lifecycle.
 type CampaignChannel string
 
 const (
 	CampaignChannelEmail CampaignChannel = "email"
 	CampaignChannelSms   CampaignChannel = "sms"
 	CampaignChannelPush  CampaignChannel = "push"
+	CampaignChannelInApp CampaignChannel = "in_app"
 )
 
 func NewCampaignChannelFromString(s string) (CampaignChannel, error) {
@@ -1921,6 +1922,8 @@ func NewCampaignChannelFromString(s string) (CampaignChannel, error) {
 		return CampaignChannelSms, nil
 	case "push":
 		return CampaignChannelPush, nil
+	case "in_app":
+		return CampaignChannelInApp, nil
 	}
 	var t CampaignChannel
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

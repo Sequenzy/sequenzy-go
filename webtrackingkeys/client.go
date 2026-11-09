@@ -136,13 +136,11 @@ func (c *Client) List(
 	return response.Body, nil
 }
 
-// Mints a short-lived HMAC proof bound to one active web tracking key, workspace, and normalized email. Identify the key by keyId or by its publishable publicKey value. If the email is not yet a contact, one is created (active, no lists, no automations triggered) so identified events are attributed instead of being silently dropped. Call this only from an authenticated backend; never expose the secret API key in browser code. Identified browser events without this proof are rejected before queueing. Requires commerce:write, automations:trigger, and subscribers:write (minting can create the contact).
+// Mints a short-lived HMAC proof bound to one active web tracking key, workspace, and the user's normalized email, external ID (your own user ID), or both. Identify the key by keyId or by its publishable publicKey value. If the user is not yet a contact, one is created (active, no lists, no automations triggered) so identified events are attributed instead of being silently dropped; an external ID alone creates a contact with no email. Minting with both links them, attaching the external ID to the email's contact (or folding a contact that has only that external ID into it). The SDK must send exactly the identifiers the token was minted for. Call this only from an authenticated backend; never expose the secret API key in browser code. Identified browser events without this proof are rejected before queueing. Requires commerce:write, automations:trigger, and subscribers:write (minting can create the contact).
 //
 // Example:
 //
-//	request := &sequenzygo.MintIdentityWebTrackingKeysRequest{
-//	    Email: "email",
-//	}
+//	request := &sequenzygo.MintIdentityWebTrackingKeysRequest{}
 //	client.WebTrackingKeys.MintIdentity(
 //	    context.TODO(),
 //	    request,

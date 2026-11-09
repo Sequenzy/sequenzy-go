@@ -130,14 +130,18 @@ func (g *GetWebTrackingKeysRequest) SetID(id string) {
 }
 
 var (
-	mintIdentityWebTrackingKeysRequestFieldEmail     = big.NewInt(1 << 0)
-	mintIdentityWebTrackingKeysRequestFieldKeyID     = big.NewInt(1 << 1)
-	mintIdentityWebTrackingKeysRequestFieldPublicKey = big.NewInt(1 << 2)
-	mintIdentityWebTrackingKeysRequestFieldTTLHours  = big.NewInt(1 << 3)
+	mintIdentityWebTrackingKeysRequestFieldEmail      = big.NewInt(1 << 0)
+	mintIdentityWebTrackingKeysRequestFieldExternalID = big.NewInt(1 << 1)
+	mintIdentityWebTrackingKeysRequestFieldKeyID      = big.NewInt(1 << 2)
+	mintIdentityWebTrackingKeysRequestFieldPublicKey  = big.NewInt(1 << 3)
+	mintIdentityWebTrackingKeysRequestFieldTTLHours   = big.NewInt(1 << 4)
 )
 
 type MintIdentityWebTrackingKeysRequest struct {
-	Email string `json:"email" url:"-"`
+	// Email of the signed-in user, normalized to lowercase. Optional when externalId is provided.
+	Email *string `json:"email,omitempty" url:"-"`
+	// Your own ID for the signed-in user, for users without an email (Sign in with Apple relay, phone login). Case-sensitive; surrounding whitespace is trimmed.
+	ExternalID *string `json:"externalId,omitempty" url:"-"`
 	// Internal web tracking key ID. Provide this or publicKey.
 	KeyID *string `json:"keyId,omitempty" url:"-"`
 	// Publishable key value (seq_pk_...). Provide this or keyId.
@@ -157,9 +161,16 @@ func (m *MintIdentityWebTrackingKeysRequest) require(field *big.Int) {
 
 // SetEmail sets the Email field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MintIdentityWebTrackingKeysRequest) SetEmail(email string) {
+func (m *MintIdentityWebTrackingKeysRequest) SetEmail(email *string) {
 	m.Email = email
 	m.require(mintIdentityWebTrackingKeysRequestFieldEmail)
+}
+
+// SetExternalID sets the ExternalID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MintIdentityWebTrackingKeysRequest) SetExternalID(externalID *string) {
+	m.ExternalID = externalID
+	m.require(mintIdentityWebTrackingKeysRequestFieldExternalID)
 }
 
 // SetKeyID sets the KeyID field and marks it as non-optional;
@@ -925,20 +936,22 @@ func (l *ListWebTrackingKeysResponse) String() string {
 var (
 	mintIdentityWebTrackingKeysResponseFieldEmail         = big.NewInt(1 << 0)
 	mintIdentityWebTrackingKeysResponseFieldExpiresAt     = big.NewInt(1 << 1)
-	mintIdentityWebTrackingKeysResponseFieldIdentityToken = big.NewInt(1 << 2)
-	mintIdentityWebTrackingKeysResponseFieldKeyID         = big.NewInt(1 << 3)
-	mintIdentityWebTrackingKeysResponseFieldPublicKey     = big.NewInt(1 << 4)
-	mintIdentityWebTrackingKeysResponseFieldSubscriberID  = big.NewInt(1 << 5)
-	mintIdentityWebTrackingKeysResponseFieldSuccess       = big.NewInt(1 << 6)
+	mintIdentityWebTrackingKeysResponseFieldExternalID    = big.NewInt(1 << 2)
+	mintIdentityWebTrackingKeysResponseFieldIdentityToken = big.NewInt(1 << 3)
+	mintIdentityWebTrackingKeysResponseFieldKeyID         = big.NewInt(1 << 4)
+	mintIdentityWebTrackingKeysResponseFieldPublicKey     = big.NewInt(1 << 5)
+	mintIdentityWebTrackingKeysResponseFieldSubscriberID  = big.NewInt(1 << 6)
+	mintIdentityWebTrackingKeysResponseFieldSuccess       = big.NewInt(1 << 7)
 )
 
 type MintIdentityWebTrackingKeysResponse struct {
 	Email         *string    `json:"email,omitempty" url:"email,omitempty"`
 	ExpiresAt     *time.Time `json:"expiresAt,omitempty" url:"expiresAt,omitempty"`
+	ExternalID    *string    `json:"externalId,omitempty" url:"externalId,omitempty"`
 	IdentityToken *string    `json:"identityToken,omitempty" url:"identityToken,omitempty"`
 	KeyID         *string    `json:"keyId,omitempty" url:"keyId,omitempty"`
 	PublicKey     *string    `json:"publicKey,omitempty" url:"publicKey,omitempty"`
-	// Contact the minted identity resolves to; created on first mint for a new email.
+	// Contact the minted identity resolves to; created on first mint for a new user.
 	SubscriberID *string `json:"subscriberId,omitempty" url:"subscriberId,omitempty"`
 	Success      *bool   `json:"success,omitempty" url:"success,omitempty"`
 
@@ -961,6 +974,13 @@ func (m *MintIdentityWebTrackingKeysResponse) GetExpiresAt() *time.Time {
 		return nil
 	}
 	return m.ExpiresAt
+}
+
+func (m *MintIdentityWebTrackingKeysResponse) GetExternalID() *string {
+	if m == nil {
+		return nil
+	}
+	return m.ExternalID
 }
 
 func (m *MintIdentityWebTrackingKeysResponse) GetIdentityToken() *string {
@@ -1024,6 +1044,13 @@ func (m *MintIdentityWebTrackingKeysResponse) SetEmail(email *string) {
 func (m *MintIdentityWebTrackingKeysResponse) SetExpiresAt(expiresAt *time.Time) {
 	m.ExpiresAt = expiresAt
 	m.require(mintIdentityWebTrackingKeysResponseFieldExpiresAt)
+}
+
+// SetExternalID sets the ExternalID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MintIdentityWebTrackingKeysResponse) SetExternalID(externalID *string) {
+	m.ExternalID = externalID
+	m.require(mintIdentityWebTrackingKeysResponseFieldExternalID)
 }
 
 // SetIdentityToken sets the IdentityToken field and marks it as non-optional;

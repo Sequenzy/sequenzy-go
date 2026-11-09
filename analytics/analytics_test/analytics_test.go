@@ -458,6 +458,58 @@ func TestAnalyticsListCampaignPollResponsesLegacyWithWireMock(
 	VerifyRequestCount(t, "TestAnalyticsListCampaignPollResponsesLegacyWithWireMock", "GET", "/campaigns/campaignId/poll-responses", nil, 1)
 }
 
+func TestAnalyticsListCampaignRepliesWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.ListCampaignRepliesRequest{
+		CampaignID: "campaignId",
+	}
+	_, invocationErr := client.Analytics.ListCampaignReplies(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestAnalyticsListCampaignRepliesWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestAnalyticsListCampaignRepliesWithWireMock", "GET", "/metrics/campaigns/campaignId/replies", nil, 1)
+}
+
+func TestAnalyticsListCampaignRepliesLegacyWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.ListCampaignRepliesLegacyRequest{
+		CampaignID: "campaignId",
+	}
+	_, invocationErr := client.Analytics.ListCampaignRepliesLegacy(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestAnalyticsListCampaignRepliesLegacyWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestAnalyticsListCampaignRepliesLegacyWithWireMock", "GET", "/campaigns/campaignId/replies", nil, 1)
+}
+
 func TestAnalyticsListEmailMetricsWithWireMock(
 	t *testing.T,
 ) {

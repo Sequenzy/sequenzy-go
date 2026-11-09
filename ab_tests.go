@@ -4373,7 +4373,7 @@ type UpdateAbTestsRequest struct {
 	// Optional campaign revision from GET; stale values return 409. Omit to preserve existing unconditional update behavior.
 	ExpectedUpdatedAt *time.Time `json:"expectedUpdatedAt,omitempty" url:"-"`
 	Name              *string    `json:"name,omitempty" url:"-"`
-	// Campaign-only total minutes from the original test start. An elapsed deadline queues selection immediately; paused campaigns stay paused.
+	// Campaign-only total minutes from the original test start, or from when the last test email is due when delivery is spread. An elapsed deadline queues selection immediately; paused campaigns stay paused.
 	TestDurationMinutes *int `json:"testDurationMinutes,omitempty" url:"-"`
 	// Campaign-only integer share of the original full audience. Live changes queue a durable request; repeat the same percentage to retry.
 	TestPercentage *int `json:"testPercentage,omitempty" url:"-"`

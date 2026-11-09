@@ -2808,10 +2808,11 @@ func (d *DeleteTemplatesResponse) String() string {
 var (
 	getLocalizationCoverageTemplatesResponseFieldLocales             = big.NewInt(1 << 0)
 	getLocalizationCoverageTemplatesResponseFieldPrimaryLocale       = big.NewInt(1 << 1)
-	getLocalizationCoverageTemplatesResponseFieldSequenceEmails      = big.NewInt(1 << 2)
-	getLocalizationCoverageTemplatesResponseFieldSuccess             = big.NewInt(1 << 3)
-	getLocalizationCoverageTemplatesResponseFieldTotalEmails         = big.NewInt(1 << 4)
-	getLocalizationCoverageTemplatesResponseFieldTransactionalEmails = big.NewInt(1 << 5)
+	getLocalizationCoverageTemplatesResponseFieldPush                = big.NewInt(1 << 2)
+	getLocalizationCoverageTemplatesResponseFieldSequenceEmails      = big.NewInt(1 << 3)
+	getLocalizationCoverageTemplatesResponseFieldSuccess             = big.NewInt(1 << 4)
+	getLocalizationCoverageTemplatesResponseFieldTotalEmails         = big.NewInt(1 << 5)
+	getLocalizationCoverageTemplatesResponseFieldTransactionalEmails = big.NewInt(1 << 6)
 )
 
 type GetLocalizationCoverageTemplatesResponse struct {
@@ -2819,6 +2820,8 @@ type GetLocalizationCoverageTemplatesResponse struct {
 	Locales []*GetLocalizationCoverageTemplatesResponseLocalesItem `json:"locales,omitempty" url:"locales,omitempty"`
 	// Locale the emails are written in.
 	PrimaryLocale *string `json:"primaryLocale,omitempty" url:"primaryLocale,omitempty"`
+	// Push steps in sequences that are not archived or defined in code. A failed push translation counts as missing again, so there is no failed count.
+	Push *GetLocalizationCoverageTemplatesResponsePush `json:"push,omitempty" url:"push,omitempty"`
 	// Sequence email steps and sequence A/B variants counted.
 	SequenceEmails *int  `json:"sequenceEmails,omitempty" url:"sequenceEmails,omitempty"`
 	Success        *bool `json:"success,omitempty" url:"success,omitempty"`
@@ -2846,6 +2849,13 @@ func (g *GetLocalizationCoverageTemplatesResponse) GetPrimaryLocale() *string {
 		return nil
 	}
 	return g.PrimaryLocale
+}
+
+func (g *GetLocalizationCoverageTemplatesResponse) GetPush() *GetLocalizationCoverageTemplatesResponsePush {
+	if g == nil {
+		return nil
+	}
+	return g.Push
 }
 
 func (g *GetLocalizationCoverageTemplatesResponse) GetSequenceEmails() *int {
@@ -2902,6 +2912,13 @@ func (g *GetLocalizationCoverageTemplatesResponse) SetLocales(locales []*GetLoca
 func (g *GetLocalizationCoverageTemplatesResponse) SetPrimaryLocale(primaryLocale *string) {
 	g.PrimaryLocale = primaryLocale
 	g.require(getLocalizationCoverageTemplatesResponseFieldPrimaryLocale)
+}
+
+// SetPush sets the Push field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetLocalizationCoverageTemplatesResponse) SetPush(push *GetLocalizationCoverageTemplatesResponsePush) {
+	g.Push = push
+	g.require(getLocalizationCoverageTemplatesResponseFieldPush)
 }
 
 // SetSequenceEmails sets the SequenceEmails field and marks it as non-optional;
@@ -3164,6 +3181,292 @@ func (g *GetLocalizationCoverageTemplatesResponseLocalesItem) MarshalJSON() ([]b
 }
 
 func (g *GetLocalizationCoverageTemplatesResponseLocalesItem) String() string {
+	if g == nil {
+		return "<nil>"
+	}
+	if len(g.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(g.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(g); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", g)
+}
+
+// Push steps in sequences that are not archived or defined in code. A failed push translation counts as missing again, so there is no failed count.
+var (
+	getLocalizationCoverageTemplatesResponsePushFieldLocales     = big.NewInt(1 << 0)
+	getLocalizationCoverageTemplatesResponsePushFieldTotalPushes = big.NewInt(1 << 1)
+)
+
+type GetLocalizationCoverageTemplatesResponsePush struct {
+	Locales []*GetLocalizationCoverageTemplatesResponsePushLocalesItem `json:"locales,omitempty" url:"locales,omitempty"`
+	// Push steps that should be translated.
+	TotalPushes *int `json:"totalPushes,omitempty" url:"totalPushes,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (g *GetLocalizationCoverageTemplatesResponsePush) GetLocales() []*GetLocalizationCoverageTemplatesResponsePushLocalesItem {
+	if g == nil {
+		return nil
+	}
+	return g.Locales
+}
+
+func (g *GetLocalizationCoverageTemplatesResponsePush) GetTotalPushes() *int {
+	if g == nil {
+		return nil
+	}
+	return g.TotalPushes
+}
+
+func (g *GetLocalizationCoverageTemplatesResponsePush) GetExtraProperties() map[string]interface{} {
+	if g == nil {
+		return nil
+	}
+	return g.extraProperties
+}
+
+func (g *GetLocalizationCoverageTemplatesResponsePush) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetLocales sets the Locales field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetLocalizationCoverageTemplatesResponsePush) SetLocales(locales []*GetLocalizationCoverageTemplatesResponsePushLocalesItem) {
+	g.Locales = locales
+	g.require(getLocalizationCoverageTemplatesResponsePushFieldLocales)
+}
+
+// SetTotalPushes sets the TotalPushes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetLocalizationCoverageTemplatesResponsePush) SetTotalPushes(totalPushes *int) {
+	g.TotalPushes = totalPushes
+	g.require(getLocalizationCoverageTemplatesResponsePushFieldTotalPushes)
+}
+
+func (g *GetLocalizationCoverageTemplatesResponsePush) UnmarshalJSON(data []byte) error {
+	type unmarshaler GetLocalizationCoverageTemplatesResponsePush
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*g = GetLocalizationCoverageTemplatesResponsePush(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *g)
+	if err != nil {
+		return err
+	}
+	g.extraProperties = extraProperties
+	g.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (g *GetLocalizationCoverageTemplatesResponsePush) MarshalJSON() ([]byte, error) {
+	type embed GetLocalizationCoverageTemplatesResponsePush
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*g),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (g *GetLocalizationCoverageTemplatesResponsePush) String() string {
+	if g == nil {
+		return "<nil>"
+	}
+	if len(g.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(g.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(g); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", g)
+}
+
+var (
+	getLocalizationCoverageTemplatesResponsePushLocalesItemFieldEdited      = big.NewInt(1 << 0)
+	getLocalizationCoverageTemplatesResponsePushLocalesItemFieldLocale      = big.NewInt(1 << 1)
+	getLocalizationCoverageTemplatesResponsePushLocalesItemFieldMissing     = big.NewInt(1 << 2)
+	getLocalizationCoverageTemplatesResponsePushLocalesItemFieldOutdated    = big.NewInt(1 << 3)
+	getLocalizationCoverageTemplatesResponsePushLocalesItemFieldTotal       = big.NewInt(1 << 4)
+	getLocalizationCoverageTemplatesResponsePushLocalesItemFieldTranslating = big.NewInt(1 << 5)
+	getLocalizationCoverageTemplatesResponsePushLocalesItemFieldUpToDate    = big.NewInt(1 << 6)
+)
+
+type GetLocalizationCoverageTemplatesResponsePushLocalesItem struct {
+	// Written by a person.
+	Edited *int    `json:"edited,omitempty" url:"edited,omitempty"`
+	Locale *string `json:"locale,omitempty" url:"locale,omitempty"`
+	// No version yet. Devices in this language get the main copy.
+	Missing *int `json:"missing,omitempty" url:"missing,omitempty"`
+	// Translated before the main title or message changed. Still sends.
+	Outdated *int `json:"outdated,omitempty" url:"outdated,omitempty"`
+	Total    *int `json:"total,omitempty" url:"total,omitempty"`
+	// Queued or being translated.
+	Translating *int `json:"translating,omitempty" url:"translating,omitempty"`
+	UpToDate    *int `json:"upToDate,omitempty" url:"upToDate,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (g *GetLocalizationCoverageTemplatesResponsePushLocalesItem) GetEdited() *int {
+	if g == nil {
+		return nil
+	}
+	return g.Edited
+}
+
+func (g *GetLocalizationCoverageTemplatesResponsePushLocalesItem) GetLocale() *string {
+	if g == nil {
+		return nil
+	}
+	return g.Locale
+}
+
+func (g *GetLocalizationCoverageTemplatesResponsePushLocalesItem) GetMissing() *int {
+	if g == nil {
+		return nil
+	}
+	return g.Missing
+}
+
+func (g *GetLocalizationCoverageTemplatesResponsePushLocalesItem) GetOutdated() *int {
+	if g == nil {
+		return nil
+	}
+	return g.Outdated
+}
+
+func (g *GetLocalizationCoverageTemplatesResponsePushLocalesItem) GetTotal() *int {
+	if g == nil {
+		return nil
+	}
+	return g.Total
+}
+
+func (g *GetLocalizationCoverageTemplatesResponsePushLocalesItem) GetTranslating() *int {
+	if g == nil {
+		return nil
+	}
+	return g.Translating
+}
+
+func (g *GetLocalizationCoverageTemplatesResponsePushLocalesItem) GetUpToDate() *int {
+	if g == nil {
+		return nil
+	}
+	return g.UpToDate
+}
+
+func (g *GetLocalizationCoverageTemplatesResponsePushLocalesItem) GetExtraProperties() map[string]interface{} {
+	if g == nil {
+		return nil
+	}
+	return g.extraProperties
+}
+
+func (g *GetLocalizationCoverageTemplatesResponsePushLocalesItem) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetEdited sets the Edited field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetLocalizationCoverageTemplatesResponsePushLocalesItem) SetEdited(edited *int) {
+	g.Edited = edited
+	g.require(getLocalizationCoverageTemplatesResponsePushLocalesItemFieldEdited)
+}
+
+// SetLocale sets the Locale field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetLocalizationCoverageTemplatesResponsePushLocalesItem) SetLocale(locale *string) {
+	g.Locale = locale
+	g.require(getLocalizationCoverageTemplatesResponsePushLocalesItemFieldLocale)
+}
+
+// SetMissing sets the Missing field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetLocalizationCoverageTemplatesResponsePushLocalesItem) SetMissing(missing *int) {
+	g.Missing = missing
+	g.require(getLocalizationCoverageTemplatesResponsePushLocalesItemFieldMissing)
+}
+
+// SetOutdated sets the Outdated field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetLocalizationCoverageTemplatesResponsePushLocalesItem) SetOutdated(outdated *int) {
+	g.Outdated = outdated
+	g.require(getLocalizationCoverageTemplatesResponsePushLocalesItemFieldOutdated)
+}
+
+// SetTotal sets the Total field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetLocalizationCoverageTemplatesResponsePushLocalesItem) SetTotal(total *int) {
+	g.Total = total
+	g.require(getLocalizationCoverageTemplatesResponsePushLocalesItemFieldTotal)
+}
+
+// SetTranslating sets the Translating field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetLocalizationCoverageTemplatesResponsePushLocalesItem) SetTranslating(translating *int) {
+	g.Translating = translating
+	g.require(getLocalizationCoverageTemplatesResponsePushLocalesItemFieldTranslating)
+}
+
+// SetUpToDate sets the UpToDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetLocalizationCoverageTemplatesResponsePushLocalesItem) SetUpToDate(upToDate *int) {
+	g.UpToDate = upToDate
+	g.require(getLocalizationCoverageTemplatesResponsePushLocalesItemFieldUpToDate)
+}
+
+func (g *GetLocalizationCoverageTemplatesResponsePushLocalesItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler GetLocalizationCoverageTemplatesResponsePushLocalesItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*g = GetLocalizationCoverageTemplatesResponsePushLocalesItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *g)
+	if err != nil {
+		return err
+	}
+	g.extraProperties = extraProperties
+	g.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (g *GetLocalizationCoverageTemplatesResponsePushLocalesItem) MarshalJSON() ([]byte, error) {
+	type embed GetLocalizationCoverageTemplatesResponsePushLocalesItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*g),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (g *GetLocalizationCoverageTemplatesResponsePushLocalesItem) String() string {
 	if g == nil {
 		return "<nil>"
 	}
@@ -4375,10 +4678,12 @@ func (s *SyncLocalizationsTemplatesResponse) String() string {
 }
 
 var (
-	translateMissingLocalizationsTemplatesResponseFieldLocales            = big.NewInt(1 << 0)
-	translateMissingLocalizationsTemplatesResponseFieldQueuedEmails       = big.NewInt(1 << 1)
-	translateMissingLocalizationsTemplatesResponseFieldQueuedTranslations = big.NewInt(1 << 2)
-	translateMissingLocalizationsTemplatesResponseFieldSuccess            = big.NewInt(1 << 3)
+	translateMissingLocalizationsTemplatesResponseFieldLocales                = big.NewInt(1 << 0)
+	translateMissingLocalizationsTemplatesResponseFieldQueuedEmails           = big.NewInt(1 << 1)
+	translateMissingLocalizationsTemplatesResponseFieldQueuedPushes           = big.NewInt(1 << 2)
+	translateMissingLocalizationsTemplatesResponseFieldQueuedPushTranslations = big.NewInt(1 << 3)
+	translateMissingLocalizationsTemplatesResponseFieldQueuedTranslations     = big.NewInt(1 << 4)
+	translateMissingLocalizationsTemplatesResponseFieldSuccess                = big.NewInt(1 << 5)
 )
 
 type TranslateMissingLocalizationsTemplatesResponse struct {
@@ -4386,6 +4691,10 @@ type TranslateMissingLocalizationsTemplatesResponse struct {
 	Locales []string `json:"locales,omitempty" url:"locales,omitempty"`
 	// Emails with at least one translation queued. 0 when nothing is missing.
 	QueuedEmails *int `json:"queuedEmails,omitempty" url:"queuedEmails,omitempty"`
+	// Sequence push steps with at least one translation queued.
+	QueuedPushes *int `json:"queuedPushes,omitempty" url:"queuedPushes,omitempty"`
+	// Push step and locale pairs queued.
+	QueuedPushTranslations *int `json:"queuedPushTranslations,omitempty" url:"queuedPushTranslations,omitempty"`
 	// Email and locale pairs queued.
 	QueuedTranslations *int  `json:"queuedTranslations,omitempty" url:"queuedTranslations,omitempty"`
 	Success            *bool `json:"success,omitempty" url:"success,omitempty"`
@@ -4409,6 +4718,20 @@ func (t *TranslateMissingLocalizationsTemplatesResponse) GetQueuedEmails() *int 
 		return nil
 	}
 	return t.QueuedEmails
+}
+
+func (t *TranslateMissingLocalizationsTemplatesResponse) GetQueuedPushes() *int {
+	if t == nil {
+		return nil
+	}
+	return t.QueuedPushes
+}
+
+func (t *TranslateMissingLocalizationsTemplatesResponse) GetQueuedPushTranslations() *int {
+	if t == nil {
+		return nil
+	}
+	return t.QueuedPushTranslations
 }
 
 func (t *TranslateMissingLocalizationsTemplatesResponse) GetQueuedTranslations() *int {
@@ -4451,6 +4774,20 @@ func (t *TranslateMissingLocalizationsTemplatesResponse) SetLocales(locales []st
 func (t *TranslateMissingLocalizationsTemplatesResponse) SetQueuedEmails(queuedEmails *int) {
 	t.QueuedEmails = queuedEmails
 	t.require(translateMissingLocalizationsTemplatesResponseFieldQueuedEmails)
+}
+
+// SetQueuedPushes sets the QueuedPushes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TranslateMissingLocalizationsTemplatesResponse) SetQueuedPushes(queuedPushes *int) {
+	t.QueuedPushes = queuedPushes
+	t.require(translateMissingLocalizationsTemplatesResponseFieldQueuedPushes)
+}
+
+// SetQueuedPushTranslations sets the QueuedPushTranslations field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TranslateMissingLocalizationsTemplatesResponse) SetQueuedPushTranslations(queuedPushTranslations *int) {
+	t.QueuedPushTranslations = queuedPushTranslations
+	t.require(translateMissingLocalizationsTemplatesResponseFieldQueuedPushTranslations)
 }
 
 // SetQueuedTranslations sets the QueuedTranslations field and marks it as non-optional;

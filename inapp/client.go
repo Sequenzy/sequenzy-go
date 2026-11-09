@@ -34,6 +34,58 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
+// Creates an in-app campaign draft, one in-app message or content card for an audience. The message, priority, end time and audience can be set now or later. Requires the campaigns:write scope.
+//
+// Example:
+//
+//	request := &sequenzygo.CreateInAppCampaignRequest{}
+//	client.InApp.CreateInAppCampaign(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) CreateInAppCampaign(
+	ctx context.Context,
+	request *sequenzygo.CreateInAppCampaignRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.CreateInAppCampaignResponse, error) {
+	response, err := c.WithRawResponse.CreateInAppCampaign(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Creates a placement, a slot in your app that shows in-app content inline. The key never changes. A workspace can have up to 50 placements. Requires the sequences:write scope.
+//
+// Example:
+//
+//	request := &sequenzygo.CreateInAppPlacementRequest{
+//	    Key: "home_hero",
+//	}
+//	client.InApp.CreateInAppPlacement(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) CreateInAppPlacement(
+	ctx context.Context,
+	request *sequenzygo.CreateInAppPlacementRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.CreateInAppPlacementResponse, error) {
+	response, err := c.WithRawResponse.CreateInAppPlacement(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Deletes an item so the contact's app stops showing it the next time it fetches the feed. Its engagement no longer counts in step stats. Requires the subscribers:write scope.
 //
 // Example:
@@ -51,6 +103,197 @@ func (c *Client) DeleteInAppMessage(
 	opts ...option.RequestOption,
 ) (*sequenzygo.DeleteInAppMessageResponse, error) {
 	response, err := c.WithRawResponse.DeleteInAppMessage(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Deletes a placement. Its slots collapse in your app on the next refresh, and in-app steps that target it skip contacts until a placement with the same key exists again. Items already created stay in contact history and never show again, even under a placement created later with the same key. Requires the sequences:delete scope.
+//
+// Example:
+//
+//	request := &sequenzygo.DeleteInAppPlacementRequest{
+//	    Key: "key",
+//	}
+//	client.InApp.DeleteInAppPlacement(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) DeleteInAppPlacement(
+	ctx context.Context,
+	request *sequenzygo.DeleteInAppPlacementRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.DeleteInAppPlacementResponse, error) {
+	response, err := c.WithRawResponse.DeleteInAppPlacement(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Copies an in-app campaign's message, priority, audience and labels into a new draft. An end time that has passed is not copied. Requires the campaigns:write scope.
+//
+// Example:
+//
+//	request := &sequenzygo.DuplicateInAppCampaignRequest{
+//	    CampaignID: "campaignId",
+//	}
+//	client.InApp.DuplicateInAppCampaign(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) DuplicateInAppCampaign(
+	ctx context.Context,
+	request *sequenzygo.DuplicateInAppCampaignRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.DuplicateInAppCampaignResponse, error) {
+	response, err := c.WithRawResponse.DuplicateInAppCampaign(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Counts the contacts who match an audience now. Contacts who join the audience while the campaign is live get it too. Requires the campaigns:read scope.
+//
+// Example:
+//
+//	request := &sequenzygo.EstimateInAppCampaignRecipientsRequest{
+//	    TargetLists: map[string]any{
+//	        "key": "value",
+//	    },
+//	}
+//	client.InApp.EstimateInAppCampaignRecipients(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) EstimateInAppCampaignRecipients(
+	ctx context.Context,
+	request *sequenzygo.EstimateInAppCampaignRecipientsRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.EstimateInAppCampaignRecipientsResponse, error) {
+	response, err := c.WithRawResponse.EstimateInAppCampaignRecipients(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Returns an in-app campaign's message, audience, priority, schedule, end time and state, plus reach and engagement once it has launched (null for drafts and scheduled campaigns). Requires the campaigns:read scope.
+//
+// Example:
+//
+//	request := &sequenzygo.GetInAppCampaignRequest{
+//	    CampaignID: "campaignId",
+//	}
+//	client.InApp.GetInAppCampaign(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) GetInAppCampaign(
+	ctx context.Context,
+	request *sequenzygo.GetInAppCampaignRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.GetInAppCampaignResponse, error) {
+	response, err := c.WithRawResponse.GetInAppCampaign(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Returns reach and engagement for an in-app campaign, counted from the messages it delivered. Requires the campaigns:read scope.
+//
+// Example:
+//
+//	request := &sequenzygo.GetInAppCampaignStatsRequest{
+//	    CampaignID: "campaignId",
+//	}
+//	client.InApp.GetInAppCampaignStats(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) GetInAppCampaignStats(
+	ctx context.Context,
+	request *sequenzygo.GetInAppCampaignStatsRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.GetInAppCampaignStatsResponse, error) {
+	response, err := c.WithRawResponse.GetInAppCampaignStats(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// One placement with its all-time item counts. Requires the sequences:read scope.
+//
+// Example:
+//
+//	request := &sequenzygo.GetInAppPlacementRequest{
+//	    Key: "key",
+//	}
+//	client.InApp.GetInAppPlacement(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) GetInAppPlacement(
+	ctx context.Context,
+	request *sequenzygo.GetInAppPlacementRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.GetInAppPlacementResponse, error) {
+	response, err := c.WithRawResponse.GetInAppPlacement(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// What each requested placement shows one contact now: their highest-priority open placement item (ties go to the newest), or null so your app collapses the slot. Keys the workspace has not defined always return null. Reading marks nothing displayed. Identify the contact with email, externalId or subscriberId. Requires the subscribers:read scope.
+//
+// Example:
+//
+//	request := &sequenzygo.GetInAppPlacementContentRequest{
+//	    Placements: "home_hero,checkout_upsell",
+//	}
+//	client.InApp.GetInAppPlacementContent(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) GetInAppPlacementContent(
+	ctx context.Context,
+	request *sequenzygo.GetInAppPlacementContentRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.GetInAppPlacementContentResponse, error) {
+	response, err := c.WithRawResponse.GetInAppPlacementContent(
 		ctx,
 		request,
 		opts...,
@@ -88,7 +331,32 @@ func (c *Client) GetInAppStepStats(
 	return response.Body, nil
 }
 
-// Lists a contact's in-app messages and content cards, created by in_app sequence steps. With status open (default) it returns what the app should show now: messages not yet displayed, clicked or dismissed, and cards not dismissed, excluding expired items, messages first, then pinned cards, then newest. With status all it returns history, newest first. Identify the contact with email, externalId or subscriberId. Requires the subscribers:read scope.
+// Lists in-app campaigns, newest first. Each carries its stored status and a state (draft, scheduled, live, ended, stopped). In-app campaigns also appear in GET /campaigns with type in_app. Requires the campaigns:read scope.
+//
+// Example:
+//
+//	request := &sequenzygo.ListInAppCampaignsRequest{}
+//	client.InApp.ListInAppCampaigns(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) ListInAppCampaigns(
+	ctx context.Context,
+	request *sequenzygo.ListInAppCampaignsRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.ListInAppCampaignsResponse, error) {
+	response, err := c.WithRawResponse.ListInAppCampaigns(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Lists a contact's in-app messages and content cards, created by in_app sequence steps and in-app campaigns. With status open (default) it first delivers live in-app campaigns the contact qualifies for, as the app's own feed does, then returns what the app should show now: messages not yet displayed, clicked or dismissed, and cards not dismissed, excluding expired items, messages first, then higher campaign priority, then pinned cards, then newest. With status all it returns history, newest first. Identify the contact with email, externalId or subscriberId. Requires the subscribers:read scope.
 //
 // Example:
 //
@@ -109,6 +377,27 @@ func (c *Client) ListInAppMessages(
 	response, err := c.WithRawResponse.ListInAppMessages(
 		ctx,
 		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Lists the workspace's placements, sorted by name, each with all-time item counts. Requires the sequences:read scope.
+//
+// Example:
+//
+//	client.InApp.ListInAppPlacements(
+//	    context.TODO(),
+//	)
+func (c *Client) ListInAppPlacements(
+	ctx context.Context,
+	opts ...option.RequestOption,
+) (*sequenzygo.ListInAppPlacementsResponse, error) {
+	response, err := c.WithRawResponse.ListInAppPlacements(
+		ctx,
 		opts...,
 	)
 	if err != nil {
@@ -156,6 +445,142 @@ func (c *Client) RecordInAppEvent(
 	opts ...option.RequestOption,
 ) (*sequenzygo.RecordInAppEventResponse, error) {
 	response, err := c.WithRawResponse.RecordInAppEvent(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Launches a draft or scheduled in-app campaign now, or schedules it when scheduledAt is a future ISO 8601 time. Launching writes nothing per contact. While the campaign is live, each contact in the audience gets the message the first time their app fetches its feed (SDK feed, browser feed or GET /in-app/messages), including contacts who join the audience later or open the app days later. Callers that cannot render the message's format or button actions do not use it up. Requires a message, an audience and an end time after the start. Requires the campaigns:send scope.
+//
+// Example:
+//
+//	request := &sequenzygo.SendInAppCampaignRequest{
+//	    CampaignID: "campaignId",
+//	}
+//	client.InApp.SendInAppCampaign(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) SendInAppCampaign(
+	ctx context.Context,
+	request *sequenzygo.SendInAppCampaignRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.SendInAppCampaignResponse, error) {
+	response, err := c.WithRawResponse.SendInAppCampaign(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Stops a scheduled or live in-app campaign. Nobody new gets it, and it leaves every feed that still has it, including cards contacts have seen but not dismissed. Stats are kept. Stopping is final; duplicate the campaign to run it again. Stopping a stopped campaign succeeds and ends its items again; a campaign past its end time has already ended (409). POST /campaigns/{campaignId}/cancel does the same for in-app campaigns. Requires the campaigns:send scope.
+//
+// Example:
+//
+//	request := &sequenzygo.StopInAppCampaignRequest{
+//	    CampaignID: "campaignId",
+//	}
+//	client.InApp.StopInAppCampaign(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) StopInAppCampaign(
+	ctx context.Context,
+	request *sequenzygo.StopInAppCampaignRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.StopInAppCampaignResponse, error) {
+	response, err := c.WithRawResponse.StopInAppCampaign(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Moves a scheduled in-app campaign back to draft. Requires the campaigns:send scope.
+//
+// Example:
+//
+//	request := &sequenzygo.UnscheduleInAppCampaignRequest{
+//	    CampaignID: "campaignId",
+//	}
+//	client.InApp.UnscheduleInAppCampaign(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) UnscheduleInAppCampaign(
+	ctx context.Context,
+	request *sequenzygo.UnscheduleInAppCampaignRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.UnscheduleInAppCampaignResponse, error) {
+	response, err := c.WithRawResponse.UnscheduleInAppCampaign(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Updates a draft or scheduled in-app campaign. Only the fields you pass change; message fields are merged over the stored message. Clear imageUrl, position, imagePlacement, expiresAfterDays, style, html or showCloseButton with null, eyebrow with "", buttons with [] and data with {}. A scheduled campaign must stay launchable. Live, ended and stopped campaigns cannot be edited; stop and duplicate them instead. Requires the campaigns:write scope.
+//
+// Example:
+//
+//	request := &sequenzygo.UpdateInAppCampaignRequest{
+//	    CampaignID: "campaignId",
+//	}
+//	client.InApp.UpdateInAppCampaign(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) UpdateInAppCampaign(
+	ctx context.Context,
+	request *sequenzygo.UpdateInAppCampaignRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.UpdateInAppCampaignResponse, error) {
+	response, err := c.WithRawResponse.UpdateInAppCampaign(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Changes a placement's name, description or size hints; null clears a size hint. The key cannot change. Requires the sequences:write scope.
+//
+// Example:
+//
+//	request := &sequenzygo.UpdateInAppPlacementRequest{
+//	    Key: "key",
+//	    Body: &sequenzygo.InAppPlacementInput{},
+//	}
+//	client.InApp.UpdateInAppPlacement(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) UpdateInAppPlacement(
+	ctx context.Context,
+	request *sequenzygo.UpdateInAppPlacementRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.UpdateInAppPlacementResponse, error) {
+	response, err := c.WithRawResponse.UpdateInAppPlacement(
 		ctx,
 		request,
 		opts...,

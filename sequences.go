@@ -6522,22 +6522,23 @@ var (
 	sequenceBranchPathStepInputFieldImageURLs        = big.NewInt(1 << 11)
 	sequenceBranchPathStepInputFieldIneligibleAction = big.NewInt(1 << 12)
 	sequenceBranchPathStepInputFieldLabel            = big.NewInt(1 << 13)
-	sequenceBranchPathStepInputFieldName             = big.NewInt(1 << 14)
-	sequenceBranchPathStepInputFieldNodeType         = big.NewInt(1 << 15)
-	sequenceBranchPathStepInputFieldPlatforms        = big.NewInt(1 << 16)
-	sequenceBranchPathStepInputFieldPreviewText      = big.NewInt(1 << 17)
-	sequenceBranchPathStepInputFieldReplyProfileID   = big.NewInt(1 << 18)
-	sequenceBranchPathStepInputFieldReplyTo          = big.NewInt(1 << 19)
-	sequenceBranchPathStepInputFieldReplyToName      = big.NewInt(1 << 20)
-	sequenceBranchPathStepInputFieldSenderProfileID  = big.NewInt(1 << 21)
-	sequenceBranchPathStepInputFieldSubject          = big.NewInt(1 << 22)
-	sequenceBranchPathStepInputFieldText             = big.NewInt(1 << 23)
-	sequenceBranchPathStepInputFieldTitle            = big.NewInt(1 << 24)
-	sequenceBranchPathStepInputFieldType             = big.NewInt(1 << 25)
-	sequenceBranchPathStepInputFieldURL              = big.NewInt(1 << 26)
-	sequenceBranchPathStepInputFieldWaitUntil        = big.NewInt(1 << 27)
-	sequenceBranchPathStepInputFieldWaitUntilKeyDate = big.NewInt(1 << 28)
-	sequenceBranchPathStepInputFieldWaitUntilWeekday = big.NewInt(1 << 29)
+	sequenceBranchPathStepInputFieldLocalizations    = big.NewInt(1 << 14)
+	sequenceBranchPathStepInputFieldName             = big.NewInt(1 << 15)
+	sequenceBranchPathStepInputFieldNodeType         = big.NewInt(1 << 16)
+	sequenceBranchPathStepInputFieldPlatforms        = big.NewInt(1 << 17)
+	sequenceBranchPathStepInputFieldPreviewText      = big.NewInt(1 << 18)
+	sequenceBranchPathStepInputFieldReplyProfileID   = big.NewInt(1 << 19)
+	sequenceBranchPathStepInputFieldReplyTo          = big.NewInt(1 << 20)
+	sequenceBranchPathStepInputFieldReplyToName      = big.NewInt(1 << 21)
+	sequenceBranchPathStepInputFieldSenderProfileID  = big.NewInt(1 << 22)
+	sequenceBranchPathStepInputFieldSubject          = big.NewInt(1 << 23)
+	sequenceBranchPathStepInputFieldText             = big.NewInt(1 << 24)
+	sequenceBranchPathStepInputFieldTitle            = big.NewInt(1 << 25)
+	sequenceBranchPathStepInputFieldType             = big.NewInt(1 << 26)
+	sequenceBranchPathStepInputFieldURL              = big.NewInt(1 << 27)
+	sequenceBranchPathStepInputFieldWaitUntil        = big.NewInt(1 << 28)
+	sequenceBranchPathStepInputFieldWaitUntilKeyDate = big.NewInt(1 << 29)
+	sequenceBranchPathStepInputFieldWaitUntilWeekday = big.NewInt(1 << 30)
 )
 
 type SequenceBranchPathStepInput struct {
@@ -6567,6 +6568,8 @@ type SequenceBranchPathStepInput struct {
 	IneligibleAction *SequenceBranchPathStepInputIneligibleAction `json:"ineligibleAction,omitempty" url:"ineligibleAction,omitempty"`
 	// SMS steps only. Display label for the step in the builder.
 	Label *string `json:"label,omitempty" url:"label,omitempty"`
+	// Push steps only. Versions in the workspace's other languages; see PushLocalization. Use POST /push/translate to write them with AI. To edit an existing step's versions, send the whole list in nodeUpdates changes.localizations.
+	Localizations []*PushLocalization `json:"localizations,omitempty" url:"localizations,omitempty"`
 	// Email template name for email steps.
 	Name *string `json:"name,omitempty" url:"name,omitempty"`
 	// Advanced node type for non-email sequence path actions.
@@ -6700,6 +6703,13 @@ func (s *SequenceBranchPathStepInput) GetLabel() *string {
 		return nil
 	}
 	return s.Label
+}
+
+func (s *SequenceBranchPathStepInput) GetLocalizations() []*PushLocalization {
+	if s == nil {
+		return nil
+	}
+	return s.Localizations
 }
 
 func (s *SequenceBranchPathStepInput) GetName() *string {
@@ -6924,6 +6934,13 @@ func (s *SequenceBranchPathStepInput) SetIneligibleAction(ineligibleAction *Sequ
 func (s *SequenceBranchPathStepInput) SetLabel(label *string) {
 	s.Label = label
 	s.require(sequenceBranchPathStepInputFieldLabel)
+}
+
+// SetLocalizations sets the Localizations field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceBranchPathStepInput) SetLocalizations(localizations []*PushLocalization) {
+	s.Localizations = localizations
+	s.require(sequenceBranchPathStepInputFieldLocalizations)
 }
 
 // SetName sets the Name field and marks it as non-optional;
@@ -25698,27 +25715,28 @@ var (
 	sequenceStepInputFieldIneligibleAction  = big.NewInt(1 << 24)
 	sequenceStepInputFieldIsTransactional   = big.NewInt(1 << 25)
 	sequenceStepInputFieldLabel             = big.NewInt(1 << 26)
-	sequenceStepInputFieldLockToSubscriber  = big.NewInt(1 << 27)
-	sequenceStepInputFieldMaxRedemptions    = big.NewInt(1 << 28)
-	sequenceStepInputFieldName              = big.NewInt(1 << 29)
-	sequenceStepInputFieldNodeType          = big.NewInt(1 << 30)
-	sequenceStepInputFieldPercentOff        = big.NewInt(1 << 31)
-	sequenceStepInputFieldPlanIDs           = big.NewInt(1 << 32)
-	sequenceStepInputFieldPlatforms         = big.NewInt(1 << 33)
-	sequenceStepInputFieldPreviewText       = big.NewInt(1 << 34)
-	sequenceStepInputFieldProvider          = big.NewInt(1 << 35)
-	sequenceStepInputFieldReplyProfileID    = big.NewInt(1 << 36)
-	sequenceStepInputFieldReplyTo           = big.NewInt(1 << 37)
-	sequenceStepInputFieldReplyToName       = big.NewInt(1 << 38)
-	sequenceStepInputFieldSenderProfileID   = big.NewInt(1 << 39)
-	sequenceStepInputFieldSubject           = big.NewInt(1 << 40)
-	sequenceStepInputFieldText              = big.NewInt(1 << 41)
-	sequenceStepInputFieldTitle             = big.NewInt(1 << 42)
-	sequenceStepInputFieldType              = big.NewInt(1 << 43)
-	sequenceStepInputFieldURL               = big.NewInt(1 << 44)
-	sequenceStepInputFieldWaitUntil         = big.NewInt(1 << 45)
-	sequenceStepInputFieldWaitUntilKeyDate  = big.NewInt(1 << 46)
-	sequenceStepInputFieldWaitUntilWeekday  = big.NewInt(1 << 47)
+	sequenceStepInputFieldLocalizations     = big.NewInt(1 << 27)
+	sequenceStepInputFieldLockToSubscriber  = big.NewInt(1 << 28)
+	sequenceStepInputFieldMaxRedemptions    = big.NewInt(1 << 29)
+	sequenceStepInputFieldName              = big.NewInt(1 << 30)
+	sequenceStepInputFieldNodeType          = big.NewInt(1 << 31)
+	sequenceStepInputFieldPercentOff        = big.NewInt(1 << 32)
+	sequenceStepInputFieldPlanIDs           = big.NewInt(1 << 33)
+	sequenceStepInputFieldPlatforms         = big.NewInt(1 << 34)
+	sequenceStepInputFieldPreviewText       = big.NewInt(1 << 35)
+	sequenceStepInputFieldProvider          = big.NewInt(1 << 36)
+	sequenceStepInputFieldReplyProfileID    = big.NewInt(1 << 37)
+	sequenceStepInputFieldReplyTo           = big.NewInt(1 << 38)
+	sequenceStepInputFieldReplyToName       = big.NewInt(1 << 39)
+	sequenceStepInputFieldSenderProfileID   = big.NewInt(1 << 40)
+	sequenceStepInputFieldSubject           = big.NewInt(1 << 41)
+	sequenceStepInputFieldText              = big.NewInt(1 << 42)
+	sequenceStepInputFieldTitle             = big.NewInt(1 << 43)
+	sequenceStepInputFieldType              = big.NewInt(1 << 44)
+	sequenceStepInputFieldURL               = big.NewInt(1 << 45)
+	sequenceStepInputFieldWaitUntil         = big.NewInt(1 << 46)
+	sequenceStepInputFieldWaitUntilKeyDate  = big.NewInt(1 << 47)
+	sequenceStepInputFieldWaitUntilWeekday  = big.NewInt(1 << 48)
 )
 
 type SequenceStepInput struct {
@@ -25774,6 +25792,8 @@ type SequenceStepInput struct {
 	IsTransactional *bool `json:"isTransactional,omitempty" url:"isTransactional,omitempty"`
 	// Legacy top-level builder label for discount steps. Prefer discount.label.
 	Label *string `json:"label,omitempty" url:"label,omitempty"`
+	// Push steps only. Versions in the workspace's other languages; see PushLocalization. Use POST /push/translate to write them with AI. To edit an existing step's versions, send the whole list in nodeUpdates changes.localizations.
+	Localizations []*PushLocalization `json:"localizations,omitempty" url:"localizations,omitempty"`
 	// Legacy top-level Stripe-only flag. Prefer discount.lockToSubscriber.
 	LockToSubscriber *bool `json:"lockToSubscriber,omitempty" url:"lockToSubscriber,omitempty"`
 	// Maximum redemptions for each generated code. Use 1 for subscriber-specific codes.
@@ -26008,6 +26028,13 @@ func (s *SequenceStepInput) GetLabel() *string {
 		return nil
 	}
 	return s.Label
+}
+
+func (s *SequenceStepInput) GetLocalizations() []*PushLocalization {
+	if s == nil {
+		return nil
+	}
+	return s.Localizations
 }
 
 func (s *SequenceStepInput) GetLockToSubscriber() *bool {
@@ -26358,6 +26385,13 @@ func (s *SequenceStepInput) SetIsTransactional(isTransactional *bool) {
 func (s *SequenceStepInput) SetLabel(label *string) {
 	s.Label = label
 	s.require(sequenceStepInputFieldLabel)
+}
+
+// SetLocalizations sets the Localizations field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceStepInput) SetLocalizations(localizations []*PushLocalization) {
+	s.Localizations = localizations
+	s.require(sequenceStepInputFieldLocalizations)
 }
 
 // SetLockToSubscriber sets the LockToSubscriber field and marks it as non-optional;

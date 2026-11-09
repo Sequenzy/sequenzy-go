@@ -773,6 +773,56 @@ func TestPushStartPushImportWithWireMock(
 	VerifyRequestCount(t, "TestPushStartPushImportWithWireMock", "POST", "/push/imports/importId/start", nil, 1)
 }
 
+func TestPushTranslatePushCampaignWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.TranslatePushCampaignRequest{
+		CampaignID: "campaignId",
+	}
+	_, invocationErr := client.Push.TranslatePushCampaign(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestPushTranslatePushCampaignWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestPushTranslatePushCampaignWithWireMock", "POST", "/push/campaigns/campaignId/translate", nil, 1)
+}
+
+func TestPushTranslatePushContentWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.TranslatePushContentRequest{}
+	_, invocationErr := client.Push.TranslatePushContent(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestPushTranslatePushContentWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestPushTranslatePushContentWithWireMock", "POST", "/push/translate", nil, 1)
+}
+
 func TestPushUnschedulePushCampaignWithWireMock(
 	t *testing.T,
 ) {

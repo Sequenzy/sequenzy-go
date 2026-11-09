@@ -1959,6 +1959,78 @@
       }
     },
     {
+      "id": "eba1ae79-f0e9-4997-8b77-148d649dd5a8",
+      "name": "List campaign replies - default",
+      "request": {
+        "urlPathTemplate": "/metrics/campaigns/{campaignId}/replies",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "campaignId": {
+            "equalTo": "campaignId"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"campaignId\": \"campaignId\",\n  \"pagination\": {\n    \"limit\": 20,\n    \"page\": 1,\n    \"total\": 100,\n    \"totalPages\": 5\n  },\n  \"replies\": [\n    {\n      \"attachmentCount\": 1,\n      \"conversationId\": \"conversationId\",\n      \"email\": \"email\",\n      \"emailSendId\": \"emailSendId\",\n      \"externalId\": \"externalId\",\n      \"firstName\": \"firstName\",\n      \"hasAttachments\": true,\n      \"lastName\": \"lastName\",\n      \"receivedAt\": \"2024-01-15T09:30:00Z\",\n      \"replyId\": \"replyId\",\n      \"subscriberId\": \"subscriberId\"\n    }\n  ],\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "eba1ae79-f0e9-4997-8b77-148d649dd5a8",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "3ba6e45f-e410-431d-98c5-b2cc93b9fe02",
+      "name": "List campaign replies - default",
+      "request": {
+        "urlPathTemplate": "/campaigns/{campaignId}/replies",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "campaignId": {
+            "equalTo": "campaignId"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"campaignId\": \"campaignId\",\n  \"pagination\": {\n    \"limit\": 20,\n    \"page\": 1,\n    \"total\": 100,\n    \"totalPages\": 5\n  },\n  \"replies\": [\n    {\n      \"attachmentCount\": 1,\n      \"conversationId\": \"conversationId\",\n      \"email\": \"email\",\n      \"emailSendId\": \"emailSendId\",\n      \"externalId\": \"externalId\",\n      \"firstName\": \"firstName\",\n      \"hasAttachments\": true,\n      \"lastName\": \"lastName\",\n      \"receivedAt\": \"2024-01-15T09:30:00Z\",\n      \"replyId\": \"replyId\",\n      \"subscriberId\": \"subscriberId\"\n    }\n  ],\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "3ba6e45f-e410-431d-98c5-b2cc93b9fe02",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "f666eec6-8faa-4d0a-8365-e89465c6e1c1",
       "name": "List per-email metrics - default",
       "request": {
@@ -5593,6 +5665,68 @@
       }
     },
     {
+      "id": "9aefa8d3-967a-4401-92d9-96f1f9093b5c",
+      "name": "Create an in-app campaign - default",
+      "request": {
+        "urlPathTemplate": "/in-app/campaigns",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "body": "{\n  \"campaign\": {\n    \"endsAt\": \"2024-01-15T09:30:00Z\",\n    \"estimatedRecipientCount\": 1,\n    \"id\": \"id\",\n    \"labelIds\": [\n      \"labelIds\"\n    ],\n    \"message\": {\n      \"body\": \"body\",\n      \"buttons\": [\n        {\n          \"label\": \"label\"\n        }\n      ],\n      \"data\": {\n        \"key\": \"value\"\n      },\n      \"expiresAfterDays\": 1,\n      \"eyebrow\": \"eyebrow\",\n      \"format\": \"modal\",\n      \"html\": \"html\",\n      \"imagePlacement\": \"top\",\n      \"imageUrl\": \"imageUrl\",\n      \"kind\": \"message\",\n      \"pinned\": true,\n      \"position\": \"top\",\n      \"showCloseButton\": true,\n      \"title\": \"title\"\n    },\n    \"name\": \"name\",\n    \"priority\": \"low\",\n    \"scheduledAt\": \"2024-01-15T09:30:00Z\",\n    \"sentAt\": \"2024-01-15T09:30:00Z\",\n    \"state\": \"draft\",\n    \"status\": \"draft\",\n    \"targetLists\": {\n      \"key\": \"value\"\n    },\n    \"type\": \"in_app\"\n  },\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "9aefa8d3-967a-4401-92d9-96f1f9093b5c",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "cc105df4-cc0e-4648-9ee9-9106c6ecb91c",
+      "name": "Create an in-app placement - default",
+      "request": {
+        "urlPathTemplate": "/in-app/placements",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "body": "{\n  \"placement\": {\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"description\": \"description\",\n    \"height\": 1,\n    \"key\": \"home_hero\",\n    \"name\": \"Home hero\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"width\": 1\n  },\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "cc105df4-cc0e-4648-9ee9-9106c6ecb91c",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "07a8d76d-d940-46b3-a2f7-010bef7a268a",
       "name": "Delete an in-app message - default",
       "request": {
@@ -5627,6 +5761,254 @@
           }
         }
       }
+    },
+    {
+      "id": "8695e9d5-85a9-47fa-b062-b6eea52c72c5",
+      "name": "Delete an in-app placement - default",
+      "request": {
+        "urlPathTemplate": "/in-app/placements/{key}",
+        "method": "DELETE",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "key": {
+            "equalTo": "key"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"key\": \"key\",\n  \"message\": \"Placement deleted.\",\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "8695e9d5-85a9-47fa-b062-b6eea52c72c5",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "430c8c53-be31-4c70-9c1d-124da06730a5",
+      "name": "Duplicate an in-app campaign - default",
+      "request": {
+        "urlPathTemplate": "/in-app/campaigns/{campaignId}/duplicate",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "campaignId": {
+            "equalTo": "campaignId"
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "body": "{\n  \"campaign\": {\n    \"endsAt\": \"2024-01-15T09:30:00Z\",\n    \"estimatedRecipientCount\": 1,\n    \"id\": \"id\",\n    \"labelIds\": [\n      \"labelIds\"\n    ],\n    \"message\": {\n      \"body\": \"body\",\n      \"buttons\": [\n        {\n          \"label\": \"label\"\n        }\n      ],\n      \"data\": {\n        \"key\": \"value\"\n      },\n      \"expiresAfterDays\": 1,\n      \"eyebrow\": \"eyebrow\",\n      \"format\": \"modal\",\n      \"html\": \"html\",\n      \"imagePlacement\": \"top\",\n      \"imageUrl\": \"imageUrl\",\n      \"kind\": \"message\",\n      \"pinned\": true,\n      \"position\": \"top\",\n      \"showCloseButton\": true,\n      \"title\": \"title\"\n    },\n    \"name\": \"name\",\n    \"priority\": \"low\",\n    \"scheduledAt\": \"2024-01-15T09:30:00Z\",\n    \"sentAt\": \"2024-01-15T09:30:00Z\",\n    \"state\": \"draft\",\n    \"status\": \"draft\",\n    \"targetLists\": {\n      \"key\": \"value\"\n    },\n    \"type\": \"in_app\"\n  },\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "430c8c53-be31-4c70-9c1d-124da06730a5",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "b3614003-369d-49f2-b0cc-b55c3cba7e8b",
+      "name": "Estimate in-app campaign recipients - default",
+      "request": {
+        "urlPathTemplate": "/in-app/campaigns/estimate",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"audienceCount\": 1200,\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "b3614003-369d-49f2-b0cc-b55c3cba7e8b",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "e0bdadf6-31f8-44f7-baf2-be4e25de17a7",
+      "name": "Get an in-app campaign - default",
+      "request": {
+        "urlPathTemplate": "/in-app/campaigns/{campaignId}",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "campaignId": {
+            "equalTo": "campaignId"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"campaign\": {\n    \"endsAt\": \"2024-01-15T09:30:00Z\",\n    \"estimatedRecipientCount\": 1,\n    \"id\": \"id\",\n    \"labelIds\": [\n      \"labelIds\"\n    ],\n    \"message\": {\n      \"body\": \"body\",\n      \"buttons\": [\n        {\n          \"label\": \"label\"\n        }\n      ],\n      \"data\": {\n        \"key\": \"value\"\n      },\n      \"expiresAfterDays\": 1,\n      \"eyebrow\": \"eyebrow\",\n      \"format\": \"modal\",\n      \"html\": \"html\",\n      \"imagePlacement\": \"top\",\n      \"imageUrl\": \"imageUrl\",\n      \"kind\": \"message\",\n      \"pinned\": true,\n      \"position\": \"top\",\n      \"showCloseButton\": true,\n      \"title\": \"title\"\n    },\n    \"name\": \"name\",\n    \"priority\": \"low\",\n    \"scheduledAt\": \"2024-01-15T09:30:00Z\",\n    \"sentAt\": \"2024-01-15T09:30:00Z\",\n    \"state\": \"draft\",\n    \"status\": \"draft\",\n    \"targetLists\": {\n      \"key\": \"value\"\n    },\n    \"type\": \"in_app\"\n  },\n  \"stats\": {\n    \"buttons\": [\n      {}\n    ],\n    \"clicked\": 1,\n    \"delivered\": 1,\n    \"dismissed\": 1,\n    \"displayed\": 1,\n    \"pushPermissionDenied\": 1,\n    \"pushPermissionGranted\": 1,\n    \"totalClicks\": 1\n  },\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "e0bdadf6-31f8-44f7-baf2-be4e25de17a7",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "2ef93351-8285-48c4-b897-7e329cfa8da8",
+      "name": "Get in-app campaign stats - default",
+      "request": {
+        "urlPathTemplate": "/in-app/campaigns/{campaignId}/stats",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "campaignId": {
+            "equalTo": "campaignId"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"audienceAtLaunch\": 1,\n  \"campaignId\": \"campaignId\",\n  \"state\": \"draft\",\n  \"stats\": {\n    \"buttons\": [\n      {}\n    ],\n    \"clicked\": 1,\n    \"delivered\": 1,\n    \"dismissed\": 1,\n    \"displayed\": 1,\n    \"pushPermissionDenied\": 1,\n    \"pushPermissionGranted\": 1,\n    \"totalClicks\": 1\n  },\n  \"status\": \"draft\",\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "2ef93351-8285-48c4-b897-7e329cfa8da8",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "5ed14c7a-fd4d-4c14-b4b1-43e22cc171a3",
+      "name": "Get an in-app placement - default",
+      "request": {
+        "urlPathTemplate": "/in-app/placements/{key}",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "key": {
+            "equalTo": "key"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"placement\": {\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"description\": \"description\",\n    \"height\": 1,\n    \"key\": \"home_hero\",\n    \"name\": \"Home hero\",\n    \"stats\": {\n      \"clicked\": 1,\n      \"created\": 1,\n      \"dismissed\": 1,\n      \"displayed\": 1,\n      \"live\": 1,\n      \"placement\": \"placement\"\n    },\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"width\": 1\n  },\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "5ed14c7a-fd4d-4c14-b4b1-43e22cc171a3",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "e9a8256a-6c0e-4bbb-be39-c0924fe71f8e",
+      "name": "Get placement content - default",
+      "request": {
+        "urlPathTemplate": "/in-app/placement-feed",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "queryParameters": {
+          "placements": {
+            "equalTo": "home_hero,checkout_upsell"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"placements\": [\n    {\n      \"placement\": \"placement\"\n    }\n  ],\n  \"subscriberId\": \"subscriberId\",\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "e9a8256a-6c0e-4bbb-be39-c0924fe71f8e",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
     },
     {
       "id": "e34ca490-31e3-4136-86c0-2ecde8ed4e3d",
@@ -5665,6 +6047,38 @@
       }
     },
     {
+      "id": "835c4fe9-ab18-4e99-b62f-ceeff1b94ae4",
+      "name": "List in-app campaigns - default",
+      "request": {
+        "urlPathTemplate": "/in-app/campaigns",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"campaigns\": [\n    {\n      \"endsAt\": \"2024-01-15T09:30:00Z\",\n      \"estimatedRecipientCount\": 1,\n      \"id\": \"id\",\n      \"labelIds\": [\n        \"labelIds\"\n      ],\n      \"name\": \"name\",\n      \"priority\": \"low\",\n      \"scheduledAt\": \"2024-01-15T09:30:00Z\",\n      \"sentAt\": \"2024-01-15T09:30:00Z\",\n      \"state\": \"draft\",\n      \"status\": \"draft\",\n      \"targetLists\": {\n        \"key\": \"value\"\n      },\n      \"type\": \"in_app\"\n    }\n  ],\n  \"success\": true,\n  \"total\": 1\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "835c4fe9-ab18-4e99-b62f-ceeff1b94ae4",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
       "id": "baaadc33-3555-4a3a-9468-804c6fe247dd",
       "name": "List a contact's in-app messages - default",
       "request": {
@@ -5683,12 +6097,44 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"messages\": [\n    {\n      \"body\": \"body\",\n      \"buttons\": [\n        {}\n      ],\n      \"clickCount\": 1,\n      \"clickedAt\": \"2024-01-15T09:30:00Z\",\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"data\": {\n        \"key\": \"value\"\n      },\n      \"dismissedAt\": \"2024-01-15T09:30:00Z\",\n      \"displayedAt\": \"2024-01-15T09:30:00Z\",\n      \"expiresAt\": \"2024-01-15T09:30:00Z\",\n      \"eyebrow\": \"eyebrow\",\n      \"format\": \"modal\",\n      \"html\": \"html\",\n      \"id\": \"id\",\n      \"imagePlacement\": \"top\",\n      \"imageUrl\": \"imageUrl\",\n      \"kind\": \"message\",\n      \"pinned\": true,\n      \"position\": \"top\",\n      \"readAt\": \"2024-01-15T09:30:00Z\",\n      \"sequenceId\": \"sequenceId\",\n      \"showCloseButton\": true,\n      \"stepId\": \"stepId\",\n      \"title\": \"title\"\n    }\n  ],\n  \"status\": \"open\",\n  \"subscriberId\": \"subscriberId\",\n  \"success\": true\n}",
+        "body": "{\n  \"messages\": [\n    {\n      \"body\": \"body\",\n      \"buttons\": [\n        {}\n      ],\n      \"campaignId\": \"campaignId\",\n      \"clickCount\": 1,\n      \"clickedAt\": \"2024-01-15T09:30:00Z\",\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"data\": {\n        \"key\": \"value\"\n      },\n      \"dismissedAt\": \"2024-01-15T09:30:00Z\",\n      \"displayedAt\": \"2024-01-15T09:30:00Z\",\n      \"expiresAt\": \"2024-01-15T09:30:00Z\",\n      \"eyebrow\": \"eyebrow\",\n      \"format\": \"modal\",\n      \"html\": \"html\",\n      \"id\": \"id\",\n      \"imagePlacement\": \"top\",\n      \"imageUrl\": \"imageUrl\",\n      \"kind\": \"message\",\n      \"layout\": \"card\",\n      \"pinned\": true,\n      \"placement\": \"placement\",\n      \"position\": \"top\",\n      \"priority\": \"low\",\n      \"readAt\": \"2024-01-15T09:30:00Z\",\n      \"sequenceId\": \"sequenceId\",\n      \"showCloseButton\": true,\n      \"stepId\": \"stepId\",\n      \"title\": \"title\"\n    }\n  ],\n  \"status\": \"open\",\n  \"subscriberId\": \"subscriberId\",\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
       },
       "uuid": "baaadc33-3555-4a3a-9468-804c6fe247dd",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
+      "id": "7670700b-ea5c-4991-898f-fa97b9e0ae4d",
+      "name": "List in-app placements - default",
+      "request": {
+        "urlPathTemplate": "/in-app/placements",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"placements\": [\n    {\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"description\": \"description\",\n      \"height\": 1,\n      \"key\": \"home_hero\",\n      \"name\": \"Home hero\",\n      \"updatedAt\": \"2024-01-15T09:30:00Z\",\n      \"width\": 1\n    }\n  ],\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "7670700b-ea5c-4991-898f-fa97b9e0ae4d",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -5752,12 +6198,192 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"message\": {\n    \"body\": \"body\",\n    \"buttons\": [\n      {}\n    ],\n    \"clickCount\": 1,\n    \"clickedAt\": \"2024-01-15T09:30:00Z\",\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"data\": {\n      \"key\": \"value\"\n    },\n    \"dismissedAt\": \"2024-01-15T09:30:00Z\",\n    \"displayedAt\": \"2024-01-15T09:30:00Z\",\n    \"expiresAt\": \"2024-01-15T09:30:00Z\",\n    \"eyebrow\": \"eyebrow\",\n    \"format\": \"modal\",\n    \"html\": \"html\",\n    \"id\": \"id\",\n    \"imagePlacement\": \"top\",\n    \"imageUrl\": \"imageUrl\",\n    \"kind\": \"message\",\n    \"pinned\": true,\n    \"position\": \"top\",\n    \"readAt\": \"2024-01-15T09:30:00Z\",\n    \"sequenceId\": \"sequenceId\",\n    \"showCloseButton\": true,\n    \"stepId\": \"stepId\",\n    \"style\": {\n      \"backgroundColor\": \"backgroundColor\",\n      \"buttonColor\": \"buttonColor\",\n      \"buttonRadius\": 1,\n      \"buttonTextColor\": \"buttonTextColor\",\n      \"cornerRadius\": 1,\n      \"fontFamily\": \"fontFamily\",\n      \"mutedTextColor\": \"mutedTextColor\",\n      \"preset\": \"brand\",\n      \"textColor\": \"textColor\"\n    },\n    \"title\": \"title\"\n  },\n  \"recorded\": true,\n  \"success\": true\n}",
+        "body": "{\n  \"message\": {\n    \"body\": \"body\",\n    \"buttons\": [\n      {}\n    ],\n    \"campaignId\": \"campaignId\",\n    \"clickCount\": 1,\n    \"clickedAt\": \"2024-01-15T09:30:00Z\",\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"data\": {\n      \"key\": \"value\"\n    },\n    \"dismissedAt\": \"2024-01-15T09:30:00Z\",\n    \"displayedAt\": \"2024-01-15T09:30:00Z\",\n    \"expiresAt\": \"2024-01-15T09:30:00Z\",\n    \"eyebrow\": \"eyebrow\",\n    \"format\": \"modal\",\n    \"html\": \"html\",\n    \"id\": \"id\",\n    \"imagePlacement\": \"top\",\n    \"imageUrl\": \"imageUrl\",\n    \"kind\": \"message\",\n    \"layout\": \"card\",\n    \"pinned\": true,\n    \"placement\": \"placement\",\n    \"position\": \"top\",\n    \"priority\": \"low\",\n    \"readAt\": \"2024-01-15T09:30:00Z\",\n    \"sequenceId\": \"sequenceId\",\n    \"showCloseButton\": true,\n    \"stepId\": \"stepId\",\n    \"style\": {\n      \"backgroundColor\": \"backgroundColor\",\n      \"buttonColor\": \"buttonColor\",\n      \"buttonRadius\": 1,\n      \"buttonTextColor\": \"buttonTextColor\",\n      \"cornerRadius\": 1,\n      \"fontFamily\": \"fontFamily\",\n      \"mutedTextColor\": \"mutedTextColor\",\n      \"preset\": \"brand\",\n      \"textColor\": \"textColor\"\n    },\n    \"title\": \"title\"\n  },\n  \"recorded\": true,\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
       },
       "uuid": "991db36e-cbd9-4799-bf7b-45e9a6867704",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "50964e8f-ebad-4fd5-a3e6-b7aa73e770bb",
+      "name": "Launch an in-app campaign - default",
+      "request": {
+        "urlPathTemplate": "/in-app/campaigns/{campaignId}/send",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "campaignId": {
+            "equalTo": "campaignId"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"campaign\": {\n    \"endsAt\": \"2024-01-15T09:30:00Z\",\n    \"estimatedRecipientCount\": 1,\n    \"id\": \"id\",\n    \"labelIds\": [\n      \"labelIds\"\n    ],\n    \"message\": {\n      \"body\": \"body\",\n      \"buttons\": [\n        {\n          \"label\": \"label\"\n        }\n      ],\n      \"data\": {\n        \"key\": \"value\"\n      },\n      \"expiresAfterDays\": 1,\n      \"eyebrow\": \"eyebrow\",\n      \"format\": \"modal\",\n      \"html\": \"html\",\n      \"imagePlacement\": \"top\",\n      \"imageUrl\": \"imageUrl\",\n      \"kind\": \"message\",\n      \"pinned\": true,\n      \"position\": \"top\",\n      \"showCloseButton\": true,\n      \"title\": \"title\"\n    },\n    \"name\": \"name\",\n    \"priority\": \"low\",\n    \"scheduledAt\": \"2024-01-15T09:30:00Z\",\n    \"sentAt\": \"2024-01-15T09:30:00Z\",\n    \"state\": \"draft\",\n    \"status\": \"draft\",\n    \"targetLists\": {\n      \"key\": \"value\"\n    },\n    \"type\": \"in_app\"\n  },\n  \"message\": \"In-app campaign is live. 1200 contacts currently match the audience; each gets it the next time their app fetches its feed.\",\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "50964e8f-ebad-4fd5-a3e6-b7aa73e770bb",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "1abe2060-82d3-4b72-b50f-32c5da4264f3",
+      "name": "Stop an in-app campaign - default",
+      "request": {
+        "urlPathTemplate": "/in-app/campaigns/{campaignId}/stop",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "campaignId": {
+            "equalTo": "campaignId"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"campaign\": {\n    \"endsAt\": \"2024-01-15T09:30:00Z\",\n    \"estimatedRecipientCount\": 1,\n    \"id\": \"id\",\n    \"labelIds\": [\n      \"labelIds\"\n    ],\n    \"message\": {\n      \"body\": \"body\",\n      \"buttons\": [\n        {\n          \"label\": \"label\"\n        }\n      ],\n      \"data\": {\n        \"key\": \"value\"\n      },\n      \"expiresAfterDays\": 1,\n      \"eyebrow\": \"eyebrow\",\n      \"format\": \"modal\",\n      \"html\": \"html\",\n      \"imagePlacement\": \"top\",\n      \"imageUrl\": \"imageUrl\",\n      \"kind\": \"message\",\n      \"pinned\": true,\n      \"position\": \"top\",\n      \"showCloseButton\": true,\n      \"title\": \"title\"\n    },\n    \"name\": \"name\",\n    \"priority\": \"low\",\n    \"scheduledAt\": \"2024-01-15T09:30:00Z\",\n    \"sentAt\": \"2024-01-15T09:30:00Z\",\n    \"state\": \"draft\",\n    \"status\": \"draft\",\n    \"targetLists\": {\n      \"key\": \"value\"\n    },\n    \"type\": \"in_app\"\n  },\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "1abe2060-82d3-4b72-b50f-32c5da4264f3",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "67d36790-109c-4d55-b917-4ec61eaf9717",
+      "name": "Unschedule an in-app campaign - default",
+      "request": {
+        "urlPathTemplate": "/in-app/campaigns/{campaignId}/unschedule",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "campaignId": {
+            "equalTo": "campaignId"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"campaign\": {\n    \"endsAt\": \"2024-01-15T09:30:00Z\",\n    \"estimatedRecipientCount\": 1,\n    \"id\": \"id\",\n    \"labelIds\": [\n      \"labelIds\"\n    ],\n    \"message\": {\n      \"body\": \"body\",\n      \"buttons\": [\n        {\n          \"label\": \"label\"\n        }\n      ],\n      \"data\": {\n        \"key\": \"value\"\n      },\n      \"expiresAfterDays\": 1,\n      \"eyebrow\": \"eyebrow\",\n      \"format\": \"modal\",\n      \"html\": \"html\",\n      \"imagePlacement\": \"top\",\n      \"imageUrl\": \"imageUrl\",\n      \"kind\": \"message\",\n      \"pinned\": true,\n      \"position\": \"top\",\n      \"showCloseButton\": true,\n      \"title\": \"title\"\n    },\n    \"name\": \"name\",\n    \"priority\": \"low\",\n    \"scheduledAt\": \"2024-01-15T09:30:00Z\",\n    \"sentAt\": \"2024-01-15T09:30:00Z\",\n    \"state\": \"draft\",\n    \"status\": \"draft\",\n    \"targetLists\": {\n      \"key\": \"value\"\n    },\n    \"type\": \"in_app\"\n  },\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "67d36790-109c-4d55-b917-4ec61eaf9717",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "aaf6c48e-5f11-4654-9c3d-c6bd3e08bbe2",
+      "name": "Update an in-app campaign - default",
+      "request": {
+        "urlPathTemplate": "/in-app/campaigns/{campaignId}",
+        "method": "PATCH",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "campaignId": {
+            "equalTo": "campaignId"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"campaign\": {\n    \"endsAt\": \"2024-01-15T09:30:00Z\",\n    \"estimatedRecipientCount\": 1,\n    \"id\": \"id\",\n    \"labelIds\": [\n      \"labelIds\"\n    ],\n    \"message\": {\n      \"body\": \"body\",\n      \"buttons\": [\n        {\n          \"label\": \"label\"\n        }\n      ],\n      \"data\": {\n        \"key\": \"value\"\n      },\n      \"expiresAfterDays\": 1,\n      \"eyebrow\": \"eyebrow\",\n      \"format\": \"modal\",\n      \"html\": \"html\",\n      \"imagePlacement\": \"top\",\n      \"imageUrl\": \"imageUrl\",\n      \"kind\": \"message\",\n      \"pinned\": true,\n      \"position\": \"top\",\n      \"showCloseButton\": true,\n      \"title\": \"title\"\n    },\n    \"name\": \"name\",\n    \"priority\": \"low\",\n    \"scheduledAt\": \"2024-01-15T09:30:00Z\",\n    \"sentAt\": \"2024-01-15T09:30:00Z\",\n    \"state\": \"draft\",\n    \"status\": \"draft\",\n    \"targetLists\": {\n      \"key\": \"value\"\n    },\n    \"type\": \"in_app\"\n  },\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "aaf6c48e-5f11-4654-9c3d-c6bd3e08bbe2",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "5b121caf-1dc4-43d2-90b3-b0a40b77976f",
+      "name": "Update an in-app placement - default",
+      "request": {
+        "urlPathTemplate": "/in-app/placements/{key}",
+        "method": "PATCH",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "key": {
+            "equalTo": "key"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"placement\": {\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"description\": \"description\",\n    \"height\": 1,\n    \"key\": \"home_hero\",\n    \"name\": \"Home hero\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\",\n    \"width\": 1\n  },\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "5b121caf-1dc4-43d2-90b3-b0a40b77976f",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -7935,7 +8561,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"campaign\": {\n    \"content\": {\n      \"body\": \"Tap to track your delivery.\",\n      \"iconUrl\": \"iconUrl\",\n      \"imageUrl\": \"imageUrl\",\n      \"platforms\": [\n        \"web\"\n      ],\n      \"title\": \"Your order shipped\",\n      \"url\": \"https://shop.example.com/orders\"\n    },\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"estimatedRecipientCount\": 1,\n    \"id\": \"id\",\n    \"labelIds\": [\n      \"labelIds\"\n    ],\n    \"name\": \"name\",\n    \"scheduledAt\": \"2024-01-15T09:30:00Z\",\n    \"sentAt\": \"2024-01-15T09:30:00Z\",\n    \"status\": \"draft\",\n    \"targetLists\": {\n      \"key\": \"value\"\n    },\n    \"type\": \"push\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"campaign\": {\n    \"content\": {\n      \"body\": \"Tap to track your delivery.\",\n      \"iconUrl\": \"iconUrl\",\n      \"imageUrl\": \"imageUrl\",\n      \"localizations\": [\n        {\n          \"body\": \"Tippe, um sie zu verfolgen.\",\n          \"locale\": \"de\",\n          \"title\": \"Deine Bestellung ist unterwegs\"\n        }\n      ],\n      \"platforms\": [\n        \"web\"\n      ],\n      \"title\": \"Your order shipped\",\n      \"url\": \"https://shop.example.com/orders\"\n    },\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"estimatedRecipientCount\": 1,\n    \"id\": \"id\",\n    \"labelIds\": [\n      \"labelIds\"\n    ],\n    \"name\": \"name\",\n    \"scheduledAt\": \"2024-01-15T09:30:00Z\",\n    \"scheduledTimezone\": \"America/New_York\",\n    \"sendInRecipientTimezone\": true,\n    \"sendTimeOptimization\": true,\n    \"sendTimeWindowHours\": 1,\n    \"sentAt\": \"2024-01-15T09:30:00Z\",\n    \"status\": \"draft\",\n    \"targetLists\": {\n      \"key\": \"value\"\n    },\n    \"type\": \"push\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -8064,7 +8690,7 @@
       },
       "response": {
         "status": 201,
-        "body": "{\n  \"campaign\": {\n    \"content\": {\n      \"body\": \"Tap to track your delivery.\",\n      \"iconUrl\": \"iconUrl\",\n      \"imageUrl\": \"imageUrl\",\n      \"platforms\": [\n        \"web\"\n      ],\n      \"title\": \"Your order shipped\",\n      \"url\": \"https://shop.example.com/orders\"\n    },\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"estimatedRecipientCount\": 1,\n    \"id\": \"id\",\n    \"labelIds\": [\n      \"labelIds\"\n    ],\n    \"name\": \"name\",\n    \"scheduledAt\": \"2024-01-15T09:30:00Z\",\n    \"sentAt\": \"2024-01-15T09:30:00Z\",\n    \"status\": \"draft\",\n    \"targetLists\": {\n      \"key\": \"value\"\n    },\n    \"type\": \"push\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"campaign\": {\n    \"content\": {\n      \"body\": \"Tap to track your delivery.\",\n      \"iconUrl\": \"iconUrl\",\n      \"imageUrl\": \"imageUrl\",\n      \"localizations\": [\n        {\n          \"body\": \"Tippe, um sie zu verfolgen.\",\n          \"locale\": \"de\",\n          \"title\": \"Deine Bestellung ist unterwegs\"\n        }\n      ],\n      \"platforms\": [\n        \"web\"\n      ],\n      \"title\": \"Your order shipped\",\n      \"url\": \"https://shop.example.com/orders\"\n    },\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"estimatedRecipientCount\": 1,\n    \"id\": \"id\",\n    \"labelIds\": [\n      \"labelIds\"\n    ],\n    \"name\": \"name\",\n    \"scheduledAt\": \"2024-01-15T09:30:00Z\",\n    \"scheduledTimezone\": \"America/New_York\",\n    \"sendInRecipientTimezone\": true,\n    \"sendTimeOptimization\": true,\n    \"sendTimeWindowHours\": 1,\n    \"sentAt\": \"2024-01-15T09:30:00Z\",\n    \"status\": \"draft\",\n    \"targetLists\": {\n      \"key\": \"value\"\n    },\n    \"type\": \"push\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -8167,7 +8793,7 @@
       },
       "response": {
         "status": 201,
-        "body": "{\n  \"campaign\": {\n    \"content\": {\n      \"body\": \"Tap to track your delivery.\",\n      \"iconUrl\": \"iconUrl\",\n      \"imageUrl\": \"imageUrl\",\n      \"platforms\": [\n        \"web\"\n      ],\n      \"title\": \"Your order shipped\",\n      \"url\": \"https://shop.example.com/orders\"\n    },\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"estimatedRecipientCount\": 1,\n    \"id\": \"id\",\n    \"labelIds\": [\n      \"labelIds\"\n    ],\n    \"name\": \"name\",\n    \"scheduledAt\": \"2024-01-15T09:30:00Z\",\n    \"sentAt\": \"2024-01-15T09:30:00Z\",\n    \"status\": \"draft\",\n    \"targetLists\": {\n      \"key\": \"value\"\n    },\n    \"type\": \"push\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"campaign\": {\n    \"content\": {\n      \"body\": \"Tap to track your delivery.\",\n      \"iconUrl\": \"iconUrl\",\n      \"imageUrl\": \"imageUrl\",\n      \"localizations\": [\n        {\n          \"body\": \"Tippe, um sie zu verfolgen.\",\n          \"locale\": \"de\",\n          \"title\": \"Deine Bestellung ist unterwegs\"\n        }\n      ],\n      \"platforms\": [\n        \"web\"\n      ],\n      \"title\": \"Your order shipped\",\n      \"url\": \"https://shop.example.com/orders\"\n    },\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"estimatedRecipientCount\": 1,\n    \"id\": \"id\",\n    \"labelIds\": [\n      \"labelIds\"\n    ],\n    \"name\": \"name\",\n    \"scheduledAt\": \"2024-01-15T09:30:00Z\",\n    \"scheduledTimezone\": \"America/New_York\",\n    \"sendInRecipientTimezone\": true,\n    \"sendTimeOptimization\": true,\n    \"sendTimeWindowHours\": 1,\n    \"sentAt\": \"2024-01-15T09:30:00Z\",\n    \"status\": \"draft\",\n    \"targetLists\": {\n      \"key\": \"value\"\n    },\n    \"type\": \"push\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -8198,7 +8824,7 @@
       },
       "response": {
         "status": 202,
-        "body": "{\n  \"activityId\": \"order-1234\",\n  \"event\": \"start\",\n  \"jobIds\": [\n    \"jobIds\"\n  ],\n  \"message\": \"Update queued for 1 device.\",\n  \"success\": true,\n  \"tokenCount\": 1\n}",
+        "body": "{\n  \"activityId\": \"order-1234\",\n  \"contactCount\": 1,\n  \"event\": \"start\",\n  \"jobIds\": [\n    \"jobIds\"\n  ],\n  \"message\": \"Update queued for 1 device.\",\n  \"platforms\": {\n    \"android\": 0,\n    \"ios\": 1\n  },\n  \"success\": true,\n  \"tokenCount\": 1\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -8229,7 +8855,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"audienceCount\": 1200,\n  \"eligibleCount\": 340,\n  \"success\": true\n}",
+        "body": "{\n  \"audienceCount\": 1200,\n  \"eligibleCount\": 340,\n  \"success\": true,\n  \"timingCoverage\": {\n    \"eligible\": 340,\n    \"withPushHistory\": 96,\n    \"withTimezone\": 312\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -8265,7 +8891,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"campaign\": {\n    \"content\": {\n      \"body\": \"Tap to track your delivery.\",\n      \"iconUrl\": \"iconUrl\",\n      \"imageUrl\": \"imageUrl\",\n      \"platforms\": [\n        \"web\"\n      ],\n      \"title\": \"Your order shipped\",\n      \"url\": \"https://shop.example.com/orders\"\n    },\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"estimatedRecipientCount\": 1,\n    \"id\": \"id\",\n    \"labelIds\": [\n      \"labelIds\"\n    ],\n    \"name\": \"name\",\n    \"scheduledAt\": \"2024-01-15T09:30:00Z\",\n    \"sentAt\": \"2024-01-15T09:30:00Z\",\n    \"status\": \"draft\",\n    \"targetLists\": {\n      \"key\": \"value\"\n    },\n    \"type\": \"push\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"stats\": {\n    \"clicked\": 1,\n    \"delivered\": 1,\n    \"devicesAccepted\": 1,\n    \"devicesTargeted\": 1,\n    \"failed\": 1,\n    \"failureReasons\": [\n      {}\n    ],\n    \"pending\": 1,\n    \"sent\": 1,\n    \"skipped\": 1,\n    \"skipReasons\": [\n      {}\n    ],\n    \"total\": 1\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"campaign\": {\n    \"content\": {\n      \"body\": \"Tap to track your delivery.\",\n      \"iconUrl\": \"iconUrl\",\n      \"imageUrl\": \"imageUrl\",\n      \"localizations\": [\n        {\n          \"body\": \"Tippe, um sie zu verfolgen.\",\n          \"locale\": \"de\",\n          \"title\": \"Deine Bestellung ist unterwegs\"\n        }\n      ],\n      \"platforms\": [\n        \"web\"\n      ],\n      \"title\": \"Your order shipped\",\n      \"url\": \"https://shop.example.com/orders\"\n    },\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"estimatedRecipientCount\": 1,\n    \"id\": \"id\",\n    \"labelIds\": [\n      \"labelIds\"\n    ],\n    \"name\": \"name\",\n    \"scheduledAt\": \"2024-01-15T09:30:00Z\",\n    \"scheduledTimezone\": \"America/New_York\",\n    \"sendInRecipientTimezone\": true,\n    \"sendTimeOptimization\": true,\n    \"sendTimeWindowHours\": 1,\n    \"sentAt\": \"2024-01-15T09:30:00Z\",\n    \"status\": \"draft\",\n    \"targetLists\": {\n      \"key\": \"value\"\n    },\n    \"type\": \"push\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"stats\": {\n    \"clicked\": 1,\n    \"delivered\": 1,\n    \"devicesAccepted\": 1,\n    \"devicesTargeted\": 1,\n    \"failed\": 1,\n    \"failureReasons\": [\n      {}\n    ],\n    \"pending\": 1,\n    \"sent\": 1,\n    \"skipped\": 1,\n    \"skipReasons\": [\n      {}\n    ],\n    \"total\": 1\n  },\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -8437,7 +9063,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"nextCursor\": \"nextCursor\",\n  \"success\": true,\n  \"summary\": {\n    \"activeActivities\": 1,\n    \"activityTypes\": [\n      {}\n    ],\n    \"pushToStartDevices\": 1\n  },\n  \"tokens\": [\n    {\n      \"activityId\": \"order-1234\",\n      \"activityType\": \"DeliveryAttributes\",\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"deviceId\": \"deviceId\",\n      \"endedAt\": \"2024-01-15T09:30:00Z\",\n      \"id\": \"id\",\n      \"invalidReason\": \"invalidReason\",\n      \"kind\": \"push_to_start\",\n      \"lastPushAt\": \"2024-01-15T09:30:00Z\",\n      \"lastPushError\": \"lastPushError\",\n      \"lastPushOutcome\": \"lastPushOutcome\",\n      \"lastSeenAt\": \"2024-01-15T09:30:00Z\",\n      \"status\": \"active\",\n      \"subscriberId\": \"subscriberId\",\n      \"tokenPreview\": \"…9f3a2b1c\"\n    }\n  ]\n}",
+        "body": "{\n  \"nextCursor\": \"nextCursor\",\n  \"success\": true,\n  \"summary\": {\n    \"activeActivities\": 1,\n    \"activityTypes\": [\n      {}\n    ],\n    \"pushToStartDevices\": 1\n  },\n  \"tokens\": [\n    {\n      \"activityId\": \"order-1234\",\n      \"activityType\": \"DeliveryAttributes\",\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"deviceId\": \"deviceId\",\n      \"endedAt\": \"2024-01-15T09:30:00Z\",\n      \"id\": \"id\",\n      \"invalidReason\": \"invalidReason\",\n      \"kind\": \"push_to_start\",\n      \"lastPushAt\": \"2024-01-15T09:30:00Z\",\n      \"lastPushError\": \"lastPushError\",\n      \"lastPushOutcome\": \"lastPushOutcome\",\n      \"lastSeenAt\": \"2024-01-15T09:30:00Z\",\n      \"platform\": \"ios\",\n      \"status\": \"active\",\n      \"subscriberId\": \"subscriberId\",\n      \"tokenPreview\": \"…9f3a2b1c\"\n    }\n  ]\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -8469,7 +9095,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"campaigns\": [\n    {\n      \"content\": {\n        \"body\": \"Tap to track your delivery.\",\n        \"title\": \"Your order shipped\",\n        \"url\": \"https://shop.example.com/orders\"\n      },\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"estimatedRecipientCount\": 1,\n      \"id\": \"id\",\n      \"labelIds\": [\n        \"labelIds\"\n      ],\n      \"name\": \"name\",\n      \"scheduledAt\": \"2024-01-15T09:30:00Z\",\n      \"sentAt\": \"2024-01-15T09:30:00Z\",\n      \"status\": \"draft\",\n      \"targetLists\": {\n        \"key\": \"value\"\n      },\n      \"type\": \"push\",\n      \"updatedAt\": \"2024-01-15T09:30:00Z\"\n    }\n  ],\n  \"success\": true,\n  \"total\": 1\n}",
+        "body": "{\n  \"campaigns\": [\n    {\n      \"content\": {\n        \"body\": \"Tap to track your delivery.\",\n        \"localizations\": [\n          {\n            \"body\": \"Tippe, um sie zu verfolgen.\",\n            \"locale\": \"de\",\n            \"title\": \"Deine Bestellung ist unterwegs\"\n          }\n        ],\n        \"title\": \"Your order shipped\",\n        \"url\": \"https://shop.example.com/orders\"\n      },\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"estimatedRecipientCount\": 1,\n      \"id\": \"id\",\n      \"labelIds\": [\n        \"labelIds\"\n      ],\n      \"name\": \"name\",\n      \"scheduledAt\": \"2024-01-15T09:30:00Z\",\n      \"scheduledTimezone\": \"America/New_York\",\n      \"sendInRecipientTimezone\": true,\n      \"sendTimeOptimization\": true,\n      \"sendTimeWindowHours\": 1,\n      \"sentAt\": \"2024-01-15T09:30:00Z\",\n      \"status\": \"draft\",\n      \"targetLists\": {\n        \"key\": \"value\"\n      },\n      \"type\": \"push\",\n      \"updatedAt\": \"2024-01-15T09:30:00Z\"\n    }\n  ],\n  \"success\": true,\n  \"total\": 1\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -8601,7 +9227,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"campaign\": {\n    \"content\": {\n      \"body\": \"Tap to track your delivery.\",\n      \"iconUrl\": \"iconUrl\",\n      \"imageUrl\": \"imageUrl\",\n      \"platforms\": [\n        \"web\"\n      ],\n      \"title\": \"Your order shipped\",\n      \"url\": \"https://shop.example.com/orders\"\n    },\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"estimatedRecipientCount\": 1,\n    \"id\": \"id\",\n    \"labelIds\": [\n      \"labelIds\"\n    ],\n    \"name\": \"name\",\n    \"scheduledAt\": \"2024-01-15T09:30:00Z\",\n    \"sentAt\": \"2024-01-15T09:30:00Z\",\n    \"status\": \"draft\",\n    \"targetLists\": {\n      \"key\": \"value\"\n    },\n    \"type\": \"push\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"message\": \"Push campaign is sending to about 340 contacts.\",\n  \"success\": true\n}",
+        "body": "{\n  \"campaign\": {\n    \"content\": {\n      \"body\": \"Tap to track your delivery.\",\n      \"iconUrl\": \"iconUrl\",\n      \"imageUrl\": \"imageUrl\",\n      \"localizations\": [\n        {\n          \"body\": \"Tippe, um sie zu verfolgen.\",\n          \"locale\": \"de\",\n          \"title\": \"Deine Bestellung ist unterwegs\"\n        }\n      ],\n      \"platforms\": [\n        \"web\"\n      ],\n      \"title\": \"Your order shipped\",\n      \"url\": \"https://shop.example.com/orders\"\n    },\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"estimatedRecipientCount\": 1,\n    \"id\": \"id\",\n    \"labelIds\": [\n      \"labelIds\"\n    ],\n    \"name\": \"name\",\n    \"scheduledAt\": \"2024-01-15T09:30:00Z\",\n    \"scheduledTimezone\": \"America/New_York\",\n    \"sendInRecipientTimezone\": true,\n    \"sendTimeOptimization\": true,\n    \"sendTimeWindowHours\": 1,\n    \"sentAt\": \"2024-01-15T09:30:00Z\",\n    \"status\": \"draft\",\n    \"targetLists\": {\n      \"key\": \"value\"\n    },\n    \"type\": \"push\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"message\": \"Push campaign is sending to about 340 contacts.\",\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -8725,7 +9351,7 @@
       },
       "response": {
         "status": 202,
-        "body": "{\n  \"activityId\": \"order-1234\",\n  \"event\": \"start\",\n  \"jobIds\": [\n    \"jobIds\"\n  ],\n  \"message\": \"Update queued for 1 device.\",\n  \"success\": true,\n  \"tokenCount\": 1\n}",
+        "body": "{\n  \"activityId\": \"order-1234\",\n  \"contactCount\": 1,\n  \"event\": \"start\",\n  \"jobIds\": [\n    \"jobIds\"\n  ],\n  \"message\": \"Update queued for 1 device.\",\n  \"platforms\": {\n    \"android\": 0,\n    \"ios\": 1\n  },\n  \"success\": true,\n  \"tokenCount\": 1\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -8779,6 +9405,73 @@
       }
     },
     {
+      "id": "fcf86fb1-8511-4abd-a76d-73b743bf8d4f",
+      "name": "Translate a push campaign - default",
+      "request": {
+        "urlPathTemplate": "/push/campaigns/{campaignId}/translate",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "campaignId": {
+            "equalTo": "campaignId"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"campaign\": {\n    \"content\": {\n      \"body\": \"Tap to track your delivery.\",\n      \"iconUrl\": \"iconUrl\",\n      \"imageUrl\": \"imageUrl\",\n      \"localizations\": [\n        {\n          \"body\": \"Tippe, um sie zu verfolgen.\",\n          \"locale\": \"de\",\n          \"title\": \"Deine Bestellung ist unterwegs\"\n        }\n      ],\n      \"platforms\": [\n        \"web\"\n      ],\n      \"title\": \"Your order shipped\",\n      \"url\": \"https://shop.example.com/orders\"\n    },\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"estimatedRecipientCount\": 1,\n    \"id\": \"id\",\n    \"labelIds\": [\n      \"labelIds\"\n    ],\n    \"name\": \"name\",\n    \"scheduledAt\": \"2024-01-15T09:30:00Z\",\n    \"scheduledTimezone\": \"America/New_York\",\n    \"sendInRecipientTimezone\": true,\n    \"sendTimeOptimization\": true,\n    \"sendTimeWindowHours\": 1,\n    \"sentAt\": \"2024-01-15T09:30:00Z\",\n    \"status\": \"draft\",\n    \"targetLists\": {\n      \"key\": \"value\"\n    },\n    \"type\": \"push\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"failed\": [\n    {\n      \"error\": \"error\",\n      \"locale\": \"locale\"\n    }\n  ],\n  \"message\": \"Translated into de, fr.\",\n  \"skipped\": [\n    {\n      \"locale\": \"locale\",\n      \"reason\": \"up_to_date\"\n    }\n  ],\n  \"success\": true,\n  \"translated\": [\n    \"translated\"\n  ]\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "fcf86fb1-8511-4abd-a76d-73b743bf8d4f",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "445f1786-914b-4248-9113-22ce99fd94a7",
+      "name": "Translate push copy - default",
+      "request": {
+        "urlPathTemplate": "/push/translate",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"failed\": [\n    {\n      \"error\": \"error\",\n      \"locale\": \"locale\"\n    }\n  ],\n  \"localizations\": [\n    {\n      \"body\": \"Tippe, um sie zu verfolgen.\",\n      \"imageUrl\": \"imageUrl\",\n      \"locale\": \"de\",\n      \"origin\": \"ai\",\n      \"sourceHash\": \"sourceHash\",\n      \"title\": \"Deine Bestellung ist unterwegs\",\n      \"url\": \"url\"\n    }\n  ],\n  \"message\": \"Translated into de, fr.\",\n  \"skipped\": [\n    {\n      \"locale\": \"locale\",\n      \"reason\": \"up_to_date\"\n    }\n  ],\n  \"success\": true,\n  \"translated\": [\n    \"translated\"\n  ]\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "445f1786-914b-4248-9113-22ce99fd94a7",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "8adc51a8-00e9-4f36-999b-689da1e8eebd",
       "name": "Unschedule a push campaign - default",
       "request": {
@@ -8797,7 +9490,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"campaign\": {\n    \"content\": {\n      \"body\": \"Tap to track your delivery.\",\n      \"iconUrl\": \"iconUrl\",\n      \"imageUrl\": \"imageUrl\",\n      \"platforms\": [\n        \"web\"\n      ],\n      \"title\": \"Your order shipped\",\n      \"url\": \"https://shop.example.com/orders\"\n    },\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"estimatedRecipientCount\": 1,\n    \"id\": \"id\",\n    \"labelIds\": [\n      \"labelIds\"\n    ],\n    \"name\": \"name\",\n    \"scheduledAt\": \"2024-01-15T09:30:00Z\",\n    \"sentAt\": \"2024-01-15T09:30:00Z\",\n    \"status\": \"draft\",\n    \"targetLists\": {\n      \"key\": \"value\"\n    },\n    \"type\": \"push\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"campaign\": {\n    \"content\": {\n      \"body\": \"Tap to track your delivery.\",\n      \"iconUrl\": \"iconUrl\",\n      \"imageUrl\": \"imageUrl\",\n      \"localizations\": [\n        {\n          \"body\": \"Tippe, um sie zu verfolgen.\",\n          \"locale\": \"de\",\n          \"title\": \"Deine Bestellung ist unterwegs\"\n        }\n      ],\n      \"platforms\": [\n        \"web\"\n      ],\n      \"title\": \"Your order shipped\",\n      \"url\": \"https://shop.example.com/orders\"\n    },\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"estimatedRecipientCount\": 1,\n    \"id\": \"id\",\n    \"labelIds\": [\n      \"labelIds\"\n    ],\n    \"name\": \"name\",\n    \"scheduledAt\": \"2024-01-15T09:30:00Z\",\n    \"scheduledTimezone\": \"America/New_York\",\n    \"sendInRecipientTimezone\": true,\n    \"sendTimeOptimization\": true,\n    \"sendTimeWindowHours\": 1,\n    \"sentAt\": \"2024-01-15T09:30:00Z\",\n    \"status\": \"draft\",\n    \"targetLists\": {\n      \"key\": \"value\"\n    },\n    \"type\": \"push\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -8828,7 +9521,7 @@
       },
       "response": {
         "status": 202,
-        "body": "{\n  \"activityId\": \"order-1234\",\n  \"event\": \"start\",\n  \"jobIds\": [\n    \"jobIds\"\n  ],\n  \"message\": \"Update queued for 1 device.\",\n  \"success\": true,\n  \"tokenCount\": 1\n}",
+        "body": "{\n  \"activityId\": \"order-1234\",\n  \"contactCount\": 1,\n  \"event\": \"start\",\n  \"jobIds\": [\n    \"jobIds\"\n  ],\n  \"message\": \"Update queued for 1 device.\",\n  \"platforms\": {\n    \"android\": 0,\n    \"ios\": 1\n  },\n  \"success\": true,\n  \"tokenCount\": 1\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -8864,7 +9557,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"campaign\": {\n    \"content\": {\n      \"body\": \"Tap to track your delivery.\",\n      \"iconUrl\": \"iconUrl\",\n      \"imageUrl\": \"imageUrl\",\n      \"platforms\": [\n        \"web\"\n      ],\n      \"title\": \"Your order shipped\",\n      \"url\": \"https://shop.example.com/orders\"\n    },\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"estimatedRecipientCount\": 1,\n    \"id\": \"id\",\n    \"labelIds\": [\n      \"labelIds\"\n    ],\n    \"name\": \"name\",\n    \"scheduledAt\": \"2024-01-15T09:30:00Z\",\n    \"sentAt\": \"2024-01-15T09:30:00Z\",\n    \"status\": \"draft\",\n    \"targetLists\": {\n      \"key\": \"value\"\n    },\n    \"type\": \"push\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"campaign\": {\n    \"content\": {\n      \"body\": \"Tap to track your delivery.\",\n      \"iconUrl\": \"iconUrl\",\n      \"imageUrl\": \"imageUrl\",\n      \"localizations\": [\n        {\n          \"body\": \"Tippe, um sie zu verfolgen.\",\n          \"locale\": \"de\",\n          \"title\": \"Deine Bestellung ist unterwegs\"\n        }\n      ],\n      \"platforms\": [\n        \"web\"\n      ],\n      \"title\": \"Your order shipped\",\n      \"url\": \"https://shop.example.com/orders\"\n    },\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"estimatedRecipientCount\": 1,\n    \"id\": \"id\",\n    \"labelIds\": [\n      \"labelIds\"\n    ],\n    \"name\": \"name\",\n    \"scheduledAt\": \"2024-01-15T09:30:00Z\",\n    \"scheduledTimezone\": \"America/New_York\",\n    \"sendInRecipientTimezone\": true,\n    \"sendTimeOptimization\": true,\n    \"sendTimeWindowHours\": 1,\n    \"sentAt\": \"2024-01-15T09:30:00Z\",\n    \"status\": \"draft\",\n    \"targetLists\": {\n      \"key\": \"value\"\n    },\n    \"type\": \"push\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -13713,7 +14406,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"locales\": [\n    {\n      \"edited\": 1,\n      \"failed\": 1,\n      \"locale\": \"locale\",\n      \"missing\": 1,\n      \"outdated\": 1,\n      \"total\": 1,\n      \"translating\": 1,\n      \"upToDate\": 1\n    }\n  ],\n  \"primaryLocale\": \"primaryLocale\",\n  \"sequenceEmails\": 1,\n  \"success\": true,\n  \"totalEmails\": 1,\n  \"transactionalEmails\": 1\n}",
+        "body": "{\n  \"locales\": [\n    {\n      \"edited\": 1,\n      \"failed\": 1,\n      \"locale\": \"locale\",\n      \"missing\": 1,\n      \"outdated\": 1,\n      \"total\": 1,\n      \"translating\": 1,\n      \"upToDate\": 1\n    }\n  ],\n  \"primaryLocale\": \"primaryLocale\",\n  \"push\": {\n    \"locales\": [\n      {}\n    ],\n    \"totalPushes\": 1\n  },\n  \"sequenceEmails\": 1,\n  \"success\": true,\n  \"totalEmails\": 1,\n  \"transactionalEmails\": 1\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -13955,7 +14648,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"locales\": [\n    \"locales\"\n  ],\n  \"queuedEmails\": 1,\n  \"queuedTranslations\": 1,\n  \"success\": true\n}",
+        "body": "{\n  \"locales\": [\n    \"locales\"\n  ],\n  \"queuedEmails\": 1,\n  \"queuedPushes\": 1,\n  \"queuedPushTranslations\": 1,\n  \"queuedTranslations\": 1,\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -15600,7 +16293,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"email\": \"email\",\n  \"expiresAt\": \"2024-01-15T09:30:00Z\",\n  \"identityToken\": \"identityToken\",\n  \"keyId\": \"keyId\",\n  \"publicKey\": \"publicKey\",\n  \"subscriberId\": \"subscriberId\",\n  \"success\": true\n}",
+        "body": "{\n  \"email\": \"email\",\n  \"expiresAt\": \"2024-01-15T09:30:00Z\",\n  \"externalId\": \"externalId\",\n  \"identityToken\": \"identityToken\",\n  \"keyId\": \"keyId\",\n  \"publicKey\": \"publicKey\",\n  \"subscriberId\": \"subscriberId\",\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -16362,6 +17055,6 @@
     }
   ],
   "meta": {
-    "total": 475
+    "total": 495
   }
 }

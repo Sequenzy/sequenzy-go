@@ -37567,6 +37567,13 @@ func TestEnumCampaignChannel(t *testing.T) {
 		assert.Equal(t, CampaignChannel("push"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_in_app", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCampaignChannelFromString("in_app")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CampaignChannel("in_app"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewCampaignChannelFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)

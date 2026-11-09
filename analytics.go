@@ -1196,6 +1196,98 @@ func (l *ListCampaignPollResponsesLegacyRequest) SetPage(page *int) {
 }
 
 var (
+	listCampaignRepliesRequestFieldCampaignID = big.NewInt(1 << 0)
+	listCampaignRepliesRequestFieldLimit      = big.NewInt(1 << 1)
+	listCampaignRepliesRequestFieldPage       = big.NewInt(1 << 2)
+)
+
+type ListCampaignRepliesRequest struct {
+	// Campaign ID
+	CampaignID string `json:"-" url:"-"`
+	// Replies per page (max 500)
+	Limit *int `json:"-" url:"limit,omitempty"`
+	// Page number
+	Page *int `json:"-" url:"page,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (l *ListCampaignRepliesRequest) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetCampaignID sets the CampaignID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCampaignRepliesRequest) SetCampaignID(campaignID string) {
+	l.CampaignID = campaignID
+	l.require(listCampaignRepliesRequestFieldCampaignID)
+}
+
+// SetLimit sets the Limit field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCampaignRepliesRequest) SetLimit(limit *int) {
+	l.Limit = limit
+	l.require(listCampaignRepliesRequestFieldLimit)
+}
+
+// SetPage sets the Page field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCampaignRepliesRequest) SetPage(page *int) {
+	l.Page = page
+	l.require(listCampaignRepliesRequestFieldPage)
+}
+
+var (
+	listCampaignRepliesLegacyRequestFieldCampaignID = big.NewInt(1 << 0)
+	listCampaignRepliesLegacyRequestFieldLimit      = big.NewInt(1 << 1)
+	listCampaignRepliesLegacyRequestFieldPage       = big.NewInt(1 << 2)
+)
+
+type ListCampaignRepliesLegacyRequest struct {
+	// Campaign ID
+	CampaignID string `json:"-" url:"-"`
+	// Replies per page (max 500)
+	Limit *int `json:"-" url:"limit,omitempty"`
+	// Page number
+	Page *int `json:"-" url:"page,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (l *ListCampaignRepliesLegacyRequest) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetCampaignID sets the CampaignID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCampaignRepliesLegacyRequest) SetCampaignID(campaignID string) {
+	l.CampaignID = campaignID
+	l.require(listCampaignRepliesLegacyRequestFieldCampaignID)
+}
+
+// SetLimit sets the Limit field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCampaignRepliesLegacyRequest) SetLimit(limit *int) {
+	l.Limit = limit
+	l.require(listCampaignRepliesLegacyRequestFieldLimit)
+}
+
+// SetPage sets the Page field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCampaignRepliesLegacyRequest) SetPage(page *int) {
+	l.Page = page
+	l.require(listCampaignRepliesLegacyRequestFieldPage)
+}
+
+var (
 	listEmailMetricsRequestFieldCampaignID               = big.NewInt(1 << 0)
 	listEmailMetricsRequestFieldEmailType                = big.NewInt(1 << 1)
 	listEmailMetricsRequestFieldEnd                      = big.NewInt(1 << 2)
@@ -1566,6 +1658,262 @@ func (c *CampaignGoalMetrics) MarshalJSON() ([]byte, error) {
 }
 
 func (c *CampaignGoalMetrics) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+// One reply to a campaign.
+var (
+	campaignReplyFieldAttachmentCount = big.NewInt(1 << 0)
+	campaignReplyFieldConversationID  = big.NewInt(1 << 1)
+	campaignReplyFieldEmail           = big.NewInt(1 << 2)
+	campaignReplyFieldEmailSendID     = big.NewInt(1 << 3)
+	campaignReplyFieldExternalID      = big.NewInt(1 << 4)
+	campaignReplyFieldFirstName       = big.NewInt(1 << 5)
+	campaignReplyFieldHasAttachments  = big.NewInt(1 << 6)
+	campaignReplyFieldLastName        = big.NewInt(1 << 7)
+	campaignReplyFieldReceivedAt      = big.NewInt(1 << 8)
+	campaignReplyFieldReplyID         = big.NewInt(1 << 9)
+	campaignReplyFieldSubscriberID    = big.NewInt(1 << 10)
+)
+
+type CampaignReply struct {
+	AttachmentCount int `json:"attachmentCount" url:"attachmentCount"`
+	// Inbox conversation holding the reply. Null when the reply has no inbox conversation.
+	ConversationID *string `json:"conversationId,omitempty" url:"conversationId,omitempty"`
+	// Null when the subscriber has since been deleted.
+	Email *string `json:"email,omitempty" url:"email,omitempty"`
+	// The campaign send the subscriber replied to.
+	EmailSendID    string    `json:"emailSendId" url:"emailSendId"`
+	ExternalID     *string   `json:"externalId,omitempty" url:"externalId,omitempty"`
+	FirstName      *string   `json:"firstName,omitempty" url:"firstName,omitempty"`
+	HasAttachments bool      `json:"hasAttachments" url:"hasAttachments"`
+	LastName       *string   `json:"lastName,omitempty" url:"lastName,omitempty"`
+	ReceivedAt     time.Time `json:"receivedAt" url:"receivedAt"`
+	ReplyID        string    `json:"replyId" url:"replyId"`
+	SubscriberID   string    `json:"subscriberId" url:"subscriberId"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CampaignReply) GetAttachmentCount() int {
+	if c == nil {
+		return 0
+	}
+	return c.AttachmentCount
+}
+
+func (c *CampaignReply) GetConversationID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.ConversationID
+}
+
+func (c *CampaignReply) GetEmail() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Email
+}
+
+func (c *CampaignReply) GetEmailSendID() string {
+	if c == nil {
+		return ""
+	}
+	return c.EmailSendID
+}
+
+func (c *CampaignReply) GetExternalID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.ExternalID
+}
+
+func (c *CampaignReply) GetFirstName() *string {
+	if c == nil {
+		return nil
+	}
+	return c.FirstName
+}
+
+func (c *CampaignReply) GetHasAttachments() bool {
+	if c == nil {
+		return false
+	}
+	return c.HasAttachments
+}
+
+func (c *CampaignReply) GetLastName() *string {
+	if c == nil {
+		return nil
+	}
+	return c.LastName
+}
+
+func (c *CampaignReply) GetReceivedAt() time.Time {
+	if c == nil {
+		return time.Time{}
+	}
+	return c.ReceivedAt
+}
+
+func (c *CampaignReply) GetReplyID() string {
+	if c == nil {
+		return ""
+	}
+	return c.ReplyID
+}
+
+func (c *CampaignReply) GetSubscriberID() string {
+	if c == nil {
+		return ""
+	}
+	return c.SubscriberID
+}
+
+func (c *CampaignReply) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CampaignReply) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetAttachmentCount sets the AttachmentCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CampaignReply) SetAttachmentCount(attachmentCount int) {
+	c.AttachmentCount = attachmentCount
+	c.require(campaignReplyFieldAttachmentCount)
+}
+
+// SetConversationID sets the ConversationID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CampaignReply) SetConversationID(conversationID *string) {
+	c.ConversationID = conversationID
+	c.require(campaignReplyFieldConversationID)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CampaignReply) SetEmail(email *string) {
+	c.Email = email
+	c.require(campaignReplyFieldEmail)
+}
+
+// SetEmailSendID sets the EmailSendID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CampaignReply) SetEmailSendID(emailSendID string) {
+	c.EmailSendID = emailSendID
+	c.require(campaignReplyFieldEmailSendID)
+}
+
+// SetExternalID sets the ExternalID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CampaignReply) SetExternalID(externalID *string) {
+	c.ExternalID = externalID
+	c.require(campaignReplyFieldExternalID)
+}
+
+// SetFirstName sets the FirstName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CampaignReply) SetFirstName(firstName *string) {
+	c.FirstName = firstName
+	c.require(campaignReplyFieldFirstName)
+}
+
+// SetHasAttachments sets the HasAttachments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CampaignReply) SetHasAttachments(hasAttachments bool) {
+	c.HasAttachments = hasAttachments
+	c.require(campaignReplyFieldHasAttachments)
+}
+
+// SetLastName sets the LastName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CampaignReply) SetLastName(lastName *string) {
+	c.LastName = lastName
+	c.require(campaignReplyFieldLastName)
+}
+
+// SetReceivedAt sets the ReceivedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CampaignReply) SetReceivedAt(receivedAt time.Time) {
+	c.ReceivedAt = receivedAt
+	c.require(campaignReplyFieldReceivedAt)
+}
+
+// SetReplyID sets the ReplyID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CampaignReply) SetReplyID(replyID string) {
+	c.ReplyID = replyID
+	c.require(campaignReplyFieldReplyID)
+}
+
+// SetSubscriberID sets the SubscriberID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CampaignReply) SetSubscriberID(subscriberID string) {
+	c.SubscriberID = subscriberID
+	c.require(campaignReplyFieldSubscriberID)
+}
+
+func (c *CampaignReply) UnmarshalJSON(data []byte) error {
+	type embed CampaignReply
+	var unmarshaler = struct {
+		embed
+		ReceivedAt *internal.DateTime `json:"receivedAt"`
+	}{
+		embed: embed(*c),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*c = CampaignReply(unmarshaler.embed)
+	c.ReceivedAt = unmarshaler.ReceivedAt.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CampaignReply) MarshalJSON() ([]byte, error) {
+	type embed CampaignReply
+	var marshaler = struct {
+		embed
+		ReceivedAt *internal.DateTime `json:"receivedAt"`
+	}{
+		embed:      embed(*c),
+		ReceivedAt: internal.NewDateTime(c.ReceivedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CampaignReply) String() string {
 	if c == nil {
 		return "<nil>"
 	}
@@ -10528,6 +10876,270 @@ func (l *ListCampaignPollResponsesResponse) MarshalJSON() ([]byte, error) {
 }
 
 func (l *ListCampaignPollResponsesResponse) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	listCampaignRepliesLegacyResponseFieldCampaignID = big.NewInt(1 << 0)
+	listCampaignRepliesLegacyResponseFieldPagination = big.NewInt(1 << 1)
+	listCampaignRepliesLegacyResponseFieldReplies    = big.NewInt(1 << 2)
+	listCampaignRepliesLegacyResponseFieldSuccess    = big.NewInt(1 << 3)
+)
+
+type ListCampaignRepliesLegacyResponse struct {
+	CampaignID *string          `json:"campaignId,omitempty" url:"campaignId,omitempty"`
+	Pagination *Pagination      `json:"pagination,omitempty" url:"pagination,omitempty"`
+	Replies    []*CampaignReply `json:"replies,omitempty" url:"replies,omitempty"`
+	Success    *bool            `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListCampaignRepliesLegacyResponse) GetCampaignID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.CampaignID
+}
+
+func (l *ListCampaignRepliesLegacyResponse) GetPagination() *Pagination {
+	if l == nil {
+		return nil
+	}
+	return l.Pagination
+}
+
+func (l *ListCampaignRepliesLegacyResponse) GetReplies() []*CampaignReply {
+	if l == nil {
+		return nil
+	}
+	return l.Replies
+}
+
+func (l *ListCampaignRepliesLegacyResponse) GetSuccess() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.Success
+}
+
+func (l *ListCampaignRepliesLegacyResponse) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListCampaignRepliesLegacyResponse) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetCampaignID sets the CampaignID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCampaignRepliesLegacyResponse) SetCampaignID(campaignID *string) {
+	l.CampaignID = campaignID
+	l.require(listCampaignRepliesLegacyResponseFieldCampaignID)
+}
+
+// SetPagination sets the Pagination field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCampaignRepliesLegacyResponse) SetPagination(pagination *Pagination) {
+	l.Pagination = pagination
+	l.require(listCampaignRepliesLegacyResponseFieldPagination)
+}
+
+// SetReplies sets the Replies field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCampaignRepliesLegacyResponse) SetReplies(replies []*CampaignReply) {
+	l.Replies = replies
+	l.require(listCampaignRepliesLegacyResponseFieldReplies)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCampaignRepliesLegacyResponse) SetSuccess(success *bool) {
+	l.Success = success
+	l.require(listCampaignRepliesLegacyResponseFieldSuccess)
+}
+
+func (l *ListCampaignRepliesLegacyResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListCampaignRepliesLegacyResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListCampaignRepliesLegacyResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListCampaignRepliesLegacyResponse) MarshalJSON() ([]byte, error) {
+	type embed ListCampaignRepliesLegacyResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListCampaignRepliesLegacyResponse) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	listCampaignRepliesResponseFieldCampaignID = big.NewInt(1 << 0)
+	listCampaignRepliesResponseFieldPagination = big.NewInt(1 << 1)
+	listCampaignRepliesResponseFieldReplies    = big.NewInt(1 << 2)
+	listCampaignRepliesResponseFieldSuccess    = big.NewInt(1 << 3)
+)
+
+type ListCampaignRepliesResponse struct {
+	CampaignID *string          `json:"campaignId,omitempty" url:"campaignId,omitempty"`
+	Pagination *Pagination      `json:"pagination,omitempty" url:"pagination,omitempty"`
+	Replies    []*CampaignReply `json:"replies,omitempty" url:"replies,omitempty"`
+	Success    *bool            `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListCampaignRepliesResponse) GetCampaignID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.CampaignID
+}
+
+func (l *ListCampaignRepliesResponse) GetPagination() *Pagination {
+	if l == nil {
+		return nil
+	}
+	return l.Pagination
+}
+
+func (l *ListCampaignRepliesResponse) GetReplies() []*CampaignReply {
+	if l == nil {
+		return nil
+	}
+	return l.Replies
+}
+
+func (l *ListCampaignRepliesResponse) GetSuccess() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.Success
+}
+
+func (l *ListCampaignRepliesResponse) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListCampaignRepliesResponse) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetCampaignID sets the CampaignID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCampaignRepliesResponse) SetCampaignID(campaignID *string) {
+	l.CampaignID = campaignID
+	l.require(listCampaignRepliesResponseFieldCampaignID)
+}
+
+// SetPagination sets the Pagination field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCampaignRepliesResponse) SetPagination(pagination *Pagination) {
+	l.Pagination = pagination
+	l.require(listCampaignRepliesResponseFieldPagination)
+}
+
+// SetReplies sets the Replies field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCampaignRepliesResponse) SetReplies(replies []*CampaignReply) {
+	l.Replies = replies
+	l.require(listCampaignRepliesResponseFieldReplies)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCampaignRepliesResponse) SetSuccess(success *bool) {
+	l.Success = success
+	l.require(listCampaignRepliesResponseFieldSuccess)
+}
+
+func (l *ListCampaignRepliesResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListCampaignRepliesResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListCampaignRepliesResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListCampaignRepliesResponse) MarshalJSON() ([]byte, error) {
+	type embed ListCampaignRepliesResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListCampaignRepliesResponse) String() string {
 	if l == nil {
 		return "<nil>"
 	}

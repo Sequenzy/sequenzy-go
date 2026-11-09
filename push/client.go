@@ -264,7 +264,7 @@ func (c *Client) DuplicatePushCampaign(
 	return response.Body, nil
 }
 
-// Ends the contact's activity on every device running it. Tokens are marked ended as APNs accepts the push, so an end that failed can be sent again. Without dismissalDate iOS keeps an ended activity on the Lock Screen for up to four hours. Requires the transactional:send scope.
+// Ends the contact's activity on every device running it, iOS and Android, or with broadcast true on every signed-in device running the activityId. Tokens are marked ended as APNs or FCM accepts the push, so an end that failed can be sent again. Without dismissalDate iOS keeps an ended activity on the Lock Screen, and Android keeps the final notification, for up to four hours. Requires the transactional:send scope; broadcast also requires campaigns:send.
 //
 // Example:
 //
@@ -452,7 +452,7 @@ func (c *Client) GetPushSettings(
 	return response.Body, nil
 }
 
-// Lists ActivityKit tokens the Sequenzy iOS SDK reported, with a summary per activity type (for the contact when email or subscriberId is given). push_to_start tokens can start an activity of their type; update tokens address one running activity. Tokens are masked. Requires the subscribers:read scope.
+// Lists ActivityKit tokens the Sequenzy iOS SDK reported and Android Live Update tokens the Sequenzy Android SDK reported, with a summary per activity type (for the contact when email or subscriberId is given, and for the platform when platform is given). push_to_start tokens can start an activity of their type; update tokens address one running activity. Tokens are masked. Requires the subscribers:read scope.
 //
 // Example:
 //
@@ -580,7 +580,7 @@ func (c *Client) RegisterPushDevice(
 	return response.Body, nil
 }
 
-// Sends a draft or scheduled push campaign now, or schedules it when scheduledAt is a future ISO 8601 time. Requires content, an audience with at least one contact that has an active device, and at least one selected platform set up in push settings. The audience is re-evaluated when delivery starts. Requires the campaigns:send scope.
+// Sends a draft or scheduled push campaign now, or schedules it when scheduledAt is a future ISO 8601 time. Requires content, an audience with at least one contact that has an active device, and at least one selected platform set up in push settings. The audience is re-evaluated when delivery starts. Optionally deliver in each contact's local time (sendInRecipientTimezone with scheduledAt and scheduledTimezone) or at each contact's optimal hour (sendTimeOptimization); omitted timing fields keep the values saved on the campaign. Push campaigns have no spreadOverHours. Requires the campaigns:send scope.
 //
 // Example:
 //
@@ -691,7 +691,7 @@ func (c *Client) SetFcmCredentials(
 	return response.Body, nil
 }
 
-// Starts an iOS Live Activity remotely (push-to-start, iOS 17.2+) on every device of one contact that reported a push-to-start token for activityType. Sequenzy adds sequenzy.activityId to the attributes so the SDK can report the new activity's update token under your id. Returns 202 with tokenCount 0, sending nothing, when no device can start it. Calling it again starts another copy. Requires the transactional:send scope.
+// Starts a Live Activity remotely on every device that reported a push-to-start token for activityType, on iOS 17.2+ through APNs and as an Android Live Update through FCM on apps that observe the same type with the Sequenzy Android SDK (promoted on Android 16, an ongoing notification on earlier versions). Target one contact with email or subscriberId, or everyone in a segment, list or tag with exactly one of segmentId, listId or tag (up to 100,000 devices on platforms with push credentials; contacts the app signed in with Sequenzy.identify, whatever their email status). When email or subscriberId is present, segmentId, listId and tag are ignored. All copies share the activityId, so one update or end with broadcast true reaches every device running it. Only platforms with push credentials are sent to; the request fails with 400 when neither APNs nor FCM is set up. Sequenzy adds sequenzy.activityId to the attributes so the iOS SDK can report the new activity's update token under your id. Returns 202 with tokenCount 0, sending nothing, when no device can start it. Calling it again starts another copy. Requires the transactional:send scope; a segment, list or tag also requires campaigns:send.
 //
 // Example:
 //
@@ -751,6 +751,58 @@ func (c *Client) StartPushImport(
 	return response.Body, nil
 }
 
+// Translates a draft or scheduled push campaign's title and message with AI into the workspace's languages (Settings > Localization) and saves the versions. By default it translates languages with no version and AI versions whose main copy changed since; versions a person wrote are kept unless overwrite is true. Merge tags are kept exactly and their fallback text is translated. Runs inline (a few seconds). The save is skipped with 409 if the campaign changed while translating. Requires the campaigns:write scope.
+//
+// Example:
+//
+//	request := &sequenzygo.TranslatePushCampaignRequest{
+//	    CampaignID: "campaignId",
+//	}
+//	client.Push.TranslatePushCampaign(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) TranslatePushCampaign(
+	ctx context.Context,
+	request *sequenzygo.TranslatePushCampaignRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.TranslatePushCampaignResponse, error) {
+	response, err := c.WithRawResponse.TranslatePushCampaign(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Translates a push title and message with AI into the workspace's languages and returns the versions without saving anything. Use the result as a sequence push step's localizations (nodeUpdates changes.localizations) or a push campaign's. Pass existing versions in localizations to keep them; the same rules as Translate a push campaign decide which languages are translated. Requires the templates:write scope, like the other content generation endpoints.
+//
+// Example:
+//
+//	request := &sequenzygo.TranslatePushContentRequest{}
+//	client.Push.TranslatePushContent(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) TranslatePushContent(
+	ctx context.Context,
+	request *sequenzygo.TranslatePushContentRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.TranslatePushContentResponse, error) {
+	response, err := c.WithRawResponse.TranslatePushContent(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Moves a scheduled push campaign back to draft. The queued send is discarded. Requires the campaigns:send scope.
 //
 // Example:
@@ -778,7 +830,7 @@ func (c *Client) UnschedulePushCampaign(
 	return response.Body, nil
 }
 
-// Sends new content state to every running copy of the contact's activity (one per device that reported an update token). Each request carries a fixed timestamp, so a retried or late delivery never replaces newer content. Returns tokenCount 0 when no running copy has reported a token. Requires the transactional:send scope.
+// Sends new content state to every running copy of the contact's activity (one per device that reported an update token, iOS and Android), or with broadcast true to every signed-in device running the activityId, such as an activity started for a segment, list or tag. Each request carries a fixed timestamp, so a retried or late delivery never replaces newer content on either platform. Returns tokenCount 0 when no running copy has reported a token. Requires the transactional:send scope; broadcast also requires campaigns:send.
 //
 // Example:
 //
@@ -809,7 +861,7 @@ func (c *Client) UpdateLiveActivity(
 	return response.Body, nil
 }
 
-// Updates a draft or scheduled push campaign. Only the fields you pass change; content fields merge over the stored content. A scheduled campaign keeps its schedule and cannot be cleared to empty content. Requires the campaigns:write scope.
+// Updates a draft or scheduled push campaign. Only the fields you pass change; content fields merge over the stored content. A scheduled campaign keeps its schedule and cannot be cleared to empty content. Delivery timing (sendInRecipientTimezone, scheduledTimezone, sendTimeOptimization, sendTimeWindowHours) saves on drafts; changing it on a scheduled campaign returns 409, so reschedule with the send endpoint instead. Requires the campaigns:write scope.
 //
 // Example:
 //

@@ -117,14 +117,15 @@ func (c *CancelPushImportRequest) SetImportID(importID string) {
 }
 
 var (
-	createPushCampaignRequestFieldBody        = big.NewInt(1 << 0)
-	createPushCampaignRequestFieldIconURL     = big.NewInt(1 << 1)
-	createPushCampaignRequestFieldImageURL    = big.NewInt(1 << 2)
-	createPushCampaignRequestFieldName        = big.NewInt(1 << 3)
-	createPushCampaignRequestFieldPlatforms   = big.NewInt(1 << 4)
-	createPushCampaignRequestFieldTargetLists = big.NewInt(1 << 5)
-	createPushCampaignRequestFieldTitle       = big.NewInt(1 << 6)
-	createPushCampaignRequestFieldURL         = big.NewInt(1 << 7)
+	createPushCampaignRequestFieldBody          = big.NewInt(1 << 0)
+	createPushCampaignRequestFieldIconURL       = big.NewInt(1 << 1)
+	createPushCampaignRequestFieldImageURL      = big.NewInt(1 << 2)
+	createPushCampaignRequestFieldLocalizations = big.NewInt(1 << 3)
+	createPushCampaignRequestFieldName          = big.NewInt(1 << 4)
+	createPushCampaignRequestFieldPlatforms     = big.NewInt(1 << 5)
+	createPushCampaignRequestFieldTargetLists   = big.NewInt(1 << 6)
+	createPushCampaignRequestFieldTitle         = big.NewInt(1 << 7)
+	createPushCampaignRequestFieldURL           = big.NewInt(1 << 8)
 )
 
 type CreatePushCampaignRequest struct {
@@ -133,8 +134,9 @@ type CreatePushCampaignRequest struct {
 	// Optional https icon for web push. Defaults to the workspace icon.
 	IconURL *string `json:"iconUrl,omitempty" url:"-"`
 	// Optional https image shown in the notification.
-	ImageURL *string `json:"imageUrl,omitempty" url:"-"`
-	Name     *string `json:"name,omitempty" url:"-"`
+	ImageURL      *string               `json:"imageUrl,omitempty" url:"-"`
+	Localizations *PushLocalizationList `json:"localizations,omitempty" url:"-"`
+	Name          *string               `json:"name,omitempty" url:"-"`
 	// Limit delivery to these platforms. Omit or pass an empty array for every platform.
 	Platforms []CreatePushCampaignRequestPlatformsItem `json:"platforms,omitempty" url:"-"`
 	// Audience, same shape as campaign targetLists, for example {"type":"all"}, {"type":"lists","listIds":["..."]}, {"type":"segment","segmentId":"..."} or {"type":"rules","include":[...]}. Only contacts with an active push device receive the campaign.
@@ -174,6 +176,13 @@ func (c *CreatePushCampaignRequest) SetIconURL(iconURL *string) {
 func (c *CreatePushCampaignRequest) SetImageURL(imageURL *string) {
 	c.ImageURL = imageURL
 	c.require(createPushCampaignRequestFieldImageURL)
+}
+
+// SetLocalizations sets the Localizations field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePushCampaignRequest) SetLocalizations(localizations *PushLocalizationList) {
+	c.Localizations = localizations
+	c.require(createPushCampaignRequestFieldLocalizations)
 }
 
 // SetName sets the Name field and marks it as non-optional;
@@ -472,23 +481,26 @@ func (d *DuplicatePushCampaignRequest) MarshalJSON() ([]byte, error) {
 var (
 	endLiveActivityRequestFieldActivityID     = big.NewInt(1 << 0)
 	endLiveActivityRequestFieldAlert          = big.NewInt(1 << 1)
-	endLiveActivityRequestFieldContentState   = big.NewInt(1 << 2)
-	endLiveActivityRequestFieldDismissalDate  = big.NewInt(1 << 3)
-	endLiveActivityRequestFieldEmail          = big.NewInt(1 << 4)
-	endLiveActivityRequestFieldPriority       = big.NewInt(1 << 5)
-	endLiveActivityRequestFieldRelevanceScore = big.NewInt(1 << 6)
-	endLiveActivityRequestFieldStaleDate      = big.NewInt(1 << 7)
-	endLiveActivityRequestFieldSubscriberID   = big.NewInt(1 << 8)
+	endLiveActivityRequestFieldBroadcast      = big.NewInt(1 << 2)
+	endLiveActivityRequestFieldContentState   = big.NewInt(1 << 3)
+	endLiveActivityRequestFieldDismissalDate  = big.NewInt(1 << 4)
+	endLiveActivityRequestFieldEmail          = big.NewInt(1 << 5)
+	endLiveActivityRequestFieldPriority       = big.NewInt(1 << 6)
+	endLiveActivityRequestFieldRelevanceScore = big.NewInt(1 << 7)
+	endLiveActivityRequestFieldStaleDate      = big.NewInt(1 << 8)
+	endLiveActivityRequestFieldSubscriberID   = big.NewInt(1 << 9)
 )
 
 type EndLiveActivityRequest struct {
 	// Your id for the activity, chosen when it starts.
 	ActivityID string             `json:"activityId" url:"-"`
 	Alert      *LiveActivityAlert `json:"alert,omitempty" url:"-"`
+	// true sends to every signed-in device running this activityId, of any contact, counting at most 10 devices per contact and up to 100,000 in all. Use it for shared activities such as one started for a segment, list or tag, never for a per-person id like an order, since anyone signed in to your app who runs the id receives the content. Ignored when email or subscriberId is present.
+	Broadcast *bool `json:"broadcast,omitempty" url:"-"`
 	// Final content shown until the activity is removed. Required, as in Apple's end payloads.
 	ContentState  map[string]any    `json:"contentState" url:"-"`
 	DismissalDate *LiveActivityTime `json:"dismissalDate,omitempty" url:"-"`
-	// Contact whose activity it is. Provide email or subscriberId; activities are always addressed per contact, so a token registered under the same activityId by another device never receives this content.
+	// Contact whose activity it is. Provide email or subscriberId, or broadcast. Per-contact requests reach only that contact's devices, so a token registered under the same activityId by another device never receives this content.
 	Email *string `json:"email,omitempty" url:"-"`
 	// high (default) delivers immediately and counts against Apple's Live Activity update budget; low (apns-priority 5) does not. Pushes with an alert always go at high priority.
 	Priority *EndLiveActivityRequestPriority `json:"priority,omitempty" url:"-"`
@@ -521,6 +533,13 @@ func (e *EndLiveActivityRequest) SetActivityID(activityID string) {
 func (e *EndLiveActivityRequest) SetAlert(alert *LiveActivityAlert) {
 	e.Alert = alert
 	e.require(endLiveActivityRequestFieldAlert)
+}
+
+// SetBroadcast sets the Broadcast field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EndLiveActivityRequest) SetBroadcast(broadcast *bool) {
+	e.Broadcast = broadcast
+	e.require(endLiveActivityRequestFieldBroadcast)
 }
 
 // SetContentState sets the ContentState field and marks it as non-optional;
@@ -594,12 +613,15 @@ func (e *EndLiveActivityRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
-	estimatePushCampaignRecipientsRequestFieldPlatforms   = big.NewInt(1 << 0)
-	estimatePushCampaignRecipientsRequestFieldTargetLists = big.NewInt(1 << 1)
+	estimatePushCampaignRecipientsRequestFieldIncludeTimingCoverage = big.NewInt(1 << 0)
+	estimatePushCampaignRecipientsRequestFieldPlatforms             = big.NewInt(1 << 1)
+	estimatePushCampaignRecipientsRequestFieldTargetLists           = big.NewInt(1 << 2)
 )
 
 type EstimatePushCampaignRecipientsRequest struct {
-	Platforms []EstimatePushCampaignRecipientsRequestPlatformsItem `json:"platforms,omitempty" url:"-"`
+	// Also return timingCoverage, which counts the eligible contacts that local-time delivery and send-time optimization can personalize.
+	IncludeTimingCoverage *bool                                                `json:"includeTimingCoverage,omitempty" url:"-"`
+	Platforms             []EstimatePushCampaignRecipientsRequestPlatformsItem `json:"platforms,omitempty" url:"-"`
 	// Audience, same shape as campaign targetLists.
 	TargetLists map[string]any `json:"targetLists" url:"-"`
 
@@ -612,6 +634,13 @@ func (e *EstimatePushCampaignRecipientsRequest) require(field *big.Int) {
 		e.explicitFields = big.NewInt(0)
 	}
 	e.explicitFields.Or(e.explicitFields, field)
+}
+
+// SetIncludeTimingCoverage sets the IncludeTimingCoverage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EstimatePushCampaignRecipientsRequest) SetIncludeTimingCoverage(includeTimingCoverage *bool) {
+	e.IncludeTimingCoverage = includeTimingCoverage
+	e.require(estimatePushCampaignRecipientsRequestFieldIncludeTimingCoverage)
 }
 
 // SetPlatforms sets the Platforms field and marks it as non-optional;
@@ -768,8 +797,9 @@ var (
 	listLiveActivitiesRequestFieldEmail        = big.NewInt(1 << 3)
 	listLiveActivitiesRequestFieldKind         = big.NewInt(1 << 4)
 	listLiveActivitiesRequestFieldLimit        = big.NewInt(1 << 5)
-	listLiveActivitiesRequestFieldStatus       = big.NewInt(1 << 6)
-	listLiveActivitiesRequestFieldSubscriberID = big.NewInt(1 << 7)
+	listLiveActivitiesRequestFieldPlatform     = big.NewInt(1 << 6)
+	listLiveActivitiesRequestFieldStatus       = big.NewInt(1 << 7)
+	listLiveActivitiesRequestFieldSubscriberID = big.NewInt(1 << 8)
 )
 
 type ListLiveActivitiesRequest struct {
@@ -778,11 +808,13 @@ type ListLiveActivitiesRequest struct {
 	// nextCursor from the previous page.
 	Cursor *string `json:"-" url:"cursor,omitempty"`
 	// Only this contact's tokens.
-	Email        *string                          `json:"-" url:"email,omitempty"`
-	Kind         *ListLiveActivitiesRequestKind   `json:"-" url:"kind,omitempty"`
-	Limit        *int                             `json:"-" url:"limit,omitempty"`
-	Status       *ListLiveActivitiesRequestStatus `json:"-" url:"status,omitempty"`
-	SubscriberID *string                          `json:"-" url:"subscriberId,omitempty"`
+	Email *string                        `json:"-" url:"email,omitempty"`
+	Kind  *ListLiveActivitiesRequestKind `json:"-" url:"kind,omitempty"`
+	Limit *int                           `json:"-" url:"limit,omitempty"`
+	// Only iOS Live Activity tokens or Android Live Update tokens. The summary counts the same platform.
+	Platform     *ListLiveActivitiesRequestPlatform `json:"-" url:"platform,omitempty"`
+	Status       *ListLiveActivitiesRequestStatus   `json:"-" url:"status,omitempty"`
+	SubscriberID *string                            `json:"-" url:"subscriberId,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -835,6 +867,13 @@ func (l *ListLiveActivitiesRequest) SetKind(kind *ListLiveActivitiesRequestKind)
 func (l *ListLiveActivitiesRequest) SetLimit(limit *int) {
 	l.Limit = limit
 	l.require(listLiveActivitiesRequestFieldLimit)
+}
+
+// SetPlatform sets the Platform field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListLiveActivitiesRequest) SetPlatform(platform *ListLiveActivitiesRequestPlatform) {
+	l.Platform = platform
+	l.require(listLiveActivitiesRequestFieldPlatform)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
@@ -1135,8 +1174,12 @@ func (r *RegisterPushDeviceRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
-	sendPushCampaignRequestFieldCampaignID  = big.NewInt(1 << 0)
-	sendPushCampaignRequestFieldScheduledAt = big.NewInt(1 << 1)
+	sendPushCampaignRequestFieldCampaignID              = big.NewInt(1 << 0)
+	sendPushCampaignRequestFieldScheduledAt             = big.NewInt(1 << 1)
+	sendPushCampaignRequestFieldScheduledTimezone       = big.NewInt(1 << 2)
+	sendPushCampaignRequestFieldSendInRecipientTimezone = big.NewInt(1 << 3)
+	sendPushCampaignRequestFieldSendTimeOptimization    = big.NewInt(1 << 4)
+	sendPushCampaignRequestFieldSendTimeWindowHours     = big.NewInt(1 << 5)
 )
 
 type SendPushCampaignRequest struct {
@@ -1144,6 +1187,14 @@ type SendPushCampaignRequest struct {
 	CampaignID string `json:"-" url:"-"`
 	// Future ISO 8601 time. Omit or null to send immediately.
 	ScheduledAt *time.Time `json:"scheduledAt,omitempty" url:"-"`
+	// IANA timezone the scheduled wall-clock time refers to, for example America/New_York. null clears it.
+	ScheduledTimezone *string `json:"scheduledTimezone,omitempty" url:"-"`
+	// Deliver scheduledAt's wall-clock time in each contact's own timezone, using the timezone the contact's most recently seen active device reported, else the contact's timezone attribute. Needs scheduledAt and scheduledTimezone when sending. Contacts whose local time has already passed get the push right away; contacts with no known timezone get it at scheduledAt. Delivery starts where the wall time first occurs (UTC+14), so a campaign can stay sending for about 26 hours. Enabling it turns sendTimeOptimization off; omit to keep the saved value.
+	SendInRecipientTimezone *bool `json:"sendInRecipientTimezone,omitempty" url:"-"`
+	// Send each contact the push at their most engaged UTC hour within sendTimeWindowHours of the start (now, or scheduledAt). The hour is their most-clicked push hour over the last 90 days (at least 3 clicks), else their most-opened email hour, else the workspace's most-clicked push hour (once it has at least 20 clicks in the last 90 days), else the start. Enabling it turns sendInRecipientTimezone off; passing both as true returns 400. Omit to keep the saved value.
+	SendTimeOptimization *bool `json:"sendTimeOptimization,omitempty" url:"-"`
+	// Hours after the start in which optimized sends may land. Omit to keep the saved value, which is 12 if never set.
+	SendTimeWindowHours *int `json:"sendTimeWindowHours,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1168,6 +1219,34 @@ func (s *SendPushCampaignRequest) SetCampaignID(campaignID string) {
 func (s *SendPushCampaignRequest) SetScheduledAt(scheduledAt *time.Time) {
 	s.ScheduledAt = scheduledAt
 	s.require(sendPushCampaignRequestFieldScheduledAt)
+}
+
+// SetScheduledTimezone sets the ScheduledTimezone field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendPushCampaignRequest) SetScheduledTimezone(scheduledTimezone *string) {
+	s.ScheduledTimezone = scheduledTimezone
+	s.require(sendPushCampaignRequestFieldScheduledTimezone)
+}
+
+// SetSendInRecipientTimezone sets the SendInRecipientTimezone field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendPushCampaignRequest) SetSendInRecipientTimezone(sendInRecipientTimezone *bool) {
+	s.SendInRecipientTimezone = sendInRecipientTimezone
+	s.require(sendPushCampaignRequestFieldSendInRecipientTimezone)
+}
+
+// SetSendTimeOptimization sets the SendTimeOptimization field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendPushCampaignRequest) SetSendTimeOptimization(sendTimeOptimization *bool) {
+	s.SendTimeOptimization = sendTimeOptimization
+	s.require(sendPushCampaignRequestFieldSendTimeOptimization)
+}
+
+// SetSendTimeWindowHours sets the SendTimeWindowHours field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendPushCampaignRequest) SetSendTimeWindowHours(sendTimeWindowHours *int) {
+	s.SendTimeWindowHours = sendTimeWindowHours
+	s.require(sendPushCampaignRequestFieldSendTimeWindowHours)
 }
 
 func (s *SendPushCampaignRequest) UnmarshalJSON(data []byte) error {
@@ -1461,9 +1540,12 @@ var (
 	startLiveActivityRequestFieldAttributes     = big.NewInt(1 << 3)
 	startLiveActivityRequestFieldContentState   = big.NewInt(1 << 4)
 	startLiveActivityRequestFieldEmail          = big.NewInt(1 << 5)
-	startLiveActivityRequestFieldRelevanceScore = big.NewInt(1 << 6)
-	startLiveActivityRequestFieldStaleDate      = big.NewInt(1 << 7)
-	startLiveActivityRequestFieldSubscriberID   = big.NewInt(1 << 8)
+	startLiveActivityRequestFieldListID         = big.NewInt(1 << 6)
+	startLiveActivityRequestFieldRelevanceScore = big.NewInt(1 << 7)
+	startLiveActivityRequestFieldSegmentID      = big.NewInt(1 << 8)
+	startLiveActivityRequestFieldStaleDate      = big.NewInt(1 << 9)
+	startLiveActivityRequestFieldSubscriberID   = big.NewInt(1 << 10)
+	startLiveActivityRequestFieldTag            = big.NewInt(1 << 11)
 )
 
 type StartLiveActivityRequest struct {
@@ -1476,12 +1558,18 @@ type StartLiveActivityRequest struct {
 	Attributes map[string]any `json:"attributes,omitempty" url:"-"`
 	// Your Swift ContentState as JSON. Date fields decode as seconds since 2001-01-01 unless your struct decodes them differently.
 	ContentState map[string]any `json:"contentState" url:"-"`
-	// Contact whose devices start the activity. Provide email or subscriberId.
+	// Contact whose devices start the activity. Provide email or subscriberId, or one of segmentId, listId or tag.
 	Email *string `json:"email,omitempty" url:"-"`
+	// Start it for every contact in this list.
+	ListID *string `json:"listId,omitempty" url:"-"`
 	// Orders a person's concurrent activities; higher shows first.
-	RelevanceScore *float64          `json:"relevanceScore,omitempty" url:"-"`
-	StaleDate      *LiveActivityTime `json:"staleDate,omitempty" url:"-"`
-	SubscriberID   *string           `json:"subscriberId,omitempty" url:"-"`
+	RelevanceScore *float64 `json:"relevanceScore,omitempty" url:"-"`
+	// Start it for every contact in this segment.
+	SegmentID    *string           `json:"segmentId,omitempty" url:"-"`
+	StaleDate    *LiveActivityTime `json:"staleDate,omitempty" url:"-"`
+	SubscriberID *string           `json:"subscriberId,omitempty" url:"-"`
+	// Start it for every contact with this tag. One tag name without commas, matched like campaign tag filters, so Lakers Fan also matches lakers-fan.
+	Tag *string `json:"tag,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1536,11 +1624,25 @@ func (s *StartLiveActivityRequest) SetEmail(email *string) {
 	s.require(startLiveActivityRequestFieldEmail)
 }
 
+// SetListID sets the ListID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *StartLiveActivityRequest) SetListID(listID *string) {
+	s.ListID = listID
+	s.require(startLiveActivityRequestFieldListID)
+}
+
 // SetRelevanceScore sets the RelevanceScore field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *StartLiveActivityRequest) SetRelevanceScore(relevanceScore *float64) {
 	s.RelevanceScore = relevanceScore
 	s.require(startLiveActivityRequestFieldRelevanceScore)
+}
+
+// SetSegmentID sets the SegmentID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *StartLiveActivityRequest) SetSegmentID(segmentID *string) {
+	s.SegmentID = segmentID
+	s.require(startLiveActivityRequestFieldSegmentID)
 }
 
 // SetStaleDate sets the StaleDate field and marks it as non-optional;
@@ -1555,6 +1657,13 @@ func (s *StartLiveActivityRequest) SetStaleDate(staleDate *LiveActivityTime) {
 func (s *StartLiveActivityRequest) SetSubscriberID(subscriberID *string) {
 	s.SubscriberID = subscriberID
 	s.require(startLiveActivityRequestFieldSubscriberID)
+}
+
+// SetTag sets the Tag field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *StartLiveActivityRequest) SetTag(tag *string) {
+	s.Tag = tag
+	s.require(startLiveActivityRequestFieldTag)
 }
 
 func (s *StartLiveActivityRequest) UnmarshalJSON(data []byte) error {
@@ -1601,6 +1710,159 @@ func (s *StartPushImportRequest) require(field *big.Int) {
 func (s *StartPushImportRequest) SetImportID(importID string) {
 	s.ImportID = importID
 	s.require(startPushImportRequestFieldImportID)
+}
+
+var (
+	translatePushCampaignRequestFieldCampaignID = big.NewInt(1 << 0)
+	translatePushCampaignRequestFieldLocales    = big.NewInt(1 << 1)
+	translatePushCampaignRequestFieldOverwrite  = big.NewInt(1 << 2)
+)
+
+type TranslatePushCampaignRequest struct {
+	// Push campaign ID.
+	CampaignID string `json:"-" url:"-"`
+	// Languages to translate into. Omit for every workspace language except the main one. Languages outside the workspace's list are rejected.
+	Locales []string `json:"locales,omitempty" url:"-"`
+	// Retranslate every requested language, replacing versions a person wrote.
+	Overwrite *bool `json:"overwrite,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (t *TranslatePushCampaignRequest) require(field *big.Int) {
+	if t.explicitFields == nil {
+		t.explicitFields = big.NewInt(0)
+	}
+	t.explicitFields.Or(t.explicitFields, field)
+}
+
+// SetCampaignID sets the CampaignID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TranslatePushCampaignRequest) SetCampaignID(campaignID string) {
+	t.CampaignID = campaignID
+	t.require(translatePushCampaignRequestFieldCampaignID)
+}
+
+// SetLocales sets the Locales field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TranslatePushCampaignRequest) SetLocales(locales []string) {
+	t.Locales = locales
+	t.require(translatePushCampaignRequestFieldLocales)
+}
+
+// SetOverwrite sets the Overwrite field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TranslatePushCampaignRequest) SetOverwrite(overwrite *bool) {
+	t.Overwrite = overwrite
+	t.require(translatePushCampaignRequestFieldOverwrite)
+}
+
+func (t *TranslatePushCampaignRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler TranslatePushCampaignRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*t = TranslatePushCampaignRequest(body)
+	return nil
+}
+
+func (t *TranslatePushCampaignRequest) MarshalJSON() ([]byte, error) {
+	type embed TranslatePushCampaignRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*t),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, t.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
+	translatePushContentRequestFieldBody          = big.NewInt(1 << 0)
+	translatePushContentRequestFieldLocales       = big.NewInt(1 << 1)
+	translatePushContentRequestFieldLocalizations = big.NewInt(1 << 2)
+	translatePushContentRequestFieldOverwrite     = big.NewInt(1 << 3)
+	translatePushContentRequestFieldTitle         = big.NewInt(1 << 4)
+)
+
+type TranslatePushContentRequest struct {
+	// Main-language message.
+	Body *string `json:"body,omitempty" url:"-"`
+	// Languages to translate into. Omit for every workspace language except the main one.
+	Locales       []string              `json:"locales,omitempty" url:"-"`
+	Localizations *PushLocalizationList `json:"localizations,omitempty" url:"-"`
+	// Retranslate versions a person wrote too.
+	Overwrite *bool `json:"overwrite,omitempty" url:"-"`
+	// Main-language title. A title or a body is required.
+	Title *string `json:"title,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (t *TranslatePushContentRequest) require(field *big.Int) {
+	if t.explicitFields == nil {
+		t.explicitFields = big.NewInt(0)
+	}
+	t.explicitFields.Or(t.explicitFields, field)
+}
+
+// SetBody sets the Body field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TranslatePushContentRequest) SetBody(body *string) {
+	t.Body = body
+	t.require(translatePushContentRequestFieldBody)
+}
+
+// SetLocales sets the Locales field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TranslatePushContentRequest) SetLocales(locales []string) {
+	t.Locales = locales
+	t.require(translatePushContentRequestFieldLocales)
+}
+
+// SetLocalizations sets the Localizations field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TranslatePushContentRequest) SetLocalizations(localizations *PushLocalizationList) {
+	t.Localizations = localizations
+	t.require(translatePushContentRequestFieldLocalizations)
+}
+
+// SetOverwrite sets the Overwrite field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TranslatePushContentRequest) SetOverwrite(overwrite *bool) {
+	t.Overwrite = overwrite
+	t.require(translatePushContentRequestFieldOverwrite)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TranslatePushContentRequest) SetTitle(title *string) {
+	t.Title = title
+	t.require(translatePushContentRequestFieldTitle)
+}
+
+func (t *TranslatePushContentRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler TranslatePushContentRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*t = TranslatePushContentRequest(body)
+	return nil
+}
+
+func (t *TranslatePushContentRequest) MarshalJSON() ([]byte, error) {
+	type embed TranslatePushContentRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*t),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, t.explicitFields)
+	return json.Marshal(explicitMarshaler)
 }
 
 // Alert shown with the push. Provide a title, a body, or both.
@@ -1722,21 +1984,27 @@ func (l *LiveActivityAlert) String() string {
 }
 
 var (
-	liveActivityDispatchFieldActivityID = big.NewInt(1 << 0)
-	liveActivityDispatchFieldEvent      = big.NewInt(1 << 1)
-	liveActivityDispatchFieldJobIDs     = big.NewInt(1 << 2)
-	liveActivityDispatchFieldMessage    = big.NewInt(1 << 3)
-	liveActivityDispatchFieldSuccess    = big.NewInt(1 << 4)
-	liveActivityDispatchFieldTokenCount = big.NewInt(1 << 5)
+	liveActivityDispatchFieldActivityID   = big.NewInt(1 << 0)
+	liveActivityDispatchFieldContactCount = big.NewInt(1 << 1)
+	liveActivityDispatchFieldEvent        = big.NewInt(1 << 2)
+	liveActivityDispatchFieldJobIDs       = big.NewInt(1 << 3)
+	liveActivityDispatchFieldMessage      = big.NewInt(1 << 4)
+	liveActivityDispatchFieldPlatforms    = big.NewInt(1 << 5)
+	liveActivityDispatchFieldSuccess      = big.NewInt(1 << 6)
+	liveActivityDispatchFieldTokenCount   = big.NewInt(1 << 7)
 )
 
 type LiveActivityDispatch struct {
-	ActivityID *string                    `json:"activityId,omitempty" url:"activityId,omitempty"`
-	Event      *LiveActivityDispatchEvent `json:"event,omitempty" url:"event,omitempty"`
+	ActivityID *string `json:"activityId,omitempty" url:"activityId,omitempty"`
+	// Distinct contacts those devices belong to. 0 when nothing was sent, at most 1 for a per-contact request, and the contacts reached for a segment, list, tag or broadcast.
+	ContactCount *int                       `json:"contactCount,omitempty" url:"contactCount,omitempty"`
+	Event        *LiveActivityDispatchEvent `json:"event,omitempty" url:"event,omitempty"`
 	// Queued delivery jobs, one per batch of 100 devices.
 	JobIDs  []string `json:"jobIds,omitempty" url:"jobIds,omitempty"`
 	Message *string  `json:"message,omitempty" url:"message,omitempty"`
-	Success *bool    `json:"success,omitempty" url:"success,omitempty"`
+	// tokenCount per platform. iOS tokens go through APNs and Android Live Update tokens through FCM; a platform without push credentials gets nothing.
+	Platforms *LiveActivityDispatchPlatforms `json:"platforms,omitempty" url:"platforms,omitempty"`
+	Success   *bool                          `json:"success,omitempty" url:"success,omitempty"`
 	// Devices the push was queued for. 0 means nothing was sent.
 	TokenCount *int `json:"tokenCount,omitempty" url:"tokenCount,omitempty"`
 
@@ -1752,6 +2020,13 @@ func (l *LiveActivityDispatch) GetActivityID() *string {
 		return nil
 	}
 	return l.ActivityID
+}
+
+func (l *LiveActivityDispatch) GetContactCount() *int {
+	if l == nil {
+		return nil
+	}
+	return l.ContactCount
 }
 
 func (l *LiveActivityDispatch) GetEvent() *LiveActivityDispatchEvent {
@@ -1773,6 +2048,13 @@ func (l *LiveActivityDispatch) GetMessage() *string {
 		return nil
 	}
 	return l.Message
+}
+
+func (l *LiveActivityDispatch) GetPlatforms() *LiveActivityDispatchPlatforms {
+	if l == nil {
+		return nil
+	}
+	return l.Platforms
 }
 
 func (l *LiveActivityDispatch) GetSuccess() *bool {
@@ -1810,6 +2092,13 @@ func (l *LiveActivityDispatch) SetActivityID(activityID *string) {
 	l.require(liveActivityDispatchFieldActivityID)
 }
 
+// SetContactCount sets the ContactCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LiveActivityDispatch) SetContactCount(contactCount *int) {
+	l.ContactCount = contactCount
+	l.require(liveActivityDispatchFieldContactCount)
+}
+
 // SetEvent sets the Event field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *LiveActivityDispatch) SetEvent(event *LiveActivityDispatchEvent) {
@@ -1829,6 +2118,13 @@ func (l *LiveActivityDispatch) SetJobIDs(jobIDs []string) {
 func (l *LiveActivityDispatch) SetMessage(message *string) {
 	l.Message = message
 	l.require(liveActivityDispatchFieldMessage)
+}
+
+// SetPlatforms sets the Platforms field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LiveActivityDispatch) SetPlatforms(platforms *LiveActivityDispatchPlatforms) {
+	l.Platforms = platforms
+	l.require(liveActivityDispatchFieldPlatforms)
 }
 
 // SetSuccess sets the Success field and marks it as non-optional;
@@ -1912,6 +2208,107 @@ func (l LiveActivityDispatchEvent) Ptr() *LiveActivityDispatchEvent {
 	return &l
 }
 
+// tokenCount per platform. iOS tokens go through APNs and Android Live Update tokens through FCM; a platform without push credentials gets nothing.
+var (
+	liveActivityDispatchPlatformsFieldAndroid = big.NewInt(1 << 0)
+	liveActivityDispatchPlatformsFieldIos     = big.NewInt(1 << 1)
+)
+
+type LiveActivityDispatchPlatforms struct {
+	Android *int `json:"android,omitempty" url:"android,omitempty"`
+	Ios     *int `json:"ios,omitempty" url:"ios,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LiveActivityDispatchPlatforms) GetAndroid() *int {
+	if l == nil {
+		return nil
+	}
+	return l.Android
+}
+
+func (l *LiveActivityDispatchPlatforms) GetIos() *int {
+	if l == nil {
+		return nil
+	}
+	return l.Ios
+}
+
+func (l *LiveActivityDispatchPlatforms) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LiveActivityDispatchPlatforms) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetAndroid sets the Android field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LiveActivityDispatchPlatforms) SetAndroid(android *int) {
+	l.Android = android
+	l.require(liveActivityDispatchPlatformsFieldAndroid)
+}
+
+// SetIos sets the Ios field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LiveActivityDispatchPlatforms) SetIos(ios *int) {
+	l.Ios = ios
+	l.require(liveActivityDispatchPlatformsFieldIos)
+}
+
+func (l *LiveActivityDispatchPlatforms) UnmarshalJSON(data []byte) error {
+	type unmarshaler LiveActivityDispatchPlatforms
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LiveActivityDispatchPlatforms(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LiveActivityDispatchPlatforms) MarshalJSON() ([]byte, error) {
+	type embed LiveActivityDispatchPlatforms
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LiveActivityDispatchPlatforms) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
 // Unix seconds, or an ISO 8601 date. A string of digits is read as Unix seconds.
 type LiveActivityTime struct {
 	Integer int
@@ -1988,32 +2385,35 @@ var (
 	liveActivityTokenFieldLastPushError   = big.NewInt(1 << 9)
 	liveActivityTokenFieldLastPushOutcome = big.NewInt(1 << 10)
 	liveActivityTokenFieldLastSeenAt      = big.NewInt(1 << 11)
-	liveActivityTokenFieldStatus          = big.NewInt(1 << 12)
-	liveActivityTokenFieldSubscriberID    = big.NewInt(1 << 13)
-	liveActivityTokenFieldTokenPreview    = big.NewInt(1 << 14)
+	liveActivityTokenFieldPlatform        = big.NewInt(1 << 12)
+	liveActivityTokenFieldStatus          = big.NewInt(1 << 13)
+	liveActivityTokenFieldSubscriberID    = big.NewInt(1 << 14)
+	liveActivityTokenFieldTokenPreview    = big.NewInt(1 << 15)
 )
 
 type LiveActivityToken struct {
 	// Your activity id. Null for push-to-start tokens.
 	ActivityID *string `json:"activityId,omitempty" url:"activityId,omitempty"`
-	// The Swift ActivityAttributes type name.
+	// The Swift ActivityAttributes type name, which Android apps observe too.
 	ActivityType *string    `json:"activityType,omitempty" url:"activityType,omitempty"`
 	CreatedAt    *time.Time `json:"createdAt,omitempty" url:"createdAt,omitempty"`
-	// The push device of the same installation, when the app registered one.
+	// The push device of the same installation, when the app registered one. Android tokens always have one; their pushes go to its FCM token.
 	DeviceID *string    `json:"deviceId,omitempty" url:"deviceId,omitempty"`
 	EndedAt  *time.Time `json:"endedAt,omitempty" url:"endedAt,omitempty"`
 	ID       *string    `json:"id,omitempty" url:"id,omitempty"`
-	// Why the token is invalid, such as `replaced`, `unregistered` or an APNs reason like `Unregistered`.
+	// Why the token is invalid, such as `replaced`, `unregistered`, `device_inactive` (the Android push device is gone), an APNs reason like `Unregistered` or an FCM code like `UNREGISTERED`.
 	InvalidReason *string `json:"invalidReason,omitempty" url:"invalidReason,omitempty"`
 	// push_to_start tokens start activities of a type on one device; update tokens address one running activity.
 	Kind          *LiveActivityTokenKind `json:"kind,omitempty" url:"kind,omitempty"`
 	LastPushAt    *time.Time             `json:"lastPushAt,omitempty" url:"lastPushAt,omitempty"`
 	LastPushError *string                `json:"lastPushError,omitempty" url:"lastPushError,omitempty"`
 	// accepted, invalid_token, credentials_error, failed, retryable, or retrying while a retry is pending.
-	LastPushOutcome *string                  `json:"lastPushOutcome,omitempty" url:"lastPushOutcome,omitempty"`
-	LastSeenAt      *time.Time               `json:"lastSeenAt,omitempty" url:"lastSeenAt,omitempty"`
-	Status          *LiveActivityTokenStatus `json:"status,omitempty" url:"status,omitempty"`
-	SubscriberID    *string                  `json:"subscriberId,omitempty" url:"subscriberId,omitempty"`
+	LastPushOutcome *string    `json:"lastPushOutcome,omitempty" url:"lastPushOutcome,omitempty"`
+	LastSeenAt      *time.Time `json:"lastSeenAt,omitempty" url:"lastSeenAt,omitempty"`
+	// ios for ActivityKit tokens, android for Live Update tokens the Sequenzy Android SDK generated.
+	Platform     *LiveActivityTokenPlatform `json:"platform,omitempty" url:"platform,omitempty"`
+	Status       *LiveActivityTokenStatus   `json:"status,omitempty" url:"status,omitempty"`
+	SubscriberID *string                    `json:"subscriberId,omitempty" url:"subscriberId,omitempty"`
 	// Last eight characters of the token.
 	TokenPreview *string `json:"tokenPreview,omitempty" url:"tokenPreview,omitempty"`
 
@@ -2106,6 +2506,13 @@ func (l *LiveActivityToken) GetLastSeenAt() *time.Time {
 		return nil
 	}
 	return l.LastSeenAt
+}
+
+func (l *LiveActivityToken) GetPlatform() *LiveActivityTokenPlatform {
+	if l == nil {
+		return nil
+	}
+	return l.Platform
 }
 
 func (l *LiveActivityToken) GetStatus() *LiveActivityTokenStatus {
@@ -2227,6 +2634,13 @@ func (l *LiveActivityToken) SetLastSeenAt(lastSeenAt *time.Time) {
 	l.require(liveActivityTokenFieldLastSeenAt)
 }
 
+// SetPlatform sets the Platform field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LiveActivityToken) SetPlatform(platform *LiveActivityTokenPlatform) {
+	l.Platform = platform
+	l.require(liveActivityTokenFieldPlatform)
+}
+
 // SetStatus sets the Status field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *LiveActivityToken) SetStatus(status *LiveActivityTokenStatus) {
@@ -2333,6 +2747,29 @@ func (l LiveActivityTokenKind) Ptr() *LiveActivityTokenKind {
 	return &l
 }
 
+// ios for ActivityKit tokens, android for Live Update tokens the Sequenzy Android SDK generated.
+type LiveActivityTokenPlatform string
+
+const (
+	LiveActivityTokenPlatformIos     LiveActivityTokenPlatform = "ios"
+	LiveActivityTokenPlatformAndroid LiveActivityTokenPlatform = "android"
+)
+
+func NewLiveActivityTokenPlatformFromString(s string) (LiveActivityTokenPlatform, error) {
+	switch s {
+	case "ios":
+		return LiveActivityTokenPlatformIos, nil
+	case "android":
+		return LiveActivityTokenPlatformAndroid, nil
+	}
+	var t LiveActivityTokenPlatform
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LiveActivityTokenPlatform) Ptr() *LiveActivityTokenPlatform {
+	return &l
+}
+
 type LiveActivityTokenStatus string
 
 const (
@@ -2366,11 +2803,15 @@ var (
 	pushCampaignFieldLabelIDs                = big.NewInt(1 << 4)
 	pushCampaignFieldName                    = big.NewInt(1 << 5)
 	pushCampaignFieldScheduledAt             = big.NewInt(1 << 6)
-	pushCampaignFieldSentAt                  = big.NewInt(1 << 7)
-	pushCampaignFieldStatus                  = big.NewInt(1 << 8)
-	pushCampaignFieldTargetLists             = big.NewInt(1 << 9)
-	pushCampaignFieldType                    = big.NewInt(1 << 10)
-	pushCampaignFieldUpdatedAt               = big.NewInt(1 << 11)
+	pushCampaignFieldScheduledTimezone       = big.NewInt(1 << 7)
+	pushCampaignFieldSendInRecipientTimezone = big.NewInt(1 << 8)
+	pushCampaignFieldSendTimeOptimization    = big.NewInt(1 << 9)
+	pushCampaignFieldSendTimeWindowHours     = big.NewInt(1 << 10)
+	pushCampaignFieldSentAt                  = big.NewInt(1 << 11)
+	pushCampaignFieldStatus                  = big.NewInt(1 << 12)
+	pushCampaignFieldTargetLists             = big.NewInt(1 << 13)
+	pushCampaignFieldType                    = big.NewInt(1 << 14)
+	pushCampaignFieldUpdatedAt               = big.NewInt(1 << 15)
 )
 
 type PushCampaign struct {
@@ -2381,11 +2822,19 @@ type PushCampaign struct {
 	LabelIDs                []string             `json:"labelIds,omitempty" url:"labelIds,omitempty"`
 	Name                    *string              `json:"name,omitempty" url:"name,omitempty"`
 	ScheduledAt             *time.Time           `json:"scheduledAt,omitempty" url:"scheduledAt,omitempty"`
-	SentAt                  *time.Time           `json:"sentAt,omitempty" url:"sentAt,omitempty"`
-	Status                  *PushCampaignStatus  `json:"status,omitempty" url:"status,omitempty"`
-	TargetLists             map[string]any       `json:"targetLists,omitempty" url:"targetLists,omitempty"`
-	Type                    *PushCampaignType    `json:"type,omitempty" url:"type,omitempty"`
-	UpdatedAt               *time.Time           `json:"updatedAt,omitempty" url:"updatedAt,omitempty"`
+	// IANA timezone the scheduled wall-clock time refers to.
+	ScheduledTimezone *string `json:"scheduledTimezone,omitempty" url:"scheduledTimezone,omitempty"`
+	// Delivers scheduledAt's wall-clock time in each contact's own timezone.
+	SendInRecipientTimezone *bool `json:"sendInRecipientTimezone,omitempty" url:"sendInRecipientTimezone,omitempty"`
+	// Sends each contact the push at their most engaged hour.
+	SendTimeOptimization *bool `json:"sendTimeOptimization,omitempty" url:"sendTimeOptimization,omitempty"`
+	// Hours after the start in which optimized sends may land.
+	SendTimeWindowHours *int                `json:"sendTimeWindowHours,omitempty" url:"sendTimeWindowHours,omitempty"`
+	SentAt              *time.Time          `json:"sentAt,omitempty" url:"sentAt,omitempty"`
+	Status              *PushCampaignStatus `json:"status,omitempty" url:"status,omitempty"`
+	TargetLists         map[string]any      `json:"targetLists,omitempty" url:"targetLists,omitempty"`
+	Type                *PushCampaignType   `json:"type,omitempty" url:"type,omitempty"`
+	UpdatedAt           *time.Time          `json:"updatedAt,omitempty" url:"updatedAt,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -2441,6 +2890,34 @@ func (p *PushCampaign) GetScheduledAt() *time.Time {
 		return nil
 	}
 	return p.ScheduledAt
+}
+
+func (p *PushCampaign) GetScheduledTimezone() *string {
+	if p == nil {
+		return nil
+	}
+	return p.ScheduledTimezone
+}
+
+func (p *PushCampaign) GetSendInRecipientTimezone() *bool {
+	if p == nil {
+		return nil
+	}
+	return p.SendInRecipientTimezone
+}
+
+func (p *PushCampaign) GetSendTimeOptimization() *bool {
+	if p == nil {
+		return nil
+	}
+	return p.SendTimeOptimization
+}
+
+func (p *PushCampaign) GetSendTimeWindowHours() *int {
+	if p == nil {
+		return nil
+	}
+	return p.SendTimeWindowHours
 }
 
 func (p *PushCampaign) GetSentAt() *time.Time {
@@ -2541,6 +3018,34 @@ func (p *PushCampaign) SetScheduledAt(scheduledAt *time.Time) {
 	p.require(pushCampaignFieldScheduledAt)
 }
 
+// SetScheduledTimezone sets the ScheduledTimezone field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushCampaign) SetScheduledTimezone(scheduledTimezone *string) {
+	p.ScheduledTimezone = scheduledTimezone
+	p.require(pushCampaignFieldScheduledTimezone)
+}
+
+// SetSendInRecipientTimezone sets the SendInRecipientTimezone field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushCampaign) SetSendInRecipientTimezone(sendInRecipientTimezone *bool) {
+	p.SendInRecipientTimezone = sendInRecipientTimezone
+	p.require(pushCampaignFieldSendInRecipientTimezone)
+}
+
+// SetSendTimeOptimization sets the SendTimeOptimization field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushCampaign) SetSendTimeOptimization(sendTimeOptimization *bool) {
+	p.SendTimeOptimization = sendTimeOptimization
+	p.require(pushCampaignFieldSendTimeOptimization)
+}
+
+// SetSendTimeWindowHours sets the SendTimeWindowHours field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushCampaign) SetSendTimeWindowHours(sendTimeWindowHours *int) {
+	p.SendTimeWindowHours = sendTimeWindowHours
+	p.require(pushCampaignFieldSendTimeWindowHours)
+}
+
 // SetSentAt sets the SentAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (p *PushCampaign) SetSentAt(sentAt *time.Time) {
@@ -2639,12 +3144,13 @@ func (p *PushCampaign) String() string {
 }
 
 var (
-	pushCampaignContentFieldBody      = big.NewInt(1 << 0)
-	pushCampaignContentFieldIconURL   = big.NewInt(1 << 1)
-	pushCampaignContentFieldImageURL  = big.NewInt(1 << 2)
-	pushCampaignContentFieldPlatforms = big.NewInt(1 << 3)
-	pushCampaignContentFieldTitle     = big.NewInt(1 << 4)
-	pushCampaignContentFieldURL       = big.NewInt(1 << 5)
+	pushCampaignContentFieldBody          = big.NewInt(1 << 0)
+	pushCampaignContentFieldIconURL       = big.NewInt(1 << 1)
+	pushCampaignContentFieldImageURL      = big.NewInt(1 << 2)
+	pushCampaignContentFieldLocalizations = big.NewInt(1 << 3)
+	pushCampaignContentFieldPlatforms     = big.NewInt(1 << 4)
+	pushCampaignContentFieldTitle         = big.NewInt(1 << 5)
+	pushCampaignContentFieldURL           = big.NewInt(1 << 6)
 )
 
 type PushCampaignContent struct {
@@ -2654,6 +3160,8 @@ type PushCampaignContent struct {
 	IconURL *string `json:"iconUrl,omitempty" url:"iconUrl,omitempty"`
 	// Optional https image shown in the notification.
 	ImageURL *string `json:"imageUrl,omitempty" url:"imageUrl,omitempty"`
+	// Versions in the workspace's other languages. Absent when there are none.
+	Localizations []*PushLocalization `json:"localizations,omitempty" url:"localizations,omitempty"`
 	// Limit delivery to these platforms. Omit or pass an empty array for every platform.
 	Platforms []PushCampaignContentPlatformsItem `json:"platforms,omitempty" url:"platforms,omitempty"`
 	// Notification title. Merge tags such as {{FIRST_NAME|there}} are supported.
@@ -2687,6 +3195,13 @@ func (p *PushCampaignContent) GetImageURL() *string {
 		return nil
 	}
 	return p.ImageURL
+}
+
+func (p *PushCampaignContent) GetLocalizations() []*PushLocalization {
+	if p == nil {
+		return nil
+	}
+	return p.Localizations
 }
 
 func (p *PushCampaignContent) GetPlatforms() []PushCampaignContentPlatformsItem {
@@ -2743,6 +3258,13 @@ func (p *PushCampaignContent) SetIconURL(iconURL *string) {
 func (p *PushCampaignContent) SetImageURL(imageURL *string) {
 	p.ImageURL = imageURL
 	p.require(pushCampaignContentFieldImageURL)
+}
+
+// SetLocalizations sets the Localizations field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushCampaignContent) SetLocalizations(localizations []*PushLocalization) {
+	p.Localizations = localizations
+	p.require(pushCampaignContentFieldLocalizations)
 }
 
 // SetPlatforms sets the Platforms field and marks it as non-optional;
@@ -5377,6 +5899,9 @@ func (p PushImportWarningSeverity) Ptr() *PushImportWarningSeverity {
 	return &p
 }
 
+// Versions in the workspace's other languages. Passing the list replaces every version; [] removes them all. Omit it to keep the stored versions.
+type PushLocalizationList = []*PushLocalization
+
 var (
 	pushSettingsFieldAndroid        = big.NewInt(1 << 0)
 	pushSettingsFieldDefaultIconURL = big.NewInt(1 << 1)
@@ -5977,6 +6502,381 @@ func (p *PushSettingsWeb) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	pushTranslationResultFieldFailed     = big.NewInt(1 << 0)
+	pushTranslationResultFieldMessage    = big.NewInt(1 << 1)
+	pushTranslationResultFieldSkipped    = big.NewInt(1 << 2)
+	pushTranslationResultFieldSuccess    = big.NewInt(1 << 3)
+	pushTranslationResultFieldTranslated = big.NewInt(1 << 4)
+)
+
+type PushTranslationResult struct {
+	// Languages the model could not translate. The others are still returned or saved; retry these.
+	Failed  []*PushTranslationResultFailedItem `json:"failed,omitempty" url:"failed,omitempty"`
+	Message *string                            `json:"message,omitempty" url:"message,omitempty"`
+	// Languages left as they were.
+	Skipped []*PushTranslationResultSkippedItem `json:"skipped,omitempty" url:"skipped,omitempty"`
+	Success *bool                               `json:"success,omitempty" url:"success,omitempty"`
+	// Languages translated by this request.
+	Translated []string `json:"translated,omitempty" url:"translated,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PushTranslationResult) GetFailed() []*PushTranslationResultFailedItem {
+	if p == nil {
+		return nil
+	}
+	return p.Failed
+}
+
+func (p *PushTranslationResult) GetMessage() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Message
+}
+
+func (p *PushTranslationResult) GetSkipped() []*PushTranslationResultSkippedItem {
+	if p == nil {
+		return nil
+	}
+	return p.Skipped
+}
+
+func (p *PushTranslationResult) GetSuccess() *bool {
+	if p == nil {
+		return nil
+	}
+	return p.Success
+}
+
+func (p *PushTranslationResult) GetTranslated() []string {
+	if p == nil {
+		return nil
+	}
+	return p.Translated
+}
+
+func (p *PushTranslationResult) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PushTranslationResult) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetFailed sets the Failed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushTranslationResult) SetFailed(failed []*PushTranslationResultFailedItem) {
+	p.Failed = failed
+	p.require(pushTranslationResultFieldFailed)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushTranslationResult) SetMessage(message *string) {
+	p.Message = message
+	p.require(pushTranslationResultFieldMessage)
+}
+
+// SetSkipped sets the Skipped field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushTranslationResult) SetSkipped(skipped []*PushTranslationResultSkippedItem) {
+	p.Skipped = skipped
+	p.require(pushTranslationResultFieldSkipped)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushTranslationResult) SetSuccess(success *bool) {
+	p.Success = success
+	p.require(pushTranslationResultFieldSuccess)
+}
+
+// SetTranslated sets the Translated field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushTranslationResult) SetTranslated(translated []string) {
+	p.Translated = translated
+	p.require(pushTranslationResultFieldTranslated)
+}
+
+func (p *PushTranslationResult) UnmarshalJSON(data []byte) error {
+	type unmarshaler PushTranslationResult
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PushTranslationResult(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PushTranslationResult) MarshalJSON() ([]byte, error) {
+	type embed PushTranslationResult
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PushTranslationResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	pushTranslationResultFailedItemFieldError  = big.NewInt(1 << 0)
+	pushTranslationResultFailedItemFieldLocale = big.NewInt(1 << 1)
+)
+
+type PushTranslationResultFailedItem struct {
+	Error  *string `json:"error,omitempty" url:"error,omitempty"`
+	Locale *string `json:"locale,omitempty" url:"locale,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PushTranslationResultFailedItem) GetError() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Error
+}
+
+func (p *PushTranslationResultFailedItem) GetLocale() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Locale
+}
+
+func (p *PushTranslationResultFailedItem) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PushTranslationResultFailedItem) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetError sets the Error field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushTranslationResultFailedItem) SetError(error_ *string) {
+	p.Error = error_
+	p.require(pushTranslationResultFailedItemFieldError)
+}
+
+// SetLocale sets the Locale field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushTranslationResultFailedItem) SetLocale(locale *string) {
+	p.Locale = locale
+	p.require(pushTranslationResultFailedItemFieldLocale)
+}
+
+func (p *PushTranslationResultFailedItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler PushTranslationResultFailedItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PushTranslationResultFailedItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PushTranslationResultFailedItem) MarshalJSON() ([]byte, error) {
+	type embed PushTranslationResultFailedItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PushTranslationResultFailedItem) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	pushTranslationResultSkippedItemFieldLocale = big.NewInt(1 << 0)
+	pushTranslationResultSkippedItemFieldReason = big.NewInt(1 << 1)
+)
+
+type PushTranslationResultSkippedItem struct {
+	Locale *string `json:"locale,omitempty" url:"locale,omitempty"`
+	// up_to_date - an AI version of the current main copy exists; edited - a person wrote it (pass overwrite to replace it).
+	Reason *PushTranslationResultSkippedItemReason `json:"reason,omitempty" url:"reason,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PushTranslationResultSkippedItem) GetLocale() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Locale
+}
+
+func (p *PushTranslationResultSkippedItem) GetReason() *PushTranslationResultSkippedItemReason {
+	if p == nil {
+		return nil
+	}
+	return p.Reason
+}
+
+func (p *PushTranslationResultSkippedItem) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PushTranslationResultSkippedItem) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetLocale sets the Locale field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushTranslationResultSkippedItem) SetLocale(locale *string) {
+	p.Locale = locale
+	p.require(pushTranslationResultSkippedItemFieldLocale)
+}
+
+// SetReason sets the Reason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushTranslationResultSkippedItem) SetReason(reason *PushTranslationResultSkippedItemReason) {
+	p.Reason = reason
+	p.require(pushTranslationResultSkippedItemFieldReason)
+}
+
+func (p *PushTranslationResultSkippedItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler PushTranslationResultSkippedItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PushTranslationResultSkippedItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PushTranslationResultSkippedItem) MarshalJSON() ([]byte, error) {
+	type embed PushTranslationResultSkippedItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PushTranslationResultSkippedItem) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// up_to_date - an AI version of the current main copy exists; edited - a person wrote it (pass overwrite to replace it).
+type PushTranslationResultSkippedItemReason string
+
+const (
+	PushTranslationResultSkippedItemReasonUpToDate PushTranslationResultSkippedItemReason = "up_to_date"
+	PushTranslationResultSkippedItemReasonEdited   PushTranslationResultSkippedItemReason = "edited"
+)
+
+func NewPushTranslationResultSkippedItemReasonFromString(s string) (PushTranslationResultSkippedItemReason, error) {
+	switch s {
+	case "up_to_date":
+		return PushTranslationResultSkippedItemReasonUpToDate, nil
+	case "edited":
+		return PushTranslationResultSkippedItemReasonEdited, nil
+	}
+	var t PushTranslationResultSkippedItemReason
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PushTranslationResultSkippedItemReason) Ptr() *PushTranslationResultSkippedItemReason {
+	return &p
 }
 
 var (
@@ -6905,15 +7805,18 @@ func (e EstimatePushCampaignRecipientsRequestPlatformsItem) Ptr() *EstimatePushC
 }
 
 var (
-	estimatePushCampaignRecipientsResponseFieldAudienceCount = big.NewInt(1 << 0)
-	estimatePushCampaignRecipientsResponseFieldEligibleCount = big.NewInt(1 << 1)
-	estimatePushCampaignRecipientsResponseFieldSuccess       = big.NewInt(1 << 2)
+	estimatePushCampaignRecipientsResponseFieldAudienceCount  = big.NewInt(1 << 0)
+	estimatePushCampaignRecipientsResponseFieldEligibleCount  = big.NewInt(1 << 1)
+	estimatePushCampaignRecipientsResponseFieldSuccess        = big.NewInt(1 << 2)
+	estimatePushCampaignRecipientsResponseFieldTimingCoverage = big.NewInt(1 << 3)
 )
 
 type EstimatePushCampaignRecipientsResponse struct {
 	AudienceCount *int  `json:"audienceCount,omitempty" url:"audienceCount,omitempty"`
 	EligibleCount *int  `json:"eligibleCount,omitempty" url:"eligibleCount,omitempty"`
 	Success       *bool `json:"success,omitempty" url:"success,omitempty"`
+	// Present when includeTimingCoverage is true.
+	TimingCoverage *EstimatePushCampaignRecipientsResponseTimingCoverage `json:"timingCoverage,omitempty" url:"timingCoverage,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -6941,6 +7844,13 @@ func (e *EstimatePushCampaignRecipientsResponse) GetSuccess() *bool {
 		return nil
 	}
 	return e.Success
+}
+
+func (e *EstimatePushCampaignRecipientsResponse) GetTimingCoverage() *EstimatePushCampaignRecipientsResponseTimingCoverage {
+	if e == nil {
+		return nil
+	}
+	return e.TimingCoverage
 }
 
 func (e *EstimatePushCampaignRecipientsResponse) GetExtraProperties() map[string]interface{} {
@@ -6978,6 +7888,13 @@ func (e *EstimatePushCampaignRecipientsResponse) SetSuccess(success *bool) {
 	e.require(estimatePushCampaignRecipientsResponseFieldSuccess)
 }
 
+// SetTimingCoverage sets the TimingCoverage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EstimatePushCampaignRecipientsResponse) SetTimingCoverage(timingCoverage *EstimatePushCampaignRecipientsResponseTimingCoverage) {
+	e.TimingCoverage = timingCoverage
+	e.require(estimatePushCampaignRecipientsResponseFieldTimingCoverage)
+}
+
 func (e *EstimatePushCampaignRecipientsResponse) UnmarshalJSON(data []byte) error {
 	type unmarshaler EstimatePushCampaignRecipientsResponse
 	var value unmarshaler
@@ -7006,6 +7923,126 @@ func (e *EstimatePushCampaignRecipientsResponse) MarshalJSON() ([]byte, error) {
 }
 
 func (e *EstimatePushCampaignRecipientsResponse) String() string {
+	if e == nil {
+		return "<nil>"
+	}
+	if len(e.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(e.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+// Present when includeTimingCoverage is true.
+var (
+	estimatePushCampaignRecipientsResponseTimingCoverageFieldEligible        = big.NewInt(1 << 0)
+	estimatePushCampaignRecipientsResponseTimingCoverageFieldWithPushHistory = big.NewInt(1 << 1)
+	estimatePushCampaignRecipientsResponseTimingCoverageFieldWithTimezone    = big.NewInt(1 << 2)
+)
+
+type EstimatePushCampaignRecipientsResponseTimingCoverage struct {
+	// Contacts that would receive the campaign.
+	Eligible *int `json:"eligible,omitempty" url:"eligible,omitempty"`
+	// Eligible contacts with at least 3 push clicks in the last 90 days. The rest use their email open hour, the workspace's usual push hour, or the start.
+	WithPushHistory *int `json:"withPushHistory,omitempty" url:"withPushHistory,omitempty"`
+	// Eligible contacts with a known device or contact timezone. The rest get a local-time campaign at scheduledAt.
+	WithTimezone *int `json:"withTimezone,omitempty" url:"withTimezone,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (e *EstimatePushCampaignRecipientsResponseTimingCoverage) GetEligible() *int {
+	if e == nil {
+		return nil
+	}
+	return e.Eligible
+}
+
+func (e *EstimatePushCampaignRecipientsResponseTimingCoverage) GetWithPushHistory() *int {
+	if e == nil {
+		return nil
+	}
+	return e.WithPushHistory
+}
+
+func (e *EstimatePushCampaignRecipientsResponseTimingCoverage) GetWithTimezone() *int {
+	if e == nil {
+		return nil
+	}
+	return e.WithTimezone
+}
+
+func (e *EstimatePushCampaignRecipientsResponseTimingCoverage) GetExtraProperties() map[string]interface{} {
+	if e == nil {
+		return nil
+	}
+	return e.extraProperties
+}
+
+func (e *EstimatePushCampaignRecipientsResponseTimingCoverage) require(field *big.Int) {
+	if e.explicitFields == nil {
+		e.explicitFields = big.NewInt(0)
+	}
+	e.explicitFields.Or(e.explicitFields, field)
+}
+
+// SetEligible sets the Eligible field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EstimatePushCampaignRecipientsResponseTimingCoverage) SetEligible(eligible *int) {
+	e.Eligible = eligible
+	e.require(estimatePushCampaignRecipientsResponseTimingCoverageFieldEligible)
+}
+
+// SetWithPushHistory sets the WithPushHistory field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EstimatePushCampaignRecipientsResponseTimingCoverage) SetWithPushHistory(withPushHistory *int) {
+	e.WithPushHistory = withPushHistory
+	e.require(estimatePushCampaignRecipientsResponseTimingCoverageFieldWithPushHistory)
+}
+
+// SetWithTimezone sets the WithTimezone field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EstimatePushCampaignRecipientsResponseTimingCoverage) SetWithTimezone(withTimezone *int) {
+	e.WithTimezone = withTimezone
+	e.require(estimatePushCampaignRecipientsResponseTimingCoverageFieldWithTimezone)
+}
+
+func (e *EstimatePushCampaignRecipientsResponseTimingCoverage) UnmarshalJSON(data []byte) error {
+	type unmarshaler EstimatePushCampaignRecipientsResponseTimingCoverage
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EstimatePushCampaignRecipientsResponseTimingCoverage(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+	e.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EstimatePushCampaignRecipientsResponseTimingCoverage) MarshalJSON() ([]byte, error) {
+	type embed EstimatePushCampaignRecipientsResponseTimingCoverage
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*e),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (e *EstimatePushCampaignRecipientsResponseTimingCoverage) String() string {
 	if e == nil {
 		return "<nil>"
 	}
@@ -7697,6 +8734,28 @@ func NewListLiveActivitiesRequestKindFromString(s string) (ListLiveActivitiesReq
 }
 
 func (l ListLiveActivitiesRequestKind) Ptr() *ListLiveActivitiesRequestKind {
+	return &l
+}
+
+type ListLiveActivitiesRequestPlatform string
+
+const (
+	ListLiveActivitiesRequestPlatformIos     ListLiveActivitiesRequestPlatform = "ios"
+	ListLiveActivitiesRequestPlatformAndroid ListLiveActivitiesRequestPlatform = "android"
+)
+
+func NewListLiveActivitiesRequestPlatformFromString(s string) (ListLiveActivitiesRequestPlatform, error) {
+	switch s {
+	case "ios":
+		return ListLiveActivitiesRequestPlatformIos, nil
+	case "android":
+		return ListLiveActivitiesRequestPlatformAndroid, nil
+	}
+	var t ListLiveActivitiesRequestPlatform
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListLiveActivitiesRequestPlatform) Ptr() *ListLiveActivitiesRequestPlatform {
 	return &l
 }
 
@@ -9403,6 +10462,341 @@ func (s *SetFcmCredentialsResponse) String() string {
 }
 
 var (
+	translatePushCampaignResponseFieldFailed     = big.NewInt(1 << 0)
+	translatePushCampaignResponseFieldMessage    = big.NewInt(1 << 1)
+	translatePushCampaignResponseFieldSkipped    = big.NewInt(1 << 2)
+	translatePushCampaignResponseFieldSuccess    = big.NewInt(1 << 3)
+	translatePushCampaignResponseFieldTranslated = big.NewInt(1 << 4)
+	translatePushCampaignResponseFieldCampaign   = big.NewInt(1 << 5)
+)
+
+type TranslatePushCampaignResponse struct {
+	// Languages the model could not translate. The others are still returned or saved; retry these.
+	Failed  []*PushTranslationResultFailedItem `json:"failed,omitempty" url:"failed,omitempty"`
+	Message *string                            `json:"message,omitempty" url:"message,omitempty"`
+	// Languages left as they were.
+	Skipped []*PushTranslationResultSkippedItem `json:"skipped,omitempty" url:"skipped,omitempty"`
+	Success *bool                               `json:"success,omitempty" url:"success,omitempty"`
+	// Languages translated by this request.
+	Translated []string      `json:"translated,omitempty" url:"translated,omitempty"`
+	Campaign   *PushCampaign `json:"campaign,omitempty" url:"campaign,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (t *TranslatePushCampaignResponse) GetFailed() []*PushTranslationResultFailedItem {
+	if t == nil {
+		return nil
+	}
+	return t.Failed
+}
+
+func (t *TranslatePushCampaignResponse) GetMessage() *string {
+	if t == nil {
+		return nil
+	}
+	return t.Message
+}
+
+func (t *TranslatePushCampaignResponse) GetSkipped() []*PushTranslationResultSkippedItem {
+	if t == nil {
+		return nil
+	}
+	return t.Skipped
+}
+
+func (t *TranslatePushCampaignResponse) GetSuccess() *bool {
+	if t == nil {
+		return nil
+	}
+	return t.Success
+}
+
+func (t *TranslatePushCampaignResponse) GetTranslated() []string {
+	if t == nil {
+		return nil
+	}
+	return t.Translated
+}
+
+func (t *TranslatePushCampaignResponse) GetCampaign() *PushCampaign {
+	if t == nil {
+		return nil
+	}
+	return t.Campaign
+}
+
+func (t *TranslatePushCampaignResponse) GetExtraProperties() map[string]interface{} {
+	if t == nil {
+		return nil
+	}
+	return t.extraProperties
+}
+
+func (t *TranslatePushCampaignResponse) require(field *big.Int) {
+	if t.explicitFields == nil {
+		t.explicitFields = big.NewInt(0)
+	}
+	t.explicitFields.Or(t.explicitFields, field)
+}
+
+// SetFailed sets the Failed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TranslatePushCampaignResponse) SetFailed(failed []*PushTranslationResultFailedItem) {
+	t.Failed = failed
+	t.require(translatePushCampaignResponseFieldFailed)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TranslatePushCampaignResponse) SetMessage(message *string) {
+	t.Message = message
+	t.require(translatePushCampaignResponseFieldMessage)
+}
+
+// SetSkipped sets the Skipped field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TranslatePushCampaignResponse) SetSkipped(skipped []*PushTranslationResultSkippedItem) {
+	t.Skipped = skipped
+	t.require(translatePushCampaignResponseFieldSkipped)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TranslatePushCampaignResponse) SetSuccess(success *bool) {
+	t.Success = success
+	t.require(translatePushCampaignResponseFieldSuccess)
+}
+
+// SetTranslated sets the Translated field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TranslatePushCampaignResponse) SetTranslated(translated []string) {
+	t.Translated = translated
+	t.require(translatePushCampaignResponseFieldTranslated)
+}
+
+// SetCampaign sets the Campaign field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TranslatePushCampaignResponse) SetCampaign(campaign *PushCampaign) {
+	t.Campaign = campaign
+	t.require(translatePushCampaignResponseFieldCampaign)
+}
+
+func (t *TranslatePushCampaignResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler TranslatePushCampaignResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*t = TranslatePushCampaignResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+	t.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (t *TranslatePushCampaignResponse) MarshalJSON() ([]byte, error) {
+	type embed TranslatePushCampaignResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*t),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, t.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (t *TranslatePushCampaignResponse) String() string {
+	if t == nil {
+		return "<nil>"
+	}
+	if len(t.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(t.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(t); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", t)
+}
+
+var (
+	translatePushContentResponseFieldFailed        = big.NewInt(1 << 0)
+	translatePushContentResponseFieldMessage       = big.NewInt(1 << 1)
+	translatePushContentResponseFieldSkipped       = big.NewInt(1 << 2)
+	translatePushContentResponseFieldSuccess       = big.NewInt(1 << 3)
+	translatePushContentResponseFieldTranslated    = big.NewInt(1 << 4)
+	translatePushContentResponseFieldLocalizations = big.NewInt(1 << 5)
+)
+
+type TranslatePushContentResponse struct {
+	// Languages the model could not translate. The others are still returned or saved; retry these.
+	Failed  []*PushTranslationResultFailedItem `json:"failed,omitempty" url:"failed,omitempty"`
+	Message *string                            `json:"message,omitempty" url:"message,omitempty"`
+	// Languages left as they were.
+	Skipped []*PushTranslationResultSkippedItem `json:"skipped,omitempty" url:"skipped,omitempty"`
+	Success *bool                               `json:"success,omitempty" url:"success,omitempty"`
+	// Languages translated by this request.
+	Translated []string `json:"translated,omitempty" url:"translated,omitempty"`
+	// Every version, the ones passed in plus the new translations.
+	Localizations []*PushLocalization `json:"localizations,omitempty" url:"localizations,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (t *TranslatePushContentResponse) GetFailed() []*PushTranslationResultFailedItem {
+	if t == nil {
+		return nil
+	}
+	return t.Failed
+}
+
+func (t *TranslatePushContentResponse) GetMessage() *string {
+	if t == nil {
+		return nil
+	}
+	return t.Message
+}
+
+func (t *TranslatePushContentResponse) GetSkipped() []*PushTranslationResultSkippedItem {
+	if t == nil {
+		return nil
+	}
+	return t.Skipped
+}
+
+func (t *TranslatePushContentResponse) GetSuccess() *bool {
+	if t == nil {
+		return nil
+	}
+	return t.Success
+}
+
+func (t *TranslatePushContentResponse) GetTranslated() []string {
+	if t == nil {
+		return nil
+	}
+	return t.Translated
+}
+
+func (t *TranslatePushContentResponse) GetLocalizations() []*PushLocalization {
+	if t == nil {
+		return nil
+	}
+	return t.Localizations
+}
+
+func (t *TranslatePushContentResponse) GetExtraProperties() map[string]interface{} {
+	if t == nil {
+		return nil
+	}
+	return t.extraProperties
+}
+
+func (t *TranslatePushContentResponse) require(field *big.Int) {
+	if t.explicitFields == nil {
+		t.explicitFields = big.NewInt(0)
+	}
+	t.explicitFields.Or(t.explicitFields, field)
+}
+
+// SetFailed sets the Failed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TranslatePushContentResponse) SetFailed(failed []*PushTranslationResultFailedItem) {
+	t.Failed = failed
+	t.require(translatePushContentResponseFieldFailed)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TranslatePushContentResponse) SetMessage(message *string) {
+	t.Message = message
+	t.require(translatePushContentResponseFieldMessage)
+}
+
+// SetSkipped sets the Skipped field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TranslatePushContentResponse) SetSkipped(skipped []*PushTranslationResultSkippedItem) {
+	t.Skipped = skipped
+	t.require(translatePushContentResponseFieldSkipped)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TranslatePushContentResponse) SetSuccess(success *bool) {
+	t.Success = success
+	t.require(translatePushContentResponseFieldSuccess)
+}
+
+// SetTranslated sets the Translated field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TranslatePushContentResponse) SetTranslated(translated []string) {
+	t.Translated = translated
+	t.require(translatePushContentResponseFieldTranslated)
+}
+
+// SetLocalizations sets the Localizations field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TranslatePushContentResponse) SetLocalizations(localizations []*PushLocalization) {
+	t.Localizations = localizations
+	t.require(translatePushContentResponseFieldLocalizations)
+}
+
+func (t *TranslatePushContentResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler TranslatePushContentResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*t = TranslatePushContentResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+	t.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (t *TranslatePushContentResponse) MarshalJSON() ([]byte, error) {
+	type embed TranslatePushContentResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*t),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, t.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (t *TranslatePushContentResponse) String() string {
+	if t == nil {
+		return "<nil>"
+	}
+	if len(t.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(t.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(t); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", t)
+}
+
+var (
 	unschedulePushCampaignResponseFieldCampaign = big.NewInt(1 << 0)
 	unschedulePushCampaignResponseFieldSuccess  = big.NewInt(1 << 1)
 )
@@ -9978,21 +11372,24 @@ func (u *UnschedulePushCampaignRequest) SetCampaignID(campaignID string) {
 var (
 	updateLiveActivityRequestFieldActivityID     = big.NewInt(1 << 0)
 	updateLiveActivityRequestFieldAlert          = big.NewInt(1 << 1)
-	updateLiveActivityRequestFieldContentState   = big.NewInt(1 << 2)
-	updateLiveActivityRequestFieldEmail          = big.NewInt(1 << 3)
-	updateLiveActivityRequestFieldPriority       = big.NewInt(1 << 4)
-	updateLiveActivityRequestFieldRelevanceScore = big.NewInt(1 << 5)
-	updateLiveActivityRequestFieldStaleDate      = big.NewInt(1 << 6)
-	updateLiveActivityRequestFieldSubscriberID   = big.NewInt(1 << 7)
+	updateLiveActivityRequestFieldBroadcast      = big.NewInt(1 << 2)
+	updateLiveActivityRequestFieldContentState   = big.NewInt(1 << 3)
+	updateLiveActivityRequestFieldEmail          = big.NewInt(1 << 4)
+	updateLiveActivityRequestFieldPriority       = big.NewInt(1 << 5)
+	updateLiveActivityRequestFieldRelevanceScore = big.NewInt(1 << 6)
+	updateLiveActivityRequestFieldStaleDate      = big.NewInt(1 << 7)
+	updateLiveActivityRequestFieldSubscriberID   = big.NewInt(1 << 8)
 )
 
 type UpdateLiveActivityRequest struct {
 	// Your id for the activity, chosen when it starts.
 	ActivityID string             `json:"activityId" url:"-"`
 	Alert      *LiveActivityAlert `json:"alert,omitempty" url:"-"`
+	// true sends to every signed-in device running this activityId, of any contact, counting at most 10 devices per contact and up to 100,000 in all. Use it for shared activities such as one started for a segment, list or tag, never for a per-person id like an order, since anyone signed in to your app who runs the id receives the content. Ignored when email or subscriberId is present.
+	Broadcast *bool `json:"broadcast,omitempty" url:"-"`
 	// Your Swift ContentState as JSON. Date fields decode as seconds since 2001-01-01 unless your struct decodes them differently.
 	ContentState map[string]any `json:"contentState" url:"-"`
-	// Contact whose activity it is. Provide email or subscriberId; activities are always addressed per contact, so a token registered under the same activityId by another device never receives this content.
+	// Contact whose activity it is. Provide email or subscriberId, or broadcast. Per-contact requests reach only that contact's devices, so a token registered under the same activityId by another device never receives this content.
 	Email *string `json:"email,omitempty" url:"-"`
 	// high (default) delivers immediately and counts against Apple's Live Activity update budget; low (apns-priority 5) does not. Pushes with an alert always go at high priority.
 	Priority *UpdateLiveActivityRequestPriority `json:"priority,omitempty" url:"-"`
@@ -10025,6 +11422,13 @@ func (u *UpdateLiveActivityRequest) SetActivityID(activityID string) {
 func (u *UpdateLiveActivityRequest) SetAlert(alert *LiveActivityAlert) {
 	u.Alert = alert
 	u.require(updateLiveActivityRequestFieldAlert)
+}
+
+// SetBroadcast sets the Broadcast field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateLiveActivityRequest) SetBroadcast(broadcast *bool) {
+	u.Broadcast = broadcast
+	u.require(updateLiveActivityRequestFieldBroadcast)
 }
 
 // SetContentState sets the ContentState field and marks it as non-optional;
@@ -10091,15 +11495,20 @@ func (u *UpdateLiveActivityRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
-	updatePushCampaignRequestFieldCampaignID  = big.NewInt(1 << 0)
-	updatePushCampaignRequestFieldBody        = big.NewInt(1 << 1)
-	updatePushCampaignRequestFieldIconURL     = big.NewInt(1 << 2)
-	updatePushCampaignRequestFieldImageURL    = big.NewInt(1 << 3)
-	updatePushCampaignRequestFieldName        = big.NewInt(1 << 4)
-	updatePushCampaignRequestFieldPlatforms   = big.NewInt(1 << 5)
-	updatePushCampaignRequestFieldTargetLists = big.NewInt(1 << 6)
-	updatePushCampaignRequestFieldTitle       = big.NewInt(1 << 7)
-	updatePushCampaignRequestFieldURL         = big.NewInt(1 << 8)
+	updatePushCampaignRequestFieldCampaignID              = big.NewInt(1 << 0)
+	updatePushCampaignRequestFieldBody                    = big.NewInt(1 << 1)
+	updatePushCampaignRequestFieldIconURL                 = big.NewInt(1 << 2)
+	updatePushCampaignRequestFieldImageURL                = big.NewInt(1 << 3)
+	updatePushCampaignRequestFieldLocalizations           = big.NewInt(1 << 4)
+	updatePushCampaignRequestFieldName                    = big.NewInt(1 << 5)
+	updatePushCampaignRequestFieldPlatforms               = big.NewInt(1 << 6)
+	updatePushCampaignRequestFieldScheduledTimezone       = big.NewInt(1 << 7)
+	updatePushCampaignRequestFieldSendInRecipientTimezone = big.NewInt(1 << 8)
+	updatePushCampaignRequestFieldSendTimeOptimization    = big.NewInt(1 << 9)
+	updatePushCampaignRequestFieldSendTimeWindowHours     = big.NewInt(1 << 10)
+	updatePushCampaignRequestFieldTargetLists             = big.NewInt(1 << 11)
+	updatePushCampaignRequestFieldTitle                   = big.NewInt(1 << 12)
+	updatePushCampaignRequestFieldURL                     = big.NewInt(1 << 13)
 )
 
 type UpdatePushCampaignRequest struct {
@@ -10110,10 +11519,19 @@ type UpdatePushCampaignRequest struct {
 	// Optional https icon for web push. Defaults to the workspace icon.
 	IconURL *string `json:"iconUrl,omitempty" url:"-"`
 	// Optional https image shown in the notification.
-	ImageURL *string `json:"imageUrl,omitempty" url:"-"`
-	Name     *string `json:"name,omitempty" url:"-"`
+	ImageURL      *string               `json:"imageUrl,omitempty" url:"-"`
+	Localizations *PushLocalizationList `json:"localizations,omitempty" url:"-"`
+	Name          *string               `json:"name,omitempty" url:"-"`
 	// Limit delivery to these platforms. Omit or pass an empty array for every platform.
 	Platforms []UpdatePushCampaignRequestPlatformsItem `json:"platforms,omitempty" url:"-"`
+	// IANA timezone the scheduled wall-clock time refers to, for example America/New_York. null clears it.
+	ScheduledTimezone *string `json:"scheduledTimezone,omitempty" url:"-"`
+	// Deliver scheduledAt's wall-clock time in each contact's own timezone, using the timezone the contact's most recently seen active device reported, else the contact's timezone attribute. Needs scheduledAt and scheduledTimezone when sending. Contacts whose local time has already passed get the push right away; contacts with no known timezone get it at scheduledAt. Delivery starts where the wall time first occurs (UTC+14), so a campaign can stay sending for about 26 hours. Enabling it turns sendTimeOptimization off; omit to keep the saved value.
+	SendInRecipientTimezone *bool `json:"sendInRecipientTimezone,omitempty" url:"-"`
+	// Send each contact the push at their most engaged UTC hour within sendTimeWindowHours of the start (now, or scheduledAt). The hour is their most-clicked push hour over the last 90 days (at least 3 clicks), else their most-opened email hour, else the workspace's most-clicked push hour (once it has at least 20 clicks in the last 90 days), else the start. Enabling it turns sendInRecipientTimezone off; passing both as true returns 400. Omit to keep the saved value.
+	SendTimeOptimization *bool `json:"sendTimeOptimization,omitempty" url:"-"`
+	// Hours after the start in which optimized sends may land. Omit to keep the saved value, which is 12 if never set.
+	SendTimeWindowHours *int `json:"sendTimeWindowHours,omitempty" url:"-"`
 	// Audience, same shape as campaign targetLists.
 	TargetLists map[string]any `json:"targetLists,omitempty" url:"-"`
 	// Notification title. Merge tags such as {{FIRST_NAME|there}} are supported.
@@ -10160,6 +11578,13 @@ func (u *UpdatePushCampaignRequest) SetImageURL(imageURL *string) {
 	u.require(updatePushCampaignRequestFieldImageURL)
 }
 
+// SetLocalizations sets the Localizations field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePushCampaignRequest) SetLocalizations(localizations *PushLocalizationList) {
+	u.Localizations = localizations
+	u.require(updatePushCampaignRequestFieldLocalizations)
+}
+
 // SetName sets the Name field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdatePushCampaignRequest) SetName(name *string) {
@@ -10172,6 +11597,34 @@ func (u *UpdatePushCampaignRequest) SetName(name *string) {
 func (u *UpdatePushCampaignRequest) SetPlatforms(platforms []UpdatePushCampaignRequestPlatformsItem) {
 	u.Platforms = platforms
 	u.require(updatePushCampaignRequestFieldPlatforms)
+}
+
+// SetScheduledTimezone sets the ScheduledTimezone field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePushCampaignRequest) SetScheduledTimezone(scheduledTimezone *string) {
+	u.ScheduledTimezone = scheduledTimezone
+	u.require(updatePushCampaignRequestFieldScheduledTimezone)
+}
+
+// SetSendInRecipientTimezone sets the SendInRecipientTimezone field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePushCampaignRequest) SetSendInRecipientTimezone(sendInRecipientTimezone *bool) {
+	u.SendInRecipientTimezone = sendInRecipientTimezone
+	u.require(updatePushCampaignRequestFieldSendInRecipientTimezone)
+}
+
+// SetSendTimeOptimization sets the SendTimeOptimization field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePushCampaignRequest) SetSendTimeOptimization(sendTimeOptimization *bool) {
+	u.SendTimeOptimization = sendTimeOptimization
+	u.require(updatePushCampaignRequestFieldSendTimeOptimization)
+}
+
+// SetSendTimeWindowHours sets the SendTimeWindowHours field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePushCampaignRequest) SetSendTimeWindowHours(sendTimeWindowHours *int) {
+	u.SendTimeWindowHours = sendTimeWindowHours
+	u.require(updatePushCampaignRequestFieldSendTimeWindowHours)
 }
 
 // SetTargetLists sets the TargetLists field and marks it as non-optional;

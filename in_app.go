@@ -11,6 +11,143 @@ import (
 )
 
 var (
+	createInAppCampaignRequestFieldEndsAt      = big.NewInt(1 << 0)
+	createInAppCampaignRequestFieldMessage     = big.NewInt(1 << 1)
+	createInAppCampaignRequestFieldName        = big.NewInt(1 << 2)
+	createInAppCampaignRequestFieldPriority    = big.NewInt(1 << 3)
+	createInAppCampaignRequestFieldTargetLists = big.NewInt(1 << 4)
+)
+
+type CreateInAppCampaignRequest struct {
+	// When the campaign ends. After it nobody new gets the campaign and it leaves every feed that still has it, including seen cards. null means it runs until stopped.
+	EndsAt  *time.Time            `json:"endsAt,omitempty" url:"-"`
+	Message *InAppCampaignMessage `json:"message,omitempty" url:"-"`
+	Name    *string               `json:"name,omitempty" url:"-"`
+	// Order among messages waiting in the app at the same time; higher first. Defaults to medium, the same as sequence messages.
+	Priority *CreateInAppCampaignRequestPriority `json:"priority,omitempty" url:"-"`
+	// Audience, same shape as campaign targetLists, for example {"type":"all"}, {"type":"lists","listIds":["..."]}, {"type":"segment","segmentId":"..."} or {"type":"rules","include":[...],"exclude":[...]}. Email status does not matter. Each contact is checked when their app fetches its feed while the campaign is live.
+	TargetLists map[string]any `json:"targetLists,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (c *CreateInAppCampaignRequest) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetEndsAt sets the EndsAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInAppCampaignRequest) SetEndsAt(endsAt *time.Time) {
+	c.EndsAt = endsAt
+	c.require(createInAppCampaignRequestFieldEndsAt)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInAppCampaignRequest) SetMessage(message *InAppCampaignMessage) {
+	c.Message = message
+	c.require(createInAppCampaignRequestFieldMessage)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInAppCampaignRequest) SetName(name *string) {
+	c.Name = name
+	c.require(createInAppCampaignRequestFieldName)
+}
+
+// SetPriority sets the Priority field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInAppCampaignRequest) SetPriority(priority *CreateInAppCampaignRequestPriority) {
+	c.Priority = priority
+	c.require(createInAppCampaignRequestFieldPriority)
+}
+
+// SetTargetLists sets the TargetLists field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInAppCampaignRequest) SetTargetLists(targetLists map[string]any) {
+	c.TargetLists = targetLists
+	c.require(createInAppCampaignRequestFieldTargetLists)
+}
+
+func (c *CreateInAppCampaignRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateInAppCampaignRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*c = CreateInAppCampaignRequest(body)
+	return nil
+}
+
+func (c *CreateInAppCampaignRequest) MarshalJSON() ([]byte, error) {
+	type embed CreateInAppCampaignRequest
+	var marshaler = struct {
+		embed
+		EndsAt *internal.DateTime `json:"endsAt,omitempty"`
+	}{
+		embed:  embed(*c),
+		EndsAt: internal.NewOptionalDateTime(c.EndsAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
+	createInAppPlacementRequestFieldKey = big.NewInt(1 << 0)
+)
+
+type CreateInAppPlacementRequest struct {
+	Description *string `json:"description,omitempty" url:"-"`
+	Height      *int    `json:"height,omitempty" url:"-"`
+	Name        *string `json:"name,omitempty" url:"-"`
+	Width       *int    `json:"width,omitempty" url:"-"`
+	Key         string  `json:"key" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (c *CreateInAppPlacementRequest) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetKey sets the Key field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInAppPlacementRequest) SetKey(key string) {
+	c.Key = key
+	c.require(createInAppPlacementRequestFieldKey)
+}
+
+func (c *CreateInAppPlacementRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateInAppPlacementRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*c = CreateInAppPlacementRequest(body)
+	return nil
+}
+
+func (c *CreateInAppPlacementRequest) MarshalJSON() ([]byte, error) {
+	type embed CreateInAppPlacementRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
 	deleteInAppMessageRequestFieldMessageID = big.NewInt(1 << 0)
 )
 
@@ -33,6 +170,274 @@ func (d *DeleteInAppMessageRequest) require(field *big.Int) {
 func (d *DeleteInAppMessageRequest) SetMessageID(messageID string) {
 	d.MessageID = messageID
 	d.require(deleteInAppMessageRequestFieldMessageID)
+}
+
+var (
+	deleteInAppPlacementRequestFieldKey = big.NewInt(1 << 0)
+)
+
+type DeleteInAppPlacementRequest struct {
+	// The placement key, e.g. home_hero.
+	Key string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (d *DeleteInAppPlacementRequest) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetKey sets the Key field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteInAppPlacementRequest) SetKey(key string) {
+	d.Key = key
+	d.require(deleteInAppPlacementRequestFieldKey)
+}
+
+var (
+	duplicateInAppCampaignRequestFieldCampaignID = big.NewInt(1 << 0)
+	duplicateInAppCampaignRequestFieldName       = big.NewInt(1 << 1)
+)
+
+type DuplicateInAppCampaignRequest struct {
+	CampaignID string `json:"-" url:"-"`
+	// Name for the copy. Defaults to the source name with " (Copy)".
+	Name *string `json:"name,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (d *DuplicateInAppCampaignRequest) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetCampaignID sets the CampaignID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DuplicateInAppCampaignRequest) SetCampaignID(campaignID string) {
+	d.CampaignID = campaignID
+	d.require(duplicateInAppCampaignRequestFieldCampaignID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DuplicateInAppCampaignRequest) SetName(name *string) {
+	d.Name = name
+	d.require(duplicateInAppCampaignRequestFieldName)
+}
+
+func (d *DuplicateInAppCampaignRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler DuplicateInAppCampaignRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*d = DuplicateInAppCampaignRequest(body)
+	return nil
+}
+
+func (d *DuplicateInAppCampaignRequest) MarshalJSON() ([]byte, error) {
+	type embed DuplicateInAppCampaignRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
+	estimateInAppCampaignRecipientsRequestFieldTargetLists = big.NewInt(1 << 0)
+)
+
+type EstimateInAppCampaignRecipientsRequest struct {
+	// Audience, same shape as campaign targetLists.
+	TargetLists map[string]any `json:"targetLists" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (e *EstimateInAppCampaignRecipientsRequest) require(field *big.Int) {
+	if e.explicitFields == nil {
+		e.explicitFields = big.NewInt(0)
+	}
+	e.explicitFields.Or(e.explicitFields, field)
+}
+
+// SetTargetLists sets the TargetLists field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EstimateInAppCampaignRecipientsRequest) SetTargetLists(targetLists map[string]any) {
+	e.TargetLists = targetLists
+	e.require(estimateInAppCampaignRecipientsRequestFieldTargetLists)
+}
+
+func (e *EstimateInAppCampaignRecipientsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler EstimateInAppCampaignRecipientsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*e = EstimateInAppCampaignRecipientsRequest(body)
+	return nil
+}
+
+func (e *EstimateInAppCampaignRecipientsRequest) MarshalJSON() ([]byte, error) {
+	type embed EstimateInAppCampaignRecipientsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*e),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
+	getInAppCampaignRequestFieldCampaignID = big.NewInt(1 << 0)
+)
+
+type GetInAppCampaignRequest struct {
+	CampaignID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (g *GetInAppCampaignRequest) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetCampaignID sets the CampaignID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetInAppCampaignRequest) SetCampaignID(campaignID string) {
+	g.CampaignID = campaignID
+	g.require(getInAppCampaignRequestFieldCampaignID)
+}
+
+var (
+	getInAppCampaignStatsRequestFieldCampaignID = big.NewInt(1 << 0)
+)
+
+type GetInAppCampaignStatsRequest struct {
+	CampaignID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (g *GetInAppCampaignStatsRequest) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetCampaignID sets the CampaignID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetInAppCampaignStatsRequest) SetCampaignID(campaignID string) {
+	g.CampaignID = campaignID
+	g.require(getInAppCampaignStatsRequestFieldCampaignID)
+}
+
+var (
+	getInAppPlacementRequestFieldKey = big.NewInt(1 << 0)
+)
+
+type GetInAppPlacementRequest struct {
+	// The placement key, e.g. home_hero.
+	Key string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (g *GetInAppPlacementRequest) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetKey sets the Key field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetInAppPlacementRequest) SetKey(key string) {
+	g.Key = key
+	g.require(getInAppPlacementRequestFieldKey)
+}
+
+var (
+	getInAppPlacementContentRequestFieldActions      = big.NewInt(1 << 0)
+	getInAppPlacementContentRequestFieldEmail        = big.NewInt(1 << 1)
+	getInAppPlacementContentRequestFieldExternalID   = big.NewInt(1 << 2)
+	getInAppPlacementContentRequestFieldPlacements   = big.NewInt(1 << 3)
+	getInAppPlacementContentRequestFieldSubscriberID = big.NewInt(1 << 4)
+)
+
+type GetInAppPlacementContentRequest struct {
+	// Comma-separated button actions your app handles beyond open_url and dismiss (request_push_permission). Items with other actions are skipped, so a lower-priority item can show.
+	Actions    *string `json:"-" url:"actions,omitempty"`
+	Email      *string `json:"-" url:"email,omitempty"`
+	ExternalID *string `json:"-" url:"externalId,omitempty"`
+	// Comma-separated placement keys, up to 10.
+	Placements   string  `json:"-" url:"placements"`
+	SubscriberID *string `json:"-" url:"subscriberId,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (g *GetInAppPlacementContentRequest) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetActions sets the Actions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetInAppPlacementContentRequest) SetActions(actions *string) {
+	g.Actions = actions
+	g.require(getInAppPlacementContentRequestFieldActions)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetInAppPlacementContentRequest) SetEmail(email *string) {
+	g.Email = email
+	g.require(getInAppPlacementContentRequestFieldEmail)
+}
+
+// SetExternalID sets the ExternalID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetInAppPlacementContentRequest) SetExternalID(externalID *string) {
+	g.ExternalID = externalID
+	g.require(getInAppPlacementContentRequestFieldExternalID)
+}
+
+// SetPlacements sets the Placements field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetInAppPlacementContentRequest) SetPlacements(placements string) {
+	g.Placements = placements
+	g.require(getInAppPlacementContentRequestFieldPlacements)
+}
+
+// SetSubscriberID sets the SubscriberID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetInAppPlacementContentRequest) SetSubscriberID(subscriberID *string) {
+	g.SubscriberID = subscriberID
+	g.require(getInAppPlacementContentRequestFieldSubscriberID)
 }
 
 var (
@@ -62,25 +467,73 @@ func (g *GetInAppStepStatsRequest) SetStepID(stepID string) {
 }
 
 var (
+	listInAppCampaignsRequestFieldLimit  = big.NewInt(1 << 0)
+	listInAppCampaignsRequestFieldOffset = big.NewInt(1 << 1)
+	listInAppCampaignsRequestFieldStatus = big.NewInt(1 << 2)
+)
+
+type ListInAppCampaignsRequest struct {
+	Limit  *int `json:"-" url:"limit,omitempty"`
+	Offset *int `json:"-" url:"offset,omitempty"`
+	// Stored status. sent covers live and ended campaigns; cancelled covers stopped ones.
+	Status *ListInAppCampaignsRequestStatus `json:"-" url:"status,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (l *ListInAppCampaignsRequest) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetLimit sets the Limit field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListInAppCampaignsRequest) SetLimit(limit *int) {
+	l.Limit = limit
+	l.require(listInAppCampaignsRequestFieldLimit)
+}
+
+// SetOffset sets the Offset field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListInAppCampaignsRequest) SetOffset(offset *int) {
+	l.Offset = offset
+	l.require(listInAppCampaignsRequestFieldOffset)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListInAppCampaignsRequest) SetStatus(status *ListInAppCampaignsRequestStatus) {
+	l.Status = status
+	l.require(listInAppCampaignsRequestFieldStatus)
+}
+
+var (
 	listInAppMessagesRequestFieldActions      = big.NewInt(1 << 0)
-	listInAppMessagesRequestFieldEmail        = big.NewInt(1 << 1)
-	listInAppMessagesRequestFieldExternalID   = big.NewInt(1 << 2)
-	listInAppMessagesRequestFieldFormats      = big.NewInt(1 << 3)
-	listInAppMessagesRequestFieldKind         = big.NewInt(1 << 4)
-	listInAppMessagesRequestFieldLimit        = big.NewInt(1 << 5)
-	listInAppMessagesRequestFieldStatus       = big.NewInt(1 << 6)
-	listInAppMessagesRequestFieldSubscriberID = big.NewInt(1 << 7)
+	listInAppMessagesRequestFieldDeliver      = big.NewInt(1 << 1)
+	listInAppMessagesRequestFieldEmail        = big.NewInt(1 << 2)
+	listInAppMessagesRequestFieldExternalID   = big.NewInt(1 << 3)
+	listInAppMessagesRequestFieldFormats      = big.NewInt(1 << 4)
+	listInAppMessagesRequestFieldKind         = big.NewInt(1 << 5)
+	listInAppMessagesRequestFieldLimit        = big.NewInt(1 << 6)
+	listInAppMessagesRequestFieldStatus       = big.NewInt(1 << 7)
+	listInAppMessagesRequestFieldSubscriberID = big.NewInt(1 << 8)
 )
 
 type ListInAppMessagesRequest struct {
 	// Open items only: comma-separated button actions your app handles beyond open_url and dismiss, such as request_push_permission. Items with an action you don't list stay in the inbox but are left out, so an app that can't handle them never shows them. The mobile SDKs send this themselves.
 	Actions *string `json:"-" url:"actions,omitempty"`
+	// Open feeds only. true (default) first delivers live in-app campaigns the contact qualifies for, as the app's own feed does; false lists without delivering, for looking at a contact's feed (support, agents) without counting a delivery.
+	Deliver *ListInAppMessagesRequestDeliver `json:"-" url:"deliver,omitempty"`
 	// Contact email (case-insensitive).
 	Email *string `json:"-" url:"email,omitempty"`
 	// Contact external ID.
 	ExternalID *string `json:"-" url:"externalId,omitempty"`
 	// Comma-separated message formats your app renders: modal, banner, fullscreen, html. With status open, messages in other formats are left out (cards are unaffected), so custom HTML messages appear only when html is listed. With status all, every format is listed and html adds the documents of the first 3 custom HTML messages. Unknown names return 400.
-	Formats      *string                         `json:"-" url:"formats,omitempty"`
+	Formats *string `json:"-" url:"formats,omitempty"`
+	// Only one kind. Open feeds never list placement items (kind=placement with status open returns 400); use Get Placement Content for what each placement shows, or status=all for history.
 	Kind         *ListInAppMessagesRequestKind   `json:"-" url:"kind,omitempty"`
 	Limit        *int                            `json:"-" url:"limit,omitempty"`
 	Status       *ListInAppMessagesRequestStatus `json:"-" url:"status,omitempty"`
@@ -102,6 +555,13 @@ func (l *ListInAppMessagesRequest) require(field *big.Int) {
 func (l *ListInAppMessagesRequest) SetActions(actions *string) {
 	l.Actions = actions
 	l.require(listInAppMessagesRequestFieldActions)
+}
+
+// SetDeliver sets the Deliver field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListInAppMessagesRequest) SetDeliver(deliver *ListInAppMessagesRequestDeliver) {
+	l.Deliver = deliver
+	l.require(listInAppMessagesRequestFieldDeliver)
 }
 
 // SetEmail sets the Email field and marks it as non-optional;
@@ -228,41 +688,1389 @@ func (r *RecordInAppEventRequest) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
+var (
+	sendInAppCampaignRequestFieldCampaignID  = big.NewInt(1 << 0)
+	sendInAppCampaignRequestFieldScheduledAt = big.NewInt(1 << 1)
+)
+
+type SendInAppCampaignRequest struct {
+	CampaignID string `json:"-" url:"-"`
+	// Future ISO 8601 time to go live. Omit or pass null to launch now.
+	ScheduledAt *time.Time `json:"scheduledAt,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (s *SendInAppCampaignRequest) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetCampaignID sets the CampaignID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendInAppCampaignRequest) SetCampaignID(campaignID string) {
+	s.CampaignID = campaignID
+	s.require(sendInAppCampaignRequestFieldCampaignID)
+}
+
+// SetScheduledAt sets the ScheduledAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendInAppCampaignRequest) SetScheduledAt(scheduledAt *time.Time) {
+	s.ScheduledAt = scheduledAt
+	s.require(sendInAppCampaignRequestFieldScheduledAt)
+}
+
+func (s *SendInAppCampaignRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler SendInAppCampaignRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*s = SendInAppCampaignRequest(body)
+	return nil
+}
+
+func (s *SendInAppCampaignRequest) MarshalJSON() ([]byte, error) {
+	type embed SendInAppCampaignRequest
+	var marshaler = struct {
+		embed
+		ScheduledAt *internal.DateTime `json:"scheduledAt,omitempty"`
+	}{
+		embed:       embed(*s),
+		ScheduledAt: internal.NewOptionalDateTime(s.ScheduledAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
+	stopInAppCampaignRequestFieldCampaignID = big.NewInt(1 << 0)
+)
+
+type StopInAppCampaignRequest struct {
+	CampaignID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (s *StopInAppCampaignRequest) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetCampaignID sets the CampaignID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *StopInAppCampaignRequest) SetCampaignID(campaignID string) {
+	s.CampaignID = campaignID
+	s.require(stopInAppCampaignRequestFieldCampaignID)
+}
+
+var (
+	inAppCampaignFieldEndsAt                  = big.NewInt(1 << 0)
+	inAppCampaignFieldEstimatedRecipientCount = big.NewInt(1 << 1)
+	inAppCampaignFieldID                      = big.NewInt(1 << 2)
+	inAppCampaignFieldLabelIDs                = big.NewInt(1 << 3)
+	inAppCampaignFieldMessage                 = big.NewInt(1 << 4)
+	inAppCampaignFieldName                    = big.NewInt(1 << 5)
+	inAppCampaignFieldPriority                = big.NewInt(1 << 6)
+	inAppCampaignFieldScheduledAt             = big.NewInt(1 << 7)
+	inAppCampaignFieldSentAt                  = big.NewInt(1 << 8)
+	inAppCampaignFieldState                   = big.NewInt(1 << 9)
+	inAppCampaignFieldStatus                  = big.NewInt(1 << 10)
+	inAppCampaignFieldTargetLists             = big.NewInt(1 << 11)
+	inAppCampaignFieldType                    = big.NewInt(1 << 12)
+)
+
+type InAppCampaign struct {
+	EndsAt *time.Time `json:"endsAt,omitempty" url:"endsAt,omitempty"`
+	// Contacts who matched the audience at launch.
+	EstimatedRecipientCount *int                   `json:"estimatedRecipientCount,omitempty" url:"estimatedRecipientCount,omitempty"`
+	ID                      *string                `json:"id,omitempty" url:"id,omitempty"`
+	LabelIDs                []string               `json:"labelIds,omitempty" url:"labelIds,omitempty"`
+	Message                 *InAppCampaignMessage  `json:"message,omitempty" url:"message,omitempty"`
+	Name                    *string                `json:"name,omitempty" url:"name,omitempty"`
+	Priority                *InAppCampaignPriority `json:"priority,omitempty" url:"priority,omitempty"`
+	ScheduledAt             *time.Time             `json:"scheduledAt,omitempty" url:"scheduledAt,omitempty"`
+	// When the campaign went live.
+	SentAt *time.Time `json:"sentAt,omitempty" url:"sentAt,omitempty"`
+	// live is a launched campaign whose end time has not passed; ended is one whose end time has.
+	State *InAppCampaignState `json:"state,omitempty" url:"state,omitempty"`
+	// Stored status. sent is a launched campaign (live or ended); cancelled is stopped.
+	Status      *InAppCampaignStatus `json:"status,omitempty" url:"status,omitempty"`
+	TargetLists map[string]any       `json:"targetLists,omitempty" url:"targetLists,omitempty"`
+	Type        *InAppCampaignType   `json:"type,omitempty" url:"type,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (i *InAppCampaign) GetEndsAt() *time.Time {
+	if i == nil {
+		return nil
+	}
+	return i.EndsAt
+}
+
+func (i *InAppCampaign) GetEstimatedRecipientCount() *int {
+	if i == nil {
+		return nil
+	}
+	return i.EstimatedRecipientCount
+}
+
+func (i *InAppCampaign) GetID() *string {
+	if i == nil {
+		return nil
+	}
+	return i.ID
+}
+
+func (i *InAppCampaign) GetLabelIDs() []string {
+	if i == nil {
+		return nil
+	}
+	return i.LabelIDs
+}
+
+func (i *InAppCampaign) GetMessage() *InAppCampaignMessage {
+	if i == nil {
+		return nil
+	}
+	return i.Message
+}
+
+func (i *InAppCampaign) GetName() *string {
+	if i == nil {
+		return nil
+	}
+	return i.Name
+}
+
+func (i *InAppCampaign) GetPriority() *InAppCampaignPriority {
+	if i == nil {
+		return nil
+	}
+	return i.Priority
+}
+
+func (i *InAppCampaign) GetScheduledAt() *time.Time {
+	if i == nil {
+		return nil
+	}
+	return i.ScheduledAt
+}
+
+func (i *InAppCampaign) GetSentAt() *time.Time {
+	if i == nil {
+		return nil
+	}
+	return i.SentAt
+}
+
+func (i *InAppCampaign) GetState() *InAppCampaignState {
+	if i == nil {
+		return nil
+	}
+	return i.State
+}
+
+func (i *InAppCampaign) GetStatus() *InAppCampaignStatus {
+	if i == nil {
+		return nil
+	}
+	return i.Status
+}
+
+func (i *InAppCampaign) GetTargetLists() map[string]any {
+	if i == nil {
+		return nil
+	}
+	return i.TargetLists
+}
+
+func (i *InAppCampaign) GetType() *InAppCampaignType {
+	if i == nil {
+		return nil
+	}
+	return i.Type
+}
+
+func (i *InAppCampaign) GetExtraProperties() map[string]interface{} {
+	if i == nil {
+		return nil
+	}
+	return i.extraProperties
+}
+
+func (i *InAppCampaign) require(field *big.Int) {
+	if i.explicitFields == nil {
+		i.explicitFields = big.NewInt(0)
+	}
+	i.explicitFields.Or(i.explicitFields, field)
+}
+
+// SetEndsAt sets the EndsAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppCampaign) SetEndsAt(endsAt *time.Time) {
+	i.EndsAt = endsAt
+	i.require(inAppCampaignFieldEndsAt)
+}
+
+// SetEstimatedRecipientCount sets the EstimatedRecipientCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppCampaign) SetEstimatedRecipientCount(estimatedRecipientCount *int) {
+	i.EstimatedRecipientCount = estimatedRecipientCount
+	i.require(inAppCampaignFieldEstimatedRecipientCount)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppCampaign) SetID(id *string) {
+	i.ID = id
+	i.require(inAppCampaignFieldID)
+}
+
+// SetLabelIDs sets the LabelIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppCampaign) SetLabelIDs(labelIDs []string) {
+	i.LabelIDs = labelIDs
+	i.require(inAppCampaignFieldLabelIDs)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppCampaign) SetMessage(message *InAppCampaignMessage) {
+	i.Message = message
+	i.require(inAppCampaignFieldMessage)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppCampaign) SetName(name *string) {
+	i.Name = name
+	i.require(inAppCampaignFieldName)
+}
+
+// SetPriority sets the Priority field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppCampaign) SetPriority(priority *InAppCampaignPriority) {
+	i.Priority = priority
+	i.require(inAppCampaignFieldPriority)
+}
+
+// SetScheduledAt sets the ScheduledAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppCampaign) SetScheduledAt(scheduledAt *time.Time) {
+	i.ScheduledAt = scheduledAt
+	i.require(inAppCampaignFieldScheduledAt)
+}
+
+// SetSentAt sets the SentAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppCampaign) SetSentAt(sentAt *time.Time) {
+	i.SentAt = sentAt
+	i.require(inAppCampaignFieldSentAt)
+}
+
+// SetState sets the State field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppCampaign) SetState(state *InAppCampaignState) {
+	i.State = state
+	i.require(inAppCampaignFieldState)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppCampaign) SetStatus(status *InAppCampaignStatus) {
+	i.Status = status
+	i.require(inAppCampaignFieldStatus)
+}
+
+// SetTargetLists sets the TargetLists field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppCampaign) SetTargetLists(targetLists map[string]any) {
+	i.TargetLists = targetLists
+	i.require(inAppCampaignFieldTargetLists)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppCampaign) SetType(type_ *InAppCampaignType) {
+	i.Type = type_
+	i.require(inAppCampaignFieldType)
+}
+
+func (i *InAppCampaign) UnmarshalJSON(data []byte) error {
+	type embed InAppCampaign
+	var unmarshaler = struct {
+		embed
+		EndsAt      *internal.DateTime `json:"endsAt,omitempty"`
+		ScheduledAt *internal.DateTime `json:"scheduledAt,omitempty"`
+		SentAt      *internal.DateTime `json:"sentAt,omitempty"`
+	}{
+		embed: embed(*i),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*i = InAppCampaign(unmarshaler.embed)
+	i.EndsAt = unmarshaler.EndsAt.TimePtr()
+	i.ScheduledAt = unmarshaler.ScheduledAt.TimePtr()
+	i.SentAt = unmarshaler.SentAt.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+	i.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InAppCampaign) MarshalJSON() ([]byte, error) {
+	type embed InAppCampaign
+	var marshaler = struct {
+		embed
+		EndsAt      *internal.DateTime `json:"endsAt,omitempty"`
+		ScheduledAt *internal.DateTime `json:"scheduledAt,omitempty"`
+		SentAt      *internal.DateTime `json:"sentAt,omitempty"`
+	}{
+		embed:       embed(*i),
+		EndsAt:      internal.NewOptionalDateTime(i.EndsAt),
+		ScheduledAt: internal.NewOptionalDateTime(i.ScheduledAt),
+		SentAt:      internal.NewOptionalDateTime(i.SentAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (i *InAppCampaign) String() string {
+	if i == nil {
+		return "<nil>"
+	}
+	if len(i.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
+// The message an in-app campaign shows, the same fields as an in-app sequence step. Merge tags such as {{firstName}} are filled for each contact when their app receives it.
+var (
+	inAppCampaignMessageFieldBody             = big.NewInt(1 << 0)
+	inAppCampaignMessageFieldButtons          = big.NewInt(1 << 1)
+	inAppCampaignMessageFieldData             = big.NewInt(1 << 2)
+	inAppCampaignMessageFieldExpiresAfterDays = big.NewInt(1 << 3)
+	inAppCampaignMessageFieldEyebrow          = big.NewInt(1 << 4)
+	inAppCampaignMessageFieldFormat           = big.NewInt(1 << 5)
+	inAppCampaignMessageFieldHTML             = big.NewInt(1 << 6)
+	inAppCampaignMessageFieldImagePlacement   = big.NewInt(1 << 7)
+	inAppCampaignMessageFieldImageURL         = big.NewInt(1 << 8)
+	inAppCampaignMessageFieldKind             = big.NewInt(1 << 9)
+	inAppCampaignMessageFieldPinned           = big.NewInt(1 << 10)
+	inAppCampaignMessageFieldPosition         = big.NewInt(1 << 11)
+	inAppCampaignMessageFieldShowCloseButton  = big.NewInt(1 << 12)
+	inAppCampaignMessageFieldStyle            = big.NewInt(1 << 13)
+	inAppCampaignMessageFieldTitle            = big.NewInt(1 << 14)
+)
+
+type InAppCampaignMessage struct {
+	Body    *string                            `json:"body,omitempty" url:"body,omitempty"`
+	Buttons []*InAppCampaignMessageButtonsItem `json:"buttons,omitempty" url:"buttons,omitempty"`
+	// Up to 20 string key/values passed to your app.
+	Data map[string]string `json:"data,omitempty" url:"data,omitempty"`
+	// How long a contact keeps the item after first receiving it. null means until the campaign ends or the contact dismisses it.
+	ExpiresAfterDays *int    `json:"expiresAfterDays,omitempty" url:"expiresAfterDays,omitempty"`
+	Eyebrow          *string `json:"eyebrow,omitempty" url:"eyebrow,omitempty"`
+	// Messages only. Defaults to modal. html needs html and is served only to callers that list html in formats.
+	Format *InAppCampaignMessageFormat `json:"format,omitempty" url:"format,omitempty"`
+	// format html only. The document, at most 64 KB.
+	HTML           *string                             `json:"html,omitempty" url:"html,omitempty"`
+	ImagePlacement *InAppCampaignMessageImagePlacement `json:"imagePlacement,omitempty" url:"imagePlacement,omitempty"`
+	ImageURL       *string                             `json:"imageUrl,omitempty" url:"imageUrl,omitempty"`
+	Kind           *InAppCampaignMessageKind           `json:"kind,omitempty" url:"kind,omitempty"`
+	// Cards only.
+	Pinned *bool `json:"pinned,omitempty" url:"pinned,omitempty"`
+	// Banners top or bottom; modals bottom (a sheet) or center.
+	Position *InAppCampaignMessagePosition `json:"position,omitempty" url:"position,omitempty"`
+	// format html only. Defaults to true.
+	ShowCloseButton *bool       `json:"showCloseButton,omitempty" url:"showCloseButton,omitempty"`
+	Style           *InAppStyle `json:"style,omitempty" url:"style,omitempty"`
+	Title           *string     `json:"title,omitempty" url:"title,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (i *InAppCampaignMessage) GetBody() *string {
+	if i == nil {
+		return nil
+	}
+	return i.Body
+}
+
+func (i *InAppCampaignMessage) GetButtons() []*InAppCampaignMessageButtonsItem {
+	if i == nil {
+		return nil
+	}
+	return i.Buttons
+}
+
+func (i *InAppCampaignMessage) GetData() map[string]string {
+	if i == nil {
+		return nil
+	}
+	return i.Data
+}
+
+func (i *InAppCampaignMessage) GetExpiresAfterDays() *int {
+	if i == nil {
+		return nil
+	}
+	return i.ExpiresAfterDays
+}
+
+func (i *InAppCampaignMessage) GetEyebrow() *string {
+	if i == nil {
+		return nil
+	}
+	return i.Eyebrow
+}
+
+func (i *InAppCampaignMessage) GetFormat() *InAppCampaignMessageFormat {
+	if i == nil {
+		return nil
+	}
+	return i.Format
+}
+
+func (i *InAppCampaignMessage) GetHTML() *string {
+	if i == nil {
+		return nil
+	}
+	return i.HTML
+}
+
+func (i *InAppCampaignMessage) GetImagePlacement() *InAppCampaignMessageImagePlacement {
+	if i == nil {
+		return nil
+	}
+	return i.ImagePlacement
+}
+
+func (i *InAppCampaignMessage) GetImageURL() *string {
+	if i == nil {
+		return nil
+	}
+	return i.ImageURL
+}
+
+func (i *InAppCampaignMessage) GetKind() *InAppCampaignMessageKind {
+	if i == nil {
+		return nil
+	}
+	return i.Kind
+}
+
+func (i *InAppCampaignMessage) GetPinned() *bool {
+	if i == nil {
+		return nil
+	}
+	return i.Pinned
+}
+
+func (i *InAppCampaignMessage) GetPosition() *InAppCampaignMessagePosition {
+	if i == nil {
+		return nil
+	}
+	return i.Position
+}
+
+func (i *InAppCampaignMessage) GetShowCloseButton() *bool {
+	if i == nil {
+		return nil
+	}
+	return i.ShowCloseButton
+}
+
+func (i *InAppCampaignMessage) GetStyle() *InAppStyle {
+	if i == nil {
+		return nil
+	}
+	return i.Style
+}
+
+func (i *InAppCampaignMessage) GetTitle() *string {
+	if i == nil {
+		return nil
+	}
+	return i.Title
+}
+
+func (i *InAppCampaignMessage) GetExtraProperties() map[string]interface{} {
+	if i == nil {
+		return nil
+	}
+	return i.extraProperties
+}
+
+func (i *InAppCampaignMessage) require(field *big.Int) {
+	if i.explicitFields == nil {
+		i.explicitFields = big.NewInt(0)
+	}
+	i.explicitFields.Or(i.explicitFields, field)
+}
+
+// SetBody sets the Body field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppCampaignMessage) SetBody(body *string) {
+	i.Body = body
+	i.require(inAppCampaignMessageFieldBody)
+}
+
+// SetButtons sets the Buttons field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppCampaignMessage) SetButtons(buttons []*InAppCampaignMessageButtonsItem) {
+	i.Buttons = buttons
+	i.require(inAppCampaignMessageFieldButtons)
+}
+
+// SetData sets the Data field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppCampaignMessage) SetData(data map[string]string) {
+	i.Data = data
+	i.require(inAppCampaignMessageFieldData)
+}
+
+// SetExpiresAfterDays sets the ExpiresAfterDays field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppCampaignMessage) SetExpiresAfterDays(expiresAfterDays *int) {
+	i.ExpiresAfterDays = expiresAfterDays
+	i.require(inAppCampaignMessageFieldExpiresAfterDays)
+}
+
+// SetEyebrow sets the Eyebrow field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppCampaignMessage) SetEyebrow(eyebrow *string) {
+	i.Eyebrow = eyebrow
+	i.require(inAppCampaignMessageFieldEyebrow)
+}
+
+// SetFormat sets the Format field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppCampaignMessage) SetFormat(format *InAppCampaignMessageFormat) {
+	i.Format = format
+	i.require(inAppCampaignMessageFieldFormat)
+}
+
+// SetHTML sets the HTML field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppCampaignMessage) SetHTML(html *string) {
+	i.HTML = html
+	i.require(inAppCampaignMessageFieldHTML)
+}
+
+// SetImagePlacement sets the ImagePlacement field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppCampaignMessage) SetImagePlacement(imagePlacement *InAppCampaignMessageImagePlacement) {
+	i.ImagePlacement = imagePlacement
+	i.require(inAppCampaignMessageFieldImagePlacement)
+}
+
+// SetImageURL sets the ImageURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppCampaignMessage) SetImageURL(imageURL *string) {
+	i.ImageURL = imageURL
+	i.require(inAppCampaignMessageFieldImageURL)
+}
+
+// SetKind sets the Kind field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppCampaignMessage) SetKind(kind *InAppCampaignMessageKind) {
+	i.Kind = kind
+	i.require(inAppCampaignMessageFieldKind)
+}
+
+// SetPinned sets the Pinned field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppCampaignMessage) SetPinned(pinned *bool) {
+	i.Pinned = pinned
+	i.require(inAppCampaignMessageFieldPinned)
+}
+
+// SetPosition sets the Position field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppCampaignMessage) SetPosition(position *InAppCampaignMessagePosition) {
+	i.Position = position
+	i.require(inAppCampaignMessageFieldPosition)
+}
+
+// SetShowCloseButton sets the ShowCloseButton field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppCampaignMessage) SetShowCloseButton(showCloseButton *bool) {
+	i.ShowCloseButton = showCloseButton
+	i.require(inAppCampaignMessageFieldShowCloseButton)
+}
+
+// SetStyle sets the Style field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppCampaignMessage) SetStyle(style *InAppStyle) {
+	i.Style = style
+	i.require(inAppCampaignMessageFieldStyle)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppCampaignMessage) SetTitle(title *string) {
+	i.Title = title
+	i.require(inAppCampaignMessageFieldTitle)
+}
+
+func (i *InAppCampaignMessage) UnmarshalJSON(data []byte) error {
+	type unmarshaler InAppCampaignMessage
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*i = InAppCampaignMessage(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+	i.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InAppCampaignMessage) MarshalJSON() ([]byte, error) {
+	type embed InAppCampaignMessage
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*i),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (i *InAppCampaignMessage) String() string {
+	if i == nil {
+		return "<nil>"
+	}
+	if len(i.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
+var (
+	inAppCampaignMessageButtonsItemFieldAction = big.NewInt(1 << 0)
+	inAppCampaignMessageButtonsItemFieldLabel  = big.NewInt(1 << 1)
+	inAppCampaignMessageButtonsItemFieldURL    = big.NewInt(1 << 2)
+)
+
+type InAppCampaignMessageButtonsItem struct {
+	Action *InAppCampaignMessageButtonsItemAction `json:"action,omitempty" url:"action,omitempty"`
+	Label  string                                 `json:"label" url:"label"`
+	// https URL, app deep link or merge tag; required for open_url.
+	URL *string `json:"url,omitempty" url:"url,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (i *InAppCampaignMessageButtonsItem) GetAction() *InAppCampaignMessageButtonsItemAction {
+	if i == nil {
+		return nil
+	}
+	return i.Action
+}
+
+func (i *InAppCampaignMessageButtonsItem) GetLabel() string {
+	if i == nil {
+		return ""
+	}
+	return i.Label
+}
+
+func (i *InAppCampaignMessageButtonsItem) GetURL() *string {
+	if i == nil {
+		return nil
+	}
+	return i.URL
+}
+
+func (i *InAppCampaignMessageButtonsItem) GetExtraProperties() map[string]interface{} {
+	if i == nil {
+		return nil
+	}
+	return i.extraProperties
+}
+
+func (i *InAppCampaignMessageButtonsItem) require(field *big.Int) {
+	if i.explicitFields == nil {
+		i.explicitFields = big.NewInt(0)
+	}
+	i.explicitFields.Or(i.explicitFields, field)
+}
+
+// SetAction sets the Action field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppCampaignMessageButtonsItem) SetAction(action *InAppCampaignMessageButtonsItemAction) {
+	i.Action = action
+	i.require(inAppCampaignMessageButtonsItemFieldAction)
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppCampaignMessageButtonsItem) SetLabel(label string) {
+	i.Label = label
+	i.require(inAppCampaignMessageButtonsItemFieldLabel)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppCampaignMessageButtonsItem) SetURL(url *string) {
+	i.URL = url
+	i.require(inAppCampaignMessageButtonsItemFieldURL)
+}
+
+func (i *InAppCampaignMessageButtonsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler InAppCampaignMessageButtonsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*i = InAppCampaignMessageButtonsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+	i.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InAppCampaignMessageButtonsItem) MarshalJSON() ([]byte, error) {
+	type embed InAppCampaignMessageButtonsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*i),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (i *InAppCampaignMessageButtonsItem) String() string {
+	if i == nil {
+		return "<nil>"
+	}
+	if len(i.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
+type InAppCampaignMessageButtonsItemAction string
+
+const (
+	InAppCampaignMessageButtonsItemActionOpenURL               InAppCampaignMessageButtonsItemAction = "open_url"
+	InAppCampaignMessageButtonsItemActionDismiss               InAppCampaignMessageButtonsItemAction = "dismiss"
+	InAppCampaignMessageButtonsItemActionRequestPushPermission InAppCampaignMessageButtonsItemAction = "request_push_permission"
+)
+
+func NewInAppCampaignMessageButtonsItemActionFromString(s string) (InAppCampaignMessageButtonsItemAction, error) {
+	switch s {
+	case "open_url":
+		return InAppCampaignMessageButtonsItemActionOpenURL, nil
+	case "dismiss":
+		return InAppCampaignMessageButtonsItemActionDismiss, nil
+	case "request_push_permission":
+		return InAppCampaignMessageButtonsItemActionRequestPushPermission, nil
+	}
+	var t InAppCampaignMessageButtonsItemAction
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (i InAppCampaignMessageButtonsItemAction) Ptr() *InAppCampaignMessageButtonsItemAction {
+	return &i
+}
+
+// Messages only. Defaults to modal. html needs html and is served only to callers that list html in formats.
+type InAppCampaignMessageFormat string
+
+const (
+	InAppCampaignMessageFormatModal      InAppCampaignMessageFormat = "modal"
+	InAppCampaignMessageFormatBanner     InAppCampaignMessageFormat = "banner"
+	InAppCampaignMessageFormatFullscreen InAppCampaignMessageFormat = "fullscreen"
+	InAppCampaignMessageFormatHTML       InAppCampaignMessageFormat = "html"
+)
+
+func NewInAppCampaignMessageFormatFromString(s string) (InAppCampaignMessageFormat, error) {
+	switch s {
+	case "modal":
+		return InAppCampaignMessageFormatModal, nil
+	case "banner":
+		return InAppCampaignMessageFormatBanner, nil
+	case "fullscreen":
+		return InAppCampaignMessageFormatFullscreen, nil
+	case "html":
+		return InAppCampaignMessageFormatHTML, nil
+	}
+	var t InAppCampaignMessageFormat
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (i InAppCampaignMessageFormat) Ptr() *InAppCampaignMessageFormat {
+	return &i
+}
+
+type InAppCampaignMessageImagePlacement string
+
+const (
+	InAppCampaignMessageImagePlacementTop        InAppCampaignMessageImagePlacement = "top"
+	InAppCampaignMessageImagePlacementBackground InAppCampaignMessageImagePlacement = "background"
+)
+
+func NewInAppCampaignMessageImagePlacementFromString(s string) (InAppCampaignMessageImagePlacement, error) {
+	switch s {
+	case "top":
+		return InAppCampaignMessageImagePlacementTop, nil
+	case "background":
+		return InAppCampaignMessageImagePlacementBackground, nil
+	}
+	var t InAppCampaignMessageImagePlacement
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (i InAppCampaignMessageImagePlacement) Ptr() *InAppCampaignMessageImagePlacement {
+	return &i
+}
+
+type InAppCampaignMessageKind string
+
+const (
+	InAppCampaignMessageKindMessage InAppCampaignMessageKind = "message"
+	InAppCampaignMessageKindCard    InAppCampaignMessageKind = "card"
+)
+
+func NewInAppCampaignMessageKindFromString(s string) (InAppCampaignMessageKind, error) {
+	switch s {
+	case "message":
+		return InAppCampaignMessageKindMessage, nil
+	case "card":
+		return InAppCampaignMessageKindCard, nil
+	}
+	var t InAppCampaignMessageKind
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (i InAppCampaignMessageKind) Ptr() *InAppCampaignMessageKind {
+	return &i
+}
+
+// Banners top or bottom; modals bottom (a sheet) or center.
+type InAppCampaignMessagePosition string
+
+const (
+	InAppCampaignMessagePositionTop    InAppCampaignMessagePosition = "top"
+	InAppCampaignMessagePositionBottom InAppCampaignMessagePosition = "bottom"
+	InAppCampaignMessagePositionCenter InAppCampaignMessagePosition = "center"
+)
+
+func NewInAppCampaignMessagePositionFromString(s string) (InAppCampaignMessagePosition, error) {
+	switch s {
+	case "top":
+		return InAppCampaignMessagePositionTop, nil
+	case "bottom":
+		return InAppCampaignMessagePositionBottom, nil
+	case "center":
+		return InAppCampaignMessagePositionCenter, nil
+	}
+	var t InAppCampaignMessagePosition
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (i InAppCampaignMessagePosition) Ptr() *InAppCampaignMessagePosition {
+	return &i
+}
+
+type InAppCampaignPriority string
+
+const (
+	InAppCampaignPriorityLow    InAppCampaignPriority = "low"
+	InAppCampaignPriorityMedium InAppCampaignPriority = "medium"
+	InAppCampaignPriorityHigh   InAppCampaignPriority = "high"
+)
+
+func NewInAppCampaignPriorityFromString(s string) (InAppCampaignPriority, error) {
+	switch s {
+	case "low":
+		return InAppCampaignPriorityLow, nil
+	case "medium":
+		return InAppCampaignPriorityMedium, nil
+	case "high":
+		return InAppCampaignPriorityHigh, nil
+	}
+	var t InAppCampaignPriority
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (i InAppCampaignPriority) Ptr() *InAppCampaignPriority {
+	return &i
+}
+
+// live is a launched campaign whose end time has not passed; ended is one whose end time has.
+type InAppCampaignState string
+
+const (
+	InAppCampaignStateDraft     InAppCampaignState = "draft"
+	InAppCampaignStateScheduled InAppCampaignState = "scheduled"
+	InAppCampaignStateLive      InAppCampaignState = "live"
+	InAppCampaignStateEnded     InAppCampaignState = "ended"
+	InAppCampaignStateStopped   InAppCampaignState = "stopped"
+)
+
+func NewInAppCampaignStateFromString(s string) (InAppCampaignState, error) {
+	switch s {
+	case "draft":
+		return InAppCampaignStateDraft, nil
+	case "scheduled":
+		return InAppCampaignStateScheduled, nil
+	case "live":
+		return InAppCampaignStateLive, nil
+	case "ended":
+		return InAppCampaignStateEnded, nil
+	case "stopped":
+		return InAppCampaignStateStopped, nil
+	}
+	var t InAppCampaignState
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (i InAppCampaignState) Ptr() *InAppCampaignState {
+	return &i
+}
+
+var (
+	inAppCampaignStatsFieldButtons               = big.NewInt(1 << 0)
+	inAppCampaignStatsFieldClicked               = big.NewInt(1 << 1)
+	inAppCampaignStatsFieldDelivered             = big.NewInt(1 << 2)
+	inAppCampaignStatsFieldDismissed             = big.NewInt(1 << 3)
+	inAppCampaignStatsFieldDisplayed             = big.NewInt(1 << 4)
+	inAppCampaignStatsFieldPushPermissionDenied  = big.NewInt(1 << 5)
+	inAppCampaignStatsFieldPushPermissionGranted = big.NewInt(1 << 6)
+	inAppCampaignStatsFieldTotalClicks           = big.NewInt(1 << 7)
+)
+
+type InAppCampaignStats struct {
+	// Custom HTML messages. Contacts per control their first click reported (buttonId).
+	Buttons []*InAppCampaignStatsButtonsItem `json:"buttons,omitempty" url:"buttons,omitempty"`
+	// Contacts who clicked it at least once.
+	Clicked *int `json:"clicked,omitempty" url:"clicked,omitempty"`
+	// Contacts whose app received the message (fetched it while in the audience).
+	Delivered *int `json:"delivered,omitempty" url:"delivered,omitempty"`
+	Dismissed *int `json:"dismissed,omitempty" url:"dismissed,omitempty"`
+	// Contacts the app showed it to.
+	Displayed            *int `json:"displayed,omitempty" url:"displayed,omitempty"`
+	PushPermissionDenied *int `json:"pushPermissionDenied,omitempty" url:"pushPermissionDenied,omitempty"`
+	// Push primers. Contacts who allowed notifications from the permission button.
+	PushPermissionGranted *int `json:"pushPermissionGranted,omitempty" url:"pushPermissionGranted,omitempty"`
+	TotalClicks           *int `json:"totalClicks,omitempty" url:"totalClicks,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (i *InAppCampaignStats) GetButtons() []*InAppCampaignStatsButtonsItem {
+	if i == nil {
+		return nil
+	}
+	return i.Buttons
+}
+
+func (i *InAppCampaignStats) GetClicked() *int {
+	if i == nil {
+		return nil
+	}
+	return i.Clicked
+}
+
+func (i *InAppCampaignStats) GetDelivered() *int {
+	if i == nil {
+		return nil
+	}
+	return i.Delivered
+}
+
+func (i *InAppCampaignStats) GetDismissed() *int {
+	if i == nil {
+		return nil
+	}
+	return i.Dismissed
+}
+
+func (i *InAppCampaignStats) GetDisplayed() *int {
+	if i == nil {
+		return nil
+	}
+	return i.Displayed
+}
+
+func (i *InAppCampaignStats) GetPushPermissionDenied() *int {
+	if i == nil {
+		return nil
+	}
+	return i.PushPermissionDenied
+}
+
+func (i *InAppCampaignStats) GetPushPermissionGranted() *int {
+	if i == nil {
+		return nil
+	}
+	return i.PushPermissionGranted
+}
+
+func (i *InAppCampaignStats) GetTotalClicks() *int {
+	if i == nil {
+		return nil
+	}
+	return i.TotalClicks
+}
+
+func (i *InAppCampaignStats) GetExtraProperties() map[string]interface{} {
+	if i == nil {
+		return nil
+	}
+	return i.extraProperties
+}
+
+func (i *InAppCampaignStats) require(field *big.Int) {
+	if i.explicitFields == nil {
+		i.explicitFields = big.NewInt(0)
+	}
+	i.explicitFields.Or(i.explicitFields, field)
+}
+
+// SetButtons sets the Buttons field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppCampaignStats) SetButtons(buttons []*InAppCampaignStatsButtonsItem) {
+	i.Buttons = buttons
+	i.require(inAppCampaignStatsFieldButtons)
+}
+
+// SetClicked sets the Clicked field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppCampaignStats) SetClicked(clicked *int) {
+	i.Clicked = clicked
+	i.require(inAppCampaignStatsFieldClicked)
+}
+
+// SetDelivered sets the Delivered field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppCampaignStats) SetDelivered(delivered *int) {
+	i.Delivered = delivered
+	i.require(inAppCampaignStatsFieldDelivered)
+}
+
+// SetDismissed sets the Dismissed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppCampaignStats) SetDismissed(dismissed *int) {
+	i.Dismissed = dismissed
+	i.require(inAppCampaignStatsFieldDismissed)
+}
+
+// SetDisplayed sets the Displayed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppCampaignStats) SetDisplayed(displayed *int) {
+	i.Displayed = displayed
+	i.require(inAppCampaignStatsFieldDisplayed)
+}
+
+// SetPushPermissionDenied sets the PushPermissionDenied field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppCampaignStats) SetPushPermissionDenied(pushPermissionDenied *int) {
+	i.PushPermissionDenied = pushPermissionDenied
+	i.require(inAppCampaignStatsFieldPushPermissionDenied)
+}
+
+// SetPushPermissionGranted sets the PushPermissionGranted field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppCampaignStats) SetPushPermissionGranted(pushPermissionGranted *int) {
+	i.PushPermissionGranted = pushPermissionGranted
+	i.require(inAppCampaignStatsFieldPushPermissionGranted)
+}
+
+// SetTotalClicks sets the TotalClicks field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppCampaignStats) SetTotalClicks(totalClicks *int) {
+	i.TotalClicks = totalClicks
+	i.require(inAppCampaignStatsFieldTotalClicks)
+}
+
+func (i *InAppCampaignStats) UnmarshalJSON(data []byte) error {
+	type unmarshaler InAppCampaignStats
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*i = InAppCampaignStats(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+	i.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InAppCampaignStats) MarshalJSON() ([]byte, error) {
+	type embed InAppCampaignStats
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*i),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (i *InAppCampaignStats) String() string {
+	if i == nil {
+		return "<nil>"
+	}
+	if len(i.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
+var (
+	inAppCampaignStatsButtonsItemFieldButtonID = big.NewInt(1 << 0)
+	inAppCampaignStatsButtonsItemFieldClicked  = big.NewInt(1 << 1)
+)
+
+type InAppCampaignStatsButtonsItem struct {
+	ButtonID *string `json:"buttonId,omitempty" url:"buttonId,omitempty"`
+	Clicked  *int    `json:"clicked,omitempty" url:"clicked,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (i *InAppCampaignStatsButtonsItem) GetButtonID() *string {
+	if i == nil {
+		return nil
+	}
+	return i.ButtonID
+}
+
+func (i *InAppCampaignStatsButtonsItem) GetClicked() *int {
+	if i == nil {
+		return nil
+	}
+	return i.Clicked
+}
+
+func (i *InAppCampaignStatsButtonsItem) GetExtraProperties() map[string]interface{} {
+	if i == nil {
+		return nil
+	}
+	return i.extraProperties
+}
+
+func (i *InAppCampaignStatsButtonsItem) require(field *big.Int) {
+	if i.explicitFields == nil {
+		i.explicitFields = big.NewInt(0)
+	}
+	i.explicitFields.Or(i.explicitFields, field)
+}
+
+// SetButtonID sets the ButtonID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppCampaignStatsButtonsItem) SetButtonID(buttonID *string) {
+	i.ButtonID = buttonID
+	i.require(inAppCampaignStatsButtonsItemFieldButtonID)
+}
+
+// SetClicked sets the Clicked field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppCampaignStatsButtonsItem) SetClicked(clicked *int) {
+	i.Clicked = clicked
+	i.require(inAppCampaignStatsButtonsItemFieldClicked)
+}
+
+func (i *InAppCampaignStatsButtonsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler InAppCampaignStatsButtonsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*i = InAppCampaignStatsButtonsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+	i.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InAppCampaignStatsButtonsItem) MarshalJSON() ([]byte, error) {
+	type embed InAppCampaignStatsButtonsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*i),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (i *InAppCampaignStatsButtonsItem) String() string {
+	if i == nil {
+		return "<nil>"
+	}
+	if len(i.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
+// Stored status. sent is a launched campaign (live or ended); cancelled is stopped.
+type InAppCampaignStatus string
+
+const (
+	InAppCampaignStatusDraft     InAppCampaignStatus = "draft"
+	InAppCampaignStatusScheduled InAppCampaignStatus = "scheduled"
+	InAppCampaignStatusSent      InAppCampaignStatus = "sent"
+	InAppCampaignStatusCancelled InAppCampaignStatus = "cancelled"
+)
+
+func NewInAppCampaignStatusFromString(s string) (InAppCampaignStatus, error) {
+	switch s {
+	case "draft":
+		return InAppCampaignStatusDraft, nil
+	case "scheduled":
+		return InAppCampaignStatusScheduled, nil
+	case "sent":
+		return InAppCampaignStatusSent, nil
+	case "cancelled":
+		return InAppCampaignStatusCancelled, nil
+	}
+	var t InAppCampaignStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (i InAppCampaignStatus) Ptr() *InAppCampaignStatus {
+	return &i
+}
+
+type InAppCampaignType string
+
+const (
+	InAppCampaignTypeInApp InAppCampaignType = "in_app"
+)
+
+func NewInAppCampaignTypeFromString(s string) (InAppCampaignType, error) {
+	switch s {
+	case "in_app":
+		return InAppCampaignTypeInApp, nil
+	}
+	var t InAppCampaignType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (i InAppCampaignType) Ptr() *InAppCampaignType {
+	return &i
+}
+
 // One item in a contact's in-app feed, with merge tags already resolved.
 var (
 	inAppMessageFieldBody            = big.NewInt(1 << 0)
 	inAppMessageFieldButtons         = big.NewInt(1 << 1)
-	inAppMessageFieldClickCount      = big.NewInt(1 << 2)
-	inAppMessageFieldClickedAt       = big.NewInt(1 << 3)
-	inAppMessageFieldCreatedAt       = big.NewInt(1 << 4)
-	inAppMessageFieldData            = big.NewInt(1 << 5)
-	inAppMessageFieldDismissedAt     = big.NewInt(1 << 6)
-	inAppMessageFieldDisplayedAt     = big.NewInt(1 << 7)
-	inAppMessageFieldExpiresAt       = big.NewInt(1 << 8)
-	inAppMessageFieldEyebrow         = big.NewInt(1 << 9)
-	inAppMessageFieldFormat          = big.NewInt(1 << 10)
-	inAppMessageFieldHTML            = big.NewInt(1 << 11)
-	inAppMessageFieldID              = big.NewInt(1 << 12)
-	inAppMessageFieldImagePlacement  = big.NewInt(1 << 13)
-	inAppMessageFieldImageURL        = big.NewInt(1 << 14)
-	inAppMessageFieldKind            = big.NewInt(1 << 15)
-	inAppMessageFieldPinned          = big.NewInt(1 << 16)
-	inAppMessageFieldPosition        = big.NewInt(1 << 17)
-	inAppMessageFieldReadAt          = big.NewInt(1 << 18)
-	inAppMessageFieldSequenceID      = big.NewInt(1 << 19)
-	inAppMessageFieldShowCloseButton = big.NewInt(1 << 20)
-	inAppMessageFieldStepID          = big.NewInt(1 << 21)
-	inAppMessageFieldStyle           = big.NewInt(1 << 22)
-	inAppMessageFieldTitle           = big.NewInt(1 << 23)
+	inAppMessageFieldCampaignID      = big.NewInt(1 << 2)
+	inAppMessageFieldClickCount      = big.NewInt(1 << 3)
+	inAppMessageFieldClickedAt       = big.NewInt(1 << 4)
+	inAppMessageFieldCreatedAt       = big.NewInt(1 << 5)
+	inAppMessageFieldData            = big.NewInt(1 << 6)
+	inAppMessageFieldDismissedAt     = big.NewInt(1 << 7)
+	inAppMessageFieldDisplayedAt     = big.NewInt(1 << 8)
+	inAppMessageFieldExpiresAt       = big.NewInt(1 << 9)
+	inAppMessageFieldEyebrow         = big.NewInt(1 << 10)
+	inAppMessageFieldFormat          = big.NewInt(1 << 11)
+	inAppMessageFieldHTML            = big.NewInt(1 << 12)
+	inAppMessageFieldID              = big.NewInt(1 << 13)
+	inAppMessageFieldImagePlacement  = big.NewInt(1 << 14)
+	inAppMessageFieldImageURL        = big.NewInt(1 << 15)
+	inAppMessageFieldKind            = big.NewInt(1 << 16)
+	inAppMessageFieldLayout          = big.NewInt(1 << 17)
+	inAppMessageFieldPinned          = big.NewInt(1 << 18)
+	inAppMessageFieldPlacement       = big.NewInt(1 << 19)
+	inAppMessageFieldPosition        = big.NewInt(1 << 20)
+	inAppMessageFieldPriority        = big.NewInt(1 << 21)
+	inAppMessageFieldReadAt          = big.NewInt(1 << 22)
+	inAppMessageFieldSequenceID      = big.NewInt(1 << 23)
+	inAppMessageFieldShowCloseButton = big.NewInt(1 << 24)
+	inAppMessageFieldStepID          = big.NewInt(1 << 25)
+	inAppMessageFieldStyle           = big.NewInt(1 << 26)
+	inAppMessageFieldTitle           = big.NewInt(1 << 27)
 )
 
 type InAppMessage struct {
 	// Plain text; may contain line breaks.
-	Body       *string                    `json:"body,omitempty" url:"body,omitempty"`
-	Buttons    []*InAppMessageButtonsItem `json:"buttons,omitempty" url:"buttons,omitempty"`
-	ClickCount *int                       `json:"clickCount,omitempty" url:"clickCount,omitempty"`
-	ClickedAt  *time.Time                 `json:"clickedAt,omitempty" url:"clickedAt,omitempty"`
-	CreatedAt  *time.Time                 `json:"createdAt,omitempty" url:"createdAt,omitempty"`
+	Body    *string                    `json:"body,omitempty" url:"body,omitempty"`
+	Buttons []*InAppMessageButtonsItem `json:"buttons,omitempty" url:"buttons,omitempty"`
+	// The in-app campaign that created it; null for sequence steps.
+	CampaignID *string    `json:"campaignId,omitempty" url:"campaignId,omitempty"`
+	ClickCount *int       `json:"clickCount,omitempty" url:"clickCount,omitempty"`
+	ClickedAt  *time.Time `json:"clickedAt,omitempty" url:"clickedAt,omitempty"`
+	CreatedAt  *time.Time `json:"createdAt,omitempty" url:"createdAt,omitempty"`
 	// String key/values set on the step for your app's own logic.
 	Data        map[string]string `json:"data,omitempty" url:"data,omitempty"`
 	DismissedAt *time.Time        `json:"dismissedAt,omitempty" url:"dismissedAt,omitempty"`
@@ -279,12 +2087,18 @@ type InAppMessage struct {
 	// Modals and full screens with an image: top (image above the text) or background (image fills the message, text on a dark scrim over it). Null otherwise.
 	ImagePlacement *InAppMessageImagePlacement `json:"imagePlacement,omitempty" url:"imagePlacement,omitempty"`
 	ImageURL       *string                     `json:"imageUrl,omitempty" url:"imageUrl,omitempty"`
-	// message: modal, banner or fullscreen, shown once. card: stays in the card feed until dismissed.
+	// message: modal, banner or fullscreen, shown once. card: stays in the card feed until dismissed. placement: shown inline in a placement slot until dismissed; returned by the placement feed, and by List In-App Messages only with status=all.
 	Kind *InAppMessageKind `json:"kind,omitempty" url:"kind,omitempty"`
+	// Placement items only: card (image over the text, link buttons), banner (compact row with an image thumbnail and a filled button) or hero (text over the image, filled button). Null for other kinds.
+	Layout *InAppMessageLayout `json:"layout,omitempty" url:"layout,omitempty"`
 	// Cards only. Pinned cards sort first.
 	Pinned *bool `json:"pinned,omitempty" url:"pinned,omitempty"`
+	// Placement items only. The key of the placement the item fills.
+	Placement *string `json:"placement,omitempty" url:"placement,omitempty"`
 	// Banners: top or bottom. Modals: bottom (a sheet rising from the bottom edge) or center. Null for full screens and cards.
-	Position   *InAppMessagePosition `json:"position,omitempty" url:"position,omitempty"`
+	Position *InAppMessagePosition `json:"position,omitempty" url:"position,omitempty"`
+	// Which open item a placement shows first (high, then medium, then low; ties go to the newest). Medium for items that are not placement items.
+	Priority   *InAppMessagePriority `json:"priority,omitempty" url:"priority,omitempty"`
 	ReadAt     *time.Time            `json:"readAt,omitempty" url:"readAt,omitempty"`
 	SequenceID *string               `json:"sequenceId,omitempty" url:"sequenceId,omitempty"`
 	// html messages: draw a close control over the document. False for other formats.
@@ -313,6 +2127,13 @@ func (i *InAppMessage) GetButtons() []*InAppMessageButtonsItem {
 		return nil
 	}
 	return i.Buttons
+}
+
+func (i *InAppMessage) GetCampaignID() *string {
+	if i == nil {
+		return nil
+	}
+	return i.CampaignID
 }
 
 func (i *InAppMessage) GetClickCount() *int {
@@ -413,6 +2234,13 @@ func (i *InAppMessage) GetKind() *InAppMessageKind {
 	return i.Kind
 }
 
+func (i *InAppMessage) GetLayout() *InAppMessageLayout {
+	if i == nil {
+		return nil
+	}
+	return i.Layout
+}
+
 func (i *InAppMessage) GetPinned() *bool {
 	if i == nil {
 		return nil
@@ -420,11 +2248,25 @@ func (i *InAppMessage) GetPinned() *bool {
 	return i.Pinned
 }
 
+func (i *InAppMessage) GetPlacement() *string {
+	if i == nil {
+		return nil
+	}
+	return i.Placement
+}
+
 func (i *InAppMessage) GetPosition() *InAppMessagePosition {
 	if i == nil {
 		return nil
 	}
 	return i.Position
+}
+
+func (i *InAppMessage) GetPriority() *InAppMessagePriority {
+	if i == nil {
+		return nil
+	}
+	return i.Priority
 }
 
 func (i *InAppMessage) GetReadAt() *time.Time {
@@ -495,6 +2337,13 @@ func (i *InAppMessage) SetBody(body *string) {
 func (i *InAppMessage) SetButtons(buttons []*InAppMessageButtonsItem) {
 	i.Buttons = buttons
 	i.require(inAppMessageFieldButtons)
+}
+
+// SetCampaignID sets the CampaignID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppMessage) SetCampaignID(campaignID *string) {
+	i.CampaignID = campaignID
+	i.require(inAppMessageFieldCampaignID)
 }
 
 // SetClickCount sets the ClickCount field and marks it as non-optional;
@@ -595,6 +2444,13 @@ func (i *InAppMessage) SetKind(kind *InAppMessageKind) {
 	i.require(inAppMessageFieldKind)
 }
 
+// SetLayout sets the Layout field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppMessage) SetLayout(layout *InAppMessageLayout) {
+	i.Layout = layout
+	i.require(inAppMessageFieldLayout)
+}
+
 // SetPinned sets the Pinned field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (i *InAppMessage) SetPinned(pinned *bool) {
@@ -602,11 +2458,25 @@ func (i *InAppMessage) SetPinned(pinned *bool) {
 	i.require(inAppMessageFieldPinned)
 }
 
+// SetPlacement sets the Placement field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppMessage) SetPlacement(placement *string) {
+	i.Placement = placement
+	i.require(inAppMessageFieldPlacement)
+}
+
 // SetPosition sets the Position field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (i *InAppMessage) SetPosition(position *InAppMessagePosition) {
 	i.Position = position
 	i.require(inAppMessageFieldPosition)
+}
+
+// SetPriority sets the Priority field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppMessage) SetPriority(priority *InAppMessagePriority) {
+	i.Priority = priority
+	i.require(inAppMessageFieldPriority)
 }
 
 // SetReadAt sets the ReadAt field and marks it as non-optional;
@@ -917,12 +2787,13 @@ func (i InAppMessageImagePlacement) Ptr() *InAppMessageImagePlacement {
 	return &i
 }
 
-// message: modal, banner or fullscreen, shown once. card: stays in the card feed until dismissed.
+// message: modal, banner or fullscreen, shown once. card: stays in the card feed until dismissed. placement: shown inline in a placement slot until dismissed; returned by the placement feed, and by List In-App Messages only with status=all.
 type InAppMessageKind string
 
 const (
-	InAppMessageKindMessage InAppMessageKind = "message"
-	InAppMessageKindCard    InAppMessageKind = "card"
+	InAppMessageKindMessage   InAppMessageKind = "message"
+	InAppMessageKindCard      InAppMessageKind = "card"
+	InAppMessageKindPlacement InAppMessageKind = "placement"
 )
 
 func NewInAppMessageKindFromString(s string) (InAppMessageKind, error) {
@@ -931,12 +2802,40 @@ func NewInAppMessageKindFromString(s string) (InAppMessageKind, error) {
 		return InAppMessageKindMessage, nil
 	case "card":
 		return InAppMessageKindCard, nil
+	case "placement":
+		return InAppMessageKindPlacement, nil
 	}
 	var t InAppMessageKind
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
 func (i InAppMessageKind) Ptr() *InAppMessageKind {
+	return &i
+}
+
+// Placement items only: card (image over the text, link buttons), banner (compact row with an image thumbnail and a filled button) or hero (text over the image, filled button). Null for other kinds.
+type InAppMessageLayout string
+
+const (
+	InAppMessageLayoutCard   InAppMessageLayout = "card"
+	InAppMessageLayoutBanner InAppMessageLayout = "banner"
+	InAppMessageLayoutHero   InAppMessageLayout = "hero"
+)
+
+func NewInAppMessageLayoutFromString(s string) (InAppMessageLayout, error) {
+	switch s {
+	case "card":
+		return InAppMessageLayoutCard, nil
+	case "banner":
+		return InAppMessageLayoutBanner, nil
+	case "hero":
+		return InAppMessageLayoutHero, nil
+	}
+	var t InAppMessageLayout
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (i InAppMessageLayout) Ptr() *InAppMessageLayout {
 	return &i
 }
 
@@ -964,6 +2863,743 @@ func NewInAppMessagePositionFromString(s string) (InAppMessagePosition, error) {
 
 func (i InAppMessagePosition) Ptr() *InAppMessagePosition {
 	return &i
+}
+
+// Which open item a placement shows first (high, then medium, then low; ties go to the newest). Medium for items that are not placement items.
+type InAppMessagePriority string
+
+const (
+	InAppMessagePriorityLow    InAppMessagePriority = "low"
+	InAppMessagePriorityMedium InAppMessagePriority = "medium"
+	InAppMessagePriorityHigh   InAppMessagePriority = "high"
+)
+
+func NewInAppMessagePriorityFromString(s string) (InAppMessagePriority, error) {
+	switch s {
+	case "low":
+		return InAppMessagePriorityLow, nil
+	case "medium":
+		return InAppMessagePriorityMedium, nil
+	case "high":
+		return InAppMessagePriorityHigh, nil
+	}
+	var t InAppMessagePriority
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (i InAppMessagePriority) Ptr() *InAppMessagePriority {
+	return &i
+}
+
+// A slot in your app or website that shows in-app content inline.
+var (
+	inAppPlacementFieldCreatedAt   = big.NewInt(1 << 0)
+	inAppPlacementFieldDescription = big.NewInt(1 << 1)
+	inAppPlacementFieldHeight      = big.NewInt(1 << 2)
+	inAppPlacementFieldKey         = big.NewInt(1 << 3)
+	inAppPlacementFieldName        = big.NewInt(1 << 4)
+	inAppPlacementFieldUpdatedAt   = big.NewInt(1 << 5)
+	inAppPlacementFieldWidth       = big.NewInt(1 << 6)
+)
+
+type InAppPlacement struct {
+	CreatedAt *time.Time `json:"createdAt,omitempty" url:"createdAt,omitempty"`
+	// Where the slot sits in the app; empty when not set.
+	Description *string `json:"description,omitempty" url:"description,omitempty"`
+	// Height hint in points; null when not set.
+	Height *int `json:"height,omitempty" url:"height,omitempty"`
+	// What app code passes to the SDK. 1-64 lowercase letters, numbers, dots, dashes or underscores, starting with a letter or number. Never changes.
+	Key       *string    `json:"key,omitempty" url:"key,omitempty"`
+	Name      *string    `json:"name,omitempty" url:"name,omitempty"`
+	UpdatedAt *time.Time `json:"updatedAt,omitempty" url:"updatedAt,omitempty"`
+	// Width hint in points (CSS pixels on the web) for whoever writes the content; null when not set.
+	Width *int `json:"width,omitempty" url:"width,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (i *InAppPlacement) GetCreatedAt() *time.Time {
+	if i == nil {
+		return nil
+	}
+	return i.CreatedAt
+}
+
+func (i *InAppPlacement) GetDescription() *string {
+	if i == nil {
+		return nil
+	}
+	return i.Description
+}
+
+func (i *InAppPlacement) GetHeight() *int {
+	if i == nil {
+		return nil
+	}
+	return i.Height
+}
+
+func (i *InAppPlacement) GetKey() *string {
+	if i == nil {
+		return nil
+	}
+	return i.Key
+}
+
+func (i *InAppPlacement) GetName() *string {
+	if i == nil {
+		return nil
+	}
+	return i.Name
+}
+
+func (i *InAppPlacement) GetUpdatedAt() *time.Time {
+	if i == nil {
+		return nil
+	}
+	return i.UpdatedAt
+}
+
+func (i *InAppPlacement) GetWidth() *int {
+	if i == nil {
+		return nil
+	}
+	return i.Width
+}
+
+func (i *InAppPlacement) GetExtraProperties() map[string]interface{} {
+	if i == nil {
+		return nil
+	}
+	return i.extraProperties
+}
+
+func (i *InAppPlacement) require(field *big.Int) {
+	if i.explicitFields == nil {
+		i.explicitFields = big.NewInt(0)
+	}
+	i.explicitFields.Or(i.explicitFields, field)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppPlacement) SetCreatedAt(createdAt *time.Time) {
+	i.CreatedAt = createdAt
+	i.require(inAppPlacementFieldCreatedAt)
+}
+
+// SetDescription sets the Description field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppPlacement) SetDescription(description *string) {
+	i.Description = description
+	i.require(inAppPlacementFieldDescription)
+}
+
+// SetHeight sets the Height field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppPlacement) SetHeight(height *int) {
+	i.Height = height
+	i.require(inAppPlacementFieldHeight)
+}
+
+// SetKey sets the Key field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppPlacement) SetKey(key *string) {
+	i.Key = key
+	i.require(inAppPlacementFieldKey)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppPlacement) SetName(name *string) {
+	i.Name = name
+	i.require(inAppPlacementFieldName)
+}
+
+// SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppPlacement) SetUpdatedAt(updatedAt *time.Time) {
+	i.UpdatedAt = updatedAt
+	i.require(inAppPlacementFieldUpdatedAt)
+}
+
+// SetWidth sets the Width field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppPlacement) SetWidth(width *int) {
+	i.Width = width
+	i.require(inAppPlacementFieldWidth)
+}
+
+func (i *InAppPlacement) UnmarshalJSON(data []byte) error {
+	type embed InAppPlacement
+	var unmarshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"createdAt,omitempty"`
+		UpdatedAt *internal.DateTime `json:"updatedAt,omitempty"`
+	}{
+		embed: embed(*i),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*i = InAppPlacement(unmarshaler.embed)
+	i.CreatedAt = unmarshaler.CreatedAt.TimePtr()
+	i.UpdatedAt = unmarshaler.UpdatedAt.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+	i.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InAppPlacement) MarshalJSON() ([]byte, error) {
+	type embed InAppPlacement
+	var marshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"createdAt,omitempty"`
+		UpdatedAt *internal.DateTime `json:"updatedAt,omitempty"`
+	}{
+		embed:     embed(*i),
+		CreatedAt: internal.NewOptionalDateTime(i.CreatedAt),
+		UpdatedAt: internal.NewOptionalDateTime(i.UpdatedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (i *InAppPlacement) String() string {
+	if i == nil {
+		return "<nil>"
+	}
+	if len(i.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
+var (
+	inAppPlacementInputFieldDescription = big.NewInt(1 << 0)
+	inAppPlacementInputFieldHeight      = big.NewInt(1 << 1)
+	inAppPlacementInputFieldName        = big.NewInt(1 << 2)
+	inAppPlacementInputFieldWidth       = big.NewInt(1 << 3)
+)
+
+type InAppPlacementInput struct {
+	Description *string `json:"description,omitempty" url:"description,omitempty"`
+	Height      *int    `json:"height,omitempty" url:"height,omitempty"`
+	Name        *string `json:"name,omitempty" url:"name,omitempty"`
+	Width       *int    `json:"width,omitempty" url:"width,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (i *InAppPlacementInput) GetDescription() *string {
+	if i == nil {
+		return nil
+	}
+	return i.Description
+}
+
+func (i *InAppPlacementInput) GetHeight() *int {
+	if i == nil {
+		return nil
+	}
+	return i.Height
+}
+
+func (i *InAppPlacementInput) GetName() *string {
+	if i == nil {
+		return nil
+	}
+	return i.Name
+}
+
+func (i *InAppPlacementInput) GetWidth() *int {
+	if i == nil {
+		return nil
+	}
+	return i.Width
+}
+
+func (i *InAppPlacementInput) GetExtraProperties() map[string]interface{} {
+	if i == nil {
+		return nil
+	}
+	return i.extraProperties
+}
+
+func (i *InAppPlacementInput) require(field *big.Int) {
+	if i.explicitFields == nil {
+		i.explicitFields = big.NewInt(0)
+	}
+	i.explicitFields.Or(i.explicitFields, field)
+}
+
+// SetDescription sets the Description field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppPlacementInput) SetDescription(description *string) {
+	i.Description = description
+	i.require(inAppPlacementInputFieldDescription)
+}
+
+// SetHeight sets the Height field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppPlacementInput) SetHeight(height *int) {
+	i.Height = height
+	i.require(inAppPlacementInputFieldHeight)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppPlacementInput) SetName(name *string) {
+	i.Name = name
+	i.require(inAppPlacementInputFieldName)
+}
+
+// SetWidth sets the Width field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppPlacementInput) SetWidth(width *int) {
+	i.Width = width
+	i.require(inAppPlacementInputFieldWidth)
+}
+
+func (i *InAppPlacementInput) UnmarshalJSON(data []byte) error {
+	type unmarshaler InAppPlacementInput
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*i = InAppPlacementInput(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+	i.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InAppPlacementInput) MarshalJSON() ([]byte, error) {
+	type embed InAppPlacementInput
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*i),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (i *InAppPlacementInput) String() string {
+	if i == nil {
+		return "<nil>"
+	}
+	if len(i.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
+// All-time counts for the in-app items that targeted one placement.
+var (
+	inAppPlacementStatsFieldClicked   = big.NewInt(1 << 0)
+	inAppPlacementStatsFieldCreated   = big.NewInt(1 << 1)
+	inAppPlacementStatsFieldDismissed = big.NewInt(1 << 2)
+	inAppPlacementStatsFieldDisplayed = big.NewInt(1 << 3)
+	inAppPlacementStatsFieldLive      = big.NewInt(1 << 4)
+	inAppPlacementStatsFieldPlacement = big.NewInt(1 << 5)
+)
+
+type InAppPlacementStats struct {
+	// Contacts who clicked their item at least once.
+	Clicked *int `json:"clicked,omitempty" url:"clicked,omitempty"`
+	// Items created for contacts.
+	Created *int `json:"created,omitempty" url:"created,omitempty"`
+	// Contacts who dismissed their item.
+	Dismissed *int `json:"dismissed,omitempty" url:"dismissed,omitempty"`
+	// Contacts who saw their item at least once.
+	Displayed *int `json:"displayed,omitempty" url:"displayed,omitempty"`
+	// Contacts with an open item (not dismissed, not expired).
+	Live      *int    `json:"live,omitempty" url:"live,omitempty"`
+	Placement *string `json:"placement,omitempty" url:"placement,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (i *InAppPlacementStats) GetClicked() *int {
+	if i == nil {
+		return nil
+	}
+	return i.Clicked
+}
+
+func (i *InAppPlacementStats) GetCreated() *int {
+	if i == nil {
+		return nil
+	}
+	return i.Created
+}
+
+func (i *InAppPlacementStats) GetDismissed() *int {
+	if i == nil {
+		return nil
+	}
+	return i.Dismissed
+}
+
+func (i *InAppPlacementStats) GetDisplayed() *int {
+	if i == nil {
+		return nil
+	}
+	return i.Displayed
+}
+
+func (i *InAppPlacementStats) GetLive() *int {
+	if i == nil {
+		return nil
+	}
+	return i.Live
+}
+
+func (i *InAppPlacementStats) GetPlacement() *string {
+	if i == nil {
+		return nil
+	}
+	return i.Placement
+}
+
+func (i *InAppPlacementStats) GetExtraProperties() map[string]interface{} {
+	if i == nil {
+		return nil
+	}
+	return i.extraProperties
+}
+
+func (i *InAppPlacementStats) require(field *big.Int) {
+	if i.explicitFields == nil {
+		i.explicitFields = big.NewInt(0)
+	}
+	i.explicitFields.Or(i.explicitFields, field)
+}
+
+// SetClicked sets the Clicked field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppPlacementStats) SetClicked(clicked *int) {
+	i.Clicked = clicked
+	i.require(inAppPlacementStatsFieldClicked)
+}
+
+// SetCreated sets the Created field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppPlacementStats) SetCreated(created *int) {
+	i.Created = created
+	i.require(inAppPlacementStatsFieldCreated)
+}
+
+// SetDismissed sets the Dismissed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppPlacementStats) SetDismissed(dismissed *int) {
+	i.Dismissed = dismissed
+	i.require(inAppPlacementStatsFieldDismissed)
+}
+
+// SetDisplayed sets the Displayed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppPlacementStats) SetDisplayed(displayed *int) {
+	i.Displayed = displayed
+	i.require(inAppPlacementStatsFieldDisplayed)
+}
+
+// SetLive sets the Live field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppPlacementStats) SetLive(live *int) {
+	i.Live = live
+	i.require(inAppPlacementStatsFieldLive)
+}
+
+// SetPlacement sets the Placement field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppPlacementStats) SetPlacement(placement *string) {
+	i.Placement = placement
+	i.require(inAppPlacementStatsFieldPlacement)
+}
+
+func (i *InAppPlacementStats) UnmarshalJSON(data []byte) error {
+	type unmarshaler InAppPlacementStats
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*i = InAppPlacementStats(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+	i.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InAppPlacementStats) MarshalJSON() ([]byte, error) {
+	type embed InAppPlacementStats
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*i),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (i *InAppPlacementStats) String() string {
+	if i == nil {
+		return "<nil>"
+	}
+	if len(i.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
+var (
+	inAppPlacementWithStatsFieldCreatedAt   = big.NewInt(1 << 0)
+	inAppPlacementWithStatsFieldDescription = big.NewInt(1 << 1)
+	inAppPlacementWithStatsFieldHeight      = big.NewInt(1 << 2)
+	inAppPlacementWithStatsFieldKey         = big.NewInt(1 << 3)
+	inAppPlacementWithStatsFieldName        = big.NewInt(1 << 4)
+	inAppPlacementWithStatsFieldUpdatedAt   = big.NewInt(1 << 5)
+	inAppPlacementWithStatsFieldWidth       = big.NewInt(1 << 6)
+	inAppPlacementWithStatsFieldStats       = big.NewInt(1 << 7)
+)
+
+type InAppPlacementWithStats struct {
+	CreatedAt *time.Time `json:"createdAt,omitempty" url:"createdAt,omitempty"`
+	// Where the slot sits in the app; empty when not set.
+	Description *string `json:"description,omitempty" url:"description,omitempty"`
+	// Height hint in points; null when not set.
+	Height *int `json:"height,omitempty" url:"height,omitempty"`
+	// What app code passes to the SDK. 1-64 lowercase letters, numbers, dots, dashes or underscores, starting with a letter or number. Never changes.
+	Key       *string    `json:"key,omitempty" url:"key,omitempty"`
+	Name      *string    `json:"name,omitempty" url:"name,omitempty"`
+	UpdatedAt *time.Time `json:"updatedAt,omitempty" url:"updatedAt,omitempty"`
+	// Width hint in points (CSS pixels on the web) for whoever writes the content; null when not set.
+	Width *int                 `json:"width,omitempty" url:"width,omitempty"`
+	Stats *InAppPlacementStats `json:"stats,omitempty" url:"stats,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (i *InAppPlacementWithStats) GetCreatedAt() *time.Time {
+	if i == nil {
+		return nil
+	}
+	return i.CreatedAt
+}
+
+func (i *InAppPlacementWithStats) GetDescription() *string {
+	if i == nil {
+		return nil
+	}
+	return i.Description
+}
+
+func (i *InAppPlacementWithStats) GetHeight() *int {
+	if i == nil {
+		return nil
+	}
+	return i.Height
+}
+
+func (i *InAppPlacementWithStats) GetKey() *string {
+	if i == nil {
+		return nil
+	}
+	return i.Key
+}
+
+func (i *InAppPlacementWithStats) GetName() *string {
+	if i == nil {
+		return nil
+	}
+	return i.Name
+}
+
+func (i *InAppPlacementWithStats) GetUpdatedAt() *time.Time {
+	if i == nil {
+		return nil
+	}
+	return i.UpdatedAt
+}
+
+func (i *InAppPlacementWithStats) GetWidth() *int {
+	if i == nil {
+		return nil
+	}
+	return i.Width
+}
+
+func (i *InAppPlacementWithStats) GetStats() *InAppPlacementStats {
+	if i == nil {
+		return nil
+	}
+	return i.Stats
+}
+
+func (i *InAppPlacementWithStats) GetExtraProperties() map[string]interface{} {
+	if i == nil {
+		return nil
+	}
+	return i.extraProperties
+}
+
+func (i *InAppPlacementWithStats) require(field *big.Int) {
+	if i.explicitFields == nil {
+		i.explicitFields = big.NewInt(0)
+	}
+	i.explicitFields.Or(i.explicitFields, field)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppPlacementWithStats) SetCreatedAt(createdAt *time.Time) {
+	i.CreatedAt = createdAt
+	i.require(inAppPlacementWithStatsFieldCreatedAt)
+}
+
+// SetDescription sets the Description field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppPlacementWithStats) SetDescription(description *string) {
+	i.Description = description
+	i.require(inAppPlacementWithStatsFieldDescription)
+}
+
+// SetHeight sets the Height field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppPlacementWithStats) SetHeight(height *int) {
+	i.Height = height
+	i.require(inAppPlacementWithStatsFieldHeight)
+}
+
+// SetKey sets the Key field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppPlacementWithStats) SetKey(key *string) {
+	i.Key = key
+	i.require(inAppPlacementWithStatsFieldKey)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppPlacementWithStats) SetName(name *string) {
+	i.Name = name
+	i.require(inAppPlacementWithStatsFieldName)
+}
+
+// SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppPlacementWithStats) SetUpdatedAt(updatedAt *time.Time) {
+	i.UpdatedAt = updatedAt
+	i.require(inAppPlacementWithStatsFieldUpdatedAt)
+}
+
+// SetWidth sets the Width field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppPlacementWithStats) SetWidth(width *int) {
+	i.Width = width
+	i.require(inAppPlacementWithStatsFieldWidth)
+}
+
+// SetStats sets the Stats field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InAppPlacementWithStats) SetStats(stats *InAppPlacementStats) {
+	i.Stats = stats
+	i.require(inAppPlacementWithStatsFieldStats)
+}
+
+func (i *InAppPlacementWithStats) UnmarshalJSON(data []byte) error {
+	type embed InAppPlacementWithStats
+	var unmarshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"createdAt,omitempty"`
+		UpdatedAt *internal.DateTime `json:"updatedAt,omitempty"`
+	}{
+		embed: embed(*i),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*i = InAppPlacementWithStats(unmarshaler.embed)
+	i.CreatedAt = unmarshaler.CreatedAt.TimePtr()
+	i.UpdatedAt = unmarshaler.UpdatedAt.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+	i.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InAppPlacementWithStats) MarshalJSON() ([]byte, error) {
+	type embed InAppPlacementWithStats
+	var marshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"createdAt,omitempty"`
+		UpdatedAt *internal.DateTime `json:"updatedAt,omitempty"`
+	}{
+		embed:     embed(*i),
+		CreatedAt: internal.NewOptionalDateTime(i.CreatedAt),
+		UpdatedAt: internal.NewOptionalDateTime(i.UpdatedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (i *InAppPlacementWithStats) String() string {
+	if i == nil {
+		return "<nil>"
+	}
+	if len(i.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
 }
 
 // Colors, corners and font to draw the item with. Resolved from the step's style preset and overrides against your brand (Email design settings) when the item was created. Colors are
@@ -1211,6 +3847,232 @@ func (i InAppStylePreset) Ptr() *InAppStylePreset {
 	return &i
 }
 
+// Order among messages waiting in the app at the same time; higher first. Defaults to medium, the same as sequence messages.
+type CreateInAppCampaignRequestPriority string
+
+const (
+	CreateInAppCampaignRequestPriorityLow    CreateInAppCampaignRequestPriority = "low"
+	CreateInAppCampaignRequestPriorityMedium CreateInAppCampaignRequestPriority = "medium"
+	CreateInAppCampaignRequestPriorityHigh   CreateInAppCampaignRequestPriority = "high"
+)
+
+func NewCreateInAppCampaignRequestPriorityFromString(s string) (CreateInAppCampaignRequestPriority, error) {
+	switch s {
+	case "low":
+		return CreateInAppCampaignRequestPriorityLow, nil
+	case "medium":
+		return CreateInAppCampaignRequestPriorityMedium, nil
+	case "high":
+		return CreateInAppCampaignRequestPriorityHigh, nil
+	}
+	var t CreateInAppCampaignRequestPriority
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateInAppCampaignRequestPriority) Ptr() *CreateInAppCampaignRequestPriority {
+	return &c
+}
+
+var (
+	createInAppCampaignResponseFieldCampaign = big.NewInt(1 << 0)
+	createInAppCampaignResponseFieldSuccess  = big.NewInt(1 << 1)
+)
+
+type CreateInAppCampaignResponse struct {
+	Campaign *InAppCampaign `json:"campaign,omitempty" url:"campaign,omitempty"`
+	Success  *bool          `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateInAppCampaignResponse) GetCampaign() *InAppCampaign {
+	if c == nil {
+		return nil
+	}
+	return c.Campaign
+}
+
+func (c *CreateInAppCampaignResponse) GetSuccess() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.Success
+}
+
+func (c *CreateInAppCampaignResponse) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateInAppCampaignResponse) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetCampaign sets the Campaign field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInAppCampaignResponse) SetCampaign(campaign *InAppCampaign) {
+	c.Campaign = campaign
+	c.require(createInAppCampaignResponseFieldCampaign)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInAppCampaignResponse) SetSuccess(success *bool) {
+	c.Success = success
+	c.require(createInAppCampaignResponseFieldSuccess)
+}
+
+func (c *CreateInAppCampaignResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateInAppCampaignResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateInAppCampaignResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateInAppCampaignResponse) MarshalJSON() ([]byte, error) {
+	type embed CreateInAppCampaignResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateInAppCampaignResponse) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	createInAppPlacementResponseFieldPlacement = big.NewInt(1 << 0)
+	createInAppPlacementResponseFieldSuccess   = big.NewInt(1 << 1)
+)
+
+type CreateInAppPlacementResponse struct {
+	Placement *InAppPlacement `json:"placement,omitempty" url:"placement,omitempty"`
+	Success   *bool           `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateInAppPlacementResponse) GetPlacement() *InAppPlacement {
+	if c == nil {
+		return nil
+	}
+	return c.Placement
+}
+
+func (c *CreateInAppPlacementResponse) GetSuccess() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.Success
+}
+
+func (c *CreateInAppPlacementResponse) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateInAppPlacementResponse) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetPlacement sets the Placement field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInAppPlacementResponse) SetPlacement(placement *InAppPlacement) {
+	c.Placement = placement
+	c.require(createInAppPlacementResponseFieldPlacement)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInAppPlacementResponse) SetSuccess(success *bool) {
+	c.Success = success
+	c.require(createInAppPlacementResponseFieldSuccess)
+}
+
+func (c *CreateInAppPlacementResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateInAppPlacementResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateInAppPlacementResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateInAppPlacementResponse) MarshalJSON() ([]byte, error) {
+	type embed CreateInAppPlacementResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateInAppPlacementResponse) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
 var (
 	deleteInAppMessageResponseFieldMessage   = big.NewInt(1 << 0)
 	deleteInAppMessageResponseFieldMessageID = big.NewInt(1 << 1)
@@ -1325,6 +4187,978 @@ func (d *DeleteInAppMessageResponse) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", d)
+}
+
+var (
+	deleteInAppPlacementResponseFieldKey     = big.NewInt(1 << 0)
+	deleteInAppPlacementResponseFieldMessage = big.NewInt(1 << 1)
+	deleteInAppPlacementResponseFieldSuccess = big.NewInt(1 << 2)
+)
+
+type DeleteInAppPlacementResponse struct {
+	Key     *string `json:"key,omitempty" url:"key,omitempty"`
+	Message *string `json:"message,omitempty" url:"message,omitempty"`
+	Success *bool   `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DeleteInAppPlacementResponse) GetKey() *string {
+	if d == nil {
+		return nil
+	}
+	return d.Key
+}
+
+func (d *DeleteInAppPlacementResponse) GetMessage() *string {
+	if d == nil {
+		return nil
+	}
+	return d.Message
+}
+
+func (d *DeleteInAppPlacementResponse) GetSuccess() *bool {
+	if d == nil {
+		return nil
+	}
+	return d.Success
+}
+
+func (d *DeleteInAppPlacementResponse) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DeleteInAppPlacementResponse) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetKey sets the Key field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteInAppPlacementResponse) SetKey(key *string) {
+	d.Key = key
+	d.require(deleteInAppPlacementResponseFieldKey)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteInAppPlacementResponse) SetMessage(message *string) {
+	d.Message = message
+	d.require(deleteInAppPlacementResponseFieldMessage)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteInAppPlacementResponse) SetSuccess(success *bool) {
+	d.Success = success
+	d.require(deleteInAppPlacementResponseFieldSuccess)
+}
+
+func (d *DeleteInAppPlacementResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler DeleteInAppPlacementResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DeleteInAppPlacementResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DeleteInAppPlacementResponse) MarshalJSON() ([]byte, error) {
+	type embed DeleteInAppPlacementResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DeleteInAppPlacementResponse) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
+var (
+	duplicateInAppCampaignResponseFieldCampaign = big.NewInt(1 << 0)
+	duplicateInAppCampaignResponseFieldSuccess  = big.NewInt(1 << 1)
+)
+
+type DuplicateInAppCampaignResponse struct {
+	Campaign *InAppCampaign `json:"campaign,omitempty" url:"campaign,omitempty"`
+	Success  *bool          `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DuplicateInAppCampaignResponse) GetCampaign() *InAppCampaign {
+	if d == nil {
+		return nil
+	}
+	return d.Campaign
+}
+
+func (d *DuplicateInAppCampaignResponse) GetSuccess() *bool {
+	if d == nil {
+		return nil
+	}
+	return d.Success
+}
+
+func (d *DuplicateInAppCampaignResponse) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DuplicateInAppCampaignResponse) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetCampaign sets the Campaign field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DuplicateInAppCampaignResponse) SetCampaign(campaign *InAppCampaign) {
+	d.Campaign = campaign
+	d.require(duplicateInAppCampaignResponseFieldCampaign)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DuplicateInAppCampaignResponse) SetSuccess(success *bool) {
+	d.Success = success
+	d.require(duplicateInAppCampaignResponseFieldSuccess)
+}
+
+func (d *DuplicateInAppCampaignResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler DuplicateInAppCampaignResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DuplicateInAppCampaignResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DuplicateInAppCampaignResponse) MarshalJSON() ([]byte, error) {
+	type embed DuplicateInAppCampaignResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DuplicateInAppCampaignResponse) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
+var (
+	estimateInAppCampaignRecipientsResponseFieldAudienceCount = big.NewInt(1 << 0)
+	estimateInAppCampaignRecipientsResponseFieldSuccess       = big.NewInt(1 << 1)
+)
+
+type EstimateInAppCampaignRecipientsResponse struct {
+	AudienceCount *int  `json:"audienceCount,omitempty" url:"audienceCount,omitempty"`
+	Success       *bool `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (e *EstimateInAppCampaignRecipientsResponse) GetAudienceCount() *int {
+	if e == nil {
+		return nil
+	}
+	return e.AudienceCount
+}
+
+func (e *EstimateInAppCampaignRecipientsResponse) GetSuccess() *bool {
+	if e == nil {
+		return nil
+	}
+	return e.Success
+}
+
+func (e *EstimateInAppCampaignRecipientsResponse) GetExtraProperties() map[string]interface{} {
+	if e == nil {
+		return nil
+	}
+	return e.extraProperties
+}
+
+func (e *EstimateInAppCampaignRecipientsResponse) require(field *big.Int) {
+	if e.explicitFields == nil {
+		e.explicitFields = big.NewInt(0)
+	}
+	e.explicitFields.Or(e.explicitFields, field)
+}
+
+// SetAudienceCount sets the AudienceCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EstimateInAppCampaignRecipientsResponse) SetAudienceCount(audienceCount *int) {
+	e.AudienceCount = audienceCount
+	e.require(estimateInAppCampaignRecipientsResponseFieldAudienceCount)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EstimateInAppCampaignRecipientsResponse) SetSuccess(success *bool) {
+	e.Success = success
+	e.require(estimateInAppCampaignRecipientsResponseFieldSuccess)
+}
+
+func (e *EstimateInAppCampaignRecipientsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler EstimateInAppCampaignRecipientsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EstimateInAppCampaignRecipientsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+	e.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EstimateInAppCampaignRecipientsResponse) MarshalJSON() ([]byte, error) {
+	type embed EstimateInAppCampaignRecipientsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*e),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (e *EstimateInAppCampaignRecipientsResponse) String() string {
+	if e == nil {
+		return "<nil>"
+	}
+	if len(e.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(e.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+var (
+	getInAppCampaignResponseFieldCampaign = big.NewInt(1 << 0)
+	getInAppCampaignResponseFieldStats    = big.NewInt(1 << 1)
+	getInAppCampaignResponseFieldSuccess  = big.NewInt(1 << 2)
+)
+
+type GetInAppCampaignResponse struct {
+	Campaign *InAppCampaign      `json:"campaign,omitempty" url:"campaign,omitempty"`
+	Stats    *InAppCampaignStats `json:"stats,omitempty" url:"stats,omitempty"`
+	Success  *bool               `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (g *GetInAppCampaignResponse) GetCampaign() *InAppCampaign {
+	if g == nil {
+		return nil
+	}
+	return g.Campaign
+}
+
+func (g *GetInAppCampaignResponse) GetStats() *InAppCampaignStats {
+	if g == nil {
+		return nil
+	}
+	return g.Stats
+}
+
+func (g *GetInAppCampaignResponse) GetSuccess() *bool {
+	if g == nil {
+		return nil
+	}
+	return g.Success
+}
+
+func (g *GetInAppCampaignResponse) GetExtraProperties() map[string]interface{} {
+	if g == nil {
+		return nil
+	}
+	return g.extraProperties
+}
+
+func (g *GetInAppCampaignResponse) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetCampaign sets the Campaign field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetInAppCampaignResponse) SetCampaign(campaign *InAppCampaign) {
+	g.Campaign = campaign
+	g.require(getInAppCampaignResponseFieldCampaign)
+}
+
+// SetStats sets the Stats field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetInAppCampaignResponse) SetStats(stats *InAppCampaignStats) {
+	g.Stats = stats
+	g.require(getInAppCampaignResponseFieldStats)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetInAppCampaignResponse) SetSuccess(success *bool) {
+	g.Success = success
+	g.require(getInAppCampaignResponseFieldSuccess)
+}
+
+func (g *GetInAppCampaignResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler GetInAppCampaignResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*g = GetInAppCampaignResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *g)
+	if err != nil {
+		return err
+	}
+	g.extraProperties = extraProperties
+	g.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (g *GetInAppCampaignResponse) MarshalJSON() ([]byte, error) {
+	type embed GetInAppCampaignResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*g),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (g *GetInAppCampaignResponse) String() string {
+	if g == nil {
+		return "<nil>"
+	}
+	if len(g.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(g.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(g); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", g)
+}
+
+var (
+	getInAppCampaignStatsResponseFieldAudienceAtLaunch = big.NewInt(1 << 0)
+	getInAppCampaignStatsResponseFieldCampaignID       = big.NewInt(1 << 1)
+	getInAppCampaignStatsResponseFieldState            = big.NewInt(1 << 2)
+	getInAppCampaignStatsResponseFieldStats            = big.NewInt(1 << 3)
+	getInAppCampaignStatsResponseFieldStatus           = big.NewInt(1 << 4)
+	getInAppCampaignStatsResponseFieldSuccess          = big.NewInt(1 << 5)
+)
+
+type GetInAppCampaignStatsResponse struct {
+	// Contacts who matched the audience at launch.
+	AudienceAtLaunch *int                                 `json:"audienceAtLaunch,omitempty" url:"audienceAtLaunch,omitempty"`
+	CampaignID       *string                              `json:"campaignId,omitempty" url:"campaignId,omitempty"`
+	State            *GetInAppCampaignStatsResponseState  `json:"state,omitempty" url:"state,omitempty"`
+	Stats            *InAppCampaignStats                  `json:"stats,omitempty" url:"stats,omitempty"`
+	Status           *GetInAppCampaignStatsResponseStatus `json:"status,omitempty" url:"status,omitempty"`
+	Success          *bool                                `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (g *GetInAppCampaignStatsResponse) GetAudienceAtLaunch() *int {
+	if g == nil {
+		return nil
+	}
+	return g.AudienceAtLaunch
+}
+
+func (g *GetInAppCampaignStatsResponse) GetCampaignID() *string {
+	if g == nil {
+		return nil
+	}
+	return g.CampaignID
+}
+
+func (g *GetInAppCampaignStatsResponse) GetState() *GetInAppCampaignStatsResponseState {
+	if g == nil {
+		return nil
+	}
+	return g.State
+}
+
+func (g *GetInAppCampaignStatsResponse) GetStats() *InAppCampaignStats {
+	if g == nil {
+		return nil
+	}
+	return g.Stats
+}
+
+func (g *GetInAppCampaignStatsResponse) GetStatus() *GetInAppCampaignStatsResponseStatus {
+	if g == nil {
+		return nil
+	}
+	return g.Status
+}
+
+func (g *GetInAppCampaignStatsResponse) GetSuccess() *bool {
+	if g == nil {
+		return nil
+	}
+	return g.Success
+}
+
+func (g *GetInAppCampaignStatsResponse) GetExtraProperties() map[string]interface{} {
+	if g == nil {
+		return nil
+	}
+	return g.extraProperties
+}
+
+func (g *GetInAppCampaignStatsResponse) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetAudienceAtLaunch sets the AudienceAtLaunch field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetInAppCampaignStatsResponse) SetAudienceAtLaunch(audienceAtLaunch *int) {
+	g.AudienceAtLaunch = audienceAtLaunch
+	g.require(getInAppCampaignStatsResponseFieldAudienceAtLaunch)
+}
+
+// SetCampaignID sets the CampaignID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetInAppCampaignStatsResponse) SetCampaignID(campaignID *string) {
+	g.CampaignID = campaignID
+	g.require(getInAppCampaignStatsResponseFieldCampaignID)
+}
+
+// SetState sets the State field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetInAppCampaignStatsResponse) SetState(state *GetInAppCampaignStatsResponseState) {
+	g.State = state
+	g.require(getInAppCampaignStatsResponseFieldState)
+}
+
+// SetStats sets the Stats field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetInAppCampaignStatsResponse) SetStats(stats *InAppCampaignStats) {
+	g.Stats = stats
+	g.require(getInAppCampaignStatsResponseFieldStats)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetInAppCampaignStatsResponse) SetStatus(status *GetInAppCampaignStatsResponseStatus) {
+	g.Status = status
+	g.require(getInAppCampaignStatsResponseFieldStatus)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetInAppCampaignStatsResponse) SetSuccess(success *bool) {
+	g.Success = success
+	g.require(getInAppCampaignStatsResponseFieldSuccess)
+}
+
+func (g *GetInAppCampaignStatsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler GetInAppCampaignStatsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*g = GetInAppCampaignStatsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *g)
+	if err != nil {
+		return err
+	}
+	g.extraProperties = extraProperties
+	g.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (g *GetInAppCampaignStatsResponse) MarshalJSON() ([]byte, error) {
+	type embed GetInAppCampaignStatsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*g),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (g *GetInAppCampaignStatsResponse) String() string {
+	if g == nil {
+		return "<nil>"
+	}
+	if len(g.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(g.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(g); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", g)
+}
+
+type GetInAppCampaignStatsResponseState string
+
+const (
+	GetInAppCampaignStatsResponseStateDraft     GetInAppCampaignStatsResponseState = "draft"
+	GetInAppCampaignStatsResponseStateScheduled GetInAppCampaignStatsResponseState = "scheduled"
+	GetInAppCampaignStatsResponseStateLive      GetInAppCampaignStatsResponseState = "live"
+	GetInAppCampaignStatsResponseStateEnded     GetInAppCampaignStatsResponseState = "ended"
+	GetInAppCampaignStatsResponseStateStopped   GetInAppCampaignStatsResponseState = "stopped"
+)
+
+func NewGetInAppCampaignStatsResponseStateFromString(s string) (GetInAppCampaignStatsResponseState, error) {
+	switch s {
+	case "draft":
+		return GetInAppCampaignStatsResponseStateDraft, nil
+	case "scheduled":
+		return GetInAppCampaignStatsResponseStateScheduled, nil
+	case "live":
+		return GetInAppCampaignStatsResponseStateLive, nil
+	case "ended":
+		return GetInAppCampaignStatsResponseStateEnded, nil
+	case "stopped":
+		return GetInAppCampaignStatsResponseStateStopped, nil
+	}
+	var t GetInAppCampaignStatsResponseState
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (g GetInAppCampaignStatsResponseState) Ptr() *GetInAppCampaignStatsResponseState {
+	return &g
+}
+
+type GetInAppCampaignStatsResponseStatus string
+
+const (
+	GetInAppCampaignStatsResponseStatusDraft     GetInAppCampaignStatsResponseStatus = "draft"
+	GetInAppCampaignStatsResponseStatusScheduled GetInAppCampaignStatsResponseStatus = "scheduled"
+	GetInAppCampaignStatsResponseStatusSent      GetInAppCampaignStatsResponseStatus = "sent"
+	GetInAppCampaignStatsResponseStatusCancelled GetInAppCampaignStatsResponseStatus = "cancelled"
+)
+
+func NewGetInAppCampaignStatsResponseStatusFromString(s string) (GetInAppCampaignStatsResponseStatus, error) {
+	switch s {
+	case "draft":
+		return GetInAppCampaignStatsResponseStatusDraft, nil
+	case "scheduled":
+		return GetInAppCampaignStatsResponseStatusScheduled, nil
+	case "sent":
+		return GetInAppCampaignStatsResponseStatusSent, nil
+	case "cancelled":
+		return GetInAppCampaignStatsResponseStatusCancelled, nil
+	}
+	var t GetInAppCampaignStatsResponseStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (g GetInAppCampaignStatsResponseStatus) Ptr() *GetInAppCampaignStatsResponseStatus {
+	return &g
+}
+
+var (
+	getInAppPlacementContentResponseFieldPlacements   = big.NewInt(1 << 0)
+	getInAppPlacementContentResponseFieldSubscriberID = big.NewInt(1 << 1)
+	getInAppPlacementContentResponseFieldSuccess      = big.NewInt(1 << 2)
+)
+
+type GetInAppPlacementContentResponse struct {
+	Placements   []*GetInAppPlacementContentResponsePlacementsItem `json:"placements,omitempty" url:"placements,omitempty"`
+	SubscriberID *string                                           `json:"subscriberId,omitempty" url:"subscriberId,omitempty"`
+	Success      *bool                                             `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (g *GetInAppPlacementContentResponse) GetPlacements() []*GetInAppPlacementContentResponsePlacementsItem {
+	if g == nil {
+		return nil
+	}
+	return g.Placements
+}
+
+func (g *GetInAppPlacementContentResponse) GetSubscriberID() *string {
+	if g == nil {
+		return nil
+	}
+	return g.SubscriberID
+}
+
+func (g *GetInAppPlacementContentResponse) GetSuccess() *bool {
+	if g == nil {
+		return nil
+	}
+	return g.Success
+}
+
+func (g *GetInAppPlacementContentResponse) GetExtraProperties() map[string]interface{} {
+	if g == nil {
+		return nil
+	}
+	return g.extraProperties
+}
+
+func (g *GetInAppPlacementContentResponse) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetPlacements sets the Placements field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetInAppPlacementContentResponse) SetPlacements(placements []*GetInAppPlacementContentResponsePlacementsItem) {
+	g.Placements = placements
+	g.require(getInAppPlacementContentResponseFieldPlacements)
+}
+
+// SetSubscriberID sets the SubscriberID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetInAppPlacementContentResponse) SetSubscriberID(subscriberID *string) {
+	g.SubscriberID = subscriberID
+	g.require(getInAppPlacementContentResponseFieldSubscriberID)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetInAppPlacementContentResponse) SetSuccess(success *bool) {
+	g.Success = success
+	g.require(getInAppPlacementContentResponseFieldSuccess)
+}
+
+func (g *GetInAppPlacementContentResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler GetInAppPlacementContentResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*g = GetInAppPlacementContentResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *g)
+	if err != nil {
+		return err
+	}
+	g.extraProperties = extraProperties
+	g.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (g *GetInAppPlacementContentResponse) MarshalJSON() ([]byte, error) {
+	type embed GetInAppPlacementContentResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*g),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (g *GetInAppPlacementContentResponse) String() string {
+	if g == nil {
+		return "<nil>"
+	}
+	if len(g.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(g.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(g); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", g)
+}
+
+var (
+	getInAppPlacementContentResponsePlacementsItemFieldMessage   = big.NewInt(1 << 0)
+	getInAppPlacementContentResponsePlacementsItemFieldPlacement = big.NewInt(1 << 1)
+)
+
+type GetInAppPlacementContentResponsePlacementsItem struct {
+	Message   *InAppMessage `json:"message,omitempty" url:"message,omitempty"`
+	Placement *string       `json:"placement,omitempty" url:"placement,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (g *GetInAppPlacementContentResponsePlacementsItem) GetMessage() *InAppMessage {
+	if g == nil {
+		return nil
+	}
+	return g.Message
+}
+
+func (g *GetInAppPlacementContentResponsePlacementsItem) GetPlacement() *string {
+	if g == nil {
+		return nil
+	}
+	return g.Placement
+}
+
+func (g *GetInAppPlacementContentResponsePlacementsItem) GetExtraProperties() map[string]interface{} {
+	if g == nil {
+		return nil
+	}
+	return g.extraProperties
+}
+
+func (g *GetInAppPlacementContentResponsePlacementsItem) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetInAppPlacementContentResponsePlacementsItem) SetMessage(message *InAppMessage) {
+	g.Message = message
+	g.require(getInAppPlacementContentResponsePlacementsItemFieldMessage)
+}
+
+// SetPlacement sets the Placement field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetInAppPlacementContentResponsePlacementsItem) SetPlacement(placement *string) {
+	g.Placement = placement
+	g.require(getInAppPlacementContentResponsePlacementsItemFieldPlacement)
+}
+
+func (g *GetInAppPlacementContentResponsePlacementsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler GetInAppPlacementContentResponsePlacementsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*g = GetInAppPlacementContentResponsePlacementsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *g)
+	if err != nil {
+		return err
+	}
+	g.extraProperties = extraProperties
+	g.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (g *GetInAppPlacementContentResponsePlacementsItem) MarshalJSON() ([]byte, error) {
+	type embed GetInAppPlacementContentResponsePlacementsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*g),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (g *GetInAppPlacementContentResponsePlacementsItem) String() string {
+	if g == nil {
+		return "<nil>"
+	}
+	if len(g.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(g.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(g); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", g)
+}
+
+var (
+	getInAppPlacementResponseFieldPlacement = big.NewInt(1 << 0)
+	getInAppPlacementResponseFieldSuccess   = big.NewInt(1 << 1)
+)
+
+type GetInAppPlacementResponse struct {
+	Placement *InAppPlacementWithStats `json:"placement,omitempty" url:"placement,omitempty"`
+	Success   *bool                    `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (g *GetInAppPlacementResponse) GetPlacement() *InAppPlacementWithStats {
+	if g == nil {
+		return nil
+	}
+	return g.Placement
+}
+
+func (g *GetInAppPlacementResponse) GetSuccess() *bool {
+	if g == nil {
+		return nil
+	}
+	return g.Success
+}
+
+func (g *GetInAppPlacementResponse) GetExtraProperties() map[string]interface{} {
+	if g == nil {
+		return nil
+	}
+	return g.extraProperties
+}
+
+func (g *GetInAppPlacementResponse) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetPlacement sets the Placement field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetInAppPlacementResponse) SetPlacement(placement *InAppPlacementWithStats) {
+	g.Placement = placement
+	g.require(getInAppPlacementResponseFieldPlacement)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetInAppPlacementResponse) SetSuccess(success *bool) {
+	g.Success = success
+	g.require(getInAppPlacementResponseFieldSuccess)
+}
+
+func (g *GetInAppPlacementResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler GetInAppPlacementResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*g = GetInAppPlacementResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *g)
+	if err != nil {
+		return err
+	}
+	g.extraProperties = extraProperties
+	g.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (g *GetInAppPlacementResponse) MarshalJSON() ([]byte, error) {
+	type embed GetInAppPlacementResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*g),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (g *GetInAppPlacementResponse) String() string {
+	if g == nil {
+		return "<nil>"
+	}
+	if len(g.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(g.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(g); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", g)
 }
 
 var (
@@ -1625,11 +5459,178 @@ func (g *GetInAppStepStatsResponseStats) String() string {
 	return fmt.Sprintf("%#v", g)
 }
 
+type ListInAppCampaignsRequestStatus string
+
+const (
+	ListInAppCampaignsRequestStatusDraft     ListInAppCampaignsRequestStatus = "draft"
+	ListInAppCampaignsRequestStatusScheduled ListInAppCampaignsRequestStatus = "scheduled"
+	ListInAppCampaignsRequestStatusSent      ListInAppCampaignsRequestStatus = "sent"
+	ListInAppCampaignsRequestStatusCancelled ListInAppCampaignsRequestStatus = "cancelled"
+)
+
+func NewListInAppCampaignsRequestStatusFromString(s string) (ListInAppCampaignsRequestStatus, error) {
+	switch s {
+	case "draft":
+		return ListInAppCampaignsRequestStatusDraft, nil
+	case "scheduled":
+		return ListInAppCampaignsRequestStatusScheduled, nil
+	case "sent":
+		return ListInAppCampaignsRequestStatusSent, nil
+	case "cancelled":
+		return ListInAppCampaignsRequestStatusCancelled, nil
+	}
+	var t ListInAppCampaignsRequestStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListInAppCampaignsRequestStatus) Ptr() *ListInAppCampaignsRequestStatus {
+	return &l
+}
+
+var (
+	listInAppCampaignsResponseFieldCampaigns = big.NewInt(1 << 0)
+	listInAppCampaignsResponseFieldSuccess   = big.NewInt(1 << 1)
+	listInAppCampaignsResponseFieldTotal     = big.NewInt(1 << 2)
+)
+
+type ListInAppCampaignsResponse struct {
+	Campaigns []*InAppCampaign `json:"campaigns,omitempty" url:"campaigns,omitempty"`
+	Success   *bool            `json:"success,omitempty" url:"success,omitempty"`
+	Total     *int             `json:"total,omitempty" url:"total,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListInAppCampaignsResponse) GetCampaigns() []*InAppCampaign {
+	if l == nil {
+		return nil
+	}
+	return l.Campaigns
+}
+
+func (l *ListInAppCampaignsResponse) GetSuccess() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.Success
+}
+
+func (l *ListInAppCampaignsResponse) GetTotal() *int {
+	if l == nil {
+		return nil
+	}
+	return l.Total
+}
+
+func (l *ListInAppCampaignsResponse) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListInAppCampaignsResponse) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetCampaigns sets the Campaigns field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListInAppCampaignsResponse) SetCampaigns(campaigns []*InAppCampaign) {
+	l.Campaigns = campaigns
+	l.require(listInAppCampaignsResponseFieldCampaigns)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListInAppCampaignsResponse) SetSuccess(success *bool) {
+	l.Success = success
+	l.require(listInAppCampaignsResponseFieldSuccess)
+}
+
+// SetTotal sets the Total field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListInAppCampaignsResponse) SetTotal(total *int) {
+	l.Total = total
+	l.require(listInAppCampaignsResponseFieldTotal)
+}
+
+func (l *ListInAppCampaignsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListInAppCampaignsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListInAppCampaignsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListInAppCampaignsResponse) MarshalJSON() ([]byte, error) {
+	type embed ListInAppCampaignsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListInAppCampaignsResponse) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type ListInAppMessagesRequestDeliver string
+
+const (
+	ListInAppMessagesRequestDeliverTrue  ListInAppMessagesRequestDeliver = "true"
+	ListInAppMessagesRequestDeliverFalse ListInAppMessagesRequestDeliver = "false"
+)
+
+func NewListInAppMessagesRequestDeliverFromString(s string) (ListInAppMessagesRequestDeliver, error) {
+	switch s {
+	case "true":
+		return ListInAppMessagesRequestDeliverTrue, nil
+	case "false":
+		return ListInAppMessagesRequestDeliverFalse, nil
+	}
+	var t ListInAppMessagesRequestDeliver
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListInAppMessagesRequestDeliver) Ptr() *ListInAppMessagesRequestDeliver {
+	return &l
+}
+
 type ListInAppMessagesRequestKind string
 
 const (
-	ListInAppMessagesRequestKindMessage ListInAppMessagesRequestKind = "message"
-	ListInAppMessagesRequestKindCard    ListInAppMessagesRequestKind = "card"
+	ListInAppMessagesRequestKindMessage   ListInAppMessagesRequestKind = "message"
+	ListInAppMessagesRequestKindCard      ListInAppMessagesRequestKind = "card"
+	ListInAppMessagesRequestKindPlacement ListInAppMessagesRequestKind = "placement"
 )
 
 func NewListInAppMessagesRequestKindFromString(s string) (ListInAppMessagesRequestKind, error) {
@@ -1638,6 +5639,8 @@ func NewListInAppMessagesRequestKindFromString(s string) (ListInAppMessagesReque
 		return ListInAppMessagesRequestKindMessage, nil
 	case "card":
 		return ListInAppMessagesRequestKindCard, nil
+	case "placement":
+		return ListInAppMessagesRequestKindPlacement, nil
 	}
 	var t ListInAppMessagesRequestKind
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -1821,6 +5824,106 @@ func NewListInAppMessagesResponseStatusFromString(s string) (ListInAppMessagesRe
 
 func (l ListInAppMessagesResponseStatus) Ptr() *ListInAppMessagesResponseStatus {
 	return &l
+}
+
+var (
+	listInAppPlacementsResponseFieldPlacements = big.NewInt(1 << 0)
+	listInAppPlacementsResponseFieldSuccess    = big.NewInt(1 << 1)
+)
+
+type ListInAppPlacementsResponse struct {
+	Placements []*InAppPlacementWithStats `json:"placements,omitempty" url:"placements,omitempty"`
+	Success    *bool                      `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListInAppPlacementsResponse) GetPlacements() []*InAppPlacementWithStats {
+	if l == nil {
+		return nil
+	}
+	return l.Placements
+}
+
+func (l *ListInAppPlacementsResponse) GetSuccess() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.Success
+}
+
+func (l *ListInAppPlacementsResponse) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListInAppPlacementsResponse) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetPlacements sets the Placements field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListInAppPlacementsResponse) SetPlacements(placements []*InAppPlacementWithStats) {
+	l.Placements = placements
+	l.require(listInAppPlacementsResponseFieldPlacements)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListInAppPlacementsResponse) SetSuccess(success *bool) {
+	l.Success = success
+	l.require(listInAppPlacementsResponseFieldSuccess)
+}
+
+func (l *ListInAppPlacementsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListInAppPlacementsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListInAppPlacementsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListInAppPlacementsResponse) MarshalJSON() ([]byte, error) {
+	type embed ListInAppPlacementsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListInAppPlacementsResponse) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
 }
 
 var (
@@ -2275,6 +6378,548 @@ func (r *RecordInAppEventResponse) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", r)
+}
+
+var (
+	sendInAppCampaignResponseFieldCampaign = big.NewInt(1 << 0)
+	sendInAppCampaignResponseFieldMessage  = big.NewInt(1 << 1)
+	sendInAppCampaignResponseFieldSuccess  = big.NewInt(1 << 2)
+)
+
+type SendInAppCampaignResponse struct {
+	Campaign *InAppCampaign `json:"campaign,omitempty" url:"campaign,omitempty"`
+	Message  *string        `json:"message,omitempty" url:"message,omitempty"`
+	Success  *bool          `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SendInAppCampaignResponse) GetCampaign() *InAppCampaign {
+	if s == nil {
+		return nil
+	}
+	return s.Campaign
+}
+
+func (s *SendInAppCampaignResponse) GetMessage() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Message
+}
+
+func (s *SendInAppCampaignResponse) GetSuccess() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.Success
+}
+
+func (s *SendInAppCampaignResponse) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SendInAppCampaignResponse) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetCampaign sets the Campaign field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendInAppCampaignResponse) SetCampaign(campaign *InAppCampaign) {
+	s.Campaign = campaign
+	s.require(sendInAppCampaignResponseFieldCampaign)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendInAppCampaignResponse) SetMessage(message *string) {
+	s.Message = message
+	s.require(sendInAppCampaignResponseFieldMessage)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendInAppCampaignResponse) SetSuccess(success *bool) {
+	s.Success = success
+	s.require(sendInAppCampaignResponseFieldSuccess)
+}
+
+func (s *SendInAppCampaignResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler SendInAppCampaignResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SendInAppCampaignResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SendInAppCampaignResponse) MarshalJSON() ([]byte, error) {
+	type embed SendInAppCampaignResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SendInAppCampaignResponse) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	stopInAppCampaignResponseFieldCampaign = big.NewInt(1 << 0)
+	stopInAppCampaignResponseFieldSuccess  = big.NewInt(1 << 1)
+)
+
+type StopInAppCampaignResponse struct {
+	Campaign *InAppCampaign `json:"campaign,omitempty" url:"campaign,omitempty"`
+	Success  *bool          `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *StopInAppCampaignResponse) GetCampaign() *InAppCampaign {
+	if s == nil {
+		return nil
+	}
+	return s.Campaign
+}
+
+func (s *StopInAppCampaignResponse) GetSuccess() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.Success
+}
+
+func (s *StopInAppCampaignResponse) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *StopInAppCampaignResponse) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetCampaign sets the Campaign field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *StopInAppCampaignResponse) SetCampaign(campaign *InAppCampaign) {
+	s.Campaign = campaign
+	s.require(stopInAppCampaignResponseFieldCampaign)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *StopInAppCampaignResponse) SetSuccess(success *bool) {
+	s.Success = success
+	s.require(stopInAppCampaignResponseFieldSuccess)
+}
+
+func (s *StopInAppCampaignResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler StopInAppCampaignResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = StopInAppCampaignResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *StopInAppCampaignResponse) MarshalJSON() ([]byte, error) {
+	type embed StopInAppCampaignResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *StopInAppCampaignResponse) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	unscheduleInAppCampaignResponseFieldCampaign = big.NewInt(1 << 0)
+	unscheduleInAppCampaignResponseFieldSuccess  = big.NewInt(1 << 1)
+)
+
+type UnscheduleInAppCampaignResponse struct {
+	Campaign *InAppCampaign `json:"campaign,omitempty" url:"campaign,omitempty"`
+	Success  *bool          `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UnscheduleInAppCampaignResponse) GetCampaign() *InAppCampaign {
+	if u == nil {
+		return nil
+	}
+	return u.Campaign
+}
+
+func (u *UnscheduleInAppCampaignResponse) GetSuccess() *bool {
+	if u == nil {
+		return nil
+	}
+	return u.Success
+}
+
+func (u *UnscheduleInAppCampaignResponse) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UnscheduleInAppCampaignResponse) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetCampaign sets the Campaign field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UnscheduleInAppCampaignResponse) SetCampaign(campaign *InAppCampaign) {
+	u.Campaign = campaign
+	u.require(unscheduleInAppCampaignResponseFieldCampaign)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UnscheduleInAppCampaignResponse) SetSuccess(success *bool) {
+	u.Success = success
+	u.require(unscheduleInAppCampaignResponseFieldSuccess)
+}
+
+func (u *UnscheduleInAppCampaignResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler UnscheduleInAppCampaignResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UnscheduleInAppCampaignResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UnscheduleInAppCampaignResponse) MarshalJSON() ([]byte, error) {
+	type embed UnscheduleInAppCampaignResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UnscheduleInAppCampaignResponse) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+// Order among messages waiting in the app at the same time; higher first. Defaults to medium, the same as sequence messages.
+type UpdateInAppCampaignRequestPriority string
+
+const (
+	UpdateInAppCampaignRequestPriorityLow    UpdateInAppCampaignRequestPriority = "low"
+	UpdateInAppCampaignRequestPriorityMedium UpdateInAppCampaignRequestPriority = "medium"
+	UpdateInAppCampaignRequestPriorityHigh   UpdateInAppCampaignRequestPriority = "high"
+)
+
+func NewUpdateInAppCampaignRequestPriorityFromString(s string) (UpdateInAppCampaignRequestPriority, error) {
+	switch s {
+	case "low":
+		return UpdateInAppCampaignRequestPriorityLow, nil
+	case "medium":
+		return UpdateInAppCampaignRequestPriorityMedium, nil
+	case "high":
+		return UpdateInAppCampaignRequestPriorityHigh, nil
+	}
+	var t UpdateInAppCampaignRequestPriority
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateInAppCampaignRequestPriority) Ptr() *UpdateInAppCampaignRequestPriority {
+	return &u
+}
+
+var (
+	updateInAppCampaignResponseFieldCampaign = big.NewInt(1 << 0)
+	updateInAppCampaignResponseFieldSuccess  = big.NewInt(1 << 1)
+)
+
+type UpdateInAppCampaignResponse struct {
+	Campaign *InAppCampaign `json:"campaign,omitempty" url:"campaign,omitempty"`
+	Success  *bool          `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateInAppCampaignResponse) GetCampaign() *InAppCampaign {
+	if u == nil {
+		return nil
+	}
+	return u.Campaign
+}
+
+func (u *UpdateInAppCampaignResponse) GetSuccess() *bool {
+	if u == nil {
+		return nil
+	}
+	return u.Success
+}
+
+func (u *UpdateInAppCampaignResponse) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateInAppCampaignResponse) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetCampaign sets the Campaign field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInAppCampaignResponse) SetCampaign(campaign *InAppCampaign) {
+	u.Campaign = campaign
+	u.require(updateInAppCampaignResponseFieldCampaign)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInAppCampaignResponse) SetSuccess(success *bool) {
+	u.Success = success
+	u.require(updateInAppCampaignResponseFieldSuccess)
+}
+
+func (u *UpdateInAppCampaignResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateInAppCampaignResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateInAppCampaignResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateInAppCampaignResponse) MarshalJSON() ([]byte, error) {
+	type embed UpdateInAppCampaignResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateInAppCampaignResponse) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	updateInAppPlacementResponseFieldPlacement = big.NewInt(1 << 0)
+	updateInAppPlacementResponseFieldSuccess   = big.NewInt(1 << 1)
+)
+
+type UpdateInAppPlacementResponse struct {
+	Placement *InAppPlacement `json:"placement,omitempty" url:"placement,omitempty"`
+	Success   *bool           `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateInAppPlacementResponse) GetPlacement() *InAppPlacement {
+	if u == nil {
+		return nil
+	}
+	return u.Placement
+}
+
+func (u *UpdateInAppPlacementResponse) GetSuccess() *bool {
+	if u == nil {
+		return nil
+	}
+	return u.Success
+}
+
+func (u *UpdateInAppPlacementResponse) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateInAppPlacementResponse) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetPlacement sets the Placement field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInAppPlacementResponse) SetPlacement(placement *InAppPlacement) {
+	u.Placement = placement
+	u.require(updateInAppPlacementResponseFieldPlacement)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInAppPlacementResponse) SetSuccess(success *bool) {
+	u.Success = success
+	u.require(updateInAppPlacementResponseFieldSuccess)
+}
+
+func (u *UpdateInAppPlacementResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateInAppPlacementResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateInAppPlacementResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateInAppPlacementResponse) MarshalJSON() ([]byte, error) {
+	type embed UpdateInAppPlacementResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateInAppPlacementResponse) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
 }
 
 var (
@@ -3137,6 +7782,167 @@ func NewWriteInAppCopyResponseCopyButtonsItemActionFromString(s string) (WriteIn
 
 func (w WriteInAppCopyResponseCopyButtonsItemAction) Ptr() *WriteInAppCopyResponseCopyButtonsItemAction {
 	return &w
+}
+
+var (
+	unscheduleInAppCampaignRequestFieldCampaignID = big.NewInt(1 << 0)
+)
+
+type UnscheduleInAppCampaignRequest struct {
+	CampaignID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (u *UnscheduleInAppCampaignRequest) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetCampaignID sets the CampaignID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UnscheduleInAppCampaignRequest) SetCampaignID(campaignID string) {
+	u.CampaignID = campaignID
+	u.require(unscheduleInAppCampaignRequestFieldCampaignID)
+}
+
+var (
+	updateInAppCampaignRequestFieldCampaignID  = big.NewInt(1 << 0)
+	updateInAppCampaignRequestFieldEndsAt      = big.NewInt(1 << 1)
+	updateInAppCampaignRequestFieldMessage     = big.NewInt(1 << 2)
+	updateInAppCampaignRequestFieldName        = big.NewInt(1 << 3)
+	updateInAppCampaignRequestFieldPriority    = big.NewInt(1 << 4)
+	updateInAppCampaignRequestFieldTargetLists = big.NewInt(1 << 5)
+)
+
+type UpdateInAppCampaignRequest struct {
+	CampaignID string `json:"-" url:"-"`
+	// When the campaign ends. After it nobody new gets the campaign and it leaves every feed that still has it, including seen cards. null means it runs until stopped.
+	EndsAt  *time.Time            `json:"endsAt,omitempty" url:"-"`
+	Message *InAppCampaignMessage `json:"message,omitempty" url:"-"`
+	Name    *string               `json:"name,omitempty" url:"-"`
+	// Order among messages waiting in the app at the same time; higher first. Defaults to medium, the same as sequence messages.
+	Priority *UpdateInAppCampaignRequestPriority `json:"priority,omitempty" url:"-"`
+	// Audience, same shape as campaign targetLists, for example {"type":"all"}, {"type":"lists","listIds":["..."]}, {"type":"segment","segmentId":"..."} or {"type":"rules","include":[...],"exclude":[...]}. Email status does not matter. Each contact is checked when their app fetches its feed while the campaign is live.
+	TargetLists map[string]any `json:"targetLists,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (u *UpdateInAppCampaignRequest) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetCampaignID sets the CampaignID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInAppCampaignRequest) SetCampaignID(campaignID string) {
+	u.CampaignID = campaignID
+	u.require(updateInAppCampaignRequestFieldCampaignID)
+}
+
+// SetEndsAt sets the EndsAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInAppCampaignRequest) SetEndsAt(endsAt *time.Time) {
+	u.EndsAt = endsAt
+	u.require(updateInAppCampaignRequestFieldEndsAt)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInAppCampaignRequest) SetMessage(message *InAppCampaignMessage) {
+	u.Message = message
+	u.require(updateInAppCampaignRequestFieldMessage)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInAppCampaignRequest) SetName(name *string) {
+	u.Name = name
+	u.require(updateInAppCampaignRequestFieldName)
+}
+
+// SetPriority sets the Priority field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInAppCampaignRequest) SetPriority(priority *UpdateInAppCampaignRequestPriority) {
+	u.Priority = priority
+	u.require(updateInAppCampaignRequestFieldPriority)
+}
+
+// SetTargetLists sets the TargetLists field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInAppCampaignRequest) SetTargetLists(targetLists map[string]any) {
+	u.TargetLists = targetLists
+	u.require(updateInAppCampaignRequestFieldTargetLists)
+}
+
+func (u *UpdateInAppCampaignRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateInAppCampaignRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*u = UpdateInAppCampaignRequest(body)
+	return nil
+}
+
+func (u *UpdateInAppCampaignRequest) MarshalJSON() ([]byte, error) {
+	type embed UpdateInAppCampaignRequest
+	var marshaler = struct {
+		embed
+		EndsAt *internal.DateTime `json:"endsAt,omitempty"`
+	}{
+		embed:  embed(*u),
+		EndsAt: internal.NewOptionalDateTime(u.EndsAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
+	updateInAppPlacementRequestFieldKey = big.NewInt(1 << 0)
+)
+
+type UpdateInAppPlacementRequest struct {
+	// The placement key, e.g. home_hero.
+	Key  string               `json:"-" url:"-"`
+	Body *InAppPlacementInput `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (u *UpdateInAppPlacementRequest) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetKey sets the Key field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInAppPlacementRequest) SetKey(key string) {
+	u.Key = key
+	u.require(updateInAppPlacementRequestFieldKey)
+}
+
+func (u *UpdateInAppPlacementRequest) UnmarshalJSON(data []byte) error {
+	body := new(InAppPlacementInput)
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	u.Body = body
+	return nil
+}
+
+func (u *UpdateInAppPlacementRequest) MarshalJSON() ([]byte, error) {
+	return json.Marshal(u.Body)
 }
 
 var (

@@ -876,7 +876,7 @@ client.AbTests.SelectWinner(
 <dl>
 <dd>
 
-Updates a draft or testing campaign test or the effective settings for a sequence test. Live campaign duration is measured from its original start; sample changes are asynchronous and preserve committed recipients. Campaigns use testPercentage and testDurationMinutes; sequences use testType and winnerThreshold. Sequence changes that affect a live or already-used test require confirmLiveChange.
+Updates a draft or testing campaign test or the effective settings for a sequence test. Live campaign duration is measured from its original start, or from when the last test email is due when delivery is spread; sample changes are asynchronous and preserve committed recipients. Campaigns use testPercentage and testDurationMinutes; sequences use testType and winnerThreshold. Sequence changes that affect a live or already-used test require confirmLiveChange.
 </dd>
 </dl>
 </dd>
@@ -968,7 +968,7 @@ client.AbTests.Update(
 <dl>
 <dd>
 
-**testDurationMinutes:** `*int` — Campaign-only total minutes from the original test start. An elapsed deadline queues selection immediately; paused campaigns stay paused.
+**testDurationMinutes:** `*int` — Campaign-only total minutes from the original test start, or from when the last test email is due when delivery is spread. An elapsed deadline queues selection immediately; paused campaigns stay paused.
     
 </dd>
 </dl>
@@ -4670,6 +4670,158 @@ client.Analytics.ListCampaignPollResponsesLegacy(
 </dl>
 </details>
 
+<details><summary><code>client.Analytics.ListCampaignReplies(CampaignID) -> *sequenzygo.ListCampaignRepliesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns one row per reply to a campaign, newest first, with the subscriber who replied, the send they replied to, attachment counts, the reply time and the inbox conversation holding the reply. `pagination.total` matches `stats.replies` from the campaign metrics endpoint called without `period`, `start` or `end`, which narrow that count, or `mailboxProvider`, which reports 0 replies. Reply text is not returned: read it with `GET /conversations/{conversationId}`. `conversationId` is null when the reply has no inbox conversation. Requires the `analytics:read` scope. Also available at `GET /campaigns/{campaignId}/replies`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.ListCampaignRepliesRequest{
+    CampaignID: "campaignId",
+}
+client.Analytics.ListCampaignReplies(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**campaignID:** `string` — Campaign ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `*int` — Replies per page (max 500)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page:** `*int` — Page number
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Analytics.ListCampaignRepliesLegacy(CampaignID) -> *sequenzygo.ListCampaignRepliesLegacyResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Alias for `GET /metrics/campaigns/{campaignId}/replies`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.ListCampaignRepliesLegacyRequest{
+    CampaignID: "campaignId",
+}
+client.Analytics.ListCampaignRepliesLegacy(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**campaignID:** `string` — Campaign ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `*int` — Replies per page (max 500)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page:** `*int` — Page number
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Analytics.ListEmailMetrics() -> *sequenzygo.ListEmailMetricsResponse</code></summary>
 <dl>
 <dd>
@@ -6053,7 +6205,7 @@ client.Campaigns.CreateVariation(
 <dl>
 <dd>
 
-Permanently deletes a campaign. Active campaigns (sending, scheduled, or paused) must be cancelled first.
+Permanently deletes a campaign. Active campaigns (sending, scheduled, or paused) must be cancelled first, and a live in-app campaign must be stopped first. Deleting an in-app campaign also deletes the messages it delivered.
 </dd>
 </dl>
 </dd>
@@ -7389,7 +7541,7 @@ client.Campaigns.Resume(
 <dl>
 <dd>
 
-**spreadOverHours:** `*int` — Spread remaining delivery over this many hours. Pass null to clear an existing spread.
+**spreadOverHours:** `*int` — Spread remaining delivery over this many hours. Pass null to clear an existing spread. With an A/B test, this sets the sending rate and the current phase's remaining recipients are spread over their share of it. If the account has a minimum spread, a lower, missing or cleared value is raised to it.
     
 </dd>
 </dl>
@@ -7587,7 +7739,7 @@ client.Campaigns.Schedule(
 <dl>
 <dd>
 
-**spreadOverHours:** `*float64` — Spread delivery over this many hours. When set, spread delivery takes precedence over send-time optimization.
+**spreadOverHours:** `*float64` — Spread delivery over this many hours. When set, spread delivery takes precedence over send-time optimization. With an A/B test, the spread sets one sending rate for the whole audience; the test sample and the winner are each spread over their share of the window, with the test duration in between. If the account has a minimum spread, a lower or missing value is raised to it and send-time optimization is turned off.
     
 </dd>
 </dl>
@@ -13262,6 +13414,156 @@ client.Geofences.UpdateGeofence(
 </details>
 
 ## In-app
+<details><summary><code>client.InApp.CreateInAppCampaign(request) -> *sequenzygo.CreateInAppCampaignResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Creates an in-app campaign draft, one in-app message or content card for an audience. The message, priority, end time and audience can be set now or later. Requires the campaigns:write scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.CreateInAppCampaignRequest{}
+client.InApp.CreateInAppCampaign(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**endsAt:** `*time.Time` — When the campaign ends. After it nobody new gets the campaign and it leaves every feed that still has it, including seen cards. null means it runs until stopped.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**message:** `*sequenzygo.InAppCampaignMessage` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**name:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**priority:** `*sequenzygo.CreateInAppCampaignRequestPriority` — Order among messages waiting in the app at the same time; higher first. Defaults to medium, the same as sequence messages.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**targetLists:** `map[string]any` — Audience, same shape as campaign targetLists, for example {"type":"all"}, {"type":"lists","listIds":["..."]}, {"type":"segment","segmentId":"..."} or {"type":"rules","include":[...],"exclude":[...]}. Email status does not matter. Each contact is checked when their app fetches its feed while the campaign is live.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.InApp.CreateInAppPlacement(request) -> *sequenzygo.CreateInAppPlacementResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Creates a placement, a slot in your app that shows in-app content inline. The key never changes. A workspace can have up to 50 placements. Requires the sequences:write scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.CreateInAppPlacementRequest{
+    Key: "home_hero",
+}
+client.InApp.CreateInAppPlacement(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**key:** `string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.InApp.DeleteInAppMessage(MessageID) -> *sequenzygo.DeleteInAppMessageResponse</code></summary>
 <dl>
 <dd>
@@ -13311,6 +13613,468 @@ client.InApp.DeleteInAppMessage(
 <dd>
 
 **messageID:** `string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.InApp.DeleteInAppPlacement(Key) -> *sequenzygo.DeleteInAppPlacementResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Deletes a placement. Its slots collapse in your app on the next refresh, and in-app steps that target it skip contacts until a placement with the same key exists again. Items already created stay in contact history and never show again, even under a placement created later with the same key. Requires the sequences:delete scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.DeleteInAppPlacementRequest{
+    Key: "key",
+}
+client.InApp.DeleteInAppPlacement(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**key:** `string` — The placement key, e.g. home_hero.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.InApp.DuplicateInAppCampaign(CampaignID, request) -> *sequenzygo.DuplicateInAppCampaignResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Copies an in-app campaign's message, priority, audience and labels into a new draft. An end time that has passed is not copied. Requires the campaigns:write scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.DuplicateInAppCampaignRequest{
+    CampaignID: "campaignId",
+}
+client.InApp.DuplicateInAppCampaign(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**campaignID:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**name:** `*string` — Name for the copy. Defaults to the source name with " (Copy)".
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.InApp.EstimateInAppCampaignRecipients(request) -> *sequenzygo.EstimateInAppCampaignRecipientsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Counts the contacts who match an audience now. Contacts who join the audience while the campaign is live get it too. Requires the campaigns:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.EstimateInAppCampaignRecipientsRequest{
+    TargetLists: map[string]any{
+        "key": "value",
+    },
+}
+client.InApp.EstimateInAppCampaignRecipients(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**targetLists:** `map[string]any` — Audience, same shape as campaign targetLists.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.InApp.GetInAppCampaign(CampaignID) -> *sequenzygo.GetInAppCampaignResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns an in-app campaign's message, audience, priority, schedule, end time and state, plus reach and engagement once it has launched (null for drafts and scheduled campaigns). Requires the campaigns:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.GetInAppCampaignRequest{
+    CampaignID: "campaignId",
+}
+client.InApp.GetInAppCampaign(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**campaignID:** `string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.InApp.GetInAppCampaignStats(CampaignID) -> *sequenzygo.GetInAppCampaignStatsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns reach and engagement for an in-app campaign, counted from the messages it delivered. Requires the campaigns:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.GetInAppCampaignStatsRequest{
+    CampaignID: "campaignId",
+}
+client.InApp.GetInAppCampaignStats(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**campaignID:** `string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.InApp.GetInAppPlacement(Key) -> *sequenzygo.GetInAppPlacementResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+One placement with its all-time item counts. Requires the sequences:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.GetInAppPlacementRequest{
+    Key: "key",
+}
+client.InApp.GetInAppPlacement(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**key:** `string` — The placement key, e.g. home_hero.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.InApp.GetInAppPlacementContent() -> *sequenzygo.GetInAppPlacementContentResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+What each requested placement shows one contact now: their highest-priority open placement item (ties go to the newest), or null so your app collapses the slot. Keys the workspace has not defined always return null. Reading marks nothing displayed. Identify the contact with email, externalId or subscriberId. Requires the subscribers:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.GetInAppPlacementContentRequest{
+    Placements: "home_hero,checkout_upsell",
+}
+client.InApp.GetInAppPlacementContent(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**actions:** `*string` — Comma-separated button actions your app handles beyond open_url and dismiss (request_push_permission). Items with other actions are skipped, so a lower-priority item can show.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**email:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**externalID:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**placements:** `string` — Comma-separated placement keys, up to 10.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**subscriberID:** `*string` 
     
 </dd>
 </dl>
@@ -13382,6 +14146,80 @@ client.InApp.GetInAppStepStats(
 </dl>
 </details>
 
+<details><summary><code>client.InApp.ListInAppCampaigns() -> *sequenzygo.ListInAppCampaignsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists in-app campaigns, newest first. Each carries its stored status and a state (draft, scheduled, live, ended, stopped). In-app campaigns also appear in GET /campaigns with type in_app. Requires the campaigns:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.ListInAppCampaignsRequest{}
+client.InApp.ListInAppCampaigns(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**limit:** `*int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**offset:** `*int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**status:** `*sequenzygo.ListInAppCampaignsRequestStatus` — Stored status. sent covers live and ended campaigns; cancelled covers stopped ones.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.InApp.ListInAppMessages() -> *sequenzygo.ListInAppMessagesResponse</code></summary>
 <dl>
 <dd>
@@ -13394,7 +14232,7 @@ client.InApp.GetInAppStepStats(
 <dl>
 <dd>
 
-Lists a contact's in-app messages and content cards, created by in_app sequence steps. With status open (default) it returns what the app should show now: messages not yet displayed, clicked or dismissed, and cards not dismissed, excluding expired items, messages first, then pinned cards, then newest. With status all it returns history, newest first. Identify the contact with email, externalId or subscriberId. Requires the subscribers:read scope.
+Lists a contact's in-app messages and content cards, created by in_app sequence steps and in-app campaigns. With status open (default) it first delivers live in-app campaigns the contact qualifies for, as the app's own feed does, then returns what the app should show now: messages not yet displayed, clicked or dismissed, and cards not dismissed, excluding expired items, messages first, then higher campaign priority, then pinned cards, then newest. With status all it returns history, newest first. Identify the contact with email, externalId or subscriberId. Requires the subscribers:read scope.
 </dd>
 </dl>
 </dd>
@@ -13440,6 +14278,14 @@ client.InApp.ListInAppMessages(
 <dl>
 <dd>
 
+**deliver:** `*sequenzygo.ListInAppMessagesRequestDeliver` — Open feeds only. true (default) first delivers live in-app campaigns the contact qualifies for, as the app's own feed does; false lists without delivering, for looking at a contact's feed (support, agents) without counting a delivery.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **email:** `*string` — Contact email (case-insensitive).
     
 </dd>
@@ -13464,7 +14310,7 @@ client.InApp.ListInAppMessages(
 <dl>
 <dd>
 
-**kind:** `*sequenzygo.ListInAppMessagesRequestKind` 
+**kind:** `*sequenzygo.ListInAppMessagesRequestKind` — Only one kind. Open feeds never list placement items (kind=placement with status open returns 400); use Get Placement Content for what each placement shows, or status=all for history.
     
 </dd>
 </dl>
@@ -13490,6 +14336,47 @@ client.InApp.ListInAppMessages(
 
 **subscriberID:** `*string` 
     
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.InApp.ListInAppPlacements() -> *sequenzygo.ListInAppPlacementsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists the workspace's placements, sorted by name, each with all-time item counts. Requires the sequences:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+client.InApp.ListInAppPlacements(
+    context.TODO(),
+)
+```
 </dd>
 </dl>
 </dd>
@@ -13615,6 +14502,363 @@ client.InApp.RecordInAppEvent(
 <dd>
 
 **type_:** `*sequenzygo.RecordInAppEventRequestType` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.InApp.SendInAppCampaign(CampaignID, request) -> *sequenzygo.SendInAppCampaignResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Launches a draft or scheduled in-app campaign now, or schedules it when scheduledAt is a future ISO 8601 time. Launching writes nothing per contact. While the campaign is live, each contact in the audience gets the message the first time their app fetches its feed (SDK feed, browser feed or GET /in-app/messages), including contacts who join the audience later or open the app days later. Callers that cannot render the message's format or button actions do not use it up. Requires a message, an audience and an end time after the start. Requires the campaigns:send scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.SendInAppCampaignRequest{
+    CampaignID: "campaignId",
+}
+client.InApp.SendInAppCampaign(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**campaignID:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**scheduledAt:** `*time.Time` — Future ISO 8601 time to go live. Omit or pass null to launch now.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.InApp.StopInAppCampaign(CampaignID) -> *sequenzygo.StopInAppCampaignResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Stops a scheduled or live in-app campaign. Nobody new gets it, and it leaves every feed that still has it, including cards contacts have seen but not dismissed. Stats are kept. Stopping is final; duplicate the campaign to run it again. Stopping a stopped campaign succeeds and ends its items again; a campaign past its end time has already ended (409). POST /campaigns/{campaignId}/cancel does the same for in-app campaigns. Requires the campaigns:send scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.StopInAppCampaignRequest{
+    CampaignID: "campaignId",
+}
+client.InApp.StopInAppCampaign(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**campaignID:** `string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.InApp.UnscheduleInAppCampaign(CampaignID) -> *sequenzygo.UnscheduleInAppCampaignResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Moves a scheduled in-app campaign back to draft. Requires the campaigns:send scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.UnscheduleInAppCampaignRequest{
+    CampaignID: "campaignId",
+}
+client.InApp.UnscheduleInAppCampaign(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**campaignID:** `string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.InApp.UpdateInAppCampaign(CampaignID, request) -> *sequenzygo.UpdateInAppCampaignResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Updates a draft or scheduled in-app campaign. Only the fields you pass change; message fields are merged over the stored message. Clear imageUrl, position, imagePlacement, expiresAfterDays, style, html or showCloseButton with null, eyebrow with "", buttons with [] and data with {}. A scheduled campaign must stay launchable. Live, ended and stopped campaigns cannot be edited; stop and duplicate them instead. Requires the campaigns:write scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.UpdateInAppCampaignRequest{
+    CampaignID: "campaignId",
+}
+client.InApp.UpdateInAppCampaign(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**campaignID:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**endsAt:** `*time.Time` — When the campaign ends. After it nobody new gets the campaign and it leaves every feed that still has it, including seen cards. null means it runs until stopped.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**message:** `*sequenzygo.InAppCampaignMessage` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**name:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**priority:** `*sequenzygo.UpdateInAppCampaignRequestPriority` — Order among messages waiting in the app at the same time; higher first. Defaults to medium, the same as sequence messages.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**targetLists:** `map[string]any` — Audience, same shape as campaign targetLists, for example {"type":"all"}, {"type":"lists","listIds":["..."]}, {"type":"segment","segmentId":"..."} or {"type":"rules","include":[...],"exclude":[...]}. Email status does not matter. Each contact is checked when their app fetches its feed while the campaign is live.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.InApp.UpdateInAppPlacement(Key, request) -> *sequenzygo.UpdateInAppPlacementResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Changes a placement's name, description or size hints; null clears a size hint. The key cannot change. Requires the sequences:write scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.UpdateInAppPlacementRequest{
+    Key: "key",
+    Body: &sequenzygo.InAppPlacementInput{},
+}
+client.InApp.UpdateInAppPlacement(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**key:** `string` — The placement key, e.g. home_hero.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request:** `*sequenzygo.InAppPlacementInput` 
     
 </dd>
 </dl>
@@ -18448,6 +19692,14 @@ client.Push.CreatePushCampaign(
 <dl>
 <dd>
 
+**localizations:** `*sequenzygo.PushLocalizationList` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **name:** `*string` 
     
 </dd>
@@ -18780,7 +20032,7 @@ client.Push.DuplicatePushCampaign(
 <dl>
 <dd>
 
-Ends the contact's activity on every device running it. Tokens are marked ended as APNs accepts the push, so an end that failed can be sent again. Without dismissalDate iOS keeps an ended activity on the Lock Screen for up to four hours. Requires the transactional:send scope.
+Ends the contact's activity on every device running it, iOS and Android, or with broadcast true on every signed-in device running the activityId. Tokens are marked ended as APNs or FCM accepts the push, so an end that failed can be sent again. Without dismissalDate iOS keeps an ended activity on the Lock Screen, and Android keeps the final notification, for up to four hours. Requires the transactional:send scope; broadcast also requires campaigns:send.
 </dd>
 </dl>
 </dd>
@@ -18835,6 +20087,14 @@ client.Push.EndLiveActivity(
 <dl>
 <dd>
 
+**broadcast:** `*bool` — true sends to every signed-in device running this activityId, of any contact, counting at most 10 devices per contact and up to 100,000 in all. Use it for shared activities such as one started for a segment, list or tag, never for a per-person id like an order, since anyone signed in to your app who runs the id receives the content. Ignored when email or subscriberId is present.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **contentState:** `map[string]any` — Final content shown until the activity is removed. Required, as in Apple's end payloads.
     
 </dd>
@@ -18851,7 +20111,7 @@ client.Push.EndLiveActivity(
 <dl>
 <dd>
 
-**email:** `*string` — Contact whose activity it is. Provide email or subscriberId; activities are always addressed per contact, so a token registered under the same activityId by another device never receives this content.
+**email:** `*string` — Contact whose activity it is. Provide email or subscriberId, or broadcast. Per-contact requests reach only that contact's devices, so a token registered under the same activityId by another device never receives this content.
     
 </dd>
 </dl>
@@ -18941,6 +20201,14 @@ client.Push.EstimatePushCampaignRecipients(
 
 <dl>
 <dd>
+
+<dl>
+<dd>
+
+**includeTimingCoverage:** `*bool` — Also return timingCoverage, which counts the eligible contacts that local-time delivery and send-time optimization can personalize.
+    
+</dd>
+</dl>
 
 <dl>
 <dd>
@@ -19266,7 +20534,7 @@ client.Push.GetPushSettings(
 <dl>
 <dd>
 
-Lists ActivityKit tokens the Sequenzy iOS SDK reported, with a summary per activity type (for the contact when email or subscriberId is given). push_to_start tokens can start an activity of their type; update tokens address one running activity. Tokens are masked. Requires the subscribers:read scope.
+Lists ActivityKit tokens the Sequenzy iOS SDK reported and Android Live Update tokens the Sequenzy Android SDK reported, with a summary per activity type (for the contact when email or subscriberId is given, and for the platform when platform is given). push_to_start tokens can start an activity of their type; update tokens address one running activity. Tokens are masked. Requires the subscribers:read scope.
 </dd>
 </dl>
 </dd>
@@ -19341,6 +20609,14 @@ client.Push.ListLiveActivities(
 <dd>
 
 **limit:** `*int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**platform:** `*sequenzygo.ListLiveActivitiesRequestPlatform` — Only iOS Live Activity tokens or Android Live Update tokens. The summary counts the same platform.
     
 </dd>
 </dl>
@@ -19751,7 +21027,7 @@ client.Push.RegisterPushDevice(
 <dl>
 <dd>
 
-Sends a draft or scheduled push campaign now, or schedules it when scheduledAt is a future ISO 8601 time. Requires content, an audience with at least one contact that has an active device, and at least one selected platform set up in push settings. The audience is re-evaluated when delivery starts. Requires the campaigns:send scope.
+Sends a draft or scheduled push campaign now, or schedules it when scheduledAt is a future ISO 8601 time. Requires content, an audience with at least one contact that has an active device, and at least one selected platform set up in push settings. The audience is re-evaluated when delivery starts. Optionally deliver in each contact's local time (sendInRecipientTimezone with scheduledAt and scheduledTimezone) or at each contact's optimal hour (sendTimeOptimization); omitted timing fields keep the values saved on the campaign. Push campaigns have no spreadOverHours. Requires the campaigns:send scope.
 </dd>
 </dl>
 </dd>
@@ -19796,6 +21072,38 @@ client.Push.SendPushCampaign(
 <dd>
 
 **scheduledAt:** `*time.Time` — Future ISO 8601 time. Omit or null to send immediately.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**scheduledTimezone:** `*string` — IANA timezone the scheduled wall-clock time refers to, for example America/New_York. null clears it.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sendInRecipientTimezone:** `*bool` — Deliver scheduledAt's wall-clock time in each contact's own timezone, using the timezone the contact's most recently seen active device reported, else the contact's timezone attribute. Needs scheduledAt and scheduledTimezone when sending. Contacts whose local time has already passed get the push right away; contacts with no known timezone get it at scheduledAt. Delivery starts where the wall time first occurs (UTC+14), so a campaign can stay sending for about 26 hours. Enabling it turns sendTimeOptimization off; omit to keep the saved value.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sendTimeOptimization:** `*bool` — Send each contact the push at their most engaged UTC hour within sendTimeWindowHours of the start (now, or scheduledAt). The hour is their most-clicked push hour over the last 90 days (at least 3 clicks), else their most-opened email hour, else the workspace's most-clicked push hour (once it has at least 20 clicks in the last 90 days), else the start. Enabling it turns sendInRecipientTimezone off; passing both as true returns 400. Omit to keep the saved value.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sendTimeWindowHours:** `*int` — Hours after the start in which optimized sends may land. Omit to keep the saved value, which is 12 if never set.
     
 </dd>
 </dl>
@@ -20098,7 +21406,7 @@ client.Push.SetFcmCredentials(
 <dl>
 <dd>
 
-Starts an iOS Live Activity remotely (push-to-start, iOS 17.2+) on every device of one contact that reported a push-to-start token for activityType. Sequenzy adds sequenzy.activityId to the attributes so the SDK can report the new activity's update token under your id. Returns 202 with tokenCount 0, sending nothing, when no device can start it. Calling it again starts another copy. Requires the transactional:send scope.
+Starts a Live Activity remotely on every device that reported a push-to-start token for activityType, on iOS 17.2+ through APNs and as an Android Live Update through FCM on apps that observe the same type with the Sequenzy Android SDK (promoted on Android 16, an ongoing notification on earlier versions). Target one contact with email or subscriberId, or everyone in a segment, list or tag with exactly one of segmentId, listId or tag (up to 100,000 devices on platforms with push credentials; contacts the app signed in with Sequenzy.identify, whatever their email status). When email or subscriberId is present, segmentId, listId and tag are ignored. All copies share the activityId, so one update or end with broadcast true reaches every device running it. Only platforms with push credentials are sent to; the request fails with 400 when neither APNs nor FCM is set up. Sequenzy adds sequenzy.activityId to the attributes so the iOS SDK can report the new activity's update token under your id. Returns 202 with tokenCount 0, sending nothing, when no device can start it. Calling it again starts another copy. Requires the transactional:send scope; a segment, list or tag also requires campaigns:send.
 </dd>
 </dl>
 </dd>
@@ -20180,7 +21488,15 @@ client.Push.StartLiveActivity(
 <dl>
 <dd>
 
-**email:** `*string` — Contact whose devices start the activity. Provide email or subscriberId.
+**email:** `*string` — Contact whose devices start the activity. Provide email or subscriberId, or one of segmentId, listId or tag.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**listID:** `*string` — Start it for every contact in this list.
     
 </dd>
 </dl>
@@ -20189,6 +21505,14 @@ client.Push.StartLiveActivity(
 <dd>
 
 **relevanceScore:** `*float64` — Orders a person's concurrent activities; higher shows first.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**segmentID:** `*string` — Start it for every contact in this segment.
     
 </dd>
 </dl>
@@ -20205,6 +21529,14 @@ client.Push.StartLiveActivity(
 <dd>
 
 **subscriberID:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**tag:** `*string` — Start it for every contact with this tag. One tag name without commas, matched like campaign tag filters, so Lakers Fan also matches lakers-fan.
     
 </dd>
 </dl>
@@ -20265,6 +21597,172 @@ client.Push.StartPushImport(
 <dd>
 
 **importID:** `string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Push.TranslatePushCampaign(CampaignID, request) -> *sequenzygo.TranslatePushCampaignResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Translates a draft or scheduled push campaign's title and message with AI into the workspace's languages (Settings > Localization) and saves the versions. By default it translates languages with no version and AI versions whose main copy changed since; versions a person wrote are kept unless overwrite is true. Merge tags are kept exactly and their fallback text is translated. Runs inline (a few seconds). The save is skipped with 409 if the campaign changed while translating. Requires the campaigns:write scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.TranslatePushCampaignRequest{
+    CampaignID: "campaignId",
+}
+client.Push.TranslatePushCampaign(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**campaignID:** `string` — Push campaign ID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**locales:** `[]string` — Languages to translate into. Omit for every workspace language except the main one. Languages outside the workspace's list are rejected.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**overwrite:** `*bool` — Retranslate every requested language, replacing versions a person wrote.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Push.TranslatePushContent(request) -> *sequenzygo.TranslatePushContentResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Translates a push title and message with AI into the workspace's languages and returns the versions without saving anything. Use the result as a sequence push step's localizations (nodeUpdates changes.localizations) or a push campaign's. Pass existing versions in localizations to keep them; the same rules as Translate a push campaign decide which languages are translated. Requires the templates:write scope, like the other content generation endpoints.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.TranslatePushContentRequest{}
+client.Push.TranslatePushContent(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**body:** `*string` — Main-language message.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**locales:** `[]string` — Languages to translate into. Omit for every workspace language except the main one.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**localizations:** `*sequenzygo.PushLocalizationList` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**overwrite:** `*bool` — Retranslate versions a person wrote too.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**title:** `*string` — Main-language title. A title or a body is required.
     
 </dd>
 </dl>
@@ -20348,7 +21846,7 @@ client.Push.UnschedulePushCampaign(
 <dl>
 <dd>
 
-Sends new content state to every running copy of the contact's activity (one per device that reported an update token). Each request carries a fixed timestamp, so a retried or late delivery never replaces newer content. Returns tokenCount 0 when no running copy has reported a token. Requires the transactional:send scope.
+Sends new content state to every running copy of the contact's activity (one per device that reported an update token, iOS and Android), or with broadcast true to every signed-in device running the activityId, such as an activity started for a segment, list or tag. Each request carries a fixed timestamp, so a retried or late delivery never replaces newer content on either platform. Returns tokenCount 0 when no running copy has reported a token. Requires the transactional:send scope; broadcast also requires campaigns:send.
 </dd>
 </dl>
 </dd>
@@ -20404,6 +21902,14 @@ client.Push.UpdateLiveActivity(
 <dl>
 <dd>
 
+**broadcast:** `*bool` — true sends to every signed-in device running this activityId, of any contact, counting at most 10 devices per contact and up to 100,000 in all. Use it for shared activities such as one started for a segment, list or tag, never for a per-person id like an order, since anyone signed in to your app who runs the id receives the content. Ignored when email or subscriberId is present.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **contentState:** `map[string]any` — Your Swift ContentState as JSON. Date fields decode as seconds since 2001-01-01 unless your struct decodes them differently.
     
 </dd>
@@ -20412,7 +21918,7 @@ client.Push.UpdateLiveActivity(
 <dl>
 <dd>
 
-**email:** `*string` — Contact whose activity it is. Provide email or subscriberId; activities are always addressed per contact, so a token registered under the same activityId by another device never receives this content.
+**email:** `*string` — Contact whose activity it is. Provide email or subscriberId, or broadcast. Per-contact requests reach only that contact's devices, so a token registered under the same activityId by another device never receives this content.
     
 </dd>
 </dl>
@@ -20468,7 +21974,7 @@ client.Push.UpdateLiveActivity(
 <dl>
 <dd>
 
-Updates a draft or scheduled push campaign. Only the fields you pass change; content fields merge over the stored content. A scheduled campaign keeps its schedule and cannot be cleared to empty content. Requires the campaigns:write scope.
+Updates a draft or scheduled push campaign. Only the fields you pass change; content fields merge over the stored content. A scheduled campaign keeps its schedule and cannot be cleared to empty content. Delivery timing (sendInRecipientTimezone, scheduledTimezone, sendTimeOptimization, sendTimeWindowHours) saves on drafts; changing it on a scheduled campaign returns 409, so reschedule with the send endpoint instead. Requires the campaigns:write scope.
 </dd>
 </dl>
 </dd>
@@ -20536,6 +22042,14 @@ client.Push.UpdatePushCampaign(
 <dl>
 <dd>
 
+**localizations:** `*sequenzygo.PushLocalizationList` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **name:** `*string` 
     
 </dd>
@@ -20545,6 +22059,38 @@ client.Push.UpdatePushCampaign(
 <dd>
 
 **platforms:** `[]*sequenzygo.UpdatePushCampaignRequestPlatformsItem` — Limit delivery to these platforms. Omit or pass an empty array for every platform.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**scheduledTimezone:** `*string` — IANA timezone the scheduled wall-clock time refers to, for example America/New_York. null clears it.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sendInRecipientTimezone:** `*bool` — Deliver scheduledAt's wall-clock time in each contact's own timezone, using the timezone the contact's most recently seen active device reported, else the contact's timezone attribute. Needs scheduledAt and scheduledTimezone when sending. Contacts whose local time has already passed get the push right away; contacts with no known timezone get it at scheduledAt. Delivery starts where the wall time first occurs (UTC+14), so a campaign can stay sending for about 26 hours. Enabling it turns sendTimeOptimization off; omit to keep the saved value.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sendTimeOptimization:** `*bool` — Send each contact the push at their most engaged UTC hour within sendTimeWindowHours of the start (now, or scheduledAt). The hour is their most-clicked push hour over the last 90 days (at least 3 clicks), else their most-opened email hour, else the workspace's most-clicked push hour (once it has at least 20 clicks in the last 90 days), else the start. Enabling it turns sendInRecipientTimezone off; passing both as true returns 400. Omit to keep the saved value.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sendTimeWindowHours:** `*int` — Hours after the start in which optimized sends may land. Omit to keep the saved value, which is 12 if never set.
     
 </dd>
 </dl>
@@ -35859,7 +37405,7 @@ client.WebTrackingKeys.List(
 <dl>
 <dd>
 
-Mints a short-lived HMAC proof bound to one active web tracking key, workspace, and normalized email. Identify the key by keyId or by its publishable publicKey value. If the email is not yet a contact, one is created (active, no lists, no automations triggered) so identified events are attributed instead of being silently dropped. Call this only from an authenticated backend; never expose the secret API key in browser code. Identified browser events without this proof are rejected before queueing. Requires commerce:write, automations:trigger, and subscribers:write (minting can create the contact).
+Mints a short-lived HMAC proof bound to one active web tracking key, workspace, and the user's normalized email, external ID (your own user ID), or both. Identify the key by keyId or by its publishable publicKey value. If the user is not yet a contact, one is created (active, no lists, no automations triggered) so identified events are attributed instead of being silently dropped; an external ID alone creates a contact with no email. Minting with both links them, attaching the external ID to the email's contact (or folding a contact that has only that external ID into it). The SDK must send exactly the identifiers the token was minted for. Call this only from an authenticated backend; never expose the secret API key in browser code. Identified browser events without this proof are rejected before queueing. Requires commerce:write, automations:trigger, and subscribers:write (minting can create the contact).
 </dd>
 </dl>
 </dd>
@@ -35874,9 +37420,7 @@ Mints a short-lived HMAC proof bound to one active web tracking key, workspace, 
 <dd>
 
 ```go
-request := &sequenzygo.MintIdentityWebTrackingKeysRequest{
-    Email: "email",
-}
+request := &sequenzygo.MintIdentityWebTrackingKeysRequest{}
 client.WebTrackingKeys.MintIdentity(
     context.TODO(),
     request,
@@ -35895,7 +37439,15 @@ client.WebTrackingKeys.MintIdentity(
 <dl>
 <dd>
 
-**email:** `string` 
+**email:** `*string` — Email of the signed-in user, normalized to lowercase. Optional when externalId is provided.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**externalID:** `*string` — Your own ID for the signed-in user, for users without an email (Sign in with Apple relay, phone login). Case-sensitive; surrounding whitespace is trimmed.
     
 </dd>
 </dl>

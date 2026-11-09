@@ -8003,6 +8003,217 @@ func (p PollResultsSummaryVariant) Ptr() *PollResultsSummaryVariant {
 	return &p
 }
 
+// One language's version of a push. Title and body are its own; a null url or imageUrl uses the main one. Each contact gets the version for their language attribute (Settings > Localization), else their device's OS language, else the workspace fallback language. Languages without a version, and versions for languages no longer in the workspace's list, get the main title and body.
+var (
+	pushLocalizationFieldBody       = big.NewInt(1 << 0)
+	pushLocalizationFieldImageURL   = big.NewInt(1 << 1)
+	pushLocalizationFieldLocale     = big.NewInt(1 << 2)
+	pushLocalizationFieldOrigin     = big.NewInt(1 << 3)
+	pushLocalizationFieldSourceHash = big.NewInt(1 << 4)
+	pushLocalizationFieldTitle      = big.NewInt(1 << 5)
+	pushLocalizationFieldURL        = big.NewInt(1 << 6)
+)
+
+type PushLocalization struct {
+	// Message in this language. Merge tags work.
+	Body string `json:"body" url:"body"`
+	// Image for this language. null uses the main image.
+	ImageURL *string `json:"imageUrl,omitempty" url:"imageUrl,omitempty"`
+	// Language code such as de, fr or pt-BR. Stored in canonical form; each language appears once.
+	Locale string `json:"locale" url:"locale"`
+	// ai for AI translations, manual for versions a person wrote. Translate requests keep manual versions unless overwrite is true.
+	Origin *PushLocalizationOrigin `json:"origin,omitempty" url:"origin,omitempty"`
+	// Fingerprint of the main title and body this version was written from. When it no longer matches, the dashboard shows the version as outdated; outdated versions still send. Send back the value you read.
+	SourceHash *string `json:"sourceHash,omitempty" url:"sourceHash,omitempty"`
+	// Title in this language. A version needs a title or a body. Merge tags work.
+	Title string `json:"title" url:"title"`
+	// Link for this language. null uses the main link.
+	URL *string `json:"url,omitempty" url:"url,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PushLocalization) GetBody() string {
+	if p == nil {
+		return ""
+	}
+	return p.Body
+}
+
+func (p *PushLocalization) GetImageURL() *string {
+	if p == nil {
+		return nil
+	}
+	return p.ImageURL
+}
+
+func (p *PushLocalization) GetLocale() string {
+	if p == nil {
+		return ""
+	}
+	return p.Locale
+}
+
+func (p *PushLocalization) GetOrigin() *PushLocalizationOrigin {
+	if p == nil {
+		return nil
+	}
+	return p.Origin
+}
+
+func (p *PushLocalization) GetSourceHash() *string {
+	if p == nil {
+		return nil
+	}
+	return p.SourceHash
+}
+
+func (p *PushLocalization) GetTitle() string {
+	if p == nil {
+		return ""
+	}
+	return p.Title
+}
+
+func (p *PushLocalization) GetURL() *string {
+	if p == nil {
+		return nil
+	}
+	return p.URL
+}
+
+func (p *PushLocalization) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PushLocalization) require(field *big.Int) {
+	if p.explicitFields == nil {
+		p.explicitFields = big.NewInt(0)
+	}
+	p.explicitFields.Or(p.explicitFields, field)
+}
+
+// SetBody sets the Body field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushLocalization) SetBody(body string) {
+	p.Body = body
+	p.require(pushLocalizationFieldBody)
+}
+
+// SetImageURL sets the ImageURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushLocalization) SetImageURL(imageURL *string) {
+	p.ImageURL = imageURL
+	p.require(pushLocalizationFieldImageURL)
+}
+
+// SetLocale sets the Locale field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushLocalization) SetLocale(locale string) {
+	p.Locale = locale
+	p.require(pushLocalizationFieldLocale)
+}
+
+// SetOrigin sets the Origin field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushLocalization) SetOrigin(origin *PushLocalizationOrigin) {
+	p.Origin = origin
+	p.require(pushLocalizationFieldOrigin)
+}
+
+// SetSourceHash sets the SourceHash field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushLocalization) SetSourceHash(sourceHash *string) {
+	p.SourceHash = sourceHash
+	p.require(pushLocalizationFieldSourceHash)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushLocalization) SetTitle(title string) {
+	p.Title = title
+	p.require(pushLocalizationFieldTitle)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PushLocalization) SetURL(url *string) {
+	p.URL = url
+	p.require(pushLocalizationFieldURL)
+}
+
+func (p *PushLocalization) UnmarshalJSON(data []byte) error {
+	type unmarshaler PushLocalization
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PushLocalization(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PushLocalization) MarshalJSON() ([]byte, error) {
+	type embed PushLocalization
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PushLocalization) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// ai for AI translations, manual for versions a person wrote. Translate requests keep manual versions unless overwrite is true.
+type PushLocalizationOrigin string
+
+const (
+	PushLocalizationOriginAi     PushLocalizationOrigin = "ai"
+	PushLocalizationOriginManual PushLocalizationOrigin = "manual"
+)
+
+func NewPushLocalizationOriginFromString(s string) (PushLocalizationOrigin, error) {
+	switch s {
+	case "ai":
+		return PushLocalizationOriginAi, nil
+	case "manual":
+		return PushLocalizationOriginManual, nil
+	}
+	var t PushLocalizationOrigin
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PushLocalizationOrigin) Ptr() *PushLocalizationOrigin {
+	return &p
+}
+
 // Product recommendation funnel for a campaign or sequence. Returned as a top-level `recommendations` object when recommendation blocks were rendered. The requested period or custom time range scopes impressions and clicks. Orders and revenue are attributed when a subscriber buys a recommended product within 7 days of a scoped click.
 var (
 	recommendationMetricsFieldClickers          = big.NewInt(1 << 0)

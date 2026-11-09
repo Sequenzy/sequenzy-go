@@ -188,9 +188,7 @@ func TestWebTrackingKeysMintIdentityWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithAPIKey("test-token"),
 	)
-	request := &sequenzygo.MintIdentityWebTrackingKeysRequest{
-		Email: "email",
-	}
+	request := &sequenzygo.MintIdentityWebTrackingKeysRequest{}
 	_, invocationErr := client.WebTrackingKeys.MintIdentity(
 		context.TODO(),
 		request,

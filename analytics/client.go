@@ -430,6 +430,60 @@ func (c *Client) ListCampaignPollResponsesLegacy(
 	return response.Body, nil
 }
 
+// Returns one row per reply to a campaign, newest first, with the subscriber who replied, the send they replied to, attachment counts, the reply time and the inbox conversation holding the reply. `pagination.total` matches `stats.replies` from the campaign metrics endpoint called without `period`, `start` or `end`, which narrow that count, or `mailboxProvider`, which reports 0 replies. Reply text is not returned: read it with `GET /conversations/{conversationId}`. `conversationId` is null when the reply has no inbox conversation. Requires the `analytics:read` scope. Also available at `GET /campaigns/{campaignId}/replies`.
+//
+// Example:
+//
+//	request := &sequenzygo.ListCampaignRepliesRequest{
+//	    CampaignID: "campaignId",
+//	}
+//	client.Analytics.ListCampaignReplies(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) ListCampaignReplies(
+	ctx context.Context,
+	request *sequenzygo.ListCampaignRepliesRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.ListCampaignRepliesResponse, error) {
+	response, err := c.WithRawResponse.ListCampaignReplies(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Alias for `GET /metrics/campaigns/{campaignId}/replies`.
+//
+// Example:
+//
+//	request := &sequenzygo.ListCampaignRepliesLegacyRequest{
+//	    CampaignID: "campaignId",
+//	}
+//	client.Analytics.ListCampaignRepliesLegacy(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) ListCampaignRepliesLegacy(
+	ctx context.Context,
+	request *sequenzygo.ListCampaignRepliesLegacyRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.ListCampaignRepliesLegacyResponse, error) {
+	response, err := c.WithRawResponse.ListCampaignRepliesLegacy(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Returns one row per email - each campaign and each sequence email step - with its own delivery funnel, attributed conversions, and revenue. Sequence rows carry sequenceId, automationNodeId, and the step number, so cross-sequence questions such as how many step-4 emails went out are one request instead of one per sequence. Counts come from retained event storage and match the steps array of the sequence metrics endpoint. The totals object covers every matching email rather than the current page.
 //
 // Example:
