@@ -21348,18 +21348,21 @@ var (
 	sequenceInboundWebhookFieldEventName        = big.NewInt(1 << 1)
 	sequenceInboundWebhookFieldFieldMapping     = big.NewInt(1 << 2)
 	sequenceInboundWebhookFieldID               = big.NewInt(1 << 3)
-	sequenceInboundWebhookFieldSampleCapturedAt = big.NewInt(1 << 4)
-	sequenceInboundWebhookFieldSamplePayload    = big.NewInt(1 << 5)
-	sequenceInboundWebhookFieldSecret           = big.NewInt(1 << 6)
-	sequenceInboundWebhookFieldStatus           = big.NewInt(1 << 7)
-	sequenceInboundWebhookFieldURL              = big.NewInt(1 << 8)
+	sequenceInboundWebhookFieldMappingCheck     = big.NewInt(1 << 4)
+	sequenceInboundWebhookFieldSampleCapturedAt = big.NewInt(1 << 5)
+	sequenceInboundWebhookFieldSamplePayload    = big.NewInt(1 << 6)
+	sequenceInboundWebhookFieldSecret           = big.NewInt(1 << 7)
+	sequenceInboundWebhookFieldStatus           = big.NewInt(1 << 8)
+	sequenceInboundWebhookFieldURL              = big.NewInt(1 << 9)
 )
 
 type SequenceInboundWebhook struct {
-	CreatedAt        *time.Time                          `json:"createdAt,omitempty" url:"createdAt,omitempty"`
-	EventName        *string                             `json:"eventName,omitempty" url:"eventName,omitempty"`
-	FieldMapping     *SequenceInboundWebhookFieldMapping `json:"fieldMapping,omitempty" url:"fieldMapping,omitempty"`
-	ID               *string                             `json:"id,omitempty" url:"id,omitempty"`
+	CreatedAt    *time.Time                          `json:"createdAt,omitempty" url:"createdAt,omitempty"`
+	EventName    *string                             `json:"eventName,omitempty" url:"eventName,omitempty"`
+	FieldMapping *SequenceInboundWebhookFieldMapping `json:"fieldMapping,omitempty" url:"fieldMapping,omitempty"`
+	ID           *string                             `json:"id,omitempty" url:"id,omitempty"`
+	// Whether the field mapping finds an email in the last payload received, or in a sample saved through this endpoint. An example sample applied from the integration catalog on first setup is not checked. The endpoint answers 200 to every payload it can parse, but skips one without a valid email and creates no subscriber, so a mapping with status email_not_found means received webhooks are being skipped. Null when no mapping is saved.
+	MappingCheck     *SequenceInboundWebhookMappingCheck `json:"mappingCheck,omitempty" url:"mappingCheck,omitempty"`
 	SampleCapturedAt *time.Time                          `json:"sampleCapturedAt,omitempty" url:"sampleCapturedAt,omitempty"`
 	SamplePayload    map[string]any                      `json:"samplePayload,omitempty" url:"samplePayload,omitempty"`
 	// Secret URL token. Treat it as a credential.
@@ -21400,6 +21403,13 @@ func (s *SequenceInboundWebhook) GetID() *string {
 		return nil
 	}
 	return s.ID
+}
+
+func (s *SequenceInboundWebhook) GetMappingCheck() *SequenceInboundWebhookMappingCheck {
+	if s == nil {
+		return nil
+	}
+	return s.MappingCheck
 }
 
 func (s *SequenceInboundWebhook) GetSampleCapturedAt() *time.Time {
@@ -21477,6 +21487,13 @@ func (s *SequenceInboundWebhook) SetFieldMapping(fieldMapping *SequenceInboundWe
 func (s *SequenceInboundWebhook) SetID(id *string) {
 	s.ID = id
 	s.require(sequenceInboundWebhookFieldID)
+}
+
+// SetMappingCheck sets the MappingCheck field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceInboundWebhook) SetMappingCheck(mappingCheck *SequenceInboundWebhookMappingCheck) {
+	s.MappingCheck = mappingCheck
+	s.require(sequenceInboundWebhookFieldMappingCheck)
 }
 
 // SetSampleCapturedAt sets the SampleCapturedAt field and marks it as non-optional;
@@ -21576,7 +21593,7 @@ var (
 )
 
 type SequenceInboundWebhookFieldMapping struct {
-	// Dot path to the subscriber email in the webhook payload.
+	// Dot path to the subscriber email in the webhook payload. A key that itself contains dots, such as `data.user_email`, is matched as one key, so `properties.data.user_email` reads `{"properties": {"data.user_email": "..."}}`.
 	Email      string            `json:"email" url:"email"`
 	FirstName  *string           `json:"firstName,omitempty" url:"firstName,omitempty"`
 	LastName   *string           `json:"lastName,omitempty" url:"lastName,omitempty"`
@@ -21699,6 +21716,235 @@ func (s *SequenceInboundWebhookFieldMapping) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	sequenceInboundWebhookMappingCheckFieldMissingFields = big.NewInt(1 << 0)
+	sequenceInboundWebhookMappingCheckFieldStatus        = big.NewInt(1 << 1)
+)
+
+type SequenceInboundWebhookMappingCheck struct {
+	// Mapped fields whose path does not exist in the saved sample.
+	MissingFields []*SequenceInboundWebhookMappingCheckMissingFieldsItem `json:"missingFields" url:"missingFields"`
+	// `ok`: the email path holds a valid address. `email_not_found`: it is missing or not a valid address. `no_sample`: no payload has been received or saved yet.
+	Status SequenceInboundWebhookMappingCheckStatus `json:"status" url:"status"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequenceInboundWebhookMappingCheck) GetMissingFields() []*SequenceInboundWebhookMappingCheckMissingFieldsItem {
+	if s == nil {
+		return nil
+	}
+	return s.MissingFields
+}
+
+func (s *SequenceInboundWebhookMappingCheck) GetStatus() SequenceInboundWebhookMappingCheckStatus {
+	if s == nil {
+		return ""
+	}
+	return s.Status
+}
+
+func (s *SequenceInboundWebhookMappingCheck) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequenceInboundWebhookMappingCheck) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetMissingFields sets the MissingFields field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceInboundWebhookMappingCheck) SetMissingFields(missingFields []*SequenceInboundWebhookMappingCheckMissingFieldsItem) {
+	s.MissingFields = missingFields
+	s.require(sequenceInboundWebhookMappingCheckFieldMissingFields)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceInboundWebhookMappingCheck) SetStatus(status SequenceInboundWebhookMappingCheckStatus) {
+	s.Status = status
+	s.require(sequenceInboundWebhookMappingCheckFieldStatus)
+}
+
+func (s *SequenceInboundWebhookMappingCheck) UnmarshalJSON(data []byte) error {
+	type unmarshaler SequenceInboundWebhookMappingCheck
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SequenceInboundWebhookMappingCheck(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceInboundWebhookMappingCheck) MarshalJSON() ([]byte, error) {
+	type embed SequenceInboundWebhookMappingCheck
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequenceInboundWebhookMappingCheck) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	sequenceInboundWebhookMappingCheckMissingFieldsItemFieldField = big.NewInt(1 << 0)
+	sequenceInboundWebhookMappingCheckMissingFieldsItemFieldPath  = big.NewInt(1 << 1)
+)
+
+type SequenceInboundWebhookMappingCheckMissingFieldsItem struct {
+	// `email`, `firstName`, `lastName` or `properties.<name>`.
+	Field string `json:"field" url:"field"`
+	Path  string `json:"path" url:"path"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequenceInboundWebhookMappingCheckMissingFieldsItem) GetField() string {
+	if s == nil {
+		return ""
+	}
+	return s.Field
+}
+
+func (s *SequenceInboundWebhookMappingCheckMissingFieldsItem) GetPath() string {
+	if s == nil {
+		return ""
+	}
+	return s.Path
+}
+
+func (s *SequenceInboundWebhookMappingCheckMissingFieldsItem) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequenceInboundWebhookMappingCheckMissingFieldsItem) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetField sets the Field field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceInboundWebhookMappingCheckMissingFieldsItem) SetField(field string) {
+	s.Field = field
+	s.require(sequenceInboundWebhookMappingCheckMissingFieldsItemFieldField)
+}
+
+// SetPath sets the Path field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceInboundWebhookMappingCheckMissingFieldsItem) SetPath(path string) {
+	s.Path = path
+	s.require(sequenceInboundWebhookMappingCheckMissingFieldsItemFieldPath)
+}
+
+func (s *SequenceInboundWebhookMappingCheckMissingFieldsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler SequenceInboundWebhookMappingCheckMissingFieldsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SequenceInboundWebhookMappingCheckMissingFieldsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequenceInboundWebhookMappingCheckMissingFieldsItem) MarshalJSON() ([]byte, error) {
+	type embed SequenceInboundWebhookMappingCheckMissingFieldsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequenceInboundWebhookMappingCheckMissingFieldsItem) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+// `ok`: the email path holds a valid address. `email_not_found`: it is missing or not a valid address. `no_sample`: no payload has been received or saved yet.
+type SequenceInboundWebhookMappingCheckStatus string
+
+const (
+	SequenceInboundWebhookMappingCheckStatusOk            SequenceInboundWebhookMappingCheckStatus = "ok"
+	SequenceInboundWebhookMappingCheckStatusEmailNotFound SequenceInboundWebhookMappingCheckStatus = "email_not_found"
+	SequenceInboundWebhookMappingCheckStatusNoSample      SequenceInboundWebhookMappingCheckStatus = "no_sample"
+)
+
+func NewSequenceInboundWebhookMappingCheckStatusFromString(s string) (SequenceInboundWebhookMappingCheckStatus, error) {
+	switch s {
+	case "ok":
+		return SequenceInboundWebhookMappingCheckStatusOk, nil
+	case "email_not_found":
+		return SequenceInboundWebhookMappingCheckStatusEmailNotFound, nil
+	case "no_sample":
+		return SequenceInboundWebhookMappingCheckStatusNoSample, nil
+	}
+	var t SequenceInboundWebhookMappingCheckStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SequenceInboundWebhookMappingCheckStatus) Ptr() *SequenceInboundWebhookMappingCheckStatus {
+	return &s
 }
 
 type SequenceInboundWebhookStatus string

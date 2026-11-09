@@ -10586,7 +10586,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"success\": true,\n  \"webhook\": {\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"eventName\": \"eventName\",\n    \"fieldMapping\": {\n      \"email\": \"email\",\n      \"firstName\": \"firstName\",\n      \"lastName\": \"lastName\",\n      \"properties\": {\n        \"key\": \"value\"\n      }\n    },\n    \"id\": \"id\",\n    \"sampleCapturedAt\": \"2024-01-15T09:30:00Z\",\n    \"samplePayload\": {\n      \"key\": \"value\"\n    },\n    \"secret\": \"secret\",\n    \"status\": \"pending_setup\",\n    \"url\": \"url\"\n  }\n}",
+        "body": "{\n  \"success\": true,\n  \"webhook\": {\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"eventName\": \"eventName\",\n    \"fieldMapping\": {\n      \"email\": \"email\",\n      \"firstName\": \"firstName\",\n      \"lastName\": \"lastName\",\n      \"properties\": {\n        \"key\": \"value\"\n      }\n    },\n    \"id\": \"id\",\n    \"mappingCheck\": {\n      \"missingFields\": [\n        {\n          \"field\": \"field\",\n          \"path\": \"path\"\n        }\n      ],\n      \"status\": \"ok\"\n    },\n    \"sampleCapturedAt\": \"2024-01-15T09:30:00Z\",\n    \"samplePayload\": {\n      \"key\": \"value\"\n    },\n    \"secret\": \"secret\",\n    \"status\": \"pending_setup\",\n    \"url\": \"url\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -11451,7 +11451,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"success\": true,\n  \"webhook\": {\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"eventName\": \"eventName\",\n    \"fieldMapping\": {\n      \"email\": \"email\",\n      \"firstName\": \"firstName\",\n      \"lastName\": \"lastName\",\n      \"properties\": {\n        \"key\": \"value\"\n      }\n    },\n    \"id\": \"id\",\n    \"sampleCapturedAt\": \"2024-01-15T09:30:00Z\",\n    \"samplePayload\": {\n      \"key\": \"value\"\n    },\n    \"secret\": \"secret\",\n    \"status\": \"pending_setup\",\n    \"url\": \"url\"\n  }\n}",
+        "body": "{\n  \"success\": true,\n  \"webhook\": {\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"eventName\": \"eventName\",\n    \"fieldMapping\": {\n      \"email\": \"email\",\n      \"firstName\": \"firstName\",\n      \"lastName\": \"lastName\",\n      \"properties\": {\n        \"key\": \"value\"\n      }\n    },\n    \"id\": \"id\",\n    \"mappingCheck\": {\n      \"missingFields\": [\n        {\n          \"field\": \"field\",\n          \"path\": \"path\"\n        }\n      ],\n      \"status\": \"ok\"\n    },\n    \"sampleCapturedAt\": \"2024-01-15T09:30:00Z\",\n    \"samplePayload\": {\n      \"key\": \"value\"\n    },\n    \"secret\": \"secret\",\n    \"status\": \"pending_setup\",\n    \"url\": \"url\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -12145,7 +12145,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"success\": true,\n  \"webhook\": {\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"eventName\": \"eventName\",\n    \"fieldMapping\": {\n      \"email\": \"email\",\n      \"firstName\": \"firstName\",\n      \"lastName\": \"lastName\",\n      \"properties\": {\n        \"key\": \"value\"\n      }\n    },\n    \"id\": \"id\",\n    \"sampleCapturedAt\": \"2024-01-15T09:30:00Z\",\n    \"samplePayload\": {\n      \"key\": \"value\"\n    },\n    \"secret\": \"secret\",\n    \"status\": \"pending_setup\",\n    \"url\": \"url\"\n  }\n}",
+        "body": "{\n  \"success\": true,\n  \"webhook\": {\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"eventName\": \"eventName\",\n    \"fieldMapping\": {\n      \"email\": \"email\",\n      \"firstName\": \"firstName\",\n      \"lastName\": \"lastName\",\n      \"properties\": {\n        \"key\": \"value\"\n      }\n    },\n    \"id\": \"id\",\n    \"mappingCheck\": {\n      \"missingFields\": [\n        {\n          \"field\": \"field\",\n          \"path\": \"path\"\n        }\n      ],\n      \"status\": \"ok\"\n    },\n    \"sampleCapturedAt\": \"2024-01-15T09:30:00Z\",\n    \"samplePayload\": {\n      \"key\": \"value\"\n    },\n    \"secret\": \"secret\",\n    \"status\": \"pending_setup\",\n    \"url\": \"url\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
