@@ -196,7 +196,7 @@ func (c *Client) Create(
 	return response.Body, nil
 }
 
-// Queues an asynchronous full-record subscriber import of up to 5,000 contacts.
+// Queues an asynchronous full-record subscriber import of up to 5,000 contacts. If the list has too many addresses that don't exist, the import gets a listQuality recommendation to clean it.
 //
 // Example:
 //

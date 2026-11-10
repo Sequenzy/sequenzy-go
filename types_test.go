@@ -28884,6 +28884,13 @@ func TestEnumFilterLeafField(t *testing.T) {
 		assert.Equal(t, FilterLeafField("phone"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_phoneCountry", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFilterLeafFieldFromString("phoneCountry")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FilterLeafField("phoneCountry"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_smsStatus", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewFilterLeafFieldFromString("smsStatus")
@@ -29143,6 +29150,20 @@ func TestEnumFilterLeafOperator(t *testing.T) {
 		val, err := NewFilterLeafOperatorFromString("not_contains")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, FilterLeafOperator("not_contains"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_starts_with", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFilterLeafOperatorFromString("starts_with")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FilterLeafOperator("starts_with"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_not_starts_with", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFilterLeafOperatorFromString("not_starts_with")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FilterLeafOperator("not_starts_with"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_less_than", func(t *testing.T) {

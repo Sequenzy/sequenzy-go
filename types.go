@@ -6341,7 +6341,7 @@ type FilterLeaf struct {
 	ID    string          `json:"id" url:"id"`
 	// Required when the filter is inside a v2 root group.
 	Kind *FilterLeafKind `json:"kind,omitempty" url:"kind,omitempty"`
-	// Valid operators depend on the field. status/segment: is, is_not. smsStatus: is, is_not (values: subscribed, unsubscribed, not_subscribed). phone: is_not_empty, is_empty (empty value). tag: contains, not_contains, is_empty, is_not_empty. email: contains, not_contains for domain or substring matching, is, is_not for an exact case-insensitive address. emailProvider/list: is, is_not, is_empty, is_not_empty. firstName/lastName: contains, not_contains, is_empty, is_not_empty. added: less_than, more_than. attribute: is, is_not, is_empty, is_not_empty, gte, lte, gt, lt, contains, not_contains. event and email engagement fields: is, is_not, at_least, less_than_count. emailBounced also supports is_temporary_bounce and is_permanent_bounce. stripeProduct: is, is_not, at_least, less_than_count. stripeCurrentProduct/stripeTrialProduct: is, is_not, gte, lte, gt, lt. commerceProduct/commerceCollection: is, is_not, at_least, less_than_count. pushDevice: is, is_not (values: any, web, ios, android; matches active push devices). pushSent/pushDelivered/pushClicked: is, is_not with a time range such as 30d or all (test sends are ignored).
+	// Valid operators depend on the field. status/segment: is, is_not. smsStatus: is, is_not (values: subscribed, unsubscribed, not_subscribed). phone: is_not_empty, is_empty (empty value), or starts_with, not_starts_with, contains, not_contains with digits matched against the stored E.164 number (for example +44 or +1 415; negative operators only match contacts with a phone). phoneCountry: is, is_not with ISO 3166-1 alpha-2 codes, comma-separated for several (for example GB or US,CA); only contacts with a phone match. tag: contains, not_contains, is_empty, is_not_empty. email: contains, not_contains for domain or substring matching, is, is_not for an exact case-insensitive address. emailProvider/list: is, is_not, is_empty, is_not_empty. firstName/lastName: contains, not_contains, is_empty, is_not_empty. added: less_than, more_than. attribute: is, is_not, is_empty, is_not_empty, gte, lte, gt, lt, contains, not_contains. event and email engagement fields: is, is_not, at_least, less_than_count. emailBounced also supports is_temporary_bounce and is_permanent_bounce. stripeProduct: is, is_not, at_least, less_than_count. stripeCurrentProduct/stripeTrialProduct: is, is_not, gte, lte, gt, lt. commerceProduct/commerceCollection: is, is_not, at_least, less_than_count. pushDevice: is, is_not (values: any, web, ios, android; matches active push devices). pushSent/pushDelivered/pushClicked: is, is_not with a time range such as 30d or all (test sends are ignored).
 	Operator FilterLeafOperator `json:"operator" url:"operator"`
 	// Event filters use `eventName:30d` or `eventName:5:30d`. Segment filters use a segment ID. Email engagement fields use a rolling time window (`24h`, `7d`, `30d`, `90d`, `180d`, `all`; whole hours from `1h` to `8760h` are measured to the exact hour; count filters are exact up to `168h`), a specific campaign via `campaign:<campaign_id>`, an email-type scope via `marketing:<timeRange>` (marketing-policy campaign, automation, and Send API traffic) or `transactional:<timeRange>` (transactional-policy sends; with is/is_not or the emailBounced subtype operators; scopes require a send-time policy snapshot, so ambiguous older events remain unscoped), or `count:timeRange` (such as `10:30d` or `10:all`) with at_least/less_than_count. Stripe product filters use `prod_123` for bought/current/trialing checks, `prod_123:3` for payment thresholds, and product-scoped values such as `prod_123:is_canceled`, `prod_123:cancels_at:2026-05-26`, `prod_123:end_at:2026-05-26`, or `prod_123:start_at:7 days ago`. Commerce product filters use `provider:productId` (provider one of `shopify`, `woocommerce`, `api`), optionally with an order-count threshold (`shopify:42:2`); a bare product ID matches the ID on any provider. Commerce collection filters use a collection ID or handle (`skincare`), optionally provider-prefixed and/or with an order-count threshold (`shopify:skincare:2`), and match anyone whose orders contain any product currently in that collection. Push device filters use `any`, `web`, `ios`, or `android`. Push sent, delivered, and clicked filters use a time range (`7d`, `30d`, `all`).
 	Value string `json:"value" url:"value"`
@@ -6484,6 +6484,7 @@ type FilterLeafField string
 const (
 	FilterLeafFieldStatus               FilterLeafField = "status"
 	FilterLeafFieldPhone                FilterLeafField = "phone"
+	FilterLeafFieldPhoneCountry         FilterLeafField = "phoneCountry"
 	FilterLeafFieldSmsStatus            FilterLeafField = "smsStatus"
 	FilterLeafFieldTag                  FilterLeafField = "tag"
 	FilterLeafFieldEmail                FilterLeafField = "email"
@@ -6518,6 +6519,8 @@ func NewFilterLeafFieldFromString(s string) (FilterLeafField, error) {
 		return FilterLeafFieldStatus, nil
 	case "phone":
 		return FilterLeafFieldPhone, nil
+	case "phoneCountry":
+		return FilterLeafFieldPhoneCountry, nil
 	case "smsStatus":
 		return FilterLeafFieldSmsStatus, nil
 	case "tag":
@@ -6599,7 +6602,7 @@ func (f FilterLeafKind) Ptr() *FilterLeafKind {
 	return &f
 }
 
-// Valid operators depend on the field. status/segment: is, is_not. smsStatus: is, is_not (values: subscribed, unsubscribed, not_subscribed). phone: is_not_empty, is_empty (empty value). tag: contains, not_contains, is_empty, is_not_empty. email: contains, not_contains for domain or substring matching, is, is_not for an exact case-insensitive address. emailProvider/list: is, is_not, is_empty, is_not_empty. firstName/lastName: contains, not_contains, is_empty, is_not_empty. added: less_than, more_than. attribute: is, is_not, is_empty, is_not_empty, gte, lte, gt, lt, contains, not_contains. event and email engagement fields: is, is_not, at_least, less_than_count. emailBounced also supports is_temporary_bounce and is_permanent_bounce. stripeProduct: is, is_not, at_least, less_than_count. stripeCurrentProduct/stripeTrialProduct: is, is_not, gte, lte, gt, lt. commerceProduct/commerceCollection: is, is_not, at_least, less_than_count. pushDevice: is, is_not (values: any, web, ios, android; matches active push devices). pushSent/pushDelivered/pushClicked: is, is_not with a time range such as 30d or all (test sends are ignored).
+// Valid operators depend on the field. status/segment: is, is_not. smsStatus: is, is_not (values: subscribed, unsubscribed, not_subscribed). phone: is_not_empty, is_empty (empty value), or starts_with, not_starts_with, contains, not_contains with digits matched against the stored E.164 number (for example +44 or +1 415; negative operators only match contacts with a phone). phoneCountry: is, is_not with ISO 3166-1 alpha-2 codes, comma-separated for several (for example GB or US,CA); only contacts with a phone match. tag: contains, not_contains, is_empty, is_not_empty. email: contains, not_contains for domain or substring matching, is, is_not for an exact case-insensitive address. emailProvider/list: is, is_not, is_empty, is_not_empty. firstName/lastName: contains, not_contains, is_empty, is_not_empty. added: less_than, more_than. attribute: is, is_not, is_empty, is_not_empty, gte, lte, gt, lt, contains, not_contains. event and email engagement fields: is, is_not, at_least, less_than_count. emailBounced also supports is_temporary_bounce and is_permanent_bounce. stripeProduct: is, is_not, at_least, less_than_count. stripeCurrentProduct/stripeTrialProduct: is, is_not, gte, lte, gt, lt. commerceProduct/commerceCollection: is, is_not, at_least, less_than_count. pushDevice: is, is_not (values: any, web, ios, android; matches active push devices). pushSent/pushDelivered/pushClicked: is, is_not with a time range such as 30d or all (test sends are ignored).
 type FilterLeafOperator string
 
 const (
@@ -6609,6 +6612,8 @@ const (
 	FilterLeafOperatorIsNotEmpty        FilterLeafOperator = "is_not_empty"
 	FilterLeafOperatorContains          FilterLeafOperator = "contains"
 	FilterLeafOperatorNotContains       FilterLeafOperator = "not_contains"
+	FilterLeafOperatorStartsWith        FilterLeafOperator = "starts_with"
+	FilterLeafOperatorNotStartsWith     FilterLeafOperator = "not_starts_with"
 	FilterLeafOperatorLessThan          FilterLeafOperator = "less_than"
 	FilterLeafOperatorMoreThan          FilterLeafOperator = "more_than"
 	FilterLeafOperatorIsTemporaryBounce FilterLeafOperator = "is_temporary_bounce"
@@ -6635,6 +6640,10 @@ func NewFilterLeafOperatorFromString(s string) (FilterLeafOperator, error) {
 		return FilterLeafOperatorContains, nil
 	case "not_contains":
 		return FilterLeafOperatorNotContains, nil
+	case "starts_with":
+		return FilterLeafOperatorStartsWith, nil
+	case "not_starts_with":
+		return FilterLeafOperatorNotStartsWith, nil
 	case "less_than":
 		return FilterLeafOperatorLessThan, nil
 	case "more_than":

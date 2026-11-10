@@ -3170,33 +3170,35 @@ var (
 	subscriberImportFieldFailedReasons      = big.NewInt(1 << 10)
 	subscriberImportFieldFileName           = big.NewInt(1 << 11)
 	subscriberImportFieldID                 = big.NewInt(1 << 12)
-	subscriberImportFieldProcessedCount     = big.NewInt(1 << 13)
-	subscriberImportFieldSkippedCount       = big.NewInt(1 << 14)
-	subscriberImportFieldSkippedReasons     = big.NewInt(1 << 15)
-	subscriberImportFieldStartedAt          = big.NewInt(1 << 16)
-	subscriberImportFieldStatus             = big.NewInt(1 << 17)
-	subscriberImportFieldTotalChunks        = big.NewInt(1 << 18)
-	subscriberImportFieldTotalRows          = big.NewInt(1 << 19)
-	subscriberImportFieldUpdatedAt          = big.NewInt(1 << 20)
-	subscriberImportFieldUpdatedCount       = big.NewInt(1 << 21)
+	subscriberImportFieldListQuality        = big.NewInt(1 << 13)
+	subscriberImportFieldProcessedCount     = big.NewInt(1 << 14)
+	subscriberImportFieldSkippedCount       = big.NewInt(1 << 15)
+	subscriberImportFieldSkippedReasons     = big.NewInt(1 << 16)
+	subscriberImportFieldStartedAt          = big.NewInt(1 << 17)
+	subscriberImportFieldStatus             = big.NewInt(1 << 18)
+	subscriberImportFieldTotalChunks        = big.NewInt(1 << 19)
+	subscriberImportFieldTotalRows          = big.NewInt(1 << 20)
+	subscriberImportFieldUpdatedAt          = big.NewInt(1 << 21)
+	subscriberImportFieldUpdatedCount       = big.NewInt(1 << 22)
 )
 
 type SubscriberImport struct {
-	AddedCount         *int           `json:"addedCount,omitempty" url:"addedCount,omitempty"`
-	BatchID            *string        `json:"batchId,omitempty" url:"batchId,omitempty"`
-	CompletedAt        *time.Time     `json:"completedAt,omitempty" url:"completedAt,omitempty"`
-	CompletedChunks    *int           `json:"completedChunks,omitempty" url:"completedChunks,omitempty"`
-	CreatedAt          *time.Time     `json:"createdAt,omitempty" url:"createdAt,omitempty"`
-	DuplicateRows      *int           `json:"duplicateRows,omitempty" url:"duplicateRows,omitempty"`
-	EmailCount         *int           `json:"emailCount,omitempty" url:"emailCount,omitempty"`
-	FailedChunkReasons map[string]int `json:"failedChunkReasons,omitempty" url:"failedChunkReasons,omitempty"`
-	FailedChunks       *int           `json:"failedChunks,omitempty" url:"failedChunks,omitempty"`
-	FailedCount        *int           `json:"failedCount,omitempty" url:"failedCount,omitempty"`
-	FailedReasons      map[string]int `json:"failedReasons,omitempty" url:"failedReasons,omitempty"`
-	FileName           *string        `json:"fileName,omitempty" url:"fileName,omitempty"`
-	ID                 *string        `json:"id,omitempty" url:"id,omitempty"`
-	ProcessedCount     *int           `json:"processedCount,omitempty" url:"processedCount,omitempty"`
-	SkippedCount       *int           `json:"skippedCount,omitempty" url:"skippedCount,omitempty"`
+	AddedCount         *int                         `json:"addedCount,omitempty" url:"addedCount,omitempty"`
+	BatchID            *string                      `json:"batchId,omitempty" url:"batchId,omitempty"`
+	CompletedAt        *time.Time                   `json:"completedAt,omitempty" url:"completedAt,omitempty"`
+	CompletedChunks    *int                         `json:"completedChunks,omitempty" url:"completedChunks,omitempty"`
+	CreatedAt          *time.Time                   `json:"createdAt,omitempty" url:"createdAt,omitempty"`
+	DuplicateRows      *int                         `json:"duplicateRows,omitempty" url:"duplicateRows,omitempty"`
+	EmailCount         *int                         `json:"emailCount,omitempty" url:"emailCount,omitempty"`
+	FailedChunkReasons map[string]int               `json:"failedChunkReasons,omitempty" url:"failedChunkReasons,omitempty"`
+	FailedChunks       *int                         `json:"failedChunks,omitempty" url:"failedChunks,omitempty"`
+	FailedCount        *int                         `json:"failedCount,omitempty" url:"failedCount,omitempty"`
+	FailedReasons      map[string]int               `json:"failedReasons,omitempty" url:"failedReasons,omitempty"`
+	FileName           *string                      `json:"fileName,omitempty" url:"fileName,omitempty"`
+	ID                 *string                      `json:"id,omitempty" url:"id,omitempty"`
+	ListQuality        *SubscriberImportListQuality `json:"listQuality,omitempty" url:"listQuality,omitempty"`
+	ProcessedCount     *int                         `json:"processedCount,omitempty" url:"processedCount,omitempty"`
+	SkippedCount       *int                         `json:"skippedCount,omitempty" url:"skippedCount,omitempty"`
 	// Count per reason a row was skipped. The values sum to skippedCount.
 	SkippedReasons map[string]int          `json:"skippedReasons,omitempty" url:"skippedReasons,omitempty"`
 	StartedAt      *time.Time              `json:"startedAt,omitempty" url:"startedAt,omitempty"`
@@ -3302,6 +3304,13 @@ func (s *SubscriberImport) GetID() *string {
 		return nil
 	}
 	return s.ID
+}
+
+func (s *SubscriberImport) GetListQuality() *SubscriberImportListQuality {
+	if s == nil {
+		return nil
+	}
+	return s.ListQuality
 }
 
 func (s *SubscriberImport) GetProcessedCount() *int {
@@ -3472,6 +3481,13 @@ func (s *SubscriberImport) SetID(id *string) {
 	s.require(subscriberImportFieldID)
 }
 
+// SetListQuality sets the ListQuality field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubscriberImport) SetListQuality(listQuality *SubscriberImportListQuality) {
+	s.ListQuality = listQuality
+	s.require(subscriberImportFieldListQuality)
+}
+
 // SetProcessedCount sets the ProcessedCount field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *SubscriberImport) SetProcessedCount(processedCount *int) {
@@ -3595,6 +3611,364 @@ func (s *SubscriberImport) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", s)
+}
+
+// Set when the list has too many addresses that don't exist or look risky; null otherwise. None of its contacts are imported (every row is skipped as list_needs_cleaning). An import stays running, with nothing processed, until its list check is done.
+var (
+	subscriberImportListQualityFieldCheckedAt          = big.NewInt(1 << 0)
+	subscriberImportListQualityFieldCleaningURL        = big.NewInt(1 << 1)
+	subscriberImportListQualityFieldIssues             = big.NewInt(1 << 2)
+	subscriberImportListQualityFieldMessage            = big.NewInt(1 << 3)
+	subscriberImportListQualityFieldSampleSize         = big.NewInt(1 << 4)
+	subscriberImportListQualityFieldStatus             = big.NewInt(1 << 5)
+	subscriberImportListQualityFieldUndeliverableCount = big.NewInt(1 << 6)
+	subscriberImportListQualityFieldUndeliverableRate  = big.NewInt(1 << 7)
+)
+
+type SubscriberImportListQuality struct {
+	CheckedAt *time.Time `json:"checkedAt,omitempty" url:"checkedAt,omitempty"`
+	// A list-cleaning service to clean the list with.
+	CleaningURL *string `json:"cleaningUrl,omitempty" url:"cleaningUrl,omitempty"`
+	// What needs cleaning, as estimated shares of the list. A list can need cleaning for any of them, not only for addresses that don't exist.
+	Issues []*SubscriberImportListQualityIssuesItem `json:"issues,omitempty" url:"issues,omitempty"`
+	// Customer-facing explanation and recommendation.
+	Message *string `json:"message,omitempty" url:"message,omitempty"`
+	// Addresses in the checked sample.
+	SampleSize *int                               `json:"sampleSize,omitempty" url:"sampleSize,omitempty"`
+	Status     *SubscriberImportListQualityStatus `json:"status,omitempty" url:"status,omitempty"`
+	// Addresses in the sample that don't exist.
+	UndeliverableCount *int `json:"undeliverableCount,omitempty" url:"undeliverableCount,omitempty"`
+	// Estimated share of the list's addresses that don't exist, from 0 to 1.
+	UndeliverableRate *float64 `json:"undeliverableRate,omitempty" url:"undeliverableRate,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SubscriberImportListQuality) GetCheckedAt() *time.Time {
+	if s == nil {
+		return nil
+	}
+	return s.CheckedAt
+}
+
+func (s *SubscriberImportListQuality) GetCleaningURL() *string {
+	if s == nil {
+		return nil
+	}
+	return s.CleaningURL
+}
+
+func (s *SubscriberImportListQuality) GetIssues() []*SubscriberImportListQualityIssuesItem {
+	if s == nil {
+		return nil
+	}
+	return s.Issues
+}
+
+func (s *SubscriberImportListQuality) GetMessage() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Message
+}
+
+func (s *SubscriberImportListQuality) GetSampleSize() *int {
+	if s == nil {
+		return nil
+	}
+	return s.SampleSize
+}
+
+func (s *SubscriberImportListQuality) GetStatus() *SubscriberImportListQualityStatus {
+	if s == nil {
+		return nil
+	}
+	return s.Status
+}
+
+func (s *SubscriberImportListQuality) GetUndeliverableCount() *int {
+	if s == nil {
+		return nil
+	}
+	return s.UndeliverableCount
+}
+
+func (s *SubscriberImportListQuality) GetUndeliverableRate() *float64 {
+	if s == nil {
+		return nil
+	}
+	return s.UndeliverableRate
+}
+
+func (s *SubscriberImportListQuality) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SubscriberImportListQuality) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetCheckedAt sets the CheckedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubscriberImportListQuality) SetCheckedAt(checkedAt *time.Time) {
+	s.CheckedAt = checkedAt
+	s.require(subscriberImportListQualityFieldCheckedAt)
+}
+
+// SetCleaningURL sets the CleaningURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubscriberImportListQuality) SetCleaningURL(cleaningURL *string) {
+	s.CleaningURL = cleaningURL
+	s.require(subscriberImportListQualityFieldCleaningURL)
+}
+
+// SetIssues sets the Issues field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubscriberImportListQuality) SetIssues(issues []*SubscriberImportListQualityIssuesItem) {
+	s.Issues = issues
+	s.require(subscriberImportListQualityFieldIssues)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubscriberImportListQuality) SetMessage(message *string) {
+	s.Message = message
+	s.require(subscriberImportListQualityFieldMessage)
+}
+
+// SetSampleSize sets the SampleSize field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubscriberImportListQuality) SetSampleSize(sampleSize *int) {
+	s.SampleSize = sampleSize
+	s.require(subscriberImportListQualityFieldSampleSize)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubscriberImportListQuality) SetStatus(status *SubscriberImportListQualityStatus) {
+	s.Status = status
+	s.require(subscriberImportListQualityFieldStatus)
+}
+
+// SetUndeliverableCount sets the UndeliverableCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubscriberImportListQuality) SetUndeliverableCount(undeliverableCount *int) {
+	s.UndeliverableCount = undeliverableCount
+	s.require(subscriberImportListQualityFieldUndeliverableCount)
+}
+
+// SetUndeliverableRate sets the UndeliverableRate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubscriberImportListQuality) SetUndeliverableRate(undeliverableRate *float64) {
+	s.UndeliverableRate = undeliverableRate
+	s.require(subscriberImportListQualityFieldUndeliverableRate)
+}
+
+func (s *SubscriberImportListQuality) UnmarshalJSON(data []byte) error {
+	type embed SubscriberImportListQuality
+	var unmarshaler = struct {
+		embed
+		CheckedAt *internal.DateTime `json:"checkedAt,omitempty"`
+	}{
+		embed: embed(*s),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*s = SubscriberImportListQuality(unmarshaler.embed)
+	s.CheckedAt = unmarshaler.CheckedAt.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SubscriberImportListQuality) MarshalJSON() ([]byte, error) {
+	type embed SubscriberImportListQuality
+	var marshaler = struct {
+		embed
+		CheckedAt *internal.DateTime `json:"checkedAt,omitempty"`
+	}{
+		embed:     embed(*s),
+		CheckedAt: internal.NewOptionalDateTime(s.CheckedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SubscriberImportListQuality) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	subscriberImportListQualityIssuesItemFieldKind = big.NewInt(1 << 0)
+	subscriberImportListQualityIssuesItemFieldRate = big.NewInt(1 << 1)
+)
+
+type SubscriberImportListQualityIssuesItem struct {
+	// undeliverable: addresses that don't exist. disposable: temporary inboxes. role: shared addresses like info@ or sales@.
+	Kind SubscriberImportListQualityIssuesItemKind `json:"kind" url:"kind"`
+	// Share of the list, from 0 to 1.
+	Rate float64 `json:"rate" url:"rate"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SubscriberImportListQualityIssuesItem) GetKind() SubscriberImportListQualityIssuesItemKind {
+	if s == nil {
+		return ""
+	}
+	return s.Kind
+}
+
+func (s *SubscriberImportListQualityIssuesItem) GetRate() float64 {
+	if s == nil {
+		return 0
+	}
+	return s.Rate
+}
+
+func (s *SubscriberImportListQualityIssuesItem) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SubscriberImportListQualityIssuesItem) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetKind sets the Kind field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubscriberImportListQualityIssuesItem) SetKind(kind SubscriberImportListQualityIssuesItemKind) {
+	s.Kind = kind
+	s.require(subscriberImportListQualityIssuesItemFieldKind)
+}
+
+// SetRate sets the Rate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubscriberImportListQualityIssuesItem) SetRate(rate float64) {
+	s.Rate = rate
+	s.require(subscriberImportListQualityIssuesItemFieldRate)
+}
+
+func (s *SubscriberImportListQualityIssuesItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler SubscriberImportListQualityIssuesItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SubscriberImportListQualityIssuesItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SubscriberImportListQualityIssuesItem) MarshalJSON() ([]byte, error) {
+	type embed SubscriberImportListQualityIssuesItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SubscriberImportListQualityIssuesItem) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+// undeliverable: addresses that don't exist. disposable: temporary inboxes. role: shared addresses like info@ or sales@.
+type SubscriberImportListQualityIssuesItemKind string
+
+const (
+	SubscriberImportListQualityIssuesItemKindUndeliverable SubscriberImportListQualityIssuesItemKind = "undeliverable"
+	SubscriberImportListQualityIssuesItemKindDisposable    SubscriberImportListQualityIssuesItemKind = "disposable"
+	SubscriberImportListQualityIssuesItemKindRole          SubscriberImportListQualityIssuesItemKind = "role"
+)
+
+func NewSubscriberImportListQualityIssuesItemKindFromString(s string) (SubscriberImportListQualityIssuesItemKind, error) {
+	switch s {
+	case "undeliverable":
+		return SubscriberImportListQualityIssuesItemKindUndeliverable, nil
+	case "disposable":
+		return SubscriberImportListQualityIssuesItemKindDisposable, nil
+	case "role":
+		return SubscriberImportListQualityIssuesItemKindRole, nil
+	}
+	var t SubscriberImportListQualityIssuesItemKind
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SubscriberImportListQualityIssuesItemKind) Ptr() *SubscriberImportListQualityIssuesItemKind {
+	return &s
+}
+
+type SubscriberImportListQualityStatus string
+
+const (
+	SubscriberImportListQualityStatusNeedsCleaning SubscriberImportListQualityStatus = "needs_cleaning"
+)
+
+func NewSubscriberImportListQualityStatusFromString(s string) (SubscriberImportListQualityStatus, error) {
+	switch s {
+	case "needs_cleaning":
+		return SubscriberImportListQualityStatusNeedsCleaning, nil
+	}
+	var t SubscriberImportListQualityStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SubscriberImportListQualityStatus) Ptr() *SubscriberImportListQualityStatus {
+	return &s
 }
 
 // Every record must include an email or a phone. Records with only a phone import as phone-only (SMS) contacts.
