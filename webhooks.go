@@ -1383,6 +1383,7 @@ const (
 	OutboundWebhookEventTypeSequenceFinished           OutboundWebhookEventType = "sequence.finished"
 	OutboundWebhookEventTypeSequenceFailed             OutboundWebhookEventType = "sequence.failed"
 	OutboundWebhookEventTypePollAnswered               OutboundWebhookEventType = "poll.answered"
+	OutboundWebhookEventTypePollCommented              OutboundWebhookEventType = "poll.commented"
 )
 
 func NewOutboundWebhookEventTypeFromString(s string) (OutboundWebhookEventType, error) {
@@ -1439,6 +1440,8 @@ func NewOutboundWebhookEventTypeFromString(s string) (OutboundWebhookEventType, 
 		return OutboundWebhookEventTypeSequenceFailed, nil
 	case "poll.answered":
 		return OutboundWebhookEventTypePollAnswered, nil
+	case "poll.commented":
+		return OutboundWebhookEventTypePollCommented, nil
 	}
 	var t OutboundWebhookEventType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

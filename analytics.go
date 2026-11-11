@@ -1086,8 +1086,9 @@ func (l *ListCampaignEventsRequest) SetStart(start *time.Time) {
 var (
 	listCampaignPollResponsesRequestFieldCampaignID = big.NewInt(1 << 0)
 	listCampaignPollResponsesRequestFieldBlockID    = big.NewInt(1 << 1)
-	listCampaignPollResponsesRequestFieldLimit      = big.NewInt(1 << 2)
-	listCampaignPollResponsesRequestFieldPage       = big.NewInt(1 << 3)
+	listCampaignPollResponsesRequestFieldHasComment = big.NewInt(1 << 2)
+	listCampaignPollResponsesRequestFieldLimit      = big.NewInt(1 << 3)
+	listCampaignPollResponsesRequestFieldPage       = big.NewInt(1 << 4)
 )
 
 type ListCampaignPollResponsesRequest struct {
@@ -1095,6 +1096,8 @@ type ListCampaignPollResponsesRequest struct {
 	CampaignID string `json:"-" url:"-"`
 	// Restrict results to one poll block. Block IDs come from the `polls` array of the campaign metrics endpoint.
 	BlockID *string `json:"-" url:"blockId,omitempty"`
+	// Pass `true` to list only respondents who left a comment, newest comment first.
+	HasComment *bool `json:"-" url:"hasComment,omitempty"`
 	// Responses per page (max 500)
 	Limit *int `json:"-" url:"limit,omitempty"`
 	// Page number
@@ -1125,6 +1128,13 @@ func (l *ListCampaignPollResponsesRequest) SetBlockID(blockID *string) {
 	l.require(listCampaignPollResponsesRequestFieldBlockID)
 }
 
+// SetHasComment sets the HasComment field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCampaignPollResponsesRequest) SetHasComment(hasComment *bool) {
+	l.HasComment = hasComment
+	l.require(listCampaignPollResponsesRequestFieldHasComment)
+}
+
 // SetLimit sets the Limit field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *ListCampaignPollResponsesRequest) SetLimit(limit *int) {
@@ -1142,8 +1152,9 @@ func (l *ListCampaignPollResponsesRequest) SetPage(page *int) {
 var (
 	listCampaignPollResponsesLegacyRequestFieldCampaignID = big.NewInt(1 << 0)
 	listCampaignPollResponsesLegacyRequestFieldBlockID    = big.NewInt(1 << 1)
-	listCampaignPollResponsesLegacyRequestFieldLimit      = big.NewInt(1 << 2)
-	listCampaignPollResponsesLegacyRequestFieldPage       = big.NewInt(1 << 3)
+	listCampaignPollResponsesLegacyRequestFieldHasComment = big.NewInt(1 << 2)
+	listCampaignPollResponsesLegacyRequestFieldLimit      = big.NewInt(1 << 3)
+	listCampaignPollResponsesLegacyRequestFieldPage       = big.NewInt(1 << 4)
 )
 
 type ListCampaignPollResponsesLegacyRequest struct {
@@ -1151,6 +1162,8 @@ type ListCampaignPollResponsesLegacyRequest struct {
 	CampaignID string `json:"-" url:"-"`
 	// Restrict results to one poll block.
 	BlockID *string `json:"-" url:"blockId,omitempty"`
+	// Pass `true` to list only respondents who left a comment, newest comment first.
+	HasComment *bool `json:"-" url:"hasComment,omitempty"`
 	// Responses per page (max 500)
 	Limit *int `json:"-" url:"limit,omitempty"`
 	// Page number
@@ -1179,6 +1192,13 @@ func (l *ListCampaignPollResponsesLegacyRequest) SetCampaignID(campaignID string
 func (l *ListCampaignPollResponsesLegacyRequest) SetBlockID(blockID *string) {
 	l.BlockID = blockID
 	l.require(listCampaignPollResponsesLegacyRequestFieldBlockID)
+}
+
+// SetHasComment sets the HasComment field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCampaignPollResponsesLegacyRequest) SetHasComment(hasComment *bool) {
+	l.HasComment = hasComment
+	l.require(listCampaignPollResponsesLegacyRequestFieldHasComment)
 }
 
 // SetLimit sets the Limit field and marks it as non-optional;
@@ -4405,15 +4425,18 @@ var (
 	pollResponseFieldAnswers       = big.NewInt(1 << 1)
 	pollResponseFieldAttributeKey  = big.NewInt(1 << 2)
 	pollResponseFieldBlockID       = big.NewInt(1 << 3)
-	pollResponseFieldEmail         = big.NewInt(1 << 4)
-	pollResponseFieldExternalID    = big.NewInt(1 << 5)
-	pollResponseFieldFirstName     = big.NewInt(1 << 6)
-	pollResponseFieldLastName      = big.NewInt(1 << 7)
-	pollResponseFieldQuestion      = big.NewInt(1 << 8)
-	pollResponseFieldRespondedAt   = big.NewInt(1 << 9)
-	pollResponseFieldSubscriberID  = big.NewInt(1 << 10)
-	pollResponseFieldValues        = big.NewInt(1 << 11)
-	pollResponseFieldVariant       = big.NewInt(1 << 12)
+	pollResponseFieldComment       = big.NewInt(1 << 4)
+	pollResponseFieldCommentAnswer = big.NewInt(1 << 5)
+	pollResponseFieldCommentedAt   = big.NewInt(1 << 6)
+	pollResponseFieldEmail         = big.NewInt(1 << 7)
+	pollResponseFieldExternalID    = big.NewInt(1 << 8)
+	pollResponseFieldFirstName     = big.NewInt(1 << 9)
+	pollResponseFieldLastName      = big.NewInt(1 << 10)
+	pollResponseFieldQuestion      = big.NewInt(1 << 11)
+	pollResponseFieldRespondedAt   = big.NewInt(1 << 12)
+	pollResponseFieldSubscriberID  = big.NewInt(1 << 13)
+	pollResponseFieldValues        = big.NewInt(1 << 14)
+	pollResponseFieldVariant       = big.NewInt(1 << 15)
 )
 
 type PollResponse struct {
@@ -4425,6 +4448,12 @@ type PollResponse struct {
 	AttributeKey *string `json:"attributeKey,omitempty" url:"attributeKey,omitempty"`
 	// Poll block ID inside the email content.
 	BlockID *string `json:"blockId,omitempty" url:"blockId,omitempty"`
+	// Latest comment the respondent left on the poll's hosted confirmation page, or null when they did not comment. Requires the poll's comment box (`commentEnabled`).
+	Comment *string `json:"comment,omitempty" url:"comment,omitempty"`
+	// The answer the comment was written under. It can differ from `answers` when the respondent changed their answer after commenting. Null without a comment.
+	CommentAnswer *string `json:"commentAnswer,omitempty" url:"commentAnswer,omitempty"`
+	// When the comment was left. Null without a comment.
+	CommentedAt *time.Time `json:"commentedAt,omitempty" url:"commentedAt,omitempty"`
 	// Null when the subscriber has since been deleted.
 	Email        *string    `json:"email,omitempty" url:"email,omitempty"`
 	ExternalID   *string    `json:"externalId,omitempty" url:"externalId,omitempty"`
@@ -4470,6 +4499,27 @@ func (p *PollResponse) GetBlockID() *string {
 		return nil
 	}
 	return p.BlockID
+}
+
+func (p *PollResponse) GetComment() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Comment
+}
+
+func (p *PollResponse) GetCommentAnswer() *string {
+	if p == nil {
+		return nil
+	}
+	return p.CommentAnswer
+}
+
+func (p *PollResponse) GetCommentedAt() *time.Time {
+	if p == nil {
+		return nil
+	}
+	return p.CommentedAt
 }
 
 func (p *PollResponse) GetEmail() *string {
@@ -4577,6 +4627,27 @@ func (p *PollResponse) SetBlockID(blockID *string) {
 	p.require(pollResponseFieldBlockID)
 }
 
+// SetComment sets the Comment field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PollResponse) SetComment(comment *string) {
+	p.Comment = comment
+	p.require(pollResponseFieldComment)
+}
+
+// SetCommentAnswer sets the CommentAnswer field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PollResponse) SetCommentAnswer(commentAnswer *string) {
+	p.CommentAnswer = commentAnswer
+	p.require(pollResponseFieldCommentAnswer)
+}
+
+// SetCommentedAt sets the CommentedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PollResponse) SetCommentedAt(commentedAt *time.Time) {
+	p.CommentedAt = commentedAt
+	p.require(pollResponseFieldCommentedAt)
+}
+
 // SetEmail sets the Email field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (p *PollResponse) SetEmail(email *string) {
@@ -4644,6 +4715,7 @@ func (p *PollResponse) UnmarshalJSON(data []byte) error {
 	type embed PollResponse
 	var unmarshaler = struct {
 		embed
+		CommentedAt *internal.DateTime `json:"commentedAt,omitempty"`
 		RespondedAt *internal.DateTime `json:"respondedAt,omitempty"`
 	}{
 		embed: embed(*p),
@@ -4652,6 +4724,7 @@ func (p *PollResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*p = PollResponse(unmarshaler.embed)
+	p.CommentedAt = unmarshaler.CommentedAt.TimePtr()
 	p.RespondedAt = unmarshaler.RespondedAt.TimePtr()
 	extraProperties, err := internal.ExtractExtraProperties(data, *p)
 	if err != nil {
@@ -4666,9 +4739,11 @@ func (p *PollResponse) MarshalJSON() ([]byte, error) {
 	type embed PollResponse
 	var marshaler = struct {
 		embed
+		CommentedAt *internal.DateTime `json:"commentedAt,omitempty"`
 		RespondedAt *internal.DateTime `json:"respondedAt,omitempty"`
 	}{
 		embed:       embed(*p),
+		CommentedAt: internal.NewOptionalDateTime(p.CommentedAt),
 		RespondedAt: internal.NewOptionalDateTime(p.RespondedAt),
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
