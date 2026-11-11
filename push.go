@@ -1273,15 +1273,16 @@ func (s *SendPushCampaignRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
-	sendTestPushRequestFieldBody         = big.NewInt(1 << 0)
-	sendTestPushRequestFieldDeviceID     = big.NewInt(1 << 1)
-	sendTestPushRequestFieldEmail        = big.NewInt(1 << 2)
-	sendTestPushRequestFieldIconURL      = big.NewInt(1 << 3)
-	sendTestPushRequestFieldImageURL     = big.NewInt(1 << 4)
-	sendTestPushRequestFieldPlatforms    = big.NewInt(1 << 5)
-	sendTestPushRequestFieldSubscriberID = big.NewInt(1 << 6)
-	sendTestPushRequestFieldTitle        = big.NewInt(1 << 7)
-	sendTestPushRequestFieldURL          = big.NewInt(1 << 8)
+	sendTestPushRequestFieldBody          = big.NewInt(1 << 0)
+	sendTestPushRequestFieldDeviceID      = big.NewInt(1 << 1)
+	sendTestPushRequestFieldEmail         = big.NewInt(1 << 2)
+	sendTestPushRequestFieldIconURL       = big.NewInt(1 << 3)
+	sendTestPushRequestFieldImageURL      = big.NewInt(1 << 4)
+	sendTestPushRequestFieldLocalizations = big.NewInt(1 << 5)
+	sendTestPushRequestFieldPlatforms     = big.NewInt(1 << 6)
+	sendTestPushRequestFieldSubscriberID  = big.NewInt(1 << 7)
+	sendTestPushRequestFieldTitle         = big.NewInt(1 << 8)
+	sendTestPushRequestFieldURL           = big.NewInt(1 << 9)
 )
 
 type SendTestPushRequest struct {
@@ -1295,6 +1296,8 @@ type SendTestPushRequest struct {
 	IconURL *string `json:"iconUrl,omitempty" url:"-"`
 	// Optional https image shown in the notification.
 	ImageURL *string `json:"imageUrl,omitempty" url:"-"`
+	// Accepted so a campaign body can be sent as is, but not used. A test always sends the title and body given here.
+	Localizations *PushLocalizationList `json:"localizations,omitempty" url:"-"`
 	// Limit delivery to these platforms. Omit or pass an empty array for every platform.
 	Platforms []SendTestPushRequestPlatformsItem `json:"platforms,omitempty" url:"-"`
 	// Notify every active device of this subscriber.
@@ -1348,6 +1351,13 @@ func (s *SendTestPushRequest) SetIconURL(iconURL *string) {
 func (s *SendTestPushRequest) SetImageURL(imageURL *string) {
 	s.ImageURL = imageURL
 	s.require(sendTestPushRequestFieldImageURL)
+}
+
+// SetLocalizations sets the Localizations field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendTestPushRequest) SetLocalizations(localizations *PushLocalizationList) {
+	s.Localizations = localizations
+	s.require(sendTestPushRequestFieldLocalizations)
 }
 
 // SetPlatforms sets the Platforms field and marks it as non-optional;
@@ -1784,7 +1794,8 @@ var (
 	translatePushContentRequestFieldLocales       = big.NewInt(1 << 1)
 	translatePushContentRequestFieldLocalizations = big.NewInt(1 << 2)
 	translatePushContentRequestFieldOverwrite     = big.NewInt(1 << 3)
-	translatePushContentRequestFieldTitle         = big.NewInt(1 << 4)
+	translatePushContentRequestFieldPlatforms     = big.NewInt(1 << 4)
+	translatePushContentRequestFieldTitle         = big.NewInt(1 << 5)
 )
 
 type TranslatePushContentRequest struct {
@@ -1795,6 +1806,8 @@ type TranslatePushContentRequest struct {
 	Localizations *PushLocalizationList `json:"localizations,omitempty" url:"-"`
 	// Retranslate versions a person wrote too.
 	Overwrite *bool `json:"overwrite,omitempty" url:"-"`
+	// Accepted so a campaign body can be sent as is, but not used. Translation does not depend on the platform.
+	Platforms []TranslatePushContentRequestPlatformsItem `json:"platforms,omitempty" url:"-"`
 	// Main-language title. A title or a body is required.
 	Title *string `json:"title,omitempty" url:"-"`
 
@@ -1835,6 +1848,13 @@ func (t *TranslatePushContentRequest) SetLocalizations(localizations *PushLocali
 func (t *TranslatePushContentRequest) SetOverwrite(overwrite *bool) {
 	t.Overwrite = overwrite
 	t.require(translatePushContentRequestFieldOverwrite)
+}
+
+// SetPlatforms sets the Platforms field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TranslatePushContentRequest) SetPlatforms(platforms []TranslatePushContentRequestPlatformsItem) {
+	t.Platforms = platforms
+	t.require(translatePushContentRequestFieldPlatforms)
 }
 
 // SetTitle sets the Title field and marks it as non-optional;
@@ -10626,6 +10646,31 @@ func (t *TranslatePushCampaignResponse) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", t)
+}
+
+type TranslatePushContentRequestPlatformsItem string
+
+const (
+	TranslatePushContentRequestPlatformsItemWeb     TranslatePushContentRequestPlatformsItem = "web"
+	TranslatePushContentRequestPlatformsItemIos     TranslatePushContentRequestPlatformsItem = "ios"
+	TranslatePushContentRequestPlatformsItemAndroid TranslatePushContentRequestPlatformsItem = "android"
+)
+
+func NewTranslatePushContentRequestPlatformsItemFromString(s string) (TranslatePushContentRequestPlatformsItem, error) {
+	switch s {
+	case "web":
+		return TranslatePushContentRequestPlatformsItemWeb, nil
+	case "ios":
+		return TranslatePushContentRequestPlatformsItemIos, nil
+	case "android":
+		return TranslatePushContentRequestPlatformsItemAndroid, nil
+	}
+	var t TranslatePushContentRequestPlatformsItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (t TranslatePushContentRequestPlatformsItem) Ptr() *TranslatePushContentRequestPlatformsItem {
+	return &t
 }
 
 var (

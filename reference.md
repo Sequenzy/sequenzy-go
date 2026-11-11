@@ -2176,7 +2176,7 @@ client.Accounts.CreateFromOrganizationID(
 <dl>
 <dd>
 
-Deletes the account and its memberships. Contacts are kept; their `account.*` attributes are cleared.
+Deletes one customer organization (a B2B account your contacts belong to, shown under Subscribers > Organizations) and its memberships. Contacts are kept; their `organization.*` attributes (and the older `account.*` alias) are cleared or replaced by another organization they belong to. Never deletes your Sequenzy account, workspace, login or API keys.
 </dd>
 </dl>
 </dd>
@@ -7002,6 +7002,14 @@ client.Campaigns.List(
 <dd>
 
 **offset:** `*int` — Optional zero-based row offset.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page:** `*int` — Optional 1-based page number, used when offset is absent: page=N starts at row (N - 1) * limit. An explicit offset takes precedence; a malformed page is ignored.
     
 </dd>
 </dl>
@@ -13764,7 +13772,7 @@ client.InApp.DuplicateInAppCampaign(
 <dl>
 <dd>
 
-Counts the contacts who match an audience now. Contacts who join the audience while the campaign is live get it too. Requires the campaigns:read scope.
+Counts the contacts who match an audience now, and how many of them are known to have your app connected. Contacts who join the audience while the campaign is live get it too. Requires the campaigns:read scope.
 </dd>
 </dl>
 </dd>
@@ -17819,6 +17827,106 @@ client.Media.CreateEmailImageUploadURL(
 </dl>
 </details>
 
+<details><summary><code>client.Media.CropEmailImage(request) -> *sequenzygo.CropEmailImageResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Crops a media-library image, or a Pexels or Unsplash photo, into a new hosted image in the company's media library. The crop is baked into the file, so every email client shows exactly the selected area. Pass either crop or aspectRatio. The original is kept. Requests are idempotent: the same source and pixel area return the same asset. Requires emails:write.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.CropEmailImageRequest{
+    SourceURL: "sourceUrl",
+}
+client.Media.CropEmailImage(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**altText:** `*string` — Stored on the new asset; longer text is cut at 500 characters. Defaults to the generated file name. A repeated crop keeps the first request's alt text.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**aspectRatio:** `*sequenzygo.CropEmailImageRequestAspectRatio` — Width / height as a number or "W:H" string, between 1:10 and 10:1. Crops the largest area of that shape. Mutually exclusive with crop.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**crop:** `*sequenzygo.CropEmailImageRequestCrop` — Area to keep, as fractions of the upright (EXIF-oriented) image. Must stay inside the image. Mutually exclusive with aspectRatio.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**focusX:** `*float64` — With aspectRatio only. Horizontal center of the crop. Defaults to 0.5.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**focusY:** `*float64` — With aspectRatio only. Vertical center of the crop. Defaults to 0.5.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sourceURL:** `string` — Hosted URL of the original image: a media-library URL or a Pexels/Unsplash photo. Merge tags and other hosts are rejected.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Migrations
 <details><summary><code>client.Migrations.ApprovePlan(RunID, request) -> *sequenzygo.ApprovePlanMigrationsResponse</code></summary>
 <dl>
@@ -21201,6 +21309,14 @@ client.Push.SendTestPush(
 <dl>
 <dd>
 
+**localizations:** `*sequenzygo.PushLocalizationList` — Accepted so a campaign body can be sent as is, but not used. A test always sends the title and body given here.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **platforms:** `[]*sequenzygo.SendTestPushRequestPlatformsItem` — Limit delivery to these platforms. Omit or pass an empty array for every platform.
     
 </dd>
@@ -21755,6 +21871,14 @@ client.Push.TranslatePushContent(
 <dd>
 
 **overwrite:** `*bool` — Retranslate versions a person wrote too.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**platforms:** `[]*sequenzygo.TranslatePushContentRequestPlatformsItem` — Accepted so a campaign body can be sent as is, but not used. Translation does not depend on the platform.
     
 </dd>
 </dl>
@@ -23070,7 +23194,7 @@ client.Segments.Create(
 <dl>
 <dd>
 
-Deletes a saved segment. Subscribers matched by the segment are not affected.
+Deletes a saved segment. Subscribers matched by the segment are not affected. Deleting is not blocked when the segment is in use; the response lists what read it, and those now treat every contact as not in the segment. Draft campaigns and conditions inside email content are not checked. If the usage check fails, the segment is still deleted and the four affected fields are omitted, which means usage is unknown.
 </dd>
 </dl>
 </dd>
@@ -24668,7 +24792,7 @@ client.Sequences.CreateGoal(
 </dl>
 </details>
 
-<details><summary><code>client.Sequences.Delete(SequenceID) -> *sequenzygo.SequenceActionResponse</code></summary>
+<details><summary><code>client.Sequences.Delete(SequenceID) -> *sequenzygo.DeleteSequencesResponse</code></summary>
 <dl>
 <dd>
 
@@ -24680,7 +24804,7 @@ client.Sequences.CreateGoal(
 <dl>
 <dd>
 
-Deletes a sequence and its automation nodes.
+Deletes a sequence and its steps. Contacts still in it are removed and get none of its remaining steps; `contactsInSequence` says how many.
 </dd>
 </dl>
 </dd>
@@ -26407,6 +26531,14 @@ client.Sequences.List(
 <dd>
 
 **offset:** `*int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page:** `*int` — Optional 1-based page number, used only with limit and without offset. page alone does not enable pagination, so every sequence is still returned. A malformed page is ignored.
     
 </dd>
 </dl>
@@ -29152,7 +29284,7 @@ client.Sms.UpdateNumberLabel(
 <dl>
 <dd>
 
-Adds multiple tags to a subscriber. Creates the subscriber if they don't exist. Creates tag definitions if they don't exist. When the workspace has double opt-in enabled, a brand-new subscriber is created pending confirmation, the confirmation email is queued, and tag automations wait at their trigger until the subscriber confirms.
+One contact, several tags. Adds several tags to a single subscriber identified by email or externalId. Creates the subscriber if they don't exist. To add tags to many existing subscribers without creating contacts, use POST /subscribers/bulk/tags/add. Creates tag definitions if they don't exist. When the workspace has double opt-in enabled, a brand-new subscriber is created pending confirmation, the confirmation email is queued, and tag automations wait at their trigger until the subscriber confirms.
 </dd>
 </dl>
 </dd>
@@ -29256,7 +29388,7 @@ client.Subscribers.AddTagsBulk(
 <dl>
 <dd>
 
-Adds one or more tags to up to 500 existing subscribers identified by email, externalId, or subscriberId. Built for reconciling historical or derived tags, so identifiers that do not match an existing subscriber are returned in notFound rather than creating contacts. Tag automations are skipped unless triggerAutomations is true, which requires the automations:trigger scope.
+Many contacts, one or more tags. Adds one or more tags to up to 500 existing subscribers identified by email, externalId, or subscriberId. Built for reconciling historical or derived tags, so identifiers that do not match an existing subscriber are returned in notFound rather than creating contacts. Tag automations are skipped unless triggerAutomations is true, which requires the automations:trigger scope.
 </dd>
 </dl>
 </dd>
@@ -29322,7 +29454,7 @@ client.Subscribers.BulkAddTags(
 <dl>
 <dd>
 
-Removes one or more tags from up to 500 existing subscribers identified by email, externalId, or subscriberId. Identifiers that do not match an existing subscriber are returned in notFound.
+Many contacts, one or more tags. Removes one or more tags from up to 500 existing subscribers identified by email, externalId, or subscriberId. Identifiers that do not match an existing subscriber are returned in notFound.
 </dd>
 </dl>
 </dd>
@@ -31878,7 +32010,7 @@ client.Subscribers.Tags.Add(
 <dl>
 <dd>
 
-Removes a tag from a subscriber. Creates the subscriber if they don't exist (without the tag).
+Removes one tag from one subscriber identified by email or externalId. Never creates a subscriber. When no subscriber matches, the request succeeds with subscriberFound false, tag.removed false, an empty subscriber.id and subscriber.created false. firstName and lastName update a matched subscriber and are ignored otherwise. To remove tags from many existing subscribers, use POST /subscribers/bulk/tags/remove.
 </dd>
 </dl>
 </dd>
@@ -31914,7 +32046,7 @@ client.Subscribers.Tags.Remove(
 <dl>
 <dd>
 
-**email:** `*string` — Required when creating a new subscriber. Optional when externalId identifies an existing subscriber.
+**email:** `*string` — Subscriber email. Provide email, externalId, or both.
     
 </dd>
 </dl>
@@ -31930,7 +32062,7 @@ client.Subscribers.Tags.Remove(
 <dl>
 <dd>
 
-**firstName:** `*string` — First name (used if creating new subscriber)
+**firstName:** `*string` — Updates the matched subscriber's first name. Ignored when no subscriber matches.
     
 </dd>
 </dl>
@@ -31938,7 +32070,7 @@ client.Subscribers.Tags.Remove(
 <dl>
 <dd>
 
-**lastName:** `*string` — Last name (used if creating new subscriber)
+**lastName:** `*string` — Updates the matched subscriber's last name. Ignored when no subscriber matches.
     
 </dd>
 </dl>
@@ -33335,6 +33467,14 @@ client.Templates.List(
 <dd>
 
 **offset:** `*int` — Templates to skip before returning results.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page:** `*int` — Optional 1-based page number, used when offset is absent: page=N starts at row (N - 1) * limit. An explicit offset takes precedence; a malformed page is ignored.
     
 </dd>
 </dl>

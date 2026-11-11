@@ -5,6 +5,7 @@ package subscribers
 import (
 	json "encoding/json"
 	fmt "fmt"
+	sequenzygo "github.com/sequenzy/sequenzy-go"
 	internal "github.com/sequenzy/sequenzy-go/internal"
 	big "math/big"
 	time "time"
@@ -386,18 +387,24 @@ func (t *TriggerBulkEventsRequestEventsItem) String() string {
 }
 
 var (
-	triggerBulkEventsResponseFieldEvents     = big.NewInt(1 << 0)
-	triggerBulkEventsResponseFieldOptIn      = big.NewInt(1 << 1)
-	triggerBulkEventsResponseFieldSubscriber = big.NewInt(1 << 2)
-	triggerBulkEventsResponseFieldSuccess    = big.NewInt(1 << 3)
+	triggerBulkEventsResponseFieldEvents                        = big.NewInt(1 << 0)
+	triggerBulkEventsResponseFieldOptIn                         = big.NewInt(1 << 1)
+	triggerBulkEventsResponseFieldSequenceTriggersRan           = big.NewInt(1 << 2)
+	triggerBulkEventsResponseFieldSequenceTriggersSkippedReason = big.NewInt(1 << 3)
+	triggerBulkEventsResponseFieldSubscriber                    = big.NewInt(1 << 4)
+	triggerBulkEventsResponseFieldSuccess                       = big.NewInt(1 << 5)
+	triggerBulkEventsResponseFieldWarnings                      = big.NewInt(1 << 6)
 )
 
 type TriggerBulkEventsResponse struct {
 	Events []*TriggerBulkEventsResponseEventsItem `json:"events,omitempty" url:"events,omitempty"`
 	// Present when this request created a brand-new subscriber while workspace double opt-in is enabled. The subscriber stays pending and matching sequences wait until they confirm.
-	OptIn      *TriggerBulkEventsResponseOptIn      `json:"optIn,omitempty" url:"optIn,omitempty"`
-	Subscriber *TriggerBulkEventsResponseSubscriber `json:"subscriber,omitempty" url:"subscriber,omitempty"`
-	Success    *bool                                `json:"success,omitempty" url:"success,omitempty"`
+	OptIn                         *TriggerBulkEventsResponseOptIn           `json:"optIn,omitempty" url:"optIn,omitempty"`
+	SequenceTriggersRan           *sequenzygo.SequenceTriggersRan           `json:"sequenceTriggersRan,omitempty" url:"sequenceTriggersRan,omitempty"`
+	SequenceTriggersSkippedReason *sequenzygo.SequenceTriggersSkippedReason `json:"sequenceTriggersSkippedReason,omitempty" url:"sequenceTriggersSkippedReason,omitempty"`
+	Subscriber                    *TriggerBulkEventsResponseSubscriber      `json:"subscriber,omitempty" url:"subscriber,omitempty"`
+	Success                       *bool                                     `json:"success,omitempty" url:"success,omitempty"`
+	Warnings                      *sequenzygo.SequenceTriggerWarnings       `json:"warnings,omitempty" url:"warnings,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -420,6 +427,20 @@ func (t *TriggerBulkEventsResponse) GetOptIn() *TriggerBulkEventsResponseOptIn {
 	return t.OptIn
 }
 
+func (t *TriggerBulkEventsResponse) GetSequenceTriggersRan() *sequenzygo.SequenceTriggersRan {
+	if t == nil {
+		return nil
+	}
+	return t.SequenceTriggersRan
+}
+
+func (t *TriggerBulkEventsResponse) GetSequenceTriggersSkippedReason() *sequenzygo.SequenceTriggersSkippedReason {
+	if t == nil {
+		return nil
+	}
+	return t.SequenceTriggersSkippedReason
+}
+
 func (t *TriggerBulkEventsResponse) GetSubscriber() *TriggerBulkEventsResponseSubscriber {
 	if t == nil {
 		return nil
@@ -432,6 +453,13 @@ func (t *TriggerBulkEventsResponse) GetSuccess() *bool {
 		return nil
 	}
 	return t.Success
+}
+
+func (t *TriggerBulkEventsResponse) GetWarnings() *sequenzygo.SequenceTriggerWarnings {
+	if t == nil {
+		return nil
+	}
+	return t.Warnings
 }
 
 func (t *TriggerBulkEventsResponse) GetExtraProperties() map[string]interface{} {
@@ -462,6 +490,20 @@ func (t *TriggerBulkEventsResponse) SetOptIn(optIn *TriggerBulkEventsResponseOpt
 	t.require(triggerBulkEventsResponseFieldOptIn)
 }
 
+// SetSequenceTriggersRan sets the SequenceTriggersRan field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TriggerBulkEventsResponse) SetSequenceTriggersRan(sequenceTriggersRan *sequenzygo.SequenceTriggersRan) {
+	t.SequenceTriggersRan = sequenceTriggersRan
+	t.require(triggerBulkEventsResponseFieldSequenceTriggersRan)
+}
+
+// SetSequenceTriggersSkippedReason sets the SequenceTriggersSkippedReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TriggerBulkEventsResponse) SetSequenceTriggersSkippedReason(sequenceTriggersSkippedReason *sequenzygo.SequenceTriggersSkippedReason) {
+	t.SequenceTriggersSkippedReason = sequenceTriggersSkippedReason
+	t.require(triggerBulkEventsResponseFieldSequenceTriggersSkippedReason)
+}
+
 // SetSubscriber sets the Subscriber field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (t *TriggerBulkEventsResponse) SetSubscriber(subscriber *TriggerBulkEventsResponseSubscriber) {
@@ -474,6 +516,13 @@ func (t *TriggerBulkEventsResponse) SetSubscriber(subscriber *TriggerBulkEventsR
 func (t *TriggerBulkEventsResponse) SetSuccess(success *bool) {
 	t.Success = success
 	t.require(triggerBulkEventsResponseFieldSuccess)
+}
+
+// SetWarnings sets the Warnings field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TriggerBulkEventsResponse) SetWarnings(warnings *sequenzygo.SequenceTriggerWarnings) {
+	t.Warnings = warnings
+	t.require(triggerBulkEventsResponseFieldWarnings)
 }
 
 func (t *TriggerBulkEventsResponse) UnmarshalJSON(data []byte) error {
@@ -1124,18 +1173,21 @@ func (t TriggerEventsRequestAccountAttributesRole) Ptr() *TriggerEventsRequestAc
 }
 
 var (
-	triggerEventsResponseFieldAccount            = big.NewInt(1 << 0)
-	triggerEventsResponseFieldAccountIgnored     = big.NewInt(1 << 1)
-	triggerEventsResponseFieldDuplicate          = big.NewInt(1 << 2)
-	triggerEventsResponseFieldDuplicates         = big.NewInt(1 << 3)
-	triggerEventsResponseFieldEvent              = big.NewInt(1 << 4)
-	triggerEventsResponseFieldEvents             = big.NewInt(1 << 5)
-	triggerEventsResponseFieldHistorical         = big.NewInt(1 << 6)
-	triggerEventsResponseFieldInserted           = big.NewInt(1 << 7)
-	triggerEventsResponseFieldOptIn              = big.NewInt(1 << 8)
-	triggerEventsResponseFieldSideEffectFailures = big.NewInt(1 << 9)
-	triggerEventsResponseFieldSubscriber         = big.NewInt(1 << 10)
-	triggerEventsResponseFieldSuccess            = big.NewInt(1 << 11)
+	triggerEventsResponseFieldAccount                       = big.NewInt(1 << 0)
+	triggerEventsResponseFieldAccountIgnored                = big.NewInt(1 << 1)
+	triggerEventsResponseFieldDuplicate                     = big.NewInt(1 << 2)
+	triggerEventsResponseFieldDuplicates                    = big.NewInt(1 << 3)
+	triggerEventsResponseFieldEvent                         = big.NewInt(1 << 4)
+	triggerEventsResponseFieldEvents                        = big.NewInt(1 << 5)
+	triggerEventsResponseFieldHistorical                    = big.NewInt(1 << 6)
+	triggerEventsResponseFieldInserted                      = big.NewInt(1 << 7)
+	triggerEventsResponseFieldOptIn                         = big.NewInt(1 << 8)
+	triggerEventsResponseFieldSequenceTriggersRan           = big.NewInt(1 << 9)
+	triggerEventsResponseFieldSequenceTriggersSkippedReason = big.NewInt(1 << 10)
+	triggerEventsResponseFieldSideEffectFailures            = big.NewInt(1 << 11)
+	triggerEventsResponseFieldSubscriber                    = big.NewInt(1 << 12)
+	triggerEventsResponseFieldSuccess                       = big.NewInt(1 << 13)
+	triggerEventsResponseFieldWarnings                      = big.NewInt(1 << 14)
 )
 
 type TriggerEventsResponse struct {
@@ -1155,11 +1207,14 @@ type TriggerEventsResponse struct {
 	// Historical event rows inserted by this request.
 	Inserted *int `json:"inserted,omitempty" url:"inserted,omitempty"`
 	// Present when this event created a brand-new subscriber while workspace double opt-in is enabled. The subscriber stays pending and matching sequences wait until they confirm.
-	OptIn *TriggerEventsResponseOptIn `json:"optIn,omitempty" url:"optIn,omitempty"`
+	OptIn                         *TriggerEventsResponseOptIn               `json:"optIn,omitempty" url:"optIn,omitempty"`
+	SequenceTriggersRan           *sequenzygo.SequenceTriggersRan           `json:"sequenceTriggersRan,omitempty" url:"sequenceTriggersRan,omitempty"`
+	SequenceTriggersSkippedReason *sequenzygo.SequenceTriggersSkippedReason `json:"sequenceTriggersSkippedReason,omitempty" url:"sequenceTriggersSkippedReason,omitempty"`
 	// Present when the event was recorded but one or more side-effect stages (e.g. apply-sync-rules, trigger-event-automations) failed. Retry-sensitive callers should treat these as partial failures.
-	SideEffectFailures []string                         `json:"sideEffectFailures,omitempty" url:"sideEffectFailures,omitempty"`
-	Subscriber         *TriggerEventsResponseSubscriber `json:"subscriber,omitempty" url:"subscriber,omitempty"`
-	Success            *bool                            `json:"success,omitempty" url:"success,omitempty"`
+	SideEffectFailures []string                            `json:"sideEffectFailures,omitempty" url:"sideEffectFailures,omitempty"`
+	Subscriber         *TriggerEventsResponseSubscriber    `json:"subscriber,omitempty" url:"subscriber,omitempty"`
+	Success            *bool                               `json:"success,omitempty" url:"success,omitempty"`
+	Warnings           *sequenzygo.SequenceTriggerWarnings `json:"warnings,omitempty" url:"warnings,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1231,6 +1286,20 @@ func (t *TriggerEventsResponse) GetOptIn() *TriggerEventsResponseOptIn {
 	return t.OptIn
 }
 
+func (t *TriggerEventsResponse) GetSequenceTriggersRan() *sequenzygo.SequenceTriggersRan {
+	if t == nil {
+		return nil
+	}
+	return t.SequenceTriggersRan
+}
+
+func (t *TriggerEventsResponse) GetSequenceTriggersSkippedReason() *sequenzygo.SequenceTriggersSkippedReason {
+	if t == nil {
+		return nil
+	}
+	return t.SequenceTriggersSkippedReason
+}
+
 func (t *TriggerEventsResponse) GetSideEffectFailures() []string {
 	if t == nil {
 		return nil
@@ -1250,6 +1319,13 @@ func (t *TriggerEventsResponse) GetSuccess() *bool {
 		return nil
 	}
 	return t.Success
+}
+
+func (t *TriggerEventsResponse) GetWarnings() *sequenzygo.SequenceTriggerWarnings {
+	if t == nil {
+		return nil
+	}
+	return t.Warnings
 }
 
 func (t *TriggerEventsResponse) GetExtraProperties() map[string]interface{} {
@@ -1329,6 +1405,20 @@ func (t *TriggerEventsResponse) SetOptIn(optIn *TriggerEventsResponseOptIn) {
 	t.require(triggerEventsResponseFieldOptIn)
 }
 
+// SetSequenceTriggersRan sets the SequenceTriggersRan field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TriggerEventsResponse) SetSequenceTriggersRan(sequenceTriggersRan *sequenzygo.SequenceTriggersRan) {
+	t.SequenceTriggersRan = sequenceTriggersRan
+	t.require(triggerEventsResponseFieldSequenceTriggersRan)
+}
+
+// SetSequenceTriggersSkippedReason sets the SequenceTriggersSkippedReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TriggerEventsResponse) SetSequenceTriggersSkippedReason(sequenceTriggersSkippedReason *sequenzygo.SequenceTriggersSkippedReason) {
+	t.SequenceTriggersSkippedReason = sequenceTriggersSkippedReason
+	t.require(triggerEventsResponseFieldSequenceTriggersSkippedReason)
+}
+
 // SetSideEffectFailures sets the SideEffectFailures field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (t *TriggerEventsResponse) SetSideEffectFailures(sideEffectFailures []string) {
@@ -1348,6 +1438,13 @@ func (t *TriggerEventsResponse) SetSubscriber(subscriber *TriggerEventsResponseS
 func (t *TriggerEventsResponse) SetSuccess(success *bool) {
 	t.Success = success
 	t.require(triggerEventsResponseFieldSuccess)
+}
+
+// SetWarnings sets the Warnings field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TriggerEventsResponse) SetWarnings(warnings *sequenzygo.SequenceTriggerWarnings) {
+	t.Warnings = warnings
+	t.require(triggerEventsResponseFieldWarnings)
 }
 
 func (t *TriggerEventsResponse) UnmarshalJSON(data []byte) error {

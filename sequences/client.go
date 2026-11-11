@@ -287,7 +287,7 @@ func (c *Client) CreateGoal(
 	return response.Body, nil
 }
 
-// Deletes a sequence and its automation nodes.
+// Deletes a sequence and its steps. Contacts still in it are removed and get none of its remaining steps; `contactsInSequence` says how many.
 //
 // Example:
 //
@@ -302,7 +302,7 @@ func (c *Client) Delete(
 	ctx context.Context,
 	request *sequenzygo.DeleteSequencesRequest,
 	opts ...option.RequestOption,
-) (*sequenzygo.SequenceActionResponse, error) {
+) (*sequenzygo.DeleteSequencesResponse, error) {
 	response, err := c.WithRawResponse.Delete(
 		ctx,
 		request,

@@ -365,6 +365,7 @@ var (
 	listTemplatesRequestFieldLabel      = big.NewInt(1 << 1)
 	listTemplatesRequestFieldLimit      = big.NewInt(1 << 2)
 	listTemplatesRequestFieldOffset     = big.NewInt(1 << 3)
+	listTemplatesRequestFieldPage       = big.NewInt(1 << 4)
 )
 
 type ListTemplatesRequest struct {
@@ -376,6 +377,8 @@ type ListTemplatesRequest struct {
 	Limit *int `json:"-" url:"limit,omitempty"`
 	// Templates to skip before returning results.
 	Offset *int `json:"-" url:"offset,omitempty"`
+	// Optional 1-based page number, used when offset is absent: page=N starts at row (N - 1) * limit. An explicit offset takes precedence; a malformed page is ignored.
+	Page *int `json:"-" url:"page,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -414,6 +417,13 @@ func (l *ListTemplatesRequest) SetLimit(limit *int) {
 func (l *ListTemplatesRequest) SetOffset(offset *int) {
 	l.Offset = offset
 	l.require(listTemplatesRequestFieldOffset)
+}
+
+// SetPage sets the Page field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTemplatesRequest) SetPage(page *int) {
+	l.Page = page
+	l.require(listTemplatesRequestFieldPage)
 }
 
 var (
@@ -3746,11 +3756,13 @@ func (l *ListTemplatesResponse) String() string {
 }
 
 var (
-	listTemplatesResponsePaginationFieldCount   = big.NewInt(1 << 0)
-	listTemplatesResponsePaginationFieldHasMore = big.NewInt(1 << 1)
-	listTemplatesResponsePaginationFieldLimit   = big.NewInt(1 << 2)
-	listTemplatesResponsePaginationFieldOffset  = big.NewInt(1 << 3)
-	listTemplatesResponsePaginationFieldTotal   = big.NewInt(1 << 4)
+	listTemplatesResponsePaginationFieldCount      = big.NewInt(1 << 0)
+	listTemplatesResponsePaginationFieldHasMore    = big.NewInt(1 << 1)
+	listTemplatesResponsePaginationFieldLimit      = big.NewInt(1 << 2)
+	listTemplatesResponsePaginationFieldOffset     = big.NewInt(1 << 3)
+	listTemplatesResponsePaginationFieldPage       = big.NewInt(1 << 4)
+	listTemplatesResponsePaginationFieldTotal      = big.NewInt(1 << 5)
+	listTemplatesResponsePaginationFieldTotalPages = big.NewInt(1 << 6)
 )
 
 type ListTemplatesResponsePagination struct {
@@ -3759,8 +3771,12 @@ type ListTemplatesResponsePagination struct {
 	HasMore *bool `json:"hasMore,omitempty" url:"hasMore,omitempty"`
 	Limit   *int  `json:"limit,omitempty" url:"limit,omitempty"`
 	Offset  *int  `json:"offset,omitempty" url:"offset,omitempty"`
+	// 1-based page that starts at offset.
+	Page *int `json:"page,omitempty" url:"page,omitempty"`
 	// Every matching email body.
 	Total *int `json:"total,omitempty" url:"total,omitempty"`
+	// Pages at this limit.
+	TotalPages *int `json:"totalPages,omitempty" url:"totalPages,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -3797,11 +3813,25 @@ func (l *ListTemplatesResponsePagination) GetOffset() *int {
 	return l.Offset
 }
 
+func (l *ListTemplatesResponsePagination) GetPage() *int {
+	if l == nil {
+		return nil
+	}
+	return l.Page
+}
+
 func (l *ListTemplatesResponsePagination) GetTotal() *int {
 	if l == nil {
 		return nil
 	}
 	return l.Total
+}
+
+func (l *ListTemplatesResponsePagination) GetTotalPages() *int {
+	if l == nil {
+		return nil
+	}
+	return l.TotalPages
 }
 
 func (l *ListTemplatesResponsePagination) GetExtraProperties() map[string]interface{} {
@@ -3846,11 +3876,25 @@ func (l *ListTemplatesResponsePagination) SetOffset(offset *int) {
 	l.require(listTemplatesResponsePaginationFieldOffset)
 }
 
+// SetPage sets the Page field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTemplatesResponsePagination) SetPage(page *int) {
+	l.Page = page
+	l.require(listTemplatesResponsePaginationFieldPage)
+}
+
 // SetTotal sets the Total field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *ListTemplatesResponsePagination) SetTotal(total *int) {
 	l.Total = total
 	l.require(listTemplatesResponsePaginationFieldTotal)
+}
+
+// SetTotalPages sets the TotalPages field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTemplatesResponsePagination) SetTotalPages(totalPages *int) {
+	l.TotalPages = totalPages
+	l.require(listTemplatesResponsePaginationFieldTotalPages)
 }
 
 func (l *ListTemplatesResponsePagination) UnmarshalJSON(data []byte) error {

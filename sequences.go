@@ -2037,8 +2037,9 @@ var (
 	listSequencesRequestFieldLabels = big.NewInt(1 << 1)
 	listSequencesRequestFieldLimit  = big.NewInt(1 << 2)
 	listSequencesRequestFieldOffset = big.NewInt(1 << 3)
-	listSequencesRequestFieldSearch = big.NewInt(1 << 4)
-	listSequencesRequestFieldStatus = big.NewInt(1 << 5)
+	listSequencesRequestFieldPage   = big.NewInt(1 << 4)
+	listSequencesRequestFieldSearch = big.NewInt(1 << 5)
+	listSequencesRequestFieldStatus = big.NewInt(1 << 6)
 )
 
 type ListSequencesRequest struct {
@@ -2049,6 +2050,8 @@ type ListSequencesRequest struct {
 	// Page size, up to 100. When limit and offset are both omitted, every sequence is returned.
 	Limit  *int `json:"-" url:"limit,omitempty"`
 	Offset *int `json:"-" url:"offset,omitempty"`
+	// Optional 1-based page number, used only with limit and without offset. page alone does not enable pagination, so every sequence is still returned. A malformed page is ignored.
+	Page *int `json:"-" url:"page,omitempty"`
 	// Case-insensitive name or description search.
 	Search *string         `json:"-" url:"search,omitempty"`
 	Status *SequenceStatus `json:"-" url:"status,omitempty"`
@@ -2090,6 +2093,13 @@ func (l *ListSequencesRequest) SetLimit(limit *int) {
 func (l *ListSequencesRequest) SetOffset(offset *int) {
 	l.Offset = offset
 	l.require(listSequencesRequestFieldOffset)
+}
+
+// SetPage sets the Page field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSequencesRequest) SetPage(page *int) {
+	l.Page = page
+	l.require(listSequencesRequestFieldPage)
 }
 
 // SetSearch sets the Search field and marks it as non-optional;
@@ -34552,6 +34562,256 @@ func (d *DeleteGoalSequencesResponse) String() string {
 }
 
 var (
+	deleteSequencesResponseFieldAcceptsNewEnrollments        = big.NewInt(1 << 0)
+	deleteSequencesResponseFieldEffectiveStatus              = big.NewInt(1 << 1)
+	deleteSequencesResponseFieldEffectiveStatusSummary       = big.NewInt(1 << 2)
+	deleteSequencesResponseFieldEnrollmentPaused             = big.NewInt(1 << 3)
+	deleteSequencesResponseFieldMessage                      = big.NewInt(1 << 4)
+	deleteSequencesResponseFieldProcessesExistingEnrollments = big.NewInt(1 << 5)
+	deleteSequencesResponseFieldSequenceID                   = big.NewInt(1 << 6)
+	deleteSequencesResponseFieldStatus                       = big.NewInt(1 << 7)
+	deleteSequencesResponseFieldSuccess                      = big.NewInt(1 << 8)
+	deleteSequencesResponseFieldWarnings                     = big.NewInt(1 << 9)
+	deleteSequencesResponseFieldContactsInSequence           = big.NewInt(1 << 10)
+)
+
+type DeleteSequencesResponse struct {
+	// Whether new subscribers can enter the sequence right now.
+	AcceptsNewEnrollments *bool                    `json:"acceptsNewEnrollments,omitempty" url:"acceptsNewEnrollments,omitempty"`
+	EffectiveStatus       *SequenceEffectiveStatus `json:"effectiveStatus,omitempty" url:"effectiveStatus,omitempty"`
+	// One plain-language sentence describing the run state, safe to show a user verbatim.
+	EffectiveStatusSummary *string `json:"effectiveStatusSummary,omitempty" url:"effectiveStatusSummary,omitempty"`
+	// Present for enable/disable and enrollment pause/resume actions.
+	EnrollmentPaused *bool   `json:"enrollmentPaused,omitempty" url:"enrollmentPaused,omitempty"`
+	Message          *string `json:"message,omitempty" url:"message,omitempty"`
+	// Whether subscribers already inside the sequence keep advancing and receiving steps.
+	ProcessesExistingEnrollments *bool           `json:"processesExistingEnrollments,omitempty" url:"processesExistingEnrollments,omitempty"`
+	SequenceID                   *string         `json:"sequenceId,omitempty" url:"sequenceId,omitempty"`
+	Status                       *SequenceStatus `json:"status,omitempty" url:"status,omitempty"`
+	Success                      *bool           `json:"success,omitempty" url:"success,omitempty"`
+	// Enable only. Non-blocking readiness warnings, such as empty branch paths, a `contact_added` trigger with no list, which enrolls every contact added to the company, or an email that uses `{{webhooks.KEY...}}` or `{{ai.KEY...}}` when no earlier step saves a result under that key, so those tags send empty. Absent when there is nothing to report.
+	Warnings []string `json:"warnings,omitempty" url:"warnings,omitempty"`
+	// Contacts who were still in the sequence (running a step, waiting, or paused) when it was deleted. They were removed and get none of its remaining steps.
+	ContactsInSequence *int `json:"contactsInSequence,omitempty" url:"contactsInSequence,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DeleteSequencesResponse) GetAcceptsNewEnrollments() *bool {
+	if d == nil {
+		return nil
+	}
+	return d.AcceptsNewEnrollments
+}
+
+func (d *DeleteSequencesResponse) GetEffectiveStatus() *SequenceEffectiveStatus {
+	if d == nil {
+		return nil
+	}
+	return d.EffectiveStatus
+}
+
+func (d *DeleteSequencesResponse) GetEffectiveStatusSummary() *string {
+	if d == nil {
+		return nil
+	}
+	return d.EffectiveStatusSummary
+}
+
+func (d *DeleteSequencesResponse) GetEnrollmentPaused() *bool {
+	if d == nil {
+		return nil
+	}
+	return d.EnrollmentPaused
+}
+
+func (d *DeleteSequencesResponse) GetMessage() *string {
+	if d == nil {
+		return nil
+	}
+	return d.Message
+}
+
+func (d *DeleteSequencesResponse) GetProcessesExistingEnrollments() *bool {
+	if d == nil {
+		return nil
+	}
+	return d.ProcessesExistingEnrollments
+}
+
+func (d *DeleteSequencesResponse) GetSequenceID() *string {
+	if d == nil {
+		return nil
+	}
+	return d.SequenceID
+}
+
+func (d *DeleteSequencesResponse) GetStatus() *SequenceStatus {
+	if d == nil {
+		return nil
+	}
+	return d.Status
+}
+
+func (d *DeleteSequencesResponse) GetSuccess() *bool {
+	if d == nil {
+		return nil
+	}
+	return d.Success
+}
+
+func (d *DeleteSequencesResponse) GetWarnings() []string {
+	if d == nil {
+		return nil
+	}
+	return d.Warnings
+}
+
+func (d *DeleteSequencesResponse) GetContactsInSequence() *int {
+	if d == nil {
+		return nil
+	}
+	return d.ContactsInSequence
+}
+
+func (d *DeleteSequencesResponse) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DeleteSequencesResponse) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetAcceptsNewEnrollments sets the AcceptsNewEnrollments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteSequencesResponse) SetAcceptsNewEnrollments(acceptsNewEnrollments *bool) {
+	d.AcceptsNewEnrollments = acceptsNewEnrollments
+	d.require(deleteSequencesResponseFieldAcceptsNewEnrollments)
+}
+
+// SetEffectiveStatus sets the EffectiveStatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteSequencesResponse) SetEffectiveStatus(effectiveStatus *SequenceEffectiveStatus) {
+	d.EffectiveStatus = effectiveStatus
+	d.require(deleteSequencesResponseFieldEffectiveStatus)
+}
+
+// SetEffectiveStatusSummary sets the EffectiveStatusSummary field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteSequencesResponse) SetEffectiveStatusSummary(effectiveStatusSummary *string) {
+	d.EffectiveStatusSummary = effectiveStatusSummary
+	d.require(deleteSequencesResponseFieldEffectiveStatusSummary)
+}
+
+// SetEnrollmentPaused sets the EnrollmentPaused field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteSequencesResponse) SetEnrollmentPaused(enrollmentPaused *bool) {
+	d.EnrollmentPaused = enrollmentPaused
+	d.require(deleteSequencesResponseFieldEnrollmentPaused)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteSequencesResponse) SetMessage(message *string) {
+	d.Message = message
+	d.require(deleteSequencesResponseFieldMessage)
+}
+
+// SetProcessesExistingEnrollments sets the ProcessesExistingEnrollments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteSequencesResponse) SetProcessesExistingEnrollments(processesExistingEnrollments *bool) {
+	d.ProcessesExistingEnrollments = processesExistingEnrollments
+	d.require(deleteSequencesResponseFieldProcessesExistingEnrollments)
+}
+
+// SetSequenceID sets the SequenceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteSequencesResponse) SetSequenceID(sequenceID *string) {
+	d.SequenceID = sequenceID
+	d.require(deleteSequencesResponseFieldSequenceID)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteSequencesResponse) SetStatus(status *SequenceStatus) {
+	d.Status = status
+	d.require(deleteSequencesResponseFieldStatus)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteSequencesResponse) SetSuccess(success *bool) {
+	d.Success = success
+	d.require(deleteSequencesResponseFieldSuccess)
+}
+
+// SetWarnings sets the Warnings field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteSequencesResponse) SetWarnings(warnings []string) {
+	d.Warnings = warnings
+	d.require(deleteSequencesResponseFieldWarnings)
+}
+
+// SetContactsInSequence sets the ContactsInSequence field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteSequencesResponse) SetContactsInSequence(contactsInSequence *int) {
+	d.ContactsInSequence = contactsInSequence
+	d.require(deleteSequencesResponseFieldContactsInSequence)
+}
+
+func (d *DeleteSequencesResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler DeleteSequencesResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DeleteSequencesResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DeleteSequencesResponse) MarshalJSON() ([]byte, error) {
+	type embed DeleteSequencesResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DeleteSequencesResponse) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
+var (
 	discardEmailVariationSequencesResponseFieldDiscarded = big.NewInt(1 << 0)
 	discardEmailVariationSequencesResponseFieldSuccess   = big.NewInt(1 << 1)
 )
@@ -38146,11 +38406,13 @@ func (l *ListSequencesResponse) String() string {
 }
 
 var (
-	listSequencesResponsePaginationFieldCount   = big.NewInt(1 << 0)
-	listSequencesResponsePaginationFieldHasMore = big.NewInt(1 << 1)
-	listSequencesResponsePaginationFieldLimit   = big.NewInt(1 << 2)
-	listSequencesResponsePaginationFieldOffset  = big.NewInt(1 << 3)
-	listSequencesResponsePaginationFieldTotal   = big.NewInt(1 << 4)
+	listSequencesResponsePaginationFieldCount      = big.NewInt(1 << 0)
+	listSequencesResponsePaginationFieldHasMore    = big.NewInt(1 << 1)
+	listSequencesResponsePaginationFieldLimit      = big.NewInt(1 << 2)
+	listSequencesResponsePaginationFieldOffset     = big.NewInt(1 << 3)
+	listSequencesResponsePaginationFieldPage       = big.NewInt(1 << 4)
+	listSequencesResponsePaginationFieldTotal      = big.NewInt(1 << 5)
+	listSequencesResponsePaginationFieldTotalPages = big.NewInt(1 << 6)
 )
 
 type ListSequencesResponsePagination struct {
@@ -38159,7 +38421,11 @@ type ListSequencesResponsePagination struct {
 	// Applied page size, or null when the unpaginated default returned every sequence.
 	Limit  *int `json:"limit,omitempty" url:"limit,omitempty"`
 	Offset *int `json:"offset,omitempty" url:"offset,omitempty"`
-	Total  *int `json:"total,omitempty" url:"total,omitempty"`
+	// 1-based page that starts at offset.
+	Page  *int `json:"page,omitempty" url:"page,omitempty"`
+	Total *int `json:"total,omitempty" url:"total,omitempty"`
+	// Pages at this limit; 1 for an unpaginated response with results.
+	TotalPages *int `json:"totalPages,omitempty" url:"totalPages,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -38196,11 +38462,25 @@ func (l *ListSequencesResponsePagination) GetOffset() *int {
 	return l.Offset
 }
 
+func (l *ListSequencesResponsePagination) GetPage() *int {
+	if l == nil {
+		return nil
+	}
+	return l.Page
+}
+
 func (l *ListSequencesResponsePagination) GetTotal() *int {
 	if l == nil {
 		return nil
 	}
 	return l.Total
+}
+
+func (l *ListSequencesResponsePagination) GetTotalPages() *int {
+	if l == nil {
+		return nil
+	}
+	return l.TotalPages
 }
 
 func (l *ListSequencesResponsePagination) GetExtraProperties() map[string]interface{} {
@@ -38245,11 +38525,25 @@ func (l *ListSequencesResponsePagination) SetOffset(offset *int) {
 	l.require(listSequencesResponsePaginationFieldOffset)
 }
 
+// SetPage sets the Page field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSequencesResponsePagination) SetPage(page *int) {
+	l.Page = page
+	l.require(listSequencesResponsePaginationFieldPage)
+}
+
 // SetTotal sets the Total field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *ListSequencesResponsePagination) SetTotal(total *int) {
 	l.Total = total
 	l.require(listSequencesResponsePaginationFieldTotal)
+}
+
+// SetTotalPages sets the TotalPages field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSequencesResponsePagination) SetTotalPages(totalPages *int) {
+	l.TotalPages = totalPages
+	l.require(listSequencesResponsePaginationFieldTotalPages)
 }
 
 func (l *ListSequencesResponsePagination) UnmarshalJSON(data []byte) error {

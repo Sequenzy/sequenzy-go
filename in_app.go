@@ -4406,11 +4406,14 @@ func (d *DuplicateInAppCampaignResponse) String() string {
 }
 
 var (
-	estimateInAppCampaignRecipientsResponseFieldAudienceCount = big.NewInt(1 << 0)
-	estimateInAppCampaignRecipientsResponseFieldSuccess       = big.NewInt(1 << 1)
+	estimateInAppCampaignRecipientsResponseFieldAppUserCount  = big.NewInt(1 << 0)
+	estimateInAppCampaignRecipientsResponseFieldAudienceCount = big.NewInt(1 << 1)
+	estimateInAppCampaignRecipientsResponseFieldSuccess       = big.NewInt(1 << 2)
 )
 
 type EstimateInAppCampaignRecipientsResponse struct {
+	// Contacts in the audience known to have your app connected, from an active iOS or Android device or an in-app message their app displayed. A lower bound; everyone in the audience gets the campaign the next time their app fetches the feed.
+	AppUserCount  *int  `json:"appUserCount,omitempty" url:"appUserCount,omitempty"`
 	AudienceCount *int  `json:"audienceCount,omitempty" url:"audienceCount,omitempty"`
 	Success       *bool `json:"success,omitempty" url:"success,omitempty"`
 
@@ -4419,6 +4422,13 @@ type EstimateInAppCampaignRecipientsResponse struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (e *EstimateInAppCampaignRecipientsResponse) GetAppUserCount() *int {
+	if e == nil {
+		return nil
+	}
+	return e.AppUserCount
 }
 
 func (e *EstimateInAppCampaignRecipientsResponse) GetAudienceCount() *int {
@@ -4447,6 +4457,13 @@ func (e *EstimateInAppCampaignRecipientsResponse) require(field *big.Int) {
 		e.explicitFields = big.NewInt(0)
 	}
 	e.explicitFields.Or(e.explicitFields, field)
+}
+
+// SetAppUserCount sets the AppUserCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EstimateInAppCampaignRecipientsResponse) SetAppUserCount(appUserCount *int) {
+	e.AppUserCount = appUserCount
+	e.require(estimateInAppCampaignRecipientsResponseFieldAppUserCount)
 }
 
 // SetAudienceCount sets the AudienceCount field and marks it as non-optional;

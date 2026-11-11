@@ -29563,6 +29563,42 @@ func TestEnumSequenceEnrollmentRealignQueuedResponseStatus(t *testing.T) {
 	})
 }
 
+func TestEnumSequenceTriggersSkippedReason(t *testing.T) {
+	t.Run("NewFromString_missing_scope", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSequenceTriggersSkippedReasonFromString("missing_scope")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SequenceTriggersSkippedReason("missing_scope"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_not_requested", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSequenceTriggersSkippedReasonFromString("not_requested")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SequenceTriggersSkippedReason("not_requested"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_historical", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSequenceTriggersSkippedReasonFromString("historical")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SequenceTriggersSkippedReason("historical"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewSequenceTriggersSkippedReasonFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewSequenceTriggersSkippedReasonFromString("missing_scope")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestExtraPropertiesAbTestContentEditing(t *testing.T) {
 	t.Run("GetExtraProperties", func(t *testing.T) {
 		t.Parallel()

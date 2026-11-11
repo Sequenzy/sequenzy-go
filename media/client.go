@@ -94,6 +94,33 @@ func (c *Client) CreateEmailImageUploadURL(
 	return response.Body, nil
 }
 
+// Crops a media-library image, or a Pexels or Unsplash photo, into a new hosted image in the company's media library. The crop is baked into the file, so every email client shows exactly the selected area. Pass either crop or aspectRatio. The original is kept. Requests are idempotent: the same source and pixel area return the same asset. Requires emails:write.
+//
+// Example:
+//
+//	request := &sequenzygo.CropEmailImageRequest{
+//	    SourceURL: "sourceUrl",
+//	}
+//	client.Media.CropEmailImage(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) CropEmailImage(
+	ctx context.Context,
+	request *sequenzygo.CropEmailImageRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.CropEmailImageResponse, error) {
+	response, err := c.WithRawResponse.CropEmailImage(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Uploads the exact bytes to the authenticated URL returned by POST /media/upload-url. The server enforces the requested size, verifies the file signature, and creates the public object only once.
 func (c *Client) UploadEmailImageBytes(
 	ctx context.Context,

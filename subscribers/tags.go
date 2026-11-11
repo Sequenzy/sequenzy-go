@@ -5,6 +5,7 @@ package subscribers
 import (
 	json "encoding/json"
 	fmt "fmt"
+	sequenzygo "github.com/sequenzy/sequenzy-go"
 	internal "github.com/sequenzy/sequenzy-go/internal"
 	big "math/big"
 )
@@ -114,13 +115,13 @@ var (
 )
 
 type RemoveTagsRequest struct {
-	// Required when creating a new subscriber. Optional when externalId identifies an existing subscriber.
+	// Subscriber email. Provide email, externalId, or both.
 	Email *string `json:"email,omitempty" url:"-"`
 	// Customer-owned app/customer/user ID
 	ExternalID *string `json:"externalId,omitempty" url:"-"`
-	// First name (used if creating new subscriber)
+	// Updates the matched subscriber's first name. Ignored when no subscriber matches.
 	FirstName *string `json:"firstName,omitempty" url:"-"`
-	// Last name (used if creating new subscriber)
+	// Updates the matched subscriber's last name. Ignored when no subscriber matches.
 	LastName *string `json:"lastName,omitempty" url:"-"`
 	Tag      string  `json:"tag" url:"-"`
 
@@ -192,18 +193,24 @@ func (r *RemoveTagsRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
-	addTagsResponseFieldOptIn      = big.NewInt(1 << 0)
-	addTagsResponseFieldSubscriber = big.NewInt(1 << 1)
-	addTagsResponseFieldSuccess    = big.NewInt(1 << 2)
-	addTagsResponseFieldTag        = big.NewInt(1 << 3)
+	addTagsResponseFieldOptIn                         = big.NewInt(1 << 0)
+	addTagsResponseFieldSequenceTriggersRan           = big.NewInt(1 << 1)
+	addTagsResponseFieldSequenceTriggersSkippedReason = big.NewInt(1 << 2)
+	addTagsResponseFieldSubscriber                    = big.NewInt(1 << 3)
+	addTagsResponseFieldSuccess                       = big.NewInt(1 << 4)
+	addTagsResponseFieldTag                           = big.NewInt(1 << 5)
+	addTagsResponseFieldWarnings                      = big.NewInt(1 << 6)
 )
 
 type AddTagsResponse struct {
 	// Present when this request created a brand-new subscriber while workspace double opt-in is enabled. The tag is applied, but the subscriber stays pending and tag automations wait until they confirm.
-	OptIn      *AddTagsResponseOptIn      `json:"optIn,omitempty" url:"optIn,omitempty"`
-	Subscriber *AddTagsResponseSubscriber `json:"subscriber,omitempty" url:"subscriber,omitempty"`
-	Success    *bool                      `json:"success,omitempty" url:"success,omitempty"`
-	Tag        *AddTagsResponseTag        `json:"tag,omitempty" url:"tag,omitempty"`
+	OptIn                         *AddTagsResponseOptIn                     `json:"optIn,omitempty" url:"optIn,omitempty"`
+	SequenceTriggersRan           *sequenzygo.SequenceTriggersRan           `json:"sequenceTriggersRan,omitempty" url:"sequenceTriggersRan,omitempty"`
+	SequenceTriggersSkippedReason *sequenzygo.SequenceTriggersSkippedReason `json:"sequenceTriggersSkippedReason,omitempty" url:"sequenceTriggersSkippedReason,omitempty"`
+	Subscriber                    *AddTagsResponseSubscriber                `json:"subscriber,omitempty" url:"subscriber,omitempty"`
+	Success                       *bool                                     `json:"success,omitempty" url:"success,omitempty"`
+	Tag                           *AddTagsResponseTag                       `json:"tag,omitempty" url:"tag,omitempty"`
+	Warnings                      *sequenzygo.SequenceTriggerWarnings       `json:"warnings,omitempty" url:"warnings,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -217,6 +224,20 @@ func (a *AddTagsResponse) GetOptIn() *AddTagsResponseOptIn {
 		return nil
 	}
 	return a.OptIn
+}
+
+func (a *AddTagsResponse) GetSequenceTriggersRan() *sequenzygo.SequenceTriggersRan {
+	if a == nil {
+		return nil
+	}
+	return a.SequenceTriggersRan
+}
+
+func (a *AddTagsResponse) GetSequenceTriggersSkippedReason() *sequenzygo.SequenceTriggersSkippedReason {
+	if a == nil {
+		return nil
+	}
+	return a.SequenceTriggersSkippedReason
 }
 
 func (a *AddTagsResponse) GetSubscriber() *AddTagsResponseSubscriber {
@@ -240,6 +261,13 @@ func (a *AddTagsResponse) GetTag() *AddTagsResponseTag {
 	return a.Tag
 }
 
+func (a *AddTagsResponse) GetWarnings() *sequenzygo.SequenceTriggerWarnings {
+	if a == nil {
+		return nil
+	}
+	return a.Warnings
+}
+
 func (a *AddTagsResponse) GetExtraProperties() map[string]interface{} {
 	if a == nil {
 		return nil
@@ -261,6 +289,20 @@ func (a *AddTagsResponse) SetOptIn(optIn *AddTagsResponseOptIn) {
 	a.require(addTagsResponseFieldOptIn)
 }
 
+// SetSequenceTriggersRan sets the SequenceTriggersRan field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AddTagsResponse) SetSequenceTriggersRan(sequenceTriggersRan *sequenzygo.SequenceTriggersRan) {
+	a.SequenceTriggersRan = sequenceTriggersRan
+	a.require(addTagsResponseFieldSequenceTriggersRan)
+}
+
+// SetSequenceTriggersSkippedReason sets the SequenceTriggersSkippedReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AddTagsResponse) SetSequenceTriggersSkippedReason(sequenceTriggersSkippedReason *sequenzygo.SequenceTriggersSkippedReason) {
+	a.SequenceTriggersSkippedReason = sequenceTriggersSkippedReason
+	a.require(addTagsResponseFieldSequenceTriggersSkippedReason)
+}
+
 // SetSubscriber sets the Subscriber field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *AddTagsResponse) SetSubscriber(subscriber *AddTagsResponseSubscriber) {
@@ -280,6 +322,13 @@ func (a *AddTagsResponse) SetSuccess(success *bool) {
 func (a *AddTagsResponse) SetTag(tag *AddTagsResponseTag) {
 	a.Tag = tag
 	a.require(addTagsResponseFieldTag)
+}
+
+// SetWarnings sets the Warnings field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AddTagsResponse) SetWarnings(warnings *sequenzygo.SequenceTriggerWarnings) {
+	a.Warnings = warnings
+	a.require(addTagsResponseFieldWarnings)
 }
 
 func (a *AddTagsResponse) UnmarshalJSON(data []byte) error {
@@ -678,15 +727,18 @@ func (a *AddTagsResponseTag) String() string {
 }
 
 var (
-	removeTagsResponseFieldSubscriber = big.NewInt(1 << 0)
-	removeTagsResponseFieldSuccess    = big.NewInt(1 << 1)
-	removeTagsResponseFieldTag        = big.NewInt(1 << 2)
+	removeTagsResponseFieldSubscriber      = big.NewInt(1 << 0)
+	removeTagsResponseFieldSubscriberFound = big.NewInt(1 << 1)
+	removeTagsResponseFieldSuccess         = big.NewInt(1 << 2)
+	removeTagsResponseFieldTag             = big.NewInt(1 << 3)
 )
 
 type RemoveTagsResponse struct {
 	Subscriber *RemoveTagsResponseSubscriber `json:"subscriber,omitempty" url:"subscriber,omitempty"`
-	Success    *bool                         `json:"success,omitempty" url:"success,omitempty"`
-	Tag        *RemoveTagsResponseTag        `json:"tag,omitempty" url:"tag,omitempty"`
+	// False when no subscriber matched the email or externalId. Nothing was created or changed, subscriber.id is empty and subscriber.tags is empty.
+	SubscriberFound *bool                  `json:"subscriberFound,omitempty" url:"subscriberFound,omitempty"`
+	Success         *bool                  `json:"success,omitempty" url:"success,omitempty"`
+	Tag             *RemoveTagsResponseTag `json:"tag,omitempty" url:"tag,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -700,6 +752,13 @@ func (r *RemoveTagsResponse) GetSubscriber() *RemoveTagsResponseSubscriber {
 		return nil
 	}
 	return r.Subscriber
+}
+
+func (r *RemoveTagsResponse) GetSubscriberFound() *bool {
+	if r == nil {
+		return nil
+	}
+	return r.SubscriberFound
 }
 
 func (r *RemoveTagsResponse) GetSuccess() *bool {
@@ -735,6 +794,13 @@ func (r *RemoveTagsResponse) require(field *big.Int) {
 func (r *RemoveTagsResponse) SetSubscriber(subscriber *RemoveTagsResponseSubscriber) {
 	r.Subscriber = subscriber
 	r.require(removeTagsResponseFieldSubscriber)
+}
+
+// SetSubscriberFound sets the SubscriberFound field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RemoveTagsResponse) SetSubscriberFound(subscriberFound *bool) {
+	r.SubscriberFound = subscriberFound
+	r.require(removeTagsResponseFieldSubscriberFound)
 }
 
 // SetSuccess sets the Success field and marks it as non-optional;
@@ -801,7 +867,7 @@ var (
 )
 
 type RemoveTagsResponseSubscriber struct {
-	// Whether the subscriber was newly created
+	// Always false. This endpoint never creates a subscriber.
 	Created *bool `json:"created,omitempty" url:"created,omitempty"`
 	// Null for phone-only (SMS) and push-only contacts.
 	Email *string  `json:"email,omitempty" url:"email,omitempty"`

@@ -482,17 +482,57 @@ func (c *CreateSegmentsResponse) String() string {
 }
 
 var (
-	deleteSegmentsResponseFieldSuccess = big.NewInt(1 << 0)
+	deleteSegmentsResponseFieldAffectedAudienceSyncs = big.NewInt(1 << 0)
+	deleteSegmentsResponseFieldAffectedCampaigns     = big.NewInt(1 << 1)
+	deleteSegmentsResponseFieldAffectedSegments      = big.NewInt(1 << 2)
+	deleteSegmentsResponseFieldAffectedSequences     = big.NewInt(1 << 3)
+	deleteSegmentsResponseFieldSuccess               = big.NewInt(1 << 4)
 )
 
 type DeleteSegmentsResponse struct {
-	Success *bool `json:"success,omitempty" url:"success,omitempty"`
+	// Ad audience syncs that pushed the segment's members.
+	AffectedAudienceSyncs []*DeleteSegmentsResponseAffectedAudienceSyncsItem `json:"affectedAudienceSyncs,omitempty" url:"affectedAudienceSyncs,omitempty"`
+	// Campaigns that still read the segment and targeted or excluded it. Unsent campaigns (scheduled, waiting approval, sending or paused) and live in-app campaigns (status sent, type in_app, not yet ended).
+	AffectedCampaigns []*DeleteSegmentsResponseAffectedCampaignsItem `json:"affectedCampaigns,omitempty" url:"affectedCampaigns,omitempty"`
+	// Other segments whose rules referenced the deleted segment.
+	AffectedSegments []*DeleteSegmentsResponseAffectedSegmentsItem `json:"affectedSegments,omitempty" url:"affectedSegments,omitempty"`
+	// Sequences (not archived) that read the deleted segment.
+	AffectedSequences []*DeleteSegmentsResponseAffectedSequencesItem `json:"affectedSequences,omitempty" url:"affectedSequences,omitempty"`
+	Success           *bool                                          `json:"success,omitempty" url:"success,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (d *DeleteSegmentsResponse) GetAffectedAudienceSyncs() []*DeleteSegmentsResponseAffectedAudienceSyncsItem {
+	if d == nil {
+		return nil
+	}
+	return d.AffectedAudienceSyncs
+}
+
+func (d *DeleteSegmentsResponse) GetAffectedCampaigns() []*DeleteSegmentsResponseAffectedCampaignsItem {
+	if d == nil {
+		return nil
+	}
+	return d.AffectedCampaigns
+}
+
+func (d *DeleteSegmentsResponse) GetAffectedSegments() []*DeleteSegmentsResponseAffectedSegmentsItem {
+	if d == nil {
+		return nil
+	}
+	return d.AffectedSegments
+}
+
+func (d *DeleteSegmentsResponse) GetAffectedSequences() []*DeleteSegmentsResponseAffectedSequencesItem {
+	if d == nil {
+		return nil
+	}
+	return d.AffectedSequences
 }
 
 func (d *DeleteSegmentsResponse) GetSuccess() *bool {
@@ -514,6 +554,34 @@ func (d *DeleteSegmentsResponse) require(field *big.Int) {
 		d.explicitFields = big.NewInt(0)
 	}
 	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetAffectedAudienceSyncs sets the AffectedAudienceSyncs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteSegmentsResponse) SetAffectedAudienceSyncs(affectedAudienceSyncs []*DeleteSegmentsResponseAffectedAudienceSyncsItem) {
+	d.AffectedAudienceSyncs = affectedAudienceSyncs
+	d.require(deleteSegmentsResponseFieldAffectedAudienceSyncs)
+}
+
+// SetAffectedCampaigns sets the AffectedCampaigns field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteSegmentsResponse) SetAffectedCampaigns(affectedCampaigns []*DeleteSegmentsResponseAffectedCampaignsItem) {
+	d.AffectedCampaigns = affectedCampaigns
+	d.require(deleteSegmentsResponseFieldAffectedCampaigns)
+}
+
+// SetAffectedSegments sets the AffectedSegments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteSegmentsResponse) SetAffectedSegments(affectedSegments []*DeleteSegmentsResponseAffectedSegmentsItem) {
+	d.AffectedSegments = affectedSegments
+	d.require(deleteSegmentsResponseFieldAffectedSegments)
+}
+
+// SetAffectedSequences sets the AffectedSequences field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteSegmentsResponse) SetAffectedSequences(affectedSequences []*DeleteSegmentsResponseAffectedSequencesItem) {
+	d.AffectedSequences = affectedSequences
+	d.require(deleteSegmentsResponseFieldAffectedSequences)
 }
 
 // SetSuccess sets the Success field and marks it as non-optional;
@@ -563,6 +631,528 @@ func (d *DeleteSegmentsResponse) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", d)
+}
+
+var (
+	deleteSegmentsResponseAffectedAudienceSyncsItemFieldAudienceName = big.NewInt(1 << 0)
+	deleteSegmentsResponseAffectedAudienceSyncsItemFieldID           = big.NewInt(1 << 1)
+)
+
+type DeleteSegmentsResponseAffectedAudienceSyncsItem struct {
+	AudienceName *string `json:"audienceName,omitempty" url:"audienceName,omitempty"`
+	ID           *string `json:"id,omitempty" url:"id,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DeleteSegmentsResponseAffectedAudienceSyncsItem) GetAudienceName() *string {
+	if d == nil {
+		return nil
+	}
+	return d.AudienceName
+}
+
+func (d *DeleteSegmentsResponseAffectedAudienceSyncsItem) GetID() *string {
+	if d == nil {
+		return nil
+	}
+	return d.ID
+}
+
+func (d *DeleteSegmentsResponseAffectedAudienceSyncsItem) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DeleteSegmentsResponseAffectedAudienceSyncsItem) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetAudienceName sets the AudienceName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteSegmentsResponseAffectedAudienceSyncsItem) SetAudienceName(audienceName *string) {
+	d.AudienceName = audienceName
+	d.require(deleteSegmentsResponseAffectedAudienceSyncsItemFieldAudienceName)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteSegmentsResponseAffectedAudienceSyncsItem) SetID(id *string) {
+	d.ID = id
+	d.require(deleteSegmentsResponseAffectedAudienceSyncsItemFieldID)
+}
+
+func (d *DeleteSegmentsResponseAffectedAudienceSyncsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler DeleteSegmentsResponseAffectedAudienceSyncsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DeleteSegmentsResponseAffectedAudienceSyncsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DeleteSegmentsResponseAffectedAudienceSyncsItem) MarshalJSON() ([]byte, error) {
+	type embed DeleteSegmentsResponseAffectedAudienceSyncsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DeleteSegmentsResponseAffectedAudienceSyncsItem) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
+var (
+	deleteSegmentsResponseAffectedCampaignsItemFieldID     = big.NewInt(1 << 0)
+	deleteSegmentsResponseAffectedCampaignsItemFieldName   = big.NewInt(1 << 1)
+	deleteSegmentsResponseAffectedCampaignsItemFieldStatus = big.NewInt(1 << 2)
+	deleteSegmentsResponseAffectedCampaignsItemFieldType   = big.NewInt(1 << 3)
+)
+
+type DeleteSegmentsResponseAffectedCampaignsItem struct {
+	ID     *string `json:"id,omitempty" url:"id,omitempty"`
+	Name   *string `json:"name,omitempty" url:"name,omitempty"`
+	Status *string `json:"status,omitempty" url:"status,omitempty"`
+	// Campaign type, such as email, sms, push or in_app.
+	Type *string `json:"type,omitempty" url:"type,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DeleteSegmentsResponseAffectedCampaignsItem) GetID() *string {
+	if d == nil {
+		return nil
+	}
+	return d.ID
+}
+
+func (d *DeleteSegmentsResponseAffectedCampaignsItem) GetName() *string {
+	if d == nil {
+		return nil
+	}
+	return d.Name
+}
+
+func (d *DeleteSegmentsResponseAffectedCampaignsItem) GetStatus() *string {
+	if d == nil {
+		return nil
+	}
+	return d.Status
+}
+
+func (d *DeleteSegmentsResponseAffectedCampaignsItem) GetType() *string {
+	if d == nil {
+		return nil
+	}
+	return d.Type
+}
+
+func (d *DeleteSegmentsResponseAffectedCampaignsItem) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DeleteSegmentsResponseAffectedCampaignsItem) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteSegmentsResponseAffectedCampaignsItem) SetID(id *string) {
+	d.ID = id
+	d.require(deleteSegmentsResponseAffectedCampaignsItemFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteSegmentsResponseAffectedCampaignsItem) SetName(name *string) {
+	d.Name = name
+	d.require(deleteSegmentsResponseAffectedCampaignsItemFieldName)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteSegmentsResponseAffectedCampaignsItem) SetStatus(status *string) {
+	d.Status = status
+	d.require(deleteSegmentsResponseAffectedCampaignsItemFieldStatus)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteSegmentsResponseAffectedCampaignsItem) SetType(type_ *string) {
+	d.Type = type_
+	d.require(deleteSegmentsResponseAffectedCampaignsItemFieldType)
+}
+
+func (d *DeleteSegmentsResponseAffectedCampaignsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler DeleteSegmentsResponseAffectedCampaignsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DeleteSegmentsResponseAffectedCampaignsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DeleteSegmentsResponseAffectedCampaignsItem) MarshalJSON() ([]byte, error) {
+	type embed DeleteSegmentsResponseAffectedCampaignsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DeleteSegmentsResponseAffectedCampaignsItem) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
+var (
+	deleteSegmentsResponseAffectedSegmentsItemFieldID   = big.NewInt(1 << 0)
+	deleteSegmentsResponseAffectedSegmentsItemFieldName = big.NewInt(1 << 1)
+)
+
+type DeleteSegmentsResponseAffectedSegmentsItem struct {
+	ID   *string `json:"id,omitempty" url:"id,omitempty"`
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DeleteSegmentsResponseAffectedSegmentsItem) GetID() *string {
+	if d == nil {
+		return nil
+	}
+	return d.ID
+}
+
+func (d *DeleteSegmentsResponseAffectedSegmentsItem) GetName() *string {
+	if d == nil {
+		return nil
+	}
+	return d.Name
+}
+
+func (d *DeleteSegmentsResponseAffectedSegmentsItem) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DeleteSegmentsResponseAffectedSegmentsItem) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteSegmentsResponseAffectedSegmentsItem) SetID(id *string) {
+	d.ID = id
+	d.require(deleteSegmentsResponseAffectedSegmentsItemFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteSegmentsResponseAffectedSegmentsItem) SetName(name *string) {
+	d.Name = name
+	d.require(deleteSegmentsResponseAffectedSegmentsItemFieldName)
+}
+
+func (d *DeleteSegmentsResponseAffectedSegmentsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler DeleteSegmentsResponseAffectedSegmentsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DeleteSegmentsResponseAffectedSegmentsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DeleteSegmentsResponseAffectedSegmentsItem) MarshalJSON() ([]byte, error) {
+	type embed DeleteSegmentsResponseAffectedSegmentsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DeleteSegmentsResponseAffectedSegmentsItem) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
+var (
+	deleteSegmentsResponseAffectedSequencesItemFieldID     = big.NewInt(1 << 0)
+	deleteSegmentsResponseAffectedSequencesItemFieldName   = big.NewInt(1 << 1)
+	deleteSegmentsResponseAffectedSequencesItemFieldStatus = big.NewInt(1 << 2)
+	deleteSegmentsResponseAffectedSequencesItemFieldUsages = big.NewInt(1 << 3)
+)
+
+type DeleteSegmentsResponseAffectedSequencesItem struct {
+	ID     *string                                            `json:"id,omitempty" url:"id,omitempty"`
+	Name   *string                                            `json:"name,omitempty" url:"name,omitempty"`
+	Status *DeleteSegmentsResponseAffectedSequencesItemStatus `json:"status,omitempty" url:"status,omitempty"`
+	// How the sequence used the segment: `trigger` (entered or left the segment), `condition` (a condition or split), `filter` (a segment rule in a trigger or step filter), `stop_condition` (exit when in the segment), `audience` (automatic, recurring or running audience enrollment).
+	Usages []DeleteSegmentsResponseAffectedSequencesItemUsagesItem `json:"usages,omitempty" url:"usages,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DeleteSegmentsResponseAffectedSequencesItem) GetID() *string {
+	if d == nil {
+		return nil
+	}
+	return d.ID
+}
+
+func (d *DeleteSegmentsResponseAffectedSequencesItem) GetName() *string {
+	if d == nil {
+		return nil
+	}
+	return d.Name
+}
+
+func (d *DeleteSegmentsResponseAffectedSequencesItem) GetStatus() *DeleteSegmentsResponseAffectedSequencesItemStatus {
+	if d == nil {
+		return nil
+	}
+	return d.Status
+}
+
+func (d *DeleteSegmentsResponseAffectedSequencesItem) GetUsages() []DeleteSegmentsResponseAffectedSequencesItemUsagesItem {
+	if d == nil {
+		return nil
+	}
+	return d.Usages
+}
+
+func (d *DeleteSegmentsResponseAffectedSequencesItem) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DeleteSegmentsResponseAffectedSequencesItem) require(field *big.Int) {
+	if d.explicitFields == nil {
+		d.explicitFields = big.NewInt(0)
+	}
+	d.explicitFields.Or(d.explicitFields, field)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteSegmentsResponseAffectedSequencesItem) SetID(id *string) {
+	d.ID = id
+	d.require(deleteSegmentsResponseAffectedSequencesItemFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteSegmentsResponseAffectedSequencesItem) SetName(name *string) {
+	d.Name = name
+	d.require(deleteSegmentsResponseAffectedSequencesItemFieldName)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteSegmentsResponseAffectedSequencesItem) SetStatus(status *DeleteSegmentsResponseAffectedSequencesItemStatus) {
+	d.Status = status
+	d.require(deleteSegmentsResponseAffectedSequencesItemFieldStatus)
+}
+
+// SetUsages sets the Usages field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteSegmentsResponseAffectedSequencesItem) SetUsages(usages []DeleteSegmentsResponseAffectedSequencesItemUsagesItem) {
+	d.Usages = usages
+	d.require(deleteSegmentsResponseAffectedSequencesItemFieldUsages)
+}
+
+func (d *DeleteSegmentsResponseAffectedSequencesItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler DeleteSegmentsResponseAffectedSequencesItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DeleteSegmentsResponseAffectedSequencesItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DeleteSegmentsResponseAffectedSequencesItem) MarshalJSON() ([]byte, error) {
+	type embed DeleteSegmentsResponseAffectedSequencesItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DeleteSegmentsResponseAffectedSequencesItem) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
+type DeleteSegmentsResponseAffectedSequencesItemStatus string
+
+const (
+	DeleteSegmentsResponseAffectedSequencesItemStatusDraft  DeleteSegmentsResponseAffectedSequencesItemStatus = "draft"
+	DeleteSegmentsResponseAffectedSequencesItemStatusActive DeleteSegmentsResponseAffectedSequencesItemStatus = "active"
+	DeleteSegmentsResponseAffectedSequencesItemStatusPaused DeleteSegmentsResponseAffectedSequencesItemStatus = "paused"
+)
+
+func NewDeleteSegmentsResponseAffectedSequencesItemStatusFromString(s string) (DeleteSegmentsResponseAffectedSequencesItemStatus, error) {
+	switch s {
+	case "draft":
+		return DeleteSegmentsResponseAffectedSequencesItemStatusDraft, nil
+	case "active":
+		return DeleteSegmentsResponseAffectedSequencesItemStatusActive, nil
+	case "paused":
+		return DeleteSegmentsResponseAffectedSequencesItemStatusPaused, nil
+	}
+	var t DeleteSegmentsResponseAffectedSequencesItemStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (d DeleteSegmentsResponseAffectedSequencesItemStatus) Ptr() *DeleteSegmentsResponseAffectedSequencesItemStatus {
+	return &d
+}
+
+type DeleteSegmentsResponseAffectedSequencesItemUsagesItem string
+
+const (
+	DeleteSegmentsResponseAffectedSequencesItemUsagesItemTrigger       DeleteSegmentsResponseAffectedSequencesItemUsagesItem = "trigger"
+	DeleteSegmentsResponseAffectedSequencesItemUsagesItemCondition     DeleteSegmentsResponseAffectedSequencesItemUsagesItem = "condition"
+	DeleteSegmentsResponseAffectedSequencesItemUsagesItemFilter        DeleteSegmentsResponseAffectedSequencesItemUsagesItem = "filter"
+	DeleteSegmentsResponseAffectedSequencesItemUsagesItemStopCondition DeleteSegmentsResponseAffectedSequencesItemUsagesItem = "stop_condition"
+	DeleteSegmentsResponseAffectedSequencesItemUsagesItemAudience      DeleteSegmentsResponseAffectedSequencesItemUsagesItem = "audience"
+)
+
+func NewDeleteSegmentsResponseAffectedSequencesItemUsagesItemFromString(s string) (DeleteSegmentsResponseAffectedSequencesItemUsagesItem, error) {
+	switch s {
+	case "trigger":
+		return DeleteSegmentsResponseAffectedSequencesItemUsagesItemTrigger, nil
+	case "condition":
+		return DeleteSegmentsResponseAffectedSequencesItemUsagesItemCondition, nil
+	case "filter":
+		return DeleteSegmentsResponseAffectedSequencesItemUsagesItemFilter, nil
+	case "stop_condition":
+		return DeleteSegmentsResponseAffectedSequencesItemUsagesItemStopCondition, nil
+	case "audience":
+		return DeleteSegmentsResponseAffectedSequencesItemUsagesItemAudience, nil
+	}
+	var t DeleteSegmentsResponseAffectedSequencesItemUsagesItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (d DeleteSegmentsResponseAffectedSequencesItemUsagesItem) Ptr() *DeleteSegmentsResponseAffectedSequencesItemUsagesItem {
+	return &d
 }
 
 var (

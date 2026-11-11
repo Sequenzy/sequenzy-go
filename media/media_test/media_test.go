@@ -134,3 +134,29 @@ func TestMediaCreateEmailImageUploadURLWithWireMock(
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestMediaCreateEmailImageUploadURLWithWireMock", "POST", "/media/upload-url", nil, 1)
 }
+
+func TestMediaCropEmailImageWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.CropEmailImageRequest{
+		SourceURL: "sourceUrl",
+	}
+	_, invocationErr := client.Media.CropEmailImage(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestMediaCropEmailImageWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestMediaCropEmailImageWithWireMock", "POST", "/media/crop", nil, 1)
+}

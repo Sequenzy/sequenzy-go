@@ -4,6 +4,7 @@ package subscribers
 
 import (
 	json "encoding/json"
+	sequenzygo "github.com/sequenzy/sequenzy-go"
 	assert "github.com/stretchr/testify/assert"
 	require "github.com/stretchr/testify/require"
 	testing "testing"
@@ -459,6 +460,22 @@ func TestSettersAddTagsResponse(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetSequenceTriggersRan", func(t *testing.T) {
+		obj := &AddTagsResponse{}
+		var fernTestValueSequenceTriggersRan *sequenzygo.SequenceTriggersRan
+		obj.SetSequenceTriggersRan(fernTestValueSequenceTriggersRan)
+		assert.Equal(t, fernTestValueSequenceTriggersRan, obj.SequenceTriggersRan)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetSequenceTriggersSkippedReason", func(t *testing.T) {
+		obj := &AddTagsResponse{}
+		var fernTestValueSequenceTriggersSkippedReason *sequenzygo.SequenceTriggersSkippedReason
+		obj.SetSequenceTriggersSkippedReason(fernTestValueSequenceTriggersSkippedReason)
+		assert.Equal(t, fernTestValueSequenceTriggersSkippedReason, obj.SequenceTriggersSkippedReason)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetSubscriber", func(t *testing.T) {
 		obj := &AddTagsResponse{}
 		var fernTestValueSubscriber *AddTagsResponseSubscriber
@@ -480,6 +497,14 @@ func TestSettersAddTagsResponse(t *testing.T) {
 		var fernTestValueTag *AddTagsResponseTag
 		obj.SetTag(fernTestValueTag)
 		assert.Equal(t, fernTestValueTag, obj.Tag)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetWarnings", func(t *testing.T) {
+		obj := &AddTagsResponse{}
+		var fernTestValueWarnings *sequenzygo.SequenceTriggerWarnings
+		obj.SetWarnings(fernTestValueWarnings)
+		assert.Equal(t, fernTestValueWarnings, obj.Warnings)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -517,6 +542,72 @@ func TestGettersAddTagsResponse(t *testing.T) {
 			}
 		}()
 		_ = obj.GetOptIn() // Should return zero value
+	})
+
+	t.Run("GetSequenceTriggersRan", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AddTagsResponse{}
+		var expected *sequenzygo.SequenceTriggersRan
+		obj.SequenceTriggersRan = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSequenceTriggersRan(), "getter should return the property value")
+	})
+
+	t.Run("GetSequenceTriggersRan_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AddTagsResponse{}
+		obj.SequenceTriggersRan = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSequenceTriggersRan(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSequenceTriggersRan_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AddTagsResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSequenceTriggersRan() // Should return zero value
+	})
+
+	t.Run("GetSequenceTriggersSkippedReason", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AddTagsResponse{}
+		var expected *sequenzygo.SequenceTriggersSkippedReason
+		obj.SequenceTriggersSkippedReason = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSequenceTriggersSkippedReason(), "getter should return the property value")
+	})
+
+	t.Run("GetSequenceTriggersSkippedReason_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AddTagsResponse{}
+		obj.SequenceTriggersSkippedReason = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSequenceTriggersSkippedReason(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSequenceTriggersSkippedReason_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AddTagsResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSequenceTriggersSkippedReason() // Should return zero value
 	})
 
 	t.Run("GetSubscriber", func(t *testing.T) {
@@ -618,6 +709,39 @@ func TestGettersAddTagsResponse(t *testing.T) {
 		_ = obj.GetTag() // Should return zero value
 	})
 
+	t.Run("GetWarnings", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AddTagsResponse{}
+		var expected *sequenzygo.SequenceTriggerWarnings
+		obj.Warnings = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetWarnings(), "getter should return the property value")
+	})
+
+	t.Run("GetWarnings_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AddTagsResponse{}
+		obj.Warnings = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetWarnings(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetWarnings_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AddTagsResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetWarnings() // Should return zero value
+	})
+
 }
 
 func TestSettersMarkExplicitAddTagsResponse(t *testing.T) {
@@ -629,6 +753,68 @@ func TestSettersMarkExplicitAddTagsResponse(t *testing.T) {
 
 		// Act
 		obj.SetOptIn(fernTestValueOptIn)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSequenceTriggersRan_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AddTagsResponse{}
+		var fernTestValueSequenceTriggersRan *sequenzygo.SequenceTriggersRan
+
+		// Act
+		obj.SetSequenceTriggersRan(fernTestValueSequenceTriggersRan)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSequenceTriggersSkippedReason_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AddTagsResponse{}
+		var fernTestValueSequenceTriggersSkippedReason *sequenzygo.SequenceTriggersSkippedReason
+
+		// Act
+		obj.SetSequenceTriggersSkippedReason(fernTestValueSequenceTriggersSkippedReason)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -722,6 +908,37 @@ func TestSettersMarkExplicitAddTagsResponse(t *testing.T) {
 
 		// Act
 		obj.SetTag(fernTestValueTag)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetWarnings_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AddTagsResponse{}
+		var fernTestValueWarnings *sequenzygo.SequenceTriggerWarnings
+
+		// Act
+		obj.SetWarnings(fernTestValueWarnings)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -1431,6 +1648,14 @@ func TestSettersRemoveTagsResponse(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetSubscriberFound", func(t *testing.T) {
+		obj := &RemoveTagsResponse{}
+		var fernTestValueSubscriberFound *bool
+		obj.SetSubscriberFound(fernTestValueSubscriberFound)
+		assert.Equal(t, fernTestValueSubscriberFound, obj.SubscriberFound)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetSuccess", func(t *testing.T) {
 		obj := &RemoveTagsResponse{}
 		var fernTestValueSuccess *bool
@@ -1481,6 +1706,39 @@ func TestGettersRemoveTagsResponse(t *testing.T) {
 			}
 		}()
 		_ = obj.GetSubscriber() // Should return zero value
+	})
+
+	t.Run("GetSubscriberFound", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RemoveTagsResponse{}
+		var expected *bool
+		obj.SubscriberFound = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSubscriberFound(), "getter should return the property value")
+	})
+
+	t.Run("GetSubscriberFound_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RemoveTagsResponse{}
+		obj.SubscriberFound = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSubscriberFound(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSubscriberFound_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *RemoveTagsResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSubscriberFound() // Should return zero value
 	})
 
 	t.Run("GetSuccess", func(t *testing.T) {
@@ -1560,6 +1818,37 @@ func TestSettersMarkExplicitRemoveTagsResponse(t *testing.T) {
 
 		// Act
 		obj.SetSubscriber(fernTestValueSubscriber)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSubscriberFound_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RemoveTagsResponse{}
+		var fernTestValueSubscriberFound *bool
+
+		// Act
+		obj.SetSubscriberFound(fernTestValueSubscriberFound)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)

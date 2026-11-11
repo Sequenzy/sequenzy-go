@@ -1180,7 +1180,8 @@ var (
 	listCampaignsRequestFieldLabel  = big.NewInt(1 << 0)
 	listCampaignsRequestFieldLimit  = big.NewInt(1 << 1)
 	listCampaignsRequestFieldOffset = big.NewInt(1 << 2)
-	listCampaignsRequestFieldStatus = big.NewInt(1 << 3)
+	listCampaignsRequestFieldPage   = big.NewInt(1 << 3)
+	listCampaignsRequestFieldStatus = big.NewInt(1 << 4)
 )
 
 type ListCampaignsRequest struct {
@@ -1190,6 +1191,8 @@ type ListCampaignsRequest struct {
 	Limit *int `json:"-" url:"limit,omitempty"`
 	// Optional zero-based row offset.
 	Offset *int `json:"-" url:"offset,omitempty"`
+	// Optional 1-based page number, used when offset is absent: page=N starts at row (N - 1) * limit. An explicit offset takes precedence; a malformed page is ignored.
+	Page *int `json:"-" url:"page,omitempty"`
 	// Optional campaign status filter.
 	Status *ListCampaignsRequestStatus `json:"-" url:"status,omitempty"`
 
@@ -1223,6 +1226,13 @@ func (l *ListCampaignsRequest) SetLimit(limit *int) {
 func (l *ListCampaignsRequest) SetOffset(offset *int) {
 	l.Offset = offset
 	l.require(listCampaignsRequestFieldOffset)
+}
+
+// SetPage sets the Page field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCampaignsRequest) SetPage(page *int) {
+	l.Page = page
+	l.require(listCampaignsRequestFieldPage)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
@@ -9823,11 +9833,13 @@ func (l *ListCampaignsResponse) String() string {
 }
 
 var (
-	listCampaignsResponsePaginationFieldCount   = big.NewInt(1 << 0)
-	listCampaignsResponsePaginationFieldHasMore = big.NewInt(1 << 1)
-	listCampaignsResponsePaginationFieldLimit   = big.NewInt(1 << 2)
-	listCampaignsResponsePaginationFieldOffset  = big.NewInt(1 << 3)
-	listCampaignsResponsePaginationFieldTotal   = big.NewInt(1 << 4)
+	listCampaignsResponsePaginationFieldCount      = big.NewInt(1 << 0)
+	listCampaignsResponsePaginationFieldHasMore    = big.NewInt(1 << 1)
+	listCampaignsResponsePaginationFieldLimit      = big.NewInt(1 << 2)
+	listCampaignsResponsePaginationFieldOffset     = big.NewInt(1 << 3)
+	listCampaignsResponsePaginationFieldPage       = big.NewInt(1 << 4)
+	listCampaignsResponsePaginationFieldTotal      = big.NewInt(1 << 5)
+	listCampaignsResponsePaginationFieldTotalPages = big.NewInt(1 << 6)
 )
 
 type ListCampaignsResponsePagination struct {
@@ -9835,7 +9847,11 @@ type ListCampaignsResponsePagination struct {
 	HasMore *bool `json:"hasMore,omitempty" url:"hasMore,omitempty"`
 	Limit   *int  `json:"limit,omitempty" url:"limit,omitempty"`
 	Offset  *int  `json:"offset,omitempty" url:"offset,omitempty"`
-	Total   *int  `json:"total,omitempty" url:"total,omitempty"`
+	// 1-based page that starts at offset.
+	Page  *int `json:"page,omitempty" url:"page,omitempty"`
+	Total *int `json:"total,omitempty" url:"total,omitempty"`
+	// Pages at this limit.
+	TotalPages *int `json:"totalPages,omitempty" url:"totalPages,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -9872,11 +9888,25 @@ func (l *ListCampaignsResponsePagination) GetOffset() *int {
 	return l.Offset
 }
 
+func (l *ListCampaignsResponsePagination) GetPage() *int {
+	if l == nil {
+		return nil
+	}
+	return l.Page
+}
+
 func (l *ListCampaignsResponsePagination) GetTotal() *int {
 	if l == nil {
 		return nil
 	}
 	return l.Total
+}
+
+func (l *ListCampaignsResponsePagination) GetTotalPages() *int {
+	if l == nil {
+		return nil
+	}
+	return l.TotalPages
 }
 
 func (l *ListCampaignsResponsePagination) GetExtraProperties() map[string]interface{} {
@@ -9921,11 +9951,25 @@ func (l *ListCampaignsResponsePagination) SetOffset(offset *int) {
 	l.require(listCampaignsResponsePaginationFieldOffset)
 }
 
+// SetPage sets the Page field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCampaignsResponsePagination) SetPage(page *int) {
+	l.Page = page
+	l.require(listCampaignsResponsePaginationFieldPage)
+}
+
 // SetTotal sets the Total field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *ListCampaignsResponsePagination) SetTotal(total *int) {
 	l.Total = total
 	l.require(listCampaignsResponsePaginationFieldTotal)
+}
+
+// SetTotalPages sets the TotalPages field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCampaignsResponsePagination) SetTotalPages(totalPages *int) {
+	l.TotalPages = totalPages
+	l.require(listCampaignsResponsePaginationFieldTotalPages)
 }
 
 func (l *ListCampaignsResponsePagination) UnmarshalJSON(data []byte) error {

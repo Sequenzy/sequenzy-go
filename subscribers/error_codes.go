@@ -19,4 +19,14 @@ var ErrorCodes internal.ErrorCodes = internal.ErrorCodes{
 			APIError: apiError,
 		}
 	},
+	400: func(apiError *core.APIError) error {
+		return &sequenzygo.BadRequestError{
+			APIError: apiError,
+		}
+	},
+	409: func(apiError *core.APIError) error {
+		return &sequenzygo.ConflictError{
+			APIError: apiError,
+		}
+	},
 }

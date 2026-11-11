@@ -55,7 +55,7 @@ func (c *ConflictError) Unwrap() error {
 	return c.APIError
 }
 
-// Selection exceeds 100,000 contacts or 8 MiB; narrow it or use a saved segment
+// Source larger than 25MB or cropped image larger than 10MB
 type ContentTooLargeError struct {
 	*core.APIError
 	Body *Error

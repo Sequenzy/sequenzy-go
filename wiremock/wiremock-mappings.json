@@ -986,8 +986,8 @@
       }
     },
     {
-      "id": "9945c13d-2450-4148-b2e1-bb3db25f3b5c",
-      "name": "Delete account - default",
+      "id": "700d51a1-b2e2-4bc8-8951-67a8841ca7a4",
+      "name": "Delete organization (account) - default",
       "request": {
         "urlPathTemplate": "/accounts/{externalId}",
         "method": "DELETE",
@@ -1009,7 +1009,7 @@
           "Content-Type": "application/json"
         }
       },
-      "uuid": "9945c13d-2450-4148-b2e1-bb3db25f3b5c",
+      "uuid": "700d51a1-b2e2-4bc8-8951-67a8841ca7a4",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -2942,7 +2942,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"campaigns\": [\n    {\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"emailId\": \"email_abc123\",\n      \"emailPreset\": \"branded\",\n      \"hasAudience\": true,\n      \"id\": \"camp_abc123\",\n      \"labels\": [\n        \"edm\",\n        \"api\"\n      ],\n      \"maxRecipients\": 1,\n      \"name\": \"April Launch\",\n      \"rejectionComment\": \"rejectionComment\",\n      \"scheduledAt\": \"2024-01-15T09:30:00Z\",\n      \"scheduledTimezone\": \"America/New_York\",\n      \"sendInRecipientTimezone\": true,\n      \"sendTimeOptimization\": true,\n      \"sendTimeWindowHours\": 12,\n      \"sentAt\": \"2024-01-15T09:30:00Z\",\n      \"spreadOverHours\": 6,\n      \"status\": \"draft\",\n      \"subject\": \"A quick update\",\n      \"trackingCode\": \"trackingCode\",\n      \"type\": \"email\"\n    }\n  ],\n  \"pagination\": {\n    \"count\": 50,\n    \"hasMore\": true,\n    \"limit\": 50,\n    \"offset\": 0,\n    \"total\": 125\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"campaigns\": [\n    {\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"emailId\": \"email_abc123\",\n      \"emailPreset\": \"branded\",\n      \"hasAudience\": true,\n      \"id\": \"camp_abc123\",\n      \"labels\": [\n        \"edm\",\n        \"api\"\n      ],\n      \"maxRecipients\": 1,\n      \"name\": \"April Launch\",\n      \"rejectionComment\": \"rejectionComment\",\n      \"scheduledAt\": \"2024-01-15T09:30:00Z\",\n      \"scheduledTimezone\": \"America/New_York\",\n      \"sendInRecipientTimezone\": true,\n      \"sendTimeOptimization\": true,\n      \"sendTimeWindowHours\": 12,\n      \"sentAt\": \"2024-01-15T09:30:00Z\",\n      \"spreadOverHours\": 6,\n      \"status\": \"draft\",\n      \"subject\": \"A quick update\",\n      \"trackingCode\": \"trackingCode\",\n      \"type\": \"email\"\n    }\n  ],\n  \"pagination\": {\n    \"count\": 50,\n    \"hasMore\": true,\n    \"limit\": 50,\n    \"offset\": 0,\n    \"page\": 1,\n    \"total\": 125,\n    \"totalPages\": 3\n  },\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -5848,7 +5848,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"audienceCount\": 1200,\n  \"success\": true\n}",
+        "body": "{\n  \"appUserCount\": 840,\n  \"audienceCount\": 1200,\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -7818,6 +7818,37 @@
         }
       },
       "uuid": "dd8789a5-26fa-4e8f-a5ad-4215ff299de3",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "9132f09b-b622-433a-a62b-29955fa49785",
+      "name": "Crop an email image - default",
+      "request": {
+        "urlPathTemplate": "/media/crop",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"asset\": {\n    \"altText\": \"altText\",\n    \"companyId\": \"companyId\",\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"filename\": \"filename\",\n    \"height\": \"height\",\n    \"id\": \"id\",\n    \"mimeType\": \"mimeType\",\n    \"size\": \"size\",\n    \"url\": \"url\",\n    \"width\": \"width\"\n  },\n  \"crop\": {\n    \"croppedSrc\": \"croppedSrc\",\n    \"height\": 1.1,\n    \"sourceSrc\": \"sourceSrc\",\n    \"width\": 1.1,\n    \"x\": 1.1,\n    \"y\": 1.1\n  },\n  \"sourceHeight\": 1,\n  \"sourceWidth\": 1,\n  \"success\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "9132f09b-b622-433a-a62b-29955fa49785",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -10093,7 +10124,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"success\": true\n}",
+        "body": "{\n  \"affectedAudienceSyncs\": [\n    {\n      \"audienceName\": \"audienceName\",\n      \"id\": \"id\"\n    }\n  ],\n  \"affectedCampaigns\": [\n    {\n      \"id\": \"id\",\n      \"name\": \"name\",\n      \"status\": \"status\",\n      \"type\": \"type\"\n    }\n  ],\n  \"affectedSegments\": [\n    {\n      \"id\": \"id\",\n      \"name\": \"name\"\n    }\n  ],\n  \"affectedSequences\": [\n    {\n      \"id\": \"id\",\n      \"name\": \"name\",\n      \"status\": \"draft\",\n      \"usages\": [\n        \"trigger\"\n      ]\n    }\n  ],\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -10751,7 +10782,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"acceptsNewEnrollments\": true,\n  \"effectiveStatus\": \"draft\",\n  \"effectiveStatusSummary\": \"effectiveStatusSummary\",\n  \"enrollmentPaused\": true,\n  \"message\": \"Sequence enabled\",\n  \"processesExistingEnrollments\": true,\n  \"sequenceId\": \"seq_abc123\",\n  \"status\": \"draft\",\n  \"success\": true,\n  \"warnings\": [\n    \"warnings\"\n  ]\n}",
+        "body": "{\n  \"acceptsNewEnrollments\": true,\n  \"contactsInSequence\": 12,\n  \"effectiveStatus\": \"draft\",\n  \"effectiveStatusSummary\": \"effectiveStatusSummary\",\n  \"enrollmentPaused\": true,\n  \"message\": \"Sequence enabled\",\n  \"processesExistingEnrollments\": true,\n  \"sequenceId\": \"seq_abc123\",\n  \"status\": \"draft\",\n  \"success\": true,\n  \"warnings\": [\n    \"warnings\"\n  ]\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -11593,7 +11624,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"pagination\": {\n    \"count\": 1,\n    \"hasMore\": true,\n    \"limit\": 1,\n    \"offset\": 1,\n    \"total\": 1\n  },\n  \"sequences\": [\n    {\n      \"acceptsNewEnrollments\": true,\n      \"activeSubscribersOnly\": true,\n      \"audienceAutoEnroll\": {\n        \"audience\": {\n          \"includedSubscriberIds\": [\n            \"sub_abc123\",\n            \"sub_def456\"\n          ],\n          \"listIds\": [\n            \"list_abc123\"\n          ],\n          \"segmentId\": \"seg_abc123\",\n          \"type\": \"all\"\n        },\n        \"enabled\": true\n      },\n      \"bccEmails\": [\n        \"cs-team@example.com\"\n      ],\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"description\": \"description\",\n      \"effectiveStatus\": \"draft\",\n      \"effectiveStatusSummary\": \"effectiveStatusSummary\",\n      \"emailCount\": 5,\n      \"enrollmentPaused\": true,\n      \"frequencyCapEnabled\": true,\n      \"fromEmail\": \"fromEmail\",\n      \"fromName\": \"fromName\",\n      \"id\": \"seq_abc123\",\n      \"key\": \"key\",\n      \"keyDates\": {\n        \"dates\": [\n          {\n            \"at\": \"2024-01-15T09:30:00Z\",\n            \"key\": \"black_friday_starts\",\n            \"label\": \"Black Friday starts\"\n          }\n        ],\n        \"timezone\": \"America/New_York\"\n      },\n      \"labelIds\": [\n        \"labelIds\"\n      ],\n      \"labels\": [\n        \"labels\"\n      ],\n      \"managedBy\": \"dashboard\",\n      \"name\": \"Welcome Sequence\",\n      \"pausedAt\": \"2024-01-15T09:30:00Z\",\n      \"pausedByUserId\": \"pausedByUserId\",\n      \"pauseReason\": \"pauseReason\",\n      \"pauseSource\": \"pauseSource\",\n      \"processesExistingEnrollments\": true,\n      \"recurringEnrollment\": {\n        \"audience\": {\n          \"includedSubscriberIds\": [\n            \"sub_abc123\",\n            \"sub_def456\"\n          ],\n          \"listIds\": [\n            \"list_abc123\"\n          ],\n          \"segmentId\": \"seg_abc123\",\n          \"type\": \"all\"\n        },\n        \"enabled\": true,\n        \"schedule\": {\n          \"frequency\": \"daily\",\n          \"monthDays\": [\n            1,\n            \"last\"\n          ],\n          \"time\": \"10:00\",\n          \"timezone\": \"Europe/London\",\n          \"weekdays\": [\n            1\n          ]\n        }\n      },\n      \"replyProfileId\": \"replyProfileId\",\n      \"replyToEmail\": \"replyToEmail\",\n      \"replyToName\": \"replyToName\",\n      \"senderProfileId\": \"senderProfileId\",\n      \"sendingWindow\": {\n        \"days\": [\n          \"monday\",\n          \"tuesday\",\n          \"wednesday\",\n          \"thursday\",\n          \"friday\"\n        ],\n        \"enabled\": true,\n        \"endTime\": \"20:00\",\n        \"startTime\": \"08:00\",\n        \"timezone\": \"Europe/Kiev\"\n      },\n      \"status\": \"draft\",\n      \"trigger\": \"trigger_list\",\n      \"triggerConfig\": {\n        \"key\": \"value\"\n      },\n      \"updatedAt\": \"2024-01-15T09:30:00Z\",\n      \"userCancellable\": true\n    }\n  ],\n  \"success\": true\n}",
+        "body": "{\n  \"pagination\": {\n    \"count\": 1,\n    \"hasMore\": true,\n    \"limit\": 1,\n    \"offset\": 1,\n    \"page\": 1,\n    \"total\": 1,\n    \"totalPages\": 3\n  },\n  \"sequences\": [\n    {\n      \"acceptsNewEnrollments\": true,\n      \"activeSubscribersOnly\": true,\n      \"audienceAutoEnroll\": {\n        \"audience\": {\n          \"includedSubscriberIds\": [\n            \"sub_abc123\",\n            \"sub_def456\"\n          ],\n          \"listIds\": [\n            \"list_abc123\"\n          ],\n          \"segmentId\": \"seg_abc123\",\n          \"type\": \"all\"\n        },\n        \"enabled\": true\n      },\n      \"bccEmails\": [\n        \"cs-team@example.com\"\n      ],\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"description\": \"description\",\n      \"effectiveStatus\": \"draft\",\n      \"effectiveStatusSummary\": \"effectiveStatusSummary\",\n      \"emailCount\": 5,\n      \"enrollmentPaused\": true,\n      \"frequencyCapEnabled\": true,\n      \"fromEmail\": \"fromEmail\",\n      \"fromName\": \"fromName\",\n      \"id\": \"seq_abc123\",\n      \"key\": \"key\",\n      \"keyDates\": {\n        \"dates\": [\n          {\n            \"at\": \"2024-01-15T09:30:00Z\",\n            \"key\": \"black_friday_starts\",\n            \"label\": \"Black Friday starts\"\n          }\n        ],\n        \"timezone\": \"America/New_York\"\n      },\n      \"labelIds\": [\n        \"labelIds\"\n      ],\n      \"labels\": [\n        \"labels\"\n      ],\n      \"managedBy\": \"dashboard\",\n      \"name\": \"Welcome Sequence\",\n      \"pausedAt\": \"2024-01-15T09:30:00Z\",\n      \"pausedByUserId\": \"pausedByUserId\",\n      \"pauseReason\": \"pauseReason\",\n      \"pauseSource\": \"pauseSource\",\n      \"processesExistingEnrollments\": true,\n      \"recurringEnrollment\": {\n        \"audience\": {\n          \"includedSubscriberIds\": [\n            \"sub_abc123\",\n            \"sub_def456\"\n          ],\n          \"listIds\": [\n            \"list_abc123\"\n          ],\n          \"segmentId\": \"seg_abc123\",\n          \"type\": \"all\"\n        },\n        \"enabled\": true,\n        \"schedule\": {\n          \"frequency\": \"daily\",\n          \"monthDays\": [\n            1,\n            \"last\"\n          ],\n          \"time\": \"10:00\",\n          \"timezone\": \"Europe/London\",\n          \"weekdays\": [\n            1\n          ]\n        }\n      },\n      \"replyProfileId\": \"replyProfileId\",\n      \"replyToEmail\": \"replyToEmail\",\n      \"replyToName\": \"replyToName\",\n      \"senderProfileId\": \"senderProfileId\",\n      \"sendingWindow\": {\n        \"days\": [\n          \"monday\",\n          \"tuesday\",\n          \"wednesday\",\n          \"thursday\",\n          \"friday\"\n        ],\n        \"enabled\": true,\n        \"endTime\": \"20:00\",\n        \"startTime\": \"08:00\",\n        \"timezone\": \"Europe/Kiev\"\n      },\n      \"status\": \"draft\",\n      \"trigger\": \"trigger_list\",\n      \"triggerConfig\": {\n        \"key\": \"value\"\n      },\n      \"updatedAt\": \"2024-01-15T09:30:00Z\",\n      \"userCancellable\": true\n    }\n  ],\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -12693,8 +12724,8 @@
       }
     },
     {
-      "id": "2905eb0d-7569-4af9-b0d0-14eb3014d0fa",
-      "name": "Add multiple tags to subscriber - default",
+      "id": "e5b34b57-11ed-4e61-bb58-28c01c8e8bb8",
+      "name": "Add several tags to one subscriber - default",
       "request": {
         "urlPathTemplate": "/subscribers/tags/bulk",
         "method": "POST",
@@ -12706,12 +12737,12 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"optIn\": {\n    \"emailQueued\": true,\n    \"required\": true\n  },\n  \"subscriber\": {\n    \"created\": true,\n    \"email\": \"email\",\n    \"id\": \"id\",\n    \"tags\": [\n      \"tags\"\n    ]\n  },\n  \"success\": true,\n  \"tags\": {\n    \"added\": [\n      \"added\"\n    ],\n    \"created\": [\n      \"created\"\n    ]\n  }\n}",
+        "body": "{\n  \"optIn\": {\n    \"emailQueued\": true,\n    \"required\": true\n  },\n  \"sequenceTriggersRan\": true,\n  \"sequenceTriggersSkippedReason\": \"missing_scope\",\n  \"subscriber\": {\n    \"created\": true,\n    \"email\": \"email\",\n    \"id\": \"id\",\n    \"tags\": [\n      \"tags\"\n    ]\n  },\n  \"success\": true,\n  \"tags\": {\n    \"added\": [\n      \"added\"\n    ],\n    \"created\": [\n      \"created\"\n    ]\n  },\n  \"warnings\": [\n    \"No sequences were started and no waiting sequence steps were resumed: this API key is missing the automations:trigger scope. The rest of the request was applied. Add automations:trigger to the key (or use a preset that includes it) to start sequences from API calls.\"\n  ]\n}",
         "headers": {
           "Content-Type": "application/json"
         }
       },
-      "uuid": "2905eb0d-7569-4af9-b0d0-14eb3014d0fa",
+      "uuid": "e5b34b57-11ed-4e61-bb58-28c01c8e8bb8",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -12835,7 +12866,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"optIn\": {\n    \"emailQueued\": true,\n    \"required\": true\n  },\n  \"subscriber\": {\n    \"created\": true,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"customAttributes\": {\n      \"plan\": \"pro\",\n      \"signupSource\": \"website\"\n    },\n    \"email\": \"user@example.com\",\n    \"emailProvider\": \"gmail\",\n    \"externalId\": \"user_123\",\n    \"firstName\": \"John\",\n    \"id\": \"sub_abc123\",\n    \"lastName\": \"Doe\",\n    \"phone\": \"+15551234567\",\n    \"phoneCountry\": \"US\",\n    \"skipped\": false,\n    \"smsStatus\": \"not_subscribed\",\n    \"status\": \"active\",\n    \"tags\": [\n      \"premium\",\n      \"newsletter\"\n    ],\n    \"timezone\": \"America/New_York\",\n    \"unsubscribedAt\": \"2024-01-15T09:30:00Z\",\n    \"updated\": false,\n    \"updatedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"optIn\": {\n    \"emailQueued\": true,\n    \"required\": true\n  },\n  \"sequenceTriggersRan\": true,\n  \"sequenceTriggersSkippedReason\": \"missing_scope\",\n  \"subscriber\": {\n    \"created\": true,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"customAttributes\": {\n      \"plan\": \"pro\",\n      \"signupSource\": \"website\"\n    },\n    \"email\": \"user@example.com\",\n    \"emailProvider\": \"gmail\",\n    \"externalId\": \"user_123\",\n    \"firstName\": \"John\",\n    \"id\": \"sub_abc123\",\n    \"lastName\": \"Doe\",\n    \"phone\": \"+15551234567\",\n    \"phoneCountry\": \"US\",\n    \"skipped\": false,\n    \"smsStatus\": \"not_subscribed\",\n    \"status\": \"active\",\n    \"tags\": [\n      \"premium\",\n      \"newsletter\"\n    ],\n    \"timezone\": \"America/New_York\",\n    \"unsubscribedAt\": \"2024-01-15T09:30:00Z\",\n    \"updated\": false,\n    \"updatedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"success\": true,\n  \"warnings\": [\n    \"No sequences were started and no waiting sequence steps were resumed: this API key is missing the automations:trigger scope. The rest of the request was applied. Add automations:trigger to the key (or use a preset that includes it) to start sequences from API calls.\"\n  ]\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -13326,7 +13357,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"duplicates\": 1,\n  \"error\": \"error\",\n  \"failed\": 1,\n  \"failures\": [\n    {\n      \"error\": \"error\",\n      \"index\": 1\n    }\n  ],\n  \"recorded\": 1,\n  \"sideEffectFailed\": 1,\n  \"sideEffectFailures\": [\n    {\n      \"error\": \"error\",\n      \"index\": 1,\n      \"stages\": [\n        \"stages\"\n      ]\n    }\n  ],\n  \"subscribers\": 1,\n  \"success\": true,\n  \"total\": 1\n}",
+        "body": "{\n  \"duplicates\": 1,\n  \"error\": \"error\",\n  \"failed\": 1,\n  \"failures\": [\n    {\n      \"error\": \"error\",\n      \"index\": 1\n    }\n  ],\n  \"recorded\": 1,\n  \"sequenceTriggersRan\": true,\n  \"sequenceTriggersSkippedReason\": \"missing_scope\",\n  \"sideEffectFailed\": 1,\n  \"sideEffectFailures\": [\n    {\n      \"error\": \"error\",\n      \"index\": 1,\n      \"stages\": [\n        \"stages\"\n      ]\n    }\n  ],\n  \"subscribers\": 1,\n  \"success\": true,\n  \"total\": 1,\n  \"warnings\": [\n    \"No sequences were started and no waiting sequence steps were resumed: this API key is missing the automations:trigger scope. The rest of the request was applied. Add automations:trigger to the key (or use a preset that includes it) to start sequences from API calls.\"\n  ]\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -13562,7 +13593,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"subscriber\": {\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"customAttributes\": {\n      \"plan\": \"pro\",\n      \"signupSource\": \"website\"\n    },\n    \"email\": \"user@example.com\",\n    \"emailProvider\": \"gmail\",\n    \"externalId\": \"user_123\",\n    \"firstName\": \"John\",\n    \"id\": \"sub_abc123\",\n    \"lastName\": \"Doe\",\n    \"phone\": \"+15551234567\",\n    \"phoneCountry\": \"US\",\n    \"smsStatus\": \"not_subscribed\",\n    \"status\": \"active\",\n    \"tags\": [\n      \"premium\",\n      \"newsletter\"\n    ],\n    \"timezone\": \"America/New_York\",\n    \"unsubscribedAt\": \"2024-01-15T09:30:00Z\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"sequenceTriggersRan\": true,\n  \"sequenceTriggersSkippedReason\": \"missing_scope\",\n  \"subscriber\": {\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"customAttributes\": {\n      \"plan\": \"pro\",\n      \"signupSource\": \"website\"\n    },\n    \"email\": \"user@example.com\",\n    \"emailProvider\": \"gmail\",\n    \"externalId\": \"user_123\",\n    \"firstName\": \"John\",\n    \"id\": \"sub_abc123\",\n    \"lastName\": \"Doe\",\n    \"phone\": \"+15551234567\",\n    \"phoneCountry\": \"US\",\n    \"smsStatus\": \"not_subscribed\",\n    \"status\": \"active\",\n    \"tags\": [\n      \"premium\",\n      \"newsletter\"\n    ],\n    \"timezone\": \"America/New_York\",\n    \"unsubscribedAt\": \"2024-01-15T09:30:00Z\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"success\": true,\n  \"warnings\": [\n    \"No sequences were started and no waiting sequence steps were resumed: this API key is missing the automations:trigger scope. The rest of the request was applied. Add automations:trigger to the key (or use a preset that includes it) to start sequences from API calls.\"\n  ]\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -13598,7 +13629,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"subscriber\": {\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"customAttributes\": {\n      \"plan\": \"pro\",\n      \"signupSource\": \"website\"\n    },\n    \"email\": \"user@example.com\",\n    \"emailProvider\": \"gmail\",\n    \"externalId\": \"user_123\",\n    \"firstName\": \"John\",\n    \"id\": \"sub_abc123\",\n    \"lastName\": \"Doe\",\n    \"phone\": \"+15551234567\",\n    \"phoneCountry\": \"US\",\n    \"smsStatus\": \"not_subscribed\",\n    \"status\": \"active\",\n    \"tags\": [\n      \"premium\",\n      \"newsletter\"\n    ],\n    \"timezone\": \"America/New_York\",\n    \"unsubscribedAt\": \"2024-01-15T09:30:00Z\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"sequenceTriggersRan\": true,\n  \"sequenceTriggersSkippedReason\": \"missing_scope\",\n  \"subscriber\": {\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"customAttributes\": {\n      \"plan\": \"pro\",\n      \"signupSource\": \"website\"\n    },\n    \"email\": \"user@example.com\",\n    \"emailProvider\": \"gmail\",\n    \"externalId\": \"user_123\",\n    \"firstName\": \"John\",\n    \"id\": \"sub_abc123\",\n    \"lastName\": \"Doe\",\n    \"phone\": \"+15551234567\",\n    \"phoneCountry\": \"US\",\n    \"smsStatus\": \"not_subscribed\",\n    \"status\": \"active\",\n    \"tags\": [\n      \"premium\",\n      \"newsletter\"\n    ],\n    \"timezone\": \"America/New_York\",\n    \"unsubscribedAt\": \"2024-01-15T09:30:00Z\",\n    \"updatedAt\": \"2024-01-15T09:30:00Z\"\n  },\n  \"success\": true,\n  \"warnings\": [\n    \"No sequences were started and no waiting sequence steps were resumed: this API key is missing the automations:trigger scope. The rest of the request was applied. Add automations:trigger to the key (or use a preset that includes it) to start sequences from API calls.\"\n  ]\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -13665,7 +13696,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"account\": {\n    \"created\": true,\n    \"externalId\": \"externalId\",\n    \"role\": \"owner\"\n  },\n  \"accountIgnored\": {\n    \"message\": \"message\",\n    \"reason\": \"accounts_not_enabled\"\n  },\n  \"duplicate\": true,\n  \"duplicates\": 0,\n  \"event\": {\n    \"definitionCreated\": true,\n    \"id\": \"id\",\n    \"name\": \"name\"\n  },\n  \"events\": [\n    {\n      \"id\": \"id\",\n      \"name\": \"name\",\n      \"occurredAt\": \"2024-01-15T09:30:00Z\"\n    }\n  ],\n  \"historical\": true,\n  \"inserted\": 1,\n  \"optIn\": {\n    \"emailQueued\": true,\n    \"required\": true\n  },\n  \"sideEffectFailures\": [\n    \"apply-sync-rules\"\n  ],\n  \"subscriber\": {\n    \"created\": true,\n    \"email\": \"email\",\n    \"id\": \"id\"\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"account\": {\n    \"created\": true,\n    \"externalId\": \"externalId\",\n    \"role\": \"owner\"\n  },\n  \"accountIgnored\": {\n    \"message\": \"message\",\n    \"reason\": \"accounts_not_enabled\"\n  },\n  \"duplicate\": true,\n  \"duplicates\": 0,\n  \"event\": {\n    \"definitionCreated\": true,\n    \"id\": \"id\",\n    \"name\": \"name\"\n  },\n  \"events\": [\n    {\n      \"id\": \"id\",\n      \"name\": \"name\",\n      \"occurredAt\": \"2024-01-15T09:30:00Z\"\n    }\n  ],\n  \"historical\": true,\n  \"inserted\": 1,\n  \"optIn\": {\n    \"emailQueued\": true,\n    \"required\": true\n  },\n  \"sequenceTriggersRan\": true,\n  \"sequenceTriggersSkippedReason\": \"missing_scope\",\n  \"sideEffectFailures\": [\n    \"apply-sync-rules\"\n  ],\n  \"subscriber\": {\n    \"created\": true,\n    \"email\": \"email\",\n    \"id\": \"id\"\n  },\n  \"success\": true,\n  \"warnings\": [\n    \"No sequences were started and no waiting sequence steps were resumed: this API key is missing the automations:trigger scope. The rest of the request was applied. Add automations:trigger to the key (or use a preset that includes it) to start sequences from API calls.\"\n  ]\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -13696,7 +13727,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"events\": [\n    {\n      \"definitionCreated\": true,\n      \"duplicate\": true,\n      \"id\": \"id\",\n      \"name\": \"name\",\n      \"sideEffectFailures\": [\n        \"sideEffectFailures\"\n      ]\n    }\n  ],\n  \"optIn\": {\n    \"emailQueued\": true,\n    \"required\": true\n  },\n  \"subscriber\": {\n    \"created\": true,\n    \"email\": \"email\",\n    \"id\": \"id\"\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"events\": [\n    {\n      \"definitionCreated\": true,\n      \"duplicate\": true,\n      \"id\": \"id\",\n      \"name\": \"name\",\n      \"sideEffectFailures\": [\n        \"sideEffectFailures\"\n      ]\n    }\n  ],\n  \"optIn\": {\n    \"emailQueued\": true,\n    \"required\": true\n  },\n  \"sequenceTriggersRan\": true,\n  \"sequenceTriggersSkippedReason\": \"missing_scope\",\n  \"subscriber\": {\n    \"created\": true,\n    \"email\": \"email\",\n    \"id\": \"id\"\n  },\n  \"success\": true,\n  \"warnings\": [\n    \"No sequences were started and no waiting sequence steps were resumed: this API key is missing the automations:trigger scope. The rest of the request was applied. Add automations:trigger to the key (or use a preset that includes it) to start sequences from API calls.\"\n  ]\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -13727,7 +13758,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"optIn\": {\n    \"emailQueued\": true,\n    \"required\": true\n  },\n  \"subscriber\": {\n    \"created\": true,\n    \"email\": \"email\",\n    \"id\": \"id\",\n    \"tags\": [\n      \"tags\"\n    ]\n  },\n  \"success\": true,\n  \"tag\": {\n    \"created\": true,\n    \"id\": \"id\",\n    \"name\": \"name\"\n  }\n}",
+        "body": "{\n  \"optIn\": {\n    \"emailQueued\": true,\n    \"required\": true\n  },\n  \"sequenceTriggersRan\": true,\n  \"sequenceTriggersSkippedReason\": \"missing_scope\",\n  \"subscriber\": {\n    \"created\": true,\n    \"email\": \"email\",\n    \"id\": \"id\",\n    \"tags\": [\n      \"tags\"\n    ]\n  },\n  \"success\": true,\n  \"tag\": {\n    \"created\": true,\n    \"id\": \"id\",\n    \"name\": \"name\"\n  },\n  \"warnings\": [\n    \"No sequences were started and no waiting sequence steps were resumed: this API key is missing the automations:trigger scope. The rest of the request was applied. Add automations:trigger to the key (or use a preset that includes it) to start sequences from API calls.\"\n  ]\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -13745,8 +13776,8 @@
       }
     },
     {
-      "id": "297fa945-81e5-4faf-aa62-f8f20bb86f1f",
-      "name": "Remove tag from subscriber - default",
+      "id": "b7871039-317e-4a4d-9a8a-f10699fd4830",
+      "name": "Remove tag from one subscriber - default",
       "request": {
         "urlPathTemplate": "/subscribers/tags/remove",
         "method": "POST",
@@ -13758,12 +13789,12 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"subscriber\": {\n    \"created\": true,\n    \"email\": \"email\",\n    \"id\": \"id\",\n    \"tags\": [\n      \"tags\"\n    ]\n  },\n  \"success\": true,\n  \"tag\": {\n    \"name\": \"name\",\n    \"removed\": true\n  }\n}",
+        "body": "{\n  \"subscriber\": {\n    \"created\": true,\n    \"email\": \"email\",\n    \"id\": \"id\",\n    \"tags\": [\n      \"tags\"\n    ]\n  },\n  \"subscriberFound\": true,\n  \"success\": true,\n  \"tag\": {\n    \"name\": \"name\",\n    \"removed\": true\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
       },
-      "uuid": "297fa945-81e5-4faf-aa62-f8f20bb86f1f",
+      "uuid": "b7871039-317e-4a4d-9a8a-f10699fd4830",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -14438,7 +14469,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"companyId\": \"companyId\",\n  \"emailLocalizationConfig\": {\n    \"key\": \"value\"\n  },\n  \"pagination\": {\n    \"count\": 50,\n    \"hasMore\": true,\n    \"limit\": 50,\n    \"offset\": 0,\n    \"total\": 137\n  },\n  \"success\": true,\n  \"templates\": [\n    {\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"emailPreset\": \"branded\",\n      \"id\": \"email_abc123\",\n      \"isTemplate\": false,\n      \"labels\": [\n        \"edm\",\n        \"template\"\n      ],\n      \"localizations\": [\n        {\n          \"key\": \"value\"\n        }\n      ],\n      \"name\": \"[Template] Welcome\",\n      \"previewText\": \"previewText\",\n      \"subject\": \"Welcome!\",\n      \"updatedAt\": \"2024-01-15T09:30:00Z\"\n    }\n  ]\n}",
+        "body": "{\n  \"companyId\": \"companyId\",\n  \"emailLocalizationConfig\": {\n    \"key\": \"value\"\n  },\n  \"pagination\": {\n    \"count\": 50,\n    \"hasMore\": true,\n    \"limit\": 50,\n    \"offset\": 0,\n    \"page\": 1,\n    \"total\": 137,\n    \"totalPages\": 3\n  },\n  \"success\": true,\n  \"templates\": [\n    {\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"emailPreset\": \"branded\",\n      \"id\": \"email_abc123\",\n      \"isTemplate\": false,\n      \"labels\": [\n        \"edm\",\n        \"template\"\n      ],\n      \"localizations\": [\n        {\n          \"key\": \"value\"\n        }\n      ],\n      \"name\": \"[Template] Welcome\",\n      \"previewText\": \"previewText\",\n      \"subject\": \"Welcome!\",\n      \"updatedAt\": \"2024-01-15T09:30:00Z\"\n    }\n  ]\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -17055,6 +17086,6 @@
     }
   ],
   "meta": {
-    "total": 495
+    "total": 496
   }
 }

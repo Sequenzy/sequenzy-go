@@ -5992,18 +5992,24 @@ func (s SubscriberStatus) Ptr() *SubscriberStatus {
 }
 
 var (
-	addTagsBulkResponseFieldOptIn      = big.NewInt(1 << 0)
-	addTagsBulkResponseFieldSubscriber = big.NewInt(1 << 1)
-	addTagsBulkResponseFieldSuccess    = big.NewInt(1 << 2)
-	addTagsBulkResponseFieldTags       = big.NewInt(1 << 3)
+	addTagsBulkResponseFieldOptIn                         = big.NewInt(1 << 0)
+	addTagsBulkResponseFieldSequenceTriggersRan           = big.NewInt(1 << 1)
+	addTagsBulkResponseFieldSequenceTriggersSkippedReason = big.NewInt(1 << 2)
+	addTagsBulkResponseFieldSubscriber                    = big.NewInt(1 << 3)
+	addTagsBulkResponseFieldSuccess                       = big.NewInt(1 << 4)
+	addTagsBulkResponseFieldTags                          = big.NewInt(1 << 5)
+	addTagsBulkResponseFieldWarnings                      = big.NewInt(1 << 6)
 )
 
 type AddTagsBulkResponse struct {
 	// Present when this request created a brand-new subscriber while workspace double opt-in is enabled. The tags are applied, but the subscriber stays pending and tag automations wait until they confirm.
-	OptIn      *AddTagsBulkResponseOptIn      `json:"optIn,omitempty" url:"optIn,omitempty"`
-	Subscriber *AddTagsBulkResponseSubscriber `json:"subscriber,omitempty" url:"subscriber,omitempty"`
-	Success    *bool                          `json:"success,omitempty" url:"success,omitempty"`
-	Tags       *AddTagsBulkResponseTags       `json:"tags,omitempty" url:"tags,omitempty"`
+	OptIn                         *AddTagsBulkResponseOptIn      `json:"optIn,omitempty" url:"optIn,omitempty"`
+	SequenceTriggersRan           *SequenceTriggersRan           `json:"sequenceTriggersRan,omitempty" url:"sequenceTriggersRan,omitempty"`
+	SequenceTriggersSkippedReason *SequenceTriggersSkippedReason `json:"sequenceTriggersSkippedReason,omitempty" url:"sequenceTriggersSkippedReason,omitempty"`
+	Subscriber                    *AddTagsBulkResponseSubscriber `json:"subscriber,omitempty" url:"subscriber,omitempty"`
+	Success                       *bool                          `json:"success,omitempty" url:"success,omitempty"`
+	Tags                          *AddTagsBulkResponseTags       `json:"tags,omitempty" url:"tags,omitempty"`
+	Warnings                      *SequenceTriggerWarnings       `json:"warnings,omitempty" url:"warnings,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -6017,6 +6023,20 @@ func (a *AddTagsBulkResponse) GetOptIn() *AddTagsBulkResponseOptIn {
 		return nil
 	}
 	return a.OptIn
+}
+
+func (a *AddTagsBulkResponse) GetSequenceTriggersRan() *SequenceTriggersRan {
+	if a == nil {
+		return nil
+	}
+	return a.SequenceTriggersRan
+}
+
+func (a *AddTagsBulkResponse) GetSequenceTriggersSkippedReason() *SequenceTriggersSkippedReason {
+	if a == nil {
+		return nil
+	}
+	return a.SequenceTriggersSkippedReason
 }
 
 func (a *AddTagsBulkResponse) GetSubscriber() *AddTagsBulkResponseSubscriber {
@@ -6040,6 +6060,13 @@ func (a *AddTagsBulkResponse) GetTags() *AddTagsBulkResponseTags {
 	return a.Tags
 }
 
+func (a *AddTagsBulkResponse) GetWarnings() *SequenceTriggerWarnings {
+	if a == nil {
+		return nil
+	}
+	return a.Warnings
+}
+
 func (a *AddTagsBulkResponse) GetExtraProperties() map[string]interface{} {
 	if a == nil {
 		return nil
@@ -6061,6 +6088,20 @@ func (a *AddTagsBulkResponse) SetOptIn(optIn *AddTagsBulkResponseOptIn) {
 	a.require(addTagsBulkResponseFieldOptIn)
 }
 
+// SetSequenceTriggersRan sets the SequenceTriggersRan field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AddTagsBulkResponse) SetSequenceTriggersRan(sequenceTriggersRan *SequenceTriggersRan) {
+	a.SequenceTriggersRan = sequenceTriggersRan
+	a.require(addTagsBulkResponseFieldSequenceTriggersRan)
+}
+
+// SetSequenceTriggersSkippedReason sets the SequenceTriggersSkippedReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AddTagsBulkResponse) SetSequenceTriggersSkippedReason(sequenceTriggersSkippedReason *SequenceTriggersSkippedReason) {
+	a.SequenceTriggersSkippedReason = sequenceTriggersSkippedReason
+	a.require(addTagsBulkResponseFieldSequenceTriggersSkippedReason)
+}
+
 // SetSubscriber sets the Subscriber field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *AddTagsBulkResponse) SetSubscriber(subscriber *AddTagsBulkResponseSubscriber) {
@@ -6080,6 +6121,13 @@ func (a *AddTagsBulkResponse) SetSuccess(success *bool) {
 func (a *AddTagsBulkResponse) SetTags(tags *AddTagsBulkResponseTags) {
 	a.Tags = tags
 	a.require(addTagsBulkResponseFieldTags)
+}
+
+// SetWarnings sets the Warnings field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AddTagsBulkResponse) SetWarnings(warnings *SequenceTriggerWarnings) {
+	a.Warnings = warnings
+	a.require(addTagsBulkResponseFieldWarnings)
 }
 
 func (a *AddTagsBulkResponse) UnmarshalJSON(data []byte) error {
@@ -6928,16 +6976,22 @@ func (c CreateSubscribersRequestStatus) Ptr() *CreateSubscribersRequestStatus {
 }
 
 var (
-	createSubscribersResponseFieldOptIn      = big.NewInt(1 << 0)
-	createSubscribersResponseFieldSubscriber = big.NewInt(1 << 1)
-	createSubscribersResponseFieldSuccess    = big.NewInt(1 << 2)
+	createSubscribersResponseFieldOptIn                         = big.NewInt(1 << 0)
+	createSubscribersResponseFieldSequenceTriggersRan           = big.NewInt(1 << 1)
+	createSubscribersResponseFieldSequenceTriggersSkippedReason = big.NewInt(1 << 2)
+	createSubscribersResponseFieldSubscriber                    = big.NewInt(1 << 3)
+	createSubscribersResponseFieldSuccess                       = big.NewInt(1 << 4)
+	createSubscribersResponseFieldWarnings                      = big.NewInt(1 << 5)
 )
 
 type CreateSubscribersResponse struct {
 	// Present when the subscriber is awaiting double opt-in confirmation.
-	OptIn      *CreateSubscribersResponseOptIn      `json:"optIn,omitempty" url:"optIn,omitempty"`
-	Subscriber *CreateSubscribersResponseSubscriber `json:"subscriber,omitempty" url:"subscriber,omitempty"`
-	Success    *bool                                `json:"success,omitempty" url:"success,omitempty"`
+	OptIn                         *CreateSubscribersResponseOptIn      `json:"optIn,omitempty" url:"optIn,omitempty"`
+	SequenceTriggersRan           *SequenceTriggersRan                 `json:"sequenceTriggersRan,omitempty" url:"sequenceTriggersRan,omitempty"`
+	SequenceTriggersSkippedReason *SequenceTriggersSkippedReason       `json:"sequenceTriggersSkippedReason,omitempty" url:"sequenceTriggersSkippedReason,omitempty"`
+	Subscriber                    *CreateSubscribersResponseSubscriber `json:"subscriber,omitempty" url:"subscriber,omitempty"`
+	Success                       *bool                                `json:"success,omitempty" url:"success,omitempty"`
+	Warnings                      *SequenceTriggerWarnings             `json:"warnings,omitempty" url:"warnings,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -6953,6 +7007,20 @@ func (c *CreateSubscribersResponse) GetOptIn() *CreateSubscribersResponseOptIn {
 	return c.OptIn
 }
 
+func (c *CreateSubscribersResponse) GetSequenceTriggersRan() *SequenceTriggersRan {
+	if c == nil {
+		return nil
+	}
+	return c.SequenceTriggersRan
+}
+
+func (c *CreateSubscribersResponse) GetSequenceTriggersSkippedReason() *SequenceTriggersSkippedReason {
+	if c == nil {
+		return nil
+	}
+	return c.SequenceTriggersSkippedReason
+}
+
 func (c *CreateSubscribersResponse) GetSubscriber() *CreateSubscribersResponseSubscriber {
 	if c == nil {
 		return nil
@@ -6965,6 +7033,13 @@ func (c *CreateSubscribersResponse) GetSuccess() *bool {
 		return nil
 	}
 	return c.Success
+}
+
+func (c *CreateSubscribersResponse) GetWarnings() *SequenceTriggerWarnings {
+	if c == nil {
+		return nil
+	}
+	return c.Warnings
 }
 
 func (c *CreateSubscribersResponse) GetExtraProperties() map[string]interface{} {
@@ -6988,6 +7063,20 @@ func (c *CreateSubscribersResponse) SetOptIn(optIn *CreateSubscribersResponseOpt
 	c.require(createSubscribersResponseFieldOptIn)
 }
 
+// SetSequenceTriggersRan sets the SequenceTriggersRan field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateSubscribersResponse) SetSequenceTriggersRan(sequenceTriggersRan *SequenceTriggersRan) {
+	c.SequenceTriggersRan = sequenceTriggersRan
+	c.require(createSubscribersResponseFieldSequenceTriggersRan)
+}
+
+// SetSequenceTriggersSkippedReason sets the SequenceTriggersSkippedReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateSubscribersResponse) SetSequenceTriggersSkippedReason(sequenceTriggersSkippedReason *SequenceTriggersSkippedReason) {
+	c.SequenceTriggersSkippedReason = sequenceTriggersSkippedReason
+	c.require(createSubscribersResponseFieldSequenceTriggersSkippedReason)
+}
+
 // SetSubscriber sets the Subscriber field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreateSubscribersResponse) SetSubscriber(subscriber *CreateSubscribersResponseSubscriber) {
@@ -7000,6 +7089,13 @@ func (c *CreateSubscribersResponse) SetSubscriber(subscriber *CreateSubscribersR
 func (c *CreateSubscribersResponse) SetSuccess(success *bool) {
 	c.Success = success
 	c.require(createSubscribersResponseFieldSuccess)
+}
+
+// SetWarnings sets the Warnings field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateSubscribersResponse) SetWarnings(warnings *SequenceTriggerWarnings) {
+	c.Warnings = warnings
+	c.require(createSubscribersResponseFieldWarnings)
 }
 
 func (c *CreateSubscribersResponse) UnmarshalJSON(data []byte) error {
@@ -8795,16 +8891,19 @@ func (i *ImportEventsSubscribersRequestEventsItem) String() string {
 }
 
 var (
-	importEventsSubscribersResponseFieldDuplicates         = big.NewInt(1 << 0)
-	importEventsSubscribersResponseFieldError              = big.NewInt(1 << 1)
-	importEventsSubscribersResponseFieldFailed             = big.NewInt(1 << 2)
-	importEventsSubscribersResponseFieldFailures           = big.NewInt(1 << 3)
-	importEventsSubscribersResponseFieldRecorded           = big.NewInt(1 << 4)
-	importEventsSubscribersResponseFieldSideEffectFailed   = big.NewInt(1 << 5)
-	importEventsSubscribersResponseFieldSideEffectFailures = big.NewInt(1 << 6)
-	importEventsSubscribersResponseFieldSubscribers        = big.NewInt(1 << 7)
-	importEventsSubscribersResponseFieldSuccess            = big.NewInt(1 << 8)
-	importEventsSubscribersResponseFieldTotal              = big.NewInt(1 << 9)
+	importEventsSubscribersResponseFieldDuplicates                    = big.NewInt(1 << 0)
+	importEventsSubscribersResponseFieldError                         = big.NewInt(1 << 1)
+	importEventsSubscribersResponseFieldFailed                        = big.NewInt(1 << 2)
+	importEventsSubscribersResponseFieldFailures                      = big.NewInt(1 << 3)
+	importEventsSubscribersResponseFieldRecorded                      = big.NewInt(1 << 4)
+	importEventsSubscribersResponseFieldSequenceTriggersRan           = big.NewInt(1 << 5)
+	importEventsSubscribersResponseFieldSequenceTriggersSkippedReason = big.NewInt(1 << 6)
+	importEventsSubscribersResponseFieldSideEffectFailed              = big.NewInt(1 << 7)
+	importEventsSubscribersResponseFieldSideEffectFailures            = big.NewInt(1 << 8)
+	importEventsSubscribersResponseFieldSubscribers                   = big.NewInt(1 << 9)
+	importEventsSubscribersResponseFieldSuccess                       = big.NewInt(1 << 10)
+	importEventsSubscribersResponseFieldTotal                         = big.NewInt(1 << 11)
+	importEventsSubscribersResponseFieldWarnings                      = big.NewInt(1 << 12)
 )
 
 type ImportEventsSubscribersResponse struct {
@@ -8817,7 +8916,9 @@ type ImportEventsSubscribersResponse struct {
 	// Failed events by input index.
 	Failures []*ImportEventsSubscribersResponseFailuresItem `json:"failures,omitempty" url:"failures,omitempty"`
 	// Events recorded by this request.
-	Recorded *int `json:"recorded,omitempty" url:"recorded,omitempty"`
+	Recorded                      *int                           `json:"recorded,omitempty" url:"recorded,omitempty"`
+	SequenceTriggersRan           *SequenceTriggersRan           `json:"sequenceTriggersRan,omitempty" url:"sequenceTriggersRan,omitempty"`
+	SequenceTriggersSkippedReason *SequenceTriggersSkippedReason `json:"sequenceTriggersSkippedReason,omitempty" url:"sequenceTriggersSkippedReason,omitempty"`
 	// Receipt rows whose downstream side effects or historical automation shielding failed. This is orthogonal to receipt accounting and may accompany either recorded or duplicate rows during recovery.
 	SideEffectFailed *int `json:"sideEffectFailed,omitempty" url:"sideEffectFailed,omitempty"`
 	// Post-write failures by input index. The receipt exists (new or duplicate); retry with the same eventId for recovery.
@@ -8826,7 +8927,8 @@ type ImportEventsSubscribersResponse struct {
 	Subscribers *int  `json:"subscribers,omitempty" url:"subscribers,omitempty"`
 	Success     *bool `json:"success,omitempty" url:"success,omitempty"`
 	// Events submitted in this request.
-	Total *int `json:"total,omitempty" url:"total,omitempty"`
+	Total    *int                     `json:"total,omitempty" url:"total,omitempty"`
+	Warnings *SequenceTriggerWarnings `json:"warnings,omitempty" url:"warnings,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -8870,6 +8972,20 @@ func (i *ImportEventsSubscribersResponse) GetRecorded() *int {
 	return i.Recorded
 }
 
+func (i *ImportEventsSubscribersResponse) GetSequenceTriggersRan() *SequenceTriggersRan {
+	if i == nil {
+		return nil
+	}
+	return i.SequenceTriggersRan
+}
+
+func (i *ImportEventsSubscribersResponse) GetSequenceTriggersSkippedReason() *SequenceTriggersSkippedReason {
+	if i == nil {
+		return nil
+	}
+	return i.SequenceTriggersSkippedReason
+}
+
 func (i *ImportEventsSubscribersResponse) GetSideEffectFailed() *int {
 	if i == nil {
 		return nil
@@ -8903,6 +9019,13 @@ func (i *ImportEventsSubscribersResponse) GetTotal() *int {
 		return nil
 	}
 	return i.Total
+}
+
+func (i *ImportEventsSubscribersResponse) GetWarnings() *SequenceTriggerWarnings {
+	if i == nil {
+		return nil
+	}
+	return i.Warnings
 }
 
 func (i *ImportEventsSubscribersResponse) GetExtraProperties() map[string]interface{} {
@@ -8954,6 +9077,20 @@ func (i *ImportEventsSubscribersResponse) SetRecorded(recorded *int) {
 	i.require(importEventsSubscribersResponseFieldRecorded)
 }
 
+// SetSequenceTriggersRan sets the SequenceTriggersRan field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *ImportEventsSubscribersResponse) SetSequenceTriggersRan(sequenceTriggersRan *SequenceTriggersRan) {
+	i.SequenceTriggersRan = sequenceTriggersRan
+	i.require(importEventsSubscribersResponseFieldSequenceTriggersRan)
+}
+
+// SetSequenceTriggersSkippedReason sets the SequenceTriggersSkippedReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *ImportEventsSubscribersResponse) SetSequenceTriggersSkippedReason(sequenceTriggersSkippedReason *SequenceTriggersSkippedReason) {
+	i.SequenceTriggersSkippedReason = sequenceTriggersSkippedReason
+	i.require(importEventsSubscribersResponseFieldSequenceTriggersSkippedReason)
+}
+
 // SetSideEffectFailed sets the SideEffectFailed field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (i *ImportEventsSubscribersResponse) SetSideEffectFailed(sideEffectFailed *int) {
@@ -8987,6 +9124,13 @@ func (i *ImportEventsSubscribersResponse) SetSuccess(success *bool) {
 func (i *ImportEventsSubscribersResponse) SetTotal(total *int) {
 	i.Total = total
 	i.require(importEventsSubscribersResponseFieldTotal)
+}
+
+// SetWarnings sets the Warnings field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *ImportEventsSubscribersResponse) SetWarnings(warnings *SequenceTriggerWarnings) {
+	i.Warnings = warnings
+	i.require(importEventsSubscribersResponseFieldWarnings)
 }
 
 func (i *ImportEventsSubscribersResponse) UnmarshalJSON(data []byte) error {
@@ -10510,19 +10654,39 @@ func (u UpdateByExternalIDSubscribersRequestStatus) Ptr() *UpdateByExternalIDSub
 }
 
 var (
-	updateByExternalIDSubscribersResponseFieldSubscriber = big.NewInt(1 << 0)
-	updateByExternalIDSubscribersResponseFieldSuccess    = big.NewInt(1 << 1)
+	updateByExternalIDSubscribersResponseFieldSequenceTriggersRan           = big.NewInt(1 << 0)
+	updateByExternalIDSubscribersResponseFieldSequenceTriggersSkippedReason = big.NewInt(1 << 1)
+	updateByExternalIDSubscribersResponseFieldSubscriber                    = big.NewInt(1 << 2)
+	updateByExternalIDSubscribersResponseFieldSuccess                       = big.NewInt(1 << 3)
+	updateByExternalIDSubscribersResponseFieldWarnings                      = big.NewInt(1 << 4)
 )
 
 type UpdateByExternalIDSubscribersResponse struct {
-	Subscriber *Subscriber `json:"subscriber,omitempty" url:"subscriber,omitempty"`
-	Success    *bool       `json:"success,omitempty" url:"success,omitempty"`
+	SequenceTriggersRan           *SequenceTriggersRan           `json:"sequenceTriggersRan,omitempty" url:"sequenceTriggersRan,omitempty"`
+	SequenceTriggersSkippedReason *SequenceTriggersSkippedReason `json:"sequenceTriggersSkippedReason,omitempty" url:"sequenceTriggersSkippedReason,omitempty"`
+	Subscriber                    *Subscriber                    `json:"subscriber,omitempty" url:"subscriber,omitempty"`
+	Success                       *bool                          `json:"success,omitempty" url:"success,omitempty"`
+	Warnings                      *SequenceTriggerWarnings       `json:"warnings,omitempty" url:"warnings,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (u *UpdateByExternalIDSubscribersResponse) GetSequenceTriggersRan() *SequenceTriggersRan {
+	if u == nil {
+		return nil
+	}
+	return u.SequenceTriggersRan
+}
+
+func (u *UpdateByExternalIDSubscribersResponse) GetSequenceTriggersSkippedReason() *SequenceTriggersSkippedReason {
+	if u == nil {
+		return nil
+	}
+	return u.SequenceTriggersSkippedReason
 }
 
 func (u *UpdateByExternalIDSubscribersResponse) GetSubscriber() *Subscriber {
@@ -10539,6 +10703,13 @@ func (u *UpdateByExternalIDSubscribersResponse) GetSuccess() *bool {
 	return u.Success
 }
 
+func (u *UpdateByExternalIDSubscribersResponse) GetWarnings() *SequenceTriggerWarnings {
+	if u == nil {
+		return nil
+	}
+	return u.Warnings
+}
+
 func (u *UpdateByExternalIDSubscribersResponse) GetExtraProperties() map[string]interface{} {
 	if u == nil {
 		return nil
@@ -10553,6 +10724,20 @@ func (u *UpdateByExternalIDSubscribersResponse) require(field *big.Int) {
 	u.explicitFields.Or(u.explicitFields, field)
 }
 
+// SetSequenceTriggersRan sets the SequenceTriggersRan field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateByExternalIDSubscribersResponse) SetSequenceTriggersRan(sequenceTriggersRan *SequenceTriggersRan) {
+	u.SequenceTriggersRan = sequenceTriggersRan
+	u.require(updateByExternalIDSubscribersResponseFieldSequenceTriggersRan)
+}
+
+// SetSequenceTriggersSkippedReason sets the SequenceTriggersSkippedReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateByExternalIDSubscribersResponse) SetSequenceTriggersSkippedReason(sequenceTriggersSkippedReason *SequenceTriggersSkippedReason) {
+	u.SequenceTriggersSkippedReason = sequenceTriggersSkippedReason
+	u.require(updateByExternalIDSubscribersResponseFieldSequenceTriggersSkippedReason)
+}
+
 // SetSubscriber sets the Subscriber field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateByExternalIDSubscribersResponse) SetSubscriber(subscriber *Subscriber) {
@@ -10565,6 +10750,13 @@ func (u *UpdateByExternalIDSubscribersResponse) SetSubscriber(subscriber *Subscr
 func (u *UpdateByExternalIDSubscribersResponse) SetSuccess(success *bool) {
 	u.Success = success
 	u.require(updateByExternalIDSubscribersResponseFieldSuccess)
+}
+
+// SetWarnings sets the Warnings field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateByExternalIDSubscribersResponse) SetWarnings(warnings *SequenceTriggerWarnings) {
+	u.Warnings = warnings
+	u.require(updateByExternalIDSubscribersResponseFieldWarnings)
 }
 
 func (u *UpdateByExternalIDSubscribersResponse) UnmarshalJSON(data []byte) error {
@@ -10662,19 +10854,39 @@ func (u UpdateSubscribersRequestStatus) Ptr() *UpdateSubscribersRequestStatus {
 }
 
 var (
-	updateSubscribersResponseFieldSubscriber = big.NewInt(1 << 0)
-	updateSubscribersResponseFieldSuccess    = big.NewInt(1 << 1)
+	updateSubscribersResponseFieldSequenceTriggersRan           = big.NewInt(1 << 0)
+	updateSubscribersResponseFieldSequenceTriggersSkippedReason = big.NewInt(1 << 1)
+	updateSubscribersResponseFieldSubscriber                    = big.NewInt(1 << 2)
+	updateSubscribersResponseFieldSuccess                       = big.NewInt(1 << 3)
+	updateSubscribersResponseFieldWarnings                      = big.NewInt(1 << 4)
 )
 
 type UpdateSubscribersResponse struct {
-	Subscriber *Subscriber `json:"subscriber,omitempty" url:"subscriber,omitempty"`
-	Success    *bool       `json:"success,omitempty" url:"success,omitempty"`
+	SequenceTriggersRan           *SequenceTriggersRan           `json:"sequenceTriggersRan,omitempty" url:"sequenceTriggersRan,omitempty"`
+	SequenceTriggersSkippedReason *SequenceTriggersSkippedReason `json:"sequenceTriggersSkippedReason,omitempty" url:"sequenceTriggersSkippedReason,omitempty"`
+	Subscriber                    *Subscriber                    `json:"subscriber,omitempty" url:"subscriber,omitempty"`
+	Success                       *bool                          `json:"success,omitempty" url:"success,omitempty"`
+	Warnings                      *SequenceTriggerWarnings       `json:"warnings,omitempty" url:"warnings,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (u *UpdateSubscribersResponse) GetSequenceTriggersRan() *SequenceTriggersRan {
+	if u == nil {
+		return nil
+	}
+	return u.SequenceTriggersRan
+}
+
+func (u *UpdateSubscribersResponse) GetSequenceTriggersSkippedReason() *SequenceTriggersSkippedReason {
+	if u == nil {
+		return nil
+	}
+	return u.SequenceTriggersSkippedReason
 }
 
 func (u *UpdateSubscribersResponse) GetSubscriber() *Subscriber {
@@ -10691,6 +10903,13 @@ func (u *UpdateSubscribersResponse) GetSuccess() *bool {
 	return u.Success
 }
 
+func (u *UpdateSubscribersResponse) GetWarnings() *SequenceTriggerWarnings {
+	if u == nil {
+		return nil
+	}
+	return u.Warnings
+}
+
 func (u *UpdateSubscribersResponse) GetExtraProperties() map[string]interface{} {
 	if u == nil {
 		return nil
@@ -10705,6 +10924,20 @@ func (u *UpdateSubscribersResponse) require(field *big.Int) {
 	u.explicitFields.Or(u.explicitFields, field)
 }
 
+// SetSequenceTriggersRan sets the SequenceTriggersRan field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateSubscribersResponse) SetSequenceTriggersRan(sequenceTriggersRan *SequenceTriggersRan) {
+	u.SequenceTriggersRan = sequenceTriggersRan
+	u.require(updateSubscribersResponseFieldSequenceTriggersRan)
+}
+
+// SetSequenceTriggersSkippedReason sets the SequenceTriggersSkippedReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateSubscribersResponse) SetSequenceTriggersSkippedReason(sequenceTriggersSkippedReason *SequenceTriggersSkippedReason) {
+	u.SequenceTriggersSkippedReason = sequenceTriggersSkippedReason
+	u.require(updateSubscribersResponseFieldSequenceTriggersSkippedReason)
+}
+
 // SetSubscriber sets the Subscriber field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateSubscribersResponse) SetSubscriber(subscriber *Subscriber) {
@@ -10717,6 +10950,13 @@ func (u *UpdateSubscribersResponse) SetSubscriber(subscriber *Subscriber) {
 func (u *UpdateSubscribersResponse) SetSuccess(success *bool) {
 	u.Success = success
 	u.require(updateSubscribersResponseFieldSuccess)
+}
+
+// SetWarnings sets the Warnings field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateSubscribersResponse) SetWarnings(warnings *SequenceTriggerWarnings) {
+	u.Warnings = warnings
+	u.require(updateSubscribersResponseFieldWarnings)
 }
 
 func (u *UpdateSubscribersResponse) UnmarshalJSON(data []byte) error {

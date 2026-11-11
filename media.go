@@ -175,6 +175,103 @@ func (c *CreateEmailImageUploadURLRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
+	cropEmailImageRequestFieldAltText     = big.NewInt(1 << 0)
+	cropEmailImageRequestFieldAspectRatio = big.NewInt(1 << 1)
+	cropEmailImageRequestFieldCrop        = big.NewInt(1 << 2)
+	cropEmailImageRequestFieldFocusX      = big.NewInt(1 << 3)
+	cropEmailImageRequestFieldFocusY      = big.NewInt(1 << 4)
+	cropEmailImageRequestFieldSourceURL   = big.NewInt(1 << 5)
+)
+
+type CropEmailImageRequest struct {
+	// Stored on the new asset; longer text is cut at 500 characters. Defaults to the generated file name. A repeated crop keeps the first request's alt text.
+	AltText *string `json:"altText,omitempty" url:"-"`
+	// Width / height as a number or "W:H" string, between 1:10 and 10:1. Crops the largest area of that shape. Mutually exclusive with crop.
+	AspectRatio *CropEmailImageRequestAspectRatio `json:"aspectRatio,omitempty" url:"-"`
+	// Area to keep, as fractions of the upright (EXIF-oriented) image. Must stay inside the image. Mutually exclusive with aspectRatio.
+	Crop *CropEmailImageRequestCrop `json:"crop,omitempty" url:"-"`
+	// With aspectRatio only. Horizontal center of the crop. Defaults to 0.5.
+	FocusX *float64 `json:"focusX,omitempty" url:"-"`
+	// With aspectRatio only. Vertical center of the crop. Defaults to 0.5.
+	FocusY *float64 `json:"focusY,omitempty" url:"-"`
+	// Hosted URL of the original image: a media-library URL or a Pexels/Unsplash photo. Merge tags and other hosts are rejected.
+	SourceURL string `json:"sourceUrl" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (c *CropEmailImageRequest) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetAltText sets the AltText field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CropEmailImageRequest) SetAltText(altText *string) {
+	c.AltText = altText
+	c.require(cropEmailImageRequestFieldAltText)
+}
+
+// SetAspectRatio sets the AspectRatio field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CropEmailImageRequest) SetAspectRatio(aspectRatio *CropEmailImageRequestAspectRatio) {
+	c.AspectRatio = aspectRatio
+	c.require(cropEmailImageRequestFieldAspectRatio)
+}
+
+// SetCrop sets the Crop field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CropEmailImageRequest) SetCrop(crop *CropEmailImageRequestCrop) {
+	c.Crop = crop
+	c.require(cropEmailImageRequestFieldCrop)
+}
+
+// SetFocusX sets the FocusX field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CropEmailImageRequest) SetFocusX(focusX *float64) {
+	c.FocusX = focusX
+	c.require(cropEmailImageRequestFieldFocusX)
+}
+
+// SetFocusY sets the FocusY field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CropEmailImageRequest) SetFocusY(focusY *float64) {
+	c.FocusY = focusY
+	c.require(cropEmailImageRequestFieldFocusY)
+}
+
+// SetSourceURL sets the SourceURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CropEmailImageRequest) SetSourceURL(sourceURL string) {
+	c.SourceURL = sourceURL
+	c.require(cropEmailImageRequestFieldSourceURL)
+}
+
+func (c *CropEmailImageRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler CropEmailImageRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*c = CropEmailImageRequest(body)
+	return nil
+}
+
+func (c *CropEmailImageRequest) MarshalJSON() ([]byte, error) {
+	type embed CropEmailImageRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
 	completeEmailImageUploadResponseFieldAsset   = big.NewInt(1 << 0)
 	completeEmailImageUploadResponseFieldSuccess = big.NewInt(1 << 1)
 )
@@ -644,6 +741,756 @@ func (c *CreateEmailImageUploadURLResponse) MarshalJSON() ([]byte, error) {
 }
 
 func (c *CreateEmailImageUploadURLResponse) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+// Width / height as a number or "W:H" string, between 1:10 and 10:1. Crops the largest area of that shape. Mutually exclusive with crop.
+type CropEmailImageRequestAspectRatio struct {
+	Double float64
+	String string
+
+	typ string
+}
+
+func (c *CropEmailImageRequestAspectRatio) GetDouble() float64 {
+	if c == nil {
+		return 0
+	}
+	return c.Double
+}
+
+func (c *CropEmailImageRequestAspectRatio) GetString() string {
+	if c == nil {
+		return ""
+	}
+	return c.String
+}
+
+func (c *CropEmailImageRequestAspectRatio) UnmarshalJSON(data []byte) error {
+	var valueDouble float64
+	if err := json.Unmarshal(data, &valueDouble); err == nil {
+		c.typ = "Double"
+		c.Double = valueDouble
+		return nil
+	}
+	var valueString string
+	if err := json.Unmarshal(data, &valueString); err == nil {
+		c.typ = "String"
+		c.String = valueString
+		return nil
+	}
+	return fmt.Errorf("%s cannot be deserialized as a %T", data, c)
+}
+
+func (c CropEmailImageRequestAspectRatio) MarshalJSON() ([]byte, error) {
+	if c.typ == "Double" || c.Double != 0 {
+		return json.Marshal(c.Double)
+	}
+	if c.typ == "String" || c.String != "" {
+		return json.Marshal(c.String)
+	}
+	return nil, fmt.Errorf("type %T does not include a non-empty union type", c)
+}
+
+type CropEmailImageRequestAspectRatioVisitor interface {
+	VisitDouble(float64) error
+	VisitString(string) error
+}
+
+func (c *CropEmailImageRequestAspectRatio) Accept(visitor CropEmailImageRequestAspectRatioVisitor) error {
+	if c.typ == "Double" || c.Double != 0 {
+		return visitor.VisitDouble(c.Double)
+	}
+	if c.typ == "String" || c.String != "" {
+		return visitor.VisitString(c.String)
+	}
+	return fmt.Errorf("type %T does not include a non-empty union type", c)
+}
+
+// Area to keep, as fractions of the upright (EXIF-oriented) image. Must stay inside the image. Mutually exclusive with aspectRatio.
+var (
+	cropEmailImageRequestCropFieldHeight = big.NewInt(1 << 0)
+	cropEmailImageRequestCropFieldWidth  = big.NewInt(1 << 1)
+	cropEmailImageRequestCropFieldX      = big.NewInt(1 << 2)
+	cropEmailImageRequestCropFieldY      = big.NewInt(1 << 3)
+)
+
+type CropEmailImageRequestCrop struct {
+	Height float64 `json:"height" url:"height"`
+	Width  float64 `json:"width" url:"width"`
+	X      float64 `json:"x" url:"x"`
+	Y      float64 `json:"y" url:"y"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CropEmailImageRequestCrop) GetHeight() float64 {
+	if c == nil {
+		return 0
+	}
+	return c.Height
+}
+
+func (c *CropEmailImageRequestCrop) GetWidth() float64 {
+	if c == nil {
+		return 0
+	}
+	return c.Width
+}
+
+func (c *CropEmailImageRequestCrop) GetX() float64 {
+	if c == nil {
+		return 0
+	}
+	return c.X
+}
+
+func (c *CropEmailImageRequestCrop) GetY() float64 {
+	if c == nil {
+		return 0
+	}
+	return c.Y
+}
+
+func (c *CropEmailImageRequestCrop) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CropEmailImageRequestCrop) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetHeight sets the Height field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CropEmailImageRequestCrop) SetHeight(height float64) {
+	c.Height = height
+	c.require(cropEmailImageRequestCropFieldHeight)
+}
+
+// SetWidth sets the Width field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CropEmailImageRequestCrop) SetWidth(width float64) {
+	c.Width = width
+	c.require(cropEmailImageRequestCropFieldWidth)
+}
+
+// SetX sets the X field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CropEmailImageRequestCrop) SetX(x float64) {
+	c.X = x
+	c.require(cropEmailImageRequestCropFieldX)
+}
+
+// SetY sets the Y field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CropEmailImageRequestCrop) SetY(y float64) {
+	c.Y = y
+	c.require(cropEmailImageRequestCropFieldY)
+}
+
+func (c *CropEmailImageRequestCrop) UnmarshalJSON(data []byte) error {
+	type unmarshaler CropEmailImageRequestCrop
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CropEmailImageRequestCrop(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CropEmailImageRequestCrop) MarshalJSON() ([]byte, error) {
+	type embed CropEmailImageRequestCrop
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CropEmailImageRequestCrop) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	cropEmailImageResponseFieldAsset        = big.NewInt(1 << 0)
+	cropEmailImageResponseFieldCrop         = big.NewInt(1 << 1)
+	cropEmailImageResponseFieldSourceHeight = big.NewInt(1 << 2)
+	cropEmailImageResponseFieldSourceWidth  = big.NewInt(1 << 3)
+	cropEmailImageResponseFieldSuccess      = big.NewInt(1 << 4)
+)
+
+type CropEmailImageResponse struct {
+	// The new media-library asset holding the cropped image.
+	Asset *CropEmailImageResponseAsset `json:"asset,omitempty" url:"asset,omitempty"`
+	// Crop record to store on the image block next to src, so the editor can re-open or undo the crop. x, y, width and height are snapped to whole source pixels.
+	Crop *CropEmailImageResponseCrop `json:"crop,omitempty" url:"crop,omitempty"`
+	// Upright height of the original in pixels.
+	SourceHeight *int `json:"sourceHeight,omitempty" url:"sourceHeight,omitempty"`
+	// Upright width of the original in pixels.
+	SourceWidth *int  `json:"sourceWidth,omitempty" url:"sourceWidth,omitempty"`
+	Success     *bool `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CropEmailImageResponse) GetAsset() *CropEmailImageResponseAsset {
+	if c == nil {
+		return nil
+	}
+	return c.Asset
+}
+
+func (c *CropEmailImageResponse) GetCrop() *CropEmailImageResponseCrop {
+	if c == nil {
+		return nil
+	}
+	return c.Crop
+}
+
+func (c *CropEmailImageResponse) GetSourceHeight() *int {
+	if c == nil {
+		return nil
+	}
+	return c.SourceHeight
+}
+
+func (c *CropEmailImageResponse) GetSourceWidth() *int {
+	if c == nil {
+		return nil
+	}
+	return c.SourceWidth
+}
+
+func (c *CropEmailImageResponse) GetSuccess() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.Success
+}
+
+func (c *CropEmailImageResponse) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CropEmailImageResponse) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetAsset sets the Asset field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CropEmailImageResponse) SetAsset(asset *CropEmailImageResponseAsset) {
+	c.Asset = asset
+	c.require(cropEmailImageResponseFieldAsset)
+}
+
+// SetCrop sets the Crop field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CropEmailImageResponse) SetCrop(crop *CropEmailImageResponseCrop) {
+	c.Crop = crop
+	c.require(cropEmailImageResponseFieldCrop)
+}
+
+// SetSourceHeight sets the SourceHeight field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CropEmailImageResponse) SetSourceHeight(sourceHeight *int) {
+	c.SourceHeight = sourceHeight
+	c.require(cropEmailImageResponseFieldSourceHeight)
+}
+
+// SetSourceWidth sets the SourceWidth field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CropEmailImageResponse) SetSourceWidth(sourceWidth *int) {
+	c.SourceWidth = sourceWidth
+	c.require(cropEmailImageResponseFieldSourceWidth)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CropEmailImageResponse) SetSuccess(success *bool) {
+	c.Success = success
+	c.require(cropEmailImageResponseFieldSuccess)
+}
+
+func (c *CropEmailImageResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler CropEmailImageResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CropEmailImageResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CropEmailImageResponse) MarshalJSON() ([]byte, error) {
+	type embed CropEmailImageResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CropEmailImageResponse) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+// The new media-library asset holding the cropped image.
+var (
+	cropEmailImageResponseAssetFieldAltText   = big.NewInt(1 << 0)
+	cropEmailImageResponseAssetFieldCompanyID = big.NewInt(1 << 1)
+	cropEmailImageResponseAssetFieldCreatedAt = big.NewInt(1 << 2)
+	cropEmailImageResponseAssetFieldFilename  = big.NewInt(1 << 3)
+	cropEmailImageResponseAssetFieldHeight    = big.NewInt(1 << 4)
+	cropEmailImageResponseAssetFieldID        = big.NewInt(1 << 5)
+	cropEmailImageResponseAssetFieldMimeType  = big.NewInt(1 << 6)
+	cropEmailImageResponseAssetFieldSize      = big.NewInt(1 << 7)
+	cropEmailImageResponseAssetFieldURL       = big.NewInt(1 << 8)
+	cropEmailImageResponseAssetFieldWidth     = big.NewInt(1 << 9)
+)
+
+type CropEmailImageResponseAsset struct {
+	AltText   *string    `json:"altText,omitempty" url:"altText,omitempty"`
+	CompanyID *string    `json:"companyId,omitempty" url:"companyId,omitempty"`
+	CreatedAt *time.Time `json:"createdAt,omitempty" url:"createdAt,omitempty"`
+	Filename  *string    `json:"filename,omitempty" url:"filename,omitempty"`
+	Height    *string    `json:"height,omitempty" url:"height,omitempty"`
+	ID        *string    `json:"id,omitempty" url:"id,omitempty"`
+	MimeType  *string    `json:"mimeType,omitempty" url:"mimeType,omitempty"`
+	Size      *string    `json:"size,omitempty" url:"size,omitempty"`
+	URL       *string    `json:"url,omitempty" url:"url,omitempty"`
+	Width     *string    `json:"width,omitempty" url:"width,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CropEmailImageResponseAsset) GetAltText() *string {
+	if c == nil {
+		return nil
+	}
+	return c.AltText
+}
+
+func (c *CropEmailImageResponseAsset) GetCompanyID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.CompanyID
+}
+
+func (c *CropEmailImageResponseAsset) GetCreatedAt() *time.Time {
+	if c == nil {
+		return nil
+	}
+	return c.CreatedAt
+}
+
+func (c *CropEmailImageResponseAsset) GetFilename() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Filename
+}
+
+func (c *CropEmailImageResponseAsset) GetHeight() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Height
+}
+
+func (c *CropEmailImageResponseAsset) GetID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.ID
+}
+
+func (c *CropEmailImageResponseAsset) GetMimeType() *string {
+	if c == nil {
+		return nil
+	}
+	return c.MimeType
+}
+
+func (c *CropEmailImageResponseAsset) GetSize() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Size
+}
+
+func (c *CropEmailImageResponseAsset) GetURL() *string {
+	if c == nil {
+		return nil
+	}
+	return c.URL
+}
+
+func (c *CropEmailImageResponseAsset) GetWidth() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Width
+}
+
+func (c *CropEmailImageResponseAsset) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CropEmailImageResponseAsset) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetAltText sets the AltText field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CropEmailImageResponseAsset) SetAltText(altText *string) {
+	c.AltText = altText
+	c.require(cropEmailImageResponseAssetFieldAltText)
+}
+
+// SetCompanyID sets the CompanyID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CropEmailImageResponseAsset) SetCompanyID(companyID *string) {
+	c.CompanyID = companyID
+	c.require(cropEmailImageResponseAssetFieldCompanyID)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CropEmailImageResponseAsset) SetCreatedAt(createdAt *time.Time) {
+	c.CreatedAt = createdAt
+	c.require(cropEmailImageResponseAssetFieldCreatedAt)
+}
+
+// SetFilename sets the Filename field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CropEmailImageResponseAsset) SetFilename(filename *string) {
+	c.Filename = filename
+	c.require(cropEmailImageResponseAssetFieldFilename)
+}
+
+// SetHeight sets the Height field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CropEmailImageResponseAsset) SetHeight(height *string) {
+	c.Height = height
+	c.require(cropEmailImageResponseAssetFieldHeight)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CropEmailImageResponseAsset) SetID(id *string) {
+	c.ID = id
+	c.require(cropEmailImageResponseAssetFieldID)
+}
+
+// SetMimeType sets the MimeType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CropEmailImageResponseAsset) SetMimeType(mimeType *string) {
+	c.MimeType = mimeType
+	c.require(cropEmailImageResponseAssetFieldMimeType)
+}
+
+// SetSize sets the Size field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CropEmailImageResponseAsset) SetSize(size *string) {
+	c.Size = size
+	c.require(cropEmailImageResponseAssetFieldSize)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CropEmailImageResponseAsset) SetURL(url *string) {
+	c.URL = url
+	c.require(cropEmailImageResponseAssetFieldURL)
+}
+
+// SetWidth sets the Width field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CropEmailImageResponseAsset) SetWidth(width *string) {
+	c.Width = width
+	c.require(cropEmailImageResponseAssetFieldWidth)
+}
+
+func (c *CropEmailImageResponseAsset) UnmarshalJSON(data []byte) error {
+	type embed CropEmailImageResponseAsset
+	var unmarshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"createdAt,omitempty"`
+	}{
+		embed: embed(*c),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*c = CropEmailImageResponseAsset(unmarshaler.embed)
+	c.CreatedAt = unmarshaler.CreatedAt.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CropEmailImageResponseAsset) MarshalJSON() ([]byte, error) {
+	type embed CropEmailImageResponseAsset
+	var marshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"createdAt,omitempty"`
+	}{
+		embed:     embed(*c),
+		CreatedAt: internal.NewOptionalDateTime(c.CreatedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CropEmailImageResponseAsset) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+// Crop record to store on the image block next to src, so the editor can re-open or undo the crop. x, y, width and height are snapped to whole source pixels.
+var (
+	cropEmailImageResponseCropFieldCroppedSrc = big.NewInt(1 << 0)
+	cropEmailImageResponseCropFieldHeight     = big.NewInt(1 << 1)
+	cropEmailImageResponseCropFieldSourceSrc  = big.NewInt(1 << 2)
+	cropEmailImageResponseCropFieldWidth      = big.NewInt(1 << 3)
+	cropEmailImageResponseCropFieldX          = big.NewInt(1 << 4)
+	cropEmailImageResponseCropFieldY          = big.NewInt(1 << 5)
+)
+
+type CropEmailImageResponseCrop struct {
+	CroppedSrc *string  `json:"croppedSrc,omitempty" url:"croppedSrc,omitempty"`
+	Height     *float64 `json:"height,omitempty" url:"height,omitempty"`
+	SourceSrc  *string  `json:"sourceSrc,omitempty" url:"sourceSrc,omitempty"`
+	Width      *float64 `json:"width,omitempty" url:"width,omitempty"`
+	X          *float64 `json:"x,omitempty" url:"x,omitempty"`
+	Y          *float64 `json:"y,omitempty" url:"y,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CropEmailImageResponseCrop) GetCroppedSrc() *string {
+	if c == nil {
+		return nil
+	}
+	return c.CroppedSrc
+}
+
+func (c *CropEmailImageResponseCrop) GetHeight() *float64 {
+	if c == nil {
+		return nil
+	}
+	return c.Height
+}
+
+func (c *CropEmailImageResponseCrop) GetSourceSrc() *string {
+	if c == nil {
+		return nil
+	}
+	return c.SourceSrc
+}
+
+func (c *CropEmailImageResponseCrop) GetWidth() *float64 {
+	if c == nil {
+		return nil
+	}
+	return c.Width
+}
+
+func (c *CropEmailImageResponseCrop) GetX() *float64 {
+	if c == nil {
+		return nil
+	}
+	return c.X
+}
+
+func (c *CropEmailImageResponseCrop) GetY() *float64 {
+	if c == nil {
+		return nil
+	}
+	return c.Y
+}
+
+func (c *CropEmailImageResponseCrop) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CropEmailImageResponseCrop) require(field *big.Int) {
+	if c.explicitFields == nil {
+		c.explicitFields = big.NewInt(0)
+	}
+	c.explicitFields.Or(c.explicitFields, field)
+}
+
+// SetCroppedSrc sets the CroppedSrc field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CropEmailImageResponseCrop) SetCroppedSrc(croppedSrc *string) {
+	c.CroppedSrc = croppedSrc
+	c.require(cropEmailImageResponseCropFieldCroppedSrc)
+}
+
+// SetHeight sets the Height field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CropEmailImageResponseCrop) SetHeight(height *float64) {
+	c.Height = height
+	c.require(cropEmailImageResponseCropFieldHeight)
+}
+
+// SetSourceSrc sets the SourceSrc field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CropEmailImageResponseCrop) SetSourceSrc(sourceSrc *string) {
+	c.SourceSrc = sourceSrc
+	c.require(cropEmailImageResponseCropFieldSourceSrc)
+}
+
+// SetWidth sets the Width field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CropEmailImageResponseCrop) SetWidth(width *float64) {
+	c.Width = width
+	c.require(cropEmailImageResponseCropFieldWidth)
+}
+
+// SetX sets the X field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CropEmailImageResponseCrop) SetX(x *float64) {
+	c.X = x
+	c.require(cropEmailImageResponseCropFieldX)
+}
+
+// SetY sets the Y field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CropEmailImageResponseCrop) SetY(y *float64) {
+	c.Y = y
+	c.require(cropEmailImageResponseCropFieldY)
+}
+
+func (c *CropEmailImageResponseCrop) UnmarshalJSON(data []byte) error {
+	type unmarshaler CropEmailImageResponseCrop
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CropEmailImageResponseCrop(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CropEmailImageResponseCrop) MarshalJSON() ([]byte, error) {
+	type embed CropEmailImageResponseCrop
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CropEmailImageResponseCrop) String() string {
 	if c == nil {
 		return "<nil>"
 	}

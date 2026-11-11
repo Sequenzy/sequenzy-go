@@ -3363,6 +3363,14 @@ func TestSettersSendTestPushRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetLocalizations", func(t *testing.T) {
+		obj := &SendTestPushRequest{}
+		var fernTestValueLocalizations *PushLocalizationList
+		obj.SetLocalizations(fernTestValueLocalizations)
+		assert.Equal(t, fernTestValueLocalizations, obj.Localizations)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetPlatforms", func(t *testing.T) {
 		obj := &SendTestPushRequest{}
 		var fernTestValuePlatforms []SendTestPushRequestPlatformsItem
@@ -3530,6 +3538,37 @@ func TestSettersMarkExplicitSendTestPushRequest(t *testing.T) {
 
 		// Act
 		obj.SetImageURL(fernTestValueImageURL)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetLocalizations_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SendTestPushRequest{}
+		var fernTestValueLocalizations *PushLocalizationList
+
+		// Act
+		obj.SetLocalizations(fernTestValueLocalizations)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -4600,6 +4639,14 @@ func TestSettersTranslatePushContentRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetPlatforms", func(t *testing.T) {
+		obj := &TranslatePushContentRequest{}
+		var fernTestValuePlatforms []TranslatePushContentRequestPlatformsItem
+		obj.SetPlatforms(fernTestValuePlatforms)
+		assert.Equal(t, fernTestValuePlatforms, obj.Platforms)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetTitle", func(t *testing.T) {
 		obj := &TranslatePushContentRequest{}
 		var fernTestValueTitle *string
@@ -4712,6 +4759,37 @@ func TestSettersMarkExplicitTranslatePushContentRequest(t *testing.T) {
 
 		// Act
 		obj.SetOverwrite(fernTestValueOverwrite)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPlatforms_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TranslatePushContentRequest{}
+		var fernTestValuePlatforms []TranslatePushContentRequestPlatformsItem
+
+		// Act
+		obj.SetPlatforms(fernTestValuePlatforms)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -29898,6 +29976,42 @@ func TestEnumSetApnsCredentialsRequestEnvironment(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewSetApnsCredentialsRequestEnvironmentFromString("production")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumTranslatePushContentRequestPlatformsItem(t *testing.T) {
+	t.Run("NewFromString_web", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewTranslatePushContentRequestPlatformsItemFromString("web")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, TranslatePushContentRequestPlatformsItem("web"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ios", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewTranslatePushContentRequestPlatformsItemFromString("ios")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, TranslatePushContentRequestPlatformsItem("ios"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_android", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewTranslatePushContentRequestPlatformsItemFromString("android")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, TranslatePushContentRequestPlatformsItem("android"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewTranslatePushContentRequestPlatformsItemFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewTranslatePushContentRequestPlatformsItemFromString("web")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)

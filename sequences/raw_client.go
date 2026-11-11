@@ -448,7 +448,7 @@ func (r *RawClient) Delete(
 	ctx context.Context,
 	request *sequenzygo.DeleteSequencesRequest,
 	opts ...option.RequestOption,
-) (*core.Response[*sequenzygo.SequenceActionResponse], error) {
+) (*core.Response[*sequenzygo.DeleteSequencesResponse], error) {
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
@@ -463,7 +463,7 @@ func (r *RawClient) Delete(
 		r.options.ToHeader(),
 		options.ToHeader(),
 	)
-	var response *sequenzygo.SequenceActionResponse
+	var response *sequenzygo.DeleteSequencesResponse
 	raw, err := r.caller.Call(
 		ctx,
 		&internal.CallParams{
@@ -482,7 +482,7 @@ func (r *RawClient) Delete(
 	if err != nil {
 		return nil, err
 	}
-	return &core.Response[*sequenzygo.SequenceActionResponse]{
+	return &core.Response[*sequenzygo.DeleteSequencesResponse]{
 		StatusCode: raw.StatusCode,
 		Header:     raw.Header,
 		Body:       response,

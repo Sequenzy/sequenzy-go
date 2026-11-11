@@ -10760,6 +10760,38 @@ func (s *SequencePausedEnrollmentCountsByCurrentNodeItem) String() string {
 	return fmt.Sprintf("%#v", s)
 }
 
+// Present with `missing_scope`. One message that names the missing scope.
+type SequenceTriggerWarnings = []string
+
+// `true` when sequence triggers were allowed to run for this request. It does not mean a sequence started: no trigger may match, and a duplicate event or a tag the contact already had does not enroll anyone again. `false` when no sequence could start from this request; `sequenceTriggersSkippedReason` says why.
+type SequenceTriggersRan = bool
+
+// Present when `sequenceTriggersRan` is `false`. `missing_scope`: the API key lacks `automations:trigger`, so the write was applied but no sequence started and no waiting step resumed. `not_requested`: `enrollInSequences` was `false`. `historical`: the write was recorded as history (an `occurredAt` or `createdAt` more than an hour old).
+type SequenceTriggersSkippedReason string
+
+const (
+	SequenceTriggersSkippedReasonMissingScope SequenceTriggersSkippedReason = "missing_scope"
+	SequenceTriggersSkippedReasonNotRequested SequenceTriggersSkippedReason = "not_requested"
+	SequenceTriggersSkippedReasonHistorical   SequenceTriggersSkippedReason = "historical"
+)
+
+func NewSequenceTriggersSkippedReasonFromString(s string) (SequenceTriggersSkippedReason, error) {
+	switch s {
+	case "missing_scope":
+		return SequenceTriggersSkippedReasonMissingScope, nil
+	case "not_requested":
+		return SequenceTriggersSkippedReasonNotRequested, nil
+	case "historical":
+		return SequenceTriggersSkippedReasonHistorical, nil
+	}
+	var t SequenceTriggersSkippedReason
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SequenceTriggersSkippedReason) Ptr() *SequenceTriggersSkippedReason {
+	return &s
+}
+
 var (
 	serviceUnavailableErrorBodyFieldError     = big.NewInt(1 << 0)
 	serviceUnavailableErrorBodyFieldImportID  = big.NewInt(1 << 1)
