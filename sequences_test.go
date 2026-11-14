@@ -921,6 +921,14 @@ func TestSettersSequenceCreateRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetSendToNotSubscribed", func(t *testing.T) {
+		obj := &SequenceCreateRequest{}
+		var fernTestValueSendToNotSubscribed *bool
+		obj.SetSendToNotSubscribed(fernTestValueSendToNotSubscribed)
+		assert.Equal(t, fernTestValueSendToNotSubscribed, obj.SendToNotSubscribed)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetSteps", func(t *testing.T) {
 		obj := &SequenceCreateRequest{}
 		var fernTestValueSteps []*SequenceStepInput
@@ -1957,6 +1965,37 @@ func TestSettersMarkExplicitSequenceCreateRequest(t *testing.T) {
 
 		// Act
 		obj.SetSendingWindow(fernTestValueSendingWindow)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSendToNotSubscribed_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceCreateRequest{}
+		var fernTestValueSendToNotSubscribed *bool
+
+		// Act
+		obj.SetSendToNotSubscribed(fernTestValueSendToNotSubscribed)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -21186,6 +21225,14 @@ func TestSettersSequenceCreateResponseSequence(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetSendToNotSubscribed", func(t *testing.T) {
+		obj := &SequenceCreateResponseSequence{}
+		var fernTestValueSendToNotSubscribed *bool
+		obj.SetSendToNotSubscribed(fernTestValueSendToNotSubscribed)
+		assert.Equal(t, fernTestValueSendToNotSubscribed, obj.SendToNotSubscribed)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetStatus", func(t *testing.T) {
 		obj := &SequenceCreateResponseSequence{}
 		var fernTestValueStatus *SequenceStatus
@@ -21714,6 +21761,39 @@ func TestGettersSequenceCreateResponseSequence(t *testing.T) {
 			}
 		}()
 		_ = obj.GetSendingWindow() // Should return zero value
+	})
+
+	t.Run("GetSendToNotSubscribed", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceCreateResponseSequence{}
+		var expected *bool
+		obj.SendToNotSubscribed = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSendToNotSubscribed(), "getter should return the property value")
+	})
+
+	t.Run("GetSendToNotSubscribed_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceCreateResponseSequence{}
+		obj.SendToNotSubscribed = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSendToNotSubscribed(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSendToNotSubscribed_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequenceCreateResponseSequence
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSendToNotSubscribed() // Should return zero value
 	})
 
 	t.Run("GetStatus", func(t *testing.T) {
@@ -22293,6 +22373,37 @@ func TestSettersMarkExplicitSequenceCreateResponseSequence(t *testing.T) {
 
 		// Act
 		obj.SetSendingWindow(fernTestValueSendingWindow)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSendToNotSubscribed_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceCreateResponseSequence{}
+		var fernTestValueSendToNotSubscribed *bool
+
+		// Act
+		obj.SetSendToNotSubscribed(fernTestValueSendToNotSubscribed)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -26113,6 +26224,14 @@ func TestSettersSequenceDefinitionSettings(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetSendToNotSubscribed", func(t *testing.T) {
+		obj := &SequenceDefinitionSettings{}
+		var fernTestValueSendToNotSubscribed *bool
+		obj.SetSendToNotSubscribed(fernTestValueSendToNotSubscribed)
+		assert.Equal(t, fernTestValueSendToNotSubscribed, obj.SendToNotSubscribed)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetStopCondition", func(t *testing.T) {
 		obj := &SequenceDefinitionSettings{}
 		var fernTestValueStopCondition *SequenceDefinitionSettingsStopCondition
@@ -26394,6 +26513,39 @@ func TestGettersSequenceDefinitionSettings(t *testing.T) {
 			}
 		}()
 		_ = obj.GetSendingWindow() // Should return zero value
+	})
+
+	t.Run("GetSendToNotSubscribed", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceDefinitionSettings{}
+		var expected *bool
+		obj.SendToNotSubscribed = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSendToNotSubscribed(), "getter should return the property value")
+	})
+
+	t.Run("GetSendToNotSubscribed_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceDefinitionSettings{}
+		obj.SendToNotSubscribed = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSendToNotSubscribed(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSendToNotSubscribed_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequenceDefinitionSettings
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSendToNotSubscribed() // Should return zero value
 	})
 
 	t.Run("GetStopCondition", func(t *testing.T) {
@@ -26690,6 +26842,37 @@ func TestSettersMarkExplicitSequenceDefinitionSettings(t *testing.T) {
 
 		// Act
 		obj.SetSendingWindow(fernTestValueSendingWindow)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSendToNotSubscribed_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceDefinitionSettings{}
+		var fernTestValueSendToNotSubscribed *bool
+
+		// Act
+		obj.SetSendToNotSubscribed(fernTestValueSendToNotSubscribed)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -31164,6 +31347,14 @@ func TestSettersSequenceDetails(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetSendToNotSubscribed", func(t *testing.T) {
+		obj := &SequenceDetails{}
+		var fernTestValueSendToNotSubscribed *bool
+		obj.SetSendToNotSubscribed(fernTestValueSendToNotSubscribed)
+		assert.Equal(t, fernTestValueSendToNotSubscribed, obj.SendToNotSubscribed)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetStatus", func(t *testing.T) {
 		obj := &SequenceDetails{}
 		var fernTestValueStatus *SequenceStatus
@@ -32316,6 +32507,39 @@ func TestGettersSequenceDetails(t *testing.T) {
 			}
 		}()
 		_ = obj.GetSendingWindow() // Should return zero value
+	})
+
+	t.Run("GetSendToNotSubscribed", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceDetails{}
+		var expected *bool
+		obj.SendToNotSubscribed = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSendToNotSubscribed(), "getter should return the property value")
+	})
+
+	t.Run("GetSendToNotSubscribed_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceDetails{}
+		obj.SendToNotSubscribed = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSendToNotSubscribed(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSendToNotSubscribed_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequenceDetails
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSendToNotSubscribed() // Should return zero value
 	})
 
 	t.Run("GetStatus", func(t *testing.T) {
@@ -33787,6 +34011,37 @@ func TestSettersMarkExplicitSequenceDetails(t *testing.T) {
 
 		// Act
 		obj.SetSendingWindow(fernTestValueSendingWindow)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSendToNotSubscribed_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceDetails{}
+		var fernTestValueSendToNotSubscribed *bool
+
+		// Act
+		obj.SetSendToNotSubscribed(fernTestValueSendToNotSubscribed)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -60557,6 +60812,14 @@ func TestSettersSequenceListItem(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetSendToNotSubscribed", func(t *testing.T) {
+		obj := &SequenceListItem{}
+		var fernTestValueSendToNotSubscribed *bool
+		obj.SetSendToNotSubscribed(fernTestValueSendToNotSubscribed)
+		assert.Equal(t, fernTestValueSendToNotSubscribed, obj.SendToNotSubscribed)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetStatus", func(t *testing.T) {
 		obj := &SequenceListItem{}
 		var fernTestValueStatus *SequenceStatus
@@ -61629,6 +61892,39 @@ func TestGettersSequenceListItem(t *testing.T) {
 			}
 		}()
 		_ = obj.GetSendingWindow() // Should return zero value
+	})
+
+	t.Run("GetSendToNotSubscribed", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceListItem{}
+		var expected *bool
+		obj.SendToNotSubscribed = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSendToNotSubscribed(), "getter should return the property value")
+	})
+
+	t.Run("GetSendToNotSubscribed_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceListItem{}
+		obj.SendToNotSubscribed = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSendToNotSubscribed(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSendToNotSubscribed_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequenceListItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSendToNotSubscribed() // Should return zero value
 	})
 
 	t.Run("GetStatus", func(t *testing.T) {
@@ -62770,6 +63066,37 @@ func TestSettersMarkExplicitSequenceListItem(t *testing.T) {
 
 		// Act
 		obj.SetSendingWindow(fernTestValueSendingWindow)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSendToNotSubscribed_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceListItem{}
+		var fernTestValueSendToNotSubscribed *bool
+
+		// Act
+		obj.SetSendToNotSubscribed(fernTestValueSendToNotSubscribed)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -74636,6 +74963,14 @@ func TestSettersSequenceSummary(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetSendToNotSubscribed", func(t *testing.T) {
+		obj := &SequenceSummary{}
+		var fernTestValueSendToNotSubscribed *bool
+		obj.SetSendToNotSubscribed(fernTestValueSendToNotSubscribed)
+		assert.Equal(t, fernTestValueSendToNotSubscribed, obj.SendToNotSubscribed)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetStatus", func(t *testing.T) {
 		obj := &SequenceSummary{}
 		var fernTestValueStatus *SequenceStatus
@@ -75700,6 +76035,39 @@ func TestGettersSequenceSummary(t *testing.T) {
 			}
 		}()
 		_ = obj.GetSendingWindow() // Should return zero value
+	})
+
+	t.Run("GetSendToNotSubscribed", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceSummary{}
+		var expected *bool
+		obj.SendToNotSubscribed = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSendToNotSubscribed(), "getter should return the property value")
+	})
+
+	t.Run("GetSendToNotSubscribed_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceSummary{}
+		obj.SendToNotSubscribed = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSendToNotSubscribed(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSendToNotSubscribed_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequenceSummary
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSendToNotSubscribed() // Should return zero value
 	})
 
 	t.Run("GetStatus", func(t *testing.T) {
@@ -76808,6 +77176,37 @@ func TestSettersMarkExplicitSequenceSummary(t *testing.T) {
 
 		// Act
 		obj.SetSendingWindow(fernTestValueSendingWindow)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSendToNotSubscribed_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceSummary{}
+		var fernTestValueSendToNotSubscribed *bool
+
+		// Act
+		obj.SetSendToNotSubscribed(fernTestValueSendToNotSubscribed)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -101546,6 +101945,14 @@ func TestSettersUpdateSequencesResponseSequence(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetSendToNotSubscribed", func(t *testing.T) {
+		obj := &UpdateSequencesResponseSequence{}
+		var fernTestValueSendToNotSubscribed *bool
+		obj.SetSendToNotSubscribed(fernTestValueSendToNotSubscribed)
+		assert.Equal(t, fernTestValueSendToNotSubscribed, obj.SendToNotSubscribed)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetStatus", func(t *testing.T) {
 		obj := &UpdateSequencesResponseSequence{}
 		var fernTestValueStatus *SequenceStatus
@@ -102247,6 +102654,39 @@ func TestGettersUpdateSequencesResponseSequence(t *testing.T) {
 			}
 		}()
 		_ = obj.GetSendingWindow() // Should return zero value
+	})
+
+	t.Run("GetSendToNotSubscribed", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateSequencesResponseSequence{}
+		var expected *bool
+		obj.SendToNotSubscribed = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSendToNotSubscribed(), "getter should return the property value")
+	})
+
+	t.Run("GetSendToNotSubscribed_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateSequencesResponseSequence{}
+		obj.SendToNotSubscribed = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSendToNotSubscribed(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSendToNotSubscribed_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateSequencesResponseSequence
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSendToNotSubscribed() // Should return zero value
 	})
 
 	t.Run("GetStatus", func(t *testing.T) {
@@ -103014,6 +103454,37 @@ func TestSettersMarkExplicitUpdateSequencesResponseSequence(t *testing.T) {
 
 		// Act
 		obj.SetSendingWindow(fernTestValueSendingWindow)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSendToNotSubscribed_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateSequencesResponseSequence{}
+		var fernTestValueSendToNotSubscribed *bool
+
+		// Act
+		obj.SetSendToNotSubscribed(fernTestValueSendToNotSubscribed)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -104282,6 +104753,14 @@ func TestSettersSequenceUpdateRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetSendToNotSubscribed", func(t *testing.T) {
+		obj := &SequenceUpdateRequest{}
+		var fernTestValueSendToNotSubscribed *bool
+		obj.SetSendToNotSubscribed(fernTestValueSendToNotSubscribed)
+		assert.Equal(t, fernTestValueSendToNotSubscribed, obj.SendToNotSubscribed)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetSmsSteps", func(t *testing.T) {
 		obj := &SequenceUpdateRequest{}
 		var fernTestValueSmsSteps []*SequenceSmsStepUpdateInput
@@ -105520,6 +105999,37 @@ func TestSettersMarkExplicitSequenceUpdateRequest(t *testing.T) {
 
 		// Act
 		obj.SetSendingWindow(fernTestValueSendingWindow)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSendToNotSubscribed_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceUpdateRequest{}
+		var fernTestValueSendToNotSubscribed *bool
+
+		// Act
+		obj.SetSendToNotSubscribed(fernTestValueSendToNotSubscribed)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)

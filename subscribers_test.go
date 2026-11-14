@@ -30053,6 +30053,13 @@ func TestEnumCreateSubscribersRequestStatus(t *testing.T) {
 		assert.Equal(t, CreateSubscribersRequestStatus("active"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_not_subscribed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateSubscribersRequestStatusFromString("not_subscribed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateSubscribersRequestStatus("not_subscribed"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_unsubscribed", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewCreateSubscribersRequestStatusFromString("unsubscribed")
@@ -30269,6 +30276,13 @@ func TestEnumListSubscribersRequestStatus(t *testing.T) {
 		assert.Equal(t, ListSubscribersRequestStatus("active"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_not_subscribed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListSubscribersRequestStatusFromString("not_subscribed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListSubscribersRequestStatus("not_subscribed"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_unsubscribed", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewListSubscribersRequestStatusFromString("unsubscribed")
@@ -30404,6 +30418,13 @@ func TestEnumSubscriberImportRecordStatus(t *testing.T) {
 		val, err := NewSubscriberImportRecordStatusFromString("active")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, SubscriberImportRecordStatus("active"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_not_subscribed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSubscriberImportRecordStatusFromString("not_subscribed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SubscriberImportRecordStatus("not_subscribed"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_unsubscribed", func(t *testing.T) {
@@ -30637,6 +30658,13 @@ func TestEnumSubscriberStatus(t *testing.T) {
 		assert.Equal(t, SubscriberStatus("active"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_not_subscribed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSubscriberStatusFromString("not_subscribed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SubscriberStatus("not_subscribed"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_unsubscribed", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewSubscriberStatusFromString("unsubscribed")
@@ -30700,6 +30728,13 @@ func TestEnumUpdateByExternalIDPathSubscribersRequestStatus(t *testing.T) {
 		val, err := NewUpdateByExternalIDPathSubscribersRequestStatusFromString("active")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, UpdateByExternalIDPathSubscribersRequestStatus("active"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_not_subscribed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateByExternalIDPathSubscribersRequestStatusFromString("not_subscribed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateByExternalIDPathSubscribersRequestStatus("not_subscribed"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_unsubscribed", func(t *testing.T) {
@@ -30774,6 +30809,13 @@ func TestEnumUpdateByExternalIDSubscribersRequestStatus(t *testing.T) {
 		assert.Equal(t, UpdateByExternalIDSubscribersRequestStatus("active"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_not_subscribed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateByExternalIDSubscribersRequestStatusFromString("not_subscribed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateByExternalIDSubscribersRequestStatus("not_subscribed"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_unsubscribed", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewUpdateByExternalIDSubscribersRequestStatusFromString("unsubscribed")
@@ -30844,6 +30886,13 @@ func TestEnumUpdateSubscribersRequestStatus(t *testing.T) {
 		val, err := NewUpdateSubscribersRequestStatusFromString("active")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, UpdateSubscribersRequestStatus("active"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_not_subscribed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateSubscribersRequestStatusFromString("not_subscribed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateSubscribersRequestStatus("not_subscribed"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_unsubscribed", func(t *testing.T) {

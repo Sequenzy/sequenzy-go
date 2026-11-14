@@ -335,18 +335,19 @@ var (
 	sequenceCreateRequestFieldSegmentID             = big.NewInt(1 << 29)
 	sequenceCreateRequestFieldSenderProfileID       = big.NewInt(1 << 30)
 	sequenceCreateRequestFieldSendingWindow         = big.NewInt(1 << 31)
-	sequenceCreateRequestFieldSteps                 = big.NewInt(1 << 32)
-	sequenceCreateRequestFieldStopCondition         = big.NewInt(1 << 33)
-	sequenceCreateRequestFieldStopOnSegmentExit     = big.NewInt(1 << 34)
-	sequenceCreateRequestFieldTagName               = big.NewInt(1 << 35)
-	sequenceCreateRequestFieldTagNames              = big.NewInt(1 << 36)
-	sequenceCreateRequestFieldTimeWindowDays        = big.NewInt(1 << 37)
-	sequenceCreateRequestFieldTrigger               = big.NewInt(1 << 38)
-	sequenceCreateRequestFieldUserCancellable       = big.NewInt(1 << 39)
+	sequenceCreateRequestFieldSendToNotSubscribed   = big.NewInt(1 << 32)
+	sequenceCreateRequestFieldSteps                 = big.NewInt(1 << 33)
+	sequenceCreateRequestFieldStopCondition         = big.NewInt(1 << 34)
+	sequenceCreateRequestFieldStopOnSegmentExit     = big.NewInt(1 << 35)
+	sequenceCreateRequestFieldTagName               = big.NewInt(1 << 36)
+	sequenceCreateRequestFieldTagNames              = big.NewInt(1 << 37)
+	sequenceCreateRequestFieldTimeWindowDays        = big.NewInt(1 << 38)
+	sequenceCreateRequestFieldTrigger               = big.NewInt(1 << 39)
+	sequenceCreateRequestFieldUserCancellable       = big.NewInt(1 << 40)
 )
 
 type SequenceCreateRequest struct {
-	// Only enroll contacts whose status is `active`. Defaults to `false`: unsubscribed and bounced contacts still enter on tag, event, list and contact triggers so non-marketing steps run for them, and their marketing emails are skipped at send time. Pending double opt-in contacts still wait for confirmation.
+	// Only enroll contacts whose status is `active`. Defaults to `false`: unsubscribed, bounced and not subscribed contacts still enter on tag, event, list and contact triggers so non-marketing steps run for them. Marketing emails are skipped at send time for unsubscribed and bounced contacts, and for not subscribed contacts unless `sendToNotSubscribed` is on. When `true`, none of them enter, including not subscribed contacts when `sendToNotSubscribed` is on. Pending double opt-in contacts still wait for confirmation.
 	ActiveSubscribersOnly *bool `json:"activeSubscribersOnly,omitempty" url:"-"`
 	// Addresses blind-copied on every sequence email.
 	BccEmails []string `json:"bccEmails,omitempty" url:"-"`
@@ -407,6 +408,8 @@ type SequenceCreateRequest struct {
 	// Existing sender profile ID. It already supplies both the From address and display name, so send it on its own and omit fromEmail and fromName. To keep this profile under a different display name, set fromName on the email steps instead, where it is a per-step override.
 	SenderProfileID *string                `json:"senderProfileId,omitempty" url:"-"`
 	SendingWindow   *SequenceSendingWindow `json:"sendingWindow,omitempty" url:"-"`
+	// Whether marketing emails in this sequence also go to contacts whose status is `not_subscribed` (never opted in, never opted out). Omit it or pass `null` to use the default for the trigger: `true` when the sequence starts on the `ecommerce.checkout_started` event, `false` otherwise. Unsubscribed and bounced contacts never receive marketing email. With `activeSubscribersOnly: true`, not subscribed contacts do not enter the sequence at all.
+	SendToNotSubscribed *bool `json:"sendToNotSubscribed,omitempty" url:"-"`
 	// Explicit email and action steps. Provide either steps or goal, or omit both for a blank dashboard-compatible draft.
 	Steps         []*SequenceStepInput   `json:"steps,omitempty" url:"-"`
 	StopCondition *SequenceStopCondition `json:"stopCondition,omitempty" url:"-"`
@@ -656,6 +659,13 @@ func (s *SequenceCreateRequest) SetSenderProfileID(senderProfileID *string) {
 func (s *SequenceCreateRequest) SetSendingWindow(sendingWindow *SequenceSendingWindow) {
 	s.SendingWindow = sendingWindow
 	s.require(sequenceCreateRequestFieldSendingWindow)
+}
+
+// SetSendToNotSubscribed sets the SendToNotSubscribed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceCreateRequest) SetSendToNotSubscribed(sendToNotSubscribed *bool) {
+	s.SendToNotSubscribed = sendToNotSubscribed
+	s.require(sequenceCreateRequestFieldSendToNotSubscribed)
 }
 
 // SetSteps sets the Steps field and marks it as non-optional;
@@ -7924,16 +7934,17 @@ var (
 	sequenceCreateResponseSequenceFieldNodeCount                    = big.NewInt(1 << 12)
 	sequenceCreateResponseSequenceFieldProcessesExistingEnrollments = big.NewInt(1 << 13)
 	sequenceCreateResponseSequenceFieldSendingWindow                = big.NewInt(1 << 14)
-	sequenceCreateResponseSequenceFieldStatus                       = big.NewInt(1 << 15)
-	sequenceCreateResponseSequenceFieldStopCondition                = big.NewInt(1 << 16)
-	sequenceCreateResponseSequenceFieldSubscriberUpdateCount        = big.NewInt(1 << 17)
-	sequenceCreateResponseSequenceFieldTrigger                      = big.NewInt(1 << 18)
+	sequenceCreateResponseSequenceFieldSendToNotSubscribed          = big.NewInt(1 << 15)
+	sequenceCreateResponseSequenceFieldStatus                       = big.NewInt(1 << 16)
+	sequenceCreateResponseSequenceFieldStopCondition                = big.NewInt(1 << 17)
+	sequenceCreateResponseSequenceFieldSubscriberUpdateCount        = big.NewInt(1 << 18)
+	sequenceCreateResponseSequenceFieldTrigger                      = big.NewInt(1 << 19)
 )
 
 type SequenceCreateResponseSequence struct {
 	// Whether new subscribers can enter the sequence right now.
 	AcceptsNewEnrollments *bool `json:"acceptsNewEnrollments,omitempty" url:"acceptsNewEnrollments,omitempty"`
-	// Whether only active contacts can enter. When `false`, unsubscribed and bounced contacts still enter and only their marketing emails are skipped.
+	// Whether only active contacts can enter. When `false`, unsubscribed, bounced and not subscribed contacts still enter. Marketing emails are skipped for unsubscribed and bounced contacts, and for not subscribed contacts unless `sendToNotSubscribed` is `true`.
 	ActiveSubscribersOnly *bool                    `json:"activeSubscribersOnly,omitempty" url:"activeSubscribersOnly,omitempty"`
 	DiscountCount         *float64                 `json:"discountCount,omitempty" url:"discountCount,omitempty"`
 	EffectiveStatus       *SequenceEffectiveStatus `json:"effectiveStatus,omitempty" url:"effectiveStatus,omitempty"`
@@ -7952,10 +7963,12 @@ type SequenceCreateResponseSequence struct {
 	// Whether subscribers already inside the sequence keep advancing and receiving steps.
 	ProcessesExistingEnrollments *bool                  `json:"processesExistingEnrollments,omitempty" url:"processesExistingEnrollments,omitempty"`
 	SendingWindow                *SequenceSendingWindow `json:"sendingWindow,omitempty" url:"sendingWindow,omitempty"`
-	Status                       *SequenceStatus        `json:"status,omitempty" url:"status,omitempty"`
-	StopCondition                *SequenceStopCondition `json:"stopCondition,omitempty" url:"stopCondition,omitempty"`
-	SubscriberUpdateCount        *float64               `json:"subscriberUpdateCount,omitempty" url:"subscriberUpdateCount,omitempty"`
-	Trigger                      *string                `json:"trigger,omitempty" url:"trigger,omitempty"`
+	// Whether marketing emails in this sequence also go to contacts whose status is `not_subscribed`. This is the value in effect, after the trigger default is applied.
+	SendToNotSubscribed   *bool                  `json:"sendToNotSubscribed,omitempty" url:"sendToNotSubscribed,omitempty"`
+	Status                *SequenceStatus        `json:"status,omitempty" url:"status,omitempty"`
+	StopCondition         *SequenceStopCondition `json:"stopCondition,omitempty" url:"stopCondition,omitempty"`
+	SubscriberUpdateCount *float64               `json:"subscriberUpdateCount,omitempty" url:"subscriberUpdateCount,omitempty"`
+	Trigger               *string                `json:"trigger,omitempty" url:"trigger,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -8067,6 +8080,13 @@ func (s *SequenceCreateResponseSequence) GetSendingWindow() *SequenceSendingWind
 		return nil
 	}
 	return s.SendingWindow
+}
+
+func (s *SequenceCreateResponseSequence) GetSendToNotSubscribed() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.SendToNotSubscribed
 }
 
 func (s *SequenceCreateResponseSequence) GetStatus() *SequenceStatus {
@@ -8214,6 +8234,13 @@ func (s *SequenceCreateResponseSequence) SetProcessesExistingEnrollments(process
 func (s *SequenceCreateResponseSequence) SetSendingWindow(sendingWindow *SequenceSendingWindow) {
 	s.SendingWindow = sendingWindow
 	s.require(sequenceCreateResponseSequenceFieldSendingWindow)
+}
+
+// SetSendToNotSubscribed sets the SendToNotSubscribed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceCreateResponseSequence) SetSendToNotSubscribed(sendToNotSubscribed *bool) {
+	s.SendToNotSubscribed = sendToNotSubscribed
+	s.require(sequenceCreateResponseSequenceFieldSendToNotSubscribed)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
@@ -9958,8 +9985,9 @@ var (
 	sequenceDefinitionSettingsFieldReplyProfileID        = big.NewInt(1 << 5)
 	sequenceDefinitionSettingsFieldSenderProfileID       = big.NewInt(1 << 6)
 	sequenceDefinitionSettingsFieldSendingWindow         = big.NewInt(1 << 7)
-	sequenceDefinitionSettingsFieldStopCondition         = big.NewInt(1 << 8)
-	sequenceDefinitionSettingsFieldUserCancellable       = big.NewInt(1 << 9)
+	sequenceDefinitionSettingsFieldSendToNotSubscribed   = big.NewInt(1 << 8)
+	sequenceDefinitionSettingsFieldStopCondition         = big.NewInt(1 << 9)
+	sequenceDefinitionSettingsFieldUserCancellable       = big.NewInt(1 << 10)
 )
 
 type SequenceDefinitionSettings struct {
@@ -9971,10 +9999,12 @@ type SequenceDefinitionSettings struct {
 	// Must be a Reply-To profile in this company.
 	ReplyProfileID *string `json:"replyProfileId,omitempty" url:"replyProfileId,omitempty"`
 	// Must be a sender profile in this company.
-	SenderProfileID *string                                  `json:"senderProfileId,omitempty" url:"senderProfileId,omitempty"`
-	SendingWindow   map[string]any                           `json:"sendingWindow,omitempty" url:"sendingWindow,omitempty"`
-	StopCondition   *SequenceDefinitionSettingsStopCondition `json:"stopCondition,omitempty" url:"stopCondition,omitempty"`
-	UserCancellable *bool                                    `json:"userCancellable,omitempty" url:"userCancellable,omitempty"`
+	SenderProfileID *string        `json:"senderProfileId,omitempty" url:"senderProfileId,omitempty"`
+	SendingWindow   map[string]any `json:"sendingWindow,omitempty" url:"sendingWindow,omitempty"`
+	// Whether marketing emails also go to contacts whose status is `not_subscribed`. `null` uses the default for the trigger (`true` for `ecommerce.checkout_started`, `false` otherwise). Omit it to keep the stored value.
+	SendToNotSubscribed *bool                                    `json:"sendToNotSubscribed,omitempty" url:"sendToNotSubscribed,omitempty"`
+	StopCondition       *SequenceDefinitionSettingsStopCondition `json:"stopCondition,omitempty" url:"stopCondition,omitempty"`
+	UserCancellable     *bool                                    `json:"userCancellable,omitempty" url:"userCancellable,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -10037,6 +10067,13 @@ func (s *SequenceDefinitionSettings) GetSendingWindow() map[string]any {
 		return nil
 	}
 	return s.SendingWindow
+}
+
+func (s *SequenceDefinitionSettings) GetSendToNotSubscribed() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.SendToNotSubscribed
 }
 
 func (s *SequenceDefinitionSettings) GetStopCondition() *SequenceDefinitionSettingsStopCondition {
@@ -10121,6 +10158,13 @@ func (s *SequenceDefinitionSettings) SetSenderProfileID(senderProfileID *string)
 func (s *SequenceDefinitionSettings) SetSendingWindow(sendingWindow map[string]any) {
 	s.SendingWindow = sendingWindow
 	s.require(sequenceDefinitionSettingsFieldSendingWindow)
+}
+
+// SetSendToNotSubscribed sets the SendToNotSubscribed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDefinitionSettings) SetSendToNotSubscribed(sendToNotSubscribed *bool) {
+	s.SendToNotSubscribed = sendToNotSubscribed
+	s.require(sequenceDefinitionSettingsFieldSendToNotSubscribed)
 }
 
 // SetStopCondition sets the StopCondition field and marks it as non-optional;
@@ -11843,28 +11887,29 @@ var (
 	sequenceDetailsFieldReplyToName                  = big.NewInt(1 << 28)
 	sequenceDetailsFieldSenderProfileID              = big.NewInt(1 << 29)
 	sequenceDetailsFieldSendingWindow                = big.NewInt(1 << 30)
-	sequenceDetailsFieldStatus                       = big.NewInt(1 << 31)
-	sequenceDetailsFieldTrigger                      = big.NewInt(1 << 32)
-	sequenceDetailsFieldTriggerConfig                = big.NewInt(1 << 33)
-	sequenceDetailsFieldUpdatedAt                    = big.NewInt(1 << 34)
-	sequenceDetailsFieldUserCancellable              = big.NewInt(1 << 35)
-	sequenceDetailsFieldAbTestCount                  = big.NewInt(1 << 36)
-	sequenceDetailsFieldDiscountCount                = big.NewInt(1 << 37)
-	sequenceDetailsFieldEdges                        = big.NewInt(1 << 38)
-	sequenceDetailsFieldEmailCount                   = big.NewInt(1 << 39)
-	sequenceDetailsFieldEmails                       = big.NewInt(1 << 40)
-	sequenceDetailsFieldEnrichedCount                = big.NewInt(1 << 41)
-	sequenceDetailsFieldEnrichmentStatus             = big.NewInt(1 << 42)
-	sequenceDetailsFieldGraphRevision                = big.NewInt(1 << 43)
-	sequenceDetailsFieldNodes                        = big.NewInt(1 << 44)
-	sequenceDetailsFieldStopCondition                = big.NewInt(1 << 45)
-	sequenceDetailsFieldSubscriberUpdateCount        = big.NewInt(1 << 46)
+	sequenceDetailsFieldSendToNotSubscribed          = big.NewInt(1 << 31)
+	sequenceDetailsFieldStatus                       = big.NewInt(1 << 32)
+	sequenceDetailsFieldTrigger                      = big.NewInt(1 << 33)
+	sequenceDetailsFieldTriggerConfig                = big.NewInt(1 << 34)
+	sequenceDetailsFieldUpdatedAt                    = big.NewInt(1 << 35)
+	sequenceDetailsFieldUserCancellable              = big.NewInt(1 << 36)
+	sequenceDetailsFieldAbTestCount                  = big.NewInt(1 << 37)
+	sequenceDetailsFieldDiscountCount                = big.NewInt(1 << 38)
+	sequenceDetailsFieldEdges                        = big.NewInt(1 << 39)
+	sequenceDetailsFieldEmailCount                   = big.NewInt(1 << 40)
+	sequenceDetailsFieldEmails                       = big.NewInt(1 << 41)
+	sequenceDetailsFieldEnrichedCount                = big.NewInt(1 << 42)
+	sequenceDetailsFieldEnrichmentStatus             = big.NewInt(1 << 43)
+	sequenceDetailsFieldGraphRevision                = big.NewInt(1 << 44)
+	sequenceDetailsFieldNodes                        = big.NewInt(1 << 45)
+	sequenceDetailsFieldStopCondition                = big.NewInt(1 << 46)
+	sequenceDetailsFieldSubscriberUpdateCount        = big.NewInt(1 << 47)
 )
 
 type SequenceDetails struct {
 	// Whether new subscribers can enter the sequence right now.
 	AcceptsNewEnrollments *bool `json:"acceptsNewEnrollments,omitempty" url:"acceptsNewEnrollments,omitempty"`
-	// Whether only active contacts can enter. When `false`, unsubscribed and bounced contacts still enter and only their marketing emails are skipped.
+	// Whether only active contacts can enter. When `false`, unsubscribed, bounced and not subscribed contacts still enter. Marketing emails are skipped for unsubscribed and bounced contacts, and for not subscribed contacts unless `sendToNotSubscribed` is `true`.
 	ActiveSubscribersOnly *bool                       `json:"activeSubscribersOnly,omitempty" url:"activeSubscribersOnly,omitempty"`
 	AudienceAutoEnroll    *SequenceAudienceAutoEnroll `json:"audienceAutoEnroll,omitempty" url:"audienceAutoEnroll,omitempty"`
 	// Email addresses blind-copied on every email this sequence sends.
@@ -11903,11 +11948,13 @@ type SequenceDetails struct {
 	ReplyToName         *string                      `json:"replyToName,omitempty" url:"replyToName,omitempty"`
 	SenderProfileID     *string                      `json:"senderProfileId,omitempty" url:"senderProfileId,omitempty"`
 	SendingWindow       *SequenceSendingWindow       `json:"sendingWindow,omitempty" url:"sendingWindow,omitempty"`
-	Status              *SequenceStatus              `json:"status,omitempty" url:"status,omitempty"`
-	Trigger             *string                      `json:"trigger,omitempty" url:"trigger,omitempty"`
-	TriggerConfig       map[string]any               `json:"triggerConfig,omitempty" url:"triggerConfig,omitempty"`
-	UpdatedAt           *time.Time                   `json:"updatedAt,omitempty" url:"updatedAt,omitempty"`
-	UserCancellable     *bool                        `json:"userCancellable,omitempty" url:"userCancellable,omitempty"`
+	// Whether marketing emails in this sequence also go to contacts whose status is `not_subscribed`. This is the value in effect, after the trigger default is applied.
+	SendToNotSubscribed *bool           `json:"sendToNotSubscribed,omitempty" url:"sendToNotSubscribed,omitempty"`
+	Status              *SequenceStatus `json:"status,omitempty" url:"status,omitempty"`
+	Trigger             *string         `json:"trigger,omitempty" url:"trigger,omitempty"`
+	TriggerConfig       map[string]any  `json:"triggerConfig,omitempty" url:"triggerConfig,omitempty"`
+	UpdatedAt           *time.Time      `json:"updatedAt,omitempty" url:"updatedAt,omitempty"`
+	UserCancellable     *bool           `json:"userCancellable,omitempty" url:"userCancellable,omitempty"`
 	// How many of the email steps are A/B test steps.
 	AbTestCount   *float64 `json:"abTestCount,omitempty" url:"abTestCount,omitempty"`
 	DiscountCount *float64 `json:"discountCount,omitempty" url:"discountCount,omitempty"`
@@ -12146,6 +12193,13 @@ func (s *SequenceDetails) GetSendingWindow() *SequenceSendingWindow {
 		return nil
 	}
 	return s.SendingWindow
+}
+
+func (s *SequenceDetails) GetSendToNotSubscribed() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.SendToNotSubscribed
 }
 
 func (s *SequenceDetails) GetStatus() *SequenceStatus {
@@ -12489,6 +12543,13 @@ func (s *SequenceDetails) SetSenderProfileID(senderProfileID *string) {
 func (s *SequenceDetails) SetSendingWindow(sendingWindow *SequenceSendingWindow) {
 	s.SendingWindow = sendingWindow
 	s.require(sequenceDetailsFieldSendingWindow)
+}
+
+// SetSendToNotSubscribed sets the SendToNotSubscribed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceDetails) SetSendToNotSubscribed(sendToNotSubscribed *bool) {
+	s.SendToNotSubscribed = sendToNotSubscribed
+	s.require(sequenceDetailsFieldSendToNotSubscribed)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
@@ -22446,18 +22507,19 @@ var (
 	sequenceListItemFieldReplyToName                  = big.NewInt(1 << 28)
 	sequenceListItemFieldSenderProfileID              = big.NewInt(1 << 29)
 	sequenceListItemFieldSendingWindow                = big.NewInt(1 << 30)
-	sequenceListItemFieldStatus                       = big.NewInt(1 << 31)
-	sequenceListItemFieldTrigger                      = big.NewInt(1 << 32)
-	sequenceListItemFieldTriggerConfig                = big.NewInt(1 << 33)
-	sequenceListItemFieldUpdatedAt                    = big.NewInt(1 << 34)
-	sequenceListItemFieldUserCancellable              = big.NewInt(1 << 35)
-	sequenceListItemFieldEmailCount                   = big.NewInt(1 << 36)
+	sequenceListItemFieldSendToNotSubscribed          = big.NewInt(1 << 31)
+	sequenceListItemFieldStatus                       = big.NewInt(1 << 32)
+	sequenceListItemFieldTrigger                      = big.NewInt(1 << 33)
+	sequenceListItemFieldTriggerConfig                = big.NewInt(1 << 34)
+	sequenceListItemFieldUpdatedAt                    = big.NewInt(1 << 35)
+	sequenceListItemFieldUserCancellable              = big.NewInt(1 << 36)
+	sequenceListItemFieldEmailCount                   = big.NewInt(1 << 37)
 )
 
 type SequenceListItem struct {
 	// Whether new subscribers can enter the sequence right now.
 	AcceptsNewEnrollments *bool `json:"acceptsNewEnrollments,omitempty" url:"acceptsNewEnrollments,omitempty"`
-	// Whether only active contacts can enter. When `false`, unsubscribed and bounced contacts still enter and only their marketing emails are skipped.
+	// Whether only active contacts can enter. When `false`, unsubscribed, bounced and not subscribed contacts still enter. Marketing emails are skipped for unsubscribed and bounced contacts, and for not subscribed contacts unless `sendToNotSubscribed` is `true`.
 	ActiveSubscribersOnly *bool                       `json:"activeSubscribersOnly,omitempty" url:"activeSubscribersOnly,omitempty"`
 	AudienceAutoEnroll    *SequenceAudienceAutoEnroll `json:"audienceAutoEnroll,omitempty" url:"audienceAutoEnroll,omitempty"`
 	// Email addresses blind-copied on every email this sequence sends.
@@ -22496,11 +22558,13 @@ type SequenceListItem struct {
 	ReplyToName         *string                      `json:"replyToName,omitempty" url:"replyToName,omitempty"`
 	SenderProfileID     *string                      `json:"senderProfileId,omitempty" url:"senderProfileId,omitempty"`
 	SendingWindow       *SequenceSendingWindow       `json:"sendingWindow,omitempty" url:"sendingWindow,omitempty"`
-	Status              *SequenceStatus              `json:"status,omitempty" url:"status,omitempty"`
-	Trigger             *string                      `json:"trigger,omitempty" url:"trigger,omitempty"`
-	TriggerConfig       map[string]any               `json:"triggerConfig,omitempty" url:"triggerConfig,omitempty"`
-	UpdatedAt           *time.Time                   `json:"updatedAt,omitempty" url:"updatedAt,omitempty"`
-	UserCancellable     *bool                        `json:"userCancellable,omitempty" url:"userCancellable,omitempty"`
+	// Whether marketing emails in this sequence also go to contacts whose status is `not_subscribed`. This is the value in effect, after the trigger default is applied.
+	SendToNotSubscribed *bool           `json:"sendToNotSubscribed,omitempty" url:"sendToNotSubscribed,omitempty"`
+	Status              *SequenceStatus `json:"status,omitempty" url:"status,omitempty"`
+	Trigger             *string         `json:"trigger,omitempty" url:"trigger,omitempty"`
+	TriggerConfig       map[string]any  `json:"triggerConfig,omitempty" url:"triggerConfig,omitempty"`
+	UpdatedAt           *time.Time      `json:"updatedAt,omitempty" url:"updatedAt,omitempty"`
+	UserCancellable     *bool           `json:"userCancellable,omitempty" url:"userCancellable,omitempty"`
 	// Number of email-sending steps. An A/B test step counts once. Includes steps not yet connected to the flow, so a draft shows every email it has.
 	EmailCount *int `json:"emailCount,omitempty" url:"emailCount,omitempty"`
 
@@ -22726,6 +22790,13 @@ func (s *SequenceListItem) GetSendingWindow() *SequenceSendingWindow {
 		return nil
 	}
 	return s.SendingWindow
+}
+
+func (s *SequenceListItem) GetSendToNotSubscribed() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.SendToNotSubscribed
 }
 
 func (s *SequenceListItem) GetStatus() *SequenceStatus {
@@ -22999,6 +23070,13 @@ func (s *SequenceListItem) SetSenderProfileID(senderProfileID *string) {
 func (s *SequenceListItem) SetSendingWindow(sendingWindow *SequenceSendingWindow) {
 	s.SendingWindow = sendingWindow
 	s.require(sequenceListItemFieldSendingWindow)
+}
+
+// SetSendToNotSubscribed sets the SendToNotSubscribed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceListItem) SetSendToNotSubscribed(sendToNotSubscribed *bool) {
+	s.SendToNotSubscribed = sendToNotSubscribed
+	s.require(sequenceListItemFieldSendToNotSubscribed)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
@@ -28161,17 +28239,18 @@ var (
 	sequenceSummaryFieldReplyToName                  = big.NewInt(1 << 28)
 	sequenceSummaryFieldSenderProfileID              = big.NewInt(1 << 29)
 	sequenceSummaryFieldSendingWindow                = big.NewInt(1 << 30)
-	sequenceSummaryFieldStatus                       = big.NewInt(1 << 31)
-	sequenceSummaryFieldTrigger                      = big.NewInt(1 << 32)
-	sequenceSummaryFieldTriggerConfig                = big.NewInt(1 << 33)
-	sequenceSummaryFieldUpdatedAt                    = big.NewInt(1 << 34)
-	sequenceSummaryFieldUserCancellable              = big.NewInt(1 << 35)
+	sequenceSummaryFieldSendToNotSubscribed          = big.NewInt(1 << 31)
+	sequenceSummaryFieldStatus                       = big.NewInt(1 << 32)
+	sequenceSummaryFieldTrigger                      = big.NewInt(1 << 33)
+	sequenceSummaryFieldTriggerConfig                = big.NewInt(1 << 34)
+	sequenceSummaryFieldUpdatedAt                    = big.NewInt(1 << 35)
+	sequenceSummaryFieldUserCancellable              = big.NewInt(1 << 36)
 )
 
 type SequenceSummary struct {
 	// Whether new subscribers can enter the sequence right now.
 	AcceptsNewEnrollments *bool `json:"acceptsNewEnrollments,omitempty" url:"acceptsNewEnrollments,omitempty"`
-	// Whether only active contacts can enter. When `false`, unsubscribed and bounced contacts still enter and only their marketing emails are skipped.
+	// Whether only active contacts can enter. When `false`, unsubscribed, bounced and not subscribed contacts still enter. Marketing emails are skipped for unsubscribed and bounced contacts, and for not subscribed contacts unless `sendToNotSubscribed` is `true`.
 	ActiveSubscribersOnly *bool                       `json:"activeSubscribersOnly,omitempty" url:"activeSubscribersOnly,omitempty"`
 	AudienceAutoEnroll    *SequenceAudienceAutoEnroll `json:"audienceAutoEnroll,omitempty" url:"audienceAutoEnroll,omitempty"`
 	// Email addresses blind-copied on every email this sequence sends.
@@ -28210,11 +28289,13 @@ type SequenceSummary struct {
 	ReplyToName         *string                      `json:"replyToName,omitempty" url:"replyToName,omitempty"`
 	SenderProfileID     *string                      `json:"senderProfileId,omitempty" url:"senderProfileId,omitempty"`
 	SendingWindow       *SequenceSendingWindow       `json:"sendingWindow,omitempty" url:"sendingWindow,omitempty"`
-	Status              *SequenceStatus              `json:"status,omitempty" url:"status,omitempty"`
-	Trigger             *string                      `json:"trigger,omitempty" url:"trigger,omitempty"`
-	TriggerConfig       map[string]any               `json:"triggerConfig,omitempty" url:"triggerConfig,omitempty"`
-	UpdatedAt           *time.Time                   `json:"updatedAt,omitempty" url:"updatedAt,omitempty"`
-	UserCancellable     *bool                        `json:"userCancellable,omitempty" url:"userCancellable,omitempty"`
+	// Whether marketing emails in this sequence also go to contacts whose status is `not_subscribed`. This is the value in effect, after the trigger default is applied.
+	SendToNotSubscribed *bool           `json:"sendToNotSubscribed,omitempty" url:"sendToNotSubscribed,omitempty"`
+	Status              *SequenceStatus `json:"status,omitempty" url:"status,omitempty"`
+	Trigger             *string         `json:"trigger,omitempty" url:"trigger,omitempty"`
+	TriggerConfig       map[string]any  `json:"triggerConfig,omitempty" url:"triggerConfig,omitempty"`
+	UpdatedAt           *time.Time      `json:"updatedAt,omitempty" url:"updatedAt,omitempty"`
+	UserCancellable     *bool           `json:"userCancellable,omitempty" url:"userCancellable,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -28438,6 +28519,13 @@ func (s *SequenceSummary) GetSendingWindow() *SequenceSendingWindow {
 		return nil
 	}
 	return s.SendingWindow
+}
+
+func (s *SequenceSummary) GetSendToNotSubscribed() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.SendToNotSubscribed
 }
 
 func (s *SequenceSummary) GetStatus() *SequenceStatus {
@@ -28704,6 +28792,13 @@ func (s *SequenceSummary) SetSenderProfileID(senderProfileID *string) {
 func (s *SequenceSummary) SetSendingWindow(sendingWindow *SequenceSendingWindow) {
 	s.SendingWindow = sendingWindow
 	s.require(sequenceSummaryFieldSendingWindow)
+}
+
+// SetSendToNotSubscribed sets the SendToNotSubscribed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceSummary) SetSendToNotSubscribed(sendToNotSubscribed *bool) {
+	s.SendToNotSubscribed = sendToNotSubscribed
+	s.require(sequenceSummaryFieldSendToNotSubscribed)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
@@ -40517,11 +40612,12 @@ var (
 	updateSequencesResponseSequenceFieldName                       = big.NewInt(1 << 17)
 	updateSequencesResponseSequenceFieldReplacedEdgeCount          = big.NewInt(1 << 18)
 	updateSequencesResponseSequenceFieldSendingWindow              = big.NewInt(1 << 19)
-	updateSequencesResponseSequenceFieldStatus                     = big.NewInt(1 << 20)
-	updateSequencesResponseSequenceFieldStopCondition              = big.NewInt(1 << 21)
-	updateSequencesResponseSequenceFieldUpdatedEmailCount          = big.NewInt(1 << 22)
-	updateSequencesResponseSequenceFieldUpdatedSmsStepCount        = big.NewInt(1 << 23)
-	updateSequencesResponseSequenceFieldUpdatedSubscriberStepCount = big.NewInt(1 << 24)
+	updateSequencesResponseSequenceFieldSendToNotSubscribed        = big.NewInt(1 << 20)
+	updateSequencesResponseSequenceFieldStatus                     = big.NewInt(1 << 21)
+	updateSequencesResponseSequenceFieldStopCondition              = big.NewInt(1 << 22)
+	updateSequencesResponseSequenceFieldUpdatedEmailCount          = big.NewInt(1 << 23)
+	updateSequencesResponseSequenceFieldUpdatedSmsStepCount        = big.NewInt(1 << 24)
+	updateSequencesResponseSequenceFieldUpdatedSubscriberStepCount = big.NewInt(1 << 25)
 )
 
 type UpdateSequencesResponseSequence struct {
@@ -40553,8 +40649,10 @@ type UpdateSequencesResponseSequence struct {
 	MovedNodeID *string `json:"movedNodeId,omitempty" url:"movedNodeId,omitempty"`
 	Name        *string `json:"name,omitempty" url:"name,omitempty"`
 	// Number of edges in the committed graph after a structural graph edit.
-	ReplacedEdgeCount          *float64               `json:"replacedEdgeCount,omitempty" url:"replacedEdgeCount,omitempty"`
-	SendingWindow              *SequenceSendingWindow `json:"sendingWindow,omitempty" url:"sendingWindow,omitempty"`
+	ReplacedEdgeCount *float64               `json:"replacedEdgeCount,omitempty" url:"replacedEdgeCount,omitempty"`
+	SendingWindow     *SequenceSendingWindow `json:"sendingWindow,omitempty" url:"sendingWindow,omitempty"`
+	// Whether marketing emails in this sequence also go to contacts whose status is `not_subscribed`. This is the value in effect, after the trigger default is applied.
+	SendToNotSubscribed        *bool                  `json:"sendToNotSubscribed,omitempty" url:"sendToNotSubscribed,omitempty"`
 	Status                     *SequenceStatus        `json:"status,omitempty" url:"status,omitempty"`
 	StopCondition              *SequenceStopCondition `json:"stopCondition,omitempty" url:"stopCondition,omitempty"`
 	UpdatedEmailCount          *float64               `json:"updatedEmailCount,omitempty" url:"updatedEmailCount,omitempty"`
@@ -40706,6 +40804,13 @@ func (u *UpdateSequencesResponseSequence) GetSendingWindow() *SequenceSendingWin
 		return nil
 	}
 	return u.SendingWindow
+}
+
+func (u *UpdateSequencesResponseSequence) GetSendToNotSubscribed() *bool {
+	if u == nil {
+		return nil
+	}
+	return u.SendToNotSubscribed
 }
 
 func (u *UpdateSequencesResponseSequence) GetStatus() *SequenceStatus {
@@ -40895,6 +41000,13 @@ func (u *UpdateSequencesResponseSequence) SetReplacedEdgeCount(replacedEdgeCount
 func (u *UpdateSequencesResponseSequence) SetSendingWindow(sendingWindow *SequenceSendingWindow) {
 	u.SendingWindow = sendingWindow
 	u.require(updateSequencesResponseSequenceFieldSendingWindow)
+}
+
+// SetSendToNotSubscribed sets the SendToNotSubscribed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateSequencesResponseSequence) SetSendToNotSubscribed(sendToNotSubscribed *bool) {
+	u.SendToNotSubscribed = sendToNotSubscribed
+	u.require(updateSequencesResponseSequenceFieldSendToNotSubscribed)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
@@ -41412,22 +41524,23 @@ var (
 	sequenceUpdateRequestFieldSegmentID               = big.NewInt(1 << 35)
 	sequenceUpdateRequestFieldSenderProfileID         = big.NewInt(1 << 36)
 	sequenceUpdateRequestFieldSendingWindow           = big.NewInt(1 << 37)
-	sequenceUpdateRequestFieldSmsSteps                = big.NewInt(1 << 38)
-	sequenceUpdateRequestFieldSteps                   = big.NewInt(1 << 39)
-	sequenceUpdateRequestFieldStopCondition           = big.NewInt(1 << 40)
-	sequenceUpdateRequestFieldStopOnSegmentExit       = big.NewInt(1 << 41)
-	sequenceUpdateRequestFieldSubscriberUpdateSteps   = big.NewInt(1 << 42)
-	sequenceUpdateRequestFieldTagName                 = big.NewInt(1 << 43)
-	sequenceUpdateRequestFieldTagNames                = big.NewInt(1 << 44)
-	sequenceUpdateRequestFieldTimeWindowDays          = big.NewInt(1 << 45)
-	sequenceUpdateRequestFieldTrigger                 = big.NewInt(1 << 46)
-	sequenceUpdateRequestFieldUserCancellable         = big.NewInt(1 << 47)
+	sequenceUpdateRequestFieldSendToNotSubscribed     = big.NewInt(1 << 38)
+	sequenceUpdateRequestFieldSmsSteps                = big.NewInt(1 << 39)
+	sequenceUpdateRequestFieldSteps                   = big.NewInt(1 << 40)
+	sequenceUpdateRequestFieldStopCondition           = big.NewInt(1 << 41)
+	sequenceUpdateRequestFieldStopOnSegmentExit       = big.NewInt(1 << 42)
+	sequenceUpdateRequestFieldSubscriberUpdateSteps   = big.NewInt(1 << 43)
+	sequenceUpdateRequestFieldTagName                 = big.NewInt(1 << 44)
+	sequenceUpdateRequestFieldTagNames                = big.NewInt(1 << 45)
+	sequenceUpdateRequestFieldTimeWindowDays          = big.NewInt(1 << 46)
+	sequenceUpdateRequestFieldTrigger                 = big.NewInt(1 << 47)
+	sequenceUpdateRequestFieldUserCancellable         = big.NewInt(1 << 48)
 )
 
 type SequenceUpdateRequest struct {
 	// Sequence ID
 	SequenceID string `json:"-" url:"-"`
-	// Only enroll contacts whose status is `active`. Defaults to `false`: unsubscribed and bounced contacts still enter on tag, event, list and contact triggers so non-marketing steps run for them, and their marketing emails are skipped at send time. Pending double opt-in contacts still wait for confirmation.
+	// Only enroll contacts whose status is `active`. Defaults to `false`: unsubscribed, bounced and not subscribed contacts still enter on tag, event, list and contact triggers so non-marketing steps run for them. Marketing emails are skipped at send time for unsubscribed and bounced contacts, and for not subscribed contacts unless `sendToNotSubscribed` is on. When `true`, none of them enter, including not subscribed contacts when `sendToNotSubscribed` is on. Pending double opt-in contacts still wait for confirmation.
 	ActiveSubscribersOnly *bool `json:"activeSubscribersOnly,omitempty" url:"-"`
 	// Keep enrolling later joiners of an audience until the last key date. Null clears it. Changing the trigger away from manual switches it off (endedReason "disabled").
 	AudienceAutoEnroll *SequenceAudienceAutoEnroll `json:"audienceAutoEnroll,omitempty" url:"-"`
@@ -41492,6 +41605,8 @@ type SequenceUpdateRequest struct {
 	// Existing sender profile ID. It already supplies both the From address and display name, so send it on its own and omit fromEmail and fromName. To keep this profile under a different display name, set fromName on the email steps instead, where it is a per-step override.
 	SenderProfileID *string                `json:"senderProfileId,omitempty" url:"-"`
 	SendingWindow   *SequenceSendingWindow `json:"sendingWindow,omitempty" url:"-"`
+	// Whether marketing emails in this sequence also go to contacts whose status is `not_subscribed` (never opted in, never opted out). Omit it to keep the current choice. Pass `null` to go back to the default for the trigger: `true` when the sequence starts on the `ecommerce.checkout_started` event, `false` otherwise. Unsubscribed and bounced contacts never receive marketing email. With `activeSubscribersOnly: true`, not subscribed contacts do not enter the sequence at all.
+	SendToNotSubscribed *bool `json:"sendToNotSubscribed,omitempty" url:"-"`
 	// Content updates for existing SMS steps, targeted by action_sms nodeId. Content-only edits; use insertSteps to create new SMS steps.
 	SmsSteps []*SequenceSmsStepUpdateInput `json:"smsSteps,omitempty" url:"-"`
 	// Alias for emails. Use insertSteps to create new steps.
@@ -41786,6 +41901,13 @@ func (s *SequenceUpdateRequest) SetSenderProfileID(senderProfileID *string) {
 func (s *SequenceUpdateRequest) SetSendingWindow(sendingWindow *SequenceSendingWindow) {
 	s.SendingWindow = sendingWindow
 	s.require(sequenceUpdateRequestFieldSendingWindow)
+}
+
+// SetSendToNotSubscribed sets the SendToNotSubscribed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceUpdateRequest) SetSendToNotSubscribed(sendToNotSubscribed *bool) {
+	s.SendToNotSubscribed = sendToNotSubscribed
+	s.require(sequenceUpdateRequestFieldSendToNotSubscribed)
 }
 
 // SetSmsSteps sets the SmsSteps field and marks it as non-optional;

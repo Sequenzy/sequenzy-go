@@ -179,7 +179,7 @@ type CreateSubscribersRequest struct {
 	PhoneCountry *string `json:"phoneCountry,omitempty" url:"-"`
 	// SMS marketing consent. true sets smsStatus to subscribed with consent source api, false sets unsubscribed, omitted leaves SMS status unchanged. Never inferred from phone presence.
 	SmsConsent *bool `json:"smsConsent,omitempty" url:"-"`
-	// Initial subscriber status.
+	// Initial subscriber status. Use `not_subscribed` for a contact who never opted in to marketing email and never opted out.
 	Status *CreateSubscribersRequestStatus `json:"status,omitempty" url:"-"`
 	Tags   []string                        `json:"tags,omitempty" url:"-"`
 	// IANA timezone identifier (e.g. America/New_York) used for recipient-local campaign delivery. Invalid values fail with a 400 validation error; null clears the stored value.
@@ -1894,8 +1894,9 @@ type DetailedSubscriber struct {
 	PhoneCountry *string `json:"phoneCountry,omitempty" url:"phoneCountry,omitempty"`
 	// SMS marketing consent status, independent of the email status
 	SmsStatus *SubscriberSmsStatus `json:"smsStatus,omitempty" url:"smsStatus,omitempty"`
-	Status    *SubscriberStatus    `json:"status,omitempty" url:"status,omitempty"`
-	Tags      []string             `json:"tags,omitempty" url:"tags,omitempty"`
+	// Email status. `not_subscribed` means the contact never opted in to marketing email and never opted out, for example a shopper who started a checkout. Campaigns skip them, transactional email still reaches them, and a sequence sends them marketing email only when its `sendToNotSubscribed` setting is on.
+	Status *SubscriberStatus `json:"status,omitempty" url:"status,omitempty"`
+	Tags   []string          `json:"tags,omitempty" url:"tags,omitempty"`
 	// IANA timezone identifier used for recipient-local campaign delivery. Null when unknown.
 	Timezone *string `json:"timezone,omitempty" url:"timezone,omitempty"`
 	// When the contact opted out, derived from the list memberships the opt-out deactivated. Use this rather than `updatedAt` to date an opt-out - any later tag or attribute write moves `updatedAt`. Null unless the contact is currently unsubscribed, so leaving a single list does not set it, and null for contacts imported as already unsubscribed, where no date exists.
@@ -2316,8 +2317,9 @@ type Subscriber struct {
 	PhoneCountry *string `json:"phoneCountry,omitempty" url:"phoneCountry,omitempty"`
 	// SMS marketing consent status, independent of the email status
 	SmsStatus *SubscriberSmsStatus `json:"smsStatus,omitempty" url:"smsStatus,omitempty"`
-	Status    *SubscriberStatus    `json:"status,omitempty" url:"status,omitempty"`
-	Tags      []string             `json:"tags,omitempty" url:"tags,omitempty"`
+	// Email status. `not_subscribed` means the contact never opted in to marketing email and never opted out, for example a shopper who started a checkout. Campaigns skip them, transactional email still reaches them, and a sequence sends them marketing email only when its `sendToNotSubscribed` setting is on.
+	Status *SubscriberStatus `json:"status,omitempty" url:"status,omitempty"`
+	Tags   []string          `json:"tags,omitempty" url:"tags,omitempty"`
 	// IANA timezone identifier used for recipient-local campaign delivery. Null when unknown.
 	Timezone *string `json:"timezone,omitempty" url:"timezone,omitempty"`
 	// When the contact opted out, derived from the list memberships the opt-out deactivated. Use this rather than `updatedAt` to date an opt-out - any later tag or attribute write moves `updatedAt`. Null unless the contact is currently unsubscribed, so leaving a single list does not set it, and null for contacts imported as already unsubscribed, where no date exists.
@@ -3996,7 +3998,7 @@ type SubscriberImportRecord struct {
 	LastName   *string `json:"lastName,omitempty" url:"lastName,omitempty"`
 	// Phone number. National-format values use the batch defaultPhoneCountry. Required when the record has no email.
 	Phone *string `json:"phone,omitempty" url:"phone,omitempty"`
-	// Email status from the source platform. Unsubscribed and bounced records are stored with that status, never enroll in sequences and never receive a double opt-in confirmation, whatever optInMode is. An active record never resubscribes an existing unsubscribed or bounced contact. With merge or overwrite, an unsubscribed or bounced record applies that status to an existing active contact; an unsubscribe also stamps its list memberships and cancels its running sequences. With skip, existing contacts are left unchanged.
+	// Email status from the source platform. Unsubscribed and bounced records are stored with that status, never enroll in sequences and never receive a double opt-in confirmation, whatever optInMode is. An active record never resubscribes an existing unsubscribed or bounced contact. With merge or overwrite, an unsubscribed or bounced record applies that status to an existing active contact; an unsubscribe also stamps its list memberships and cancels its running sequences. With skip, existing contacts are left unchanged. A `not_subscribed` record (a contact who never opted in and never opted out) sets that status on new contacts only and never changes an existing contact's status. It never enrolls in sequences and never receives a double opt-in confirmation.
 	Status *SubscriberImportRecordStatus `json:"status,omitempty" url:"status,omitempty"`
 	Tags   []string                      `json:"tags,omitempty" url:"tags,omitempty"`
 	// IANA timezone identifier (e.g. America/New_York) used for recipient-local campaign delivery. Records with an invalid value import without it.
@@ -4400,19 +4402,22 @@ func (s *SubscriberImportRecordCustomAttributesValueThreeItem) Accept(visitor Su
 	return fmt.Errorf("type %T does not include a non-empty union type", s)
 }
 
-// Email status from the source platform. Unsubscribed and bounced records are stored with that status, never enroll in sequences and never receive a double opt-in confirmation, whatever optInMode is. An active record never resubscribes an existing unsubscribed or bounced contact. With merge or overwrite, an unsubscribed or bounced record applies that status to an existing active contact; an unsubscribe also stamps its list memberships and cancels its running sequences. With skip, existing contacts are left unchanged.
+// Email status from the source platform. Unsubscribed and bounced records are stored with that status, never enroll in sequences and never receive a double opt-in confirmation, whatever optInMode is. An active record never resubscribes an existing unsubscribed or bounced contact. With merge or overwrite, an unsubscribed or bounced record applies that status to an existing active contact; an unsubscribe also stamps its list memberships and cancels its running sequences. With skip, existing contacts are left unchanged. A `not_subscribed` record (a contact who never opted in and never opted out) sets that status on new contacts only and never changes an existing contact's status. It never enrolls in sequences and never receives a double opt-in confirmation.
 type SubscriberImportRecordStatus string
 
 const (
-	SubscriberImportRecordStatusActive       SubscriberImportRecordStatus = "active"
-	SubscriberImportRecordStatusUnsubscribed SubscriberImportRecordStatus = "unsubscribed"
-	SubscriberImportRecordStatusBounced      SubscriberImportRecordStatus = "bounced"
+	SubscriberImportRecordStatusActive        SubscriberImportRecordStatus = "active"
+	SubscriberImportRecordStatusNotSubscribed SubscriberImportRecordStatus = "not_subscribed"
+	SubscriberImportRecordStatusUnsubscribed  SubscriberImportRecordStatus = "unsubscribed"
+	SubscriberImportRecordStatusBounced       SubscriberImportRecordStatus = "bounced"
 )
 
 func NewSubscriberImportRecordStatusFromString(s string) (SubscriberImportRecordStatus, error) {
 	switch s {
 	case "active":
 		return SubscriberImportRecordStatusActive, nil
+	case "not_subscribed":
+		return SubscriberImportRecordStatusNotSubscribed, nil
 	case "unsubscribed":
 		return SubscriberImportRecordStatusUnsubscribed, nil
 	case "bounced":
@@ -5966,18 +5971,22 @@ func (s SubscriberSmsStatus) Ptr() *SubscriberSmsStatus {
 	return &s
 }
 
+// Email status. `not_subscribed` means the contact never opted in to marketing email and never opted out, for example a shopper who started a checkout. Campaigns skip them, transactional email still reaches them, and a sequence sends them marketing email only when its `sendToNotSubscribed` setting is on.
 type SubscriberStatus string
 
 const (
-	SubscriberStatusActive       SubscriberStatus = "active"
-	SubscriberStatusUnsubscribed SubscriberStatus = "unsubscribed"
-	SubscriberStatusBounced      SubscriberStatus = "bounced"
+	SubscriberStatusActive        SubscriberStatus = "active"
+	SubscriberStatusNotSubscribed SubscriberStatus = "not_subscribed"
+	SubscriberStatusUnsubscribed  SubscriberStatus = "unsubscribed"
+	SubscriberStatusBounced       SubscriberStatus = "bounced"
 )
 
 func NewSubscriberStatusFromString(s string) (SubscriberStatus, error) {
 	switch s {
 	case "active":
 		return SubscriberStatusActive, nil
+	case "not_subscribed":
+		return SubscriberStatusNotSubscribed, nil
 	case "unsubscribed":
 		return SubscriberStatusUnsubscribed, nil
 	case "bounced":
@@ -6949,19 +6958,22 @@ func (c CreateSubscribersRequestOptInMode) Ptr() *CreateSubscribersRequestOptInM
 	return &c
 }
 
-// Initial subscriber status.
+// Initial subscriber status. Use `not_subscribed` for a contact who never opted in to marketing email and never opted out.
 type CreateSubscribersRequestStatus string
 
 const (
-	CreateSubscribersRequestStatusActive       CreateSubscribersRequestStatus = "active"
-	CreateSubscribersRequestStatusUnsubscribed CreateSubscribersRequestStatus = "unsubscribed"
-	CreateSubscribersRequestStatusBounced      CreateSubscribersRequestStatus = "bounced"
+	CreateSubscribersRequestStatusActive        CreateSubscribersRequestStatus = "active"
+	CreateSubscribersRequestStatusNotSubscribed CreateSubscribersRequestStatus = "not_subscribed"
+	CreateSubscribersRequestStatusUnsubscribed  CreateSubscribersRequestStatus = "unsubscribed"
+	CreateSubscribersRequestStatusBounced       CreateSubscribersRequestStatus = "bounced"
 )
 
 func NewCreateSubscribersRequestStatusFromString(s string) (CreateSubscribersRequestStatus, error) {
 	switch s {
 	case "active":
 		return CreateSubscribersRequestStatusActive, nil
+	case "not_subscribed":
+		return CreateSubscribersRequestStatusNotSubscribed, nil
 	case "unsubscribed":
 		return CreateSubscribersRequestStatusUnsubscribed, nil
 	case "bounced":
@@ -7281,8 +7293,9 @@ type CreateSubscribersResponseSubscriber struct {
 	PhoneCountry *string `json:"phoneCountry,omitempty" url:"phoneCountry,omitempty"`
 	// SMS marketing consent status, independent of the email status
 	SmsStatus *SubscriberSmsStatus `json:"smsStatus,omitempty" url:"smsStatus,omitempty"`
-	Status    *SubscriberStatus    `json:"status,omitempty" url:"status,omitempty"`
-	Tags      []string             `json:"tags,omitempty" url:"tags,omitempty"`
+	// Email status. `not_subscribed` means the contact never opted in to marketing email and never opted out, for example a shopper who started a checkout. Campaigns skip them, transactional email still reaches them, and a sequence sends them marketing email only when its `sendToNotSubscribed` setting is on.
+	Status *SubscriberStatus `json:"status,omitempty" url:"status,omitempty"`
+	Tags   []string          `json:"tags,omitempty" url:"tags,omitempty"`
 	// IANA timezone identifier used for recipient-local campaign delivery. Null when unknown.
 	Timezone *string `json:"timezone,omitempty" url:"timezone,omitempty"`
 	// When the contact opted out, derived from the list memberships the opt-out deactivated. Use this rather than `updatedAt` to date an opt-out - any later tag or attribute write moves `updatedAt`. Null unless the contact is currently unsubscribed, so leaving a single list does not set it, and null for contacts imported as already unsubscribed, where no date exists.
@@ -10086,16 +10099,19 @@ func (l ListSubscribersRequestIncludeTotal) Ptr() *ListSubscribersRequestInclude
 type ListSubscribersRequestStatus string
 
 const (
-	ListSubscribersRequestStatusActive       ListSubscribersRequestStatus = "active"
-	ListSubscribersRequestStatusUnsubscribed ListSubscribersRequestStatus = "unsubscribed"
-	ListSubscribersRequestStatusBounced      ListSubscribersRequestStatus = "bounced"
-	ListSubscribersRequestStatusAll          ListSubscribersRequestStatus = "all"
+	ListSubscribersRequestStatusActive        ListSubscribersRequestStatus = "active"
+	ListSubscribersRequestStatusNotSubscribed ListSubscribersRequestStatus = "not_subscribed"
+	ListSubscribersRequestStatusUnsubscribed  ListSubscribersRequestStatus = "unsubscribed"
+	ListSubscribersRequestStatusBounced       ListSubscribersRequestStatus = "bounced"
+	ListSubscribersRequestStatusAll           ListSubscribersRequestStatus = "all"
 )
 
 func NewListSubscribersRequestStatusFromString(s string) (ListSubscribersRequestStatus, error) {
 	switch s {
 	case "active":
 		return ListSubscribersRequestStatusActive, nil
+	case "not_subscribed":
+		return ListSubscribersRequestStatusNotSubscribed, nil
 	case "unsubscribed":
 		return ListSubscribersRequestStatusUnsubscribed, nil
 	case "bounced":
@@ -10472,20 +10488,23 @@ func (u UpdateByExternalIDPathSubscribersRequestCustomAttributesStrategy) Ptr() 
 	return &u
 }
 
-// Setting `unsubscribed` performs a full global unsubscribe. Setting `complained` records a company spam-complaint suppression (visible through the suppressions endpoints), then runs the same unsubscribe workflow; the subscriber then reads as `unsubscribed`. Repeating it is safe.
+// Setting `unsubscribed` performs a full global unsubscribe. Setting `not_subscribed` marks the contact as never opted in without recording an opt-out; an active contact leaves every audience and its running sequences continue. A contact who is `unsubscribed` or `bounced` cannot be set to `not_subscribed`: the request returns `400`. Setting `complained` records a company spam-complaint suppression (visible through the suppressions endpoints), then runs the same unsubscribe workflow; the subscriber then reads as `unsubscribed`. Repeating it is safe.
 type UpdateByExternalIDPathSubscribersRequestStatus string
 
 const (
-	UpdateByExternalIDPathSubscribersRequestStatusActive       UpdateByExternalIDPathSubscribersRequestStatus = "active"
-	UpdateByExternalIDPathSubscribersRequestStatusUnsubscribed UpdateByExternalIDPathSubscribersRequestStatus = "unsubscribed"
-	UpdateByExternalIDPathSubscribersRequestStatusBounced      UpdateByExternalIDPathSubscribersRequestStatus = "bounced"
-	UpdateByExternalIDPathSubscribersRequestStatusComplained   UpdateByExternalIDPathSubscribersRequestStatus = "complained"
+	UpdateByExternalIDPathSubscribersRequestStatusActive        UpdateByExternalIDPathSubscribersRequestStatus = "active"
+	UpdateByExternalIDPathSubscribersRequestStatusNotSubscribed UpdateByExternalIDPathSubscribersRequestStatus = "not_subscribed"
+	UpdateByExternalIDPathSubscribersRequestStatusUnsubscribed  UpdateByExternalIDPathSubscribersRequestStatus = "unsubscribed"
+	UpdateByExternalIDPathSubscribersRequestStatusBounced       UpdateByExternalIDPathSubscribersRequestStatus = "bounced"
+	UpdateByExternalIDPathSubscribersRequestStatusComplained    UpdateByExternalIDPathSubscribersRequestStatus = "complained"
 )
 
 func NewUpdateByExternalIDPathSubscribersRequestStatusFromString(s string) (UpdateByExternalIDPathSubscribersRequestStatus, error) {
 	switch s {
 	case "active":
 		return UpdateByExternalIDPathSubscribersRequestStatusActive, nil
+	case "not_subscribed":
+		return UpdateByExternalIDPathSubscribersRequestStatusNotSubscribed, nil
 	case "unsubscribed":
 		return UpdateByExternalIDPathSubscribersRequestStatusUnsubscribed, nil
 	case "bounced":
@@ -10624,20 +10643,23 @@ func (u UpdateByExternalIDSubscribersRequestCustomAttributesStrategy) Ptr() *Upd
 	return &u
 }
 
-// Setting `unsubscribed` performs a full global unsubscribe. Setting `complained` records a company spam-complaint suppression (visible through the suppressions endpoints), then runs the same unsubscribe workflow; the subscriber then reads as `unsubscribed`. Repeating it is safe.
+// Setting `unsubscribed` performs a full global unsubscribe. Setting `not_subscribed` marks the contact as never opted in without recording an opt-out; an active contact leaves every audience and its running sequences continue. A contact who is `unsubscribed` or `bounced` cannot be set to `not_subscribed`: the request returns `400`. Setting `complained` records a company spam-complaint suppression (visible through the suppressions endpoints), then runs the same unsubscribe workflow; the subscriber then reads as `unsubscribed`. Repeating it is safe.
 type UpdateByExternalIDSubscribersRequestStatus string
 
 const (
-	UpdateByExternalIDSubscribersRequestStatusActive       UpdateByExternalIDSubscribersRequestStatus = "active"
-	UpdateByExternalIDSubscribersRequestStatusUnsubscribed UpdateByExternalIDSubscribersRequestStatus = "unsubscribed"
-	UpdateByExternalIDSubscribersRequestStatusBounced      UpdateByExternalIDSubscribersRequestStatus = "bounced"
-	UpdateByExternalIDSubscribersRequestStatusComplained   UpdateByExternalIDSubscribersRequestStatus = "complained"
+	UpdateByExternalIDSubscribersRequestStatusActive        UpdateByExternalIDSubscribersRequestStatus = "active"
+	UpdateByExternalIDSubscribersRequestStatusNotSubscribed UpdateByExternalIDSubscribersRequestStatus = "not_subscribed"
+	UpdateByExternalIDSubscribersRequestStatusUnsubscribed  UpdateByExternalIDSubscribersRequestStatus = "unsubscribed"
+	UpdateByExternalIDSubscribersRequestStatusBounced       UpdateByExternalIDSubscribersRequestStatus = "bounced"
+	UpdateByExternalIDSubscribersRequestStatusComplained    UpdateByExternalIDSubscribersRequestStatus = "complained"
 )
 
 func NewUpdateByExternalIDSubscribersRequestStatusFromString(s string) (UpdateByExternalIDSubscribersRequestStatus, error) {
 	switch s {
 	case "active":
 		return UpdateByExternalIDSubscribersRequestStatusActive, nil
+	case "not_subscribed":
+		return UpdateByExternalIDSubscribersRequestStatusNotSubscribed, nil
 	case "unsubscribed":
 		return UpdateByExternalIDSubscribersRequestStatusUnsubscribed, nil
 	case "bounced":
@@ -10824,20 +10846,23 @@ func (u UpdateSubscribersRequestCustomAttributesStrategy) Ptr() *UpdateSubscribe
 	return &u
 }
 
-// Setting `unsubscribed` performs a full global unsubscribe. Setting `complained` records a company spam-complaint suppression (visible through the suppressions endpoints), then runs the same unsubscribe workflow; the subscriber then reads as `unsubscribed`. Repeating it is safe.
+// Setting `unsubscribed` performs a full global unsubscribe. Setting `not_subscribed` marks the contact as never opted in without recording an opt-out; an active contact leaves every audience and its running sequences continue. A contact who is `unsubscribed` or `bounced` cannot be set to `not_subscribed`: the request returns `400`. Setting `complained` records a company spam-complaint suppression (visible through the suppressions endpoints), then runs the same unsubscribe workflow; the subscriber then reads as `unsubscribed`. Repeating it is safe.
 type UpdateSubscribersRequestStatus string
 
 const (
-	UpdateSubscribersRequestStatusActive       UpdateSubscribersRequestStatus = "active"
-	UpdateSubscribersRequestStatusUnsubscribed UpdateSubscribersRequestStatus = "unsubscribed"
-	UpdateSubscribersRequestStatusBounced      UpdateSubscribersRequestStatus = "bounced"
-	UpdateSubscribersRequestStatusComplained   UpdateSubscribersRequestStatus = "complained"
+	UpdateSubscribersRequestStatusActive        UpdateSubscribersRequestStatus = "active"
+	UpdateSubscribersRequestStatusNotSubscribed UpdateSubscribersRequestStatus = "not_subscribed"
+	UpdateSubscribersRequestStatusUnsubscribed  UpdateSubscribersRequestStatus = "unsubscribed"
+	UpdateSubscribersRequestStatusBounced       UpdateSubscribersRequestStatus = "bounced"
+	UpdateSubscribersRequestStatusComplained    UpdateSubscribersRequestStatus = "complained"
 )
 
 func NewUpdateSubscribersRequestStatusFromString(s string) (UpdateSubscribersRequestStatus, error) {
 	switch s {
 	case "active":
 		return UpdateSubscribersRequestStatusActive, nil
+	case "not_subscribed":
+		return UpdateSubscribersRequestStatusNotSubscribed, nil
 	case "unsubscribed":
 		return UpdateSubscribersRequestStatusUnsubscribed, nil
 	case "bounced":
@@ -11038,7 +11063,7 @@ type UpdateSubscribersRequest struct {
 	PhoneCountry *string `json:"phoneCountry,omitempty" url:"-"`
 	// SMS marketing consent. true sets smsStatus to subscribed with consent source api, false sets unsubscribed, omitted leaves SMS status unchanged. Never inferred from phone presence.
 	SmsConsent *bool `json:"smsConsent,omitempty" url:"-"`
-	// Setting `unsubscribed` performs a full global unsubscribe. Setting `complained` records a company spam-complaint suppression (visible through the suppressions endpoints), then runs the same unsubscribe workflow; the subscriber then reads as `unsubscribed`. Repeating it is safe.
+	// Setting `unsubscribed` performs a full global unsubscribe. Setting `not_subscribed` marks the contact as never opted in without recording an opt-out; an active contact leaves every audience and its running sequences continue. A contact who is `unsubscribed` or `bounced` cannot be set to `not_subscribed`: the request returns `400`. Setting `complained` records a company spam-complaint suppression (visible through the suppressions endpoints), then runs the same unsubscribe workflow; the subscriber then reads as `unsubscribed`. Repeating it is safe.
 	Status *UpdateSubscribersRequestStatus `json:"status,omitempty" url:"-"`
 	Tags   []string                        `json:"tags,omitempty" url:"-"`
 	// IANA timezone identifier such as America/New_York, stored as a native profile field and used for recipient-local campaign delivery. An invalid identifier returns 400 VALIDATION_ERROR. Omit to keep unchanged, or send null to clear.
@@ -11204,7 +11229,7 @@ type UpdateByExternalIDSubscribersRequest struct {
 	PhoneCountry *string `json:"phoneCountry,omitempty" url:"-"`
 	// SMS marketing consent. true sets smsStatus to subscribed with consent source api, false sets unsubscribed, omitted leaves SMS status unchanged. Never inferred from phone presence.
 	SmsConsent *bool `json:"smsConsent,omitempty" url:"-"`
-	// Setting `unsubscribed` performs a full global unsubscribe. Setting `complained` records a company spam-complaint suppression (visible through the suppressions endpoints), then runs the same unsubscribe workflow; the subscriber then reads as `unsubscribed`. Repeating it is safe.
+	// Setting `unsubscribed` performs a full global unsubscribe. Setting `not_subscribed` marks the contact as never opted in without recording an opt-out; an active contact leaves every audience and its running sequences continue. A contact who is `unsubscribed` or `bounced` cannot be set to `not_subscribed`: the request returns `400`. Setting `complained` records a company spam-complaint suppression (visible through the suppressions endpoints), then runs the same unsubscribe workflow; the subscriber then reads as `unsubscribed`. Repeating it is safe.
 	Status *UpdateByExternalIDSubscribersRequestStatus `json:"status,omitempty" url:"-"`
 	Tags   []string                                    `json:"tags,omitempty" url:"-"`
 	// IANA timezone identifier (e.g. America/New_York) used for recipient-local campaign delivery. Invalid values fail with a 400 validation error; null clears the stored value.
@@ -11370,7 +11395,7 @@ type UpdateByExternalIDPathSubscribersRequest struct {
 	PhoneCountry *string `json:"phoneCountry,omitempty" url:"-"`
 	// SMS marketing consent. true sets smsStatus to subscribed with consent source api, false sets unsubscribed, omitted leaves SMS status unchanged. Never inferred from phone presence.
 	SmsConsent *bool `json:"smsConsent,omitempty" url:"-"`
-	// Setting `unsubscribed` performs a full global unsubscribe. Setting `complained` records a company spam-complaint suppression (visible through the suppressions endpoints), then runs the same unsubscribe workflow; the subscriber then reads as `unsubscribed`. Repeating it is safe.
+	// Setting `unsubscribed` performs a full global unsubscribe. Setting `not_subscribed` marks the contact as never opted in without recording an opt-out; an active contact leaves every audience and its running sequences continue. A contact who is `unsubscribed` or `bounced` cannot be set to `not_subscribed`: the request returns `400`. Setting `complained` records a company spam-complaint suppression (visible through the suppressions endpoints), then runs the same unsubscribe workflow; the subscriber then reads as `unsubscribed`. Repeating it is safe.
 	Status *UpdateByExternalIDPathSubscribersRequestStatus `json:"status,omitempty" url:"-"`
 	Tags   []string                                        `json:"tags,omitempty" url:"-"`
 	// IANA timezone identifier (e.g. America/New_York) used for recipient-local campaign delivery. Invalid values fail with a 400 validation error; null clears the stored value.

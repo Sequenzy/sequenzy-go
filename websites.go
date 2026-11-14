@@ -1782,6 +1782,7 @@ var (
 	websiteDNSUpgradeFieldReplacedRecords       = big.NewInt(1 << 4)
 	websiteDNSUpgradeFieldStartedAt             = big.NewInt(1 << 5)
 	websiteDNSUpgradeFieldStatus                = big.NewInt(1 << 6)
+	websiteDNSUpgradeFieldTrackingRecord        = big.NewInt(1 << 7)
 )
 
 type WebsiteDNSUpgrade struct {
@@ -1798,6 +1799,8 @@ type WebsiteDNSUpgrade struct {
 	// When the upgrade started. Set while in_progress.
 	StartedAt *time.Time              `json:"startedAt,omitempty" url:"startedAt,omitempty"`
 	Status    WebsiteDNSUpgradeStatus `json:"status" url:"status"`
+	// The company tracking CNAME to publish with records while in_progress. A workspace without a tracking domain gets links.<domain> when the upgrade starts; an existing one in this domain's DNS zone is listed while it is not verified, and kept (as verified) when it verified during the upgrade. Optional; it never holds up the switch, and until it is verified links use the shared tracking domains. Null otherwise.
+	TrackingRecord *WebsiteDNSUpgradeTrackingRecord `json:"trackingRecord,omitempty" url:"trackingRecord,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1853,6 +1856,13 @@ func (w *WebsiteDNSUpgrade) GetStatus() WebsiteDNSUpgradeStatus {
 		return ""
 	}
 	return w.Status
+}
+
+func (w *WebsiteDNSUpgrade) GetTrackingRecord() *WebsiteDNSUpgradeTrackingRecord {
+	if w == nil {
+		return nil
+	}
+	return w.TrackingRecord
 }
 
 func (w *WebsiteDNSUpgrade) GetExtraProperties() map[string]interface{} {
@@ -1916,6 +1926,13 @@ func (w *WebsiteDNSUpgrade) SetStartedAt(startedAt *time.Time) {
 func (w *WebsiteDNSUpgrade) SetStatus(status WebsiteDNSUpgradeStatus) {
 	w.Status = status
 	w.require(websiteDNSUpgradeFieldStatus)
+}
+
+// SetTrackingRecord sets the TrackingRecord field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSUpgrade) SetTrackingRecord(trackingRecord *WebsiteDNSUpgradeTrackingRecord) {
+	w.TrackingRecord = trackingRecord
+	w.require(websiteDNSUpgradeFieldTrackingRecord)
 }
 
 func (w *WebsiteDNSUpgrade) UnmarshalJSON(data []byte) error {
@@ -2541,6 +2558,202 @@ func NewWebsiteDNSUpgradeStatusFromString(s string) (WebsiteDNSUpgradeStatus, er
 }
 
 func (w WebsiteDNSUpgradeStatus) Ptr() *WebsiteDNSUpgradeStatus {
+	return &w
+}
+
+// The company tracking CNAME to publish with records while in_progress. A workspace without a tracking domain gets links.<domain> when the upgrade starts; an existing one in this domain's DNS zone is listed while it is not verified, and kept (as verified) when it verified during the upgrade. Optional; it never holds up the switch, and until it is verified links use the shared tracking domains. Null otherwise.
+var (
+	websiteDNSUpgradeTrackingRecordFieldName     = big.NewInt(1 << 0)
+	websiteDNSUpgradeTrackingRecordFieldRequired = big.NewInt(1 << 1)
+	websiteDNSUpgradeTrackingRecordFieldStatus   = big.NewInt(1 << 2)
+	websiteDNSUpgradeTrackingRecordFieldType     = big.NewInt(1 << 3)
+	websiteDNSUpgradeTrackingRecordFieldValue    = big.NewInt(1 << 4)
+)
+
+type WebsiteDNSUpgradeTrackingRecord struct {
+	Name     string                                `json:"name" url:"name"`
+	Required bool                                  `json:"required" url:"required"`
+	Status   WebsiteDNSUpgradeTrackingRecordStatus `json:"status" url:"status"`
+	Type     WebsiteDNSUpgradeTrackingRecordType   `json:"type" url:"type"`
+	Value    string                                `json:"value" url:"value"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (w *WebsiteDNSUpgradeTrackingRecord) GetName() string {
+	if w == nil {
+		return ""
+	}
+	return w.Name
+}
+
+func (w *WebsiteDNSUpgradeTrackingRecord) GetRequired() bool {
+	if w == nil {
+		return false
+	}
+	return w.Required
+}
+
+func (w *WebsiteDNSUpgradeTrackingRecord) GetStatus() WebsiteDNSUpgradeTrackingRecordStatus {
+	if w == nil {
+		return ""
+	}
+	return w.Status
+}
+
+func (w *WebsiteDNSUpgradeTrackingRecord) GetType() WebsiteDNSUpgradeTrackingRecordType {
+	if w == nil {
+		return ""
+	}
+	return w.Type
+}
+
+func (w *WebsiteDNSUpgradeTrackingRecord) GetValue() string {
+	if w == nil {
+		return ""
+	}
+	return w.Value
+}
+
+func (w *WebsiteDNSUpgradeTrackingRecord) GetExtraProperties() map[string]interface{} {
+	if w == nil {
+		return nil
+	}
+	return w.extraProperties
+}
+
+func (w *WebsiteDNSUpgradeTrackingRecord) require(field *big.Int) {
+	if w.explicitFields == nil {
+		w.explicitFields = big.NewInt(0)
+	}
+	w.explicitFields.Or(w.explicitFields, field)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSUpgradeTrackingRecord) SetName(name string) {
+	w.Name = name
+	w.require(websiteDNSUpgradeTrackingRecordFieldName)
+}
+
+// SetRequired sets the Required field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSUpgradeTrackingRecord) SetRequired(required bool) {
+	w.Required = required
+	w.require(websiteDNSUpgradeTrackingRecordFieldRequired)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSUpgradeTrackingRecord) SetStatus(status WebsiteDNSUpgradeTrackingRecordStatus) {
+	w.Status = status
+	w.require(websiteDNSUpgradeTrackingRecordFieldStatus)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSUpgradeTrackingRecord) SetType(type_ WebsiteDNSUpgradeTrackingRecordType) {
+	w.Type = type_
+	w.require(websiteDNSUpgradeTrackingRecordFieldType)
+}
+
+// SetValue sets the Value field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WebsiteDNSUpgradeTrackingRecord) SetValue(value string) {
+	w.Value = value
+	w.require(websiteDNSUpgradeTrackingRecordFieldValue)
+}
+
+func (w *WebsiteDNSUpgradeTrackingRecord) UnmarshalJSON(data []byte) error {
+	type unmarshaler WebsiteDNSUpgradeTrackingRecord
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*w = WebsiteDNSUpgradeTrackingRecord(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *w)
+	if err != nil {
+		return err
+	}
+	w.extraProperties = extraProperties
+	w.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (w *WebsiteDNSUpgradeTrackingRecord) MarshalJSON() ([]byte, error) {
+	type embed WebsiteDNSUpgradeTrackingRecord
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*w),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, w.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (w *WebsiteDNSUpgradeTrackingRecord) String() string {
+	if w == nil {
+		return "<nil>"
+	}
+	if len(w.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(w.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(w); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", w)
+}
+
+type WebsiteDNSUpgradeTrackingRecordStatus string
+
+const (
+	WebsiteDNSUpgradeTrackingRecordStatusNotStarted WebsiteDNSUpgradeTrackingRecordStatus = "not_started"
+	WebsiteDNSUpgradeTrackingRecordStatusPending    WebsiteDNSUpgradeTrackingRecordStatus = "pending"
+	WebsiteDNSUpgradeTrackingRecordStatusVerified   WebsiteDNSUpgradeTrackingRecordStatus = "verified"
+	WebsiteDNSUpgradeTrackingRecordStatusFailed     WebsiteDNSUpgradeTrackingRecordStatus = "failed"
+)
+
+func NewWebsiteDNSUpgradeTrackingRecordStatusFromString(s string) (WebsiteDNSUpgradeTrackingRecordStatus, error) {
+	switch s {
+	case "not_started":
+		return WebsiteDNSUpgradeTrackingRecordStatusNotStarted, nil
+	case "pending":
+		return WebsiteDNSUpgradeTrackingRecordStatusPending, nil
+	case "verified":
+		return WebsiteDNSUpgradeTrackingRecordStatusVerified, nil
+	case "failed":
+		return WebsiteDNSUpgradeTrackingRecordStatusFailed, nil
+	}
+	var t WebsiteDNSUpgradeTrackingRecordStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (w WebsiteDNSUpgradeTrackingRecordStatus) Ptr() *WebsiteDNSUpgradeTrackingRecordStatus {
+	return &w
+}
+
+type WebsiteDNSUpgradeTrackingRecordType string
+
+const (
+	WebsiteDNSUpgradeTrackingRecordTypeCname WebsiteDNSUpgradeTrackingRecordType = "CNAME"
+)
+
+func NewWebsiteDNSUpgradeTrackingRecordTypeFromString(s string) (WebsiteDNSUpgradeTrackingRecordType, error) {
+	switch s {
+	case "CNAME":
+		return WebsiteDNSUpgradeTrackingRecordTypeCname, nil
+	}
+	var t WebsiteDNSUpgradeTrackingRecordType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (w WebsiteDNSUpgradeTrackingRecordType) Ptr() *WebsiteDNSUpgradeTrackingRecordType {
 	return &w
 }
 
