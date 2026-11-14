@@ -174,3 +174,30 @@ func TestCompaniesUpdateWithWireMock(
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestCompaniesUpdateWithWireMock", "PATCH", "/companies/companyId", nil, 1)
 }
+
+func TestCompaniesUploadFounderPhotoWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.UploadFounderPhotoCompaniesRequest{
+		CompanyID:   "companyId",
+		ImageBase64: "imageBase64",
+	}
+	_, invocationErr := client.Companies.UploadFounderPhoto(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestCompaniesUploadFounderPhotoWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestCompaniesUploadFounderPhotoWithWireMock", "PUT", "/companies/companyId/founder-photo", nil, 1)
+}

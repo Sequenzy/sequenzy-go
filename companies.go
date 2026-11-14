@@ -157,31 +157,33 @@ var (
 	companyFieldEmailStylePreference     = big.NewInt(1 << 20)
 	companyFieldEmailTheme               = big.NewInt(1 << 21)
 	companyFieldFontFamily               = big.NewInt(1 << 22)
-	companyFieldFooterStyle              = big.NewInt(1 << 23)
-	companyFieldFooterTheme              = big.NewInt(1 << 24)
-	companyFieldForwardReplies           = big.NewInt(1 << 25)
-	companyFieldFounderName              = big.NewInt(1 << 26)
-	companyFieldID                       = big.NewInt(1 << 27)
-	companyFieldLanguage                 = big.NewInt(1 << 28)
-	companyFieldLogoURL                  = big.NewInt(1 << 29)
-	companyFieldName                     = big.NewInt(1 << 30)
-	companyFieldPreviewURL               = big.NewInt(1 << 31)
-	companyFieldPricing                  = big.NewInt(1 << 32)
-	companyFieldPrimaryColor             = big.NewInt(1 << 33)
-	companyFieldPrivacyPolicyURL         = big.NewInt(1 << 34)
-	companyFieldReplyRetentionDays       = big.NewInt(1 << 35)
-	companyFieldReplyTrackingDomainMode  = big.NewInt(1 << 36)
-	companyFieldReplyTrackingEnabled     = big.NewInt(1 << 37)
-	companyFieldSocialLinks              = big.NewInt(1 << 38)
-	companyFieldStatus                   = big.NewInt(1 << 39)
-	companyFieldTermsURL                 = big.NewInt(1 << 40)
-	companyFieldTestimonials             = big.NewInt(1 << 41)
-	companyFieldToneVoice                = big.NewInt(1 << 42)
-	companyFieldURL                      = big.NewInt(1 << 43)
-	companyFieldValueProps               = big.NewInt(1 << 44)
-	companyFieldWebsiteType              = big.NewInt(1 << 45)
-	companyFieldWebsiteTypeSource        = big.NewInt(1 << 46)
-	companyFieldWebsiteURL               = big.NewInt(1 << 47)
+	companyFieldFooterMode               = big.NewInt(1 << 23)
+	companyFieldFooterStyle              = big.NewInt(1 << 24)
+	companyFieldFooterTheme              = big.NewInt(1 << 25)
+	companyFieldForwardReplies           = big.NewInt(1 << 26)
+	companyFieldFounderName              = big.NewInt(1 << 27)
+	companyFieldFounderPhotoURL          = big.NewInt(1 << 28)
+	companyFieldID                       = big.NewInt(1 << 29)
+	companyFieldLanguage                 = big.NewInt(1 << 30)
+	companyFieldLogoURL                  = big.NewInt(1 << 31)
+	companyFieldName                     = big.NewInt(1 << 32)
+	companyFieldPreviewURL               = big.NewInt(1 << 33)
+	companyFieldPricing                  = big.NewInt(1 << 34)
+	companyFieldPrimaryColor             = big.NewInt(1 << 35)
+	companyFieldPrivacyPolicyURL         = big.NewInt(1 << 36)
+	companyFieldReplyRetentionDays       = big.NewInt(1 << 37)
+	companyFieldReplyTrackingDomainMode  = big.NewInt(1 << 38)
+	companyFieldReplyTrackingEnabled     = big.NewInt(1 << 39)
+	companyFieldSocialLinks              = big.NewInt(1 << 40)
+	companyFieldStatus                   = big.NewInt(1 << 41)
+	companyFieldTermsURL                 = big.NewInt(1 << 42)
+	companyFieldTestimonials             = big.NewInt(1 << 43)
+	companyFieldToneVoice                = big.NewInt(1 << 44)
+	companyFieldURL                      = big.NewInt(1 << 45)
+	companyFieldValueProps               = big.NewInt(1 << 46)
+	companyFieldWebsiteType              = big.NewInt(1 << 47)
+	companyFieldWebsiteTypeSource        = big.NewInt(1 << 48)
+	companyFieldWebsiteURL               = big.NewInt(1 << 49)
 )
 
 type Company struct {
@@ -216,6 +218,8 @@ type Company struct {
 	EmailStylePreference *CompanyEmailStylePreference `json:"emailStylePreference,omitempty" url:"emailStylePreference,omitempty"`
 	EmailTheme           map[string]any               `json:"emailTheme,omitempty" url:"emailTheme,omitempty"`
 	FontFamily           *string                      `json:"fontFamily,omitempty" url:"fontFamily,omitempty"`
+	// Footer type for new AI-designed emails, combined with `footerStyle`. `branded` (the default) is signed by the company; `personal` opens the footer with the founder's sign-off: photo, name and title (`founderPhotoUrl`, `founderName`). Without a founder name, footers stay branded. Existing emails keep their footers.
+	FooterMode *CompanyFooterMode `json:"footerMode,omitempty" url:"footerMode,omitempty"`
 	// Footer style for new AI-designed emails. `classic` keeps brand-colored social icons, centered; `mono` uses monochrome icons and sets the company name as a small wordmark; `band` sets that on a dark full-width band; `editorial` is mono and left-aligned. `auto` (the default) picks one that fits the brand. Existing emails keep their footers.
 	FooterStyle *CompanyFooterStyle `json:"footerStyle,omitempty" url:"footerStyle,omitempty"`
 	// The auto-added footer's resolved settings, defaults included. Change it with `footerTheme` on the company update.
@@ -223,10 +227,12 @@ type Company struct {
 	// Whether captured replies are forwarded to the configured mailbox.
 	ForwardReplies *bool   `json:"forwardReplies,omitempty" url:"forwardReplies,omitempty"`
 	FounderName    *string `json:"founderName,omitempty" url:"founderName,omitempty"`
-	ID             *string `json:"id,omitempty" url:"id,omitempty"`
-	Language       *string `json:"language,omitempty" url:"language,omitempty"`
-	LogoURL        *string `json:"logoUrl,omitempty" url:"logoUrl,omitempty"`
-	Name           *string `json:"name,omitempty" url:"name,omitempty"`
+	// Square founder photo personal footers (`footerMode: personal`) sign off with. Found on your website during onboarding when it shows one, or set via PATCH. null when there is none.
+	FounderPhotoURL *string `json:"founderPhotoUrl,omitempty" url:"founderPhotoUrl,omitempty"`
+	ID              *string `json:"id,omitempty" url:"id,omitempty"`
+	Language        *string `json:"language,omitempty" url:"language,omitempty"`
+	LogoURL         *string `json:"logoUrl,omitempty" url:"logoUrl,omitempty"`
+	Name            *string `json:"name,omitempty" url:"name,omitempty"`
 	// Dashboard review/preview URL for this campaign.
 	PreviewURL       *string        `json:"previewUrl,omitempty" url:"previewUrl,omitempty"`
 	Pricing          map[string]any `json:"pricing,omitempty" url:"pricing,omitempty"`
@@ -421,6 +427,13 @@ func (c *Company) GetFontFamily() *string {
 	return c.FontFamily
 }
 
+func (c *Company) GetFooterMode() *CompanyFooterMode {
+	if c == nil {
+		return nil
+	}
+	return c.FooterMode
+}
+
 func (c *Company) GetFooterStyle() *CompanyFooterStyle {
 	if c == nil {
 		return nil
@@ -447,6 +460,13 @@ func (c *Company) GetFounderName() *string {
 		return nil
 	}
 	return c.FounderName
+}
+
+func (c *Company) GetFounderPhotoURL() *string {
+	if c == nil {
+		return nil
+	}
+	return c.FounderPhotoURL
 }
 
 func (c *Company) GetID() *string {
@@ -771,6 +791,13 @@ func (c *Company) SetFontFamily(fontFamily *string) {
 	c.require(companyFieldFontFamily)
 }
 
+// SetFooterMode sets the FooterMode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *Company) SetFooterMode(footerMode *CompanyFooterMode) {
+	c.FooterMode = footerMode
+	c.require(companyFieldFooterMode)
+}
+
 // SetFooterStyle sets the FooterStyle field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *Company) SetFooterStyle(footerStyle *CompanyFooterStyle) {
@@ -797,6 +824,13 @@ func (c *Company) SetForwardReplies(forwardReplies *bool) {
 func (c *Company) SetFounderName(founderName *string) {
 	c.FounderName = founderName
 	c.require(companyFieldFounderName)
+}
+
+// SetFounderPhotoURL sets the FounderPhotoURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *Company) SetFounderPhotoURL(founderPhotoURL *string) {
+	c.FounderPhotoURL = founderPhotoURL
+	c.require(companyFieldFounderPhotoURL)
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1461,6 +1495,29 @@ func (c CompanyEmailStylePreference) Ptr() *CompanyEmailStylePreference {
 	return &c
 }
 
+// Footer type for new AI-designed emails, combined with `footerStyle`. `branded` (the default) is signed by the company; `personal` opens the footer with the founder's sign-off: photo, name and title (`founderPhotoUrl`, `founderName`). Without a founder name, footers stay branded. Existing emails keep their footers.
+type CompanyFooterMode string
+
+const (
+	CompanyFooterModeBranded  CompanyFooterMode = "branded"
+	CompanyFooterModePersonal CompanyFooterMode = "personal"
+)
+
+func NewCompanyFooterModeFromString(s string) (CompanyFooterMode, error) {
+	switch s {
+	case "branded":
+		return CompanyFooterModeBranded, nil
+	case "personal":
+		return CompanyFooterModePersonal, nil
+	}
+	var t CompanyFooterMode
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CompanyFooterMode) Ptr() *CompanyFooterMode {
+	return &c
+}
+
 // Footer style for new AI-designed emails. `classic` keeps brand-colored social icons, centered; `mono` uses monochrome icons and sets the company name as a small wordmark; `band` sets that on a dark full-width band; `editorial` is mono and left-aligned. `auto` (the default) picks one that fits the brand. Existing emails keep their footers.
 type CompanyFooterStyle string
 
@@ -1500,19 +1557,21 @@ var (
 	companyFooterThemeFieldCompanyTextColor  = big.NewInt(1 << 2)
 	companyFooterThemeFieldLinkColor         = big.NewInt(1 << 3)
 	companyFooterThemeFieldMetaTextColor     = big.NewInt(1 << 4)
-	companyFooterThemeFieldPrivacyPolicyText = big.NewInt(1 << 5)
-	companyFooterThemeFieldReasonText        = big.NewInt(1 << 6)
-	companyFooterThemeFieldShowCompanyLine   = big.NewInt(1 << 7)
-	companyFooterThemeFieldStyle             = big.NewInt(1 << 8)
-	companyFooterThemeFieldUnsubscribeText   = big.NewInt(1 << 9)
+	companyFooterThemeFieldMode              = big.NewInt(1 << 5)
+	companyFooterThemeFieldPrivacyPolicyText = big.NewInt(1 << 6)
+	companyFooterThemeFieldReasonText        = big.NewInt(1 << 7)
+	companyFooterThemeFieldShowCompanyLine   = big.NewInt(1 << 8)
+	companyFooterThemeFieldStyle             = big.NewInt(1 << 9)
+	companyFooterThemeFieldUnsubscribeText   = big.NewInt(1 << 10)
 )
 
 type CompanyFooterTheme struct {
-	BackgroundColor  *string `json:"backgroundColor,omitempty" url:"backgroundColor,omitempty"`
-	BorderColor      *string `json:"borderColor,omitempty" url:"borderColor,omitempty"`
-	CompanyTextColor *string `json:"companyTextColor,omitempty" url:"companyTextColor,omitempty"`
-	LinkColor        *string `json:"linkColor,omitempty" url:"linkColor,omitempty"`
-	MetaTextColor    *string `json:"metaTextColor,omitempty" url:"metaTextColor,omitempty"`
+	BackgroundColor  *string                 `json:"backgroundColor,omitempty" url:"backgroundColor,omitempty"`
+	BorderColor      *string                 `json:"borderColor,omitempty" url:"borderColor,omitempty"`
+	CompanyTextColor *string                 `json:"companyTextColor,omitempty" url:"companyTextColor,omitempty"`
+	LinkColor        *string                 `json:"linkColor,omitempty" url:"linkColor,omitempty"`
+	MetaTextColor    *string                 `json:"metaTextColor,omitempty" url:"metaTextColor,omitempty"`
+	Mode             *CompanyFooterThemeMode `json:"mode,omitempty" url:"mode,omitempty"`
 	// Empty when the localized default is used.
 	PrivacyPolicyText *string `json:"privacyPolicyText,omitempty" url:"privacyPolicyText,omitempty"`
 	// Empty when the localized default is used.
@@ -1562,6 +1621,13 @@ func (c *CompanyFooterTheme) GetMetaTextColor() *string {
 		return nil
 	}
 	return c.MetaTextColor
+}
+
+func (c *CompanyFooterTheme) GetMode() *CompanyFooterThemeMode {
+	if c == nil {
+		return nil
+	}
+	return c.Mode
 }
 
 func (c *CompanyFooterTheme) GetPrivacyPolicyText() *string {
@@ -1648,6 +1714,13 @@ func (c *CompanyFooterTheme) SetMetaTextColor(metaTextColor *string) {
 	c.require(companyFooterThemeFieldMetaTextColor)
 }
 
+// SetMode sets the Mode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CompanyFooterTheme) SetMode(mode *CompanyFooterThemeMode) {
+	c.Mode = mode
+	c.require(companyFooterThemeFieldMode)
+}
+
 // SetPrivacyPolicyText sets the PrivacyPolicyText field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CompanyFooterTheme) SetPrivacyPolicyText(privacyPolicyText *string) {
@@ -1723,6 +1796,28 @@ func (c *CompanyFooterTheme) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", c)
+}
+
+type CompanyFooterThemeMode string
+
+const (
+	CompanyFooterThemeModeBranded  CompanyFooterThemeMode = "branded"
+	CompanyFooterThemeModePersonal CompanyFooterThemeMode = "personal"
+)
+
+func NewCompanyFooterThemeModeFromString(s string) (CompanyFooterThemeMode, error) {
+	switch s {
+	case "branded":
+		return CompanyFooterThemeModeBranded, nil
+	case "personal":
+		return CompanyFooterThemeModePersonal, nil
+	}
+	var t CompanyFooterThemeMode
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CompanyFooterThemeMode) Ptr() *CompanyFooterThemeMode {
+	return &c
 }
 
 type CompanyFooterThemeStyle string
@@ -3468,6 +3563,29 @@ func (u *UpdateCompaniesRequestEmailThemeTypography) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
+// Footer type for new AI-designed emails, in whichever `footerStyle`: `branded` (the default) or `personal`, which opens the footer with the founder's sign-off (photo, name and title, from `founderPhotoUrl` and `founderName`). Without a founder name, footers stay branded. Existing emails keep their footers. Other values return 400, as does a `footerTheme.mode` that differs in the same request.
+type UpdateCompaniesRequestFooterMode string
+
+const (
+	UpdateCompaniesRequestFooterModeBranded  UpdateCompaniesRequestFooterMode = "branded"
+	UpdateCompaniesRequestFooterModePersonal UpdateCompaniesRequestFooterMode = "personal"
+)
+
+func NewUpdateCompaniesRequestFooterModeFromString(s string) (UpdateCompaniesRequestFooterMode, error) {
+	switch s {
+	case "branded":
+		return UpdateCompaniesRequestFooterModeBranded, nil
+	case "personal":
+		return UpdateCompaniesRequestFooterModePersonal, nil
+	}
+	var t UpdateCompaniesRequestFooterMode
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateCompaniesRequestFooterMode) Ptr() *UpdateCompaniesRequestFooterMode {
+	return &u
+}
+
 // Footer style for new AI-designed emails: `auto` (fits the brand), `classic`, `mono`, `band` or `editorial`. Kept in the stored footer theme, alongside its other settings. Existing emails keep their footers. Other values return 400.
 type UpdateCompaniesRequestFooterStyle string
 
@@ -3507,11 +3625,12 @@ var (
 	updateCompaniesRequestFooterThemeFieldCompanyTextColor  = big.NewInt(1 << 2)
 	updateCompaniesRequestFooterThemeFieldLinkColor         = big.NewInt(1 << 3)
 	updateCompaniesRequestFooterThemeFieldMetaTextColor     = big.NewInt(1 << 4)
-	updateCompaniesRequestFooterThemeFieldPrivacyPolicyText = big.NewInt(1 << 5)
-	updateCompaniesRequestFooterThemeFieldReasonText        = big.NewInt(1 << 6)
-	updateCompaniesRequestFooterThemeFieldShowCompanyLine   = big.NewInt(1 << 7)
-	updateCompaniesRequestFooterThemeFieldStyle             = big.NewInt(1 << 8)
-	updateCompaniesRequestFooterThemeFieldUnsubscribeText   = big.NewInt(1 << 9)
+	updateCompaniesRequestFooterThemeFieldMode              = big.NewInt(1 << 5)
+	updateCompaniesRequestFooterThemeFieldPrivacyPolicyText = big.NewInt(1 << 6)
+	updateCompaniesRequestFooterThemeFieldReasonText        = big.NewInt(1 << 7)
+	updateCompaniesRequestFooterThemeFieldShowCompanyLine   = big.NewInt(1 << 8)
+	updateCompaniesRequestFooterThemeFieldStyle             = big.NewInt(1 << 9)
+	updateCompaniesRequestFooterThemeFieldUnsubscribeText   = big.NewInt(1 << 10)
 )
 
 type UpdateCompaniesRequestFooterTheme struct {
@@ -3525,6 +3644,8 @@ type UpdateCompaniesRequestFooterTheme struct {
 	LinkColor *string `json:"linkColor,omitempty" url:"linkColor,omitempty"`
 	// 6-digit hex for the reason and address text.
 	MetaTextColor *string `json:"metaTextColor,omitempty" url:"metaTextColor,omitempty"`
+	// Same setting as `footerMode`; `""` or `null` resets it to `branded`.
+	Mode *UpdateCompaniesRequestFooterThemeMode `json:"mode,omitempty" url:"mode,omitempty"`
 	// Privacy link label. Empty or null uses the localized default.
 	PrivacyPolicyText *string `json:"privacyPolicyText,omitempty" url:"privacyPolicyText,omitempty"`
 	// Why the recipient gets the email. Empty or null uses the localized default.
@@ -3576,6 +3697,13 @@ func (u *UpdateCompaniesRequestFooterTheme) GetMetaTextColor() *string {
 		return nil
 	}
 	return u.MetaTextColor
+}
+
+func (u *UpdateCompaniesRequestFooterTheme) GetMode() *UpdateCompaniesRequestFooterThemeMode {
+	if u == nil {
+		return nil
+	}
+	return u.Mode
 }
 
 func (u *UpdateCompaniesRequestFooterTheme) GetPrivacyPolicyText() *string {
@@ -3662,6 +3790,13 @@ func (u *UpdateCompaniesRequestFooterTheme) SetMetaTextColor(metaTextColor *stri
 	u.require(updateCompaniesRequestFooterThemeFieldMetaTextColor)
 }
 
+// SetMode sets the Mode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateCompaniesRequestFooterTheme) SetMode(mode *UpdateCompaniesRequestFooterThemeMode) {
+	u.Mode = mode
+	u.require(updateCompaniesRequestFooterThemeFieldMode)
+}
+
 // SetPrivacyPolicyText sets the PrivacyPolicyText field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateCompaniesRequestFooterTheme) SetPrivacyPolicyText(privacyPolicyText *string) {
@@ -3737,6 +3872,32 @@ func (u *UpdateCompaniesRequestFooterTheme) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", u)
+}
+
+// Same setting as `footerMode`; `""` or `null` resets it to `branded`.
+type UpdateCompaniesRequestFooterThemeMode string
+
+const (
+	UpdateCompaniesRequestFooterThemeModeBranded  UpdateCompaniesRequestFooterThemeMode = "branded"
+	UpdateCompaniesRequestFooterThemeModePersonal UpdateCompaniesRequestFooterThemeMode = "personal"
+	UpdateCompaniesRequestFooterThemeModeEmpty    UpdateCompaniesRequestFooterThemeMode = ""
+)
+
+func NewUpdateCompaniesRequestFooterThemeModeFromString(s string) (UpdateCompaniesRequestFooterThemeMode, error) {
+	switch s {
+	case "branded":
+		return UpdateCompaniesRequestFooterThemeModeBranded, nil
+	case "personal":
+		return UpdateCompaniesRequestFooterThemeModePersonal, nil
+	case "":
+		return UpdateCompaniesRequestFooterThemeModeEmpty, nil
+	}
+	var t UpdateCompaniesRequestFooterThemeMode
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateCompaniesRequestFooterThemeMode) Ptr() *UpdateCompaniesRequestFooterThemeMode {
+	return &u
 }
 
 // Same setting as `footerStyle`; `""` or `null` resets it to `auto`.
@@ -3933,6 +4094,106 @@ func (u *UpdateCompaniesResponse) String() string {
 }
 
 var (
+	uploadFounderPhotoCompaniesResponseFieldCompany = big.NewInt(1 << 0)
+	uploadFounderPhotoCompaniesResponseFieldSuccess = big.NewInt(1 << 1)
+)
+
+type UploadFounderPhotoCompaniesResponse struct {
+	Company *Company `json:"company,omitempty" url:"company,omitempty"`
+	Success *bool    `json:"success,omitempty" url:"success,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UploadFounderPhotoCompaniesResponse) GetCompany() *Company {
+	if u == nil {
+		return nil
+	}
+	return u.Company
+}
+
+func (u *UploadFounderPhotoCompaniesResponse) GetSuccess() *bool {
+	if u == nil {
+		return nil
+	}
+	return u.Success
+}
+
+func (u *UploadFounderPhotoCompaniesResponse) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UploadFounderPhotoCompaniesResponse) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetCompany sets the Company field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UploadFounderPhotoCompaniesResponse) SetCompany(company *Company) {
+	u.Company = company
+	u.require(uploadFounderPhotoCompaniesResponseFieldCompany)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UploadFounderPhotoCompaniesResponse) SetSuccess(success *bool) {
+	u.Success = success
+	u.require(uploadFounderPhotoCompaniesResponseFieldSuccess)
+}
+
+func (u *UploadFounderPhotoCompaniesResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler UploadFounderPhotoCompaniesResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UploadFounderPhotoCompaniesResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UploadFounderPhotoCompaniesResponse) MarshalJSON() ([]byte, error) {
+	type embed UploadFounderPhotoCompaniesResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UploadFounderPhotoCompaniesResponse) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
 	updateCompaniesRequestFieldCompanyID                = big.NewInt(1 << 0)
 	updateCompaniesRequestFieldAddress                  = big.NewInt(1 << 1)
 	updateCompaniesRequestFieldBrandColors              = big.NewInt(1 << 2)
@@ -3947,32 +4208,34 @@ var (
 	updateCompaniesRequestFieldEmailStylePreference     = big.NewInt(1 << 11)
 	updateCompaniesRequestFieldEmailTheme               = big.NewInt(1 << 12)
 	updateCompaniesRequestFieldFontFamily               = big.NewInt(1 << 13)
-	updateCompaniesRequestFieldFooterStyle              = big.NewInt(1 << 14)
-	updateCompaniesRequestFieldFooterTheme              = big.NewInt(1 << 15)
-	updateCompaniesRequestFieldForwardReplies           = big.NewInt(1 << 16)
-	updateCompaniesRequestFieldFounderName              = big.NewInt(1 << 17)
-	updateCompaniesRequestFieldFromEmail                = big.NewInt(1 << 18)
-	updateCompaniesRequestFieldFromName                 = big.NewInt(1 << 19)
-	updateCompaniesRequestFieldLanguage                 = big.NewInt(1 << 20)
-	updateCompaniesRequestFieldLogoURL                  = big.NewInt(1 << 21)
-	updateCompaniesRequestFieldName                     = big.NewInt(1 << 22)
-	updateCompaniesRequestFieldPreviousCompanyName      = big.NewInt(1 << 23)
-	updateCompaniesRequestFieldPricing                  = big.NewInt(1 << 24)
-	updateCompaniesRequestFieldPrimaryColor             = big.NewInt(1 << 25)
-	updateCompaniesRequestFieldPrivacyPolicyURL         = big.NewInt(1 << 26)
-	updateCompaniesRequestFieldRenameMatchingFooters    = big.NewInt(1 << 27)
-	updateCompaniesRequestFieldReplyProfileID           = big.NewInt(1 << 28)
-	updateCompaniesRequestFieldReplyTo                  = big.NewInt(1 << 29)
-	updateCompaniesRequestFieldReplyToName              = big.NewInt(1 << 30)
-	updateCompaniesRequestFieldReplyTrackingDomainMode  = big.NewInt(1 << 31)
-	updateCompaniesRequestFieldReplyTrackingEnabled     = big.NewInt(1 << 32)
-	updateCompaniesRequestFieldSenderProfileID          = big.NewInt(1 << 33)
-	updateCompaniesRequestFieldSocialLinks              = big.NewInt(1 << 34)
-	updateCompaniesRequestFieldTermsURL                 = big.NewInt(1 << 35)
-	updateCompaniesRequestFieldTestimonials             = big.NewInt(1 << 36)
-	updateCompaniesRequestFieldToneVoice                = big.NewInt(1 << 37)
-	updateCompaniesRequestFieldValueProps               = big.NewInt(1 << 38)
-	updateCompaniesRequestFieldWebsiteType              = big.NewInt(1 << 39)
+	updateCompaniesRequestFieldFooterMode               = big.NewInt(1 << 14)
+	updateCompaniesRequestFieldFooterStyle              = big.NewInt(1 << 15)
+	updateCompaniesRequestFieldFooterTheme              = big.NewInt(1 << 16)
+	updateCompaniesRequestFieldForwardReplies           = big.NewInt(1 << 17)
+	updateCompaniesRequestFieldFounderName              = big.NewInt(1 << 18)
+	updateCompaniesRequestFieldFounderPhotoURL          = big.NewInt(1 << 19)
+	updateCompaniesRequestFieldFromEmail                = big.NewInt(1 << 20)
+	updateCompaniesRequestFieldFromName                 = big.NewInt(1 << 21)
+	updateCompaniesRequestFieldLanguage                 = big.NewInt(1 << 22)
+	updateCompaniesRequestFieldLogoURL                  = big.NewInt(1 << 23)
+	updateCompaniesRequestFieldName                     = big.NewInt(1 << 24)
+	updateCompaniesRequestFieldPreviousCompanyName      = big.NewInt(1 << 25)
+	updateCompaniesRequestFieldPricing                  = big.NewInt(1 << 26)
+	updateCompaniesRequestFieldPrimaryColor             = big.NewInt(1 << 27)
+	updateCompaniesRequestFieldPrivacyPolicyURL         = big.NewInt(1 << 28)
+	updateCompaniesRequestFieldRenameMatchingFooters    = big.NewInt(1 << 29)
+	updateCompaniesRequestFieldReplyProfileID           = big.NewInt(1 << 30)
+	updateCompaniesRequestFieldReplyTo                  = big.NewInt(1 << 31)
+	updateCompaniesRequestFieldReplyToName              = big.NewInt(1 << 32)
+	updateCompaniesRequestFieldReplyTrackingDomainMode  = big.NewInt(1 << 33)
+	updateCompaniesRequestFieldReplyTrackingEnabled     = big.NewInt(1 << 34)
+	updateCompaniesRequestFieldSenderProfileID          = big.NewInt(1 << 35)
+	updateCompaniesRequestFieldSocialLinks              = big.NewInt(1 << 36)
+	updateCompaniesRequestFieldTermsURL                 = big.NewInt(1 << 37)
+	updateCompaniesRequestFieldTestimonials             = big.NewInt(1 << 38)
+	updateCompaniesRequestFieldToneVoice                = big.NewInt(1 << 39)
+	updateCompaniesRequestFieldValueProps               = big.NewInt(1 << 40)
+	updateCompaniesRequestFieldWebsiteType              = big.NewInt(1 << 41)
 )
 
 type UpdateCompaniesRequest struct {
@@ -3998,6 +4261,8 @@ type UpdateCompaniesRequest struct {
 	// Default email theme. Partial update - omitted fields keep their current value (or the preset default) and numeric values are clamped to supported ranges. Pass null to reset to the platform default theme.
 	EmailTheme *UpdateCompaniesRequestEmailTheme `json:"emailTheme,omitempty" url:"-"`
 	FontFamily *string                           `json:"fontFamily,omitempty" url:"-"`
+	// Footer type for new AI-designed emails, in whichever `footerStyle`: `branded` (the default) or `personal`, which opens the footer with the founder's sign-off (photo, name and title, from `founderPhotoUrl` and `founderName`). Without a founder name, footers stay branded. Existing emails keep their footers. Other values return 400, as does a `footerTheme.mode` that differs in the same request.
+	FooterMode *UpdateCompaniesRequestFooterMode `json:"footerMode,omitempty" url:"-"`
 	// Footer style for new AI-designed emails: `auto` (fits the brand), `classic`, `mono`, `band` or `editorial`. Kept in the stored footer theme, alongside its other settings. Existing emails keep their footers. Other values return 400.
 	FooterStyle *UpdateCompaniesRequestFooterStyle `json:"footerStyle,omitempty" url:"-"`
 	// Colors and copy of the auto-added footer, the compliance footer Sequenzy appends when an email has no footer block. Merged into the stored theme: omitted fields keep their value, `null` (or `""`, and `"transparent"` for `backgroundColor`, the values get returns for defaults) resets one field to its default, and `footerTheme: null` resets them all. Other brandColors keys are kept. Malformed values and unknown fields return 400, as does a `style` that differs from `footerStyle` in the same request; a value that is not an object or null returns 422. Footer font, size and line height are set in `emailTheme.typography`.
@@ -4005,6 +4270,8 @@ type UpdateCompaniesRequest struct {
 	// Enable or disable forwarding captured replies to the configured mailbox.
 	ForwardReplies *bool   `json:"forwardReplies,omitempty" url:"-"`
 	FounderName    *string `json:"founderName,omitempty" url:"-"`
+	// Square founder photo (public http(s) image URL) personal footers sign off with. New personal footers copy it; existing footers keep their own photo. Send null or `""` to remove it. Other URLs return 400.
+	FounderPhotoURL *string `json:"founderPhotoUrl,omitempty" url:"-"`
 	// Account-wide default From address. The domain must be configured and verified.
 	FromEmail *string `json:"fromEmail,omitempty" url:"-"`
 	// Display name of the default From profile. Sent on its own it renames the current default profile; with senderProfileId it renames that profile; with fromEmail it names the profile for that address. If the address already carries several display names, the request is rejected - pass senderProfileId to say which one to rename.
@@ -4149,6 +4416,13 @@ func (u *UpdateCompaniesRequest) SetFontFamily(fontFamily *string) {
 	u.require(updateCompaniesRequestFieldFontFamily)
 }
 
+// SetFooterMode sets the FooterMode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateCompaniesRequest) SetFooterMode(footerMode *UpdateCompaniesRequestFooterMode) {
+	u.FooterMode = footerMode
+	u.require(updateCompaniesRequestFieldFooterMode)
+}
+
 // SetFooterStyle sets the FooterStyle field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateCompaniesRequest) SetFooterStyle(footerStyle *UpdateCompaniesRequestFooterStyle) {
@@ -4175,6 +4449,13 @@ func (u *UpdateCompaniesRequest) SetForwardReplies(forwardReplies *bool) {
 func (u *UpdateCompaniesRequest) SetFounderName(founderName *string) {
 	u.FounderName = founderName
 	u.require(updateCompaniesRequestFieldFounderName)
+}
+
+// SetFounderPhotoURL sets the FounderPhotoURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateCompaniesRequest) SetFounderPhotoURL(founderPhotoURL *string) {
+	u.FounderPhotoURL = founderPhotoURL
+	u.require(updateCompaniesRequestFieldFounderPhotoURL)
 }
 
 // SetFromEmail sets the FromEmail field and marks it as non-optional;
@@ -4343,6 +4624,63 @@ func (u *UpdateCompaniesRequest) UnmarshalJSON(data []byte) error {
 
 func (u *UpdateCompaniesRequest) MarshalJSON() ([]byte, error) {
 	type embed UpdateCompaniesRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
+	uploadFounderPhotoCompaniesRequestFieldCompanyID   = big.NewInt(1 << 0)
+	uploadFounderPhotoCompaniesRequestFieldImageBase64 = big.NewInt(1 << 1)
+)
+
+type UploadFounderPhotoCompaniesRequest struct {
+	// Company ID
+	CompanyID string `json:"-" url:"-"`
+	// The photo as raw base64 bytes or a base64 data URL. PNG, JPEG, GIF or WebP, up to 10MB, at least 96px on each side.
+	ImageBase64 string `json:"imageBase64" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (u *UploadFounderPhotoCompaniesRequest) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetCompanyID sets the CompanyID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UploadFounderPhotoCompaniesRequest) SetCompanyID(companyID string) {
+	u.CompanyID = companyID
+	u.require(uploadFounderPhotoCompaniesRequestFieldCompanyID)
+}
+
+// SetImageBase64 sets the ImageBase64 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UploadFounderPhotoCompaniesRequest) SetImageBase64(imageBase64 string) {
+	u.ImageBase64 = imageBase64
+	u.require(uploadFounderPhotoCompaniesRequestFieldImageBase64)
+}
+
+func (u *UploadFounderPhotoCompaniesRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler UploadFounderPhotoCompaniesRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*u = UploadFounderPhotoCompaniesRequest(body)
+	return nil
+}
+
+func (u *UploadFounderPhotoCompaniesRequest) MarshalJSON() ([]byte, error) {
+	type embed UploadFounderPhotoCompaniesRequest
 	var marshaler = struct {
 		embed
 	}{

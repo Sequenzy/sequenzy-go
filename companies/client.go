@@ -133,3 +133,31 @@ func (c *Client) Update(
 	}
 	return response.Body, nil
 }
+
+// Uploads the founder photo personal footers sign off with. The image is cropped to a 192px square JPEG around its most interesting area (the face, on a portrait), hosted by Sequenzy and saved as the company's founderPhotoUrl, replacing any photo already set. New personal footers copy it; existing footers keep their own photo. To remove the photo, update the company with founderPhotoUrl null. Requires the company_profile:manage scope.
+//
+// Example:
+//
+//	request := &sequenzygo.UploadFounderPhotoCompaniesRequest{
+//	    CompanyID: "companyId",
+//	    ImageBase64: "imageBase64",
+//	}
+//	client.Companies.UploadFounderPhoto(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) UploadFounderPhoto(
+	ctx context.Context,
+	request *sequenzygo.UploadFounderPhotoCompaniesRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.UploadFounderPhotoCompaniesResponse, error) {
+	response, err := c.WithRawResponse.UploadFounderPhoto(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
