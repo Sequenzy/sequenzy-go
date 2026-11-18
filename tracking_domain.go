@@ -71,7 +71,7 @@ var (
 )
 
 type TrackingDomain struct {
-	// True while verified. New emails use this domain only while active.
+	// True when the custom domain is verified and used for new emails. A shared routing override leaves the verification status intact and sets active to false.
 	Active bool `json:"active" url:"active"`
 	// The DNS record to publish.
 	CnameRecord *TrackingDomainCnameRecord `json:"cnameRecord" url:"cnameRecord"`
