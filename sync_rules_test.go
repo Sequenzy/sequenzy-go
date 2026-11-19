@@ -611,6 +611,22 @@ func TestSettersSyncRuleConditionsPurchasedProduct(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetNames", func(t *testing.T) {
+		obj := &SyncRuleConditionsPurchasedProduct{}
+		var fernTestValueNames []string
+		obj.SetNames(fernTestValueNames)
+		assert.Equal(t, fernTestValueNames, obj.Names)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetProductIDs", func(t *testing.T) {
+		obj := &SyncRuleConditionsPurchasedProduct{}
+		var fernTestValueProductIDs []string
+		obj.SetProductIDs(fernTestValueProductIDs)
+		assert.Equal(t, fernTestValueProductIDs, obj.ProductIDs)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetProductTypes", func(t *testing.T) {
 		obj := &SyncRuleConditionsPurchasedProduct{}
 		var fernTestValueProductTypes []string
@@ -669,6 +685,72 @@ func TestGettersSyncRuleConditionsPurchasedProduct(t *testing.T) {
 			}
 		}()
 		_ = obj.GetCollectionIDs() // Should return zero value
+	})
+
+	t.Run("GetNames", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SyncRuleConditionsPurchasedProduct{}
+		var expected []string
+		obj.Names = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetNames(), "getter should return the property value")
+	})
+
+	t.Run("GetNames_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SyncRuleConditionsPurchasedProduct{}
+		obj.Names = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetNames(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetNames_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SyncRuleConditionsPurchasedProduct
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetNames() // Should return zero value
+	})
+
+	t.Run("GetProductIDs", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SyncRuleConditionsPurchasedProduct{}
+		var expected []string
+		obj.ProductIDs = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetProductIDs(), "getter should return the property value")
+	})
+
+	t.Run("GetProductIDs_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SyncRuleConditionsPurchasedProduct{}
+		obj.ProductIDs = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetProductIDs(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetProductIDs_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SyncRuleConditionsPurchasedProduct
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetProductIDs() // Should return zero value
 	})
 
 	t.Run("GetProductTypes", func(t *testing.T) {
@@ -781,6 +863,68 @@ func TestSettersMarkExplicitSyncRuleConditionsPurchasedProduct(t *testing.T) {
 
 		// Act
 		obj.SetCollectionIDs(fernTestValueCollectionIDs)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetNames_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SyncRuleConditionsPurchasedProduct{}
+		var fernTestValueNames []string
+
+		// Act
+		obj.SetNames(fernTestValueNames)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetProductIDs_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SyncRuleConditionsPurchasedProduct{}
+		var fernTestValueProductIDs []string
+
+		// Act
+		obj.SetProductIDs(fernTestValueProductIDs)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)

@@ -235,7 +235,7 @@ var (
 )
 
 type SyncRuleConditions struct {
-	// For commerce events with product context - rule only applies when a product on the event matches every specified selector (values within a selector are OR'd).
+	// Rule only applies when a product on the event matches every specified selector (values within a selector are OR'd). `names` and `productIds` match the product a payment or commerce event carries; the other selectors match commerce catalog products.
 	PurchasedProduct *SyncRuleConditionsPurchasedProduct `json:"purchasedProduct,omitempty" url:"purchasedProduct,omitempty"`
 	// Rule only applies if the subscriber has NONE of these tags.
 	RequiresNotTags []string `json:"requiresNotTags,omitempty" url:"requiresNotTags,omitempty"`
@@ -347,19 +347,25 @@ func (s *SyncRuleConditions) String() string {
 	return fmt.Sprintf("%#v", s)
 }
 
-// For commerce events with product context - rule only applies when a product on the event matches every specified selector (values within a selector are OR'd).
+// Rule only applies when a product on the event matches every specified selector (values within a selector are OR'd). `names` and `productIds` match the product a payment or commerce event carries; the other selectors match commerce catalog products.
 var (
 	syncRuleConditionsPurchasedProductFieldCollectionIDs = big.NewInt(1 << 0)
-	syncRuleConditionsPurchasedProductFieldProductTypes  = big.NewInt(1 << 1)
-	syncRuleConditionsPurchasedProductFieldTags          = big.NewInt(1 << 2)
-	syncRuleConditionsPurchasedProductFieldVendors       = big.NewInt(1 << 3)
+	syncRuleConditionsPurchasedProductFieldNames         = big.NewInt(1 << 1)
+	syncRuleConditionsPurchasedProductFieldProductIDs    = big.NewInt(1 << 2)
+	syncRuleConditionsPurchasedProductFieldProductTypes  = big.NewInt(1 << 3)
+	syncRuleConditionsPurchasedProductFieldTags          = big.NewInt(1 << 4)
+	syncRuleConditionsPurchasedProductFieldVendors       = big.NewInt(1 << 5)
 )
 
 type SyncRuleConditionsPurchasedProduct struct {
 	CollectionIDs []string `json:"collectionIds,omitempty" url:"collectionIds,omitempty"`
-	ProductTypes  []string `json:"productTypes,omitempty" url:"productTypes,omitempty"`
-	Tags          []string `json:"tags,omitempty" url:"tags,omitempty"`
-	Vendors       []string `json:"vendors,omitempty" url:"vendors,omitempty"`
+	// Product names, compared without regard to case.
+	Names []string `json:"names,omitempty" url:"names,omitempty"`
+	// Product IDs as the provider issues them.
+	ProductIDs   []string `json:"productIds,omitempty" url:"productIds,omitempty"`
+	ProductTypes []string `json:"productTypes,omitempty" url:"productTypes,omitempty"`
+	Tags         []string `json:"tags,omitempty" url:"tags,omitempty"`
+	Vendors      []string `json:"vendors,omitempty" url:"vendors,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -373,6 +379,20 @@ func (s *SyncRuleConditionsPurchasedProduct) GetCollectionIDs() []string {
 		return nil
 	}
 	return s.CollectionIDs
+}
+
+func (s *SyncRuleConditionsPurchasedProduct) GetNames() []string {
+	if s == nil {
+		return nil
+	}
+	return s.Names
+}
+
+func (s *SyncRuleConditionsPurchasedProduct) GetProductIDs() []string {
+	if s == nil {
+		return nil
+	}
+	return s.ProductIDs
 }
 
 func (s *SyncRuleConditionsPurchasedProduct) GetProductTypes() []string {
@@ -415,6 +435,20 @@ func (s *SyncRuleConditionsPurchasedProduct) require(field *big.Int) {
 func (s *SyncRuleConditionsPurchasedProduct) SetCollectionIDs(collectionIDs []string) {
 	s.CollectionIDs = collectionIDs
 	s.require(syncRuleConditionsPurchasedProductFieldCollectionIDs)
+}
+
+// SetNames sets the Names field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SyncRuleConditionsPurchasedProduct) SetNames(names []string) {
+	s.Names = names
+	s.require(syncRuleConditionsPurchasedProductFieldNames)
+}
+
+// SetProductIDs sets the ProductIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SyncRuleConditionsPurchasedProduct) SetProductIDs(productIDs []string) {
+	s.ProductIDs = productIDs
+	s.require(syncRuleConditionsPurchasedProductFieldProductIDs)
 }
 
 // SetProductTypes sets the ProductTypes field and marks it as non-optional;

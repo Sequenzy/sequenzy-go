@@ -10925,6 +10925,316 @@ func (s *ServiceUnavailableErrorBody) String() string {
 }
 
 var (
+	tagChangeConflictFieldCode    = big.NewInt(1 << 0)
+	tagChangeConflictFieldError   = big.NewInt(1 << 1)
+	tagChangeConflictFieldSuccess = big.NewInt(1 << 2)
+	tagChangeConflictFieldUsage   = big.NewInt(1 << 3)
+)
+
+type TagChangeConflict struct {
+	Code    *TagChangeConflictCode `json:"code,omitempty" url:"code,omitempty"`
+	Error   *string                `json:"error,omitempty" url:"error,omitempty"`
+	Success *bool                  `json:"success,omitempty" url:"success,omitempty"`
+	// Where the tag is still used. Present for tag_in_use.
+	Usage []*TagChangeConflictUsageItem `json:"usage,omitempty" url:"usage,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (t *TagChangeConflict) GetCode() *TagChangeConflictCode {
+	if t == nil {
+		return nil
+	}
+	return t.Code
+}
+
+func (t *TagChangeConflict) GetError() *string {
+	if t == nil {
+		return nil
+	}
+	return t.Error
+}
+
+func (t *TagChangeConflict) GetSuccess() *bool {
+	if t == nil {
+		return nil
+	}
+	return t.Success
+}
+
+func (t *TagChangeConflict) GetUsage() []*TagChangeConflictUsageItem {
+	if t == nil {
+		return nil
+	}
+	return t.Usage
+}
+
+func (t *TagChangeConflict) GetExtraProperties() map[string]interface{} {
+	if t == nil {
+		return nil
+	}
+	return t.extraProperties
+}
+
+func (t *TagChangeConflict) require(field *big.Int) {
+	if t.explicitFields == nil {
+		t.explicitFields = big.NewInt(0)
+	}
+	t.explicitFields.Or(t.explicitFields, field)
+}
+
+// SetCode sets the Code field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TagChangeConflict) SetCode(code *TagChangeConflictCode) {
+	t.Code = code
+	t.require(tagChangeConflictFieldCode)
+}
+
+// SetError sets the Error field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TagChangeConflict) SetError(error_ *string) {
+	t.Error = error_
+	t.require(tagChangeConflictFieldError)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TagChangeConflict) SetSuccess(success *bool) {
+	t.Success = success
+	t.require(tagChangeConflictFieldSuccess)
+}
+
+// SetUsage sets the Usage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TagChangeConflict) SetUsage(usage []*TagChangeConflictUsageItem) {
+	t.Usage = usage
+	t.require(tagChangeConflictFieldUsage)
+}
+
+func (t *TagChangeConflict) UnmarshalJSON(data []byte) error {
+	type unmarshaler TagChangeConflict
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*t = TagChangeConflict(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+	t.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (t *TagChangeConflict) MarshalJSON() ([]byte, error) {
+	type embed TagChangeConflict
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*t),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, t.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (t *TagChangeConflict) String() string {
+	if t == nil {
+		return "<nil>"
+	}
+	if len(t.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(t.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(t); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", t)
+}
+
+type TagChangeConflictCode string
+
+const (
+	TagChangeConflictCodeTagNameTaken  TagChangeConflictCode = "tag_name_taken"
+	TagChangeConflictCodeTagInUse      TagChangeConflictCode = "tag_in_use"
+	TagChangeConflictCodeTagChanged    TagChangeConflictCode = "tag_changed"
+	TagChangeConflictCodeTagInProgress TagChangeConflictCode = "tag_in_progress"
+)
+
+func NewTagChangeConflictCodeFromString(s string) (TagChangeConflictCode, error) {
+	switch s {
+	case "tag_name_taken":
+		return TagChangeConflictCodeTagNameTaken, nil
+	case "tag_in_use":
+		return TagChangeConflictCodeTagInUse, nil
+	case "tag_changed":
+		return TagChangeConflictCodeTagChanged, nil
+	case "tag_in_progress":
+		return TagChangeConflictCodeTagInProgress, nil
+	}
+	var t TagChangeConflictCode
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (t TagChangeConflictCode) Ptr() *TagChangeConflictCode {
+	return &t
+}
+
+var (
+	tagChangeConflictUsageItemFieldKind = big.NewInt(1 << 0)
+	tagChangeConflictUsageItemFieldName = big.NewInt(1 << 1)
+)
+
+type TagChangeConflictUsageItem struct {
+	Kind *TagChangeConflictUsageItemKind `json:"kind,omitempty" url:"kind,omitempty"`
+	Name *string                         `json:"name,omitempty" url:"name,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (t *TagChangeConflictUsageItem) GetKind() *TagChangeConflictUsageItemKind {
+	if t == nil {
+		return nil
+	}
+	return t.Kind
+}
+
+func (t *TagChangeConflictUsageItem) GetName() *string {
+	if t == nil {
+		return nil
+	}
+	return t.Name
+}
+
+func (t *TagChangeConflictUsageItem) GetExtraProperties() map[string]interface{} {
+	if t == nil {
+		return nil
+	}
+	return t.extraProperties
+}
+
+func (t *TagChangeConflictUsageItem) require(field *big.Int) {
+	if t.explicitFields == nil {
+		t.explicitFields = big.NewInt(0)
+	}
+	t.explicitFields.Or(t.explicitFields, field)
+}
+
+// SetKind sets the Kind field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TagChangeConflictUsageItem) SetKind(kind *TagChangeConflictUsageItemKind) {
+	t.Kind = kind
+	t.require(tagChangeConflictUsageItemFieldKind)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TagChangeConflictUsageItem) SetName(name *string) {
+	t.Name = name
+	t.require(tagChangeConflictUsageItemFieldName)
+}
+
+func (t *TagChangeConflictUsageItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler TagChangeConflictUsageItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*t = TagChangeConflictUsageItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+	t.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (t *TagChangeConflictUsageItem) MarshalJSON() ([]byte, error) {
+	type embed TagChangeConflictUsageItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*t),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, t.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (t *TagChangeConflictUsageItem) String() string {
+	if t == nil {
+		return "<nil>"
+	}
+	if len(t.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(t.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(t); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", t)
+}
+
+type TagChangeConflictUsageItemKind string
+
+const (
+	TagChangeConflictUsageItemKindSequence       TagChangeConflictUsageItemKind = "sequence"
+	TagChangeConflictUsageItemKindSegment        TagChangeConflictUsageItemKind = "segment"
+	TagChangeConflictUsageItemKindCampaign       TagChangeConflictUsageItemKind = "campaign"
+	TagChangeConflictUsageItemKindEmail          TagChangeConflictUsageItemKind = "email"
+	TagChangeConflictUsageItemKindEmailComponent TagChangeConflictUsageItemKind = "email_component"
+	TagChangeConflictUsageItemKindSyncRule       TagChangeConflictUsageItemKind = "sync_rule"
+	TagChangeConflictUsageItemKindGoal           TagChangeConflictUsageItemKind = "goal"
+	TagChangeConflictUsageItemKindIntegration    TagChangeConflictUsageItemKind = "integration"
+	TagChangeConflictUsageItemKindForm           TagChangeConflictUsageItemKind = "form"
+	TagChangeConflictUsageItemKindPopup          TagChangeConflictUsageItemKind = "popup"
+	TagChangeConflictUsageItemKindLandingPage    TagChangeConflictUsageItemKind = "landing_page"
+)
+
+func NewTagChangeConflictUsageItemKindFromString(s string) (TagChangeConflictUsageItemKind, error) {
+	switch s {
+	case "sequence":
+		return TagChangeConflictUsageItemKindSequence, nil
+	case "segment":
+		return TagChangeConflictUsageItemKindSegment, nil
+	case "campaign":
+		return TagChangeConflictUsageItemKindCampaign, nil
+	case "email":
+		return TagChangeConflictUsageItemKindEmail, nil
+	case "email_component":
+		return TagChangeConflictUsageItemKindEmailComponent, nil
+	case "sync_rule":
+		return TagChangeConflictUsageItemKindSyncRule, nil
+	case "goal":
+		return TagChangeConflictUsageItemKindGoal, nil
+	case "integration":
+		return TagChangeConflictUsageItemKindIntegration, nil
+	case "form":
+		return TagChangeConflictUsageItemKindForm, nil
+	case "popup":
+		return TagChangeConflictUsageItemKindPopup, nil
+	case "landing_page":
+		return TagChangeConflictUsageItemKindLandingPage, nil
+	}
+	var t TagChangeConflictUsageItemKind
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (t TagChangeConflictUsageItemKind) Ptr() *TagChangeConflictUsageItemKind {
+	return &t
+}
+
+var (
 	templateUpdateErrorFieldCode      = big.NewInt(1 << 0)
 	templateUpdateErrorFieldError     = big.NewInt(1 << 1)
 	templateUpdateErrorFieldIssues    = big.NewInt(1 << 2)

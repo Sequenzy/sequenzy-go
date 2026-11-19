@@ -4658,6 +4658,22 @@ func TestSettersCampaignDetail(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetEmailTheme", func(t *testing.T) {
+		obj := &CampaignDetail{}
+		var fernTestValueEmailTheme map[string]any
+		obj.SetEmailTheme(fernTestValueEmailTheme)
+		assert.Equal(t, fernTestValueEmailTheme, obj.EmailTheme)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetFontFamily", func(t *testing.T) {
+		obj := &CampaignDetail{}
+		var fernTestValueFontFamily *string
+		obj.SetFontFamily(fernTestValueFontFamily)
+		assert.Equal(t, fernTestValueFontFamily, obj.FontFamily)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetFromEmail", func(t *testing.T) {
 		obj := &CampaignDetail{}
 		var fernTestValueFromEmail *string
@@ -5597,6 +5613,72 @@ func TestGettersCampaignDetail(t *testing.T) {
 			}
 		}()
 		_ = obj.GetComputedLists() // Should return zero value
+	})
+
+	t.Run("GetEmailTheme", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CampaignDetail{}
+		var expected map[string]any
+		obj.EmailTheme = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetEmailTheme(), "getter should return the property value")
+	})
+
+	t.Run("GetEmailTheme_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CampaignDetail{}
+		obj.EmailTheme = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetEmailTheme(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetEmailTheme_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CampaignDetail
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetEmailTheme() // Should return zero value
+	})
+
+	t.Run("GetFontFamily", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CampaignDetail{}
+		var expected *string
+		obj.FontFamily = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetFontFamily(), "getter should return the property value")
+	})
+
+	t.Run("GetFontFamily_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CampaignDetail{}
+		obj.FontFamily = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetFontFamily(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetFontFamily_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CampaignDetail
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetFontFamily() // Should return zero value
 	})
 
 	t.Run("GetFromEmail", func(t *testing.T) {
@@ -6715,6 +6797,68 @@ func TestSettersMarkExplicitCampaignDetail(t *testing.T) {
 
 		// Act
 		obj.SetComputedLists(fernTestValueComputedLists)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetEmailTheme_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CampaignDetail{}
+		var fernTestValueEmailTheme map[string]any
+
+		// Act
+		obj.SetEmailTheme(fernTestValueEmailTheme)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetFontFamily_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CampaignDetail{}
+		var fernTestValueFontFamily *string
+
+		// Act
+		obj.SetFontFamily(fernTestValueFontFamily)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -20237,6 +20381,22 @@ func TestSettersDuplicateCampaignsResponseCampaign(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetEmailTheme", func(t *testing.T) {
+		obj := &DuplicateCampaignsResponseCampaign{}
+		var fernTestValueEmailTheme map[string]any
+		obj.SetEmailTheme(fernTestValueEmailTheme)
+		assert.Equal(t, fernTestValueEmailTheme, obj.EmailTheme)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetFontFamily", func(t *testing.T) {
+		obj := &DuplicateCampaignsResponseCampaign{}
+		var fernTestValueFontFamily *string
+		obj.SetFontFamily(fernTestValueFontFamily)
+		assert.Equal(t, fernTestValueFontFamily, obj.FontFamily)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetFromEmail", func(t *testing.T) {
 		obj := &DuplicateCampaignsResponseCampaign{}
 		var fernTestValueFromEmail *string
@@ -20751,6 +20911,72 @@ func TestGettersDuplicateCampaignsResponseCampaign(t *testing.T) {
 			}
 		}()
 		_ = obj.GetEmailPreset() // Should return zero value
+	})
+
+	t.Run("GetEmailTheme", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &DuplicateCampaignsResponseCampaign{}
+		var expected map[string]any
+		obj.EmailTheme = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetEmailTheme(), "getter should return the property value")
+	})
+
+	t.Run("GetEmailTheme_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &DuplicateCampaignsResponseCampaign{}
+		obj.EmailTheme = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetEmailTheme(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetEmailTheme_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *DuplicateCampaignsResponseCampaign
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetEmailTheme() // Should return zero value
+	})
+
+	t.Run("GetFontFamily", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &DuplicateCampaignsResponseCampaign{}
+		var expected *string
+		obj.FontFamily = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetFontFamily(), "getter should return the property value")
+	})
+
+	t.Run("GetFontFamily_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &DuplicateCampaignsResponseCampaign{}
+		obj.FontFamily = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetFontFamily(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetFontFamily_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *DuplicateCampaignsResponseCampaign
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetFontFamily() // Should return zero value
 	})
 
 	t.Run("GetFromEmail", func(t *testing.T) {
@@ -21903,6 +22129,68 @@ func TestSettersMarkExplicitDuplicateCampaignsResponseCampaign(t *testing.T) {
 
 		// Act
 		obj.SetEmailPreset(fernTestValueEmailPreset)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetEmailTheme_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &DuplicateCampaignsResponseCampaign{}
+		var fernTestValueEmailTheme map[string]any
+
+		// Act
+		obj.SetEmailTheme(fernTestValueEmailTheme)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetFontFamily_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &DuplicateCampaignsResponseCampaign{}
+		var fernTestValueFontFamily *string
+
+		// Act
+		obj.SetFontFamily(fernTestValueFontFamily)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -26328,6 +26616,22 @@ func TestSettersResendToNonOpenersCampaignsResponseCampaign(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetEmailTheme", func(t *testing.T) {
+		obj := &ResendToNonOpenersCampaignsResponseCampaign{}
+		var fernTestValueEmailTheme map[string]any
+		obj.SetEmailTheme(fernTestValueEmailTheme)
+		assert.Equal(t, fernTestValueEmailTheme, obj.EmailTheme)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetFontFamily", func(t *testing.T) {
+		obj := &ResendToNonOpenersCampaignsResponseCampaign{}
+		var fernTestValueFontFamily *string
+		obj.SetFontFamily(fernTestValueFontFamily)
+		assert.Equal(t, fernTestValueFontFamily, obj.FontFamily)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetFromEmail", func(t *testing.T) {
 		obj := &ResendToNonOpenersCampaignsResponseCampaign{}
 		var fernTestValueFromEmail *string
@@ -26842,6 +27146,72 @@ func TestGettersResendToNonOpenersCampaignsResponseCampaign(t *testing.T) {
 			}
 		}()
 		_ = obj.GetEmailPreset() // Should return zero value
+	})
+
+	t.Run("GetEmailTheme", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ResendToNonOpenersCampaignsResponseCampaign{}
+		var expected map[string]any
+		obj.EmailTheme = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetEmailTheme(), "getter should return the property value")
+	})
+
+	t.Run("GetEmailTheme_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ResendToNonOpenersCampaignsResponseCampaign{}
+		obj.EmailTheme = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetEmailTheme(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetEmailTheme_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ResendToNonOpenersCampaignsResponseCampaign
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetEmailTheme() // Should return zero value
+	})
+
+	t.Run("GetFontFamily", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ResendToNonOpenersCampaignsResponseCampaign{}
+		var expected *string
+		obj.FontFamily = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetFontFamily(), "getter should return the property value")
+	})
+
+	t.Run("GetFontFamily_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ResendToNonOpenersCampaignsResponseCampaign{}
+		obj.FontFamily = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetFontFamily(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetFontFamily_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ResendToNonOpenersCampaignsResponseCampaign
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetFontFamily() // Should return zero value
 	})
 
 	t.Run("GetFromEmail", func(t *testing.T) {
@@ -27994,6 +28364,68 @@ func TestSettersMarkExplicitResendToNonOpenersCampaignsResponseCampaign(t *testi
 
 		// Act
 		obj.SetEmailPreset(fernTestValueEmailPreset)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetEmailTheme_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ResendToNonOpenersCampaignsResponseCampaign{}
+		var fernTestValueEmailTheme map[string]any
+
+		// Act
+		obj.SetEmailTheme(fernTestValueEmailTheme)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetFontFamily_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ResendToNonOpenersCampaignsResponseCampaign{}
+		var fernTestValueFontFamily *string
+
+		// Act
+		obj.SetFontFamily(fernTestValueFontFamily)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)

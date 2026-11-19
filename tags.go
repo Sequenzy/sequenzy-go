@@ -93,6 +93,63 @@ func (d *DeleteTagsRequest) SetTagID(tagID string) {
 }
 
 var (
+	mergeTagsRequestFieldTagID       = big.NewInt(1 << 0)
+	mergeTagsRequestFieldTargetTagID = big.NewInt(1 << 1)
+)
+
+type MergeTagsRequest struct {
+	// ID of the tag to merge away. It is deleted.
+	TagID string `json:"-" url:"-"`
+	// ID of the tag to keep.
+	TargetTagID string `json:"targetTagId" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (m *MergeTagsRequest) require(field *big.Int) {
+	if m.explicitFields == nil {
+		m.explicitFields = big.NewInt(0)
+	}
+	m.explicitFields.Or(m.explicitFields, field)
+}
+
+// SetTagID sets the TagID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MergeTagsRequest) SetTagID(tagID string) {
+	m.TagID = tagID
+	m.require(mergeTagsRequestFieldTagID)
+}
+
+// SetTargetTagID sets the TargetTagID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MergeTagsRequest) SetTargetTagID(targetTagID string) {
+	m.TargetTagID = targetTagID
+	m.require(mergeTagsRequestFieldTargetTagID)
+}
+
+func (m *MergeTagsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler MergeTagsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*m = MergeTagsRequest(body)
+	return nil
+}
+
+func (m *MergeTagsRequest) MarshalJSON() ([]byte, error) {
+	type embed MergeTagsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*m),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
 	tagDefinitionFieldColor    = big.NewInt(1 << 0)
 	tagDefinitionFieldID       = big.NewInt(1 << 1)
 	tagDefinitionFieldIsSystem = big.NewInt(1 << 2)
@@ -409,19 +466,29 @@ func (d *DeleteTagsResponse) String() string {
 }
 
 var (
-	listTagsResponseFieldSuccess = big.NewInt(1 << 0)
-	listTagsResponseFieldTags    = big.NewInt(1 << 1)
+	listTagsResponseFieldChangeInProgress = big.NewInt(1 << 0)
+	listTagsResponseFieldSuccess          = big.NewInt(1 << 1)
+	listTagsResponseFieldTags             = big.NewInt(1 << 2)
 )
 
 type ListTagsResponse struct {
-	Success *bool            `json:"success,omitempty" url:"success,omitempty"`
-	Tags    []*TagDefinition `json:"tags,omitempty" url:"tags,omitempty"`
+	// Present only while a rename or merge of a tag on more than 20,000 subscribers is still moving them. Renames, merges and deletes are refused until it is gone.
+	ChangeInProgress *ListTagsResponseChangeInProgress `json:"changeInProgress,omitempty" url:"changeInProgress,omitempty"`
+	Success          *bool                             `json:"success,omitempty" url:"success,omitempty"`
+	Tags             []*TagDefinition                  `json:"tags,omitempty" url:"tags,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (l *ListTagsResponse) GetChangeInProgress() *ListTagsResponseChangeInProgress {
+	if l == nil {
+		return nil
+	}
+	return l.ChangeInProgress
 }
 
 func (l *ListTagsResponse) GetSuccess() *bool {
@@ -450,6 +517,13 @@ func (l *ListTagsResponse) require(field *big.Int) {
 		l.explicitFields = big.NewInt(0)
 	}
 	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetChangeInProgress sets the ChangeInProgress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTagsResponse) SetChangeInProgress(changeInProgress *ListTagsResponseChangeInProgress) {
+	l.ChangeInProgress = changeInProgress
+	l.require(listTagsResponseFieldChangeInProgress)
 }
 
 // SetSuccess sets the Success field and marks it as non-optional;
@@ -508,20 +582,382 @@ func (l *ListTagsResponse) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
+// Present only while a rename or merge of a tag on more than 20,000 subscribers is still moving them. Renames, merges and deletes are refused until it is gone.
 var (
-	updateTagsResponseFieldSuccess = big.NewInt(1 << 0)
-	updateTagsResponseFieldTag     = big.NewInt(1 << 1)
+	listTagsResponseChangeInProgressFieldFromName    = big.NewInt(1 << 0)
+	listTagsResponseChangeInProgressFieldKind        = big.NewInt(1 << 1)
+	listTagsResponseChangeInProgressFieldSourceTagID = big.NewInt(1 << 2)
+	listTagsResponseChangeInProgressFieldStopped     = big.NewInt(1 << 3)
+	listTagsResponseChangeInProgressFieldTagID       = big.NewInt(1 << 4)
+	listTagsResponseChangeInProgressFieldToName      = big.NewInt(1 << 5)
 )
 
-type UpdateTagsResponse struct {
-	Success *bool          `json:"success,omitempty" url:"success,omitempty"`
-	Tag     *TagDefinition `json:"tag,omitempty" url:"tag,omitempty"`
+type ListTagsResponseChangeInProgress struct {
+	FromName *string                               `json:"fromName,omitempty" url:"fromName,omitempty"`
+	Kind     *ListTagsResponseChangeInProgressKind `json:"kind,omitempty" url:"kind,omitempty"`
+	// The tag a merge deletes when it finishes. Absent for a rename.
+	SourceTagID *string `json:"sourceTagId,omitempty" url:"sourceTagId,omitempty"`
+	// Present and true when the change failed before it finished. Some subscribers still carry fromName, and renames, merges and deletes stay refused until support finishes it.
+	Stopped *bool `json:"stopped,omitempty" url:"stopped,omitempty"`
+	// The renamed tag, or the tag a merge keeps.
+	TagID  *string `json:"tagId,omitempty" url:"tagId,omitempty"`
+	ToName *string `json:"toName,omitempty" url:"toName,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (l *ListTagsResponseChangeInProgress) GetFromName() *string {
+	if l == nil {
+		return nil
+	}
+	return l.FromName
+}
+
+func (l *ListTagsResponseChangeInProgress) GetKind() *ListTagsResponseChangeInProgressKind {
+	if l == nil {
+		return nil
+	}
+	return l.Kind
+}
+
+func (l *ListTagsResponseChangeInProgress) GetSourceTagID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SourceTagID
+}
+
+func (l *ListTagsResponseChangeInProgress) GetStopped() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.Stopped
+}
+
+func (l *ListTagsResponseChangeInProgress) GetTagID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.TagID
+}
+
+func (l *ListTagsResponseChangeInProgress) GetToName() *string {
+	if l == nil {
+		return nil
+	}
+	return l.ToName
+}
+
+func (l *ListTagsResponseChangeInProgress) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListTagsResponseChangeInProgress) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetFromName sets the FromName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTagsResponseChangeInProgress) SetFromName(fromName *string) {
+	l.FromName = fromName
+	l.require(listTagsResponseChangeInProgressFieldFromName)
+}
+
+// SetKind sets the Kind field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTagsResponseChangeInProgress) SetKind(kind *ListTagsResponseChangeInProgressKind) {
+	l.Kind = kind
+	l.require(listTagsResponseChangeInProgressFieldKind)
+}
+
+// SetSourceTagID sets the SourceTagID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTagsResponseChangeInProgress) SetSourceTagID(sourceTagID *string) {
+	l.SourceTagID = sourceTagID
+	l.require(listTagsResponseChangeInProgressFieldSourceTagID)
+}
+
+// SetStopped sets the Stopped field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTagsResponseChangeInProgress) SetStopped(stopped *bool) {
+	l.Stopped = stopped
+	l.require(listTagsResponseChangeInProgressFieldStopped)
+}
+
+// SetTagID sets the TagID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTagsResponseChangeInProgress) SetTagID(tagID *string) {
+	l.TagID = tagID
+	l.require(listTagsResponseChangeInProgressFieldTagID)
+}
+
+// SetToName sets the ToName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTagsResponseChangeInProgress) SetToName(toName *string) {
+	l.ToName = toName
+	l.require(listTagsResponseChangeInProgressFieldToName)
+}
+
+func (l *ListTagsResponseChangeInProgress) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListTagsResponseChangeInProgress
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListTagsResponseChangeInProgress(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListTagsResponseChangeInProgress) MarshalJSON() ([]byte, error) {
+	type embed ListTagsResponseChangeInProgress
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListTagsResponseChangeInProgress) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type ListTagsResponseChangeInProgressKind string
+
+const (
+	ListTagsResponseChangeInProgressKindRename ListTagsResponseChangeInProgressKind = "rename"
+	ListTagsResponseChangeInProgressKindMerge  ListTagsResponseChangeInProgressKind = "merge"
+)
+
+func NewListTagsResponseChangeInProgressKindFromString(s string) (ListTagsResponseChangeInProgressKind, error) {
+	switch s {
+	case "rename":
+		return ListTagsResponseChangeInProgressKindRename, nil
+	case "merge":
+		return ListTagsResponseChangeInProgressKindMerge, nil
+	}
+	var t ListTagsResponseChangeInProgressKind
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListTagsResponseChangeInProgressKind) Ptr() *ListTagsResponseChangeInProgressKind {
+	return &l
+}
+
+var (
+	mergeTagsResponseFieldContactsUpdated = big.NewInt(1 << 0)
+	mergeTagsResponseFieldStatus          = big.NewInt(1 << 1)
+	mergeTagsResponseFieldSuccess         = big.NewInt(1 << 2)
+	mergeTagsResponseFieldTag             = big.NewInt(1 << 3)
+)
+
+type MergeTagsResponse struct {
+	// Subscribers moved from the merged tag to the kept tag.
+	ContactsUpdated *int                     `json:"contactsUpdated,omitempty" url:"contactsUpdated,omitempty"`
+	Status          *MergeTagsResponseStatus `json:"status,omitempty" url:"status,omitempty"`
+	Success         *bool                    `json:"success,omitempty" url:"success,omitempty"`
+	Tag             *TagDefinition           `json:"tag,omitempty" url:"tag,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (m *MergeTagsResponse) GetContactsUpdated() *int {
+	if m == nil {
+		return nil
+	}
+	return m.ContactsUpdated
+}
+
+func (m *MergeTagsResponse) GetStatus() *MergeTagsResponseStatus {
+	if m == nil {
+		return nil
+	}
+	return m.Status
+}
+
+func (m *MergeTagsResponse) GetSuccess() *bool {
+	if m == nil {
+		return nil
+	}
+	return m.Success
+}
+
+func (m *MergeTagsResponse) GetTag() *TagDefinition {
+	if m == nil {
+		return nil
+	}
+	return m.Tag
+}
+
+func (m *MergeTagsResponse) GetExtraProperties() map[string]interface{} {
+	if m == nil {
+		return nil
+	}
+	return m.extraProperties
+}
+
+func (m *MergeTagsResponse) require(field *big.Int) {
+	if m.explicitFields == nil {
+		m.explicitFields = big.NewInt(0)
+	}
+	m.explicitFields.Or(m.explicitFields, field)
+}
+
+// SetContactsUpdated sets the ContactsUpdated field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MergeTagsResponse) SetContactsUpdated(contactsUpdated *int) {
+	m.ContactsUpdated = contactsUpdated
+	m.require(mergeTagsResponseFieldContactsUpdated)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MergeTagsResponse) SetStatus(status *MergeTagsResponseStatus) {
+	m.Status = status
+	m.require(mergeTagsResponseFieldStatus)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MergeTagsResponse) SetSuccess(success *bool) {
+	m.Success = success
+	m.require(mergeTagsResponseFieldSuccess)
+}
+
+// SetTag sets the Tag field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MergeTagsResponse) SetTag(tag *TagDefinition) {
+	m.Tag = tag
+	m.require(mergeTagsResponseFieldTag)
+}
+
+func (m *MergeTagsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler MergeTagsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*m = MergeTagsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *m)
+	if err != nil {
+		return err
+	}
+	m.extraProperties = extraProperties
+	m.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (m *MergeTagsResponse) MarshalJSON() ([]byte, error) {
+	type embed MergeTagsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*m),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (m *MergeTagsResponse) String() string {
+	if m == nil {
+		return "<nil>"
+	}
+	if len(m.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(m); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", m)
+}
+
+type MergeTagsResponseStatus string
+
+const (
+	MergeTagsResponseStatusCompleted MergeTagsResponseStatus = "completed"
+)
+
+func NewMergeTagsResponseStatusFromString(s string) (MergeTagsResponseStatus, error) {
+	switch s {
+	case "completed":
+		return MergeTagsResponseStatusCompleted, nil
+	}
+	var t MergeTagsResponseStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (m MergeTagsResponseStatus) Ptr() *MergeTagsResponseStatus {
+	return &m
+}
+
+var (
+	updateTagsResponseFieldContactsUpdated = big.NewInt(1 << 0)
+	updateTagsResponseFieldStatus          = big.NewInt(1 << 1)
+	updateTagsResponseFieldSuccess         = big.NewInt(1 << 2)
+	updateTagsResponseFieldTag             = big.NewInt(1 << 3)
+)
+
+type UpdateTagsResponse struct {
+	// Subscribers whose tag was renamed. Present only when name was sent.
+	ContactsUpdated *int `json:"contactsUpdated,omitempty" url:"contactsUpdated,omitempty"`
+	// Present only when name was sent.
+	Status  *UpdateTagsResponseStatus `json:"status,omitempty" url:"status,omitempty"`
+	Success *bool                     `json:"success,omitempty" url:"success,omitempty"`
+	Tag     *TagDefinition            `json:"tag,omitempty" url:"tag,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateTagsResponse) GetContactsUpdated() *int {
+	if u == nil {
+		return nil
+	}
+	return u.ContactsUpdated
+}
+
+func (u *UpdateTagsResponse) GetStatus() *UpdateTagsResponseStatus {
+	if u == nil {
+		return nil
+	}
+	return u.Status
 }
 
 func (u *UpdateTagsResponse) GetSuccess() *bool {
@@ -550,6 +986,20 @@ func (u *UpdateTagsResponse) require(field *big.Int) {
 		u.explicitFields = big.NewInt(0)
 	}
 	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetContactsUpdated sets the ContactsUpdated field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateTagsResponse) SetContactsUpdated(contactsUpdated *int) {
+	u.ContactsUpdated = contactsUpdated
+	u.require(updateTagsResponseFieldContactsUpdated)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateTagsResponse) SetStatus(status *UpdateTagsResponseStatus) {
+	u.Status = status
+	u.require(updateTagsResponseFieldStatus)
 }
 
 // SetSuccess sets the Success field and marks it as non-optional;
@@ -608,16 +1058,39 @@ func (u *UpdateTagsResponse) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
+// Present only when name was sent.
+type UpdateTagsResponseStatus string
+
+const (
+	UpdateTagsResponseStatusCompleted UpdateTagsResponseStatus = "completed"
+)
+
+func NewUpdateTagsResponseStatusFromString(s string) (UpdateTagsResponseStatus, error) {
+	switch s {
+	case "completed":
+		return UpdateTagsResponseStatusCompleted, nil
+	}
+	var t UpdateTagsResponseStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateTagsResponseStatus) Ptr() *UpdateTagsResponseStatus {
+	return &u
+}
+
 var (
 	updateTagsRequestFieldTagID = big.NewInt(1 << 0)
 	updateTagsRequestFieldColor = big.NewInt(1 << 1)
+	updateTagsRequestFieldName  = big.NewInt(1 << 2)
 )
 
 type UpdateTagsRequest struct {
 	// Tag definition ID.
 	TagID string `json:"-" url:"-"`
-	// Tag color. One of: gray, red, orange, amber, yellow, lime, green, emerald, teal, cyan, sky, blue, indigo, violet, purple, fuchsia, pink, rose.
-	Color string `json:"color" url:"-"`
+	// Tag color. One of: gray, red, orange, amber, yellow, lime, green, emerald, teal, cyan, sky, blue, indigo, violet, purple, fuchsia, pink, rose. Required unless name is sent.
+	Color *string `json:"color,omitempty" url:"-"`
+	// New tag name. Normalized to lowercase with spaces turned into hyphens. Up to 255 characters. Required unless color is sent.
+	Name *string `json:"name,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -639,9 +1112,16 @@ func (u *UpdateTagsRequest) SetTagID(tagID string) {
 
 // SetColor sets the Color field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateTagsRequest) SetColor(color string) {
+func (u *UpdateTagsRequest) SetColor(color *string) {
 	u.Color = color
 	u.require(updateTagsRequestFieldColor)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateTagsRequest) SetName(name *string) {
+	u.Name = name
+	u.require(updateTagsRequestFieldName)
 }
 
 func (u *UpdateTagsRequest) UnmarshalJSON(data []byte) error {

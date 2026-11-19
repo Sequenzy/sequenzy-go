@@ -109,13 +109,40 @@ func (c *Client) List(
 	return response.Body, nil
 }
 
-// Updates a tag definition's color. System tags cannot be updated.
+// Merges the tag in the path into the target tag. Every subscriber carrying the merged tag gets the target tag instead, then the merged tag is deleted. Starts no sequences. Refused while a sequence, segment, campaign, email, sync rule, goal, integration, form, popup or landing page still uses the merged tag. System tags cannot be merged. The API key needs tags:write and tags:delete.
+//
+// Example:
+//
+//	request := &sequenzygo.MergeTagsRequest{
+//	    TagID: "tagId",
+//	    TargetTagID: "tag_def456",
+//	}
+//	client.Tags.Merge(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Merge(
+	ctx context.Context,
+	request *sequenzygo.MergeTagsRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.MergeTagsResponse, error) {
+	response, err := c.WithRawResponse.Merge(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Renames a tag definition, changes its color, or both. A rename changes the tag on every subscriber that carries it, starts no sequences, and is refused while a sequence, segment, campaign, email, sync rule, goal or integration still uses the tag. System tags cannot be updated.
 //
 // Example:
 //
 //	request := &sequenzygo.UpdateTagsRequest{
 //	    TagID: "tagId",
-//	    Color: "green",
 //	}
 //	client.Tags.Update(
 //	    context.TODO(),

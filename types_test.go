@@ -23169,6 +23169,456 @@ func TestSettersMarkExplicitServiceUnavailableErrorBody(t *testing.T) {
 
 }
 
+func TestSettersTagChangeConflict(t *testing.T) {
+	t.Run("SetCode", func(t *testing.T) {
+		obj := &TagChangeConflict{}
+		var fernTestValueCode *TagChangeConflictCode
+		obj.SetCode(fernTestValueCode)
+		assert.Equal(t, fernTestValueCode, obj.Code)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetError", func(t *testing.T) {
+		obj := &TagChangeConflict{}
+		var fernTestValueError *string
+		obj.SetError(fernTestValueError)
+		assert.Equal(t, fernTestValueError, obj.Error)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetSuccess", func(t *testing.T) {
+		obj := &TagChangeConflict{}
+		var fernTestValueSuccess *bool
+		obj.SetSuccess(fernTestValueSuccess)
+		assert.Equal(t, fernTestValueSuccess, obj.Success)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetUsage", func(t *testing.T) {
+		obj := &TagChangeConflict{}
+		var fernTestValueUsage []*TagChangeConflictUsageItem
+		obj.SetUsage(fernTestValueUsage)
+		assert.Equal(t, fernTestValueUsage, obj.Usage)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersTagChangeConflict(t *testing.T) {
+	t.Run("GetCode", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TagChangeConflict{}
+		var expected *TagChangeConflictCode
+		obj.Code = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCode(), "getter should return the property value")
+	})
+
+	t.Run("GetCode_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TagChangeConflict{}
+		obj.Code = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetCode(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetCode_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *TagChangeConflict
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCode() // Should return zero value
+	})
+
+	t.Run("GetError", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TagChangeConflict{}
+		var expected *string
+		obj.Error = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetError(), "getter should return the property value")
+	})
+
+	t.Run("GetError_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TagChangeConflict{}
+		obj.Error = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetError(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetError_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *TagChangeConflict
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetError() // Should return zero value
+	})
+
+	t.Run("GetSuccess", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TagChangeConflict{}
+		var expected *bool
+		obj.Success = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSuccess(), "getter should return the property value")
+	})
+
+	t.Run("GetSuccess_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TagChangeConflict{}
+		obj.Success = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSuccess(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSuccess_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *TagChangeConflict
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSuccess() // Should return zero value
+	})
+
+	t.Run("GetUsage", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TagChangeConflict{}
+		var expected []*TagChangeConflictUsageItem
+		obj.Usage = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetUsage(), "getter should return the property value")
+	})
+
+	t.Run("GetUsage_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TagChangeConflict{}
+		obj.Usage = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetUsage(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetUsage_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *TagChangeConflict
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetUsage() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitTagChangeConflict(t *testing.T) {
+	t.Run("SetCode_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TagChangeConflict{}
+		var fernTestValueCode *TagChangeConflictCode
+
+		// Act
+		obj.SetCode(fernTestValueCode)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetError_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TagChangeConflict{}
+		var fernTestValueError *string
+
+		// Act
+		obj.SetError(fernTestValueError)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSuccess_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TagChangeConflict{}
+		var fernTestValueSuccess *bool
+
+		// Act
+		obj.SetSuccess(fernTestValueSuccess)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetUsage_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TagChangeConflict{}
+		var fernTestValueUsage []*TagChangeConflictUsageItem
+
+		// Act
+		obj.SetUsage(fernTestValueUsage)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersTagChangeConflictUsageItem(t *testing.T) {
+	t.Run("SetKind", func(t *testing.T) {
+		obj := &TagChangeConflictUsageItem{}
+		var fernTestValueKind *TagChangeConflictUsageItemKind
+		obj.SetKind(fernTestValueKind)
+		assert.Equal(t, fernTestValueKind, obj.Kind)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetName", func(t *testing.T) {
+		obj := &TagChangeConflictUsageItem{}
+		var fernTestValueName *string
+		obj.SetName(fernTestValueName)
+		assert.Equal(t, fernTestValueName, obj.Name)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersTagChangeConflictUsageItem(t *testing.T) {
+	t.Run("GetKind", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TagChangeConflictUsageItem{}
+		var expected *TagChangeConflictUsageItemKind
+		obj.Kind = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetKind(), "getter should return the property value")
+	})
+
+	t.Run("GetKind_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TagChangeConflictUsageItem{}
+		obj.Kind = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetKind(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetKind_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *TagChangeConflictUsageItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetKind() // Should return zero value
+	})
+
+	t.Run("GetName", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TagChangeConflictUsageItem{}
+		var expected *string
+		obj.Name = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetName(), "getter should return the property value")
+	})
+
+	t.Run("GetName_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TagChangeConflictUsageItem{}
+		obj.Name = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetName(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetName_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *TagChangeConflictUsageItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetName() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitTagChangeConflictUsageItem(t *testing.T) {
+	t.Run("SetKind_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TagChangeConflictUsageItem{}
+		var fernTestValueKind *TagChangeConflictUsageItemKind
+
+		// Act
+		obj.SetKind(fernTestValueKind)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetName_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TagChangeConflictUsageItem{}
+		var fernTestValueName *string
+
+		// Act
+		obj.SetName(fernTestValueName)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
 func TestSettersTemplateUpdateError(t *testing.T) {
 	t.Run("SetCode", func(t *testing.T) {
 		obj := &TemplateUpdateError{}
@@ -26309,6 +26759,72 @@ func TestJSONMarshalingServiceUnavailableErrorBody(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingTagChangeConflict(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TagChangeConflict{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled TagChangeConflict
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj TagChangeConflict
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj TagChangeConflict
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestJSONMarshalingTagChangeConflictUsageItem(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TagChangeConflictUsageItem{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled TagChangeConflictUsageItem
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj TagChangeConflictUsageItem
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj TagChangeConflictUsageItem
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingTemplateUpdateError(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -27381,6 +27897,38 @@ func TestStringServiceUnavailableErrorBody(t *testing.T) {
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *ServiceUnavailableErrorBody
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringTagChangeConflict(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &TagChangeConflict{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *TagChangeConflict
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringTagChangeConflictUsageItem(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &TagChangeConflictUsageItem{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *TagChangeConflictUsageItem
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -29599,6 +30147,141 @@ func TestEnumSequenceTriggersSkippedReason(t *testing.T) {
 	})
 }
 
+func TestEnumTagChangeConflictCode(t *testing.T) {
+	t.Run("NewFromString_tag_name_taken", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewTagChangeConflictCodeFromString("tag_name_taken")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, TagChangeConflictCode("tag_name_taken"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_tag_in_use", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewTagChangeConflictCodeFromString("tag_in_use")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, TagChangeConflictCode("tag_in_use"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_tag_changed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewTagChangeConflictCodeFromString("tag_changed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, TagChangeConflictCode("tag_changed"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_tag_in_progress", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewTagChangeConflictCodeFromString("tag_in_progress")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, TagChangeConflictCode("tag_in_progress"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewTagChangeConflictCodeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewTagChangeConflictCodeFromString("tag_name_taken")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumTagChangeConflictUsageItemKind(t *testing.T) {
+	t.Run("NewFromString_sequence", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewTagChangeConflictUsageItemKindFromString("sequence")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, TagChangeConflictUsageItemKind("sequence"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_segment", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewTagChangeConflictUsageItemKindFromString("segment")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, TagChangeConflictUsageItemKind("segment"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_campaign", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewTagChangeConflictUsageItemKindFromString("campaign")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, TagChangeConflictUsageItemKind("campaign"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_email", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewTagChangeConflictUsageItemKindFromString("email")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, TagChangeConflictUsageItemKind("email"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_email_component", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewTagChangeConflictUsageItemKindFromString("email_component")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, TagChangeConflictUsageItemKind("email_component"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_sync_rule", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewTagChangeConflictUsageItemKindFromString("sync_rule")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, TagChangeConflictUsageItemKind("sync_rule"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_goal", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewTagChangeConflictUsageItemKindFromString("goal")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, TagChangeConflictUsageItemKind("goal"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_integration", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewTagChangeConflictUsageItemKindFromString("integration")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, TagChangeConflictUsageItemKind("integration"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_form", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewTagChangeConflictUsageItemKindFromString("form")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, TagChangeConflictUsageItemKind("form"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_popup", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewTagChangeConflictUsageItemKindFromString("popup")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, TagChangeConflictUsageItemKind("popup"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_landing_page", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewTagChangeConflictUsageItemKindFromString("landing_page")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, TagChangeConflictUsageItemKind("landing_page"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewTagChangeConflictUsageItemKindFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewTagChangeConflictUsageItemKindFromString("sequence")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestExtraPropertiesAbTestContentEditing(t *testing.T) {
 	t.Run("GetExtraProperties", func(t *testing.T) {
 		t.Parallel()
@@ -30905,6 +31588,52 @@ func TestExtraPropertiesServiceUnavailableErrorBody(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *ServiceUnavailableErrorBody
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesTagChangeConflict(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &TagChangeConflict{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *TagChangeConflict
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesTagChangeConflictUsageItem(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &TagChangeConflictUsageItem{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *TagChangeConflictUsageItem
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})

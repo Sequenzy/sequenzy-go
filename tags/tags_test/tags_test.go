@@ -151,6 +151,33 @@ func TestTagsListWithWireMock(
 	VerifyRequestCount(t, "TestTagsListWithWireMock", "GET", "/tags", nil, 1)
 }
 
+func TestTagsMergeWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.MergeTagsRequest{
+		TagID:       "tagId",
+		TargetTagID: "tag_def456",
+	}
+	_, invocationErr := client.Tags.Merge(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestTagsMergeWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestTagsMergeWithWireMock", "POST", "/tags/tagId/merge", nil, 1)
+}
+
 func TestTagsUpdateWithWireMock(
 	t *testing.T,
 ) {
@@ -164,7 +191,6 @@ func TestTagsUpdateWithWireMock(
 	)
 	request := &sequenzygo.UpdateTagsRequest{
 		TagID: "tagId",
-		Color: "green",
 	}
 	_, invocationErr := client.Tags.Update(
 		context.TODO(),

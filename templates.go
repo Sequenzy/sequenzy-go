@@ -1031,8 +1031,9 @@ var (
 	templateDetailFieldBlocks                  = big.NewInt(1 << 11)
 	templateDetailFieldCompanyID               = big.NewInt(1 << 12)
 	templateDetailFieldEmailLocalizationConfig = big.NewInt(1 << 13)
-	templateDetailFieldFontFamily              = big.NewInt(1 << 14)
-	templateDetailFieldShareURL                = big.NewInt(1 << 15)
+	templateDetailFieldEmailTheme              = big.NewInt(1 << 14)
+	templateDetailFieldFontFamily              = big.NewInt(1 << 15)
+	templateDetailFieldShareURL                = big.NewInt(1 << 16)
 )
 
 type TemplateDetail struct {
@@ -1060,7 +1061,9 @@ type TemplateDetail struct {
 	Blocks                  []*EmailBlock              `json:"blocks,omitempty" url:"blocks,omitempty"`
 	CompanyID               *string                    `json:"companyId,omitempty" url:"companyId,omitempty"`
 	EmailLocalizationConfig map[string]any             `json:"emailLocalizationConfig,omitempty" url:"emailLocalizationConfig,omitempty"`
-	FontFamily              *string                    `json:"fontFamily,omitempty" url:"fontFamily,omitempty"`
+	// The email's own theme (colors, typography, layout). Null renders it on your company theme. Pass this email's `emailId` as `templateId` when creating a campaign to start from the same look.
+	EmailTheme map[string]any `json:"emailTheme,omitempty" url:"emailTheme,omitempty"`
+	FontFamily *string        `json:"fontFamily,omitempty" url:"fontFamily,omitempty"`
 	// Public anonymized view-in-browser URL. Null until a link is
 	// minted via POST /templates/{templateId}/share-link.
 	ShareURL *string `json:"shareUrl,omitempty" url:"shareUrl,omitempty"`
@@ -1168,6 +1171,13 @@ func (t *TemplateDetail) GetEmailLocalizationConfig() map[string]any {
 		return nil
 	}
 	return t.EmailLocalizationConfig
+}
+
+func (t *TemplateDetail) GetEmailTheme() map[string]any {
+	if t == nil {
+		return nil
+	}
+	return t.EmailTheme
 }
 
 func (t *TemplateDetail) GetFontFamily() *string {
@@ -1294,6 +1304,13 @@ func (t *TemplateDetail) SetCompanyID(companyID *string) {
 func (t *TemplateDetail) SetEmailLocalizationConfig(emailLocalizationConfig map[string]any) {
 	t.EmailLocalizationConfig = emailLocalizationConfig
 	t.require(templateDetailFieldEmailLocalizationConfig)
+}
+
+// SetEmailTheme sets the EmailTheme field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TemplateDetail) SetEmailTheme(emailTheme map[string]any) {
+	t.EmailTheme = emailTheme
+	t.require(templateDetailFieldEmailTheme)
 }
 
 // SetFontFamily sets the FontFamily field and marks it as non-optional;

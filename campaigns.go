@@ -1970,16 +1970,18 @@ var (
 	campaignDetailFieldCampaignData            = big.NewInt(1 << 23)
 	campaignDetailFieldCcEmails                = big.NewInt(1 << 24)
 	campaignDetailFieldComputedLists           = big.NewInt(1 << 25)
-	campaignDetailFieldFromEmail               = big.NewInt(1 << 26)
-	campaignDetailFieldFromName                = big.NewInt(1 << 27)
-	campaignDetailFieldPreheader               = big.NewInt(1 << 28)
-	campaignDetailFieldPreheaderText           = big.NewInt(1 << 29)
-	campaignDetailFieldReplyProfileID          = big.NewInt(1 << 30)
-	campaignDetailFieldReplyToEmail            = big.NewInt(1 << 31)
-	campaignDetailFieldReplyToName             = big.NewInt(1 << 32)
-	campaignDetailFieldSenderProfileID         = big.NewInt(1 << 33)
-	campaignDetailFieldShareURL                = big.NewInt(1 << 34)
-	campaignDetailFieldTargetLists             = big.NewInt(1 << 35)
+	campaignDetailFieldEmailTheme              = big.NewInt(1 << 26)
+	campaignDetailFieldFontFamily              = big.NewInt(1 << 27)
+	campaignDetailFieldFromEmail               = big.NewInt(1 << 28)
+	campaignDetailFieldFromName                = big.NewInt(1 << 29)
+	campaignDetailFieldPreheader               = big.NewInt(1 << 30)
+	campaignDetailFieldPreheaderText           = big.NewInt(1 << 31)
+	campaignDetailFieldReplyProfileID          = big.NewInt(1 << 32)
+	campaignDetailFieldReplyToEmail            = big.NewInt(1 << 33)
+	campaignDetailFieldReplyToName             = big.NewInt(1 << 34)
+	campaignDetailFieldSenderProfileID         = big.NewInt(1 << 35)
+	campaignDetailFieldShareURL                = big.NewInt(1 << 36)
+	campaignDetailFieldTargetLists             = big.NewInt(1 << 37)
 )
 
 type CampaignDetail struct {
@@ -2025,9 +2027,13 @@ type CampaignDetail struct {
 	// Addresses CC'd on every recipient's email for this campaign.
 	CcEmails      []string         `json:"ccEmails,omitempty" url:"ccEmails,omitempty"`
 	ComputedLists []map[string]any `json:"computedLists,omitempty" url:"computedLists,omitempty"`
-	FromEmail     *string          `json:"fromEmail,omitempty" url:"fromEmail,omitempty"`
-	FromName      *string          `json:"fromName,omitempty" url:"fromName,omitempty"`
-	Preheader     *string          `json:"preheader,omitempty" url:"preheader,omitempty"`
+	// The email's own theme (colors, typography, layout). Null renders it on your company theme. Pass this email's `emailId` as `templateId` when creating a campaign to start from the same look.
+	EmailTheme map[string]any `json:"emailTheme,omitempty" url:"emailTheme,omitempty"`
+	// The email's body font stack. Null uses your company font.
+	FontFamily *string `json:"fontFamily,omitempty" url:"fontFamily,omitempty"`
+	FromEmail  *string `json:"fromEmail,omitempty" url:"fromEmail,omitempty"`
+	FromName   *string `json:"fromName,omitempty" url:"fromName,omitempty"`
+	Preheader  *string `json:"preheader,omitempty" url:"preheader,omitempty"`
 	// Compatibility alias for preheader.
 	PreheaderText   *string `json:"preheaderText,omitempty" url:"preheaderText,omitempty"`
 	ReplyProfileID  *string `json:"replyProfileId,omitempty" url:"replyProfileId,omitempty"`
@@ -2226,6 +2232,20 @@ func (c *CampaignDetail) GetComputedLists() []map[string]any {
 		return nil
 	}
 	return c.ComputedLists
+}
+
+func (c *CampaignDetail) GetEmailTheme() map[string]any {
+	if c == nil {
+		return nil
+	}
+	return c.EmailTheme
+}
+
+func (c *CampaignDetail) GetFontFamily() *string {
+	if c == nil {
+		return nil
+	}
+	return c.FontFamily
 }
 
 func (c *CampaignDetail) GetFromEmail() *string {
@@ -2492,6 +2512,20 @@ func (c *CampaignDetail) SetCcEmails(ccEmails []string) {
 func (c *CampaignDetail) SetComputedLists(computedLists []map[string]any) {
 	c.ComputedLists = computedLists
 	c.require(campaignDetailFieldComputedLists)
+}
+
+// SetEmailTheme sets the EmailTheme field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CampaignDetail) SetEmailTheme(emailTheme map[string]any) {
+	c.EmailTheme = emailTheme
+	c.require(campaignDetailFieldEmailTheme)
+}
+
+// SetFontFamily sets the FontFamily field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CampaignDetail) SetFontFamily(fontFamily *string) {
+	c.FontFamily = fontFamily
+	c.require(campaignDetailFieldFontFamily)
 }
 
 // SetFromEmail sets the FromEmail field and marks it as non-optional;
@@ -8332,33 +8366,35 @@ var (
 	duplicateCampaignsResponseCampaignFieldCreatedAt               = big.NewInt(1 << 6)
 	duplicateCampaignsResponseCampaignFieldEmailID                 = big.NewInt(1 << 7)
 	duplicateCampaignsResponseCampaignFieldEmailPreset             = big.NewInt(1 << 8)
-	duplicateCampaignsResponseCampaignFieldFromEmail               = big.NewInt(1 << 9)
-	duplicateCampaignsResponseCampaignFieldFromName                = big.NewInt(1 << 10)
-	duplicateCampaignsResponseCampaignFieldHasAudience             = big.NewInt(1 << 11)
-	duplicateCampaignsResponseCampaignFieldID                      = big.NewInt(1 << 12)
-	duplicateCampaignsResponseCampaignFieldLabels                  = big.NewInt(1 << 13)
-	duplicateCampaignsResponseCampaignFieldMaxRecipients           = big.NewInt(1 << 14)
-	duplicateCampaignsResponseCampaignFieldName                    = big.NewInt(1 << 15)
-	duplicateCampaignsResponseCampaignFieldPreheader               = big.NewInt(1 << 16)
-	duplicateCampaignsResponseCampaignFieldPreheaderText           = big.NewInt(1 << 17)
-	duplicateCampaignsResponseCampaignFieldRejectionComment        = big.NewInt(1 << 18)
-	duplicateCampaignsResponseCampaignFieldReplyProfileID          = big.NewInt(1 << 19)
-	duplicateCampaignsResponseCampaignFieldReplyToEmail            = big.NewInt(1 << 20)
-	duplicateCampaignsResponseCampaignFieldReplyToName             = big.NewInt(1 << 21)
-	duplicateCampaignsResponseCampaignFieldScheduledAt             = big.NewInt(1 << 22)
-	duplicateCampaignsResponseCampaignFieldScheduledTimezone       = big.NewInt(1 << 23)
-	duplicateCampaignsResponseCampaignFieldSenderProfileID         = big.NewInt(1 << 24)
-	duplicateCampaignsResponseCampaignFieldSendInRecipientTimezone = big.NewInt(1 << 25)
-	duplicateCampaignsResponseCampaignFieldSendTimeOptimization    = big.NewInt(1 << 26)
-	duplicateCampaignsResponseCampaignFieldSendTimeWindowHours     = big.NewInt(1 << 27)
-	duplicateCampaignsResponseCampaignFieldSentAt                  = big.NewInt(1 << 28)
-	duplicateCampaignsResponseCampaignFieldShareURL                = big.NewInt(1 << 29)
-	duplicateCampaignsResponseCampaignFieldSpreadOverHours         = big.NewInt(1 << 30)
-	duplicateCampaignsResponseCampaignFieldStatus                  = big.NewInt(1 << 31)
-	duplicateCampaignsResponseCampaignFieldSubject                 = big.NewInt(1 << 32)
-	duplicateCampaignsResponseCampaignFieldTargetLists             = big.NewInt(1 << 33)
-	duplicateCampaignsResponseCampaignFieldTrackingCode            = big.NewInt(1 << 34)
-	duplicateCampaignsResponseCampaignFieldType                    = big.NewInt(1 << 35)
+	duplicateCampaignsResponseCampaignFieldEmailTheme              = big.NewInt(1 << 9)
+	duplicateCampaignsResponseCampaignFieldFontFamily              = big.NewInt(1 << 10)
+	duplicateCampaignsResponseCampaignFieldFromEmail               = big.NewInt(1 << 11)
+	duplicateCampaignsResponseCampaignFieldFromName                = big.NewInt(1 << 12)
+	duplicateCampaignsResponseCampaignFieldHasAudience             = big.NewInt(1 << 13)
+	duplicateCampaignsResponseCampaignFieldID                      = big.NewInt(1 << 14)
+	duplicateCampaignsResponseCampaignFieldLabels                  = big.NewInt(1 << 15)
+	duplicateCampaignsResponseCampaignFieldMaxRecipients           = big.NewInt(1 << 16)
+	duplicateCampaignsResponseCampaignFieldName                    = big.NewInt(1 << 17)
+	duplicateCampaignsResponseCampaignFieldPreheader               = big.NewInt(1 << 18)
+	duplicateCampaignsResponseCampaignFieldPreheaderText           = big.NewInt(1 << 19)
+	duplicateCampaignsResponseCampaignFieldRejectionComment        = big.NewInt(1 << 20)
+	duplicateCampaignsResponseCampaignFieldReplyProfileID          = big.NewInt(1 << 21)
+	duplicateCampaignsResponseCampaignFieldReplyToEmail            = big.NewInt(1 << 22)
+	duplicateCampaignsResponseCampaignFieldReplyToName             = big.NewInt(1 << 23)
+	duplicateCampaignsResponseCampaignFieldScheduledAt             = big.NewInt(1 << 24)
+	duplicateCampaignsResponseCampaignFieldScheduledTimezone       = big.NewInt(1 << 25)
+	duplicateCampaignsResponseCampaignFieldSenderProfileID         = big.NewInt(1 << 26)
+	duplicateCampaignsResponseCampaignFieldSendInRecipientTimezone = big.NewInt(1 << 27)
+	duplicateCampaignsResponseCampaignFieldSendTimeOptimization    = big.NewInt(1 << 28)
+	duplicateCampaignsResponseCampaignFieldSendTimeWindowHours     = big.NewInt(1 << 29)
+	duplicateCampaignsResponseCampaignFieldSentAt                  = big.NewInt(1 << 30)
+	duplicateCampaignsResponseCampaignFieldShareURL                = big.NewInt(1 << 31)
+	duplicateCampaignsResponseCampaignFieldSpreadOverHours         = big.NewInt(1 << 32)
+	duplicateCampaignsResponseCampaignFieldStatus                  = big.NewInt(1 << 33)
+	duplicateCampaignsResponseCampaignFieldSubject                 = big.NewInt(1 << 34)
+	duplicateCampaignsResponseCampaignFieldTargetLists             = big.NewInt(1 << 35)
+	duplicateCampaignsResponseCampaignFieldTrackingCode            = big.NewInt(1 << 36)
+	duplicateCampaignsResponseCampaignFieldType                    = big.NewInt(1 << 37)
 )
 
 type DuplicateCampaignsResponseCampaign struct {
@@ -8376,8 +8412,12 @@ type DuplicateCampaignsResponseCampaign struct {
 	EmailID *string `json:"emailId,omitempty" url:"emailId,omitempty"`
 	// Style > Format of the linked email. Null for SMS campaigns and for an email stored as a single raw HTML block.
 	EmailPreset *EmailPreset `json:"emailPreset,omitempty" url:"emailPreset,omitempty"`
-	FromEmail   *string      `json:"fromEmail,omitempty" url:"fromEmail,omitempty"`
-	FromName    *string      `json:"fromName,omitempty" url:"fromName,omitempty"`
+	// The email's own theme (colors, typography, layout). Null renders it on your company theme. Pass this email's `emailId` as `templateId` when creating a campaign to start from the same look.
+	EmailTheme map[string]any `json:"emailTheme,omitempty" url:"emailTheme,omitempty"`
+	// The email's body font stack. Null uses your company font.
+	FontFamily *string `json:"fontFamily,omitempty" url:"fontFamily,omitempty"`
+	FromEmail  *string `json:"fromEmail,omitempty" url:"fromEmail,omitempty"`
+	FromName   *string `json:"fromName,omitempty" url:"fromName,omitempty"`
 	// Whether an explicit audience is configured. False for unset or empty selections. This does not validate resource existence or count eligible recipients. Draft rows can use this for an Audience set indicator.
 	HasAudience *bool   `json:"hasAudience,omitempty" url:"hasAudience,omitempty"`
 	ID          *string `json:"id,omitempty" url:"id,omitempty"`
@@ -8486,6 +8526,20 @@ func (d *DuplicateCampaignsResponseCampaign) GetEmailPreset() *EmailPreset {
 		return nil
 	}
 	return d.EmailPreset
+}
+
+func (d *DuplicateCampaignsResponseCampaign) GetEmailTheme() map[string]any {
+	if d == nil {
+		return nil
+	}
+	return d.EmailTheme
+}
+
+func (d *DuplicateCampaignsResponseCampaign) GetFontFamily() *string {
+	if d == nil {
+		return nil
+	}
+	return d.FontFamily
 }
 
 func (d *DuplicateCampaignsResponseCampaign) GetFromEmail() *string {
@@ -8752,6 +8806,20 @@ func (d *DuplicateCampaignsResponseCampaign) SetEmailID(emailID *string) {
 func (d *DuplicateCampaignsResponseCampaign) SetEmailPreset(emailPreset *EmailPreset) {
 	d.EmailPreset = emailPreset
 	d.require(duplicateCampaignsResponseCampaignFieldEmailPreset)
+}
+
+// SetEmailTheme sets the EmailTheme field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DuplicateCampaignsResponseCampaign) SetEmailTheme(emailTheme map[string]any) {
+	d.EmailTheme = emailTheme
+	d.require(duplicateCampaignsResponseCampaignFieldEmailTheme)
+}
+
+// SetFontFamily sets the FontFamily field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DuplicateCampaignsResponseCampaign) SetFontFamily(fontFamily *string) {
+	d.FontFamily = fontFamily
+	d.require(duplicateCampaignsResponseCampaignFieldFontFamily)
 }
 
 // SetFromEmail sets the FromEmail field and marks it as non-optional;
@@ -10823,33 +10891,35 @@ var (
 	resendToNonOpenersCampaignsResponseCampaignFieldCreatedAt               = big.NewInt(1 << 6)
 	resendToNonOpenersCampaignsResponseCampaignFieldEmailID                 = big.NewInt(1 << 7)
 	resendToNonOpenersCampaignsResponseCampaignFieldEmailPreset             = big.NewInt(1 << 8)
-	resendToNonOpenersCampaignsResponseCampaignFieldFromEmail               = big.NewInt(1 << 9)
-	resendToNonOpenersCampaignsResponseCampaignFieldFromName                = big.NewInt(1 << 10)
-	resendToNonOpenersCampaignsResponseCampaignFieldHasAudience             = big.NewInt(1 << 11)
-	resendToNonOpenersCampaignsResponseCampaignFieldID                      = big.NewInt(1 << 12)
-	resendToNonOpenersCampaignsResponseCampaignFieldLabels                  = big.NewInt(1 << 13)
-	resendToNonOpenersCampaignsResponseCampaignFieldMaxRecipients           = big.NewInt(1 << 14)
-	resendToNonOpenersCampaignsResponseCampaignFieldName                    = big.NewInt(1 << 15)
-	resendToNonOpenersCampaignsResponseCampaignFieldPreheader               = big.NewInt(1 << 16)
-	resendToNonOpenersCampaignsResponseCampaignFieldPreheaderText           = big.NewInt(1 << 17)
-	resendToNonOpenersCampaignsResponseCampaignFieldRejectionComment        = big.NewInt(1 << 18)
-	resendToNonOpenersCampaignsResponseCampaignFieldReplyProfileID          = big.NewInt(1 << 19)
-	resendToNonOpenersCampaignsResponseCampaignFieldReplyToEmail            = big.NewInt(1 << 20)
-	resendToNonOpenersCampaignsResponseCampaignFieldReplyToName             = big.NewInt(1 << 21)
-	resendToNonOpenersCampaignsResponseCampaignFieldScheduledAt             = big.NewInt(1 << 22)
-	resendToNonOpenersCampaignsResponseCampaignFieldScheduledTimezone       = big.NewInt(1 << 23)
-	resendToNonOpenersCampaignsResponseCampaignFieldSenderProfileID         = big.NewInt(1 << 24)
-	resendToNonOpenersCampaignsResponseCampaignFieldSendInRecipientTimezone = big.NewInt(1 << 25)
-	resendToNonOpenersCampaignsResponseCampaignFieldSendTimeOptimization    = big.NewInt(1 << 26)
-	resendToNonOpenersCampaignsResponseCampaignFieldSendTimeWindowHours     = big.NewInt(1 << 27)
-	resendToNonOpenersCampaignsResponseCampaignFieldSentAt                  = big.NewInt(1 << 28)
-	resendToNonOpenersCampaignsResponseCampaignFieldShareURL                = big.NewInt(1 << 29)
-	resendToNonOpenersCampaignsResponseCampaignFieldSpreadOverHours         = big.NewInt(1 << 30)
-	resendToNonOpenersCampaignsResponseCampaignFieldStatus                  = big.NewInt(1 << 31)
-	resendToNonOpenersCampaignsResponseCampaignFieldSubject                 = big.NewInt(1 << 32)
-	resendToNonOpenersCampaignsResponseCampaignFieldTargetLists             = big.NewInt(1 << 33)
-	resendToNonOpenersCampaignsResponseCampaignFieldTrackingCode            = big.NewInt(1 << 34)
-	resendToNonOpenersCampaignsResponseCampaignFieldType                    = big.NewInt(1 << 35)
+	resendToNonOpenersCampaignsResponseCampaignFieldEmailTheme              = big.NewInt(1 << 9)
+	resendToNonOpenersCampaignsResponseCampaignFieldFontFamily              = big.NewInt(1 << 10)
+	resendToNonOpenersCampaignsResponseCampaignFieldFromEmail               = big.NewInt(1 << 11)
+	resendToNonOpenersCampaignsResponseCampaignFieldFromName                = big.NewInt(1 << 12)
+	resendToNonOpenersCampaignsResponseCampaignFieldHasAudience             = big.NewInt(1 << 13)
+	resendToNonOpenersCampaignsResponseCampaignFieldID                      = big.NewInt(1 << 14)
+	resendToNonOpenersCampaignsResponseCampaignFieldLabels                  = big.NewInt(1 << 15)
+	resendToNonOpenersCampaignsResponseCampaignFieldMaxRecipients           = big.NewInt(1 << 16)
+	resendToNonOpenersCampaignsResponseCampaignFieldName                    = big.NewInt(1 << 17)
+	resendToNonOpenersCampaignsResponseCampaignFieldPreheader               = big.NewInt(1 << 18)
+	resendToNonOpenersCampaignsResponseCampaignFieldPreheaderText           = big.NewInt(1 << 19)
+	resendToNonOpenersCampaignsResponseCampaignFieldRejectionComment        = big.NewInt(1 << 20)
+	resendToNonOpenersCampaignsResponseCampaignFieldReplyProfileID          = big.NewInt(1 << 21)
+	resendToNonOpenersCampaignsResponseCampaignFieldReplyToEmail            = big.NewInt(1 << 22)
+	resendToNonOpenersCampaignsResponseCampaignFieldReplyToName             = big.NewInt(1 << 23)
+	resendToNonOpenersCampaignsResponseCampaignFieldScheduledAt             = big.NewInt(1 << 24)
+	resendToNonOpenersCampaignsResponseCampaignFieldScheduledTimezone       = big.NewInt(1 << 25)
+	resendToNonOpenersCampaignsResponseCampaignFieldSenderProfileID         = big.NewInt(1 << 26)
+	resendToNonOpenersCampaignsResponseCampaignFieldSendInRecipientTimezone = big.NewInt(1 << 27)
+	resendToNonOpenersCampaignsResponseCampaignFieldSendTimeOptimization    = big.NewInt(1 << 28)
+	resendToNonOpenersCampaignsResponseCampaignFieldSendTimeWindowHours     = big.NewInt(1 << 29)
+	resendToNonOpenersCampaignsResponseCampaignFieldSentAt                  = big.NewInt(1 << 30)
+	resendToNonOpenersCampaignsResponseCampaignFieldShareURL                = big.NewInt(1 << 31)
+	resendToNonOpenersCampaignsResponseCampaignFieldSpreadOverHours         = big.NewInt(1 << 32)
+	resendToNonOpenersCampaignsResponseCampaignFieldStatus                  = big.NewInt(1 << 33)
+	resendToNonOpenersCampaignsResponseCampaignFieldSubject                 = big.NewInt(1 << 34)
+	resendToNonOpenersCampaignsResponseCampaignFieldTargetLists             = big.NewInt(1 << 35)
+	resendToNonOpenersCampaignsResponseCampaignFieldTrackingCode            = big.NewInt(1 << 36)
+	resendToNonOpenersCampaignsResponseCampaignFieldType                    = big.NewInt(1 << 37)
 )
 
 type ResendToNonOpenersCampaignsResponseCampaign struct {
@@ -10867,8 +10937,12 @@ type ResendToNonOpenersCampaignsResponseCampaign struct {
 	EmailID *string `json:"emailId,omitempty" url:"emailId,omitempty"`
 	// Style > Format of the linked email. Null for SMS campaigns and for an email stored as a single raw HTML block.
 	EmailPreset *EmailPreset `json:"emailPreset,omitempty" url:"emailPreset,omitempty"`
-	FromEmail   *string      `json:"fromEmail,omitempty" url:"fromEmail,omitempty"`
-	FromName    *string      `json:"fromName,omitempty" url:"fromName,omitempty"`
+	// The email's own theme (colors, typography, layout). Null renders it on your company theme. Pass this email's `emailId` as `templateId` when creating a campaign to start from the same look.
+	EmailTheme map[string]any `json:"emailTheme,omitempty" url:"emailTheme,omitempty"`
+	// The email's body font stack. Null uses your company font.
+	FontFamily *string `json:"fontFamily,omitempty" url:"fontFamily,omitempty"`
+	FromEmail  *string `json:"fromEmail,omitempty" url:"fromEmail,omitempty"`
+	FromName   *string `json:"fromName,omitempty" url:"fromName,omitempty"`
 	// Whether an explicit audience is configured. False for unset or empty selections. This does not validate resource existence or count eligible recipients. Draft rows can use this for an Audience set indicator.
 	HasAudience *bool   `json:"hasAudience,omitempty" url:"hasAudience,omitempty"`
 	ID          *string `json:"id,omitempty" url:"id,omitempty"`
@@ -10977,6 +11051,20 @@ func (r *ResendToNonOpenersCampaignsResponseCampaign) GetEmailPreset() *EmailPre
 		return nil
 	}
 	return r.EmailPreset
+}
+
+func (r *ResendToNonOpenersCampaignsResponseCampaign) GetEmailTheme() map[string]any {
+	if r == nil {
+		return nil
+	}
+	return r.EmailTheme
+}
+
+func (r *ResendToNonOpenersCampaignsResponseCampaign) GetFontFamily() *string {
+	if r == nil {
+		return nil
+	}
+	return r.FontFamily
 }
 
 func (r *ResendToNonOpenersCampaignsResponseCampaign) GetFromEmail() *string {
@@ -11243,6 +11331,20 @@ func (r *ResendToNonOpenersCampaignsResponseCampaign) SetEmailID(emailID *string
 func (r *ResendToNonOpenersCampaignsResponseCampaign) SetEmailPreset(emailPreset *EmailPreset) {
 	r.EmailPreset = emailPreset
 	r.require(resendToNonOpenersCampaignsResponseCampaignFieldEmailPreset)
+}
+
+// SetEmailTheme sets the EmailTheme field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendToNonOpenersCampaignsResponseCampaign) SetEmailTheme(emailTheme map[string]any) {
+	r.EmailTheme = emailTheme
+	r.require(resendToNonOpenersCampaignsResponseCampaignFieldEmailTheme)
+}
+
+// SetFontFamily sets the FontFamily field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendToNonOpenersCampaignsResponseCampaign) SetFontFamily(fontFamily *string) {
+	r.FontFamily = fontFamily
+	r.require(resendToNonOpenersCampaignsResponseCampaignFieldFontFamily)
 }
 
 // SetFromEmail sets the FromEmail field and marks it as non-optional;

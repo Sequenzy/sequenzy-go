@@ -2226,6 +2226,14 @@ func TestSettersTemplateDetail(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetEmailTheme", func(t *testing.T) {
+		obj := &TemplateDetail{}
+		var fernTestValueEmailTheme map[string]any
+		obj.SetEmailTheme(fernTestValueEmailTheme)
+		assert.Equal(t, fernTestValueEmailTheme, obj.EmailTheme)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetFontFamily", func(t *testing.T) {
 		obj := &TemplateDetail{}
 		var fernTestValueFontFamily *string
@@ -2705,6 +2713,39 @@ func TestGettersTemplateDetail(t *testing.T) {
 			}
 		}()
 		_ = obj.GetEmailLocalizationConfig() // Should return zero value
+	})
+
+	t.Run("GetEmailTheme", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TemplateDetail{}
+		var expected map[string]any
+		obj.EmailTheme = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetEmailTheme(), "getter should return the property value")
+	})
+
+	t.Run("GetEmailTheme_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TemplateDetail{}
+		obj.EmailTheme = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetEmailTheme(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetEmailTheme_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *TemplateDetail
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetEmailTheme() // Should return zero value
 	})
 
 	t.Run("GetFontFamily", func(t *testing.T) {
@@ -3187,6 +3228,37 @@ func TestSettersMarkExplicitTemplateDetail(t *testing.T) {
 
 		// Act
 		obj.SetEmailLocalizationConfig(fernTestValueEmailLocalizationConfig)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetEmailTheme_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TemplateDetail{}
+		var fernTestValueEmailTheme map[string]any
+
+		// Act
+		obj.SetEmailTheme(fernTestValueEmailTheme)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
