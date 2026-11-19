@@ -288,7 +288,7 @@ type TrackingSettingsConsent struct {
 	DoubleOptInEmailID *string `json:"doubleOptInEmailId,omitempty" url:"doubleOptInEmailId,omitempty"`
 	// Whether new contacts must confirm by email before they become subscribed. When on, contacts added by forms, the API, and integrations start pending and are never sent marketing email until they confirm.
 	DoubleOptInEnabled *bool `json:"doubleOptInEnabled,omitempty" url:"doubleOptInEnabled,omitempty"`
-	// Where the hosted confirmation page sends subscribers after they confirm. Null keeps them on the branded confirmation page.
+	// Where the hosted confirmation page sends subscribers after they confirm, as stored. Merge tags in its query string (such as `{{EMAIL}}`) are returned unfilled and are replaced with the confirming subscriber's values at redirect time. Null keeps them on the branded confirmation page.
 	DoubleOptInRedirectURL *string `json:"doubleOptInRedirectUrl,omitempty" url:"doubleOptInRedirectUrl,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -1271,7 +1271,7 @@ type UpdateTrackingSettingsRequest struct {
 	DefaultAttributionWindowHours *int `json:"defaultAttributionWindowHours,omitempty" url:"-"`
 	// Whether new contacts must confirm by email before they become subscribed. This is the account-wide default that the per-request optInMode on subscriber creation overrides. Enabling it requires a sender profile and provisions the confirmation email automatically; it does not change contacts that are already active.
 	DoubleOptInEnabled *bool `json:"doubleOptInEnabled,omitempty" url:"-"`
-	// Where the hosted confirmation page sends subscribers after they confirm. Must be an http(s) URL of at most 500 characters after normalization; a bare domain is normalized to https. Null (or an empty string) clears it, keeping subscribers on the confirmation page branded with the company's name, logo, and colors.
+	// Where the hosted confirmation page sends subscribers after they confirm. Must be an http(s) URL of at most 500 characters after normalization; a bare domain is normalized to https. The query string may contain the merge tags `{{EMAIL}}`, `{{FIRST_NAME}}`, `{{LAST_NAME}}`, `{{SUBSCRIBER_ID}}`, `{{LISTS}}` and `{{TAGS}}` (`{{LISTS}}` is the names of the public lists the signup joins and `{{TAGS}}` the tags it applied, both comma-separated). They are replaced with the confirming subscriber's URL-encoded values at redirect time and are empty when a value is unknown, for example `https://example.com/welcome?name={{FIRST_NAME}}&email={{EMAIL}}`. Merge tags outside the query string and any other placeholders are left as written. Null (or an empty string) clears it, keeping subscribers on the confirmation page branded with the company's name, logo, and colors.
 	DoubleOptInRedirectURL *string `json:"doubleOptInRedirectUrl,omitempty" url:"-"`
 	// Whether to keep each sent email's rendered content and subject, and the IP address, user agent and country of opens and clicks. When false, sent-email records keep no body once the email is sent and store the email's name (campaign, template or sequence) in place of its subject, opens and clicks store no IP address, user agent or country, and view-in-browser links stop working. Body and subject rules apply to emails sent afterwards; IP address, user agent and country follow the setting at each open or click.
 	EmailContentStorageEnabled *bool `json:"emailContentStorageEnabled,omitempty" url:"-"`
