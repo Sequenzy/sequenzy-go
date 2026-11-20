@@ -3396,8 +3396,8 @@
       }
     },
     {
-      "id": "e01c7b39-b7dd-44b6-bd3d-13d54f56dd8b",
-      "name": "Update a draft campaign - Update campaign subject",
+      "id": "5653a8e2-1543-453a-825f-33fb664f6041",
+      "name": "Update a draft campaign or a paused campaign's content - Update campaign subject",
       "request": {
         "urlPathTemplate": "/campaigns/{campaignId}",
         "method": "PUT",
@@ -3419,7 +3419,7 @@
           "Content-Type": "application/json"
         }
       },
-      "uuid": "e01c7b39-b7dd-44b6-bd3d-13d54f56dd8b",
+      "uuid": "5653a8e2-1543-453a-825f-33fb664f6041",
       "persistent": true,
       "priority": 3,
       "metadata": {

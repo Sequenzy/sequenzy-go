@@ -3745,7 +3745,7 @@ type EmailCheckIssue struct {
 	Category EmailCheckIssueCategory `json:"category" url:"category"`
 	// Plain-language description of the finding.
 	Message string `json:"message" url:"message"`
-	// Stable rule ID. The prefix groups it: links, images, content, subject, preview, accessibility, or compatibility. Examples: links.broken, links.unreachable, links.missing-scheme, links.local, links.staging, links.example-domain, links.insecure, links.shortener, links.text-mismatch, links.missing-website, images.broken, images.large, images.missing-alt, content.placeholder-text, content.merge-tag-fallback, subject.fake-reply, compatibility.gmail-clip.
+	// Stable rule ID. The prefix groups it: links, images, content, subject, preview, accessibility, or compatibility. Examples: links.broken, links.unreachable, links.missing-scheme, links.local, links.staging, links.example-domain, links.insecure, links.shortener, links.text-mismatch, links.missing-website, images.broken, images.large, images.missing-alt, content.placeholder-text, content.merge-tag-fallback, subject.fake-reply, compatibility.gmail-clip, compatibility.layout-css, compatibility.transform, compatibility.image-object-fit, compatibility.image-padding, compatibility.outlook-padding, compatibility.outlook-table-spacing, compatibility.outlook-centering, compatibility.negative-margin. New rules are added over time, so treat an ID you do not know as a finding of its severity.
 	Rule *string `json:"rule,omitempty" url:"rule,omitempty"`
 	// error - fix before sending. warning - worth reviewing. info - a tip that does not need action.
 	Severity EmailCheckIssueSeverity `json:"severity" url:"severity"`
