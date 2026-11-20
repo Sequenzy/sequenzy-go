@@ -8686,7 +8686,7 @@ type RenderEmailRequest struct {
 	Tracking *bool `json:"tracking,omitempty" url:"tracking,omitempty"`
 	// Extra merge variables layered over the contact's attributes.
 	Variables map[string]any `json:"variables,omitempty" url:"variables,omitempty"`
-	// Render a specific A/B test variant. Required for sequence steps whose nodeType is action_ab_test; those steps have no email of their own. Sequence variants also need the ab_tests:read scope. Ignored for templates.
+	// Render a specific A/B test variant. On a sequence step whose nodeType is action_ab_test, a key with ab_tests:read can omit it to render control variant A; other keys must pass it. Passing a sequence variant also needs the ab_tests:read scope. Ignored for templates.
 	VariantID *string `json:"variantId,omitempty" url:"variantId,omitempty"`
 	// Render a design variation of the campaign's or step's email in place of its saved content, from List Campaign Variations or List Sequence Email Variations. It must be ready; it can't be combined with variantId. Ignored for templates.
 	VariationID *string `json:"variationId,omitempty" url:"variationId,omitempty"`

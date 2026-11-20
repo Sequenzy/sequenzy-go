@@ -3304,19 +3304,31 @@ func (s *StartTestRunSequencesRequest) MarshalJSON() ([]byte, error) {
 
 // Partial visual theme patch. Omitted fields keep their current value, so {"colors": {"background": "#f3f4f6"}} repaints only the outer canvas, while content controls the inner card the blocks sit on. Colors are 6-digit hex; numeric values are clamped to their supported ranges. Null clears the stored theme.
 var (
-	emailThemePatchFieldButtonStyle = big.NewInt(1 << 0)
-	emailThemePatchFieldColors      = big.NewInt(1 << 1)
-	emailThemePatchFieldLayout      = big.NewInt(1 << 2)
-	emailThemePatchFieldPresetID    = big.NewInt(1 << 3)
-	emailThemePatchFieldTypography  = big.NewInt(1 << 4)
+	emailThemePatchFieldButtonStyle          = big.NewInt(1 << 0)
+	emailThemePatchFieldChromePack           = big.NewInt(1 << 1)
+	emailThemePatchFieldColors               = big.NewInt(1 << 2)
+	emailThemePatchFieldHeadingFontFromBrand = big.NewInt(1 << 3)
+	emailThemePatchFieldLayout               = big.NewInt(1 << 4)
+	emailThemePatchFieldPresetID             = big.NewInt(1 << 5)
+	emailThemePatchFieldRadiiFromBrand       = big.NewInt(1 << 6)
+	emailThemePatchFieldSignature            = big.NewInt(1 << 7)
+	emailThemePatchFieldTypography           = big.NewInt(1 << 8)
 )
 
 type EmailThemePatch struct {
 	ButtonStyle *EmailThemePatchButtonStyle `json:"buttonStyle,omitempty" url:"buttonStyle,omitempty"`
-	Colors      *EmailThemePatchColors      `json:"colors,omitempty" url:"colors,omitempty"`
-	Layout      *EmailThemePatchLayout      `json:"layout,omitempty" url:"layout,omitempty"`
-	PresetID    *EmailThemePatchPresetID    `json:"presetId,omitempty" url:"presetId,omitempty"`
-	Typography  *EmailThemePatchTypography  `json:"typography,omitempty" url:"typography,omitempty"`
+	// Brand-derived. Send back the value a theme read returned so a copied theme renders the same; null removes it.
+	ChromePack *EmailThemePatchChromePack `json:"chromePack,omitempty" url:"chromePack,omitempty"`
+	Colors     *EmailThemePatchColors     `json:"colors,omitempty" url:"colors,omitempty"`
+	// Brand-derived. Send back the value a theme read returned so a copied theme renders the same; null removes it.
+	HeadingFontFromBrand *bool                    `json:"headingFontFromBrand,omitempty" url:"headingFontFromBrand,omitempty"`
+	Layout               *EmailThemePatchLayout   `json:"layout,omitempty" url:"layout,omitempty"`
+	PresetID             *EmailThemePatchPresetID `json:"presetId,omitempty" url:"presetId,omitempty"`
+	// Brand-derived. Send back the value a theme read returned so a copied theme renders the same; null removes it.
+	RadiiFromBrand *EmailThemePatchRadiiFromBrand `json:"radiiFromBrand,omitempty" url:"radiiFromBrand,omitempty"`
+	// Brand-derived component styles. Send back the object a theme read returned, unchanged; null removes it.
+	Signature  map[string]any             `json:"signature,omitempty" url:"signature,omitempty"`
+	Typography *EmailThemePatchTypography `json:"typography,omitempty" url:"typography,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -3332,11 +3344,25 @@ func (e *EmailThemePatch) GetButtonStyle() *EmailThemePatchButtonStyle {
 	return e.ButtonStyle
 }
 
+func (e *EmailThemePatch) GetChromePack() *EmailThemePatchChromePack {
+	if e == nil {
+		return nil
+	}
+	return e.ChromePack
+}
+
 func (e *EmailThemePatch) GetColors() *EmailThemePatchColors {
 	if e == nil {
 		return nil
 	}
 	return e.Colors
+}
+
+func (e *EmailThemePatch) GetHeadingFontFromBrand() *bool {
+	if e == nil {
+		return nil
+	}
+	return e.HeadingFontFromBrand
 }
 
 func (e *EmailThemePatch) GetLayout() *EmailThemePatchLayout {
@@ -3351,6 +3377,20 @@ func (e *EmailThemePatch) GetPresetID() *EmailThemePatchPresetID {
 		return nil
 	}
 	return e.PresetID
+}
+
+func (e *EmailThemePatch) GetRadiiFromBrand() *EmailThemePatchRadiiFromBrand {
+	if e == nil {
+		return nil
+	}
+	return e.RadiiFromBrand
+}
+
+func (e *EmailThemePatch) GetSignature() map[string]any {
+	if e == nil {
+		return nil
+	}
+	return e.Signature
 }
 
 func (e *EmailThemePatch) GetTypography() *EmailThemePatchTypography {
@@ -3381,11 +3421,25 @@ func (e *EmailThemePatch) SetButtonStyle(buttonStyle *EmailThemePatchButtonStyle
 	e.require(emailThemePatchFieldButtonStyle)
 }
 
+// SetChromePack sets the ChromePack field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailThemePatch) SetChromePack(chromePack *EmailThemePatchChromePack) {
+	e.ChromePack = chromePack
+	e.require(emailThemePatchFieldChromePack)
+}
+
 // SetColors sets the Colors field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (e *EmailThemePatch) SetColors(colors *EmailThemePatchColors) {
 	e.Colors = colors
 	e.require(emailThemePatchFieldColors)
+}
+
+// SetHeadingFontFromBrand sets the HeadingFontFromBrand field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailThemePatch) SetHeadingFontFromBrand(headingFontFromBrand *bool) {
+	e.HeadingFontFromBrand = headingFontFromBrand
+	e.require(emailThemePatchFieldHeadingFontFromBrand)
 }
 
 // SetLayout sets the Layout field and marks it as non-optional;
@@ -3400,6 +3454,20 @@ func (e *EmailThemePatch) SetLayout(layout *EmailThemePatchLayout) {
 func (e *EmailThemePatch) SetPresetID(presetID *EmailThemePatchPresetID) {
 	e.PresetID = presetID
 	e.require(emailThemePatchFieldPresetID)
+}
+
+// SetRadiiFromBrand sets the RadiiFromBrand field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailThemePatch) SetRadiiFromBrand(radiiFromBrand *EmailThemePatchRadiiFromBrand) {
+	e.RadiiFromBrand = radiiFromBrand
+	e.require(emailThemePatchFieldRadiiFromBrand)
+}
+
+// SetSignature sets the Signature field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailThemePatch) SetSignature(signature map[string]any) {
+	e.Signature = signature
+	e.require(emailThemePatchFieldSignature)
 }
 
 // SetTypography sets the Typography field and marks it as non-optional;
@@ -3470,6 +3538,35 @@ func NewEmailThemePatchButtonStyleFromString(s string) (EmailThemePatchButtonSty
 }
 
 func (e EmailThemePatchButtonStyle) Ptr() *EmailThemePatchButtonStyle {
+	return &e
+}
+
+// Brand-derived. Send back the value a theme read returned so a copied theme renders the same; null removes it.
+type EmailThemePatchChromePack string
+
+const (
+	EmailThemePatchChromePackProduct    EmailThemePatchChromePack = "product"
+	EmailThemePatchChromePackEditorial  EmailThemePatchChromePack = "editorial"
+	EmailThemePatchChromePackPoster     EmailThemePatchChromePack = "poster"
+	EmailThemePatchChromePackStorefront EmailThemePatchChromePack = "storefront"
+)
+
+func NewEmailThemePatchChromePackFromString(s string) (EmailThemePatchChromePack, error) {
+	switch s {
+	case "product":
+		return EmailThemePatchChromePackProduct, nil
+	case "editorial":
+		return EmailThemePatchChromePackEditorial, nil
+	case "poster":
+		return EmailThemePatchChromePackPoster, nil
+	case "storefront":
+		return EmailThemePatchChromePackStorefront, nil
+	}
+	var t EmailThemePatchChromePack
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (e EmailThemePatchChromePack) Ptr() *EmailThemePatchChromePack {
 	return &e
 }
 
@@ -3998,6 +4095,107 @@ func NewEmailThemePatchPresetIDFromString(s string) (EmailThemePatchPresetID, er
 
 func (e EmailThemePatchPresetID) Ptr() *EmailThemePatchPresetID {
 	return &e
+}
+
+// Brand-derived. Send back the value a theme read returned so a copied theme renders the same; null removes it.
+var (
+	emailThemePatchRadiiFromBrandFieldBase   = big.NewInt(1 << 0)
+	emailThemePatchRadiiFromBrandFieldButton = big.NewInt(1 << 1)
+)
+
+type EmailThemePatchRadiiFromBrand struct {
+	Base   bool `json:"base" url:"base"`
+	Button bool `json:"button" url:"button"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (e *EmailThemePatchRadiiFromBrand) GetBase() bool {
+	if e == nil {
+		return false
+	}
+	return e.Base
+}
+
+func (e *EmailThemePatchRadiiFromBrand) GetButton() bool {
+	if e == nil {
+		return false
+	}
+	return e.Button
+}
+
+func (e *EmailThemePatchRadiiFromBrand) GetExtraProperties() map[string]interface{} {
+	if e == nil {
+		return nil
+	}
+	return e.extraProperties
+}
+
+func (e *EmailThemePatchRadiiFromBrand) require(field *big.Int) {
+	if e.explicitFields == nil {
+		e.explicitFields = big.NewInt(0)
+	}
+	e.explicitFields.Or(e.explicitFields, field)
+}
+
+// SetBase sets the Base field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailThemePatchRadiiFromBrand) SetBase(base bool) {
+	e.Base = base
+	e.require(emailThemePatchRadiiFromBrandFieldBase)
+}
+
+// SetButton sets the Button field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailThemePatchRadiiFromBrand) SetButton(button bool) {
+	e.Button = button
+	e.require(emailThemePatchRadiiFromBrandFieldButton)
+}
+
+func (e *EmailThemePatchRadiiFromBrand) UnmarshalJSON(data []byte) error {
+	type unmarshaler EmailThemePatchRadiiFromBrand
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = EmailThemePatchRadiiFromBrand(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+	e.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *EmailThemePatchRadiiFromBrand) MarshalJSON() ([]byte, error) {
+	type embed EmailThemePatchRadiiFromBrand
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*e),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (e *EmailThemePatchRadiiFromBrand) String() string {
+	if e == nil {
+		return "<nil>"
+	}
+	if len(e.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(e.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
 }
 
 var (

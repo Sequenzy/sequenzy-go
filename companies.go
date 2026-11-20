@@ -2559,21 +2559,33 @@ func (u UpdateCompaniesRequestEmailStylePreference) Ptr() *UpdateCompaniesReques
 
 // Default email theme. Partial update - omitted fields keep their current value (or the preset default) and numeric values are clamped to supported ranges. Pass null to reset to the platform default theme.
 var (
-	updateCompaniesRequestEmailThemeFieldButtonStyle = big.NewInt(1 << 0)
-	updateCompaniesRequestEmailThemeFieldColors      = big.NewInt(1 << 1)
-	updateCompaniesRequestEmailThemeFieldLayout      = big.NewInt(1 << 2)
-	updateCompaniesRequestEmailThemeFieldPresetID    = big.NewInt(1 << 3)
-	updateCompaniesRequestEmailThemeFieldTypography  = big.NewInt(1 << 4)
+	updateCompaniesRequestEmailThemeFieldButtonStyle          = big.NewInt(1 << 0)
+	updateCompaniesRequestEmailThemeFieldChromePack           = big.NewInt(1 << 1)
+	updateCompaniesRequestEmailThemeFieldColors               = big.NewInt(1 << 2)
+	updateCompaniesRequestEmailThemeFieldHeadingFontFromBrand = big.NewInt(1 << 3)
+	updateCompaniesRequestEmailThemeFieldLayout               = big.NewInt(1 << 4)
+	updateCompaniesRequestEmailThemeFieldPresetID             = big.NewInt(1 << 5)
+	updateCompaniesRequestEmailThemeFieldRadiiFromBrand       = big.NewInt(1 << 6)
+	updateCompaniesRequestEmailThemeFieldSignature            = big.NewInt(1 << 7)
+	updateCompaniesRequestEmailThemeFieldTypography           = big.NewInt(1 << 8)
 )
 
 type UpdateCompaniesRequestEmailTheme struct {
 	// How primary buttons are filled. "outline" renders them as a transparent box with a brand-color border; "solid" (default) is the classic filled button.
 	ButtonStyle *UpdateCompaniesRequestEmailThemeButtonStyle `json:"buttonStyle,omitempty" url:"buttonStyle,omitempty"`
+	// Brand-derived. Send back the value a theme read returned so a copied theme renders the same; null removes it.
+	ChromePack *UpdateCompaniesRequestEmailThemeChromePack `json:"chromePack,omitempty" url:"chromePack,omitempty"`
 	// 6-digit hex values.
 	Colors *UpdateCompaniesRequestEmailThemeColors `json:"colors,omitempty" url:"colors,omitempty"`
+	// Brand-derived. Send back the value a theme read returned so a copied theme renders the same; null removes it.
+	HeadingFontFromBrand *bool `json:"headingFontFromBrand,omitempty" url:"headingFontFromBrand,omitempty"`
 	// Layout settings. Every field is a number except contentAlign.
 	Layout   *UpdateCompaniesRequestEmailThemeLayout   `json:"layout,omitempty" url:"layout,omitempty"`
 	PresetID *UpdateCompaniesRequestEmailThemePresetID `json:"presetId,omitempty" url:"presetId,omitempty"`
+	// Brand-derived. Send back the value a theme read returned so a copied theme renders the same; null removes it.
+	RadiiFromBrand *UpdateCompaniesRequestEmailThemeRadiiFromBrand `json:"radiiFromBrand,omitempty" url:"radiiFromBrand,omitempty"`
+	// Brand-derived component styles. Send back the object a theme read returned, unchanged; null removes it.
+	Signature map[string]any `json:"signature,omitempty" url:"signature,omitempty"`
 	// Type settings. Every field is a number except the headingFontFamily and footerFontFamily stacks.
 	Typography *UpdateCompaniesRequestEmailThemeTypography `json:"typography,omitempty" url:"typography,omitempty"`
 
@@ -2591,11 +2603,25 @@ func (u *UpdateCompaniesRequestEmailTheme) GetButtonStyle() *UpdateCompaniesRequ
 	return u.ButtonStyle
 }
 
+func (u *UpdateCompaniesRequestEmailTheme) GetChromePack() *UpdateCompaniesRequestEmailThemeChromePack {
+	if u == nil {
+		return nil
+	}
+	return u.ChromePack
+}
+
 func (u *UpdateCompaniesRequestEmailTheme) GetColors() *UpdateCompaniesRequestEmailThemeColors {
 	if u == nil {
 		return nil
 	}
 	return u.Colors
+}
+
+func (u *UpdateCompaniesRequestEmailTheme) GetHeadingFontFromBrand() *bool {
+	if u == nil {
+		return nil
+	}
+	return u.HeadingFontFromBrand
 }
 
 func (u *UpdateCompaniesRequestEmailTheme) GetLayout() *UpdateCompaniesRequestEmailThemeLayout {
@@ -2610,6 +2636,20 @@ func (u *UpdateCompaniesRequestEmailTheme) GetPresetID() *UpdateCompaniesRequest
 		return nil
 	}
 	return u.PresetID
+}
+
+func (u *UpdateCompaniesRequestEmailTheme) GetRadiiFromBrand() *UpdateCompaniesRequestEmailThemeRadiiFromBrand {
+	if u == nil {
+		return nil
+	}
+	return u.RadiiFromBrand
+}
+
+func (u *UpdateCompaniesRequestEmailTheme) GetSignature() map[string]any {
+	if u == nil {
+		return nil
+	}
+	return u.Signature
 }
 
 func (u *UpdateCompaniesRequestEmailTheme) GetTypography() *UpdateCompaniesRequestEmailThemeTypography {
@@ -2640,11 +2680,25 @@ func (u *UpdateCompaniesRequestEmailTheme) SetButtonStyle(buttonStyle *UpdateCom
 	u.require(updateCompaniesRequestEmailThemeFieldButtonStyle)
 }
 
+// SetChromePack sets the ChromePack field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateCompaniesRequestEmailTheme) SetChromePack(chromePack *UpdateCompaniesRequestEmailThemeChromePack) {
+	u.ChromePack = chromePack
+	u.require(updateCompaniesRequestEmailThemeFieldChromePack)
+}
+
 // SetColors sets the Colors field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateCompaniesRequestEmailTheme) SetColors(colors *UpdateCompaniesRequestEmailThemeColors) {
 	u.Colors = colors
 	u.require(updateCompaniesRequestEmailThemeFieldColors)
+}
+
+// SetHeadingFontFromBrand sets the HeadingFontFromBrand field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateCompaniesRequestEmailTheme) SetHeadingFontFromBrand(headingFontFromBrand *bool) {
+	u.HeadingFontFromBrand = headingFontFromBrand
+	u.require(updateCompaniesRequestEmailThemeFieldHeadingFontFromBrand)
 }
 
 // SetLayout sets the Layout field and marks it as non-optional;
@@ -2659,6 +2713,20 @@ func (u *UpdateCompaniesRequestEmailTheme) SetLayout(layout *UpdateCompaniesRequ
 func (u *UpdateCompaniesRequestEmailTheme) SetPresetID(presetID *UpdateCompaniesRequestEmailThemePresetID) {
 	u.PresetID = presetID
 	u.require(updateCompaniesRequestEmailThemeFieldPresetID)
+}
+
+// SetRadiiFromBrand sets the RadiiFromBrand field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateCompaniesRequestEmailTheme) SetRadiiFromBrand(radiiFromBrand *UpdateCompaniesRequestEmailThemeRadiiFromBrand) {
+	u.RadiiFromBrand = radiiFromBrand
+	u.require(updateCompaniesRequestEmailThemeFieldRadiiFromBrand)
+}
+
+// SetSignature sets the Signature field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateCompaniesRequestEmailTheme) SetSignature(signature map[string]any) {
+	u.Signature = signature
+	u.require(updateCompaniesRequestEmailThemeFieldSignature)
 }
 
 // SetTypography sets the Typography field and marks it as non-optional;
@@ -2730,6 +2798,35 @@ func NewUpdateCompaniesRequestEmailThemeButtonStyleFromString(s string) (UpdateC
 }
 
 func (u UpdateCompaniesRequestEmailThemeButtonStyle) Ptr() *UpdateCompaniesRequestEmailThemeButtonStyle {
+	return &u
+}
+
+// Brand-derived. Send back the value a theme read returned so a copied theme renders the same; null removes it.
+type UpdateCompaniesRequestEmailThemeChromePack string
+
+const (
+	UpdateCompaniesRequestEmailThemeChromePackProduct    UpdateCompaniesRequestEmailThemeChromePack = "product"
+	UpdateCompaniesRequestEmailThemeChromePackEditorial  UpdateCompaniesRequestEmailThemeChromePack = "editorial"
+	UpdateCompaniesRequestEmailThemeChromePackPoster     UpdateCompaniesRequestEmailThemeChromePack = "poster"
+	UpdateCompaniesRequestEmailThemeChromePackStorefront UpdateCompaniesRequestEmailThemeChromePack = "storefront"
+)
+
+func NewUpdateCompaniesRequestEmailThemeChromePackFromString(s string) (UpdateCompaniesRequestEmailThemeChromePack, error) {
+	switch s {
+	case "product":
+		return UpdateCompaniesRequestEmailThemeChromePackProduct, nil
+	case "editorial":
+		return UpdateCompaniesRequestEmailThemeChromePackEditorial, nil
+	case "poster":
+		return UpdateCompaniesRequestEmailThemeChromePackPoster, nil
+	case "storefront":
+		return UpdateCompaniesRequestEmailThemeChromePackStorefront, nil
+	}
+	var t UpdateCompaniesRequestEmailThemeChromePack
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateCompaniesRequestEmailThemeChromePack) Ptr() *UpdateCompaniesRequestEmailThemeChromePack {
 	return &u
 }
 
@@ -3261,6 +3358,107 @@ func NewUpdateCompaniesRequestEmailThemePresetIDFromString(s string) (UpdateComp
 
 func (u UpdateCompaniesRequestEmailThemePresetID) Ptr() *UpdateCompaniesRequestEmailThemePresetID {
 	return &u
+}
+
+// Brand-derived. Send back the value a theme read returned so a copied theme renders the same; null removes it.
+var (
+	updateCompaniesRequestEmailThemeRadiiFromBrandFieldBase   = big.NewInt(1 << 0)
+	updateCompaniesRequestEmailThemeRadiiFromBrandFieldButton = big.NewInt(1 << 1)
+)
+
+type UpdateCompaniesRequestEmailThemeRadiiFromBrand struct {
+	Base   bool `json:"base" url:"base"`
+	Button bool `json:"button" url:"button"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateCompaniesRequestEmailThemeRadiiFromBrand) GetBase() bool {
+	if u == nil {
+		return false
+	}
+	return u.Base
+}
+
+func (u *UpdateCompaniesRequestEmailThemeRadiiFromBrand) GetButton() bool {
+	if u == nil {
+		return false
+	}
+	return u.Button
+}
+
+func (u *UpdateCompaniesRequestEmailThemeRadiiFromBrand) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateCompaniesRequestEmailThemeRadiiFromBrand) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetBase sets the Base field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateCompaniesRequestEmailThemeRadiiFromBrand) SetBase(base bool) {
+	u.Base = base
+	u.require(updateCompaniesRequestEmailThemeRadiiFromBrandFieldBase)
+}
+
+// SetButton sets the Button field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateCompaniesRequestEmailThemeRadiiFromBrand) SetButton(button bool) {
+	u.Button = button
+	u.require(updateCompaniesRequestEmailThemeRadiiFromBrandFieldButton)
+}
+
+func (u *UpdateCompaniesRequestEmailThemeRadiiFromBrand) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateCompaniesRequestEmailThemeRadiiFromBrand
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateCompaniesRequestEmailThemeRadiiFromBrand(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateCompaniesRequestEmailThemeRadiiFromBrand) MarshalJSON() ([]byte, error) {
+	type embed UpdateCompaniesRequestEmailThemeRadiiFromBrand
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateCompaniesRequestEmailThemeRadiiFromBrand) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
 }
 
 // Type settings. Every field is a number except the headingFontFamily and footerFontFamily stacks.
