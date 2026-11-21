@@ -2784,6 +2784,14 @@ func TestSettersGetAccountResponseAPIKeyPermissions(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetAllowedCompanyIDs", func(t *testing.T) {
+		obj := &GetAccountResponseAPIKeyPermissions{}
+		var fernTestValueAllowedCompanyIDs []string
+		obj.SetAllowedCompanyIDs(fernTestValueAllowedCompanyIDs)
+		assert.Equal(t, fernTestValueAllowedCompanyIDs, obj.AllowedCompanyIDs)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetCanDiscoverMarketingWork", func(t *testing.T) {
 		obj := &GetAccountResponseAPIKeyPermissions{}
 		var fernTestValueCanDiscoverMarketingWork *bool
@@ -2888,6 +2896,14 @@ func TestSettersGetAccountResponseAPIKeyPermissions(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetWorkspaceRestricted", func(t *testing.T) {
+		obj := &GetAccountResponseAPIKeyPermissions{}
+		var fernTestValueWorkspaceRestricted *bool
+		obj.SetWorkspaceRestricted(fernTestValueWorkspaceRestricted)
+		assert.Equal(t, fernTestValueWorkspaceRestricted, obj.WorkspaceRestricted)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 }
 
 func TestGettersGetAccountResponseAPIKeyPermissions(t *testing.T) {
@@ -2922,6 +2938,39 @@ func TestGettersGetAccountResponseAPIKeyPermissions(t *testing.T) {
 			}
 		}()
 		_ = obj.GetActiveKey() // Should return zero value
+	})
+
+	t.Run("GetAllowedCompanyIDs", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetAccountResponseAPIKeyPermissions{}
+		var expected []string
+		obj.AllowedCompanyIDs = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAllowedCompanyIDs(), "getter should return the property value")
+	})
+
+	t.Run("GetAllowedCompanyIDs_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetAccountResponseAPIKeyPermissions{}
+		obj.AllowedCompanyIDs = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetAllowedCompanyIDs(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetAllowedCompanyIDs_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *GetAccountResponseAPIKeyPermissions
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAllowedCompanyIDs() // Should return zero value
 	})
 
 	t.Run("GetCanDiscoverMarketingWork", func(t *testing.T) {
@@ -3353,6 +3402,39 @@ func TestGettersGetAccountResponseAPIKeyPermissions(t *testing.T) {
 		_ = obj.GetSelectedScopeCount() // Should return zero value
 	})
 
+	t.Run("GetWorkspaceRestricted", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetAccountResponseAPIKeyPermissions{}
+		var expected *bool
+		obj.WorkspaceRestricted = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetWorkspaceRestricted(), "getter should return the property value")
+	})
+
+	t.Run("GetWorkspaceRestricted_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetAccountResponseAPIKeyPermissions{}
+		obj.WorkspaceRestricted = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetWorkspaceRestricted(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetWorkspaceRestricted_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *GetAccountResponseAPIKeyPermissions
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetWorkspaceRestricted() // Should return zero value
+	})
+
 }
 
 func TestSettersMarkExplicitGetAccountResponseAPIKeyPermissions(t *testing.T) {
@@ -3364,6 +3446,37 @@ func TestSettersMarkExplicitGetAccountResponseAPIKeyPermissions(t *testing.T) {
 
 		// Act
 		obj.SetActiveKey(fernTestValueActiveKey)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetAllowedCompanyIDs_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetAccountResponseAPIKeyPermissions{}
+		var fernTestValueAllowedCompanyIDs []string
+
+		// Act
+		obj.SetAllowedCompanyIDs(fernTestValueAllowedCompanyIDs)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -3767,6 +3880,37 @@ func TestSettersMarkExplicitGetAccountResponseAPIKeyPermissions(t *testing.T) {
 
 		// Act
 		obj.SetSelectedScopeCount(fernTestValueSelectedScopeCount)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetWorkspaceRestricted_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GetAccountResponseAPIKeyPermissions{}
+		var fernTestValueWorkspaceRestricted *bool
+
+		// Act
+		obj.SetWorkspaceRestricted(fernTestValueWorkspaceRestricted)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)

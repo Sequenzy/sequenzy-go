@@ -1201,24 +1201,28 @@ func (g *GetAccountResponse) String() string {
 // Read-only identity and permission metadata for the authenticated key, including a recovery URL. This does not bypass resource scopes.
 var (
 	getAccountResponseAPIKeyPermissionsFieldActiveKey                  = big.NewInt(1 << 0)
-	getAccountResponseAPIKeyPermissionsFieldCanDiscoverMarketingWork   = big.NewInt(1 << 1)
-	getAccountResponseAPIKeyPermissionsFieldCanSendLive                = big.NewInt(1 << 2)
-	getAccountResponseAPIKeyPermissionsFieldCurrentScopeCount          = big.NewInt(1 << 3)
-	getAccountResponseAPIKeyPermissionsFieldDescription                = big.NewInt(1 << 4)
-	getAccountResponseAPIKeyPermissionsFieldFullAccess                 = big.NewInt(1 << 5)
-	getAccountResponseAPIKeyPermissionsFieldLiveDeliveryBlockedByRole  = big.NewInt(1 << 6)
-	getAccountResponseAPIKeyPermissionsFieldManageURL                  = big.NewInt(1 << 7)
-	getAccountResponseAPIKeyPermissionsFieldMissingLiveDeliveryScopes  = big.NewInt(1 << 8)
-	getAccountResponseAPIKeyPermissionsFieldMissingMarketingReadScopes = big.NewInt(1 << 9)
-	getAccountResponseAPIKeyPermissionsFieldPreset                     = big.NewInt(1 << 10)
-	getAccountResponseAPIKeyPermissionsFieldRoleRestrictedScopes       = big.NewInt(1 << 11)
-	getAccountResponseAPIKeyPermissionsFieldScopes                     = big.NewInt(1 << 12)
-	getAccountResponseAPIKeyPermissionsFieldSelectedScopeCount         = big.NewInt(1 << 13)
+	getAccountResponseAPIKeyPermissionsFieldAllowedCompanyIDs          = big.NewInt(1 << 1)
+	getAccountResponseAPIKeyPermissionsFieldCanDiscoverMarketingWork   = big.NewInt(1 << 2)
+	getAccountResponseAPIKeyPermissionsFieldCanSendLive                = big.NewInt(1 << 3)
+	getAccountResponseAPIKeyPermissionsFieldCurrentScopeCount          = big.NewInt(1 << 4)
+	getAccountResponseAPIKeyPermissionsFieldDescription                = big.NewInt(1 << 5)
+	getAccountResponseAPIKeyPermissionsFieldFullAccess                 = big.NewInt(1 << 6)
+	getAccountResponseAPIKeyPermissionsFieldLiveDeliveryBlockedByRole  = big.NewInt(1 << 7)
+	getAccountResponseAPIKeyPermissionsFieldManageURL                  = big.NewInt(1 << 8)
+	getAccountResponseAPIKeyPermissionsFieldMissingLiveDeliveryScopes  = big.NewInt(1 << 9)
+	getAccountResponseAPIKeyPermissionsFieldMissingMarketingReadScopes = big.NewInt(1 << 10)
+	getAccountResponseAPIKeyPermissionsFieldPreset                     = big.NewInt(1 << 11)
+	getAccountResponseAPIKeyPermissionsFieldRoleRestrictedScopes       = big.NewInt(1 << 12)
+	getAccountResponseAPIKeyPermissionsFieldScopes                     = big.NewInt(1 << 13)
+	getAccountResponseAPIKeyPermissionsFieldSelectedScopeCount         = big.NewInt(1 << 14)
+	getAccountResponseAPIKeyPermissionsFieldWorkspaceRestricted        = big.NewInt(1 << 15)
 )
 
 type GetAccountResponseAPIKeyPermissions struct {
 	// Non-secret identity of the bearer key that authenticated this request. Use it to verify that a restarted client loaded the intended replacement key.
 	ActiveKey *GetAccountResponseAPIKeyPermissionsActiveKey `json:"activeKey,omitempty" url:"activeKey,omitempty"`
+	// Explicit workspace IDs a restricted personal key is allowed to access, or null when unrestricted or when authenticating with a workspace key.
+	AllowedCompanyIDs []string `json:"allowedCompanyIds,omitempty" url:"allowedCompanyIds,omitempty"`
 	// Whether the key can read campaigns, sequences, and landing pages.
 	CanDiscoverMarketingWork *bool `json:"canDiscoverMarketingWork,omitempty" url:"canDiscoverMarketingWork,omitempty"`
 	// Whether the key holds any scope that delivers to a real person. False for drafting-only keys, which can create and update content but cannot send it.
@@ -1241,6 +1245,8 @@ type GetAccountResponseAPIKeyPermissions struct {
 	Scopes               []string `json:"scopes,omitempty" url:"scopes,omitempty"`
 	// Number of currently defined scopes enabled for the key. For full-access keys this equals currentScopeCount, while fullAccess still indicates future-scope access.
 	SelectedScopeCount *int `json:"selectedScopeCount,omitempty" url:"selectedScopeCount,omitempty"`
+	// True when a personal account API key is restricted to an explicit list of workspaces instead of every workspace the user can access.
+	WorkspaceRestricted *bool `json:"workspaceRestricted,omitempty" url:"workspaceRestricted,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1254,6 +1260,13 @@ func (g *GetAccountResponseAPIKeyPermissions) GetActiveKey() *GetAccountResponse
 		return nil
 	}
 	return g.ActiveKey
+}
+
+func (g *GetAccountResponseAPIKeyPermissions) GetAllowedCompanyIDs() []string {
+	if g == nil {
+		return nil
+	}
+	return g.AllowedCompanyIDs
 }
 
 func (g *GetAccountResponseAPIKeyPermissions) GetCanDiscoverMarketingWork() *bool {
@@ -1347,6 +1360,13 @@ func (g *GetAccountResponseAPIKeyPermissions) GetSelectedScopeCount() *int {
 	return g.SelectedScopeCount
 }
 
+func (g *GetAccountResponseAPIKeyPermissions) GetWorkspaceRestricted() *bool {
+	if g == nil {
+		return nil
+	}
+	return g.WorkspaceRestricted
+}
+
 func (g *GetAccountResponseAPIKeyPermissions) GetExtraProperties() map[string]interface{} {
 	if g == nil {
 		return nil
@@ -1366,6 +1386,13 @@ func (g *GetAccountResponseAPIKeyPermissions) require(field *big.Int) {
 func (g *GetAccountResponseAPIKeyPermissions) SetActiveKey(activeKey *GetAccountResponseAPIKeyPermissionsActiveKey) {
 	g.ActiveKey = activeKey
 	g.require(getAccountResponseAPIKeyPermissionsFieldActiveKey)
+}
+
+// SetAllowedCompanyIDs sets the AllowedCompanyIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetAccountResponseAPIKeyPermissions) SetAllowedCompanyIDs(allowedCompanyIDs []string) {
+	g.AllowedCompanyIDs = allowedCompanyIDs
+	g.require(getAccountResponseAPIKeyPermissionsFieldAllowedCompanyIDs)
 }
 
 // SetCanDiscoverMarketingWork sets the CanDiscoverMarketingWork field and marks it as non-optional;
@@ -1457,6 +1484,13 @@ func (g *GetAccountResponseAPIKeyPermissions) SetScopes(scopes []string) {
 func (g *GetAccountResponseAPIKeyPermissions) SetSelectedScopeCount(selectedScopeCount *int) {
 	g.SelectedScopeCount = selectedScopeCount
 	g.require(getAccountResponseAPIKeyPermissionsFieldSelectedScopeCount)
+}
+
+// SetWorkspaceRestricted sets the WorkspaceRestricted field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetAccountResponseAPIKeyPermissions) SetWorkspaceRestricted(workspaceRestricted *bool) {
+	g.WorkspaceRestricted = workspaceRestricted
+	g.require(getAccountResponseAPIKeyPermissionsFieldWorkspaceRestricted)
 }
 
 func (g *GetAccountResponseAPIKeyPermissions) UnmarshalJSON(data []byte) error {
