@@ -8511,7 +8511,7 @@ func (s *SequenceCreateResponseSequence) String() string {
 	return fmt.Sprintf("%#v", s)
 }
 
-// A whole sequence as one document, addressed by keys you choose. In the readable format (no `connections`), `trigger` starts the sequence and `steps` run in order, with branch and split paths nesting their own steps and an implicit end. In the explicit format, every step has a `type` and `config` and `connections` wire them. On PUT, omitted settings keep their stored values while the steps replace the stored graph.
+// Opt-in sequences-as-code / GitOps document representing a whole sequence addressed by keys you choose (for sequences owned in git or CI). For normal dashboard-editable sequences, use POST /api/v1/sequences and PUT /api/v1/sequences/{sequenceId} instead. In the readable format (no `connections`), `trigger` starts the sequence and `steps` run in order, with branch and split paths nesting their own steps and an implicit end. In the explicit format, every step has a `type` and `config` and `connections` wire them. On PUT, omitted settings keep their stored values while the steps replace the stored graph.
 var (
 	sequenceDefinitionFieldConnections = big.NewInt(1 << 0)
 	sequenceDefinitionFieldDescription = big.NewInt(1 << 1)
@@ -8533,7 +8533,7 @@ type SequenceDefinition struct {
 	ID *string `json:"id,omitempty" url:"id,omitempty"`
 	// Your key for the sequence. Optional on PUT (the URL key is used); must match the URL when present. Empty on GET for a sequence that has no key yet.
 	Key *string `json:"key,omitempty" url:"key,omitempty"`
-	// `code` makes steps and settings read-only in the dashboard while on/off, pause and test sends stay available. New sequences default to `code`; existing ones keep their value when omitted. Marketer personal keys cannot change it on an existing sequence. Not returned on GET, so a pulled document pushed back never changes it.
+	// Ownership mode for the sequence. `code` locks steps, emails and settings as read-only in the dashboard for sequences-as-code / GitOps workflows while on/off, pause and test sends stay available. New sequences created via PUT /sequences/definitions/{key} default to `code`; pass `dashboard` if a pushed sequence should stay editable in the dashboard. Existing sequences keep their current value when omitted. Marketer personal keys cannot change it on an existing sequence. Not returned on GET, so a pulled document pushed back never re-locks a sequence.
 	ManagedBy *SequenceDefinitionManagedBy `json:"managedBy,omitempty" url:"managedBy,omitempty"`
 	Name      string                       `json:"name" url:"name"`
 	Settings  *SequenceDefinitionSettings  `json:"settings,omitempty" url:"settings,omitempty"`
@@ -8868,7 +8868,7 @@ func (s *SequenceDefinitionConnection) String() string {
 	return fmt.Sprintf("%#v", s)
 }
 
-// `code` makes steps and settings read-only in the dashboard while on/off, pause and test sends stay available. New sequences default to `code`; existing ones keep their value when omitted. Marketer personal keys cannot change it on an existing sequence. Not returned on GET, so a pulled document pushed back never changes it.
+// Ownership mode for the sequence. `code` locks steps, emails and settings as read-only in the dashboard for sequences-as-code / GitOps workflows while on/off, pause and test sends stay available. New sequences created via PUT /sequences/definitions/{key} default to `code`; pass `dashboard` if a pushed sequence should stay editable in the dashboard. Existing sequences keep their current value when omitted. Marketer personal keys cannot change it on an existing sequence. Not returned on GET, so a pulled document pushed back never re-locks a sequence.
 type SequenceDefinitionManagedBy string
 
 const (
@@ -12129,7 +12129,7 @@ type SequenceDetails struct {
 	KeyDates *SequenceKeyDates `json:"keyDates,omitempty" url:"keyDates,omitempty"`
 	LabelIDs []string          `json:"labelIds,omitempty" url:"labelIds,omitempty"`
 	Labels   []string          `json:"labels,omitempty" url:"labels,omitempty"`
-	// `code` when steps and settings are managed by definition pushes and read-only in the dashboard.
+	// `code` when steps, emails and settings are owned through opt-in sequences-as-code / GitOps definition pushes and read-only in the dashboard. `dashboard` for normal dashboard-editable sequences.
 	ManagedBy      *SequenceSummaryManagedBy    `json:"managedBy,omitempty" url:"managedBy,omitempty"`
 	Name           *string                      `json:"name,omitempty" url:"name,omitempty"`
 	PausedAt       *time.Time                   `json:"pausedAt,omitempty" url:"pausedAt,omitempty"`
@@ -22739,7 +22739,7 @@ type SequenceListItem struct {
 	KeyDates *SequenceKeyDates `json:"keyDates,omitempty" url:"keyDates,omitempty"`
 	LabelIDs []string          `json:"labelIds,omitempty" url:"labelIds,omitempty"`
 	Labels   []string          `json:"labels,omitempty" url:"labels,omitempty"`
-	// `code` when steps and settings are managed by definition pushes and read-only in the dashboard.
+	// `code` when steps, emails and settings are owned through opt-in sequences-as-code / GitOps definition pushes and read-only in the dashboard. `dashboard` for normal dashboard-editable sequences.
 	ManagedBy      *SequenceSummaryManagedBy    `json:"managedBy,omitempty" url:"managedBy,omitempty"`
 	Name           *string                      `json:"name,omitempty" url:"name,omitempty"`
 	PausedAt       *time.Time                   `json:"pausedAt,omitempty" url:"pausedAt,omitempty"`
@@ -28470,7 +28470,7 @@ type SequenceSummary struct {
 	KeyDates *SequenceKeyDates `json:"keyDates,omitempty" url:"keyDates,omitempty"`
 	LabelIDs []string          `json:"labelIds,omitempty" url:"labelIds,omitempty"`
 	Labels   []string          `json:"labels,omitempty" url:"labels,omitempty"`
-	// `code` when steps and settings are managed by definition pushes and read-only in the dashboard.
+	// `code` when steps, emails and settings are owned through opt-in sequences-as-code / GitOps definition pushes and read-only in the dashboard. `dashboard` for normal dashboard-editable sequences.
 	ManagedBy      *SequenceSummaryManagedBy    `json:"managedBy,omitempty" url:"managedBy,omitempty"`
 	Name           *string                      `json:"name,omitempty" url:"name,omitempty"`
 	PausedAt       *time.Time                   `json:"pausedAt,omitempty" url:"pausedAt,omitempty"`
@@ -29092,7 +29092,7 @@ func (s *SequenceSummary) String() string {
 	return fmt.Sprintf("%#v", s)
 }
 
-// `code` when steps and settings are managed by definition pushes and read-only in the dashboard.
+// `code` when steps, emails and settings are owned through opt-in sequences-as-code / GitOps definition pushes and read-only in the dashboard. `dashboard` for normal dashboard-editable sequences.
 type SequenceSummaryManagedBy string
 
 const (
