@@ -2579,7 +2579,7 @@ type UpdateCompaniesRequestEmailTheme struct {
 	Colors *UpdateCompaniesRequestEmailThemeColors `json:"colors,omitempty" url:"colors,omitempty"`
 	// Brand-derived. Send back the value a theme read returned so a copied theme renders the same; null removes it.
 	HeadingFontFromBrand *bool `json:"headingFontFromBrand,omitempty" url:"headingFontFromBrand,omitempty"`
-	// Layout settings. Every field is a number except contentAlign.
+	// Layout settings. Every field is a number except contentAlign and contentWidthMode.
 	Layout   *UpdateCompaniesRequestEmailThemeLayout   `json:"layout,omitempty" url:"layout,omitempty"`
 	PresetID *UpdateCompaniesRequestEmailThemePresetID `json:"presetId,omitempty" url:"presetId,omitempty"`
 	// Brand-derived. Send back the value a theme read returned so a copied theme renders the same; null removes it.
@@ -3063,7 +3063,7 @@ func (u *UpdateCompaniesRequestEmailThemeColors) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// Layout settings. Every field is a number except contentAlign.
+// Layout settings. Every field is a number except contentAlign and contentWidthMode.
 var (
 	updateCompaniesRequestEmailThemeLayoutFieldBaseRadius           = big.NewInt(1 << 0)
 	updateCompaniesRequestEmailThemeLayoutFieldBlockSpacing         = big.NewInt(1 << 1)
@@ -3075,7 +3075,8 @@ var (
 	updateCompaniesRequestEmailThemeLayoutFieldContainerPaddingY    = big.NewInt(1 << 7)
 	updateCompaniesRequestEmailThemeLayoutFieldContentAlign         = big.NewInt(1 << 8)
 	updateCompaniesRequestEmailThemeLayoutFieldContentWidth         = big.NewInt(1 << 9)
-	updateCompaniesRequestEmailThemeLayoutFieldSectionPadding       = big.NewInt(1 << 10)
+	updateCompaniesRequestEmailThemeLayoutFieldContentWidthMode     = big.NewInt(1 << 10)
+	updateCompaniesRequestEmailThemeLayoutFieldSectionPadding       = big.NewInt(1 << 11)
 )
 
 type UpdateCompaniesRequestEmailThemeLayout struct {
@@ -3088,9 +3089,11 @@ type UpdateCompaniesRequestEmailThemeLayout struct {
 	ContainerPaddingX    *float64 `json:"containerPaddingX,omitempty" url:"containerPaddingX,omitempty"`
 	ContainerPaddingY    *float64 `json:"containerPaddingY,omitempty" url:"containerPaddingY,omitempty"`
 	// Where the content column sits in a wide email client. center (default) or left (flush left, like a plain personal email). With left, buttons, the logo and footers line up on the left too unless set to right, or centered with styles.keepAlign. Phones show the column full width either way.
-	ContentAlign   *UpdateCompaniesRequestEmailThemeLayoutContentAlign `json:"contentAlign,omitempty" url:"contentAlign,omitempty"`
-	ContentWidth   *float64                                            `json:"contentWidth,omitempty" url:"contentWidth,omitempty"`
-	SectionPadding *float64                                            `json:"sectionPadding,omitempty" url:"sectionPadding,omitempty"`
+	ContentAlign *UpdateCompaniesRequestEmailThemeLayoutContentAlign `json:"contentAlign,omitempty" url:"contentAlign,omitempty"`
+	ContentWidth *float64                                            `json:"contentWidth,omitempty" url:"contentWidth,omitempty"`
+	// fixed (default) keeps the content in a column of contentWidth; fluid runs it the full width of the reader's window, like an email written in Gmail or Apple Mail, with no fixed-width Outlook table. A fluid email sits on the left (buttons, the logo and footers too), and image blocks keep the size contentWidth gives them instead of stretching (an image with no align of its own sits on the left). Phones show the email full width either way.
+	ContentWidthMode *UpdateCompaniesRequestEmailThemeLayoutContentWidthMode `json:"contentWidthMode,omitempty" url:"contentWidthMode,omitempty"`
+	SectionPadding   *float64                                                `json:"sectionPadding,omitempty" url:"sectionPadding,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -3167,6 +3170,13 @@ func (u *UpdateCompaniesRequestEmailThemeLayout) GetContentWidth() *float64 {
 		return nil
 	}
 	return u.ContentWidth
+}
+
+func (u *UpdateCompaniesRequestEmailThemeLayout) GetContentWidthMode() *UpdateCompaniesRequestEmailThemeLayoutContentWidthMode {
+	if u == nil {
+		return nil
+	}
+	return u.ContentWidthMode
 }
 
 func (u *UpdateCompaniesRequestEmailThemeLayout) GetSectionPadding() *float64 {
@@ -3260,6 +3270,13 @@ func (u *UpdateCompaniesRequestEmailThemeLayout) SetContentWidth(contentWidth *f
 	u.require(updateCompaniesRequestEmailThemeLayoutFieldContentWidth)
 }
 
+// SetContentWidthMode sets the ContentWidthMode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateCompaniesRequestEmailThemeLayout) SetContentWidthMode(contentWidthMode *UpdateCompaniesRequestEmailThemeLayoutContentWidthMode) {
+	u.ContentWidthMode = contentWidthMode
+	u.require(updateCompaniesRequestEmailThemeLayoutFieldContentWidthMode)
+}
+
 // SetSectionPadding sets the SectionPadding field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateCompaniesRequestEmailThemeLayout) SetSectionPadding(sectionPadding *float64) {
@@ -3329,6 +3346,29 @@ func NewUpdateCompaniesRequestEmailThemeLayoutContentAlignFromString(s string) (
 }
 
 func (u UpdateCompaniesRequestEmailThemeLayoutContentAlign) Ptr() *UpdateCompaniesRequestEmailThemeLayoutContentAlign {
+	return &u
+}
+
+// fixed (default) keeps the content in a column of contentWidth; fluid runs it the full width of the reader's window, like an email written in Gmail or Apple Mail, with no fixed-width Outlook table. A fluid email sits on the left (buttons, the logo and footers too), and image blocks keep the size contentWidth gives them instead of stretching (an image with no align of its own sits on the left). Phones show the email full width either way.
+type UpdateCompaniesRequestEmailThemeLayoutContentWidthMode string
+
+const (
+	UpdateCompaniesRequestEmailThemeLayoutContentWidthModeFixed UpdateCompaniesRequestEmailThemeLayoutContentWidthMode = "fixed"
+	UpdateCompaniesRequestEmailThemeLayoutContentWidthModeFluid UpdateCompaniesRequestEmailThemeLayoutContentWidthMode = "fluid"
+)
+
+func NewUpdateCompaniesRequestEmailThemeLayoutContentWidthModeFromString(s string) (UpdateCompaniesRequestEmailThemeLayoutContentWidthMode, error) {
+	switch s {
+	case "fixed":
+		return UpdateCompaniesRequestEmailThemeLayoutContentWidthModeFixed, nil
+	case "fluid":
+		return UpdateCompaniesRequestEmailThemeLayoutContentWidthModeFluid, nil
+	}
+	var t UpdateCompaniesRequestEmailThemeLayoutContentWidthMode
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateCompaniesRequestEmailThemeLayoutContentWidthMode) Ptr() *UpdateCompaniesRequestEmailThemeLayoutContentWidthMode {
 	return &u
 }
 

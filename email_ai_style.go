@@ -155,7 +155,7 @@ type EmailAiStyleCanvas struct {
 	Blocks      []map[string]any              `json:"blocks" url:"blocks"`
 	EmailPreset EmailAiStyleCanvasEmailPreset `json:"emailPreset" url:"emailPreset"`
 	FontFamily  string                        `json:"fontFamily" url:"fontFamily"`
-	// Complete editor theme. Required color keys are primary, background, surface, text, mutedText, heading, border and link. Required typography keys are baseFontSize, leadFontSize, baseLineHeight, heading1Size, heading2Size, heading3Size and buttonFontSize. Required layout keys are contentWidth, containerPaddingX, containerPaddingY, blockSpacing, baseRadius, sectionPadding, buttonPaddingX, buttonPaddingY and borderedBlockPadding. Optional theme fields match the editor, including content color, heading font, button radius and weight, and layout.contentAlign (center or left).
+	// Complete editor theme. Required color keys are primary, background, surface, text, mutedText, heading, border and link. Required typography keys are baseFontSize, leadFontSize, baseLineHeight, heading1Size, heading2Size, heading3Size and buttonFontSize. Required layout keys are contentWidth, containerPaddingX, containerPaddingY, blockSpacing, baseRadius, sectionPadding, buttonPaddingX, buttonPaddingY and borderedBlockPadding. Optional theme fields match the editor, including content color, heading font, button radius and weight, layout.contentAlign (center or left) and layout.contentWidthMode (fixed or fluid).
 	Theme *EmailAiStyleCanvasTheme `json:"theme" url:"theme"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -299,7 +299,7 @@ func (e EmailAiStyleCanvasEmailPreset) Ptr() *EmailAiStyleCanvasEmailPreset {
 	return &e
 }
 
-// Complete editor theme. Required color keys are primary, background, surface, text, mutedText, heading, border and link. Required typography keys are baseFontSize, leadFontSize, baseLineHeight, heading1Size, heading2Size, heading3Size and buttonFontSize. Required layout keys are contentWidth, containerPaddingX, containerPaddingY, blockSpacing, baseRadius, sectionPadding, buttonPaddingX, buttonPaddingY and borderedBlockPadding. Optional theme fields match the editor, including content color, heading font, button radius and weight, and layout.contentAlign (center or left).
+// Complete editor theme. Required color keys are primary, background, surface, text, mutedText, heading, border and link. Required typography keys are baseFontSize, leadFontSize, baseLineHeight, heading1Size, heading2Size, heading3Size and buttonFontSize. Required layout keys are contentWidth, containerPaddingX, containerPaddingY, blockSpacing, baseRadius, sectionPadding, buttonPaddingX, buttonPaddingY and borderedBlockPadding. Optional theme fields match the editor, including content color, heading font, button radius and weight, layout.contentAlign (center or left) and layout.contentWidthMode (fixed or fluid).
 var (
 	emailAiStyleCanvasThemeFieldColors     = big.NewInt(1 << 0)
 	emailAiStyleCanvasThemeFieldLayout     = big.NewInt(1 << 1)
@@ -438,11 +438,13 @@ func (e *EmailAiStyleCanvasTheme) String() string {
 }
 
 var (
-	emailAiStyleCanvasThemeLayoutFieldContentAlign = big.NewInt(1 << 0)
+	emailAiStyleCanvasThemeLayoutFieldContentAlign     = big.NewInt(1 << 0)
+	emailAiStyleCanvasThemeLayoutFieldContentWidthMode = big.NewInt(1 << 1)
 )
 
 type EmailAiStyleCanvasThemeLayout struct {
-	ContentAlign *EmailAiStyleCanvasThemeLayoutContentAlign `json:"contentAlign,omitempty" url:"contentAlign,omitempty"`
+	ContentAlign     *EmailAiStyleCanvasThemeLayoutContentAlign     `json:"contentAlign,omitempty" url:"contentAlign,omitempty"`
+	ContentWidthMode *EmailAiStyleCanvasThemeLayoutContentWidthMode `json:"contentWidthMode,omitempty" url:"contentWidthMode,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -456,6 +458,13 @@ func (e *EmailAiStyleCanvasThemeLayout) GetContentAlign() *EmailAiStyleCanvasThe
 		return nil
 	}
 	return e.ContentAlign
+}
+
+func (e *EmailAiStyleCanvasThemeLayout) GetContentWidthMode() *EmailAiStyleCanvasThemeLayoutContentWidthMode {
+	if e == nil {
+		return nil
+	}
+	return e.ContentWidthMode
 }
 
 func (e *EmailAiStyleCanvasThemeLayout) GetExtraProperties() map[string]interface{} {
@@ -477,6 +486,13 @@ func (e *EmailAiStyleCanvasThemeLayout) require(field *big.Int) {
 func (e *EmailAiStyleCanvasThemeLayout) SetContentAlign(contentAlign *EmailAiStyleCanvasThemeLayoutContentAlign) {
 	e.ContentAlign = contentAlign
 	e.require(emailAiStyleCanvasThemeLayoutFieldContentAlign)
+}
+
+// SetContentWidthMode sets the ContentWidthMode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailAiStyleCanvasThemeLayout) SetContentWidthMode(contentWidthMode *EmailAiStyleCanvasThemeLayoutContentWidthMode) {
+	e.ContentWidthMode = contentWidthMode
+	e.require(emailAiStyleCanvasThemeLayoutFieldContentWidthMode)
 }
 
 func (e *EmailAiStyleCanvasThemeLayout) UnmarshalJSON(data []byte) error {
@@ -540,6 +556,28 @@ func NewEmailAiStyleCanvasThemeLayoutContentAlignFromString(s string) (EmailAiSt
 }
 
 func (e EmailAiStyleCanvasThemeLayoutContentAlign) Ptr() *EmailAiStyleCanvasThemeLayoutContentAlign {
+	return &e
+}
+
+type EmailAiStyleCanvasThemeLayoutContentWidthMode string
+
+const (
+	EmailAiStyleCanvasThemeLayoutContentWidthModeFixed EmailAiStyleCanvasThemeLayoutContentWidthMode = "fixed"
+	EmailAiStyleCanvasThemeLayoutContentWidthModeFluid EmailAiStyleCanvasThemeLayoutContentWidthMode = "fluid"
+)
+
+func NewEmailAiStyleCanvasThemeLayoutContentWidthModeFromString(s string) (EmailAiStyleCanvasThemeLayoutContentWidthMode, error) {
+	switch s {
+	case "fixed":
+		return EmailAiStyleCanvasThemeLayoutContentWidthModeFixed, nil
+	case "fluid":
+		return EmailAiStyleCanvasThemeLayoutContentWidthModeFluid, nil
+	}
+	var t EmailAiStyleCanvasThemeLayoutContentWidthMode
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (e EmailAiStyleCanvasThemeLayoutContentWidthMode) Ptr() *EmailAiStyleCanvasThemeLayoutContentWidthMode {
 	return &e
 }
 

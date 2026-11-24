@@ -1752,6 +1752,62 @@ func (g *GetAudienceEnrollmentSequencesRequest) SetRunID(runID string) {
 }
 
 var (
+	getConditionalBlockOverviewAliasSequencesRequestFieldSequenceID = big.NewInt(1 << 0)
+	getConditionalBlockOverviewAliasSequencesRequestFieldEnd        = big.NewInt(1 << 1)
+	getConditionalBlockOverviewAliasSequencesRequestFieldPeriod     = big.NewInt(1 << 2)
+	getConditionalBlockOverviewAliasSequencesRequestFieldStart      = big.NewInt(1 << 3)
+)
+
+type GetConditionalBlockOverviewAliasSequencesRequest struct {
+	// Sequence ID
+	SequenceID string `json:"-" url:"-"`
+	// ISO 8601 end of custom send window (requires start)
+	End *time.Time `json:"-" url:"end,omitempty"`
+	// Optional send time window. Defaults to all.
+	Period *GetConditionalBlockOverviewAliasSequencesRequestPeriod `json:"-" url:"period,omitempty"`
+	// ISO 8601 start of custom send window (requires end)
+	Start *time.Time `json:"-" url:"start,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (g *GetConditionalBlockOverviewAliasSequencesRequest) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetSequenceID sets the SequenceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetConditionalBlockOverviewAliasSequencesRequest) SetSequenceID(sequenceID string) {
+	g.SequenceID = sequenceID
+	g.require(getConditionalBlockOverviewAliasSequencesRequestFieldSequenceID)
+}
+
+// SetEnd sets the End field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetConditionalBlockOverviewAliasSequencesRequest) SetEnd(end *time.Time) {
+	g.End = end
+	g.require(getConditionalBlockOverviewAliasSequencesRequestFieldEnd)
+}
+
+// SetPeriod sets the Period field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetConditionalBlockOverviewAliasSequencesRequest) SetPeriod(period *GetConditionalBlockOverviewAliasSequencesRequestPeriod) {
+	g.Period = period
+	g.require(getConditionalBlockOverviewAliasSequencesRequestFieldPeriod)
+}
+
+// SetStart sets the Start field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetConditionalBlockOverviewAliasSequencesRequest) SetStart(start *time.Time) {
+	g.Start = start
+	g.require(getConditionalBlockOverviewAliasSequencesRequestFieldStart)
+}
+
+var (
 	getDefinitionSequencesRequestFieldKey    = big.NewInt(1 << 0)
 	getDefinitionSequencesRequestFieldFormat = big.NewInt(1 << 1)
 )
@@ -1917,6 +1973,102 @@ func (g *GetInboundWebhookSequencesRequest) SetSequenceID(sequenceID string) {
 }
 
 var (
+	getOutcomesAliasSequencesRequestFieldSequenceID           = big.NewInt(1 << 0)
+	getOutcomesAliasSequencesRequestFieldConversionWindowDays = big.NewInt(1 << 1)
+	getOutcomesAliasSequencesRequestFieldEnd                  = big.NewInt(1 << 2)
+	getOutcomesAliasSequencesRequestFieldEventName            = big.NewInt(1 << 3)
+	getOutcomesAliasSequencesRequestFieldGoalID               = big.NewInt(1 << 4)
+	getOutcomesAliasSequencesRequestFieldNodeID               = big.NewInt(1 << 5)
+	getOutcomesAliasSequencesRequestFieldPeriod               = big.NewInt(1 << 6)
+	getOutcomesAliasSequencesRequestFieldStart                = big.NewInt(1 << 7)
+)
+
+type GetOutcomesAliasSequencesRequest struct {
+	// Sequence ID
+	SequenceID string `json:"-" url:"-"`
+	// Conversion window in whole days after reaching the step. Truncated early if the contact re-enrolls at the same step.
+	ConversionWindowDays *int `json:"-" url:"conversionWindowDays,omitempty"`
+	// Custom ISO 8601 end time (requires start).
+	End *time.Time `json:"-" url:"end,omitempty"`
+	// Custom event name to measure post-step conversion against. Mutually exclusive with goalId.
+	EventName *string `json:"-" url:"eventName,omitempty"`
+	// Goal ID or default-revenue. Mutually exclusive with eventName.
+	GoalID *string `json:"-" url:"goalId,omitempty"`
+	// Optional comma-separated node IDs to scope the response to.
+	NodeID *string `json:"-" url:"nodeId,omitempty"`
+	// Rolling arrival window. Omit for all-time cohorts.
+	Period *GetOutcomesAliasSequencesRequestPeriod `json:"-" url:"period,omitempty"`
+	// Custom ISO 8601 start time (requires end, max 90 days).
+	Start *time.Time `json:"-" url:"start,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (g *GetOutcomesAliasSequencesRequest) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetSequenceID sets the SequenceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetOutcomesAliasSequencesRequest) SetSequenceID(sequenceID string) {
+	g.SequenceID = sequenceID
+	g.require(getOutcomesAliasSequencesRequestFieldSequenceID)
+}
+
+// SetConversionWindowDays sets the ConversionWindowDays field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetOutcomesAliasSequencesRequest) SetConversionWindowDays(conversionWindowDays *int) {
+	g.ConversionWindowDays = conversionWindowDays
+	g.require(getOutcomesAliasSequencesRequestFieldConversionWindowDays)
+}
+
+// SetEnd sets the End field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetOutcomesAliasSequencesRequest) SetEnd(end *time.Time) {
+	g.End = end
+	g.require(getOutcomesAliasSequencesRequestFieldEnd)
+}
+
+// SetEventName sets the EventName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetOutcomesAliasSequencesRequest) SetEventName(eventName *string) {
+	g.EventName = eventName
+	g.require(getOutcomesAliasSequencesRequestFieldEventName)
+}
+
+// SetGoalID sets the GoalID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetOutcomesAliasSequencesRequest) SetGoalID(goalID *string) {
+	g.GoalID = goalID
+	g.require(getOutcomesAliasSequencesRequestFieldGoalID)
+}
+
+// SetNodeID sets the NodeID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetOutcomesAliasSequencesRequest) SetNodeID(nodeID *string) {
+	g.NodeID = nodeID
+	g.require(getOutcomesAliasSequencesRequestFieldNodeID)
+}
+
+// SetPeriod sets the Period field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetOutcomesAliasSequencesRequest) SetPeriod(period *GetOutcomesAliasSequencesRequestPeriod) {
+	g.Period = period
+	g.require(getOutcomesAliasSequencesRequestFieldPeriod)
+}
+
+// SetStart sets the Start field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetOutcomesAliasSequencesRequest) SetStart(start *time.Time) {
+	g.Start = start
+	g.require(getOutcomesAliasSequencesRequestFieldStart)
+}
+
+var (
 	getRecurringEnrollmentSequencesRequestFieldSequenceID = big.NewInt(1 << 0)
 )
 
@@ -2006,6 +2158,94 @@ func (g *GetStatsSequencesRequest) SetPeriod(period *GetStatsSequencesRequestPer
 func (g *GetStatsSequencesRequest) SetStart(start *time.Time) {
 	g.Start = start
 	g.require(getStatsSequencesRequestFieldStart)
+}
+
+var (
+	getStepConditionalBlockStatsAliasSequencesRequestFieldSequenceID               = big.NewInt(1 << 0)
+	getStepConditionalBlockStatsAliasSequencesRequestFieldNodeID                   = big.NewInt(1 << 1)
+	getStepConditionalBlockStatsAliasSequencesRequestFieldAbTestVariantID          = big.NewInt(1 << 2)
+	getStepConditionalBlockStatsAliasSequencesRequestFieldEnd                      = big.NewInt(1 << 3)
+	getStepConditionalBlockStatsAliasSequencesRequestFieldGoalID                   = big.NewInt(1 << 4)
+	getStepConditionalBlockStatsAliasSequencesRequestFieldIncludeMachineEngagement = big.NewInt(1 << 5)
+	getStepConditionalBlockStatsAliasSequencesRequestFieldPeriod                   = big.NewInt(1 << 6)
+	getStepConditionalBlockStatsAliasSequencesRequestFieldStart                    = big.NewInt(1 << 7)
+)
+
+type GetStepConditionalBlockStatsAliasSequencesRequest struct {
+	SequenceID               string                                                   `json:"-" url:"-"`
+	NodeID                   string                                                   `json:"-" url:"-"`
+	AbTestVariantID          *string                                                  `json:"-" url:"abTestVariantId,omitempty"`
+	End                      *time.Time                                               `json:"-" url:"end,omitempty"`
+	GoalID                   *string                                                  `json:"-" url:"goalId,omitempty"`
+	IncludeMachineEngagement *bool                                                    `json:"-" url:"includeMachineEngagement,omitempty"`
+	Period                   *GetStepConditionalBlockStatsAliasSequencesRequestPeriod `json:"-" url:"period,omitempty"`
+	Start                    *time.Time                                               `json:"-" url:"start,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (g *GetStepConditionalBlockStatsAliasSequencesRequest) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetSequenceID sets the SequenceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetStepConditionalBlockStatsAliasSequencesRequest) SetSequenceID(sequenceID string) {
+	g.SequenceID = sequenceID
+	g.require(getStepConditionalBlockStatsAliasSequencesRequestFieldSequenceID)
+}
+
+// SetNodeID sets the NodeID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetStepConditionalBlockStatsAliasSequencesRequest) SetNodeID(nodeID string) {
+	g.NodeID = nodeID
+	g.require(getStepConditionalBlockStatsAliasSequencesRequestFieldNodeID)
+}
+
+// SetAbTestVariantID sets the AbTestVariantID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetStepConditionalBlockStatsAliasSequencesRequest) SetAbTestVariantID(abTestVariantID *string) {
+	g.AbTestVariantID = abTestVariantID
+	g.require(getStepConditionalBlockStatsAliasSequencesRequestFieldAbTestVariantID)
+}
+
+// SetEnd sets the End field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetStepConditionalBlockStatsAliasSequencesRequest) SetEnd(end *time.Time) {
+	g.End = end
+	g.require(getStepConditionalBlockStatsAliasSequencesRequestFieldEnd)
+}
+
+// SetGoalID sets the GoalID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetStepConditionalBlockStatsAliasSequencesRequest) SetGoalID(goalID *string) {
+	g.GoalID = goalID
+	g.require(getStepConditionalBlockStatsAliasSequencesRequestFieldGoalID)
+}
+
+// SetIncludeMachineEngagement sets the IncludeMachineEngagement field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetStepConditionalBlockStatsAliasSequencesRequest) SetIncludeMachineEngagement(includeMachineEngagement *bool) {
+	g.IncludeMachineEngagement = includeMachineEngagement
+	g.require(getStepConditionalBlockStatsAliasSequencesRequestFieldIncludeMachineEngagement)
+}
+
+// SetPeriod sets the Period field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetStepConditionalBlockStatsAliasSequencesRequest) SetPeriod(period *GetStepConditionalBlockStatsAliasSequencesRequestPeriod) {
+	g.Period = period
+	g.require(getStepConditionalBlockStatsAliasSequencesRequestFieldPeriod)
+}
+
+// SetStart sets the Start field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetStepConditionalBlockStatsAliasSequencesRequest) SetStart(start *time.Time) {
+	g.Start = start
+	g.require(getStepConditionalBlockStatsAliasSequencesRequestFieldStart)
 }
 
 var (
@@ -2327,6 +2567,261 @@ func (l *ListGoalsSequencesRequest) require(field *big.Int) {
 func (l *ListGoalsSequencesRequest) SetSequenceID(sequenceID string) {
 	l.SequenceID = sequenceID
 	l.require(listGoalsSequencesRequestFieldSequenceID)
+}
+
+var (
+	listPathSubscribersAliasSequencesRequestFieldSequenceID           = big.NewInt(1 << 0)
+	listPathSubscribersAliasSequencesRequestFieldNodeID               = big.NewInt(1 << 1)
+	listPathSubscribersAliasSequencesRequestFieldBucket               = big.NewInt(1 << 2)
+	listPathSubscribersAliasSequencesRequestFieldConversionWindowDays = big.NewInt(1 << 3)
+	listPathSubscribersAliasSequencesRequestFieldEnd                  = big.NewInt(1 << 4)
+	listPathSubscribersAliasSequencesRequestFieldEventName            = big.NewInt(1 << 5)
+	listPathSubscribersAliasSequencesRequestFieldGoalID               = big.NewInt(1 << 6)
+	listPathSubscribersAliasSequencesRequestFieldLimit                = big.NewInt(1 << 7)
+	listPathSubscribersAliasSequencesRequestFieldPage                 = big.NewInt(1 << 8)
+	listPathSubscribersAliasSequencesRequestFieldPathID               = big.NewInt(1 << 9)
+	listPathSubscribersAliasSequencesRequestFieldPeriod               = big.NewInt(1 << 10)
+	listPathSubscribersAliasSequencesRequestFieldStart                = big.NewInt(1 << 11)
+)
+
+type ListPathSubscribersAliasSequencesRequest struct {
+	// Sequence ID
+	SequenceID string `json:"-" url:"-"`
+	// Branch, condition, or step node ID
+	NodeID string `json:"-" url:"-"`
+	// Optional synthetic bucket filter (unmapped for earlier graph versions, unrecorded for legacy rows). Mutually exclusive with pathId.
+	Bucket *ListPathSubscribersAliasSequencesRequestBucket `json:"-" url:"bucket,omitempty"`
+	// Conversion window in whole days.
+	ConversionWindowDays *int       `json:"-" url:"conversionWindowDays,omitempty"`
+	End                  *time.Time `json:"-" url:"end,omitempty"`
+	// Optional event name. Mutually exclusive with goalId.
+	EventName *string `json:"-" url:"eventName,omitempty"`
+	// Optional goal ID or default-revenue. Mutually exclusive with eventName.
+	GoalID *string `json:"-" url:"goalId,omitempty"`
+	Limit  *int    `json:"-" url:"limit,omitempty"`
+	Page   *int    `json:"-" url:"page,omitempty"`
+	// Optional configured path ID for branch or condition nodes (branch id, else, continued, or exited). Mutually exclusive with bucket.
+	PathID *string                                         `json:"-" url:"pathId,omitempty"`
+	Period *ListPathSubscribersAliasSequencesRequestPeriod `json:"-" url:"period,omitempty"`
+	Start  *time.Time                                      `json:"-" url:"start,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (l *ListPathSubscribersAliasSequencesRequest) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetSequenceID sets the SequenceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPathSubscribersAliasSequencesRequest) SetSequenceID(sequenceID string) {
+	l.SequenceID = sequenceID
+	l.require(listPathSubscribersAliasSequencesRequestFieldSequenceID)
+}
+
+// SetNodeID sets the NodeID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPathSubscribersAliasSequencesRequest) SetNodeID(nodeID string) {
+	l.NodeID = nodeID
+	l.require(listPathSubscribersAliasSequencesRequestFieldNodeID)
+}
+
+// SetBucket sets the Bucket field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPathSubscribersAliasSequencesRequest) SetBucket(bucket *ListPathSubscribersAliasSequencesRequestBucket) {
+	l.Bucket = bucket
+	l.require(listPathSubscribersAliasSequencesRequestFieldBucket)
+}
+
+// SetConversionWindowDays sets the ConversionWindowDays field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPathSubscribersAliasSequencesRequest) SetConversionWindowDays(conversionWindowDays *int) {
+	l.ConversionWindowDays = conversionWindowDays
+	l.require(listPathSubscribersAliasSequencesRequestFieldConversionWindowDays)
+}
+
+// SetEnd sets the End field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPathSubscribersAliasSequencesRequest) SetEnd(end *time.Time) {
+	l.End = end
+	l.require(listPathSubscribersAliasSequencesRequestFieldEnd)
+}
+
+// SetEventName sets the EventName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPathSubscribersAliasSequencesRequest) SetEventName(eventName *string) {
+	l.EventName = eventName
+	l.require(listPathSubscribersAliasSequencesRequestFieldEventName)
+}
+
+// SetGoalID sets the GoalID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPathSubscribersAliasSequencesRequest) SetGoalID(goalID *string) {
+	l.GoalID = goalID
+	l.require(listPathSubscribersAliasSequencesRequestFieldGoalID)
+}
+
+// SetLimit sets the Limit field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPathSubscribersAliasSequencesRequest) SetLimit(limit *int) {
+	l.Limit = limit
+	l.require(listPathSubscribersAliasSequencesRequestFieldLimit)
+}
+
+// SetPage sets the Page field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPathSubscribersAliasSequencesRequest) SetPage(page *int) {
+	l.Page = page
+	l.require(listPathSubscribersAliasSequencesRequestFieldPage)
+}
+
+// SetPathID sets the PathID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPathSubscribersAliasSequencesRequest) SetPathID(pathID *string) {
+	l.PathID = pathID
+	l.require(listPathSubscribersAliasSequencesRequestFieldPathID)
+}
+
+// SetPeriod sets the Period field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPathSubscribersAliasSequencesRequest) SetPeriod(period *ListPathSubscribersAliasSequencesRequestPeriod) {
+	l.Period = period
+	l.require(listPathSubscribersAliasSequencesRequestFieldPeriod)
+}
+
+// SetStart sets the Start field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPathSubscribersAliasSequencesRequest) SetStart(start *time.Time) {
+	l.Start = start
+	l.require(listPathSubscribersAliasSequencesRequestFieldStart)
+}
+
+var (
+	listStepConditionalBlockSubscribersAliasSequencesRequestFieldSequenceID               = big.NewInt(1 << 0)
+	listStepConditionalBlockSubscribersAliasSequencesRequestFieldNodeID                   = big.NewInt(1 << 1)
+	listStepConditionalBlockSubscribersAliasSequencesRequestFieldBlockID                  = big.NewInt(1 << 2)
+	listStepConditionalBlockSubscribersAliasSequencesRequestFieldAbTestVariantID          = big.NewInt(1 << 3)
+	listStepConditionalBlockSubscribersAliasSequencesRequestFieldBranch                   = big.NewInt(1 << 4)
+	listStepConditionalBlockSubscribersAliasSequencesRequestFieldEnd                      = big.NewInt(1 << 5)
+	listStepConditionalBlockSubscribersAliasSequencesRequestFieldGoalID                   = big.NewInt(1 << 6)
+	listStepConditionalBlockSubscribersAliasSequencesRequestFieldIncludeMachineEngagement = big.NewInt(1 << 7)
+	listStepConditionalBlockSubscribersAliasSequencesRequestFieldLimit                    = big.NewInt(1 << 8)
+	listStepConditionalBlockSubscribersAliasSequencesRequestFieldPage                     = big.NewInt(1 << 9)
+	listStepConditionalBlockSubscribersAliasSequencesRequestFieldPeriod                   = big.NewInt(1 << 10)
+	listStepConditionalBlockSubscribersAliasSequencesRequestFieldStart                    = big.NewInt(1 << 11)
+)
+
+type ListStepConditionalBlockSubscribersAliasSequencesRequest struct {
+	SequenceID               string                                                          `json:"-" url:"-"`
+	NodeID                   string                                                          `json:"-" url:"-"`
+	BlockID                  string                                                          `json:"-" url:"-"`
+	AbTestVariantID          *string                                                         `json:"-" url:"abTestVariantId,omitempty"`
+	Branch                   ListStepConditionalBlockSubscribersAliasSequencesRequestBranch  `json:"-" url:"branch"`
+	End                      *time.Time                                                      `json:"-" url:"end,omitempty"`
+	GoalID                   *string                                                         `json:"-" url:"goalId,omitempty"`
+	IncludeMachineEngagement *bool                                                           `json:"-" url:"includeMachineEngagement,omitempty"`
+	Limit                    *int                                                            `json:"-" url:"limit,omitempty"`
+	Page                     *int                                                            `json:"-" url:"page,omitempty"`
+	Period                   *ListStepConditionalBlockSubscribersAliasSequencesRequestPeriod `json:"-" url:"period,omitempty"`
+	Start                    *time.Time                                                      `json:"-" url:"start,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (l *ListStepConditionalBlockSubscribersAliasSequencesRequest) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetSequenceID sets the SequenceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListStepConditionalBlockSubscribersAliasSequencesRequest) SetSequenceID(sequenceID string) {
+	l.SequenceID = sequenceID
+	l.require(listStepConditionalBlockSubscribersAliasSequencesRequestFieldSequenceID)
+}
+
+// SetNodeID sets the NodeID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListStepConditionalBlockSubscribersAliasSequencesRequest) SetNodeID(nodeID string) {
+	l.NodeID = nodeID
+	l.require(listStepConditionalBlockSubscribersAliasSequencesRequestFieldNodeID)
+}
+
+// SetBlockID sets the BlockID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListStepConditionalBlockSubscribersAliasSequencesRequest) SetBlockID(blockID string) {
+	l.BlockID = blockID
+	l.require(listStepConditionalBlockSubscribersAliasSequencesRequestFieldBlockID)
+}
+
+// SetAbTestVariantID sets the AbTestVariantID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListStepConditionalBlockSubscribersAliasSequencesRequest) SetAbTestVariantID(abTestVariantID *string) {
+	l.AbTestVariantID = abTestVariantID
+	l.require(listStepConditionalBlockSubscribersAliasSequencesRequestFieldAbTestVariantID)
+}
+
+// SetBranch sets the Branch field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListStepConditionalBlockSubscribersAliasSequencesRequest) SetBranch(branch ListStepConditionalBlockSubscribersAliasSequencesRequestBranch) {
+	l.Branch = branch
+	l.require(listStepConditionalBlockSubscribersAliasSequencesRequestFieldBranch)
+}
+
+// SetEnd sets the End field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListStepConditionalBlockSubscribersAliasSequencesRequest) SetEnd(end *time.Time) {
+	l.End = end
+	l.require(listStepConditionalBlockSubscribersAliasSequencesRequestFieldEnd)
+}
+
+// SetGoalID sets the GoalID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListStepConditionalBlockSubscribersAliasSequencesRequest) SetGoalID(goalID *string) {
+	l.GoalID = goalID
+	l.require(listStepConditionalBlockSubscribersAliasSequencesRequestFieldGoalID)
+}
+
+// SetIncludeMachineEngagement sets the IncludeMachineEngagement field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListStepConditionalBlockSubscribersAliasSequencesRequest) SetIncludeMachineEngagement(includeMachineEngagement *bool) {
+	l.IncludeMachineEngagement = includeMachineEngagement
+	l.require(listStepConditionalBlockSubscribersAliasSequencesRequestFieldIncludeMachineEngagement)
+}
+
+// SetLimit sets the Limit field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListStepConditionalBlockSubscribersAliasSequencesRequest) SetLimit(limit *int) {
+	l.Limit = limit
+	l.require(listStepConditionalBlockSubscribersAliasSequencesRequestFieldLimit)
+}
+
+// SetPage sets the Page field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListStepConditionalBlockSubscribersAliasSequencesRequest) SetPage(page *int) {
+	l.Page = page
+	l.require(listStepConditionalBlockSubscribersAliasSequencesRequestFieldPage)
+}
+
+// SetPeriod sets the Period field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListStepConditionalBlockSubscribersAliasSequencesRequest) SetPeriod(period *ListStepConditionalBlockSubscribersAliasSequencesRequestPeriod) {
+	l.Period = period
+	l.require(listStepConditionalBlockSubscribersAliasSequencesRequestFieldPeriod)
+}
+
+// SetStart sets the Start field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListStepConditionalBlockSubscribersAliasSequencesRequest) SetStart(start *time.Time) {
+	l.Start = start
+	l.require(listStepConditionalBlockSubscribersAliasSequencesRequestFieldStart)
 }
 
 var (
@@ -3812,7 +4307,8 @@ var (
 	emailThemePatchLayoutFieldContainerPaddingY    = big.NewInt(1 << 7)
 	emailThemePatchLayoutFieldContentAlign         = big.NewInt(1 << 8)
 	emailThemePatchLayoutFieldContentWidth         = big.NewInt(1 << 9)
-	emailThemePatchLayoutFieldSectionPadding       = big.NewInt(1 << 10)
+	emailThemePatchLayoutFieldContentWidthMode     = big.NewInt(1 << 10)
+	emailThemePatchLayoutFieldSectionPadding       = big.NewInt(1 << 11)
 )
 
 type EmailThemePatchLayout struct {
@@ -3825,9 +4321,11 @@ type EmailThemePatchLayout struct {
 	ContainerPaddingX    *float64 `json:"containerPaddingX,omitempty" url:"containerPaddingX,omitempty"`
 	ContainerPaddingY    *float64 `json:"containerPaddingY,omitempty" url:"containerPaddingY,omitempty"`
 	// Where the content column sits in a wide email client. center (default) or left (flush left, like a plain personal email). With left, buttons, the logo and footers line up on the left too unless set to right, or centered with styles.keepAlign. Phones show the column full width either way.
-	ContentAlign   *EmailThemePatchLayoutContentAlign `json:"contentAlign,omitempty" url:"contentAlign,omitempty"`
-	ContentWidth   *float64                           `json:"contentWidth,omitempty" url:"contentWidth,omitempty"`
-	SectionPadding *float64                           `json:"sectionPadding,omitempty" url:"sectionPadding,omitempty"`
+	ContentAlign *EmailThemePatchLayoutContentAlign `json:"contentAlign,omitempty" url:"contentAlign,omitempty"`
+	ContentWidth *float64                           `json:"contentWidth,omitempty" url:"contentWidth,omitempty"`
+	// fixed (default) keeps the content in a column of contentWidth; fluid runs it the full width of the reader's window, like an email written in Gmail or Apple Mail, with no fixed-width Outlook table. A fluid email sits on the left (buttons, the logo and footers too), and image blocks keep the size contentWidth gives them instead of stretching (an image with no align of its own sits on the left). Phones show the email full width either way.
+	ContentWidthMode *EmailThemePatchLayoutContentWidthMode `json:"contentWidthMode,omitempty" url:"contentWidthMode,omitempty"`
+	SectionPadding   *float64                               `json:"sectionPadding,omitempty" url:"sectionPadding,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -3904,6 +4402,13 @@ func (e *EmailThemePatchLayout) GetContentWidth() *float64 {
 		return nil
 	}
 	return e.ContentWidth
+}
+
+func (e *EmailThemePatchLayout) GetContentWidthMode() *EmailThemePatchLayoutContentWidthMode {
+	if e == nil {
+		return nil
+	}
+	return e.ContentWidthMode
 }
 
 func (e *EmailThemePatchLayout) GetSectionPadding() *float64 {
@@ -3997,6 +4502,13 @@ func (e *EmailThemePatchLayout) SetContentWidth(contentWidth *float64) {
 	e.require(emailThemePatchLayoutFieldContentWidth)
 }
 
+// SetContentWidthMode sets the ContentWidthMode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *EmailThemePatchLayout) SetContentWidthMode(contentWidthMode *EmailThemePatchLayoutContentWidthMode) {
+	e.ContentWidthMode = contentWidthMode
+	e.require(emailThemePatchLayoutFieldContentWidthMode)
+}
+
 // SetSectionPadding sets the SectionPadding field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (e *EmailThemePatchLayout) SetSectionPadding(sectionPadding *float64) {
@@ -4066,6 +4578,29 @@ func NewEmailThemePatchLayoutContentAlignFromString(s string) (EmailThemePatchLa
 }
 
 func (e EmailThemePatchLayoutContentAlign) Ptr() *EmailThemePatchLayoutContentAlign {
+	return &e
+}
+
+// fixed (default) keeps the content in a column of contentWidth; fluid runs it the full width of the reader's window, like an email written in Gmail or Apple Mail, with no fixed-width Outlook table. A fluid email sits on the left (buttons, the logo and footers too), and image blocks keep the size contentWidth gives them instead of stretching (an image with no align of its own sits on the left). Phones show the email full width either way.
+type EmailThemePatchLayoutContentWidthMode string
+
+const (
+	EmailThemePatchLayoutContentWidthModeFixed EmailThemePatchLayoutContentWidthMode = "fixed"
+	EmailThemePatchLayoutContentWidthModeFluid EmailThemePatchLayoutContentWidthMode = "fluid"
+)
+
+func NewEmailThemePatchLayoutContentWidthModeFromString(s string) (EmailThemePatchLayoutContentWidthMode, error) {
+	switch s {
+	case "fixed":
+		return EmailThemePatchLayoutContentWidthModeFixed, nil
+	case "fluid":
+		return EmailThemePatchLayoutContentWidthModeFluid, nil
+	}
+	var t EmailThemePatchLayoutContentWidthMode
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (e EmailThemePatchLayoutContentWidthMode) Ptr() *EmailThemePatchLayoutContentWidthMode {
 	return &e
 }
 
@@ -36920,6 +37455,236 @@ func (g *GetAudienceEnrollmentSequencesResponse) String() string {
 	return fmt.Sprintf("%#v", g)
 }
 
+type GetConditionalBlockOverviewAliasSequencesRequestPeriod string
+
+const (
+	GetConditionalBlockOverviewAliasSequencesRequestPeriodOneH        GetConditionalBlockOverviewAliasSequencesRequestPeriod = "1h"
+	GetConditionalBlockOverviewAliasSequencesRequestPeriodTwentyFourH GetConditionalBlockOverviewAliasSequencesRequestPeriod = "24h"
+	GetConditionalBlockOverviewAliasSequencesRequestPeriodSevenD      GetConditionalBlockOverviewAliasSequencesRequestPeriod = "7d"
+	GetConditionalBlockOverviewAliasSequencesRequestPeriodThirtyD     GetConditionalBlockOverviewAliasSequencesRequestPeriod = "30d"
+	GetConditionalBlockOverviewAliasSequencesRequestPeriodNinetyD     GetConditionalBlockOverviewAliasSequencesRequestPeriod = "90d"
+	GetConditionalBlockOverviewAliasSequencesRequestPeriodAll         GetConditionalBlockOverviewAliasSequencesRequestPeriod = "all"
+)
+
+func NewGetConditionalBlockOverviewAliasSequencesRequestPeriodFromString(s string) (GetConditionalBlockOverviewAliasSequencesRequestPeriod, error) {
+	switch s {
+	case "1h":
+		return GetConditionalBlockOverviewAliasSequencesRequestPeriodOneH, nil
+	case "24h":
+		return GetConditionalBlockOverviewAliasSequencesRequestPeriodTwentyFourH, nil
+	case "7d":
+		return GetConditionalBlockOverviewAliasSequencesRequestPeriodSevenD, nil
+	case "30d":
+		return GetConditionalBlockOverviewAliasSequencesRequestPeriodThirtyD, nil
+	case "90d":
+		return GetConditionalBlockOverviewAliasSequencesRequestPeriodNinetyD, nil
+	case "all":
+		return GetConditionalBlockOverviewAliasSequencesRequestPeriodAll, nil
+	}
+	var t GetConditionalBlockOverviewAliasSequencesRequestPeriod
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (g GetConditionalBlockOverviewAliasSequencesRequestPeriod) Ptr() *GetConditionalBlockOverviewAliasSequencesRequestPeriod {
+	return &g
+}
+
+var (
+	getConditionalBlockOverviewAliasSequencesResponseFieldAlertCount          = big.NewInt(1 << 0)
+	getConditionalBlockOverviewAliasSequencesResponseFieldAutomationID        = big.NewInt(1 << 1)
+	getConditionalBlockOverviewAliasSequencesResponseFieldAutomationName      = big.NewInt(1 << 2)
+	getConditionalBlockOverviewAliasSequencesResponseFieldSteps               = big.NewInt(1 << 3)
+	getConditionalBlockOverviewAliasSequencesResponseFieldStepsWithConditions = big.NewInt(1 << 4)
+	getConditionalBlockOverviewAliasSequencesResponseFieldSuccess             = big.NewInt(1 << 5)
+	getConditionalBlockOverviewAliasSequencesResponseFieldTimedOut            = big.NewInt(1 << 6)
+	getConditionalBlockOverviewAliasSequencesResponseFieldTotalRuleGroups     = big.NewInt(1 << 7)
+)
+
+type GetConditionalBlockOverviewAliasSequencesResponse struct {
+	AlertCount          *int             `json:"alertCount,omitempty" url:"alertCount,omitempty"`
+	AutomationID        *string          `json:"automationId,omitempty" url:"automationId,omitempty"`
+	AutomationName      *string          `json:"automationName,omitempty" url:"automationName,omitempty"`
+	Steps               []map[string]any `json:"steps,omitempty" url:"steps,omitempty"`
+	StepsWithConditions *int             `json:"stepsWithConditions,omitempty" url:"stepsWithConditions,omitempty"`
+	Success             *bool            `json:"success,omitempty" url:"success,omitempty"`
+	TimedOut            *bool            `json:"timedOut,omitempty" url:"timedOut,omitempty"`
+	TotalRuleGroups     *int             `json:"totalRuleGroups,omitempty" url:"totalRuleGroups,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (g *GetConditionalBlockOverviewAliasSequencesResponse) GetAlertCount() *int {
+	if g == nil {
+		return nil
+	}
+	return g.AlertCount
+}
+
+func (g *GetConditionalBlockOverviewAliasSequencesResponse) GetAutomationID() *string {
+	if g == nil {
+		return nil
+	}
+	return g.AutomationID
+}
+
+func (g *GetConditionalBlockOverviewAliasSequencesResponse) GetAutomationName() *string {
+	if g == nil {
+		return nil
+	}
+	return g.AutomationName
+}
+
+func (g *GetConditionalBlockOverviewAliasSequencesResponse) GetSteps() []map[string]any {
+	if g == nil {
+		return nil
+	}
+	return g.Steps
+}
+
+func (g *GetConditionalBlockOverviewAliasSequencesResponse) GetStepsWithConditions() *int {
+	if g == nil {
+		return nil
+	}
+	return g.StepsWithConditions
+}
+
+func (g *GetConditionalBlockOverviewAliasSequencesResponse) GetSuccess() *bool {
+	if g == nil {
+		return nil
+	}
+	return g.Success
+}
+
+func (g *GetConditionalBlockOverviewAliasSequencesResponse) GetTimedOut() *bool {
+	if g == nil {
+		return nil
+	}
+	return g.TimedOut
+}
+
+func (g *GetConditionalBlockOverviewAliasSequencesResponse) GetTotalRuleGroups() *int {
+	if g == nil {
+		return nil
+	}
+	return g.TotalRuleGroups
+}
+
+func (g *GetConditionalBlockOverviewAliasSequencesResponse) GetExtraProperties() map[string]interface{} {
+	if g == nil {
+		return nil
+	}
+	return g.extraProperties
+}
+
+func (g *GetConditionalBlockOverviewAliasSequencesResponse) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetAlertCount sets the AlertCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetConditionalBlockOverviewAliasSequencesResponse) SetAlertCount(alertCount *int) {
+	g.AlertCount = alertCount
+	g.require(getConditionalBlockOverviewAliasSequencesResponseFieldAlertCount)
+}
+
+// SetAutomationID sets the AutomationID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetConditionalBlockOverviewAliasSequencesResponse) SetAutomationID(automationID *string) {
+	g.AutomationID = automationID
+	g.require(getConditionalBlockOverviewAliasSequencesResponseFieldAutomationID)
+}
+
+// SetAutomationName sets the AutomationName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetConditionalBlockOverviewAliasSequencesResponse) SetAutomationName(automationName *string) {
+	g.AutomationName = automationName
+	g.require(getConditionalBlockOverviewAliasSequencesResponseFieldAutomationName)
+}
+
+// SetSteps sets the Steps field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetConditionalBlockOverviewAliasSequencesResponse) SetSteps(steps []map[string]any) {
+	g.Steps = steps
+	g.require(getConditionalBlockOverviewAliasSequencesResponseFieldSteps)
+}
+
+// SetStepsWithConditions sets the StepsWithConditions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetConditionalBlockOverviewAliasSequencesResponse) SetStepsWithConditions(stepsWithConditions *int) {
+	g.StepsWithConditions = stepsWithConditions
+	g.require(getConditionalBlockOverviewAliasSequencesResponseFieldStepsWithConditions)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetConditionalBlockOverviewAliasSequencesResponse) SetSuccess(success *bool) {
+	g.Success = success
+	g.require(getConditionalBlockOverviewAliasSequencesResponseFieldSuccess)
+}
+
+// SetTimedOut sets the TimedOut field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetConditionalBlockOverviewAliasSequencesResponse) SetTimedOut(timedOut *bool) {
+	g.TimedOut = timedOut
+	g.require(getConditionalBlockOverviewAliasSequencesResponseFieldTimedOut)
+}
+
+// SetTotalRuleGroups sets the TotalRuleGroups field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetConditionalBlockOverviewAliasSequencesResponse) SetTotalRuleGroups(totalRuleGroups *int) {
+	g.TotalRuleGroups = totalRuleGroups
+	g.require(getConditionalBlockOverviewAliasSequencesResponseFieldTotalRuleGroups)
+}
+
+func (g *GetConditionalBlockOverviewAliasSequencesResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler GetConditionalBlockOverviewAliasSequencesResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*g = GetConditionalBlockOverviewAliasSequencesResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *g)
+	if err != nil {
+		return err
+	}
+	g.extraProperties = extraProperties
+	g.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (g *GetConditionalBlockOverviewAliasSequencesResponse) MarshalJSON() ([]byte, error) {
+	type embed GetConditionalBlockOverviewAliasSequencesResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*g),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (g *GetConditionalBlockOverviewAliasSequencesResponse) String() string {
+	if g == nil {
+		return "<nil>"
+	}
+	if len(g.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(g.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(g); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", g)
+}
+
 type GetDefinitionByIDSequencesRequestFormat string
 
 const (
@@ -37330,6 +38095,249 @@ func (g *GetInboundWebhookSequencesResponse) MarshalJSON() ([]byte, error) {
 }
 
 func (g *GetInboundWebhookSequencesResponse) String() string {
+	if g == nil {
+		return "<nil>"
+	}
+	if len(g.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(g.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(g); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", g)
+}
+
+type GetOutcomesAliasSequencesRequestPeriod string
+
+const (
+	GetOutcomesAliasSequencesRequestPeriodOneH        GetOutcomesAliasSequencesRequestPeriod = "1h"
+	GetOutcomesAliasSequencesRequestPeriodTwentyFourH GetOutcomesAliasSequencesRequestPeriod = "24h"
+	GetOutcomesAliasSequencesRequestPeriodSevenD      GetOutcomesAliasSequencesRequestPeriod = "7d"
+	GetOutcomesAliasSequencesRequestPeriodThirtyD     GetOutcomesAliasSequencesRequestPeriod = "30d"
+	GetOutcomesAliasSequencesRequestPeriodNinetyD     GetOutcomesAliasSequencesRequestPeriod = "90d"
+)
+
+func NewGetOutcomesAliasSequencesRequestPeriodFromString(s string) (GetOutcomesAliasSequencesRequestPeriod, error) {
+	switch s {
+	case "1h":
+		return GetOutcomesAliasSequencesRequestPeriodOneH, nil
+	case "24h":
+		return GetOutcomesAliasSequencesRequestPeriodTwentyFourH, nil
+	case "7d":
+		return GetOutcomesAliasSequencesRequestPeriodSevenD, nil
+	case "30d":
+		return GetOutcomesAliasSequencesRequestPeriodThirtyD, nil
+	case "90d":
+		return GetOutcomesAliasSequencesRequestPeriodNinetyD, nil
+	}
+	var t GetOutcomesAliasSequencesRequestPeriod
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (g GetOutcomesAliasSequencesRequestPeriod) Ptr() *GetOutcomesAliasSequencesRequestPeriod {
+	return &g
+}
+
+var (
+	getOutcomesAliasSequencesResponseFieldAvailableGoals       = big.NewInt(1 << 0)
+	getOutcomesAliasSequencesResponseFieldBaseline             = big.NewInt(1 << 1)
+	getOutcomesAliasSequencesResponseFieldBranches             = big.NewInt(1 << 2)
+	getOutcomesAliasSequencesResponseFieldConversionWindowDays = big.NewInt(1 << 3)
+	getOutcomesAliasSequencesResponseFieldOutcome              = big.NewInt(1 << 4)
+	getOutcomesAliasSequencesResponseFieldSequenceID           = big.NewInt(1 << 5)
+	getOutcomesAliasSequencesResponseFieldSteps                = big.NewInt(1 << 6)
+	getOutcomesAliasSequencesResponseFieldSuccess              = big.NewInt(1 << 7)
+	getOutcomesAliasSequencesResponseFieldTimedOut             = big.NewInt(1 << 8)
+)
+
+type GetOutcomesAliasSequencesResponse struct {
+	AvailableGoals       []map[string]any `json:"availableGoals,omitempty" url:"availableGoals,omitempty"`
+	Baseline             map[string]any   `json:"baseline,omitempty" url:"baseline,omitempty"`
+	Branches             []map[string]any `json:"branches,omitempty" url:"branches,omitempty"`
+	ConversionWindowDays *int             `json:"conversionWindowDays,omitempty" url:"conversionWindowDays,omitempty"`
+	Outcome              map[string]any   `json:"outcome,omitempty" url:"outcome,omitempty"`
+	SequenceID           *string          `json:"sequenceId,omitempty" url:"sequenceId,omitempty"`
+	Steps                []map[string]any `json:"steps,omitempty" url:"steps,omitempty"`
+	Success              *bool            `json:"success,omitempty" url:"success,omitempty"`
+	TimedOut             *bool            `json:"timedOut,omitempty" url:"timedOut,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (g *GetOutcomesAliasSequencesResponse) GetAvailableGoals() []map[string]any {
+	if g == nil {
+		return nil
+	}
+	return g.AvailableGoals
+}
+
+func (g *GetOutcomesAliasSequencesResponse) GetBaseline() map[string]any {
+	if g == nil {
+		return nil
+	}
+	return g.Baseline
+}
+
+func (g *GetOutcomesAliasSequencesResponse) GetBranches() []map[string]any {
+	if g == nil {
+		return nil
+	}
+	return g.Branches
+}
+
+func (g *GetOutcomesAliasSequencesResponse) GetConversionWindowDays() *int {
+	if g == nil {
+		return nil
+	}
+	return g.ConversionWindowDays
+}
+
+func (g *GetOutcomesAliasSequencesResponse) GetOutcome() map[string]any {
+	if g == nil {
+		return nil
+	}
+	return g.Outcome
+}
+
+func (g *GetOutcomesAliasSequencesResponse) GetSequenceID() *string {
+	if g == nil {
+		return nil
+	}
+	return g.SequenceID
+}
+
+func (g *GetOutcomesAliasSequencesResponse) GetSteps() []map[string]any {
+	if g == nil {
+		return nil
+	}
+	return g.Steps
+}
+
+func (g *GetOutcomesAliasSequencesResponse) GetSuccess() *bool {
+	if g == nil {
+		return nil
+	}
+	return g.Success
+}
+
+func (g *GetOutcomesAliasSequencesResponse) GetTimedOut() *bool {
+	if g == nil {
+		return nil
+	}
+	return g.TimedOut
+}
+
+func (g *GetOutcomesAliasSequencesResponse) GetExtraProperties() map[string]interface{} {
+	if g == nil {
+		return nil
+	}
+	return g.extraProperties
+}
+
+func (g *GetOutcomesAliasSequencesResponse) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetAvailableGoals sets the AvailableGoals field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetOutcomesAliasSequencesResponse) SetAvailableGoals(availableGoals []map[string]any) {
+	g.AvailableGoals = availableGoals
+	g.require(getOutcomesAliasSequencesResponseFieldAvailableGoals)
+}
+
+// SetBaseline sets the Baseline field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetOutcomesAliasSequencesResponse) SetBaseline(baseline map[string]any) {
+	g.Baseline = baseline
+	g.require(getOutcomesAliasSequencesResponseFieldBaseline)
+}
+
+// SetBranches sets the Branches field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetOutcomesAliasSequencesResponse) SetBranches(branches []map[string]any) {
+	g.Branches = branches
+	g.require(getOutcomesAliasSequencesResponseFieldBranches)
+}
+
+// SetConversionWindowDays sets the ConversionWindowDays field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetOutcomesAliasSequencesResponse) SetConversionWindowDays(conversionWindowDays *int) {
+	g.ConversionWindowDays = conversionWindowDays
+	g.require(getOutcomesAliasSequencesResponseFieldConversionWindowDays)
+}
+
+// SetOutcome sets the Outcome field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetOutcomesAliasSequencesResponse) SetOutcome(outcome map[string]any) {
+	g.Outcome = outcome
+	g.require(getOutcomesAliasSequencesResponseFieldOutcome)
+}
+
+// SetSequenceID sets the SequenceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetOutcomesAliasSequencesResponse) SetSequenceID(sequenceID *string) {
+	g.SequenceID = sequenceID
+	g.require(getOutcomesAliasSequencesResponseFieldSequenceID)
+}
+
+// SetSteps sets the Steps field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetOutcomesAliasSequencesResponse) SetSteps(steps []map[string]any) {
+	g.Steps = steps
+	g.require(getOutcomesAliasSequencesResponseFieldSteps)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetOutcomesAliasSequencesResponse) SetSuccess(success *bool) {
+	g.Success = success
+	g.require(getOutcomesAliasSequencesResponseFieldSuccess)
+}
+
+// SetTimedOut sets the TimedOut field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetOutcomesAliasSequencesResponse) SetTimedOut(timedOut *bool) {
+	g.TimedOut = timedOut
+	g.require(getOutcomesAliasSequencesResponseFieldTimedOut)
+}
+
+func (g *GetOutcomesAliasSequencesResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler GetOutcomesAliasSequencesResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*g = GetOutcomesAliasSequencesResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *g)
+	if err != nil {
+		return err
+	}
+	g.extraProperties = extraProperties
+	g.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (g *GetOutcomesAliasSequencesResponse) MarshalJSON() ([]byte, error) {
+	type embed GetOutcomesAliasSequencesResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*g),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (g *GetOutcomesAliasSequencesResponse) String() string {
 	if g == nil {
 		return "<nil>"
 	}
@@ -38119,6 +39127,416 @@ func (g *GetStatsSequencesResponseStepsItemFailedSubscribersItem) String() strin
 	return fmt.Sprintf("%#v", g)
 }
 
+type GetStepConditionalBlockStatsAliasSequencesRequestPeriod string
+
+const (
+	GetStepConditionalBlockStatsAliasSequencesRequestPeriodOneH        GetStepConditionalBlockStatsAliasSequencesRequestPeriod = "1h"
+	GetStepConditionalBlockStatsAliasSequencesRequestPeriodTwentyFourH GetStepConditionalBlockStatsAliasSequencesRequestPeriod = "24h"
+	GetStepConditionalBlockStatsAliasSequencesRequestPeriodSevenD      GetStepConditionalBlockStatsAliasSequencesRequestPeriod = "7d"
+	GetStepConditionalBlockStatsAliasSequencesRequestPeriodThirtyD     GetStepConditionalBlockStatsAliasSequencesRequestPeriod = "30d"
+	GetStepConditionalBlockStatsAliasSequencesRequestPeriodNinetyD     GetStepConditionalBlockStatsAliasSequencesRequestPeriod = "90d"
+	GetStepConditionalBlockStatsAliasSequencesRequestPeriodAll         GetStepConditionalBlockStatsAliasSequencesRequestPeriod = "all"
+)
+
+func NewGetStepConditionalBlockStatsAliasSequencesRequestPeriodFromString(s string) (GetStepConditionalBlockStatsAliasSequencesRequestPeriod, error) {
+	switch s {
+	case "1h":
+		return GetStepConditionalBlockStatsAliasSequencesRequestPeriodOneH, nil
+	case "24h":
+		return GetStepConditionalBlockStatsAliasSequencesRequestPeriodTwentyFourH, nil
+	case "7d":
+		return GetStepConditionalBlockStatsAliasSequencesRequestPeriodSevenD, nil
+	case "30d":
+		return GetStepConditionalBlockStatsAliasSequencesRequestPeriodThirtyD, nil
+	case "90d":
+		return GetStepConditionalBlockStatsAliasSequencesRequestPeriodNinetyD, nil
+	case "all":
+		return GetStepConditionalBlockStatsAliasSequencesRequestPeriodAll, nil
+	}
+	var t GetStepConditionalBlockStatsAliasSequencesRequestPeriod
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (g GetStepConditionalBlockStatsAliasSequencesRequestPeriod) Ptr() *GetStepConditionalBlockStatsAliasSequencesRequestPeriod {
+	return &g
+}
+
+var (
+	getStepConditionalBlockStatsAliasSequencesResponseFieldAbTestVariantID = big.NewInt(1 << 0)
+	getStepConditionalBlockStatsAliasSequencesResponseFieldAlerts          = big.NewInt(1 << 1)
+	getStepConditionalBlockStatsAliasSequencesResponseFieldBaseline        = big.NewInt(1 << 2)
+	getStepConditionalBlockStatsAliasSequencesResponseFieldBlocks          = big.NewInt(1 << 3)
+	getStepConditionalBlockStatsAliasSequencesResponseFieldConditionGroups = big.NewInt(1 << 4)
+	getStepConditionalBlockStatsAliasSequencesResponseFieldFailClosedSends = big.NewInt(1 << 5)
+	getStepConditionalBlockStatsAliasSequencesResponseFieldGoalID          = big.NewInt(1 << 6)
+	getStepConditionalBlockStatsAliasSequencesResponseFieldRecordedSends   = big.NewInt(1 << 7)
+	getStepConditionalBlockStatsAliasSequencesResponseFieldSourceID        = big.NewInt(1 << 8)
+	getStepConditionalBlockStatsAliasSequencesResponseFieldSourceName      = big.NewInt(1 << 9)
+	getStepConditionalBlockStatsAliasSequencesResponseFieldSourceType      = big.NewInt(1 << 10)
+	getStepConditionalBlockStatsAliasSequencesResponseFieldSuccess         = big.NewInt(1 << 11)
+	getStepConditionalBlockStatsAliasSequencesResponseFieldTimedOut        = big.NewInt(1 << 12)
+	getStepConditionalBlockStatsAliasSequencesResponseFieldTotalSends      = big.NewInt(1 << 13)
+	getStepConditionalBlockStatsAliasSequencesResponseFieldTrackingSince   = big.NewInt(1 << 14)
+	getStepConditionalBlockStatsAliasSequencesResponseFieldTruncatedSends  = big.NewInt(1 << 15)
+	getStepConditionalBlockStatsAliasSequencesResponseFieldUntrackedSends  = big.NewInt(1 << 16)
+)
+
+type GetStepConditionalBlockStatsAliasSequencesResponse struct {
+	AbTestVariantID *string `json:"abTestVariantId,omitempty" url:"abTestVariantId,omitempty"`
+	// Automatic rule-health warnings (never_matched, empty_state_spike, lopsided_else, fail_closed_spike).
+	Alerts []map[string]any `json:"alerts,omitempty" url:"alerts,omitempty"`
+	// Email-wide averages over recorded sends (sends, deliveries, openRate, clickRate, conversionRate, unsubscribeRate, bounceRate). Null when no send recorded conditional decisions.
+	Baseline map[string]any   `json:"baseline,omitempty" url:"baseline,omitempty"`
+	Blocks   []map[string]any `json:"blocks,omitempty" url:"blocks,omitempty"`
+	// Sibling conditional blocks with identical rules collapsed into one group. Branches carry rate deltas against the baseline and topClickedLink.
+	ConditionGroups []map[string]any                                              `json:"conditionGroups,omitempty" url:"conditionGroups,omitempty"`
+	FailClosedSends *int                                                          `json:"failClosedSends,omitempty" url:"failClosedSends,omitempty"`
+	GoalID          *string                                                       `json:"goalId,omitempty" url:"goalId,omitempty"`
+	RecordedSends   *int                                                          `json:"recordedSends,omitempty" url:"recordedSends,omitempty"`
+	SourceID        *string                                                       `json:"sourceId,omitempty" url:"sourceId,omitempty"`
+	SourceName      *string                                                       `json:"sourceName,omitempty" url:"sourceName,omitempty"`
+	SourceType      *GetStepConditionalBlockStatsAliasSequencesResponseSourceType `json:"sourceType,omitempty" url:"sourceType,omitempty"`
+	Success         *bool                                                         `json:"success,omitempty" url:"success,omitempty"`
+	TimedOut        *bool                                                         `json:"timedOut,omitempty" url:"timedOut,omitempty"`
+	TotalSends      *int                                                          `json:"totalSends,omitempty" url:"totalSends,omitempty"`
+	TrackingSince   *time.Time                                                    `json:"trackingSince,omitempty" url:"trackingSince,omitempty"`
+	TruncatedSends  *int                                                          `json:"truncatedSends,omitempty" url:"truncatedSends,omitempty"`
+	UntrackedSends  *int                                                          `json:"untrackedSends,omitempty" url:"untrackedSends,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (g *GetStepConditionalBlockStatsAliasSequencesResponse) GetAbTestVariantID() *string {
+	if g == nil {
+		return nil
+	}
+	return g.AbTestVariantID
+}
+
+func (g *GetStepConditionalBlockStatsAliasSequencesResponse) GetAlerts() []map[string]any {
+	if g == nil {
+		return nil
+	}
+	return g.Alerts
+}
+
+func (g *GetStepConditionalBlockStatsAliasSequencesResponse) GetBaseline() map[string]any {
+	if g == nil {
+		return nil
+	}
+	return g.Baseline
+}
+
+func (g *GetStepConditionalBlockStatsAliasSequencesResponse) GetBlocks() []map[string]any {
+	if g == nil {
+		return nil
+	}
+	return g.Blocks
+}
+
+func (g *GetStepConditionalBlockStatsAliasSequencesResponse) GetConditionGroups() []map[string]any {
+	if g == nil {
+		return nil
+	}
+	return g.ConditionGroups
+}
+
+func (g *GetStepConditionalBlockStatsAliasSequencesResponse) GetFailClosedSends() *int {
+	if g == nil {
+		return nil
+	}
+	return g.FailClosedSends
+}
+
+func (g *GetStepConditionalBlockStatsAliasSequencesResponse) GetGoalID() *string {
+	if g == nil {
+		return nil
+	}
+	return g.GoalID
+}
+
+func (g *GetStepConditionalBlockStatsAliasSequencesResponse) GetRecordedSends() *int {
+	if g == nil {
+		return nil
+	}
+	return g.RecordedSends
+}
+
+func (g *GetStepConditionalBlockStatsAliasSequencesResponse) GetSourceID() *string {
+	if g == nil {
+		return nil
+	}
+	return g.SourceID
+}
+
+func (g *GetStepConditionalBlockStatsAliasSequencesResponse) GetSourceName() *string {
+	if g == nil {
+		return nil
+	}
+	return g.SourceName
+}
+
+func (g *GetStepConditionalBlockStatsAliasSequencesResponse) GetSourceType() *GetStepConditionalBlockStatsAliasSequencesResponseSourceType {
+	if g == nil {
+		return nil
+	}
+	return g.SourceType
+}
+
+func (g *GetStepConditionalBlockStatsAliasSequencesResponse) GetSuccess() *bool {
+	if g == nil {
+		return nil
+	}
+	return g.Success
+}
+
+func (g *GetStepConditionalBlockStatsAliasSequencesResponse) GetTimedOut() *bool {
+	if g == nil {
+		return nil
+	}
+	return g.TimedOut
+}
+
+func (g *GetStepConditionalBlockStatsAliasSequencesResponse) GetTotalSends() *int {
+	if g == nil {
+		return nil
+	}
+	return g.TotalSends
+}
+
+func (g *GetStepConditionalBlockStatsAliasSequencesResponse) GetTrackingSince() *time.Time {
+	if g == nil {
+		return nil
+	}
+	return g.TrackingSince
+}
+
+func (g *GetStepConditionalBlockStatsAliasSequencesResponse) GetTruncatedSends() *int {
+	if g == nil {
+		return nil
+	}
+	return g.TruncatedSends
+}
+
+func (g *GetStepConditionalBlockStatsAliasSequencesResponse) GetUntrackedSends() *int {
+	if g == nil {
+		return nil
+	}
+	return g.UntrackedSends
+}
+
+func (g *GetStepConditionalBlockStatsAliasSequencesResponse) GetExtraProperties() map[string]interface{} {
+	if g == nil {
+		return nil
+	}
+	return g.extraProperties
+}
+
+func (g *GetStepConditionalBlockStatsAliasSequencesResponse) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetAbTestVariantID sets the AbTestVariantID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetStepConditionalBlockStatsAliasSequencesResponse) SetAbTestVariantID(abTestVariantID *string) {
+	g.AbTestVariantID = abTestVariantID
+	g.require(getStepConditionalBlockStatsAliasSequencesResponseFieldAbTestVariantID)
+}
+
+// SetAlerts sets the Alerts field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetStepConditionalBlockStatsAliasSequencesResponse) SetAlerts(alerts []map[string]any) {
+	g.Alerts = alerts
+	g.require(getStepConditionalBlockStatsAliasSequencesResponseFieldAlerts)
+}
+
+// SetBaseline sets the Baseline field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetStepConditionalBlockStatsAliasSequencesResponse) SetBaseline(baseline map[string]any) {
+	g.Baseline = baseline
+	g.require(getStepConditionalBlockStatsAliasSequencesResponseFieldBaseline)
+}
+
+// SetBlocks sets the Blocks field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetStepConditionalBlockStatsAliasSequencesResponse) SetBlocks(blocks []map[string]any) {
+	g.Blocks = blocks
+	g.require(getStepConditionalBlockStatsAliasSequencesResponseFieldBlocks)
+}
+
+// SetConditionGroups sets the ConditionGroups field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetStepConditionalBlockStatsAliasSequencesResponse) SetConditionGroups(conditionGroups []map[string]any) {
+	g.ConditionGroups = conditionGroups
+	g.require(getStepConditionalBlockStatsAliasSequencesResponseFieldConditionGroups)
+}
+
+// SetFailClosedSends sets the FailClosedSends field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetStepConditionalBlockStatsAliasSequencesResponse) SetFailClosedSends(failClosedSends *int) {
+	g.FailClosedSends = failClosedSends
+	g.require(getStepConditionalBlockStatsAliasSequencesResponseFieldFailClosedSends)
+}
+
+// SetGoalID sets the GoalID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetStepConditionalBlockStatsAliasSequencesResponse) SetGoalID(goalID *string) {
+	g.GoalID = goalID
+	g.require(getStepConditionalBlockStatsAliasSequencesResponseFieldGoalID)
+}
+
+// SetRecordedSends sets the RecordedSends field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetStepConditionalBlockStatsAliasSequencesResponse) SetRecordedSends(recordedSends *int) {
+	g.RecordedSends = recordedSends
+	g.require(getStepConditionalBlockStatsAliasSequencesResponseFieldRecordedSends)
+}
+
+// SetSourceID sets the SourceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetStepConditionalBlockStatsAliasSequencesResponse) SetSourceID(sourceID *string) {
+	g.SourceID = sourceID
+	g.require(getStepConditionalBlockStatsAliasSequencesResponseFieldSourceID)
+}
+
+// SetSourceName sets the SourceName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetStepConditionalBlockStatsAliasSequencesResponse) SetSourceName(sourceName *string) {
+	g.SourceName = sourceName
+	g.require(getStepConditionalBlockStatsAliasSequencesResponseFieldSourceName)
+}
+
+// SetSourceType sets the SourceType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetStepConditionalBlockStatsAliasSequencesResponse) SetSourceType(sourceType *GetStepConditionalBlockStatsAliasSequencesResponseSourceType) {
+	g.SourceType = sourceType
+	g.require(getStepConditionalBlockStatsAliasSequencesResponseFieldSourceType)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetStepConditionalBlockStatsAliasSequencesResponse) SetSuccess(success *bool) {
+	g.Success = success
+	g.require(getStepConditionalBlockStatsAliasSequencesResponseFieldSuccess)
+}
+
+// SetTimedOut sets the TimedOut field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetStepConditionalBlockStatsAliasSequencesResponse) SetTimedOut(timedOut *bool) {
+	g.TimedOut = timedOut
+	g.require(getStepConditionalBlockStatsAliasSequencesResponseFieldTimedOut)
+}
+
+// SetTotalSends sets the TotalSends field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetStepConditionalBlockStatsAliasSequencesResponse) SetTotalSends(totalSends *int) {
+	g.TotalSends = totalSends
+	g.require(getStepConditionalBlockStatsAliasSequencesResponseFieldTotalSends)
+}
+
+// SetTrackingSince sets the TrackingSince field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetStepConditionalBlockStatsAliasSequencesResponse) SetTrackingSince(trackingSince *time.Time) {
+	g.TrackingSince = trackingSince
+	g.require(getStepConditionalBlockStatsAliasSequencesResponseFieldTrackingSince)
+}
+
+// SetTruncatedSends sets the TruncatedSends field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetStepConditionalBlockStatsAliasSequencesResponse) SetTruncatedSends(truncatedSends *int) {
+	g.TruncatedSends = truncatedSends
+	g.require(getStepConditionalBlockStatsAliasSequencesResponseFieldTruncatedSends)
+}
+
+// SetUntrackedSends sets the UntrackedSends field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetStepConditionalBlockStatsAliasSequencesResponse) SetUntrackedSends(untrackedSends *int) {
+	g.UntrackedSends = untrackedSends
+	g.require(getStepConditionalBlockStatsAliasSequencesResponseFieldUntrackedSends)
+}
+
+func (g *GetStepConditionalBlockStatsAliasSequencesResponse) UnmarshalJSON(data []byte) error {
+	type embed GetStepConditionalBlockStatsAliasSequencesResponse
+	var unmarshaler = struct {
+		embed
+		TrackingSince *internal.DateTime `json:"trackingSince,omitempty"`
+	}{
+		embed: embed(*g),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*g = GetStepConditionalBlockStatsAliasSequencesResponse(unmarshaler.embed)
+	g.TrackingSince = unmarshaler.TrackingSince.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *g)
+	if err != nil {
+		return err
+	}
+	g.extraProperties = extraProperties
+	g.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (g *GetStepConditionalBlockStatsAliasSequencesResponse) MarshalJSON() ([]byte, error) {
+	type embed GetStepConditionalBlockStatsAliasSequencesResponse
+	var marshaler = struct {
+		embed
+		TrackingSince *internal.DateTime `json:"trackingSince,omitempty"`
+	}{
+		embed:         embed(*g),
+		TrackingSince: internal.NewOptionalDateTime(g.TrackingSince),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (g *GetStepConditionalBlockStatsAliasSequencesResponse) String() string {
+	if g == nil {
+		return "<nil>"
+	}
+	if len(g.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(g.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(g); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", g)
+}
+
+type GetStepConditionalBlockStatsAliasSequencesResponseSourceType string
+
+const (
+	GetStepConditionalBlockStatsAliasSequencesResponseSourceTypeCampaign      GetStepConditionalBlockStatsAliasSequencesResponseSourceType = "campaign"
+	GetStepConditionalBlockStatsAliasSequencesResponseSourceTypeSequenceStep  GetStepConditionalBlockStatsAliasSequencesResponseSourceType = "sequence_step"
+	GetStepConditionalBlockStatsAliasSequencesResponseSourceTypeTransactional GetStepConditionalBlockStatsAliasSequencesResponseSourceType = "transactional"
+)
+
+func NewGetStepConditionalBlockStatsAliasSequencesResponseSourceTypeFromString(s string) (GetStepConditionalBlockStatsAliasSequencesResponseSourceType, error) {
+	switch s {
+	case "campaign":
+		return GetStepConditionalBlockStatsAliasSequencesResponseSourceTypeCampaign, nil
+	case "sequence_step":
+		return GetStepConditionalBlockStatsAliasSequencesResponseSourceTypeSequenceStep, nil
+	case "transactional":
+		return GetStepConditionalBlockStatsAliasSequencesResponseSourceTypeTransactional, nil
+	}
+	var t GetStepConditionalBlockStatsAliasSequencesResponseSourceType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (g GetStepConditionalBlockStatsAliasSequencesResponseSourceType) Ptr() *GetStepConditionalBlockStatsAliasSequencesResponseSourceType {
+	return &g
+}
+
 var (
 	listAudienceEnrollmentsSequencesResponseFieldAudienceEnrollments = big.NewInt(1 << 0)
 	listAudienceEnrollmentsSequencesResponseFieldSuccess             = big.NewInt(1 << 1)
@@ -38582,6 +40000,287 @@ func (l *ListGoalsSequencesResponse) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
+type ListPathSubscribersAliasSequencesRequestBucket string
+
+const (
+	ListPathSubscribersAliasSequencesRequestBucketUnmapped   ListPathSubscribersAliasSequencesRequestBucket = "unmapped"
+	ListPathSubscribersAliasSequencesRequestBucketUnrecorded ListPathSubscribersAliasSequencesRequestBucket = "unrecorded"
+)
+
+func NewListPathSubscribersAliasSequencesRequestBucketFromString(s string) (ListPathSubscribersAliasSequencesRequestBucket, error) {
+	switch s {
+	case "unmapped":
+		return ListPathSubscribersAliasSequencesRequestBucketUnmapped, nil
+	case "unrecorded":
+		return ListPathSubscribersAliasSequencesRequestBucketUnrecorded, nil
+	}
+	var t ListPathSubscribersAliasSequencesRequestBucket
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListPathSubscribersAliasSequencesRequestBucket) Ptr() *ListPathSubscribersAliasSequencesRequestBucket {
+	return &l
+}
+
+type ListPathSubscribersAliasSequencesRequestPeriod string
+
+const (
+	ListPathSubscribersAliasSequencesRequestPeriodOneH        ListPathSubscribersAliasSequencesRequestPeriod = "1h"
+	ListPathSubscribersAliasSequencesRequestPeriodTwentyFourH ListPathSubscribersAliasSequencesRequestPeriod = "24h"
+	ListPathSubscribersAliasSequencesRequestPeriodSevenD      ListPathSubscribersAliasSequencesRequestPeriod = "7d"
+	ListPathSubscribersAliasSequencesRequestPeriodThirtyD     ListPathSubscribersAliasSequencesRequestPeriod = "30d"
+	ListPathSubscribersAliasSequencesRequestPeriodNinetyD     ListPathSubscribersAliasSequencesRequestPeriod = "90d"
+)
+
+func NewListPathSubscribersAliasSequencesRequestPeriodFromString(s string) (ListPathSubscribersAliasSequencesRequestPeriod, error) {
+	switch s {
+	case "1h":
+		return ListPathSubscribersAliasSequencesRequestPeriodOneH, nil
+	case "24h":
+		return ListPathSubscribersAliasSequencesRequestPeriodTwentyFourH, nil
+	case "7d":
+		return ListPathSubscribersAliasSequencesRequestPeriodSevenD, nil
+	case "30d":
+		return ListPathSubscribersAliasSequencesRequestPeriodThirtyD, nil
+	case "90d":
+		return ListPathSubscribersAliasSequencesRequestPeriodNinetyD, nil
+	}
+	var t ListPathSubscribersAliasSequencesRequestPeriod
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListPathSubscribersAliasSequencesRequestPeriod) Ptr() *ListPathSubscribersAliasSequencesRequestPeriod {
+	return &l
+}
+
+var (
+	listPathSubscribersAliasSequencesResponseFieldBucket               = big.NewInt(1 << 0)
+	listPathSubscribersAliasSequencesResponseFieldConversionWindowDays = big.NewInt(1 << 1)
+	listPathSubscribersAliasSequencesResponseFieldNodeID               = big.NewInt(1 << 2)
+	listPathSubscribersAliasSequencesResponseFieldOutcome              = big.NewInt(1 << 3)
+	listPathSubscribersAliasSequencesResponseFieldPagination           = big.NewInt(1 << 4)
+	listPathSubscribersAliasSequencesResponseFieldPathID               = big.NewInt(1 << 5)
+	listPathSubscribersAliasSequencesResponseFieldSequenceID           = big.NewInt(1 << 6)
+	listPathSubscribersAliasSequencesResponseFieldSubscribers          = big.NewInt(1 << 7)
+	listPathSubscribersAliasSequencesResponseFieldSuccess              = big.NewInt(1 << 8)
+	listPathSubscribersAliasSequencesResponseFieldTimedOut             = big.NewInt(1 << 9)
+)
+
+type ListPathSubscribersAliasSequencesResponse struct {
+	Bucket               *string          `json:"bucket,omitempty" url:"bucket,omitempty"`
+	ConversionWindowDays *int             `json:"conversionWindowDays,omitempty" url:"conversionWindowDays,omitempty"`
+	NodeID               *string          `json:"nodeId,omitempty" url:"nodeId,omitempty"`
+	Outcome              map[string]any   `json:"outcome,omitempty" url:"outcome,omitempty"`
+	Pagination           map[string]any   `json:"pagination,omitempty" url:"pagination,omitempty"`
+	PathID               *string          `json:"pathId,omitempty" url:"pathId,omitempty"`
+	SequenceID           *string          `json:"sequenceId,omitempty" url:"sequenceId,omitempty"`
+	Subscribers          []map[string]any `json:"subscribers,omitempty" url:"subscribers,omitempty"`
+	Success              *bool            `json:"success,omitempty" url:"success,omitempty"`
+	TimedOut             *bool            `json:"timedOut,omitempty" url:"timedOut,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListPathSubscribersAliasSequencesResponse) GetBucket() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Bucket
+}
+
+func (l *ListPathSubscribersAliasSequencesResponse) GetConversionWindowDays() *int {
+	if l == nil {
+		return nil
+	}
+	return l.ConversionWindowDays
+}
+
+func (l *ListPathSubscribersAliasSequencesResponse) GetNodeID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.NodeID
+}
+
+func (l *ListPathSubscribersAliasSequencesResponse) GetOutcome() map[string]any {
+	if l == nil {
+		return nil
+	}
+	return l.Outcome
+}
+
+func (l *ListPathSubscribersAliasSequencesResponse) GetPagination() map[string]any {
+	if l == nil {
+		return nil
+	}
+	return l.Pagination
+}
+
+func (l *ListPathSubscribersAliasSequencesResponse) GetPathID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.PathID
+}
+
+func (l *ListPathSubscribersAliasSequencesResponse) GetSequenceID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SequenceID
+}
+
+func (l *ListPathSubscribersAliasSequencesResponse) GetSubscribers() []map[string]any {
+	if l == nil {
+		return nil
+	}
+	return l.Subscribers
+}
+
+func (l *ListPathSubscribersAliasSequencesResponse) GetSuccess() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.Success
+}
+
+func (l *ListPathSubscribersAliasSequencesResponse) GetTimedOut() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.TimedOut
+}
+
+func (l *ListPathSubscribersAliasSequencesResponse) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListPathSubscribersAliasSequencesResponse) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetBucket sets the Bucket field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPathSubscribersAliasSequencesResponse) SetBucket(bucket *string) {
+	l.Bucket = bucket
+	l.require(listPathSubscribersAliasSequencesResponseFieldBucket)
+}
+
+// SetConversionWindowDays sets the ConversionWindowDays field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPathSubscribersAliasSequencesResponse) SetConversionWindowDays(conversionWindowDays *int) {
+	l.ConversionWindowDays = conversionWindowDays
+	l.require(listPathSubscribersAliasSequencesResponseFieldConversionWindowDays)
+}
+
+// SetNodeID sets the NodeID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPathSubscribersAliasSequencesResponse) SetNodeID(nodeID *string) {
+	l.NodeID = nodeID
+	l.require(listPathSubscribersAliasSequencesResponseFieldNodeID)
+}
+
+// SetOutcome sets the Outcome field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPathSubscribersAliasSequencesResponse) SetOutcome(outcome map[string]any) {
+	l.Outcome = outcome
+	l.require(listPathSubscribersAliasSequencesResponseFieldOutcome)
+}
+
+// SetPagination sets the Pagination field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPathSubscribersAliasSequencesResponse) SetPagination(pagination map[string]any) {
+	l.Pagination = pagination
+	l.require(listPathSubscribersAliasSequencesResponseFieldPagination)
+}
+
+// SetPathID sets the PathID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPathSubscribersAliasSequencesResponse) SetPathID(pathID *string) {
+	l.PathID = pathID
+	l.require(listPathSubscribersAliasSequencesResponseFieldPathID)
+}
+
+// SetSequenceID sets the SequenceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPathSubscribersAliasSequencesResponse) SetSequenceID(sequenceID *string) {
+	l.SequenceID = sequenceID
+	l.require(listPathSubscribersAliasSequencesResponseFieldSequenceID)
+}
+
+// SetSubscribers sets the Subscribers field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPathSubscribersAliasSequencesResponse) SetSubscribers(subscribers []map[string]any) {
+	l.Subscribers = subscribers
+	l.require(listPathSubscribersAliasSequencesResponseFieldSubscribers)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPathSubscribersAliasSequencesResponse) SetSuccess(success *bool) {
+	l.Success = success
+	l.require(listPathSubscribersAliasSequencesResponseFieldSuccess)
+}
+
+// SetTimedOut sets the TimedOut field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPathSubscribersAliasSequencesResponse) SetTimedOut(timedOut *bool) {
+	l.TimedOut = timedOut
+	l.require(listPathSubscribersAliasSequencesResponseFieldTimedOut)
+}
+
+func (l *ListPathSubscribersAliasSequencesResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListPathSubscribersAliasSequencesResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListPathSubscribersAliasSequencesResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListPathSubscribersAliasSequencesResponse) MarshalJSON() ([]byte, error) {
+	type embed ListPathSubscribersAliasSequencesResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListPathSubscribersAliasSequencesResponse) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
 var (
 	listSequencesResponseFieldPagination = big.NewInt(1 << 0)
 	listSequencesResponseFieldSequences  = big.NewInt(1 << 1)
@@ -38867,6 +40566,299 @@ func (l *ListSequencesResponsePagination) MarshalJSON() ([]byte, error) {
 }
 
 func (l *ListSequencesResponsePagination) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type ListStepConditionalBlockSubscribersAliasSequencesRequestBranch string
+
+const (
+	ListStepConditionalBlockSubscribersAliasSequencesRequestBranchIf      ListStepConditionalBlockSubscribersAliasSequencesRequestBranch = "if"
+	ListStepConditionalBlockSubscribersAliasSequencesRequestBranchElse    ListStepConditionalBlockSubscribersAliasSequencesRequestBranch = "else"
+	ListStepConditionalBlockSubscribersAliasSequencesRequestBranchShown   ListStepConditionalBlockSubscribersAliasSequencesRequestBranch = "shown"
+	ListStepConditionalBlockSubscribersAliasSequencesRequestBranchHidden  ListStepConditionalBlockSubscribersAliasSequencesRequestBranch = "hidden"
+	ListStepConditionalBlockSubscribersAliasSequencesRequestBranchSkipped ListStepConditionalBlockSubscribersAliasSequencesRequestBranch = "skipped"
+)
+
+func NewListStepConditionalBlockSubscribersAliasSequencesRequestBranchFromString(s string) (ListStepConditionalBlockSubscribersAliasSequencesRequestBranch, error) {
+	switch s {
+	case "if":
+		return ListStepConditionalBlockSubscribersAliasSequencesRequestBranchIf, nil
+	case "else":
+		return ListStepConditionalBlockSubscribersAliasSequencesRequestBranchElse, nil
+	case "shown":
+		return ListStepConditionalBlockSubscribersAliasSequencesRequestBranchShown, nil
+	case "hidden":
+		return ListStepConditionalBlockSubscribersAliasSequencesRequestBranchHidden, nil
+	case "skipped":
+		return ListStepConditionalBlockSubscribersAliasSequencesRequestBranchSkipped, nil
+	}
+	var t ListStepConditionalBlockSubscribersAliasSequencesRequestBranch
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListStepConditionalBlockSubscribersAliasSequencesRequestBranch) Ptr() *ListStepConditionalBlockSubscribersAliasSequencesRequestBranch {
+	return &l
+}
+
+type ListStepConditionalBlockSubscribersAliasSequencesRequestPeriod string
+
+const (
+	ListStepConditionalBlockSubscribersAliasSequencesRequestPeriodOneH        ListStepConditionalBlockSubscribersAliasSequencesRequestPeriod = "1h"
+	ListStepConditionalBlockSubscribersAliasSequencesRequestPeriodTwentyFourH ListStepConditionalBlockSubscribersAliasSequencesRequestPeriod = "24h"
+	ListStepConditionalBlockSubscribersAliasSequencesRequestPeriodSevenD      ListStepConditionalBlockSubscribersAliasSequencesRequestPeriod = "7d"
+	ListStepConditionalBlockSubscribersAliasSequencesRequestPeriodThirtyD     ListStepConditionalBlockSubscribersAliasSequencesRequestPeriod = "30d"
+	ListStepConditionalBlockSubscribersAliasSequencesRequestPeriodNinetyD     ListStepConditionalBlockSubscribersAliasSequencesRequestPeriod = "90d"
+	ListStepConditionalBlockSubscribersAliasSequencesRequestPeriodAll         ListStepConditionalBlockSubscribersAliasSequencesRequestPeriod = "all"
+)
+
+func NewListStepConditionalBlockSubscribersAliasSequencesRequestPeriodFromString(s string) (ListStepConditionalBlockSubscribersAliasSequencesRequestPeriod, error) {
+	switch s {
+	case "1h":
+		return ListStepConditionalBlockSubscribersAliasSequencesRequestPeriodOneH, nil
+	case "24h":
+		return ListStepConditionalBlockSubscribersAliasSequencesRequestPeriodTwentyFourH, nil
+	case "7d":
+		return ListStepConditionalBlockSubscribersAliasSequencesRequestPeriodSevenD, nil
+	case "30d":
+		return ListStepConditionalBlockSubscribersAliasSequencesRequestPeriodThirtyD, nil
+	case "90d":
+		return ListStepConditionalBlockSubscribersAliasSequencesRequestPeriodNinetyD, nil
+	case "all":
+		return ListStepConditionalBlockSubscribersAliasSequencesRequestPeriodAll, nil
+	}
+	var t ListStepConditionalBlockSubscribersAliasSequencesRequestPeriod
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListStepConditionalBlockSubscribersAliasSequencesRequestPeriod) Ptr() *ListStepConditionalBlockSubscribersAliasSequencesRequestPeriod {
+	return &l
+}
+
+var (
+	listStepConditionalBlockSubscribersAliasSequencesResponseFieldBlockID     = big.NewInt(1 << 0)
+	listStepConditionalBlockSubscribersAliasSequencesResponseFieldBranch      = big.NewInt(1 << 1)
+	listStepConditionalBlockSubscribersAliasSequencesResponseFieldBranchLabel = big.NewInt(1 << 2)
+	listStepConditionalBlockSubscribersAliasSequencesResponseFieldItems       = big.NewInt(1 << 3)
+	listStepConditionalBlockSubscribersAliasSequencesResponseFieldPagination  = big.NewInt(1 << 4)
+	listStepConditionalBlockSubscribersAliasSequencesResponseFieldSourceID    = big.NewInt(1 << 5)
+	listStepConditionalBlockSubscribersAliasSequencesResponseFieldSourceType  = big.NewInt(1 << 6)
+	listStepConditionalBlockSubscribersAliasSequencesResponseFieldSuccess     = big.NewInt(1 << 7)
+	listStepConditionalBlockSubscribersAliasSequencesResponseFieldTimedOut    = big.NewInt(1 << 8)
+	listStepConditionalBlockSubscribersAliasSequencesResponseFieldTotal       = big.NewInt(1 << 9)
+)
+
+type ListStepConditionalBlockSubscribersAliasSequencesResponse struct {
+	BlockID     *string          `json:"blockId,omitempty" url:"blockId,omitempty"`
+	Branch      *string          `json:"branch,omitempty" url:"branch,omitempty"`
+	BranchLabel *string          `json:"branchLabel,omitempty" url:"branchLabel,omitempty"`
+	Items       []map[string]any `json:"items,omitempty" url:"items,omitempty"`
+	Pagination  *Pagination      `json:"pagination,omitempty" url:"pagination,omitempty"`
+	SourceID    *string          `json:"sourceId,omitempty" url:"sourceId,omitempty"`
+	SourceType  *string          `json:"sourceType,omitempty" url:"sourceType,omitempty"`
+	Success     *bool            `json:"success,omitempty" url:"success,omitempty"`
+	TimedOut    *bool            `json:"timedOut,omitempty" url:"timedOut,omitempty"`
+	Total       *int             `json:"total,omitempty" url:"total,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListStepConditionalBlockSubscribersAliasSequencesResponse) GetBlockID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.BlockID
+}
+
+func (l *ListStepConditionalBlockSubscribersAliasSequencesResponse) GetBranch() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Branch
+}
+
+func (l *ListStepConditionalBlockSubscribersAliasSequencesResponse) GetBranchLabel() *string {
+	if l == nil {
+		return nil
+	}
+	return l.BranchLabel
+}
+
+func (l *ListStepConditionalBlockSubscribersAliasSequencesResponse) GetItems() []map[string]any {
+	if l == nil {
+		return nil
+	}
+	return l.Items
+}
+
+func (l *ListStepConditionalBlockSubscribersAliasSequencesResponse) GetPagination() *Pagination {
+	if l == nil {
+		return nil
+	}
+	return l.Pagination
+}
+
+func (l *ListStepConditionalBlockSubscribersAliasSequencesResponse) GetSourceID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SourceID
+}
+
+func (l *ListStepConditionalBlockSubscribersAliasSequencesResponse) GetSourceType() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SourceType
+}
+
+func (l *ListStepConditionalBlockSubscribersAliasSequencesResponse) GetSuccess() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.Success
+}
+
+func (l *ListStepConditionalBlockSubscribersAliasSequencesResponse) GetTimedOut() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.TimedOut
+}
+
+func (l *ListStepConditionalBlockSubscribersAliasSequencesResponse) GetTotal() *int {
+	if l == nil {
+		return nil
+	}
+	return l.Total
+}
+
+func (l *ListStepConditionalBlockSubscribersAliasSequencesResponse) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListStepConditionalBlockSubscribersAliasSequencesResponse) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetBlockID sets the BlockID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListStepConditionalBlockSubscribersAliasSequencesResponse) SetBlockID(blockID *string) {
+	l.BlockID = blockID
+	l.require(listStepConditionalBlockSubscribersAliasSequencesResponseFieldBlockID)
+}
+
+// SetBranch sets the Branch field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListStepConditionalBlockSubscribersAliasSequencesResponse) SetBranch(branch *string) {
+	l.Branch = branch
+	l.require(listStepConditionalBlockSubscribersAliasSequencesResponseFieldBranch)
+}
+
+// SetBranchLabel sets the BranchLabel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListStepConditionalBlockSubscribersAliasSequencesResponse) SetBranchLabel(branchLabel *string) {
+	l.BranchLabel = branchLabel
+	l.require(listStepConditionalBlockSubscribersAliasSequencesResponseFieldBranchLabel)
+}
+
+// SetItems sets the Items field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListStepConditionalBlockSubscribersAliasSequencesResponse) SetItems(items []map[string]any) {
+	l.Items = items
+	l.require(listStepConditionalBlockSubscribersAliasSequencesResponseFieldItems)
+}
+
+// SetPagination sets the Pagination field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListStepConditionalBlockSubscribersAliasSequencesResponse) SetPagination(pagination *Pagination) {
+	l.Pagination = pagination
+	l.require(listStepConditionalBlockSubscribersAliasSequencesResponseFieldPagination)
+}
+
+// SetSourceID sets the SourceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListStepConditionalBlockSubscribersAliasSequencesResponse) SetSourceID(sourceID *string) {
+	l.SourceID = sourceID
+	l.require(listStepConditionalBlockSubscribersAliasSequencesResponseFieldSourceID)
+}
+
+// SetSourceType sets the SourceType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListStepConditionalBlockSubscribersAliasSequencesResponse) SetSourceType(sourceType *string) {
+	l.SourceType = sourceType
+	l.require(listStepConditionalBlockSubscribersAliasSequencesResponseFieldSourceType)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListStepConditionalBlockSubscribersAliasSequencesResponse) SetSuccess(success *bool) {
+	l.Success = success
+	l.require(listStepConditionalBlockSubscribersAliasSequencesResponseFieldSuccess)
+}
+
+// SetTimedOut sets the TimedOut field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListStepConditionalBlockSubscribersAliasSequencesResponse) SetTimedOut(timedOut *bool) {
+	l.TimedOut = timedOut
+	l.require(listStepConditionalBlockSubscribersAliasSequencesResponseFieldTimedOut)
+}
+
+// SetTotal sets the Total field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListStepConditionalBlockSubscribersAliasSequencesResponse) SetTotal(total *int) {
+	l.Total = total
+	l.require(listStepConditionalBlockSubscribersAliasSequencesResponseFieldTotal)
+}
+
+func (l *ListStepConditionalBlockSubscribersAliasSequencesResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListStepConditionalBlockSubscribersAliasSequencesResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListStepConditionalBlockSubscribersAliasSequencesResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListStepConditionalBlockSubscribersAliasSequencesResponse) MarshalJSON() ([]byte, error) {
+	type embed ListStepConditionalBlockSubscribersAliasSequencesResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListStepConditionalBlockSubscribersAliasSequencesResponse) String() string {
 	if l == nil {
 		return "<nil>"
 	}

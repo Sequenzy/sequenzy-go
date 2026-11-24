@@ -1154,6 +1154,7 @@ const (
 	AccountHealthInsightDetectorCampaignGap                  AccountHealthInsightDetector = "campaign_gap"
 	AccountHealthInsightDetectorStaleCampaignDrafts          AccountHealthInsightDetector = "stale_campaign_drafts"
 	AccountHealthInsightDetectorUnderperformingSequenceEmail AccountHealthInsightDetector = "underperforming_sequence_email"
+	AccountHealthInsightDetectorDeadConditionalEmailRule     AccountHealthInsightDetector = "dead_conditional_email_rule"
 	AccountHealthInsightDetectorDeliverabilitySpike          AccountHealthInsightDetector = "deliverability_spike"
 	AccountHealthInsightDetectorSendingDomainFailing         AccountHealthInsightDetector = "sending_domain_failing"
 	AccountHealthInsightDetectorMissingSequence              AccountHealthInsightDetector = "missing_sequence"
@@ -1174,6 +1175,8 @@ func NewAccountHealthInsightDetectorFromString(s string) (AccountHealthInsightDe
 		return AccountHealthInsightDetectorStaleCampaignDrafts, nil
 	case "underperforming_sequence_email":
 		return AccountHealthInsightDetectorUnderperformingSequenceEmail, nil
+	case "dead_conditional_email_rule":
+		return AccountHealthInsightDetectorDeadConditionalEmailRule, nil
 	case "deliverability_spike":
 		return AccountHealthInsightDetectorDeliverabilitySpike, nil
 	case "sending_domain_failing":

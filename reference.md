@@ -3139,6 +3139,114 @@ client.Accounts.Upsert(
 </details>
 
 ## Analytics
+<details><summary><code>client.Analytics.GetCampaignConditionalBlockStats(CampaignID) -> *sequenzygo.GetCampaignConditionalBlockStatsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns per-block if/else and show/hide branch splits, engagement rates, and goal conversions for conditional blocks inside a campaign email.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.GetCampaignConditionalBlockStatsRequest{
+    CampaignID: "campaignId",
+}
+client.Analytics.GetCampaignConditionalBlockStats(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**campaignID:** `string` — Campaign ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**abTestVariantID:** `*string` — Optional A/B test variant ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**end:** `*time.Time` — ISO 8601 window end (pair with start)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**goalID:** `*string` — Optional goal ID or default-revenue
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**includeMachineEngagement:** `*bool` — Include machine-classified opens and clicks
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**period:** `*sequenzygo.GetCampaignConditionalBlockStatsRequestPeriod` — Send window (defaults to all for campaigns)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**start:** `*time.Time` — ISO 8601 window start (pair with end)
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Analytics.GetCampaignEmailClientMetrics(CampaignID) -> *sequenzygo.GetCampaignEmailClientMetricsResponse</code></summary>
 <dl>
 <dd>
@@ -4001,6 +4109,90 @@ client.Analytics.GetRecipients(
 </dl>
 </details>
 
+<details><summary><code>client.Analytics.GetSequenceConditionalBlockOverview(SequenceID) -> *sequenzygo.GetSequenceConditionalBlockOverviewResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns a sequence-wide summary of all email steps that use conditional blocks, including collapsed rule group counts and automatic dead-rule or fallback-spike alerts.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.GetSequenceConditionalBlockOverviewRequest{
+    SequenceID: "sequenceId",
+}
+client.Analytics.GetSequenceConditionalBlockOverview(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**sequenceID:** `string` — Sequence ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**end:** `*time.Time` — ISO 8601 end of custom send window (requires start)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**period:** `*sequenzygo.GetSequenceConditionalBlockOverviewRequestPeriod` — Optional send time window. Defaults to all.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**start:** `*time.Time` — ISO 8601 start of custom send window (requires end)
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Analytics.GetSequenceMetrics(SequenceID) -> *sequenzygo.GetSequenceMetricsResponse</code></summary>
 <dl>
 <dd>
@@ -4082,6 +4274,239 @@ client.Analytics.GetSequenceMetrics(
 <dd>
 
 **start:** `*time.Time` — Start of custom time range (ISO 8601). Must be used with `end`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Analytics.GetSequenceOutcomes(SequenceID) -> *sequenzygo.GetSequenceOutcomesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns per-path split counts and post-step cohort conversion rates for branch, condition, and action steps in a sequence, plus a baseline across all enrollments and optional per-goal email attribution. Rule-based branches are observational (causal false); random splits report mature-cohort significance (causal true). For goal outcomes, attributed conversions are scoped to the selected goalId and can differ from all-goals canvas email badges.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.GetSequenceOutcomesRequest{
+    SequenceID: "sequenceId",
+}
+client.Analytics.GetSequenceOutcomes(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**sequenceID:** `string` — Sequence ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**conversionWindowDays:** `*int` — Conversion window in whole days after reaching the step. Truncated early if the contact re-enrolls at the same step.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**end:** `*time.Time` — Custom ISO 8601 end time (requires start).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**eventName:** `*string` — Custom event name to measure post-step conversion against. Mutually exclusive with goalId.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**goalID:** `*string` — Goal ID or default-revenue. Mutually exclusive with eventName.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**nodeID:** `*string` — Optional comma-separated node IDs to scope the response to.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**period:** `*sequenzygo.GetSequenceOutcomesRequestPeriod` — Rolling arrival window. Omit for all-time cohorts.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**start:** `*time.Time` — Custom ISO 8601 start time (requires end, max 90 days).
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Analytics.GetSequenceStepConditionalBlockStats(SequenceID, NodeID) -> *sequenzygo.GetSequenceStepConditionalBlockStatsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns per-block if/else and show/hide performance for conditional blocks inside a sequence email or A/B test step.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.GetSequenceStepConditionalBlockStatsRequest{
+    SequenceID: "sequenceId",
+    NodeID: "nodeId",
+}
+client.Analytics.GetSequenceStepConditionalBlockStats(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**sequenceID:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**nodeID:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**abTestVariantID:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**end:** `*time.Time` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**goalID:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**includeMachineEngagement:** `*bool` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**period:** `*sequenzygo.GetSequenceStepConditionalBlockStatsRequestPeriod` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**start:** `*time.Time` 
     
 </dd>
 </dl>
@@ -4180,6 +4605,106 @@ client.Analytics.GetStatsLegacy(
 <dd>
 
 **start:** `*time.Time` — Start of custom time range (ISO 8601). Must be used with `end`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Analytics.GetTransactionalConditionalBlockStats(IDOrSlug) -> *sequenzygo.GetTransactionalConditionalBlockStatsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns per-block if/else and show/hide performance for conditional blocks inside a transactional email.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.GetTransactionalConditionalBlockStatsRequest{
+    IDOrSlug: "idOrSlug",
+}
+client.Analytics.GetTransactionalConditionalBlockStats(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**idOrSlug:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**end:** `*time.Time` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**goalID:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**includeMachineEngagement:** `*bool` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**period:** `*sequenzygo.GetTransactionalConditionalBlockStatsRequestPeriod` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**start:** `*time.Time` 
     
 </dd>
 </dl>
@@ -4356,6 +4881,148 @@ client.Analytics.GetTransactionalMetricsLegacy(
 <dd>
 
 **period:** `*sequenzygo.GetTransactionalMetricsLegacyRequestPeriod` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**start:** `*time.Time` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Analytics.ListCampaignConditionalBlockSubscribers(CampaignID, BlockID) -> *sequenzygo.ListCampaignConditionalBlockSubscribersResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns paginated recipients who received a specific branch of a conditional block inside a campaign email.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.ListCampaignConditionalBlockSubscribersRequest{
+    CampaignID: "campaignId",
+    BlockID: "blockId",
+    Branch: sequenzygo.ListCampaignConditionalBlockSubscribersRequestBranchIf,
+}
+client.Analytics.ListCampaignConditionalBlockSubscribers(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**campaignID:** `string` — Campaign ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**blockID:** `string` — Conditional block ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**abTestVariantID:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**branch:** `*sequenzygo.ListCampaignConditionalBlockSubscribersRequestBranch` — Branch key
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**end:** `*time.Time` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**goalID:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**includeMachineEngagement:** `*bool` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `*int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page:** `*int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**period:** `*sequenzygo.ListCampaignConditionalBlockSubscribersRequestPeriod` 
     
 </dd>
 </dl>
@@ -5115,6 +5782,440 @@ client.Analytics.ListSequenceEvents(
 <dd>
 
 **start:** `*time.Time` — Start of custom time range (ISO 8601). Must be used with `end`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Analytics.ListSequencePathSubscribers(SequenceID, NodeID) -> *sequenzygo.ListSequencePathSubscribersResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns paginated enrollments that took a specific branch path (or reached a step), including redacted evaluation reasons and optional cohort conversion status within the conversion window.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.ListSequencePathSubscribersRequest{
+    SequenceID: "sequenceId",
+    NodeID: "nodeId",
+}
+client.Analytics.ListSequencePathSubscribers(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**sequenceID:** `string` — Sequence ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**nodeID:** `string` — Branch, condition, or step node ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**bucket:** `*sequenzygo.ListSequencePathSubscribersRequestBucket` — Optional synthetic bucket filter (unmapped for earlier graph versions, unrecorded for legacy rows). Mutually exclusive with pathId.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**conversionWindowDays:** `*int` — Conversion window in whole days.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**end:** `*time.Time` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**eventName:** `*string` — Optional event name. Mutually exclusive with goalId.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**goalID:** `*string` — Optional goal ID or default-revenue. Mutually exclusive with eventName.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `*int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page:** `*int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**pathID:** `*string` — Optional configured path ID for branch or condition nodes (branch id, else, continued, or exited). Mutually exclusive with bucket.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**period:** `*sequenzygo.ListSequencePathSubscribersRequestPeriod` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**start:** `*time.Time` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Analytics.ListSequenceStepConditionalBlockSubscribers(SequenceID, NodeID, BlockID) -> *sequenzygo.ListSequenceStepConditionalBlockSubscribersResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns paginated recipients who received a specific branch of a conditional block inside a sequence email step.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.ListSequenceStepConditionalBlockSubscribersRequest{
+    SequenceID: "sequenceId",
+    NodeID: "nodeId",
+    BlockID: "blockId",
+    Branch: sequenzygo.ListSequenceStepConditionalBlockSubscribersRequestBranchIf,
+}
+client.Analytics.ListSequenceStepConditionalBlockSubscribers(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**sequenceID:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**nodeID:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**blockID:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**abTestVariantID:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**branch:** `*sequenzygo.ListSequenceStepConditionalBlockSubscribersRequestBranch` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**end:** `*time.Time` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**goalID:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**includeMachineEngagement:** `*bool` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `*int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page:** `*int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**period:** `*sequenzygo.ListSequenceStepConditionalBlockSubscribersRequestPeriod` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**start:** `*time.Time` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Analytics.ListTransactionalConditionalBlockSubscribers(IDOrSlug, BlockID) -> *sequenzygo.ListTransactionalConditionalBlockSubscribersResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns paginated recipients who received a specific branch of a conditional block inside a transactional email.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.ListTransactionalConditionalBlockSubscribersRequest{
+    IDOrSlug: "idOrSlug",
+    BlockID: "blockId",
+    Branch: sequenzygo.ListTransactionalConditionalBlockSubscribersRequestBranchIf,
+}
+client.Analytics.ListTransactionalConditionalBlockSubscribers(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**idOrSlug:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**blockID:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**branch:** `*sequenzygo.ListTransactionalConditionalBlockSubscribersRequestBranch` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**end:** `*time.Time` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**goalID:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**includeMachineEngagement:** `*bool` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `*int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page:** `*int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**period:** `*sequenzygo.ListTransactionalConditionalBlockSubscribersRequestPeriod` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**start:** `*time.Time` 
     
 </dd>
 </dl>
@@ -6886,6 +7987,114 @@ client.Campaigns.GetAudience(
 </dl>
 </details>
 
+<details><summary><code>client.Campaigns.GetConditionalBlockStatsAlias(CampaignID) -> *sequenzygo.GetConditionalBlockStatsAliasCampaignsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Alias for /metrics/campaigns/{campaignId}/conditional-blocks. Your key needs the campaigns:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.GetConditionalBlockStatsAliasCampaignsRequest{
+    CampaignID: "campaignId",
+}
+client.Campaigns.GetConditionalBlockStatsAlias(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**campaignID:** `string` — Campaign ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**abTestVariantID:** `*string` — Optional A/B test variant ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**end:** `*time.Time` — ISO 8601 window end (pair with start)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**goalID:** `*string` — Optional goal ID or default-revenue
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**includeMachineEngagement:** `*bool` — Include machine-classified opens and clicks
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**period:** `*sequenzygo.GetConditionalBlockStatsAliasCampaignsRequestPeriod` — Send window (defaults to all for campaigns)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**start:** `*time.Time` — ISO 8601 window start (pair with end)
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Campaigns.GetVariation(CampaignID, VariationID) -> *sequenzygo.EmailVariationResponse</code></summary>
 <dl>
 <dd>
@@ -7034,6 +8243,148 @@ client.Campaigns.List(
 <dd>
 
 **status:** `*sequenzygo.ListCampaignsRequestStatus` — Optional campaign status filter.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Campaigns.ListConditionalBlockSubscribersAlias(CampaignID, BlockID) -> *sequenzygo.ListConditionalBlockSubscribersAliasCampaignsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Alias for /metrics/campaigns/{campaignId}/conditional-blocks/{blockId}/subscribers. Your key needs the analytics:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.ListConditionalBlockSubscribersAliasCampaignsRequest{
+    CampaignID: "campaignId",
+    BlockID: "blockId",
+    Branch: sequenzygo.ListConditionalBlockSubscribersAliasCampaignsRequestBranchIf,
+}
+client.Campaigns.ListConditionalBlockSubscribersAlias(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**campaignID:** `string` — Campaign ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**blockID:** `string` — Conditional block ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**abTestVariantID:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**branch:** `*sequenzygo.ListConditionalBlockSubscribersAliasCampaignsRequestBranch` — Branch key
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**end:** `*time.Time` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**goalID:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**includeMachineEngagement:** `*bool` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `*int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page:** `*int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**period:** `*sequenzygo.ListConditionalBlockSubscribersAliasCampaignsRequestPeriod` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**start:** `*time.Time` 
     
 </dd>
 </dl>
@@ -15196,7 +16547,7 @@ client.Integrations.ActivatePixel(
 <dl>
 <dd>
 
-Connects an API-key / webhook-secret integration: polar, paddle, dodo, lemon_squeezy, whop, revenuecat, superwall, adapty, creem, chargebee, clerk, posthog, segment, mixpanel, amplitude, affonso, attio, or sparkloop. Credentials are validated, stored encrypted, and never returned. Lemon Squeezy creates a managed signed webhook when webhookSecret is omitted, or uses a caller-managed secret as fallback. Payment providers queue their initial revenue backfill, except RevenueCat, Superwall, and Adapty, which are webhook-only; Affonso queues its affiliate backfill; PostHog and Segment can optionally import event history. Mixpanel and Amplitude take only webhookSecret: Mixpanel syncs exported cohorts as mixpanel-<cohort> tags, and Amplitude streams events, user properties, and cohorts (amplitude-<cohort> tags). Attio registers its own webhook when inbound mappings are saved, so it takes no webhookSecret. SparkLoop registers its webhook in SparkLoop during connect and receives partner referrals for one publication (providerAccountId, required only when the account has several). Reconnecting replaces stored credentials. OAuth and app-install providers require the dashboard. Requires the integrations:manage scope.
+Connects an API-key / webhook-secret integration: polar, paddle, dodo, agentaos, lemon_squeezy, whop, revenuecat, superwall, adapty, creem, chargebee, clerk, posthog, segment, mixpanel, amplitude, affonso, attio, or sparkloop. Credentials are validated, stored encrypted, and never returned. Lemon Squeezy creates a managed signed webhook when webhookSecret is omitted, or uses a caller-managed secret as fallback. Payment providers queue their initial revenue backfill, except RevenueCat, Superwall, and Adapty, which are webhook-only; Affonso queues its affiliate backfill; PostHog and Segment can optionally import event history. Mixpanel and Amplitude take only webhookSecret: Mixpanel syncs exported cohorts as mixpanel-<cohort> tags, and Amplitude streams events, user properties, and cohorts (amplitude-<cohort> tags). Attio registers its own webhook when inbound mappings are saved, so it takes no webhookSecret. SparkLoop registers its webhook in SparkLoop during connect and receives partner referrals for one publication (providerAccountId, required only when the account has several). Reconnecting replaces stored credentials. OAuth and app-install providers require the dashboard. Requires the integrations:manage scope.
 </dd>
 </dl>
 </dd>
@@ -15232,7 +16583,7 @@ client.Integrations.Connect(
 <dl>
 <dd>
 
-**apiKey:** `*string` — Provider API key. Required for polar, paddle, dodo, lemon_squeezy, whop, revenuecat, creem, chargebee, affonso, attio, and sparkloop. RevenueCat uses a secret REST API v2 key with Projects read and Customers read permissions. Attio uses the workspace access token. SparkLoop uses the API key from Settings → Integrations.
+**apiKey:** `*string` — Provider API key. Required for polar, paddle, dodo, agentaos, lemon_squeezy, whop, revenuecat, creem, chargebee, affonso, attio, and sparkloop. AgentaOS accepts test (sk_test_...) or live (sk_live_...) keys and derives the mode from the prefix. RevenueCat uses a secret REST API v2 key with Projects read and Customers read permissions. Attio uses the workspace access token. SparkLoop uses the API key from Settings → Integrations.
     
 </dd>
 </dl>
@@ -15256,7 +16607,7 @@ client.Integrations.Connect(
 <dl>
 <dd>
 
-**providerAccountID:** `*string` — Provider account id: Paddle seller ID, Dodo business ID, Lemon Squeezy numeric store ID, Whop company ID, Creem store ID, or Chargebee site name. Polar resolves it from the API key. RevenueCat resolves its project ID from the API key; pass it only when the key can access several projects. Superwall, Adapty, Mixpanel, and Amplitude do not use one. SparkLoop: the publication ID (pub_...), required only when the account has several publications.
+**providerAccountID:** `*string` — Provider account id: Paddle seller ID, Dodo business ID, Lemon Squeezy numeric store ID, Whop company ID, Creem store ID, or Chargebee site name. Polar and AgentaOS resolve it from the API key. RevenueCat resolves its project ID from the API key; pass it only when the key can access several projects. Superwall, Adapty, Mixpanel, and Amplitude do not use one. SparkLoop: the publication ID (pub_...), required only when the account has several publications.
     
 </dd>
 </dl>
@@ -17460,6 +18811,14 @@ client.Lists.Create(
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**unsubscribeListOnly:** `*bool` — Scope unsubscribes from emails sent to this list to the targeted list(s) instead of globally unsubscribing the contact. Defaults false on create; omission preserves on update and false disables. Null is rejected.
+    
+</dd>
+</dl>
 </dd>
 </dl>
 
@@ -17726,6 +19085,14 @@ client.Lists.Update(
 <dd>
 
 **name:** `*string` — New list name.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**unsubscribeListOnly:** `*bool` — Scope unsubscribes from emails sent to this list to the targeted list(s) instead of globally unsubscribing the contact. Defaults false on create; omission preserves on update and false disables. Null is rejected.
     
 </dd>
 </dl>
@@ -22884,7 +24251,7 @@ client.References.ListEmailReferences(
 <dl>
 <dd>
 
-**limit:** `*int` — For `scope=similar` without `q`, most emails (and sequences) to return. Also caps sequences elsewhere.
+**limit:** `*int` — Most emails (and sequences) to return per page. For `scope=similar` without `q` there is one page.
     
 </dd>
 </dl>
@@ -26014,6 +27381,90 @@ client.Sequences.GetAudienceEnrollment(
 </dl>
 </details>
 
+<details><summary><code>client.Sequences.GetConditionalBlockOverviewAlias(SequenceID) -> *sequenzygo.GetConditionalBlockOverviewAliasSequencesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Alias for /metrics/sequences/{sequenceId}/conditional-blocks.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.GetConditionalBlockOverviewAliasSequencesRequest{
+    SequenceID: "sequenceId",
+}
+client.Sequences.GetConditionalBlockOverviewAlias(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**sequenceID:** `string` — Sequence ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**end:** `*time.Time` — ISO 8601 end of custom send window (requires start)
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**period:** `*sequenzygo.GetConditionalBlockOverviewAliasSequencesRequestPeriod` — Optional send time window. Defaults to all.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**start:** `*time.Time` — ISO 8601 start of custom send window (requires end)
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Sequences.GetDefinition(Key) -> *sequenzygo.GetDefinitionSequencesResponse</code></summary>
 <dl>
 <dd>
@@ -26348,6 +27799,122 @@ client.Sequences.GetInboundWebhook(
 </dl>
 </details>
 
+<details><summary><code>client.Sequences.GetOutcomesAlias(SequenceID) -> *sequenzygo.GetOutcomesAliasSequencesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Alias for /metrics/sequences/{sequenceId}/outcomes. Your key needs the sequences:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.GetOutcomesAliasSequencesRequest{
+    SequenceID: "sequenceId",
+}
+client.Sequences.GetOutcomesAlias(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**sequenceID:** `string` — Sequence ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**conversionWindowDays:** `*int` — Conversion window in whole days after reaching the step. Truncated early if the contact re-enrolls at the same step.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**end:** `*time.Time` — Custom ISO 8601 end time (requires start).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**eventName:** `*string` — Custom event name to measure post-step conversion against. Mutually exclusive with goalId.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**goalID:** `*string` — Goal ID or default-revenue. Mutually exclusive with eventName.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**nodeID:** `*string` — Optional comma-separated node IDs to scope the response to.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**period:** `*sequenzygo.GetOutcomesAliasSequencesRequestPeriod` — Rolling arrival window. Omit for all-time cohorts.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**start:** `*time.Time` — Custom ISO 8601 start time (requires end, max 90 days).
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Sequences.GetRecurringEnrollment(SequenceID) -> *sequenzygo.SequenceRecurringEnrollmentResponse</code></summary>
 <dl>
 <dd>
@@ -26489,6 +28056,123 @@ client.Sequences.GetStats(
 <dd>
 
 **start:** `*time.Time` — Start of custom time range (ISO 8601). Must be used with `end`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Sequences.GetStepConditionalBlockStatsAlias(SequenceID, NodeID) -> *sequenzygo.GetStepConditionalBlockStatsAliasSequencesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Alias for /metrics/sequences/{sequenceId}/steps/{nodeId}/conditional-blocks. Your key needs the sequences:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.GetStepConditionalBlockStatsAliasSequencesRequest{
+    SequenceID: "sequenceId",
+    NodeID: "nodeId",
+}
+client.Sequences.GetStepConditionalBlockStatsAlias(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**sequenceID:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**nodeID:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**abTestVariantID:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**end:** `*time.Time` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**goalID:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**includeMachineEngagement:** `*bool` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**period:** `*sequenzygo.GetStepConditionalBlockStatsAliasSequencesRequestPeriod` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**start:** `*time.Time` 
     
 </dd>
 </dl>
@@ -26997,6 +28681,306 @@ client.Sequences.ListGoals(
 <dd>
 
 **sequenceID:** `string` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Sequences.ListPathSubscribersAlias(SequenceID, NodeID) -> *sequenzygo.ListPathSubscribersAliasSequencesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Alias for /metrics/sequences/{sequenceId}/paths/{nodeId}/subscribers. Your key needs the analytics:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.ListPathSubscribersAliasSequencesRequest{
+    SequenceID: "sequenceId",
+    NodeID: "nodeId",
+}
+client.Sequences.ListPathSubscribersAlias(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**sequenceID:** `string` — Sequence ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**nodeID:** `string` — Branch, condition, or step node ID
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**bucket:** `*sequenzygo.ListPathSubscribersAliasSequencesRequestBucket` — Optional synthetic bucket filter (unmapped for earlier graph versions, unrecorded for legacy rows). Mutually exclusive with pathId.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**conversionWindowDays:** `*int` — Conversion window in whole days.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**end:** `*time.Time` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**eventName:** `*string` — Optional event name. Mutually exclusive with goalId.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**goalID:** `*string` — Optional goal ID or default-revenue. Mutually exclusive with eventName.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `*int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page:** `*int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**pathID:** `*string` — Optional configured path ID for branch or condition nodes (branch id, else, continued, or exited). Mutually exclusive with bucket.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**period:** `*sequenzygo.ListPathSubscribersAliasSequencesRequestPeriod` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**start:** `*time.Time` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Sequences.ListStepConditionalBlockSubscribersAlias(SequenceID, NodeID, BlockID) -> *sequenzygo.ListStepConditionalBlockSubscribersAliasSequencesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Alias for /metrics/sequences/{sequenceId}/steps/{nodeId}/conditional-blocks/{blockId}/subscribers. Your key needs the analytics:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.ListStepConditionalBlockSubscribersAliasSequencesRequest{
+    SequenceID: "sequenceId",
+    NodeID: "nodeId",
+    BlockID: "blockId",
+    Branch: sequenzygo.ListStepConditionalBlockSubscribersAliasSequencesRequestBranchIf,
+}
+client.Sequences.ListStepConditionalBlockSubscribersAlias(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**sequenceID:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**nodeID:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**blockID:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**abTestVariantID:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**branch:** `*sequenzygo.ListStepConditionalBlockSubscribersAliasSequencesRequestBranch` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**end:** `*time.Time` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**goalID:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**includeMachineEngagement:** `*bool` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `*int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page:** `*int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**period:** `*sequenzygo.ListStepConditionalBlockSubscribersAliasSequencesRequestPeriod` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**start:** `*time.Time` 
     
 </dd>
 </dl>
@@ -34897,6 +36881,106 @@ client.Transactional.Get(
 </dl>
 </details>
 
+<details><summary><code>client.Transactional.GetTransactionalConditionalBlockStatsAlias(IDOrSlug) -> *sequenzygo.GetTransactionalConditionalBlockStatsAliasResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Alias for /metrics/transactional/{idOrSlug}/conditional-blocks. Your key needs the transactional:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.GetTransactionalConditionalBlockStatsAliasRequest{
+    IDOrSlug: "idOrSlug",
+}
+client.Transactional.GetTransactionalConditionalBlockStatsAlias(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**idOrSlug:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**end:** `*time.Time` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**goalID:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**includeMachineEngagement:** `*bool` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**period:** `*sequenzygo.GetTransactionalConditionalBlockStatsAliasRequestPeriod` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**start:** `*time.Time` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Transactional.List() -> *sequenzygo.ListTransactionalResponse</code></summary>
 <dl>
 <dd>
@@ -34984,6 +37068,140 @@ client.Transactional.List(
 <dd>
 
 **status:** `*sequenzygo.ListTransactionalRequestStatus` — Filter by template active state.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Transactional.ListTransactionalConditionalBlockSubscribersAlias(IDOrSlug, BlockID) -> *sequenzygo.ListTransactionalConditionalBlockSubscribersAliasResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Alias for /metrics/transactional/{idOrSlug}/conditional-blocks/{blockId}/subscribers. Your key needs the analytics:read scope.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &sequenzygo.ListTransactionalConditionalBlockSubscribersAliasRequest{
+    IDOrSlug: "idOrSlug",
+    BlockID: "blockId",
+    Branch: sequenzygo.ListTransactionalConditionalBlockSubscribersAliasRequestBranchIf,
+}
+client.Transactional.ListTransactionalConditionalBlockSubscribersAlias(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**idOrSlug:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**blockID:** `string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**branch:** `*sequenzygo.ListTransactionalConditionalBlockSubscribersAliasRequestBranch` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**end:** `*time.Time` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**goalID:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**includeMachineEngagement:** `*bool` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**limit:** `*int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**page:** `*int` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**period:** `*sequenzygo.ListTransactionalConditionalBlockSubscribersAliasRequestPeriod` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**start:** `*time.Time` 
     
 </dd>
 </dl>

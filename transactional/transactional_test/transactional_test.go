@@ -155,6 +155,32 @@ func TestTransactionalGetWithWireMock(
 	VerifyRequestCount(t, "TestTransactionalGetWithWireMock", "GET", "/transactional/welcome-email", nil, 1)
 }
 
+func TestTransactionalGetTransactionalConditionalBlockStatsAliasWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.GetTransactionalConditionalBlockStatsAliasRequest{
+		IDOrSlug: "idOrSlug",
+	}
+	_, invocationErr := client.Transactional.GetTransactionalConditionalBlockStatsAlias(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestTransactionalGetTransactionalConditionalBlockStatsAliasWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestTransactionalGetTransactionalConditionalBlockStatsAliasWithWireMock", "GET", "/transactional/idOrSlug/conditional-blocks", nil, 1)
+}
+
 func TestTransactionalListWithWireMock(
 	t *testing.T,
 ) {
@@ -177,6 +203,34 @@ func TestTransactionalListWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestTransactionalListWithWireMock", "GET", "/transactional", nil, 1)
+}
+
+func TestTransactionalListTransactionalConditionalBlockSubscribersAliasWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.ListTransactionalConditionalBlockSubscribersAliasRequest{
+		IDOrSlug: "idOrSlug",
+		BlockID:  "blockId",
+		Branch:   sequenzygo.ListTransactionalConditionalBlockSubscribersAliasRequestBranchIf,
+	}
+	_, invocationErr := client.Transactional.ListTransactionalConditionalBlockSubscribersAlias(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestTransactionalListTransactionalConditionalBlockSubscribersAliasWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestTransactionalListTransactionalConditionalBlockSubscribersAliasWithWireMock", "GET", "/transactional/idOrSlug/conditional-blocks/blockId/subscribers", map[string]interface{}{"branch": "if"}, 1)
 }
 
 func TestTransactionalSendWithWireMock(

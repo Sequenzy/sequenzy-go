@@ -46,13 +46,13 @@ var (
 )
 
 type ConnectIntegrationsRequest struct {
-	// Provider API key. Required for polar, paddle, dodo, lemon_squeezy, whop, revenuecat, creem, chargebee, affonso, attio, and sparkloop. RevenueCat uses a secret REST API v2 key with Projects read and Customers read permissions. Attio uses the workspace access token. SparkLoop uses the API key from Settings → Integrations.
+	// Provider API key. Required for polar, paddle, dodo, agentaos, lemon_squeezy, whop, revenuecat, creem, chargebee, affonso, attio, and sparkloop. AgentaOS accepts test (sk_test_...) or live (sk_live_...) keys and derives the mode from the prefix. RevenueCat uses a secret REST API v2 key with Projects read and Customers read permissions. Attio uses the workspace access token. SparkLoop uses the API key from Settings → Integrations.
 	APIKey *string `json:"apiKey,omitempty" url:"-"`
 	// PostHog and Segment only. Imports event history after connecting: PostHog reads the project archive (projectId + personalApiKey); Segment walks your existing contacts' Unify profiles (spaceId + profileApiToken) and covers at most the last 14 days the Profile API serves, because Segment has no bulk event export.
 	HistoryImport *ConnectIntegrationsRequestHistoryImport `json:"historyImport,omitempty" url:"-"`
 	// Provider to connect.
 	Provider ConnectIntegrationsRequestProvider `json:"provider" url:"-"`
-	// Provider account id: Paddle seller ID, Dodo business ID, Lemon Squeezy numeric store ID, Whop company ID, Creem store ID, or Chargebee site name. Polar resolves it from the API key. RevenueCat resolves its project ID from the API key; pass it only when the key can access several projects. Superwall, Adapty, Mixpanel, and Amplitude do not use one. SparkLoop: the publication ID (pub_...), required only when the account has several publications.
+	// Provider account id: Paddle seller ID, Dodo business ID, Lemon Squeezy numeric store ID, Whop company ID, Creem store ID, or Chargebee site name. Polar and AgentaOS resolve it from the API key. RevenueCat resolves its project ID from the API key; pass it only when the key can access several projects. Superwall, Adapty, Mixpanel, and Amplitude do not use one. SparkLoop: the publication ID (pub_...), required only when the account has several publications.
 	ProviderAccountID *string `json:"providerAccountId,omitempty" url:"-"`
 	// PostHog, Segment, and Amplitude: event delivery scope. PostHog also takes matchByDistinctId. Mixpanel takes no settings. Attio: listMap (Sequenzy list id to Attio list id or slug) and syncCompanyFromDomain. SparkLoop: listIds for new referrals. On a PostHog reconnect, the settings you pass merge onto the stored ones.
 	Settings *ConnectIntegrationsRequestSettings `json:"settings,omitempty" url:"-"`
@@ -6359,6 +6359,7 @@ const (
 	ConnectIntegrationsRequestProviderPolar        ConnectIntegrationsRequestProvider = "polar"
 	ConnectIntegrationsRequestProviderPaddle       ConnectIntegrationsRequestProvider = "paddle"
 	ConnectIntegrationsRequestProviderDodo         ConnectIntegrationsRequestProvider = "dodo"
+	ConnectIntegrationsRequestProviderAgentaos     ConnectIntegrationsRequestProvider = "agentaos"
 	ConnectIntegrationsRequestProviderLemonSqueezy ConnectIntegrationsRequestProvider = "lemon_squeezy"
 	ConnectIntegrationsRequestProviderWhop         ConnectIntegrationsRequestProvider = "whop"
 	ConnectIntegrationsRequestProviderRevenuecat   ConnectIntegrationsRequestProvider = "revenuecat"
@@ -6384,6 +6385,8 @@ func NewConnectIntegrationsRequestProviderFromString(s string) (ConnectIntegrati
 		return ConnectIntegrationsRequestProviderPaddle, nil
 	case "dodo":
 		return ConnectIntegrationsRequestProviderDodo, nil
+	case "agentaos":
+		return ConnectIntegrationsRequestProviderAgentaos, nil
 	case "lemon_squeezy":
 		return ConnectIntegrationsRequestProviderLemonSqueezy, nil
 	case "whop":

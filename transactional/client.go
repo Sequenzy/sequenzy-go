@@ -121,6 +121,33 @@ func (c *Client) Get(
 	return response.Body, nil
 }
 
+// Alias for /metrics/transactional/{idOrSlug}/conditional-blocks. Your key needs the transactional:read scope.
+//
+// Example:
+//
+//	request := &sequenzygo.GetTransactionalConditionalBlockStatsAliasRequest{
+//	    IDOrSlug: "idOrSlug",
+//	}
+//	client.Transactional.GetTransactionalConditionalBlockStatsAlias(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) GetTransactionalConditionalBlockStatsAlias(
+	ctx context.Context,
+	request *sequenzygo.GetTransactionalConditionalBlockStatsAliasRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.GetTransactionalConditionalBlockStatsAliasResponse, error) {
+	response, err := c.WithRawResponse.GetTransactionalConditionalBlockStatsAlias(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Lists transactional email templates with their linked subjects and all-time delivery metrics. Search name, slug, or subject; filter active state; and sort by engagement. Human engagement is used by default.
 //
 // Example:
@@ -136,6 +163,35 @@ func (c *Client) List(
 	opts ...option.RequestOption,
 ) (*sequenzygo.ListTransactionalResponse, error) {
 	response, err := c.WithRawResponse.List(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Alias for /metrics/transactional/{idOrSlug}/conditional-blocks/{blockId}/subscribers. Your key needs the analytics:read scope.
+//
+// Example:
+//
+//	request := &sequenzygo.ListTransactionalConditionalBlockSubscribersAliasRequest{
+//	    IDOrSlug: "idOrSlug",
+//	    BlockID: "blockId",
+//	    Branch: sequenzygo.ListTransactionalConditionalBlockSubscribersAliasRequestBranchIf,
+//	}
+//	client.Transactional.ListTransactionalConditionalBlockSubscribersAlias(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) ListTransactionalConditionalBlockSubscribersAlias(
+	ctx context.Context,
+	request *sequenzygo.ListTransactionalConditionalBlockSubscribersAliasRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.ListTransactionalConditionalBlockSubscribersAliasResponse, error) {
+	response, err := c.WithRawResponse.ListTransactionalConditionalBlockSubscribersAlias(
 		ctx,
 		request,
 		opts...,

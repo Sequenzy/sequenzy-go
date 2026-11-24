@@ -192,6 +192,76 @@ func (g *GetTransactionalRequest) SetIDOrSlug(idOrSlug string) {
 }
 
 var (
+	getTransactionalConditionalBlockStatsAliasRequestFieldIDOrSlug                 = big.NewInt(1 << 0)
+	getTransactionalConditionalBlockStatsAliasRequestFieldEnd                      = big.NewInt(1 << 1)
+	getTransactionalConditionalBlockStatsAliasRequestFieldGoalID                   = big.NewInt(1 << 2)
+	getTransactionalConditionalBlockStatsAliasRequestFieldIncludeMachineEngagement = big.NewInt(1 << 3)
+	getTransactionalConditionalBlockStatsAliasRequestFieldPeriod                   = big.NewInt(1 << 4)
+	getTransactionalConditionalBlockStatsAliasRequestFieldStart                    = big.NewInt(1 << 5)
+)
+
+type GetTransactionalConditionalBlockStatsAliasRequest struct {
+	IDOrSlug                 string                                                   `json:"-" url:"-"`
+	End                      *time.Time                                               `json:"-" url:"end,omitempty"`
+	GoalID                   *string                                                  `json:"-" url:"goalId,omitempty"`
+	IncludeMachineEngagement *bool                                                    `json:"-" url:"includeMachineEngagement,omitempty"`
+	Period                   *GetTransactionalConditionalBlockStatsAliasRequestPeriod `json:"-" url:"period,omitempty"`
+	Start                    *time.Time                                               `json:"-" url:"start,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (g *GetTransactionalConditionalBlockStatsAliasRequest) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetIDOrSlug sets the IDOrSlug field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetTransactionalConditionalBlockStatsAliasRequest) SetIDOrSlug(idOrSlug string) {
+	g.IDOrSlug = idOrSlug
+	g.require(getTransactionalConditionalBlockStatsAliasRequestFieldIDOrSlug)
+}
+
+// SetEnd sets the End field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetTransactionalConditionalBlockStatsAliasRequest) SetEnd(end *time.Time) {
+	g.End = end
+	g.require(getTransactionalConditionalBlockStatsAliasRequestFieldEnd)
+}
+
+// SetGoalID sets the GoalID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetTransactionalConditionalBlockStatsAliasRequest) SetGoalID(goalID *string) {
+	g.GoalID = goalID
+	g.require(getTransactionalConditionalBlockStatsAliasRequestFieldGoalID)
+}
+
+// SetIncludeMachineEngagement sets the IncludeMachineEngagement field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetTransactionalConditionalBlockStatsAliasRequest) SetIncludeMachineEngagement(includeMachineEngagement *bool) {
+	g.IncludeMachineEngagement = includeMachineEngagement
+	g.require(getTransactionalConditionalBlockStatsAliasRequestFieldIncludeMachineEngagement)
+}
+
+// SetPeriod sets the Period field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetTransactionalConditionalBlockStatsAliasRequest) SetPeriod(period *GetTransactionalConditionalBlockStatsAliasRequestPeriod) {
+	g.Period = period
+	g.require(getTransactionalConditionalBlockStatsAliasRequestFieldPeriod)
+}
+
+// SetStart sets the Start field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetTransactionalConditionalBlockStatsAliasRequest) SetStart(start *time.Time) {
+	g.Start = start
+	g.require(getTransactionalConditionalBlockStatsAliasRequestFieldStart)
+}
+
+var (
 	listTransactionalRequestFieldIncludeMachineEngagement = big.NewInt(1 << 0)
 	listTransactionalRequestFieldLabel                    = big.NewInt(1 << 1)
 	listTransactionalRequestFieldOrder                    = big.NewInt(1 << 2)
@@ -265,6 +335,112 @@ func (l *ListTransactionalRequest) SetSort(sort *ListTransactionalRequestSort) {
 func (l *ListTransactionalRequest) SetStatus(status *ListTransactionalRequestStatus) {
 	l.Status = status
 	l.require(listTransactionalRequestFieldStatus)
+}
+
+var (
+	listTransactionalConditionalBlockSubscribersAliasRequestFieldIDOrSlug                 = big.NewInt(1 << 0)
+	listTransactionalConditionalBlockSubscribersAliasRequestFieldBlockID                  = big.NewInt(1 << 1)
+	listTransactionalConditionalBlockSubscribersAliasRequestFieldBranch                   = big.NewInt(1 << 2)
+	listTransactionalConditionalBlockSubscribersAliasRequestFieldEnd                      = big.NewInt(1 << 3)
+	listTransactionalConditionalBlockSubscribersAliasRequestFieldGoalID                   = big.NewInt(1 << 4)
+	listTransactionalConditionalBlockSubscribersAliasRequestFieldIncludeMachineEngagement = big.NewInt(1 << 5)
+	listTransactionalConditionalBlockSubscribersAliasRequestFieldLimit                    = big.NewInt(1 << 6)
+	listTransactionalConditionalBlockSubscribersAliasRequestFieldPage                     = big.NewInt(1 << 7)
+	listTransactionalConditionalBlockSubscribersAliasRequestFieldPeriod                   = big.NewInt(1 << 8)
+	listTransactionalConditionalBlockSubscribersAliasRequestFieldStart                    = big.NewInt(1 << 9)
+)
+
+type ListTransactionalConditionalBlockSubscribersAliasRequest struct {
+	IDOrSlug                 string                                                          `json:"-" url:"-"`
+	BlockID                  string                                                          `json:"-" url:"-"`
+	Branch                   ListTransactionalConditionalBlockSubscribersAliasRequestBranch  `json:"-" url:"branch"`
+	End                      *time.Time                                                      `json:"-" url:"end,omitempty"`
+	GoalID                   *string                                                         `json:"-" url:"goalId,omitempty"`
+	IncludeMachineEngagement *bool                                                           `json:"-" url:"includeMachineEngagement,omitempty"`
+	Limit                    *int                                                            `json:"-" url:"limit,omitempty"`
+	Page                     *int                                                            `json:"-" url:"page,omitempty"`
+	Period                   *ListTransactionalConditionalBlockSubscribersAliasRequestPeriod `json:"-" url:"period,omitempty"`
+	Start                    *time.Time                                                      `json:"-" url:"start,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (l *ListTransactionalConditionalBlockSubscribersAliasRequest) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetIDOrSlug sets the IDOrSlug field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTransactionalConditionalBlockSubscribersAliasRequest) SetIDOrSlug(idOrSlug string) {
+	l.IDOrSlug = idOrSlug
+	l.require(listTransactionalConditionalBlockSubscribersAliasRequestFieldIDOrSlug)
+}
+
+// SetBlockID sets the BlockID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTransactionalConditionalBlockSubscribersAliasRequest) SetBlockID(blockID string) {
+	l.BlockID = blockID
+	l.require(listTransactionalConditionalBlockSubscribersAliasRequestFieldBlockID)
+}
+
+// SetBranch sets the Branch field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTransactionalConditionalBlockSubscribersAliasRequest) SetBranch(branch ListTransactionalConditionalBlockSubscribersAliasRequestBranch) {
+	l.Branch = branch
+	l.require(listTransactionalConditionalBlockSubscribersAliasRequestFieldBranch)
+}
+
+// SetEnd sets the End field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTransactionalConditionalBlockSubscribersAliasRequest) SetEnd(end *time.Time) {
+	l.End = end
+	l.require(listTransactionalConditionalBlockSubscribersAliasRequestFieldEnd)
+}
+
+// SetGoalID sets the GoalID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTransactionalConditionalBlockSubscribersAliasRequest) SetGoalID(goalID *string) {
+	l.GoalID = goalID
+	l.require(listTransactionalConditionalBlockSubscribersAliasRequestFieldGoalID)
+}
+
+// SetIncludeMachineEngagement sets the IncludeMachineEngagement field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTransactionalConditionalBlockSubscribersAliasRequest) SetIncludeMachineEngagement(includeMachineEngagement *bool) {
+	l.IncludeMachineEngagement = includeMachineEngagement
+	l.require(listTransactionalConditionalBlockSubscribersAliasRequestFieldIncludeMachineEngagement)
+}
+
+// SetLimit sets the Limit field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTransactionalConditionalBlockSubscribersAliasRequest) SetLimit(limit *int) {
+	l.Limit = limit
+	l.require(listTransactionalConditionalBlockSubscribersAliasRequestFieldLimit)
+}
+
+// SetPage sets the Page field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTransactionalConditionalBlockSubscribersAliasRequest) SetPage(page *int) {
+	l.Page = page
+	l.require(listTransactionalConditionalBlockSubscribersAliasRequestFieldPage)
+}
+
+// SetPeriod sets the Period field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTransactionalConditionalBlockSubscribersAliasRequest) SetPeriod(period *ListTransactionalConditionalBlockSubscribersAliasRequestPeriod) {
+	l.Period = period
+	l.require(listTransactionalConditionalBlockSubscribersAliasRequestFieldPeriod)
+}
+
+// SetStart sets the Start field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTransactionalConditionalBlockSubscribersAliasRequest) SetStart(start *time.Time) {
+	l.Start = start
+	l.require(listTransactionalConditionalBlockSubscribersAliasRequestFieldStart)
 }
 
 var (
@@ -2839,6 +3015,416 @@ func (d *DeleteTransactionalResponseDeleted) String() string {
 	return fmt.Sprintf("%#v", d)
 }
 
+type GetTransactionalConditionalBlockStatsAliasRequestPeriod string
+
+const (
+	GetTransactionalConditionalBlockStatsAliasRequestPeriodOneH        GetTransactionalConditionalBlockStatsAliasRequestPeriod = "1h"
+	GetTransactionalConditionalBlockStatsAliasRequestPeriodTwentyFourH GetTransactionalConditionalBlockStatsAliasRequestPeriod = "24h"
+	GetTransactionalConditionalBlockStatsAliasRequestPeriodSevenD      GetTransactionalConditionalBlockStatsAliasRequestPeriod = "7d"
+	GetTransactionalConditionalBlockStatsAliasRequestPeriodThirtyD     GetTransactionalConditionalBlockStatsAliasRequestPeriod = "30d"
+	GetTransactionalConditionalBlockStatsAliasRequestPeriodNinetyD     GetTransactionalConditionalBlockStatsAliasRequestPeriod = "90d"
+	GetTransactionalConditionalBlockStatsAliasRequestPeriodAll         GetTransactionalConditionalBlockStatsAliasRequestPeriod = "all"
+)
+
+func NewGetTransactionalConditionalBlockStatsAliasRequestPeriodFromString(s string) (GetTransactionalConditionalBlockStatsAliasRequestPeriod, error) {
+	switch s {
+	case "1h":
+		return GetTransactionalConditionalBlockStatsAliasRequestPeriodOneH, nil
+	case "24h":
+		return GetTransactionalConditionalBlockStatsAliasRequestPeriodTwentyFourH, nil
+	case "7d":
+		return GetTransactionalConditionalBlockStatsAliasRequestPeriodSevenD, nil
+	case "30d":
+		return GetTransactionalConditionalBlockStatsAliasRequestPeriodThirtyD, nil
+	case "90d":
+		return GetTransactionalConditionalBlockStatsAliasRequestPeriodNinetyD, nil
+	case "all":
+		return GetTransactionalConditionalBlockStatsAliasRequestPeriodAll, nil
+	}
+	var t GetTransactionalConditionalBlockStatsAliasRequestPeriod
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (g GetTransactionalConditionalBlockStatsAliasRequestPeriod) Ptr() *GetTransactionalConditionalBlockStatsAliasRequestPeriod {
+	return &g
+}
+
+var (
+	getTransactionalConditionalBlockStatsAliasResponseFieldAbTestVariantID = big.NewInt(1 << 0)
+	getTransactionalConditionalBlockStatsAliasResponseFieldAlerts          = big.NewInt(1 << 1)
+	getTransactionalConditionalBlockStatsAliasResponseFieldBaseline        = big.NewInt(1 << 2)
+	getTransactionalConditionalBlockStatsAliasResponseFieldBlocks          = big.NewInt(1 << 3)
+	getTransactionalConditionalBlockStatsAliasResponseFieldConditionGroups = big.NewInt(1 << 4)
+	getTransactionalConditionalBlockStatsAliasResponseFieldFailClosedSends = big.NewInt(1 << 5)
+	getTransactionalConditionalBlockStatsAliasResponseFieldGoalID          = big.NewInt(1 << 6)
+	getTransactionalConditionalBlockStatsAliasResponseFieldRecordedSends   = big.NewInt(1 << 7)
+	getTransactionalConditionalBlockStatsAliasResponseFieldSourceID        = big.NewInt(1 << 8)
+	getTransactionalConditionalBlockStatsAliasResponseFieldSourceName      = big.NewInt(1 << 9)
+	getTransactionalConditionalBlockStatsAliasResponseFieldSourceType      = big.NewInt(1 << 10)
+	getTransactionalConditionalBlockStatsAliasResponseFieldSuccess         = big.NewInt(1 << 11)
+	getTransactionalConditionalBlockStatsAliasResponseFieldTimedOut        = big.NewInt(1 << 12)
+	getTransactionalConditionalBlockStatsAliasResponseFieldTotalSends      = big.NewInt(1 << 13)
+	getTransactionalConditionalBlockStatsAliasResponseFieldTrackingSince   = big.NewInt(1 << 14)
+	getTransactionalConditionalBlockStatsAliasResponseFieldTruncatedSends  = big.NewInt(1 << 15)
+	getTransactionalConditionalBlockStatsAliasResponseFieldUntrackedSends  = big.NewInt(1 << 16)
+)
+
+type GetTransactionalConditionalBlockStatsAliasResponse struct {
+	AbTestVariantID *string `json:"abTestVariantId,omitempty" url:"abTestVariantId,omitempty"`
+	// Automatic rule-health warnings (never_matched, empty_state_spike, lopsided_else, fail_closed_spike).
+	Alerts []map[string]any `json:"alerts,omitempty" url:"alerts,omitempty"`
+	// Email-wide averages over recorded sends (sends, deliveries, openRate, clickRate, conversionRate, unsubscribeRate, bounceRate). Null when no send recorded conditional decisions.
+	Baseline map[string]any   `json:"baseline,omitempty" url:"baseline,omitempty"`
+	Blocks   []map[string]any `json:"blocks,omitempty" url:"blocks,omitempty"`
+	// Sibling conditional blocks with identical rules collapsed into one group. Branches carry rate deltas against the baseline and topClickedLink.
+	ConditionGroups []map[string]any                                              `json:"conditionGroups,omitempty" url:"conditionGroups,omitempty"`
+	FailClosedSends *int                                                          `json:"failClosedSends,omitempty" url:"failClosedSends,omitempty"`
+	GoalID          *string                                                       `json:"goalId,omitempty" url:"goalId,omitempty"`
+	RecordedSends   *int                                                          `json:"recordedSends,omitempty" url:"recordedSends,omitempty"`
+	SourceID        *string                                                       `json:"sourceId,omitempty" url:"sourceId,omitempty"`
+	SourceName      *string                                                       `json:"sourceName,omitempty" url:"sourceName,omitempty"`
+	SourceType      *GetTransactionalConditionalBlockStatsAliasResponseSourceType `json:"sourceType,omitempty" url:"sourceType,omitempty"`
+	Success         *bool                                                         `json:"success,omitempty" url:"success,omitempty"`
+	TimedOut        *bool                                                         `json:"timedOut,omitempty" url:"timedOut,omitempty"`
+	TotalSends      *int                                                          `json:"totalSends,omitempty" url:"totalSends,omitempty"`
+	TrackingSince   *time.Time                                                    `json:"trackingSince,omitempty" url:"trackingSince,omitempty"`
+	TruncatedSends  *int                                                          `json:"truncatedSends,omitempty" url:"truncatedSends,omitempty"`
+	UntrackedSends  *int                                                          `json:"untrackedSends,omitempty" url:"untrackedSends,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (g *GetTransactionalConditionalBlockStatsAliasResponse) GetAbTestVariantID() *string {
+	if g == nil {
+		return nil
+	}
+	return g.AbTestVariantID
+}
+
+func (g *GetTransactionalConditionalBlockStatsAliasResponse) GetAlerts() []map[string]any {
+	if g == nil {
+		return nil
+	}
+	return g.Alerts
+}
+
+func (g *GetTransactionalConditionalBlockStatsAliasResponse) GetBaseline() map[string]any {
+	if g == nil {
+		return nil
+	}
+	return g.Baseline
+}
+
+func (g *GetTransactionalConditionalBlockStatsAliasResponse) GetBlocks() []map[string]any {
+	if g == nil {
+		return nil
+	}
+	return g.Blocks
+}
+
+func (g *GetTransactionalConditionalBlockStatsAliasResponse) GetConditionGroups() []map[string]any {
+	if g == nil {
+		return nil
+	}
+	return g.ConditionGroups
+}
+
+func (g *GetTransactionalConditionalBlockStatsAliasResponse) GetFailClosedSends() *int {
+	if g == nil {
+		return nil
+	}
+	return g.FailClosedSends
+}
+
+func (g *GetTransactionalConditionalBlockStatsAliasResponse) GetGoalID() *string {
+	if g == nil {
+		return nil
+	}
+	return g.GoalID
+}
+
+func (g *GetTransactionalConditionalBlockStatsAliasResponse) GetRecordedSends() *int {
+	if g == nil {
+		return nil
+	}
+	return g.RecordedSends
+}
+
+func (g *GetTransactionalConditionalBlockStatsAliasResponse) GetSourceID() *string {
+	if g == nil {
+		return nil
+	}
+	return g.SourceID
+}
+
+func (g *GetTransactionalConditionalBlockStatsAliasResponse) GetSourceName() *string {
+	if g == nil {
+		return nil
+	}
+	return g.SourceName
+}
+
+func (g *GetTransactionalConditionalBlockStatsAliasResponse) GetSourceType() *GetTransactionalConditionalBlockStatsAliasResponseSourceType {
+	if g == nil {
+		return nil
+	}
+	return g.SourceType
+}
+
+func (g *GetTransactionalConditionalBlockStatsAliasResponse) GetSuccess() *bool {
+	if g == nil {
+		return nil
+	}
+	return g.Success
+}
+
+func (g *GetTransactionalConditionalBlockStatsAliasResponse) GetTimedOut() *bool {
+	if g == nil {
+		return nil
+	}
+	return g.TimedOut
+}
+
+func (g *GetTransactionalConditionalBlockStatsAliasResponse) GetTotalSends() *int {
+	if g == nil {
+		return nil
+	}
+	return g.TotalSends
+}
+
+func (g *GetTransactionalConditionalBlockStatsAliasResponse) GetTrackingSince() *time.Time {
+	if g == nil {
+		return nil
+	}
+	return g.TrackingSince
+}
+
+func (g *GetTransactionalConditionalBlockStatsAliasResponse) GetTruncatedSends() *int {
+	if g == nil {
+		return nil
+	}
+	return g.TruncatedSends
+}
+
+func (g *GetTransactionalConditionalBlockStatsAliasResponse) GetUntrackedSends() *int {
+	if g == nil {
+		return nil
+	}
+	return g.UntrackedSends
+}
+
+func (g *GetTransactionalConditionalBlockStatsAliasResponse) GetExtraProperties() map[string]interface{} {
+	if g == nil {
+		return nil
+	}
+	return g.extraProperties
+}
+
+func (g *GetTransactionalConditionalBlockStatsAliasResponse) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetAbTestVariantID sets the AbTestVariantID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetTransactionalConditionalBlockStatsAliasResponse) SetAbTestVariantID(abTestVariantID *string) {
+	g.AbTestVariantID = abTestVariantID
+	g.require(getTransactionalConditionalBlockStatsAliasResponseFieldAbTestVariantID)
+}
+
+// SetAlerts sets the Alerts field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetTransactionalConditionalBlockStatsAliasResponse) SetAlerts(alerts []map[string]any) {
+	g.Alerts = alerts
+	g.require(getTransactionalConditionalBlockStatsAliasResponseFieldAlerts)
+}
+
+// SetBaseline sets the Baseline field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetTransactionalConditionalBlockStatsAliasResponse) SetBaseline(baseline map[string]any) {
+	g.Baseline = baseline
+	g.require(getTransactionalConditionalBlockStatsAliasResponseFieldBaseline)
+}
+
+// SetBlocks sets the Blocks field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetTransactionalConditionalBlockStatsAliasResponse) SetBlocks(blocks []map[string]any) {
+	g.Blocks = blocks
+	g.require(getTransactionalConditionalBlockStatsAliasResponseFieldBlocks)
+}
+
+// SetConditionGroups sets the ConditionGroups field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetTransactionalConditionalBlockStatsAliasResponse) SetConditionGroups(conditionGroups []map[string]any) {
+	g.ConditionGroups = conditionGroups
+	g.require(getTransactionalConditionalBlockStatsAliasResponseFieldConditionGroups)
+}
+
+// SetFailClosedSends sets the FailClosedSends field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetTransactionalConditionalBlockStatsAliasResponse) SetFailClosedSends(failClosedSends *int) {
+	g.FailClosedSends = failClosedSends
+	g.require(getTransactionalConditionalBlockStatsAliasResponseFieldFailClosedSends)
+}
+
+// SetGoalID sets the GoalID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetTransactionalConditionalBlockStatsAliasResponse) SetGoalID(goalID *string) {
+	g.GoalID = goalID
+	g.require(getTransactionalConditionalBlockStatsAliasResponseFieldGoalID)
+}
+
+// SetRecordedSends sets the RecordedSends field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetTransactionalConditionalBlockStatsAliasResponse) SetRecordedSends(recordedSends *int) {
+	g.RecordedSends = recordedSends
+	g.require(getTransactionalConditionalBlockStatsAliasResponseFieldRecordedSends)
+}
+
+// SetSourceID sets the SourceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetTransactionalConditionalBlockStatsAliasResponse) SetSourceID(sourceID *string) {
+	g.SourceID = sourceID
+	g.require(getTransactionalConditionalBlockStatsAliasResponseFieldSourceID)
+}
+
+// SetSourceName sets the SourceName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetTransactionalConditionalBlockStatsAliasResponse) SetSourceName(sourceName *string) {
+	g.SourceName = sourceName
+	g.require(getTransactionalConditionalBlockStatsAliasResponseFieldSourceName)
+}
+
+// SetSourceType sets the SourceType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetTransactionalConditionalBlockStatsAliasResponse) SetSourceType(sourceType *GetTransactionalConditionalBlockStatsAliasResponseSourceType) {
+	g.SourceType = sourceType
+	g.require(getTransactionalConditionalBlockStatsAliasResponseFieldSourceType)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetTransactionalConditionalBlockStatsAliasResponse) SetSuccess(success *bool) {
+	g.Success = success
+	g.require(getTransactionalConditionalBlockStatsAliasResponseFieldSuccess)
+}
+
+// SetTimedOut sets the TimedOut field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetTransactionalConditionalBlockStatsAliasResponse) SetTimedOut(timedOut *bool) {
+	g.TimedOut = timedOut
+	g.require(getTransactionalConditionalBlockStatsAliasResponseFieldTimedOut)
+}
+
+// SetTotalSends sets the TotalSends field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetTransactionalConditionalBlockStatsAliasResponse) SetTotalSends(totalSends *int) {
+	g.TotalSends = totalSends
+	g.require(getTransactionalConditionalBlockStatsAliasResponseFieldTotalSends)
+}
+
+// SetTrackingSince sets the TrackingSince field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetTransactionalConditionalBlockStatsAliasResponse) SetTrackingSince(trackingSince *time.Time) {
+	g.TrackingSince = trackingSince
+	g.require(getTransactionalConditionalBlockStatsAliasResponseFieldTrackingSince)
+}
+
+// SetTruncatedSends sets the TruncatedSends field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetTransactionalConditionalBlockStatsAliasResponse) SetTruncatedSends(truncatedSends *int) {
+	g.TruncatedSends = truncatedSends
+	g.require(getTransactionalConditionalBlockStatsAliasResponseFieldTruncatedSends)
+}
+
+// SetUntrackedSends sets the UntrackedSends field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetTransactionalConditionalBlockStatsAliasResponse) SetUntrackedSends(untrackedSends *int) {
+	g.UntrackedSends = untrackedSends
+	g.require(getTransactionalConditionalBlockStatsAliasResponseFieldUntrackedSends)
+}
+
+func (g *GetTransactionalConditionalBlockStatsAliasResponse) UnmarshalJSON(data []byte) error {
+	type embed GetTransactionalConditionalBlockStatsAliasResponse
+	var unmarshaler = struct {
+		embed
+		TrackingSince *internal.DateTime `json:"trackingSince,omitempty"`
+	}{
+		embed: embed(*g),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*g = GetTransactionalConditionalBlockStatsAliasResponse(unmarshaler.embed)
+	g.TrackingSince = unmarshaler.TrackingSince.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *g)
+	if err != nil {
+		return err
+	}
+	g.extraProperties = extraProperties
+	g.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (g *GetTransactionalConditionalBlockStatsAliasResponse) MarshalJSON() ([]byte, error) {
+	type embed GetTransactionalConditionalBlockStatsAliasResponse
+	var marshaler = struct {
+		embed
+		TrackingSince *internal.DateTime `json:"trackingSince,omitempty"`
+	}{
+		embed:         embed(*g),
+		TrackingSince: internal.NewOptionalDateTime(g.TrackingSince),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (g *GetTransactionalConditionalBlockStatsAliasResponse) String() string {
+	if g == nil {
+		return "<nil>"
+	}
+	if len(g.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(g.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(g); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", g)
+}
+
+type GetTransactionalConditionalBlockStatsAliasResponseSourceType string
+
+const (
+	GetTransactionalConditionalBlockStatsAliasResponseSourceTypeCampaign      GetTransactionalConditionalBlockStatsAliasResponseSourceType = "campaign"
+	GetTransactionalConditionalBlockStatsAliasResponseSourceTypeSequenceStep  GetTransactionalConditionalBlockStatsAliasResponseSourceType = "sequence_step"
+	GetTransactionalConditionalBlockStatsAliasResponseSourceTypeTransactional GetTransactionalConditionalBlockStatsAliasResponseSourceType = "transactional"
+)
+
+func NewGetTransactionalConditionalBlockStatsAliasResponseSourceTypeFromString(s string) (GetTransactionalConditionalBlockStatsAliasResponseSourceType, error) {
+	switch s {
+	case "campaign":
+		return GetTransactionalConditionalBlockStatsAliasResponseSourceTypeCampaign, nil
+	case "sequence_step":
+		return GetTransactionalConditionalBlockStatsAliasResponseSourceTypeSequenceStep, nil
+	case "transactional":
+		return GetTransactionalConditionalBlockStatsAliasResponseSourceTypeTransactional, nil
+	}
+	var t GetTransactionalConditionalBlockStatsAliasResponseSourceType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (g GetTransactionalConditionalBlockStatsAliasResponseSourceType) Ptr() *GetTransactionalConditionalBlockStatsAliasResponseSourceType {
+	return &g
+}
+
 var (
 	getTransactionalResponseFieldSuccess       = big.NewInt(1 << 0)
 	getTransactionalResponseFieldTransactional = big.NewInt(1 << 1)
@@ -2937,6 +3523,299 @@ func (g *GetTransactionalResponse) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", g)
+}
+
+type ListTransactionalConditionalBlockSubscribersAliasRequestBranch string
+
+const (
+	ListTransactionalConditionalBlockSubscribersAliasRequestBranchIf      ListTransactionalConditionalBlockSubscribersAliasRequestBranch = "if"
+	ListTransactionalConditionalBlockSubscribersAliasRequestBranchElse    ListTransactionalConditionalBlockSubscribersAliasRequestBranch = "else"
+	ListTransactionalConditionalBlockSubscribersAliasRequestBranchShown   ListTransactionalConditionalBlockSubscribersAliasRequestBranch = "shown"
+	ListTransactionalConditionalBlockSubscribersAliasRequestBranchHidden  ListTransactionalConditionalBlockSubscribersAliasRequestBranch = "hidden"
+	ListTransactionalConditionalBlockSubscribersAliasRequestBranchSkipped ListTransactionalConditionalBlockSubscribersAliasRequestBranch = "skipped"
+)
+
+func NewListTransactionalConditionalBlockSubscribersAliasRequestBranchFromString(s string) (ListTransactionalConditionalBlockSubscribersAliasRequestBranch, error) {
+	switch s {
+	case "if":
+		return ListTransactionalConditionalBlockSubscribersAliasRequestBranchIf, nil
+	case "else":
+		return ListTransactionalConditionalBlockSubscribersAliasRequestBranchElse, nil
+	case "shown":
+		return ListTransactionalConditionalBlockSubscribersAliasRequestBranchShown, nil
+	case "hidden":
+		return ListTransactionalConditionalBlockSubscribersAliasRequestBranchHidden, nil
+	case "skipped":
+		return ListTransactionalConditionalBlockSubscribersAliasRequestBranchSkipped, nil
+	}
+	var t ListTransactionalConditionalBlockSubscribersAliasRequestBranch
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListTransactionalConditionalBlockSubscribersAliasRequestBranch) Ptr() *ListTransactionalConditionalBlockSubscribersAliasRequestBranch {
+	return &l
+}
+
+type ListTransactionalConditionalBlockSubscribersAliasRequestPeriod string
+
+const (
+	ListTransactionalConditionalBlockSubscribersAliasRequestPeriodOneH        ListTransactionalConditionalBlockSubscribersAliasRequestPeriod = "1h"
+	ListTransactionalConditionalBlockSubscribersAliasRequestPeriodTwentyFourH ListTransactionalConditionalBlockSubscribersAliasRequestPeriod = "24h"
+	ListTransactionalConditionalBlockSubscribersAliasRequestPeriodSevenD      ListTransactionalConditionalBlockSubscribersAliasRequestPeriod = "7d"
+	ListTransactionalConditionalBlockSubscribersAliasRequestPeriodThirtyD     ListTransactionalConditionalBlockSubscribersAliasRequestPeriod = "30d"
+	ListTransactionalConditionalBlockSubscribersAliasRequestPeriodNinetyD     ListTransactionalConditionalBlockSubscribersAliasRequestPeriod = "90d"
+	ListTransactionalConditionalBlockSubscribersAliasRequestPeriodAll         ListTransactionalConditionalBlockSubscribersAliasRequestPeriod = "all"
+)
+
+func NewListTransactionalConditionalBlockSubscribersAliasRequestPeriodFromString(s string) (ListTransactionalConditionalBlockSubscribersAliasRequestPeriod, error) {
+	switch s {
+	case "1h":
+		return ListTransactionalConditionalBlockSubscribersAliasRequestPeriodOneH, nil
+	case "24h":
+		return ListTransactionalConditionalBlockSubscribersAliasRequestPeriodTwentyFourH, nil
+	case "7d":
+		return ListTransactionalConditionalBlockSubscribersAliasRequestPeriodSevenD, nil
+	case "30d":
+		return ListTransactionalConditionalBlockSubscribersAliasRequestPeriodThirtyD, nil
+	case "90d":
+		return ListTransactionalConditionalBlockSubscribersAliasRequestPeriodNinetyD, nil
+	case "all":
+		return ListTransactionalConditionalBlockSubscribersAliasRequestPeriodAll, nil
+	}
+	var t ListTransactionalConditionalBlockSubscribersAliasRequestPeriod
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListTransactionalConditionalBlockSubscribersAliasRequestPeriod) Ptr() *ListTransactionalConditionalBlockSubscribersAliasRequestPeriod {
+	return &l
+}
+
+var (
+	listTransactionalConditionalBlockSubscribersAliasResponseFieldBlockID     = big.NewInt(1 << 0)
+	listTransactionalConditionalBlockSubscribersAliasResponseFieldBranch      = big.NewInt(1 << 1)
+	listTransactionalConditionalBlockSubscribersAliasResponseFieldBranchLabel = big.NewInt(1 << 2)
+	listTransactionalConditionalBlockSubscribersAliasResponseFieldItems       = big.NewInt(1 << 3)
+	listTransactionalConditionalBlockSubscribersAliasResponseFieldPagination  = big.NewInt(1 << 4)
+	listTransactionalConditionalBlockSubscribersAliasResponseFieldSourceID    = big.NewInt(1 << 5)
+	listTransactionalConditionalBlockSubscribersAliasResponseFieldSourceType  = big.NewInt(1 << 6)
+	listTransactionalConditionalBlockSubscribersAliasResponseFieldSuccess     = big.NewInt(1 << 7)
+	listTransactionalConditionalBlockSubscribersAliasResponseFieldTimedOut    = big.NewInt(1 << 8)
+	listTransactionalConditionalBlockSubscribersAliasResponseFieldTotal       = big.NewInt(1 << 9)
+)
+
+type ListTransactionalConditionalBlockSubscribersAliasResponse struct {
+	BlockID     *string          `json:"blockId,omitempty" url:"blockId,omitempty"`
+	Branch      *string          `json:"branch,omitempty" url:"branch,omitempty"`
+	BranchLabel *string          `json:"branchLabel,omitempty" url:"branchLabel,omitempty"`
+	Items       []map[string]any `json:"items,omitempty" url:"items,omitempty"`
+	Pagination  *Pagination      `json:"pagination,omitempty" url:"pagination,omitempty"`
+	SourceID    *string          `json:"sourceId,omitempty" url:"sourceId,omitempty"`
+	SourceType  *string          `json:"sourceType,omitempty" url:"sourceType,omitempty"`
+	Success     *bool            `json:"success,omitempty" url:"success,omitempty"`
+	TimedOut    *bool            `json:"timedOut,omitempty" url:"timedOut,omitempty"`
+	Total       *int             `json:"total,omitempty" url:"total,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListTransactionalConditionalBlockSubscribersAliasResponse) GetBlockID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.BlockID
+}
+
+func (l *ListTransactionalConditionalBlockSubscribersAliasResponse) GetBranch() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Branch
+}
+
+func (l *ListTransactionalConditionalBlockSubscribersAliasResponse) GetBranchLabel() *string {
+	if l == nil {
+		return nil
+	}
+	return l.BranchLabel
+}
+
+func (l *ListTransactionalConditionalBlockSubscribersAliasResponse) GetItems() []map[string]any {
+	if l == nil {
+		return nil
+	}
+	return l.Items
+}
+
+func (l *ListTransactionalConditionalBlockSubscribersAliasResponse) GetPagination() *Pagination {
+	if l == nil {
+		return nil
+	}
+	return l.Pagination
+}
+
+func (l *ListTransactionalConditionalBlockSubscribersAliasResponse) GetSourceID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SourceID
+}
+
+func (l *ListTransactionalConditionalBlockSubscribersAliasResponse) GetSourceType() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SourceType
+}
+
+func (l *ListTransactionalConditionalBlockSubscribersAliasResponse) GetSuccess() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.Success
+}
+
+func (l *ListTransactionalConditionalBlockSubscribersAliasResponse) GetTimedOut() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.TimedOut
+}
+
+func (l *ListTransactionalConditionalBlockSubscribersAliasResponse) GetTotal() *int {
+	if l == nil {
+		return nil
+	}
+	return l.Total
+}
+
+func (l *ListTransactionalConditionalBlockSubscribersAliasResponse) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListTransactionalConditionalBlockSubscribersAliasResponse) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetBlockID sets the BlockID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTransactionalConditionalBlockSubscribersAliasResponse) SetBlockID(blockID *string) {
+	l.BlockID = blockID
+	l.require(listTransactionalConditionalBlockSubscribersAliasResponseFieldBlockID)
+}
+
+// SetBranch sets the Branch field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTransactionalConditionalBlockSubscribersAliasResponse) SetBranch(branch *string) {
+	l.Branch = branch
+	l.require(listTransactionalConditionalBlockSubscribersAliasResponseFieldBranch)
+}
+
+// SetBranchLabel sets the BranchLabel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTransactionalConditionalBlockSubscribersAliasResponse) SetBranchLabel(branchLabel *string) {
+	l.BranchLabel = branchLabel
+	l.require(listTransactionalConditionalBlockSubscribersAliasResponseFieldBranchLabel)
+}
+
+// SetItems sets the Items field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTransactionalConditionalBlockSubscribersAliasResponse) SetItems(items []map[string]any) {
+	l.Items = items
+	l.require(listTransactionalConditionalBlockSubscribersAliasResponseFieldItems)
+}
+
+// SetPagination sets the Pagination field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTransactionalConditionalBlockSubscribersAliasResponse) SetPagination(pagination *Pagination) {
+	l.Pagination = pagination
+	l.require(listTransactionalConditionalBlockSubscribersAliasResponseFieldPagination)
+}
+
+// SetSourceID sets the SourceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTransactionalConditionalBlockSubscribersAliasResponse) SetSourceID(sourceID *string) {
+	l.SourceID = sourceID
+	l.require(listTransactionalConditionalBlockSubscribersAliasResponseFieldSourceID)
+}
+
+// SetSourceType sets the SourceType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTransactionalConditionalBlockSubscribersAliasResponse) SetSourceType(sourceType *string) {
+	l.SourceType = sourceType
+	l.require(listTransactionalConditionalBlockSubscribersAliasResponseFieldSourceType)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTransactionalConditionalBlockSubscribersAliasResponse) SetSuccess(success *bool) {
+	l.Success = success
+	l.require(listTransactionalConditionalBlockSubscribersAliasResponseFieldSuccess)
+}
+
+// SetTimedOut sets the TimedOut field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTransactionalConditionalBlockSubscribersAliasResponse) SetTimedOut(timedOut *bool) {
+	l.TimedOut = timedOut
+	l.require(listTransactionalConditionalBlockSubscribersAliasResponseFieldTimedOut)
+}
+
+// SetTotal sets the Total field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTransactionalConditionalBlockSubscribersAliasResponse) SetTotal(total *int) {
+	l.Total = total
+	l.require(listTransactionalConditionalBlockSubscribersAliasResponseFieldTotal)
+}
+
+func (l *ListTransactionalConditionalBlockSubscribersAliasResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListTransactionalConditionalBlockSubscribersAliasResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListTransactionalConditionalBlockSubscribersAliasResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListTransactionalConditionalBlockSubscribersAliasResponse) MarshalJSON() ([]byte, error) {
+	type embed ListTransactionalConditionalBlockSubscribersAliasResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListTransactionalConditionalBlockSubscribersAliasResponse) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
 }
 
 type ListTransactionalRequestOrder string

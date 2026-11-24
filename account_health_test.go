@@ -8464,6 +8464,13 @@ func TestEnumAccountHealthInsightDetector(t *testing.T) {
 		assert.Equal(t, AccountHealthInsightDetector("underperforming_sequence_email"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_dead_conditional_email_rule", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountHealthInsightDetectorFromString("dead_conditional_email_rule")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountHealthInsightDetector("dead_conditional_email_rule"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_deliverability_spike", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewAccountHealthInsightDetectorFromString("deliverability_spike")

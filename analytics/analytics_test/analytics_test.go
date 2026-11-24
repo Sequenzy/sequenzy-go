@@ -77,6 +77,32 @@ func VerifyRequestCount(
 	require.Equal(t, expected, len(result.Requests))
 }
 
+func TestAnalyticsGetCampaignConditionalBlockStatsWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.GetCampaignConditionalBlockStatsRequest{
+		CampaignID: "campaignId",
+	}
+	_, invocationErr := client.Analytics.GetCampaignConditionalBlockStats(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestAnalyticsGetCampaignConditionalBlockStatsWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestAnalyticsGetCampaignConditionalBlockStatsWithWireMock", "GET", "/metrics/campaigns/campaignId/conditional-blocks", nil, 1)
+}
+
 func TestAnalyticsGetCampaignEmailClientMetricsWithWireMock(
 	t *testing.T,
 ) {
@@ -275,6 +301,32 @@ func TestAnalyticsGetRecipientsWithWireMock(
 	VerifyRequestCount(t, "TestAnalyticsGetRecipientsWithWireMock", "GET", "/metrics/recipients", nil, 1)
 }
 
+func TestAnalyticsGetSequenceConditionalBlockOverviewWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.GetSequenceConditionalBlockOverviewRequest{
+		SequenceID: "sequenceId",
+	}
+	_, invocationErr := client.Analytics.GetSequenceConditionalBlockOverview(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestAnalyticsGetSequenceConditionalBlockOverviewWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestAnalyticsGetSequenceConditionalBlockOverviewWithWireMock", "GET", "/metrics/sequences/sequenceId/conditional-blocks", nil, 1)
+}
+
 func TestAnalyticsGetSequenceMetricsWithWireMock(
 	t *testing.T,
 ) {
@@ -301,6 +353,59 @@ func TestAnalyticsGetSequenceMetricsWithWireMock(
 	VerifyRequestCount(t, "TestAnalyticsGetSequenceMetricsWithWireMock", "GET", "/metrics/sequences/sequenceId", nil, 1)
 }
 
+func TestAnalyticsGetSequenceOutcomesWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.GetSequenceOutcomesRequest{
+		SequenceID: "sequenceId",
+	}
+	_, invocationErr := client.Analytics.GetSequenceOutcomes(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestAnalyticsGetSequenceOutcomesWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestAnalyticsGetSequenceOutcomesWithWireMock", "GET", "/metrics/sequences/sequenceId/outcomes", nil, 1)
+}
+
+func TestAnalyticsGetSequenceStepConditionalBlockStatsWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.GetSequenceStepConditionalBlockStatsRequest{
+		SequenceID: "sequenceId",
+		NodeID:     "nodeId",
+	}
+	_, invocationErr := client.Analytics.GetSequenceStepConditionalBlockStats(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestAnalyticsGetSequenceStepConditionalBlockStatsWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestAnalyticsGetSequenceStepConditionalBlockStatsWithWireMock", "GET", "/metrics/sequences/sequenceId/steps/nodeId/conditional-blocks", nil, 1)
+}
+
 func TestAnalyticsGetStatsLegacyWithWireMock(
 	t *testing.T,
 ) {
@@ -323,6 +428,32 @@ func TestAnalyticsGetStatsLegacyWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestAnalyticsGetStatsLegacyWithWireMock", "GET", "/stats", nil, 1)
+}
+
+func TestAnalyticsGetTransactionalConditionalBlockStatsWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.GetTransactionalConditionalBlockStatsRequest{
+		IDOrSlug: "idOrSlug",
+	}
+	_, invocationErr := client.Analytics.GetTransactionalConditionalBlockStats(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestAnalyticsGetTransactionalConditionalBlockStatsWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestAnalyticsGetTransactionalConditionalBlockStatsWithWireMock", "GET", "/metrics/transactional/idOrSlug/conditional-blocks", nil, 1)
 }
 
 func TestAnalyticsGetTransactionalMetricsWithWireMock(
@@ -375,6 +506,34 @@ func TestAnalyticsGetTransactionalMetricsLegacyWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestAnalyticsGetTransactionalMetricsLegacyWithWireMock", "GET", "/transactional/idOrSlug/stats", nil, 1)
+}
+
+func TestAnalyticsListCampaignConditionalBlockSubscribersWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.ListCampaignConditionalBlockSubscribersRequest{
+		CampaignID: "campaignId",
+		BlockID:    "blockId",
+		Branch:     sequenzygo.ListCampaignConditionalBlockSubscribersRequestBranchIf,
+	}
+	_, invocationErr := client.Analytics.ListCampaignConditionalBlockSubscribers(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestAnalyticsListCampaignConditionalBlockSubscribersWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestAnalyticsListCampaignConditionalBlockSubscribersWithWireMock", "GET", "/metrics/campaigns/campaignId/conditional-blocks/blockId/subscribers", map[string]interface{}{"branch": "if"}, 1)
 }
 
 func TestAnalyticsListCampaignEventsWithWireMock(
@@ -568,4 +727,88 @@ func TestAnalyticsListSequenceEventsWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestAnalyticsListSequenceEventsWithWireMock", "GET", "/metrics/sequences/sequenceId/events", map[string]interface{}{"eventTypes": "delivery,open,click"}, 1)
+}
+
+func TestAnalyticsListSequencePathSubscribersWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.ListSequencePathSubscribersRequest{
+		SequenceID: "sequenceId",
+		NodeID:     "nodeId",
+	}
+	_, invocationErr := client.Analytics.ListSequencePathSubscribers(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestAnalyticsListSequencePathSubscribersWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestAnalyticsListSequencePathSubscribersWithWireMock", "GET", "/metrics/sequences/sequenceId/paths/nodeId/subscribers", nil, 1)
+}
+
+func TestAnalyticsListSequenceStepConditionalBlockSubscribersWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.ListSequenceStepConditionalBlockSubscribersRequest{
+		SequenceID: "sequenceId",
+		NodeID:     "nodeId",
+		BlockID:    "blockId",
+		Branch:     sequenzygo.ListSequenceStepConditionalBlockSubscribersRequestBranchIf,
+	}
+	_, invocationErr := client.Analytics.ListSequenceStepConditionalBlockSubscribers(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestAnalyticsListSequenceStepConditionalBlockSubscribersWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestAnalyticsListSequenceStepConditionalBlockSubscribersWithWireMock", "GET", "/metrics/sequences/sequenceId/steps/nodeId/conditional-blocks/blockId/subscribers", map[string]interface{}{"branch": "if"}, 1)
+}
+
+func TestAnalyticsListTransactionalConditionalBlockSubscribersWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.ListTransactionalConditionalBlockSubscribersRequest{
+		IDOrSlug: "idOrSlug",
+		BlockID:  "blockId",
+		Branch:   sequenzygo.ListTransactionalConditionalBlockSubscribersRequestBranchIf,
+	}
+	_, invocationErr := client.Analytics.ListTransactionalConditionalBlockSubscribers(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestAnalyticsListTransactionalConditionalBlockSubscribersWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestAnalyticsListTransactionalConditionalBlockSubscribersWithWireMock", "GET", "/metrics/transactional/idOrSlug/conditional-blocks/blockId/subscribers", map[string]interface{}{"branch": "if"}, 1)
 }

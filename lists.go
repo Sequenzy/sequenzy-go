@@ -99,6 +99,7 @@ var (
 	createListsRequestFieldDescription            = big.NewInt(1 << 1)
 	createListsRequestFieldIsPrivate              = big.NewInt(1 << 2)
 	createListsRequestFieldName                   = big.NewInt(1 << 3)
+	createListsRequestFieldUnsubscribeListOnly    = big.NewInt(1 << 4)
 )
 
 type CreateListsRequest struct {
@@ -109,6 +110,8 @@ type CreateListsRequest struct {
 	// Set to true to hide the list from subscriber preferences unless allowMemberUnsubscribe is enabled for current members. Public lists expose only their name on that page; descriptions remain internal. List privacy does not override a subscriber's global unsubscribe. Defaults to false when omitted.
 	IsPrivate *bool  `json:"isPrivate,omitempty" url:"-"`
 	Name      string `json:"name" url:"-"`
+	// Scope unsubscribes from emails sent to this list to the targeted list(s) instead of globally unsubscribing the contact. Defaults false on create; omission preserves on update and false disables. Null is rejected.
+	UnsubscribeListOnly *bool `json:"unsubscribeListOnly,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -147,6 +150,13 @@ func (c *CreateListsRequest) SetIsPrivate(isPrivate *bool) {
 func (c *CreateListsRequest) SetName(name string) {
 	c.Name = name
 	c.require(createListsRequestFieldName)
+}
+
+// SetUnsubscribeListOnly sets the UnsubscribeListOnly field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateListsRequest) SetUnsubscribeListOnly(unsubscribeListOnly *bool) {
+	c.UnsubscribeListOnly = unsubscribeListOnly
+	c.require(createListsRequestFieldUnsubscribeListOnly)
 }
 
 func (c *CreateListsRequest) UnmarshalJSON(data []byte) error {
@@ -272,6 +282,7 @@ var (
 	subscriberListFieldIsPrivate              = big.NewInt(1 << 5)
 	subscriberListFieldName                   = big.NewInt(1 << 6)
 	subscriberListFieldSubscriberCount        = big.NewInt(1 << 7)
+	subscriberListFieldUnsubscribeListOnly    = big.NewInt(1 << 8)
 )
 
 type SubscriberList struct {
@@ -288,6 +299,8 @@ type SubscriberList struct {
 	Name      *string `json:"name,omitempty" url:"name,omitempty"`
 	// Current list members of any status. Memberships with unsubscribedAt set are excluded.
 	SubscriberCount *int `json:"subscriberCount,omitempty" url:"subscriberCount,omitempty"`
+	// When true, unsubscribing from campaigns targeting this list or sequences triggered by joining this list removes only the targeted list(s) instead of unsubscribing the contact globally. Subscribers keep an option to unsubscribe from all emails on the preferences page.
+	UnsubscribeListOnly *bool `json:"unsubscribeListOnly,omitempty" url:"unsubscribeListOnly,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -350,6 +363,13 @@ func (s *SubscriberList) GetSubscriberCount() *int {
 		return nil
 	}
 	return s.SubscriberCount
+}
+
+func (s *SubscriberList) GetUnsubscribeListOnly() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.UnsubscribeListOnly
 }
 
 func (s *SubscriberList) GetExtraProperties() map[string]interface{} {
@@ -420,6 +440,13 @@ func (s *SubscriberList) SetName(name *string) {
 func (s *SubscriberList) SetSubscriberCount(subscriberCount *int) {
 	s.SubscriberCount = subscriberCount
 	s.require(subscriberListFieldSubscriberCount)
+}
+
+// SetUnsubscribeListOnly sets the UnsubscribeListOnly field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SubscriberList) SetUnsubscribeListOnly(unsubscribeListOnly *bool) {
+	s.UnsubscribeListOnly = unsubscribeListOnly
+	s.require(subscriberListFieldUnsubscribeListOnly)
 }
 
 func (s *SubscriberList) UnmarshalJSON(data []byte) error {
@@ -1487,6 +1514,7 @@ var (
 	updateListsRequestFieldDescription            = big.NewInt(1 << 2)
 	updateListsRequestFieldIsPrivate              = big.NewInt(1 << 3)
 	updateListsRequestFieldName                   = big.NewInt(1 << 4)
+	updateListsRequestFieldUnsubscribeListOnly    = big.NewInt(1 << 5)
 )
 
 type UpdateListsRequest struct {
@@ -1500,6 +1528,8 @@ type UpdateListsRequest struct {
 	IsPrivate *bool `json:"isPrivate,omitempty" url:"-"`
 	// New list name.
 	Name *string `json:"name,omitempty" url:"-"`
+	// Scope unsubscribes from emails sent to this list to the targeted list(s) instead of globally unsubscribing the contact. Defaults false on create; omission preserves on update and false disables. Null is rejected.
+	UnsubscribeListOnly *bool `json:"unsubscribeListOnly,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1545,6 +1575,13 @@ func (u *UpdateListsRequest) SetIsPrivate(isPrivate *bool) {
 func (u *UpdateListsRequest) SetName(name *string) {
 	u.Name = name
 	u.require(updateListsRequestFieldName)
+}
+
+// SetUnsubscribeListOnly sets the UnsubscribeListOnly field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateListsRequest) SetUnsubscribeListOnly(unsubscribeListOnly *bool) {
+	u.UnsubscribeListOnly = unsubscribeListOnly
+	u.require(updateListsRequestFieldUnsubscribeListOnly)
 }
 
 func (u *UpdateListsRequest) UnmarshalJSON(data []byte) error {

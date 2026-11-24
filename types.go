@@ -3118,7 +3118,7 @@ type EmailBlockStyles struct {
 	BorderColor  *string  `json:"borderColor,omitempty" url:"borderColor,omitempty"`
 	BorderRadius *float64 `json:"borderRadius,omitempty" url:"borderRadius,omitempty"`
 	BorderWidth  *float64 `json:"borderWidth,omitempty" url:"borderWidth,omitempty"`
-	// Keep a centered button, logo or footer centered when the email is left-aligned (layout.contentAlign left). Without it a left email moves these blocks left; right always stays.
+	// Keep a centered button, logo or footer centered when the email is left-aligned (layout.contentAlign left) or full width (layout.contentWidthMode fluid). Without it a left email moves these blocks left; right always stays.
 	KeepAlign     *bool                      `json:"keepAlign,omitempty" url:"keepAlign,omitempty"`
 	PaddingBottom *float64                   `json:"paddingBottom,omitempty" url:"paddingBottom,omitempty"`
 	PaddingLeft   *float64                   `json:"paddingLeft,omitempty" url:"paddingLeft,omitempty"`

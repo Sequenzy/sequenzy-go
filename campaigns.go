@@ -1141,6 +1141,92 @@ func (g *GetAudienceCampaignsRequest) SetCampaignID(campaignID string) {
 }
 
 var (
+	getConditionalBlockStatsAliasCampaignsRequestFieldCampaignID               = big.NewInt(1 << 0)
+	getConditionalBlockStatsAliasCampaignsRequestFieldAbTestVariantID          = big.NewInt(1 << 1)
+	getConditionalBlockStatsAliasCampaignsRequestFieldEnd                      = big.NewInt(1 << 2)
+	getConditionalBlockStatsAliasCampaignsRequestFieldGoalID                   = big.NewInt(1 << 3)
+	getConditionalBlockStatsAliasCampaignsRequestFieldIncludeMachineEngagement = big.NewInt(1 << 4)
+	getConditionalBlockStatsAliasCampaignsRequestFieldPeriod                   = big.NewInt(1 << 5)
+	getConditionalBlockStatsAliasCampaignsRequestFieldStart                    = big.NewInt(1 << 6)
+)
+
+type GetConditionalBlockStatsAliasCampaignsRequest struct {
+	// Campaign ID
+	CampaignID string `json:"-" url:"-"`
+	// Optional A/B test variant ID
+	AbTestVariantID *string `json:"-" url:"abTestVariantId,omitempty"`
+	// ISO 8601 window end (pair with start)
+	End *time.Time `json:"-" url:"end,omitempty"`
+	// Optional goal ID or default-revenue
+	GoalID *string `json:"-" url:"goalId,omitempty"`
+	// Include machine-classified opens and clicks
+	IncludeMachineEngagement *bool `json:"-" url:"includeMachineEngagement,omitempty"`
+	// Send window (defaults to all for campaigns)
+	Period *GetConditionalBlockStatsAliasCampaignsRequestPeriod `json:"-" url:"period,omitempty"`
+	// ISO 8601 window start (pair with end)
+	Start *time.Time `json:"-" url:"start,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (g *GetConditionalBlockStatsAliasCampaignsRequest) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetCampaignID sets the CampaignID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetConditionalBlockStatsAliasCampaignsRequest) SetCampaignID(campaignID string) {
+	g.CampaignID = campaignID
+	g.require(getConditionalBlockStatsAliasCampaignsRequestFieldCampaignID)
+}
+
+// SetAbTestVariantID sets the AbTestVariantID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetConditionalBlockStatsAliasCampaignsRequest) SetAbTestVariantID(abTestVariantID *string) {
+	g.AbTestVariantID = abTestVariantID
+	g.require(getConditionalBlockStatsAliasCampaignsRequestFieldAbTestVariantID)
+}
+
+// SetEnd sets the End field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetConditionalBlockStatsAliasCampaignsRequest) SetEnd(end *time.Time) {
+	g.End = end
+	g.require(getConditionalBlockStatsAliasCampaignsRequestFieldEnd)
+}
+
+// SetGoalID sets the GoalID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetConditionalBlockStatsAliasCampaignsRequest) SetGoalID(goalID *string) {
+	g.GoalID = goalID
+	g.require(getConditionalBlockStatsAliasCampaignsRequestFieldGoalID)
+}
+
+// SetIncludeMachineEngagement sets the IncludeMachineEngagement field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetConditionalBlockStatsAliasCampaignsRequest) SetIncludeMachineEngagement(includeMachineEngagement *bool) {
+	g.IncludeMachineEngagement = includeMachineEngagement
+	g.require(getConditionalBlockStatsAliasCampaignsRequestFieldIncludeMachineEngagement)
+}
+
+// SetPeriod sets the Period field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetConditionalBlockStatsAliasCampaignsRequest) SetPeriod(period *GetConditionalBlockStatsAliasCampaignsRequestPeriod) {
+	g.Period = period
+	g.require(getConditionalBlockStatsAliasCampaignsRequestFieldPeriod)
+}
+
+// SetStart sets the Start field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetConditionalBlockStatsAliasCampaignsRequest) SetStart(start *time.Time) {
+	g.Start = start
+	g.require(getConditionalBlockStatsAliasCampaignsRequestFieldStart)
+}
+
+var (
 	getVariationCampaignsRequestFieldCampaignID  = big.NewInt(1 << 0)
 	getVariationCampaignsRequestFieldVariationID = big.NewInt(1 << 1)
 )
@@ -1240,6 +1326,124 @@ func (l *ListCampaignsRequest) SetPage(page *int) {
 func (l *ListCampaignsRequest) SetStatus(status *ListCampaignsRequestStatus) {
 	l.Status = status
 	l.require(listCampaignsRequestFieldStatus)
+}
+
+var (
+	listConditionalBlockSubscribersAliasCampaignsRequestFieldCampaignID               = big.NewInt(1 << 0)
+	listConditionalBlockSubscribersAliasCampaignsRequestFieldBlockID                  = big.NewInt(1 << 1)
+	listConditionalBlockSubscribersAliasCampaignsRequestFieldAbTestVariantID          = big.NewInt(1 << 2)
+	listConditionalBlockSubscribersAliasCampaignsRequestFieldBranch                   = big.NewInt(1 << 3)
+	listConditionalBlockSubscribersAliasCampaignsRequestFieldEnd                      = big.NewInt(1 << 4)
+	listConditionalBlockSubscribersAliasCampaignsRequestFieldGoalID                   = big.NewInt(1 << 5)
+	listConditionalBlockSubscribersAliasCampaignsRequestFieldIncludeMachineEngagement = big.NewInt(1 << 6)
+	listConditionalBlockSubscribersAliasCampaignsRequestFieldLimit                    = big.NewInt(1 << 7)
+	listConditionalBlockSubscribersAliasCampaignsRequestFieldPage                     = big.NewInt(1 << 8)
+	listConditionalBlockSubscribersAliasCampaignsRequestFieldPeriod                   = big.NewInt(1 << 9)
+	listConditionalBlockSubscribersAliasCampaignsRequestFieldStart                    = big.NewInt(1 << 10)
+)
+
+type ListConditionalBlockSubscribersAliasCampaignsRequest struct {
+	// Campaign ID
+	CampaignID string `json:"-" url:"-"`
+	// Conditional block ID
+	BlockID         string  `json:"-" url:"-"`
+	AbTestVariantID *string `json:"-" url:"abTestVariantId,omitempty"`
+	// Branch key
+	Branch                   ListConditionalBlockSubscribersAliasCampaignsRequestBranch  `json:"-" url:"branch"`
+	End                      *time.Time                                                  `json:"-" url:"end,omitempty"`
+	GoalID                   *string                                                     `json:"-" url:"goalId,omitempty"`
+	IncludeMachineEngagement *bool                                                       `json:"-" url:"includeMachineEngagement,omitempty"`
+	Limit                    *int                                                        `json:"-" url:"limit,omitempty"`
+	Page                     *int                                                        `json:"-" url:"page,omitempty"`
+	Period                   *ListConditionalBlockSubscribersAliasCampaignsRequestPeriod `json:"-" url:"period,omitempty"`
+	Start                    *time.Time                                                  `json:"-" url:"start,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (l *ListConditionalBlockSubscribersAliasCampaignsRequest) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetCampaignID sets the CampaignID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListConditionalBlockSubscribersAliasCampaignsRequest) SetCampaignID(campaignID string) {
+	l.CampaignID = campaignID
+	l.require(listConditionalBlockSubscribersAliasCampaignsRequestFieldCampaignID)
+}
+
+// SetBlockID sets the BlockID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListConditionalBlockSubscribersAliasCampaignsRequest) SetBlockID(blockID string) {
+	l.BlockID = blockID
+	l.require(listConditionalBlockSubscribersAliasCampaignsRequestFieldBlockID)
+}
+
+// SetAbTestVariantID sets the AbTestVariantID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListConditionalBlockSubscribersAliasCampaignsRequest) SetAbTestVariantID(abTestVariantID *string) {
+	l.AbTestVariantID = abTestVariantID
+	l.require(listConditionalBlockSubscribersAliasCampaignsRequestFieldAbTestVariantID)
+}
+
+// SetBranch sets the Branch field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListConditionalBlockSubscribersAliasCampaignsRequest) SetBranch(branch ListConditionalBlockSubscribersAliasCampaignsRequestBranch) {
+	l.Branch = branch
+	l.require(listConditionalBlockSubscribersAliasCampaignsRequestFieldBranch)
+}
+
+// SetEnd sets the End field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListConditionalBlockSubscribersAliasCampaignsRequest) SetEnd(end *time.Time) {
+	l.End = end
+	l.require(listConditionalBlockSubscribersAliasCampaignsRequestFieldEnd)
+}
+
+// SetGoalID sets the GoalID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListConditionalBlockSubscribersAliasCampaignsRequest) SetGoalID(goalID *string) {
+	l.GoalID = goalID
+	l.require(listConditionalBlockSubscribersAliasCampaignsRequestFieldGoalID)
+}
+
+// SetIncludeMachineEngagement sets the IncludeMachineEngagement field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListConditionalBlockSubscribersAliasCampaignsRequest) SetIncludeMachineEngagement(includeMachineEngagement *bool) {
+	l.IncludeMachineEngagement = includeMachineEngagement
+	l.require(listConditionalBlockSubscribersAliasCampaignsRequestFieldIncludeMachineEngagement)
+}
+
+// SetLimit sets the Limit field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListConditionalBlockSubscribersAliasCampaignsRequest) SetLimit(limit *int) {
+	l.Limit = limit
+	l.require(listConditionalBlockSubscribersAliasCampaignsRequestFieldLimit)
+}
+
+// SetPage sets the Page field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListConditionalBlockSubscribersAliasCampaignsRequest) SetPage(page *int) {
+	l.Page = page
+	l.require(listConditionalBlockSubscribersAliasCampaignsRequestFieldPage)
+}
+
+// SetPeriod sets the Period field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListConditionalBlockSubscribersAliasCampaignsRequest) SetPeriod(period *ListConditionalBlockSubscribersAliasCampaignsRequestPeriod) {
+	l.Period = period
+	l.require(listConditionalBlockSubscribersAliasCampaignsRequestFieldPeriod)
+}
+
+// SetStart sets the Start field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListConditionalBlockSubscribersAliasCampaignsRequest) SetStart(start *time.Time) {
+	l.Start = start
+	l.require(listConditionalBlockSubscribersAliasCampaignsRequestFieldStart)
 }
 
 var (
@@ -9744,6 +9948,416 @@ func (g *GetCampaignsResponse) String() string {
 	return fmt.Sprintf("%#v", g)
 }
 
+type GetConditionalBlockStatsAliasCampaignsRequestPeriod string
+
+const (
+	GetConditionalBlockStatsAliasCampaignsRequestPeriodOneH        GetConditionalBlockStatsAliasCampaignsRequestPeriod = "1h"
+	GetConditionalBlockStatsAliasCampaignsRequestPeriodTwentyFourH GetConditionalBlockStatsAliasCampaignsRequestPeriod = "24h"
+	GetConditionalBlockStatsAliasCampaignsRequestPeriodSevenD      GetConditionalBlockStatsAliasCampaignsRequestPeriod = "7d"
+	GetConditionalBlockStatsAliasCampaignsRequestPeriodThirtyD     GetConditionalBlockStatsAliasCampaignsRequestPeriod = "30d"
+	GetConditionalBlockStatsAliasCampaignsRequestPeriodNinetyD     GetConditionalBlockStatsAliasCampaignsRequestPeriod = "90d"
+	GetConditionalBlockStatsAliasCampaignsRequestPeriodAll         GetConditionalBlockStatsAliasCampaignsRequestPeriod = "all"
+)
+
+func NewGetConditionalBlockStatsAliasCampaignsRequestPeriodFromString(s string) (GetConditionalBlockStatsAliasCampaignsRequestPeriod, error) {
+	switch s {
+	case "1h":
+		return GetConditionalBlockStatsAliasCampaignsRequestPeriodOneH, nil
+	case "24h":
+		return GetConditionalBlockStatsAliasCampaignsRequestPeriodTwentyFourH, nil
+	case "7d":
+		return GetConditionalBlockStatsAliasCampaignsRequestPeriodSevenD, nil
+	case "30d":
+		return GetConditionalBlockStatsAliasCampaignsRequestPeriodThirtyD, nil
+	case "90d":
+		return GetConditionalBlockStatsAliasCampaignsRequestPeriodNinetyD, nil
+	case "all":
+		return GetConditionalBlockStatsAliasCampaignsRequestPeriodAll, nil
+	}
+	var t GetConditionalBlockStatsAliasCampaignsRequestPeriod
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (g GetConditionalBlockStatsAliasCampaignsRequestPeriod) Ptr() *GetConditionalBlockStatsAliasCampaignsRequestPeriod {
+	return &g
+}
+
+var (
+	getConditionalBlockStatsAliasCampaignsResponseFieldAbTestVariantID = big.NewInt(1 << 0)
+	getConditionalBlockStatsAliasCampaignsResponseFieldAlerts          = big.NewInt(1 << 1)
+	getConditionalBlockStatsAliasCampaignsResponseFieldBaseline        = big.NewInt(1 << 2)
+	getConditionalBlockStatsAliasCampaignsResponseFieldBlocks          = big.NewInt(1 << 3)
+	getConditionalBlockStatsAliasCampaignsResponseFieldConditionGroups = big.NewInt(1 << 4)
+	getConditionalBlockStatsAliasCampaignsResponseFieldFailClosedSends = big.NewInt(1 << 5)
+	getConditionalBlockStatsAliasCampaignsResponseFieldGoalID          = big.NewInt(1 << 6)
+	getConditionalBlockStatsAliasCampaignsResponseFieldRecordedSends   = big.NewInt(1 << 7)
+	getConditionalBlockStatsAliasCampaignsResponseFieldSourceID        = big.NewInt(1 << 8)
+	getConditionalBlockStatsAliasCampaignsResponseFieldSourceName      = big.NewInt(1 << 9)
+	getConditionalBlockStatsAliasCampaignsResponseFieldSourceType      = big.NewInt(1 << 10)
+	getConditionalBlockStatsAliasCampaignsResponseFieldSuccess         = big.NewInt(1 << 11)
+	getConditionalBlockStatsAliasCampaignsResponseFieldTimedOut        = big.NewInt(1 << 12)
+	getConditionalBlockStatsAliasCampaignsResponseFieldTotalSends      = big.NewInt(1 << 13)
+	getConditionalBlockStatsAliasCampaignsResponseFieldTrackingSince   = big.NewInt(1 << 14)
+	getConditionalBlockStatsAliasCampaignsResponseFieldTruncatedSends  = big.NewInt(1 << 15)
+	getConditionalBlockStatsAliasCampaignsResponseFieldUntrackedSends  = big.NewInt(1 << 16)
+)
+
+type GetConditionalBlockStatsAliasCampaignsResponse struct {
+	AbTestVariantID *string `json:"abTestVariantId,omitempty" url:"abTestVariantId,omitempty"`
+	// Automatic rule-health warnings (never_matched, empty_state_spike, lopsided_else, fail_closed_spike).
+	Alerts []map[string]any `json:"alerts,omitempty" url:"alerts,omitempty"`
+	// Email-wide averages over recorded sends (sends, deliveries, openRate, clickRate, conversionRate, unsubscribeRate, bounceRate). Null when no send recorded conditional decisions.
+	Baseline map[string]any   `json:"baseline,omitempty" url:"baseline,omitempty"`
+	Blocks   []map[string]any `json:"blocks,omitempty" url:"blocks,omitempty"`
+	// Sibling conditional blocks with identical rules collapsed into one group. Branches carry rate deltas against the baseline and topClickedLink.
+	ConditionGroups []map[string]any                                          `json:"conditionGroups,omitempty" url:"conditionGroups,omitempty"`
+	FailClosedSends *int                                                      `json:"failClosedSends,omitempty" url:"failClosedSends,omitempty"`
+	GoalID          *string                                                   `json:"goalId,omitempty" url:"goalId,omitempty"`
+	RecordedSends   *int                                                      `json:"recordedSends,omitempty" url:"recordedSends,omitempty"`
+	SourceID        *string                                                   `json:"sourceId,omitempty" url:"sourceId,omitempty"`
+	SourceName      *string                                                   `json:"sourceName,omitempty" url:"sourceName,omitempty"`
+	SourceType      *GetConditionalBlockStatsAliasCampaignsResponseSourceType `json:"sourceType,omitempty" url:"sourceType,omitempty"`
+	Success         *bool                                                     `json:"success,omitempty" url:"success,omitempty"`
+	TimedOut        *bool                                                     `json:"timedOut,omitempty" url:"timedOut,omitempty"`
+	TotalSends      *int                                                      `json:"totalSends,omitempty" url:"totalSends,omitempty"`
+	TrackingSince   *time.Time                                                `json:"trackingSince,omitempty" url:"trackingSince,omitempty"`
+	TruncatedSends  *int                                                      `json:"truncatedSends,omitempty" url:"truncatedSends,omitempty"`
+	UntrackedSends  *int                                                      `json:"untrackedSends,omitempty" url:"untrackedSends,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (g *GetConditionalBlockStatsAliasCampaignsResponse) GetAbTestVariantID() *string {
+	if g == nil {
+		return nil
+	}
+	return g.AbTestVariantID
+}
+
+func (g *GetConditionalBlockStatsAliasCampaignsResponse) GetAlerts() []map[string]any {
+	if g == nil {
+		return nil
+	}
+	return g.Alerts
+}
+
+func (g *GetConditionalBlockStatsAliasCampaignsResponse) GetBaseline() map[string]any {
+	if g == nil {
+		return nil
+	}
+	return g.Baseline
+}
+
+func (g *GetConditionalBlockStatsAliasCampaignsResponse) GetBlocks() []map[string]any {
+	if g == nil {
+		return nil
+	}
+	return g.Blocks
+}
+
+func (g *GetConditionalBlockStatsAliasCampaignsResponse) GetConditionGroups() []map[string]any {
+	if g == nil {
+		return nil
+	}
+	return g.ConditionGroups
+}
+
+func (g *GetConditionalBlockStatsAliasCampaignsResponse) GetFailClosedSends() *int {
+	if g == nil {
+		return nil
+	}
+	return g.FailClosedSends
+}
+
+func (g *GetConditionalBlockStatsAliasCampaignsResponse) GetGoalID() *string {
+	if g == nil {
+		return nil
+	}
+	return g.GoalID
+}
+
+func (g *GetConditionalBlockStatsAliasCampaignsResponse) GetRecordedSends() *int {
+	if g == nil {
+		return nil
+	}
+	return g.RecordedSends
+}
+
+func (g *GetConditionalBlockStatsAliasCampaignsResponse) GetSourceID() *string {
+	if g == nil {
+		return nil
+	}
+	return g.SourceID
+}
+
+func (g *GetConditionalBlockStatsAliasCampaignsResponse) GetSourceName() *string {
+	if g == nil {
+		return nil
+	}
+	return g.SourceName
+}
+
+func (g *GetConditionalBlockStatsAliasCampaignsResponse) GetSourceType() *GetConditionalBlockStatsAliasCampaignsResponseSourceType {
+	if g == nil {
+		return nil
+	}
+	return g.SourceType
+}
+
+func (g *GetConditionalBlockStatsAliasCampaignsResponse) GetSuccess() *bool {
+	if g == nil {
+		return nil
+	}
+	return g.Success
+}
+
+func (g *GetConditionalBlockStatsAliasCampaignsResponse) GetTimedOut() *bool {
+	if g == nil {
+		return nil
+	}
+	return g.TimedOut
+}
+
+func (g *GetConditionalBlockStatsAliasCampaignsResponse) GetTotalSends() *int {
+	if g == nil {
+		return nil
+	}
+	return g.TotalSends
+}
+
+func (g *GetConditionalBlockStatsAliasCampaignsResponse) GetTrackingSince() *time.Time {
+	if g == nil {
+		return nil
+	}
+	return g.TrackingSince
+}
+
+func (g *GetConditionalBlockStatsAliasCampaignsResponse) GetTruncatedSends() *int {
+	if g == nil {
+		return nil
+	}
+	return g.TruncatedSends
+}
+
+func (g *GetConditionalBlockStatsAliasCampaignsResponse) GetUntrackedSends() *int {
+	if g == nil {
+		return nil
+	}
+	return g.UntrackedSends
+}
+
+func (g *GetConditionalBlockStatsAliasCampaignsResponse) GetExtraProperties() map[string]interface{} {
+	if g == nil {
+		return nil
+	}
+	return g.extraProperties
+}
+
+func (g *GetConditionalBlockStatsAliasCampaignsResponse) require(field *big.Int) {
+	if g.explicitFields == nil {
+		g.explicitFields = big.NewInt(0)
+	}
+	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetAbTestVariantID sets the AbTestVariantID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetConditionalBlockStatsAliasCampaignsResponse) SetAbTestVariantID(abTestVariantID *string) {
+	g.AbTestVariantID = abTestVariantID
+	g.require(getConditionalBlockStatsAliasCampaignsResponseFieldAbTestVariantID)
+}
+
+// SetAlerts sets the Alerts field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetConditionalBlockStatsAliasCampaignsResponse) SetAlerts(alerts []map[string]any) {
+	g.Alerts = alerts
+	g.require(getConditionalBlockStatsAliasCampaignsResponseFieldAlerts)
+}
+
+// SetBaseline sets the Baseline field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetConditionalBlockStatsAliasCampaignsResponse) SetBaseline(baseline map[string]any) {
+	g.Baseline = baseline
+	g.require(getConditionalBlockStatsAliasCampaignsResponseFieldBaseline)
+}
+
+// SetBlocks sets the Blocks field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetConditionalBlockStatsAliasCampaignsResponse) SetBlocks(blocks []map[string]any) {
+	g.Blocks = blocks
+	g.require(getConditionalBlockStatsAliasCampaignsResponseFieldBlocks)
+}
+
+// SetConditionGroups sets the ConditionGroups field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetConditionalBlockStatsAliasCampaignsResponse) SetConditionGroups(conditionGroups []map[string]any) {
+	g.ConditionGroups = conditionGroups
+	g.require(getConditionalBlockStatsAliasCampaignsResponseFieldConditionGroups)
+}
+
+// SetFailClosedSends sets the FailClosedSends field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetConditionalBlockStatsAliasCampaignsResponse) SetFailClosedSends(failClosedSends *int) {
+	g.FailClosedSends = failClosedSends
+	g.require(getConditionalBlockStatsAliasCampaignsResponseFieldFailClosedSends)
+}
+
+// SetGoalID sets the GoalID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetConditionalBlockStatsAliasCampaignsResponse) SetGoalID(goalID *string) {
+	g.GoalID = goalID
+	g.require(getConditionalBlockStatsAliasCampaignsResponseFieldGoalID)
+}
+
+// SetRecordedSends sets the RecordedSends field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetConditionalBlockStatsAliasCampaignsResponse) SetRecordedSends(recordedSends *int) {
+	g.RecordedSends = recordedSends
+	g.require(getConditionalBlockStatsAliasCampaignsResponseFieldRecordedSends)
+}
+
+// SetSourceID sets the SourceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetConditionalBlockStatsAliasCampaignsResponse) SetSourceID(sourceID *string) {
+	g.SourceID = sourceID
+	g.require(getConditionalBlockStatsAliasCampaignsResponseFieldSourceID)
+}
+
+// SetSourceName sets the SourceName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetConditionalBlockStatsAliasCampaignsResponse) SetSourceName(sourceName *string) {
+	g.SourceName = sourceName
+	g.require(getConditionalBlockStatsAliasCampaignsResponseFieldSourceName)
+}
+
+// SetSourceType sets the SourceType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetConditionalBlockStatsAliasCampaignsResponse) SetSourceType(sourceType *GetConditionalBlockStatsAliasCampaignsResponseSourceType) {
+	g.SourceType = sourceType
+	g.require(getConditionalBlockStatsAliasCampaignsResponseFieldSourceType)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetConditionalBlockStatsAliasCampaignsResponse) SetSuccess(success *bool) {
+	g.Success = success
+	g.require(getConditionalBlockStatsAliasCampaignsResponseFieldSuccess)
+}
+
+// SetTimedOut sets the TimedOut field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetConditionalBlockStatsAliasCampaignsResponse) SetTimedOut(timedOut *bool) {
+	g.TimedOut = timedOut
+	g.require(getConditionalBlockStatsAliasCampaignsResponseFieldTimedOut)
+}
+
+// SetTotalSends sets the TotalSends field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetConditionalBlockStatsAliasCampaignsResponse) SetTotalSends(totalSends *int) {
+	g.TotalSends = totalSends
+	g.require(getConditionalBlockStatsAliasCampaignsResponseFieldTotalSends)
+}
+
+// SetTrackingSince sets the TrackingSince field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetConditionalBlockStatsAliasCampaignsResponse) SetTrackingSince(trackingSince *time.Time) {
+	g.TrackingSince = trackingSince
+	g.require(getConditionalBlockStatsAliasCampaignsResponseFieldTrackingSince)
+}
+
+// SetTruncatedSends sets the TruncatedSends field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetConditionalBlockStatsAliasCampaignsResponse) SetTruncatedSends(truncatedSends *int) {
+	g.TruncatedSends = truncatedSends
+	g.require(getConditionalBlockStatsAliasCampaignsResponseFieldTruncatedSends)
+}
+
+// SetUntrackedSends sets the UntrackedSends field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetConditionalBlockStatsAliasCampaignsResponse) SetUntrackedSends(untrackedSends *int) {
+	g.UntrackedSends = untrackedSends
+	g.require(getConditionalBlockStatsAliasCampaignsResponseFieldUntrackedSends)
+}
+
+func (g *GetConditionalBlockStatsAliasCampaignsResponse) UnmarshalJSON(data []byte) error {
+	type embed GetConditionalBlockStatsAliasCampaignsResponse
+	var unmarshaler = struct {
+		embed
+		TrackingSince *internal.DateTime `json:"trackingSince,omitempty"`
+	}{
+		embed: embed(*g),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*g = GetConditionalBlockStatsAliasCampaignsResponse(unmarshaler.embed)
+	g.TrackingSince = unmarshaler.TrackingSince.TimePtr()
+	extraProperties, err := internal.ExtractExtraProperties(data, *g)
+	if err != nil {
+		return err
+	}
+	g.extraProperties = extraProperties
+	g.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (g *GetConditionalBlockStatsAliasCampaignsResponse) MarshalJSON() ([]byte, error) {
+	type embed GetConditionalBlockStatsAliasCampaignsResponse
+	var marshaler = struct {
+		embed
+		TrackingSince *internal.DateTime `json:"trackingSince,omitempty"`
+	}{
+		embed:         embed(*g),
+		TrackingSince: internal.NewOptionalDateTime(g.TrackingSince),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (g *GetConditionalBlockStatsAliasCampaignsResponse) String() string {
+	if g == nil {
+		return "<nil>"
+	}
+	if len(g.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(g.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(g); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", g)
+}
+
+type GetConditionalBlockStatsAliasCampaignsResponseSourceType string
+
+const (
+	GetConditionalBlockStatsAliasCampaignsResponseSourceTypeCampaign      GetConditionalBlockStatsAliasCampaignsResponseSourceType = "campaign"
+	GetConditionalBlockStatsAliasCampaignsResponseSourceTypeSequenceStep  GetConditionalBlockStatsAliasCampaignsResponseSourceType = "sequence_step"
+	GetConditionalBlockStatsAliasCampaignsResponseSourceTypeTransactional GetConditionalBlockStatsAliasCampaignsResponseSourceType = "transactional"
+)
+
+func NewGetConditionalBlockStatsAliasCampaignsResponseSourceTypeFromString(s string) (GetConditionalBlockStatsAliasCampaignsResponseSourceType, error) {
+	switch s {
+	case "campaign":
+		return GetConditionalBlockStatsAliasCampaignsResponseSourceTypeCampaign, nil
+	case "sequence_step":
+		return GetConditionalBlockStatsAliasCampaignsResponseSourceTypeSequenceStep, nil
+	case "transactional":
+		return GetConditionalBlockStatsAliasCampaignsResponseSourceTypeTransactional, nil
+	}
+	var t GetConditionalBlockStatsAliasCampaignsResponseSourceType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (g GetConditionalBlockStatsAliasCampaignsResponseSourceType) Ptr() *GetConditionalBlockStatsAliasCampaignsResponseSourceType {
+	return &g
+}
+
 type ListCampaignsRequestStatus string
 
 const (
@@ -10068,6 +10682,299 @@ func (l *ListCampaignsResponsePagination) MarshalJSON() ([]byte, error) {
 }
 
 func (l *ListCampaignsResponsePagination) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+type ListConditionalBlockSubscribersAliasCampaignsRequestBranch string
+
+const (
+	ListConditionalBlockSubscribersAliasCampaignsRequestBranchIf      ListConditionalBlockSubscribersAliasCampaignsRequestBranch = "if"
+	ListConditionalBlockSubscribersAliasCampaignsRequestBranchElse    ListConditionalBlockSubscribersAliasCampaignsRequestBranch = "else"
+	ListConditionalBlockSubscribersAliasCampaignsRequestBranchShown   ListConditionalBlockSubscribersAliasCampaignsRequestBranch = "shown"
+	ListConditionalBlockSubscribersAliasCampaignsRequestBranchHidden  ListConditionalBlockSubscribersAliasCampaignsRequestBranch = "hidden"
+	ListConditionalBlockSubscribersAliasCampaignsRequestBranchSkipped ListConditionalBlockSubscribersAliasCampaignsRequestBranch = "skipped"
+)
+
+func NewListConditionalBlockSubscribersAliasCampaignsRequestBranchFromString(s string) (ListConditionalBlockSubscribersAliasCampaignsRequestBranch, error) {
+	switch s {
+	case "if":
+		return ListConditionalBlockSubscribersAliasCampaignsRequestBranchIf, nil
+	case "else":
+		return ListConditionalBlockSubscribersAliasCampaignsRequestBranchElse, nil
+	case "shown":
+		return ListConditionalBlockSubscribersAliasCampaignsRequestBranchShown, nil
+	case "hidden":
+		return ListConditionalBlockSubscribersAliasCampaignsRequestBranchHidden, nil
+	case "skipped":
+		return ListConditionalBlockSubscribersAliasCampaignsRequestBranchSkipped, nil
+	}
+	var t ListConditionalBlockSubscribersAliasCampaignsRequestBranch
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListConditionalBlockSubscribersAliasCampaignsRequestBranch) Ptr() *ListConditionalBlockSubscribersAliasCampaignsRequestBranch {
+	return &l
+}
+
+type ListConditionalBlockSubscribersAliasCampaignsRequestPeriod string
+
+const (
+	ListConditionalBlockSubscribersAliasCampaignsRequestPeriodOneH        ListConditionalBlockSubscribersAliasCampaignsRequestPeriod = "1h"
+	ListConditionalBlockSubscribersAliasCampaignsRequestPeriodTwentyFourH ListConditionalBlockSubscribersAliasCampaignsRequestPeriod = "24h"
+	ListConditionalBlockSubscribersAliasCampaignsRequestPeriodSevenD      ListConditionalBlockSubscribersAliasCampaignsRequestPeriod = "7d"
+	ListConditionalBlockSubscribersAliasCampaignsRequestPeriodThirtyD     ListConditionalBlockSubscribersAliasCampaignsRequestPeriod = "30d"
+	ListConditionalBlockSubscribersAliasCampaignsRequestPeriodNinetyD     ListConditionalBlockSubscribersAliasCampaignsRequestPeriod = "90d"
+	ListConditionalBlockSubscribersAliasCampaignsRequestPeriodAll         ListConditionalBlockSubscribersAliasCampaignsRequestPeriod = "all"
+)
+
+func NewListConditionalBlockSubscribersAliasCampaignsRequestPeriodFromString(s string) (ListConditionalBlockSubscribersAliasCampaignsRequestPeriod, error) {
+	switch s {
+	case "1h":
+		return ListConditionalBlockSubscribersAliasCampaignsRequestPeriodOneH, nil
+	case "24h":
+		return ListConditionalBlockSubscribersAliasCampaignsRequestPeriodTwentyFourH, nil
+	case "7d":
+		return ListConditionalBlockSubscribersAliasCampaignsRequestPeriodSevenD, nil
+	case "30d":
+		return ListConditionalBlockSubscribersAliasCampaignsRequestPeriodThirtyD, nil
+	case "90d":
+		return ListConditionalBlockSubscribersAliasCampaignsRequestPeriodNinetyD, nil
+	case "all":
+		return ListConditionalBlockSubscribersAliasCampaignsRequestPeriodAll, nil
+	}
+	var t ListConditionalBlockSubscribersAliasCampaignsRequestPeriod
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListConditionalBlockSubscribersAliasCampaignsRequestPeriod) Ptr() *ListConditionalBlockSubscribersAliasCampaignsRequestPeriod {
+	return &l
+}
+
+var (
+	listConditionalBlockSubscribersAliasCampaignsResponseFieldBlockID     = big.NewInt(1 << 0)
+	listConditionalBlockSubscribersAliasCampaignsResponseFieldBranch      = big.NewInt(1 << 1)
+	listConditionalBlockSubscribersAliasCampaignsResponseFieldBranchLabel = big.NewInt(1 << 2)
+	listConditionalBlockSubscribersAliasCampaignsResponseFieldItems       = big.NewInt(1 << 3)
+	listConditionalBlockSubscribersAliasCampaignsResponseFieldPagination  = big.NewInt(1 << 4)
+	listConditionalBlockSubscribersAliasCampaignsResponseFieldSourceID    = big.NewInt(1 << 5)
+	listConditionalBlockSubscribersAliasCampaignsResponseFieldSourceType  = big.NewInt(1 << 6)
+	listConditionalBlockSubscribersAliasCampaignsResponseFieldSuccess     = big.NewInt(1 << 7)
+	listConditionalBlockSubscribersAliasCampaignsResponseFieldTimedOut    = big.NewInt(1 << 8)
+	listConditionalBlockSubscribersAliasCampaignsResponseFieldTotal       = big.NewInt(1 << 9)
+)
+
+type ListConditionalBlockSubscribersAliasCampaignsResponse struct {
+	BlockID     *string          `json:"blockId,omitempty" url:"blockId,omitempty"`
+	Branch      *string          `json:"branch,omitempty" url:"branch,omitempty"`
+	BranchLabel *string          `json:"branchLabel,omitempty" url:"branchLabel,omitempty"`
+	Items       []map[string]any `json:"items,omitempty" url:"items,omitempty"`
+	Pagination  *Pagination      `json:"pagination,omitempty" url:"pagination,omitempty"`
+	SourceID    *string          `json:"sourceId,omitempty" url:"sourceId,omitempty"`
+	SourceType  *string          `json:"sourceType,omitempty" url:"sourceType,omitempty"`
+	Success     *bool            `json:"success,omitempty" url:"success,omitempty"`
+	TimedOut    *bool            `json:"timedOut,omitempty" url:"timedOut,omitempty"`
+	Total       *int             `json:"total,omitempty" url:"total,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListConditionalBlockSubscribersAliasCampaignsResponse) GetBlockID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.BlockID
+}
+
+func (l *ListConditionalBlockSubscribersAliasCampaignsResponse) GetBranch() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Branch
+}
+
+func (l *ListConditionalBlockSubscribersAliasCampaignsResponse) GetBranchLabel() *string {
+	if l == nil {
+		return nil
+	}
+	return l.BranchLabel
+}
+
+func (l *ListConditionalBlockSubscribersAliasCampaignsResponse) GetItems() []map[string]any {
+	if l == nil {
+		return nil
+	}
+	return l.Items
+}
+
+func (l *ListConditionalBlockSubscribersAliasCampaignsResponse) GetPagination() *Pagination {
+	if l == nil {
+		return nil
+	}
+	return l.Pagination
+}
+
+func (l *ListConditionalBlockSubscribersAliasCampaignsResponse) GetSourceID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SourceID
+}
+
+func (l *ListConditionalBlockSubscribersAliasCampaignsResponse) GetSourceType() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SourceType
+}
+
+func (l *ListConditionalBlockSubscribersAliasCampaignsResponse) GetSuccess() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.Success
+}
+
+func (l *ListConditionalBlockSubscribersAliasCampaignsResponse) GetTimedOut() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.TimedOut
+}
+
+func (l *ListConditionalBlockSubscribersAliasCampaignsResponse) GetTotal() *int {
+	if l == nil {
+		return nil
+	}
+	return l.Total
+}
+
+func (l *ListConditionalBlockSubscribersAliasCampaignsResponse) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListConditionalBlockSubscribersAliasCampaignsResponse) require(field *big.Int) {
+	if l.explicitFields == nil {
+		l.explicitFields = big.NewInt(0)
+	}
+	l.explicitFields.Or(l.explicitFields, field)
+}
+
+// SetBlockID sets the BlockID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListConditionalBlockSubscribersAliasCampaignsResponse) SetBlockID(blockID *string) {
+	l.BlockID = blockID
+	l.require(listConditionalBlockSubscribersAliasCampaignsResponseFieldBlockID)
+}
+
+// SetBranch sets the Branch field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListConditionalBlockSubscribersAliasCampaignsResponse) SetBranch(branch *string) {
+	l.Branch = branch
+	l.require(listConditionalBlockSubscribersAliasCampaignsResponseFieldBranch)
+}
+
+// SetBranchLabel sets the BranchLabel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListConditionalBlockSubscribersAliasCampaignsResponse) SetBranchLabel(branchLabel *string) {
+	l.BranchLabel = branchLabel
+	l.require(listConditionalBlockSubscribersAliasCampaignsResponseFieldBranchLabel)
+}
+
+// SetItems sets the Items field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListConditionalBlockSubscribersAliasCampaignsResponse) SetItems(items []map[string]any) {
+	l.Items = items
+	l.require(listConditionalBlockSubscribersAliasCampaignsResponseFieldItems)
+}
+
+// SetPagination sets the Pagination field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListConditionalBlockSubscribersAliasCampaignsResponse) SetPagination(pagination *Pagination) {
+	l.Pagination = pagination
+	l.require(listConditionalBlockSubscribersAliasCampaignsResponseFieldPagination)
+}
+
+// SetSourceID sets the SourceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListConditionalBlockSubscribersAliasCampaignsResponse) SetSourceID(sourceID *string) {
+	l.SourceID = sourceID
+	l.require(listConditionalBlockSubscribersAliasCampaignsResponseFieldSourceID)
+}
+
+// SetSourceType sets the SourceType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListConditionalBlockSubscribersAliasCampaignsResponse) SetSourceType(sourceType *string) {
+	l.SourceType = sourceType
+	l.require(listConditionalBlockSubscribersAliasCampaignsResponseFieldSourceType)
+}
+
+// SetSuccess sets the Success field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListConditionalBlockSubscribersAliasCampaignsResponse) SetSuccess(success *bool) {
+	l.Success = success
+	l.require(listConditionalBlockSubscribersAliasCampaignsResponseFieldSuccess)
+}
+
+// SetTimedOut sets the TimedOut field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListConditionalBlockSubscribersAliasCampaignsResponse) SetTimedOut(timedOut *bool) {
+	l.TimedOut = timedOut
+	l.require(listConditionalBlockSubscribersAliasCampaignsResponseFieldTimedOut)
+}
+
+// SetTotal sets the Total field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListConditionalBlockSubscribersAliasCampaignsResponse) SetTotal(total *int) {
+	l.Total = total
+	l.require(listConditionalBlockSubscribersAliasCampaignsResponseFieldTotal)
+}
+
+func (l *ListConditionalBlockSubscribersAliasCampaignsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListConditionalBlockSubscribersAliasCampaignsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListConditionalBlockSubscribersAliasCampaignsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListConditionalBlockSubscribersAliasCampaignsResponse) MarshalJSON() ([]byte, error) {
+	type embed ListConditionalBlockSubscribersAliasCampaignsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListConditionalBlockSubscribersAliasCampaignsResponse) String() string {
 	if l == nil {
 		return "<nil>"
 	}

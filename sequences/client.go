@@ -705,6 +705,33 @@ func (c *Client) GetAudienceEnrollment(
 	return response.Body, nil
 }
 
+// Alias for /metrics/sequences/{sequenceId}/conditional-blocks.
+//
+// Example:
+//
+//	request := &sequenzygo.GetConditionalBlockOverviewAliasSequencesRequest{
+//	    SequenceID: "sequenceId",
+//	}
+//	client.Sequences.GetConditionalBlockOverviewAlias(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) GetConditionalBlockOverviewAlias(
+	ctx context.Context,
+	request *sequenzygo.GetConditionalBlockOverviewAliasSequencesRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.GetConditionalBlockOverviewAliasSequencesResponse, error) {
+	response, err := c.WithRawResponse.GetConditionalBlockOverviewAlias(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Opt-in sequences-as-code / GitOps endpoint: returns the sequence with this key as one definition document, in the readable format unless format=raw. For normal inspection and editing, use GET /api/v1/sequences/{sequenceId} instead. Pushing the document back unchanged changes nothing.
 //
 // Example:
@@ -842,6 +869,33 @@ func (c *Client) GetInboundWebhook(
 	return response.Body, nil
 }
 
+// Alias for /metrics/sequences/{sequenceId}/outcomes. Your key needs the sequences:read scope.
+//
+// Example:
+//
+//	request := &sequenzygo.GetOutcomesAliasSequencesRequest{
+//	    SequenceID: "sequenceId",
+//	}
+//	client.Sequences.GetOutcomesAlias(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) GetOutcomesAlias(
+	ctx context.Context,
+	request *sequenzygo.GetOutcomesAliasSequencesRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.GetOutcomesAliasSequencesResponse, error) {
+	response, err := c.WithRawResponse.GetOutcomesAlias(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // The schedule that re-enrolls an audience into a manual-trigger sequence, with a readable summary and the next run times. `recurringEnrollment` is null when the sequence has no schedule. Requires `sequences:read`.
 //
 // Example:
@@ -886,6 +940,34 @@ func (c *Client) GetStats(
 	opts ...option.RequestOption,
 ) (*sequenzygo.GetStatsSequencesResponse, error) {
 	response, err := c.WithRawResponse.GetStats(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Alias for /metrics/sequences/{sequenceId}/steps/{nodeId}/conditional-blocks. Your key needs the sequences:read scope.
+//
+// Example:
+//
+//	request := &sequenzygo.GetStepConditionalBlockStatsAliasSequencesRequest{
+//	    SequenceID: "sequenceId",
+//	    NodeID: "nodeId",
+//	}
+//	client.Sequences.GetStepConditionalBlockStatsAlias(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) GetStepConditionalBlockStatsAlias(
+	ctx context.Context,
+	request *sequenzygo.GetStepConditionalBlockStatsAliasSequencesRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.GetStepConditionalBlockStatsAliasSequencesResponse, error) {
+	response, err := c.WithRawResponse.GetStepConditionalBlockStatsAlias(
 		ctx,
 		request,
 		opts...,
@@ -1060,6 +1142,64 @@ func (c *Client) ListGoals(
 	opts ...option.RequestOption,
 ) (*sequenzygo.ListGoalsSequencesResponse, error) {
 	response, err := c.WithRawResponse.ListGoals(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Alias for /metrics/sequences/{sequenceId}/paths/{nodeId}/subscribers. Your key needs the analytics:read scope.
+//
+// Example:
+//
+//	request := &sequenzygo.ListPathSubscribersAliasSequencesRequest{
+//	    SequenceID: "sequenceId",
+//	    NodeID: "nodeId",
+//	}
+//	client.Sequences.ListPathSubscribersAlias(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) ListPathSubscribersAlias(
+	ctx context.Context,
+	request *sequenzygo.ListPathSubscribersAliasSequencesRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.ListPathSubscribersAliasSequencesResponse, error) {
+	response, err := c.WithRawResponse.ListPathSubscribersAlias(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Alias for /metrics/sequences/{sequenceId}/steps/{nodeId}/conditional-blocks/{blockId}/subscribers. Your key needs the analytics:read scope.
+//
+// Example:
+//
+//	request := &sequenzygo.ListStepConditionalBlockSubscribersAliasSequencesRequest{
+//	    SequenceID: "sequenceId",
+//	    NodeID: "nodeId",
+//	    BlockID: "blockId",
+//	    Branch: sequenzygo.ListStepConditionalBlockSubscribersAliasSequencesRequestBranchIf,
+//	}
+//	client.Sequences.ListStepConditionalBlockSubscribersAlias(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) ListStepConditionalBlockSubscribersAlias(
+	ctx context.Context,
+	request *sequenzygo.ListStepConditionalBlockSubscribersAliasSequencesRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.ListStepConditionalBlockSubscribersAliasSequencesResponse, error) {
+	response, err := c.WithRawResponse.ListStepConditionalBlockSubscribersAlias(
 		ctx,
 		request,
 		opts...,

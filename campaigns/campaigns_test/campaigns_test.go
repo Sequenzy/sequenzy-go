@@ -519,6 +519,32 @@ func TestCampaignsGetAudienceWithWireMock(
 	VerifyRequestCount(t, "TestCampaignsGetAudienceWithWireMock", "GET", "/campaigns/campaignId/audience", nil, 1)
 }
 
+func TestCampaignsGetConditionalBlockStatsAliasWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.GetConditionalBlockStatsAliasCampaignsRequest{
+		CampaignID: "campaignId",
+	}
+	_, invocationErr := client.Campaigns.GetConditionalBlockStatsAlias(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestCampaignsGetConditionalBlockStatsAliasWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestCampaignsGetConditionalBlockStatsAliasWithWireMock", "GET", "/campaigns/campaignId/conditional-blocks", nil, 1)
+}
+
 func TestCampaignsGetVariationWithWireMock(
 	t *testing.T,
 ) {
@@ -568,6 +594,34 @@ func TestCampaignsListWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestCampaignsListWithWireMock", "GET", "/campaigns", nil, 1)
+}
+
+func TestCampaignsListConditionalBlockSubscribersAliasWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewClient(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithAPIKey("test-token"),
+	)
+	request := &sequenzygo.ListConditionalBlockSubscribersAliasCampaignsRequest{
+		CampaignID: "campaignId",
+		BlockID:    "blockId",
+		Branch:     sequenzygo.ListConditionalBlockSubscribersAliasCampaignsRequestBranchIf,
+	}
+	_, invocationErr := client.Campaigns.ListConditionalBlockSubscribersAlias(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestCampaignsListConditionalBlockSubscribersAliasWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestCampaignsListConditionalBlockSubscribersAliasWithWireMock", "GET", "/campaigns/campaignId/conditional-blocks/blockId/subscribers", map[string]interface{}{"branch": "if"}, 1)
 }
 
 func TestCampaignsListGoalsWithWireMock(

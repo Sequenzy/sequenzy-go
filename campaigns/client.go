@@ -492,6 +492,33 @@ func (c *Client) GetAudience(
 	return response.Body, nil
 }
 
+// Alias for /metrics/campaigns/{campaignId}/conditional-blocks. Your key needs the campaigns:read scope.
+//
+// Example:
+//
+//	request := &sequenzygo.GetConditionalBlockStatsAliasCampaignsRequest{
+//	    CampaignID: "campaignId",
+//	}
+//	client.Campaigns.GetConditionalBlockStatsAlias(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) GetConditionalBlockStatsAlias(
+	ctx context.Context,
+	request *sequenzygo.GetConditionalBlockStatsAliasCampaignsRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.GetConditionalBlockStatsAliasCampaignsResponse, error) {
+	response, err := c.WithRawResponse.GetConditionalBlockStatsAlias(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Returns one variation, including its status while it generates. Discarded variations are not found.
 //
 // Example:
@@ -535,6 +562,35 @@ func (c *Client) List(
 	opts ...option.RequestOption,
 ) (*sequenzygo.ListCampaignsResponse, error) {
 	response, err := c.WithRawResponse.List(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Alias for /metrics/campaigns/{campaignId}/conditional-blocks/{blockId}/subscribers. Your key needs the analytics:read scope.
+//
+// Example:
+//
+//	request := &sequenzygo.ListConditionalBlockSubscribersAliasCampaignsRequest{
+//	    CampaignID: "campaignId",
+//	    BlockID: "blockId",
+//	    Branch: sequenzygo.ListConditionalBlockSubscribersAliasCampaignsRequestBranchIf,
+//	}
+//	client.Campaigns.ListConditionalBlockSubscribersAlias(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) ListConditionalBlockSubscribersAlias(
+	ctx context.Context,
+	request *sequenzygo.ListConditionalBlockSubscribersAliasCampaignsRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.ListConditionalBlockSubscribersAliasCampaignsResponse, error) {
+	response, err := c.WithRawResponse.ListConditionalBlockSubscribersAlias(
 		ctx,
 		request,
 		opts...,

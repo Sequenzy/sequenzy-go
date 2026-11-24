@@ -34,6 +34,33 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
+// Returns per-block if/else and show/hide branch splits, engagement rates, and goal conversions for conditional blocks inside a campaign email.
+//
+// Example:
+//
+//	request := &sequenzygo.GetCampaignConditionalBlockStatsRequest{
+//	    CampaignID: "campaignId",
+//	}
+//	client.Analytics.GetCampaignConditionalBlockStats(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) GetCampaignConditionalBlockStats(
+	ctx context.Context,
+	request *sequenzygo.GetCampaignConditionalBlockStatsRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.GetCampaignConditionalBlockStatsResponse, error) {
+	response, err := c.WithRawResponse.GetCampaignConditionalBlockStats(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Returns the mail clients and device types that opened a campaign, as shares of its unique opens. Each email send counts once, attributed to the client of its first open. Covers the whole campaign.
 //
 // Example:
@@ -240,6 +267,33 @@ func (c *Client) GetRecipients(
 	return response.Body, nil
 }
 
+// Returns a sequence-wide summary of all email steps that use conditional blocks, including collapsed rule group counts and automatic dead-rule or fallback-spike alerts.
+//
+// Example:
+//
+//	request := &sequenzygo.GetSequenceConditionalBlockOverviewRequest{
+//	    SequenceID: "sequenceId",
+//	}
+//	client.Analytics.GetSequenceConditionalBlockOverview(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) GetSequenceConditionalBlockOverview(
+	ctx context.Context,
+	request *sequenzygo.GetSequenceConditionalBlockOverviewRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.GetSequenceConditionalBlockOverviewResponse, error) {
+	response, err := c.WithRawResponse.GetSequenceConditionalBlockOverview(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Returns aggregated engagement metrics plus a live active/waiting enrollment breakdown by current node for a specific sequence (automation).
 //
 // Example:
@@ -267,6 +321,61 @@ func (c *Client) GetSequenceMetrics(
 	return response.Body, nil
 }
 
+// Returns per-path split counts and post-step cohort conversion rates for branch, condition, and action steps in a sequence, plus a baseline across all enrollments and optional per-goal email attribution. Rule-based branches are observational (causal false); random splits report mature-cohort significance (causal true). For goal outcomes, attributed conversions are scoped to the selected goalId and can differ from all-goals canvas email badges.
+//
+// Example:
+//
+//	request := &sequenzygo.GetSequenceOutcomesRequest{
+//	    SequenceID: "sequenceId",
+//	}
+//	client.Analytics.GetSequenceOutcomes(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) GetSequenceOutcomes(
+	ctx context.Context,
+	request *sequenzygo.GetSequenceOutcomesRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.GetSequenceOutcomesResponse, error) {
+	response, err := c.WithRawResponse.GetSequenceOutcomes(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Returns per-block if/else and show/hide performance for conditional blocks inside a sequence email or A/B test step.
+//
+// Example:
+//
+//	request := &sequenzygo.GetSequenceStepConditionalBlockStatsRequest{
+//	    SequenceID: "sequenceId",
+//	    NodeID: "nodeId",
+//	}
+//	client.Analytics.GetSequenceStepConditionalBlockStats(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) GetSequenceStepConditionalBlockStats(
+	ctx context.Context,
+	request *sequenzygo.GetSequenceStepConditionalBlockStatsRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.GetSequenceStepConditionalBlockStatsResponse, error) {
+	response, err := c.WithRawResponse.GetSequenceStepConditionalBlockStats(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Backward-compatible alias for `GET /metrics`. Returns aggregated email engagement metrics for the specified time period and supports the same emailType filter.
 //
 // Example:
@@ -282,6 +391,33 @@ func (c *Client) GetStatsLegacy(
 	opts ...option.RequestOption,
 ) (*sequenzygo.GetStatsLegacyResponse, error) {
 	response, err := c.WithRawResponse.GetStatsLegacy(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Returns per-block if/else and show/hide performance for conditional blocks inside a transactional email.
+//
+// Example:
+//
+//	request := &sequenzygo.GetTransactionalConditionalBlockStatsRequest{
+//	    IDOrSlug: "idOrSlug",
+//	}
+//	client.Analytics.GetTransactionalConditionalBlockStats(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) GetTransactionalConditionalBlockStats(
+	ctx context.Context,
+	request *sequenzygo.GetTransactionalConditionalBlockStatsRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.GetTransactionalConditionalBlockStatsResponse, error) {
+	response, err := c.WithRawResponse.GetTransactionalConditionalBlockStats(
 		ctx,
 		request,
 		opts...,
@@ -336,6 +472,35 @@ func (c *Client) GetTransactionalMetricsLegacy(
 	opts ...option.RequestOption,
 ) (*sequenzygo.TransactionalMetricsResponse, error) {
 	response, err := c.WithRawResponse.GetTransactionalMetricsLegacy(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Returns paginated recipients who received a specific branch of a conditional block inside a campaign email.
+//
+// Example:
+//
+//	request := &sequenzygo.ListCampaignConditionalBlockSubscribersRequest{
+//	    CampaignID: "campaignId",
+//	    BlockID: "blockId",
+//	    Branch: sequenzygo.ListCampaignConditionalBlockSubscribersRequestBranchIf,
+//	}
+//	client.Analytics.ListCampaignConditionalBlockSubscribers(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) ListCampaignConditionalBlockSubscribers(
+	ctx context.Context,
+	request *sequenzygo.ListCampaignConditionalBlockSubscribersRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.ListCampaignConditionalBlockSubscribersResponse, error) {
+	response, err := c.WithRawResponse.ListCampaignConditionalBlockSubscribers(
 		ctx,
 		request,
 		opts...,
@@ -536,6 +701,93 @@ func (c *Client) ListSequenceEvents(
 	opts ...option.RequestOption,
 ) (*sequenzygo.ListSequenceEventsResponse, error) {
 	response, err := c.WithRawResponse.ListSequenceEvents(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Returns paginated enrollments that took a specific branch path (or reached a step), including redacted evaluation reasons and optional cohort conversion status within the conversion window.
+//
+// Example:
+//
+//	request := &sequenzygo.ListSequencePathSubscribersRequest{
+//	    SequenceID: "sequenceId",
+//	    NodeID: "nodeId",
+//	}
+//	client.Analytics.ListSequencePathSubscribers(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) ListSequencePathSubscribers(
+	ctx context.Context,
+	request *sequenzygo.ListSequencePathSubscribersRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.ListSequencePathSubscribersResponse, error) {
+	response, err := c.WithRawResponse.ListSequencePathSubscribers(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Returns paginated recipients who received a specific branch of a conditional block inside a sequence email step.
+//
+// Example:
+//
+//	request := &sequenzygo.ListSequenceStepConditionalBlockSubscribersRequest{
+//	    SequenceID: "sequenceId",
+//	    NodeID: "nodeId",
+//	    BlockID: "blockId",
+//	    Branch: sequenzygo.ListSequenceStepConditionalBlockSubscribersRequestBranchIf,
+//	}
+//	client.Analytics.ListSequenceStepConditionalBlockSubscribers(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) ListSequenceStepConditionalBlockSubscribers(
+	ctx context.Context,
+	request *sequenzygo.ListSequenceStepConditionalBlockSubscribersRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.ListSequenceStepConditionalBlockSubscribersResponse, error) {
+	response, err := c.WithRawResponse.ListSequenceStepConditionalBlockSubscribers(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Returns paginated recipients who received a specific branch of a conditional block inside a transactional email.
+//
+// Example:
+//
+//	request := &sequenzygo.ListTransactionalConditionalBlockSubscribersRequest{
+//	    IDOrSlug: "idOrSlug",
+//	    BlockID: "blockId",
+//	    Branch: sequenzygo.ListTransactionalConditionalBlockSubscribersRequestBranchIf,
+//	}
+//	client.Analytics.ListTransactionalConditionalBlockSubscribers(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) ListTransactionalConditionalBlockSubscribers(
+	ctx context.Context,
+	request *sequenzygo.ListTransactionalConditionalBlockSubscribersRequest,
+	opts ...option.RequestOption,
+) (*sequenzygo.ListTransactionalConditionalBlockSubscribersResponse, error) {
+	response, err := c.WithRawResponse.ListTransactionalConditionalBlockSubscribers(
 		ctx,
 		request,
 		opts...,

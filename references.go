@@ -103,7 +103,7 @@ var (
 
 type ListEmailReferencesRequest struct {
 	Kind ListEmailReferencesRequestKind `json:"-" url:"kind"`
-	// For `scope=similar` without `q`, most emails (and sequences) to return. Also caps sequences elsewhere.
+	// Most emails (and sequences) to return per page. For `scope=similar` without `q` there is one page.
 	Limit *int `json:"-" url:"limit,omitempty"`
 	// Page for `scope=all` or a search.
 	Page *int `json:"-" url:"page,omitempty"`

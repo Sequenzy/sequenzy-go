@@ -1438,6 +1438,42 @@
       }
     },
     {
+      "id": "880a1a00-4dbc-4d38-bc4a-5e75152edae8",
+      "name": "Get conditional block stats for a campaign - default",
+      "request": {
+        "urlPathTemplate": "/metrics/campaigns/{campaignId}/conditional-blocks",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "campaignId": {
+            "equalTo": "campaignId"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"abTestVariantId\": \"abTestVariantId\",\n  \"alerts\": [\n    {\n      \"key\": \"value\"\n    }\n  ],\n  \"baseline\": {\n    \"key\": \"value\"\n  },\n  \"blocks\": [\n    {\n      \"key\": \"value\"\n    }\n  ],\n  \"conditionGroups\": [\n    {\n      \"key\": \"value\"\n    }\n  ],\n  \"failClosedSends\": 1,\n  \"goalId\": \"goalId\",\n  \"recordedSends\": 1,\n  \"sourceId\": \"sourceId\",\n  \"sourceName\": \"sourceName\",\n  \"sourceType\": \"campaign\",\n  \"success\": true,\n  \"timedOut\": true,\n  \"totalSends\": 1,\n  \"trackingSince\": \"2024-01-15T09:30:00Z\",\n  \"truncatedSends\": 1,\n  \"untrackedSends\": 1\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "880a1a00-4dbc-4d38-bc4a-5e75152edae8",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "dcc03efc-cd26-40fc-b312-699911fe9c80",
       "name": "Get campaign email client breakdown - default",
       "request": {
@@ -1706,6 +1742,42 @@
       "postServeActions": []
     },
     {
+      "id": "c4267b08-e3c6-406e-9c0d-ea84b1c4400b",
+      "name": "Get conditional block health overview for a sequence - default",
+      "request": {
+        "urlPathTemplate": "/metrics/sequences/{sequenceId}/conditional-blocks",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "sequenceId": {
+            "equalTo": "sequenceId"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"alertCount\": 1,\n  \"automationId\": \"automationId\",\n  \"automationName\": \"automationName\",\n  \"steps\": [\n    {\n      \"key\": \"value\"\n    }\n  ],\n  \"stepsWithConditions\": 1,\n  \"success\": true,\n  \"timedOut\": true,\n  \"totalRuleGroups\": 1\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "c4267b08-e3c6-406e-9c0d-ea84b1c4400b",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "9ff24b4f-5ebc-411f-bdfe-d001c30dba9a",
       "name": "Get sequence metrics - default",
       "request": {
@@ -1724,12 +1796,87 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"enrollmentCounts\": {\n    \"active\": 1,\n    \"byCurrentNode\": [\n      {\n        \"active\": 1,\n        \"currentNodeId\": \"currentNodeId\",\n        \"currentNodeMissing\": true,\n        \"total\": 1,\n        \"waiting\": 1\n      }\n    ],\n    \"total\": 1,\n    \"waiting\": 1\n  },\n  \"enrollmentSkipped\": {\n    \"byReason\": {\n      \"key\": 1\n    },\n    \"count\": 1\n  },\n  \"pausedEnrollments\": {\n    \"byCurrentNode\": [\n      {\n        \"count\": 1,\n        \"currentNodeId\": \"node_delay_2\",\n        \"currentNodeMissing\": false\n      }\n    ],\n    \"total\": 1\n  },\n  \"period\": \"period\",\n  \"recommendations\": {\n    \"clickers\": 1,\n    \"clicks\": 1,\n    \"impressions\": 1,\n    \"orders\": 1,\n    \"recipients\": 1,\n    \"revenueByCurrency\": [\n      {}\n    ],\n    \"revenueCents\": 1,\n    \"topProducts\": [\n      {}\n    ]\n  },\n  \"sequenceId\": \"sequenceId\",\n  \"stats\": {\n    \"bounced\": 1,\n    \"bounceRate\": 1.1,\n    \"clicked\": 1,\n    \"clickRate\": 1.1,\n    \"conversions\": 1,\n    \"delivered\": 1,\n    \"deliveryRate\": 1.1,\n    \"opened\": 1,\n    \"openRate\": 1.1,\n    \"rateDenominator\": 1,\n    \"rateDenominatorBasis\": \"delivered\",\n    \"replies\": 1,\n    \"replyRate\": 1.1,\n    \"revenueCents\": 1,\n    \"sent\": 1,\n    \"unsubscribed\": 1,\n    \"unsubscribeRate\": 1.1\n  },\n  \"steps\": [\n    {\n      \"failedCount\": 1,\n      \"failedSubscribers\": [\n        {}\n      ],\n      \"nodeId\": \"nodeId\",\n      \"polls\": [\n        {}\n      ],\n      \"step\": 1,\n      \"subject\": \"subject\"\n    }\n  ],\n  \"success\": true\n}",
+        "body": "{\n  \"branches\": [\n    {\n      \"decisions\": 1,\n      \"decisionsSinceUpdatedAt\": 1,\n      \"label\": \"label\",\n      \"lopsidedElse\": true,\n      \"nodeId\": \"nodeId\",\n      \"nodeType\": \"logic_branch\",\n      \"paths\": [\n        {}\n      ],\n      \"splitMode\": \"condition\"\n    }\n  ],\n  \"enrollmentCounts\": {\n    \"active\": 1,\n    \"byCurrentNode\": [\n      {\n        \"active\": 1,\n        \"currentNodeId\": \"currentNodeId\",\n        \"currentNodeMissing\": true,\n        \"total\": 1,\n        \"waiting\": 1\n      }\n    ],\n    \"total\": 1,\n    \"waiting\": 1\n  },\n  \"enrollmentSkipped\": {\n    \"byReason\": {\n      \"key\": 1\n    },\n    \"count\": 1\n  },\n  \"pausedEnrollments\": {\n    \"byCurrentNode\": [\n      {\n        \"count\": 1,\n        \"currentNodeId\": \"node_delay_2\",\n        \"currentNodeMissing\": false\n      }\n    ],\n    \"total\": 1\n  },\n  \"period\": \"period\",\n  \"recommendations\": {\n    \"clickers\": 1,\n    \"clicks\": 1,\n    \"impressions\": 1,\n    \"orders\": 1,\n    \"recipients\": 1,\n    \"revenueByCurrency\": [\n      {}\n    ],\n    \"revenueCents\": 1,\n    \"topProducts\": [\n      {}\n    ]\n  },\n  \"sequenceId\": \"sequenceId\",\n  \"stats\": {\n    \"bounced\": 1,\n    \"bounceRate\": 1.1,\n    \"clicked\": 1,\n    \"clickRate\": 1.1,\n    \"conversions\": 1,\n    \"delivered\": 1,\n    \"deliveryRate\": 1.1,\n    \"opened\": 1,\n    \"openRate\": 1.1,\n    \"rateDenominator\": 1,\n    \"rateDenominatorBasis\": \"delivered\",\n    \"replies\": 1,\n    \"replyRate\": 1.1,\n    \"revenueCents\": 1,\n    \"sent\": 1,\n    \"unsubscribed\": 1,\n    \"unsubscribeRate\": 1.1\n  },\n  \"steps\": [\n    {\n      \"failedCount\": 1,\n      \"failedSubscribers\": [\n        {}\n      ],\n      \"nodeId\": \"nodeId\",\n      \"polls\": [\n        {}\n      ],\n      \"step\": 1,\n      \"subject\": \"subject\"\n    }\n  ],\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
       },
       "uuid": "9ff24b4f-5ebc-411f-bdfe-d001c30dba9a",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "231b7012-f1aa-4b85-8c24-27b1a5d9cbbb",
+      "name": "Get sequence branch and step outcomes - default",
+      "request": {
+        "urlPathTemplate": "/metrics/sequences/{sequenceId}/outcomes",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "sequenceId": {
+            "equalTo": "sequenceId"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"availableGoals\": [\n    {\n      \"key\": \"value\"\n    }\n  ],\n  \"baseline\": {\n    \"key\": \"value\"\n  },\n  \"branches\": [\n    {\n      \"key\": \"value\"\n    }\n  ],\n  \"conversionWindowDays\": 1,\n  \"outcome\": {\n    \"key\": \"value\"\n  },\n  \"sequenceId\": \"sequenceId\",\n  \"steps\": [\n    {\n      \"key\": \"value\"\n    }\n  ],\n  \"success\": true,\n  \"timedOut\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "231b7012-f1aa-4b85-8c24-27b1a5d9cbbb",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "24c89962-e934-4d02-9fde-d3f090a89640",
+      "name": "Get conditional block stats for a sequence email step - default",
+      "request": {
+        "urlPathTemplate": "/metrics/sequences/{sequenceId}/steps/{nodeId}/conditional-blocks",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "nodeId": {
+            "equalTo": "nodeId"
+          },
+          "sequenceId": {
+            "equalTo": "sequenceId"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"abTestVariantId\": \"abTestVariantId\",\n  \"alerts\": [\n    {\n      \"key\": \"value\"\n    }\n  ],\n  \"baseline\": {\n    \"key\": \"value\"\n  },\n  \"blocks\": [\n    {\n      \"key\": \"value\"\n    }\n  ],\n  \"conditionGroups\": [\n    {\n      \"key\": \"value\"\n    }\n  ],\n  \"failClosedSends\": 1,\n  \"goalId\": \"goalId\",\n  \"recordedSends\": 1,\n  \"sourceId\": \"sourceId\",\n  \"sourceName\": \"sourceName\",\n  \"sourceType\": \"campaign\",\n  \"success\": true,\n  \"timedOut\": true,\n  \"totalSends\": 1,\n  \"trackingSince\": \"2024-01-15T09:30:00Z\",\n  \"truncatedSends\": 1,\n  \"untrackedSends\": 1\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "24c89962-e934-4d02-9fde-d3f090a89640",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -1772,6 +1919,42 @@
         }
       },
       "postServeActions": []
+    },
+    {
+      "id": "e8dcdf8b-6072-417c-af64-60adeda12047",
+      "name": "Get conditional block stats for a transactional email - default",
+      "request": {
+        "urlPathTemplate": "/metrics/transactional/{idOrSlug}/conditional-blocks",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "idOrSlug": {
+            "equalTo": "idOrSlug"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"abTestVariantId\": \"abTestVariantId\",\n  \"alerts\": [\n    {\n      \"key\": \"value\"\n    }\n  ],\n  \"baseline\": {\n    \"key\": \"value\"\n  },\n  \"blocks\": [\n    {\n      \"key\": \"value\"\n    }\n  ],\n  \"conditionGroups\": [\n    {\n      \"key\": \"value\"\n    }\n  ],\n  \"failClosedSends\": 1,\n  \"goalId\": \"goalId\",\n  \"recordedSends\": 1,\n  \"sourceId\": \"sourceId\",\n  \"sourceName\": \"sourceName\",\n  \"sourceType\": \"campaign\",\n  \"success\": true,\n  \"timedOut\": true,\n  \"totalSends\": 1,\n  \"trackingSince\": \"2024-01-15T09:30:00Z\",\n  \"truncatedSends\": 1,\n  \"untrackedSends\": 1\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "e8dcdf8b-6072-417c-af64-60adeda12047",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
     },
     {
       "id": "184708f0-87f2-4292-b376-72f048205ea1",
@@ -1834,6 +2017,50 @@
         }
       },
       "uuid": "bdd06c49-5409-411b-8900-02c0d47940f6",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "eeef5f6f-139f-4e06-8c2a-a8d3b4aa0496",
+      "name": "List recipients for a campaign conditional block branch - default",
+      "request": {
+        "urlPathTemplate": "/metrics/campaigns/{campaignId}/conditional-blocks/{blockId}/subscribers",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "blockId": {
+            "equalTo": "blockId"
+          },
+          "campaignId": {
+            "equalTo": "campaignId"
+          }
+        },
+        "queryParameters": {
+          "branch": {
+            "equalTo": "if"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"blockId\": \"blockId\",\n  \"branch\": \"branch\",\n  \"branchLabel\": \"branchLabel\",\n  \"items\": [\n    {\n      \"key\": \"value\"\n    }\n  ],\n  \"pagination\": {\n    \"limit\": 20,\n    \"page\": 1,\n    \"total\": 100,\n    \"totalPages\": 5\n  },\n  \"sourceId\": \"sourceId\",\n  \"sourceType\": \"sourceType\",\n  \"success\": true,\n  \"timedOut\": true,\n  \"total\": 1\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "eeef5f6f-139f-4e06-8c2a-a8d3b4aa0496",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -2100,6 +2327,136 @@
         }
       },
       "uuid": "cfad849e-c1cc-4b27-8fc1-5d0d30865f4d",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "1dfbf4f5-93a3-414c-bb68-b71ab723d58b",
+      "name": "List subscribers for a sequence path or step - default",
+      "request": {
+        "urlPathTemplate": "/metrics/sequences/{sequenceId}/paths/{nodeId}/subscribers",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "nodeId": {
+            "equalTo": "nodeId"
+          },
+          "sequenceId": {
+            "equalTo": "sequenceId"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"bucket\": \"bucket\",\n  \"conversionWindowDays\": 1,\n  \"nodeId\": \"nodeId\",\n  \"outcome\": {\n    \"key\": \"value\"\n  },\n  \"pagination\": {\n    \"key\": \"value\"\n  },\n  \"pathId\": \"pathId\",\n  \"sequenceId\": \"sequenceId\",\n  \"subscribers\": [\n    {\n      \"key\": \"value\"\n    }\n  ],\n  \"success\": true,\n  \"timedOut\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "1dfbf4f5-93a3-414c-bb68-b71ab723d58b",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "2c209fac-7b84-45d2-bee5-07a3e66f949a",
+      "name": "List recipients for a sequence email step conditional block branch - default",
+      "request": {
+        "urlPathTemplate": "/metrics/sequences/{sequenceId}/steps/{nodeId}/conditional-blocks/{blockId}/subscribers",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "blockId": {
+            "equalTo": "blockId"
+          },
+          "nodeId": {
+            "equalTo": "nodeId"
+          },
+          "sequenceId": {
+            "equalTo": "sequenceId"
+          }
+        },
+        "queryParameters": {
+          "branch": {
+            "equalTo": "if"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"blockId\": \"blockId\",\n  \"branch\": \"branch\",\n  \"branchLabel\": \"branchLabel\",\n  \"items\": [\n    {\n      \"key\": \"value\"\n    }\n  ],\n  \"pagination\": {\n    \"limit\": 20,\n    \"page\": 1,\n    \"total\": 100,\n    \"totalPages\": 5\n  },\n  \"sourceId\": \"sourceId\",\n  \"sourceType\": \"sourceType\",\n  \"success\": true,\n  \"timedOut\": true,\n  \"total\": 1\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "2c209fac-7b84-45d2-bee5-07a3e66f949a",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "f0b0e1bd-438a-4d57-9678-a445d59c0aa0",
+      "name": "List recipients for a transactional email conditional block branch - default",
+      "request": {
+        "urlPathTemplate": "/metrics/transactional/{idOrSlug}/conditional-blocks/{blockId}/subscribers",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "blockId": {
+            "equalTo": "blockId"
+          },
+          "idOrSlug": {
+            "equalTo": "idOrSlug"
+          }
+        },
+        "queryParameters": {
+          "branch": {
+            "equalTo": "if"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"blockId\": \"blockId\",\n  \"branch\": \"branch\",\n  \"branchLabel\": \"branchLabel\",\n  \"items\": [\n    {\n      \"key\": \"value\"\n    }\n  ],\n  \"pagination\": {\n    \"limit\": 20,\n    \"page\": 1,\n    \"total\": 100,\n    \"totalPages\": 5\n  },\n  \"sourceId\": \"sourceId\",\n  \"sourceType\": \"sourceType\",\n  \"success\": true,\n  \"timedOut\": true,\n  \"total\": 1\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "f0b0e1bd-438a-4d57-9678-a445d59c0aa0",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -2890,6 +3247,42 @@
       }
     },
     {
+      "id": "e1f2635a-b9fe-4d20-9eff-5b3f21b85a2e",
+      "name": "Get conditional block stats for a campaign - default",
+      "request": {
+        "urlPathTemplate": "/campaigns/{campaignId}/conditional-blocks",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "campaignId": {
+            "equalTo": "campaignId"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"abTestVariantId\": \"abTestVariantId\",\n  \"alerts\": [\n    {\n      \"key\": \"value\"\n    }\n  ],\n  \"baseline\": {\n    \"key\": \"value\"\n  },\n  \"blocks\": [\n    {\n      \"key\": \"value\"\n    }\n  ],\n  \"conditionGroups\": [\n    {\n      \"key\": \"value\"\n    }\n  ],\n  \"failClosedSends\": 1,\n  \"goalId\": \"goalId\",\n  \"recordedSends\": 1,\n  \"sourceId\": \"sourceId\",\n  \"sourceName\": \"sourceName\",\n  \"sourceType\": \"campaign\",\n  \"success\": true,\n  \"timedOut\": true,\n  \"totalSends\": 1,\n  \"trackingSince\": \"2024-01-15T09:30:00Z\",\n  \"truncatedSends\": 1,\n  \"untrackedSends\": 1\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "e1f2635a-b9fe-4d20-9eff-5b3f21b85a2e",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "77e5db6c-3286-4f63-8403-f48b36546a4c",
       "name": "Get variation - default",
       "request": {
@@ -2959,6 +3352,50 @@
         }
       },
       "postServeActions": []
+    },
+    {
+      "id": "95b4b204-1f29-4d77-a763-a4d46641d89e",
+      "name": "List recipients for a campaign conditional block branch - default",
+      "request": {
+        "urlPathTemplate": "/campaigns/{campaignId}/conditional-blocks/{blockId}/subscribers",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "blockId": {
+            "equalTo": "blockId"
+          },
+          "campaignId": {
+            "equalTo": "campaignId"
+          }
+        },
+        "queryParameters": {
+          "branch": {
+            "equalTo": "if"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"blockId\": \"blockId\",\n  \"branch\": \"branch\",\n  \"branchLabel\": \"branchLabel\",\n  \"items\": [\n    {\n      \"key\": \"value\"\n    }\n  ],\n  \"pagination\": {\n    \"limit\": 20,\n    \"page\": 1,\n    \"total\": 100,\n    \"totalPages\": 5\n  },\n  \"sourceId\": \"sourceId\",\n  \"sourceType\": \"sourceType\",\n  \"success\": true,\n  \"timedOut\": true,\n  \"total\": 1\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "95b4b204-1f29-4d77-a763-a4d46641d89e",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
     },
     {
       "id": "33bd1c48-2ae6-4e6e-98f3-832c7ba53e8e",
@@ -7646,7 +8083,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"list\": {\n    \"activeSubscriberCount\": 1,\n    \"allowMemberUnsubscribe\": true,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"description\": \"description\",\n    \"id\": \"list_abc123\",\n    \"isPrivate\": false,\n    \"name\": \"Newsletter Subscribers\",\n    \"subscriberCount\": 1\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"list\": {\n    \"activeSubscriberCount\": 1,\n    \"allowMemberUnsubscribe\": true,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"description\": \"description\",\n    \"id\": \"list_abc123\",\n    \"isPrivate\": false,\n    \"name\": \"Newsletter Subscribers\",\n    \"subscriberCount\": 1,\n    \"unsubscribeListOnly\": true\n  },\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -7713,7 +8150,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"lists\": [\n    {\n      \"activeSubscriberCount\": 1,\n      \"allowMemberUnsubscribe\": true,\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"description\": \"description\",\n      \"id\": \"list_abc123\",\n      \"isPrivate\": false,\n      \"name\": \"Newsletter Subscribers\",\n      \"subscriberCount\": 1\n    }\n  ],\n  \"success\": true\n}",
+        "body": "{\n  \"lists\": [\n    {\n      \"activeSubscriberCount\": 1,\n      \"allowMemberUnsubscribe\": true,\n      \"createdAt\": \"2024-01-15T09:30:00Z\",\n      \"description\": \"description\",\n      \"id\": \"list_abc123\",\n      \"isPrivate\": false,\n      \"name\": \"Newsletter Subscribers\",\n      \"subscriberCount\": 1,\n      \"unsubscribeListOnly\": true\n    }\n  ],\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -7786,7 +8223,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"list\": {\n    \"activeSubscriberCount\": 1,\n    \"allowMemberUnsubscribe\": true,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"description\": \"description\",\n    \"id\": \"list_abc123\",\n    \"isPrivate\": false,\n    \"name\": \"Newsletter Subscribers\",\n    \"subscriberCount\": 1\n  },\n  \"success\": true\n}",
+        "body": "{\n  \"list\": {\n    \"activeSubscriberCount\": 1,\n    \"allowMemberUnsubscribe\": true,\n    \"createdAt\": \"2024-01-15T09:30:00Z\",\n    \"description\": \"description\",\n    \"id\": \"list_abc123\",\n    \"isPrivate\": false,\n    \"name\": \"Newsletter Subscribers\",\n    \"subscriberCount\": 1,\n    \"unsubscribeListOnly\": true\n  },\n  \"success\": true\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -11350,6 +11787,42 @@
       }
     },
     {
+      "id": "61d2ff2d-33d7-48d8-8dec-612760fdbc5c",
+      "name": "Get conditional block health overview for a sequence (alias) - default",
+      "request": {
+        "urlPathTemplate": "/sequences/{sequenceId}/conditional-blocks",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "sequenceId": {
+            "equalTo": "sequenceId"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"alertCount\": 1,\n  \"automationId\": \"automationId\",\n  \"automationName\": \"automationName\",\n  \"steps\": [\n    {\n      \"key\": \"value\"\n    }\n  ],\n  \"stepsWithConditions\": 1,\n  \"success\": true,\n  \"timedOut\": true,\n  \"totalRuleGroups\": 1\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "61d2ff2d-33d7-48d8-8dec-612760fdbc5c",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "917a8660-a877-4ab3-8e3e-bb1c89788995",
       "name": "Get sequence definition - default",
       "request": {
@@ -11536,6 +12009,42 @@
       }
     },
     {
+      "id": "f017a221-7cb8-4154-a90f-9b2f416d4192",
+      "name": "Get sequence branch and step outcomes - default",
+      "request": {
+        "urlPathTemplate": "/sequences/{sequenceId}/outcomes",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "sequenceId": {
+            "equalTo": "sequenceId"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"availableGoals\": [\n    {\n      \"key\": \"value\"\n    }\n  ],\n  \"baseline\": {\n    \"key\": \"value\"\n  },\n  \"branches\": [\n    {\n      \"key\": \"value\"\n    }\n  ],\n  \"conversionWindowDays\": 1,\n  \"outcome\": {\n    \"key\": \"value\"\n  },\n  \"sequenceId\": \"sequenceId\",\n  \"steps\": [\n    {\n      \"key\": \"value\"\n    }\n  ],\n  \"success\": true,\n  \"timedOut\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "f017a221-7cb8-4154-a90f-9b2f416d4192",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "36c16628-2ab4-4d87-9957-58780034e7b8",
       "name": "Get a sequence's recurring schedule - default",
       "request": {
@@ -11596,6 +12105,45 @@
         }
       },
       "uuid": "c2303201-6b01-4d06-b6c9-02464e6204f6",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "b18ac8e6-25cf-4749-9bc1-8bb2f99c9f7c",
+      "name": "Get conditional block stats for a sequence email step - default",
+      "request": {
+        "urlPathTemplate": "/sequences/{sequenceId}/steps/{nodeId}/conditional-blocks",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "nodeId": {
+            "equalTo": "nodeId"
+          },
+          "sequenceId": {
+            "equalTo": "sequenceId"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"abTestVariantId\": \"abTestVariantId\",\n  \"alerts\": [\n    {\n      \"key\": \"value\"\n    }\n  ],\n  \"baseline\": {\n    \"key\": \"value\"\n  },\n  \"blocks\": [\n    {\n      \"key\": \"value\"\n    }\n  ],\n  \"conditionGroups\": [\n    {\n      \"key\": \"value\"\n    }\n  ],\n  \"failClosedSends\": 1,\n  \"goalId\": \"goalId\",\n  \"recordedSends\": 1,\n  \"sourceId\": \"sourceId\",\n  \"sourceName\": \"sourceName\",\n  \"sourceType\": \"campaign\",\n  \"success\": true,\n  \"timedOut\": true,\n  \"totalSends\": 1,\n  \"trackingSince\": \"2024-01-15T09:30:00Z\",\n  \"truncatedSends\": 1,\n  \"untrackedSends\": 1\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "b18ac8e6-25cf-4749-9bc1-8bb2f99c9f7c",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -11828,6 +12376,92 @@
         }
       },
       "uuid": "4184798d-76e9-4ba4-abd5-cafef485b369",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "303483a5-472f-4388-9e23-1b55a1ccad91",
+      "name": "List subscribers for a sequence path or step - default",
+      "request": {
+        "urlPathTemplate": "/sequences/{sequenceId}/paths/{nodeId}/subscribers",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "nodeId": {
+            "equalTo": "nodeId"
+          },
+          "sequenceId": {
+            "equalTo": "sequenceId"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"bucket\": \"bucket\",\n  \"conversionWindowDays\": 1,\n  \"nodeId\": \"nodeId\",\n  \"outcome\": {\n    \"key\": \"value\"\n  },\n  \"pagination\": {\n    \"key\": \"value\"\n  },\n  \"pathId\": \"pathId\",\n  \"sequenceId\": \"sequenceId\",\n  \"subscribers\": [\n    {\n      \"key\": \"value\"\n    }\n  ],\n  \"success\": true,\n  \"timedOut\": true\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "303483a5-472f-4388-9e23-1b55a1ccad91",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "9addeaff-6b07-43e9-9919-6c905b1e0d66",
+      "name": "List recipients for a sequence email step conditional block branch - default",
+      "request": {
+        "urlPathTemplate": "/sequences/{sequenceId}/steps/{nodeId}/conditional-blocks/{blockId}/subscribers",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "blockId": {
+            "equalTo": "blockId"
+          },
+          "nodeId": {
+            "equalTo": "nodeId"
+          },
+          "sequenceId": {
+            "equalTo": "sequenceId"
+          }
+        },
+        "queryParameters": {
+          "branch": {
+            "equalTo": "if"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"blockId\": \"blockId\",\n  \"branch\": \"branch\",\n  \"branchLabel\": \"branchLabel\",\n  \"items\": [\n    {\n      \"key\": \"value\"\n    }\n  ],\n  \"pagination\": {\n    \"limit\": 20,\n    \"page\": 1,\n    \"total\": 100,\n    \"totalPages\": 5\n  },\n  \"sourceId\": \"sourceId\",\n  \"sourceType\": \"sourceType\",\n  \"success\": true,\n  \"timedOut\": true,\n  \"total\": 1\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "9addeaff-6b07-43e9-9919-6c905b1e0d66",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -15096,6 +15730,42 @@
       }
     },
     {
+      "id": "90e54b16-bdf3-4928-8e2d-7f1958166d29",
+      "name": "Get conditional block stats for a transactional email - default",
+      "request": {
+        "urlPathTemplate": "/transactional/{idOrSlug}/conditional-blocks",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "idOrSlug": {
+            "equalTo": "idOrSlug"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"abTestVariantId\": \"abTestVariantId\",\n  \"alerts\": [\n    {\n      \"key\": \"value\"\n    }\n  ],\n  \"baseline\": {\n    \"key\": \"value\"\n  },\n  \"blocks\": [\n    {\n      \"key\": \"value\"\n    }\n  ],\n  \"conditionGroups\": [\n    {\n      \"key\": \"value\"\n    }\n  ],\n  \"failClosedSends\": 1,\n  \"goalId\": \"goalId\",\n  \"recordedSends\": 1,\n  \"sourceId\": \"sourceId\",\n  \"sourceName\": \"sourceName\",\n  \"sourceType\": \"campaign\",\n  \"success\": true,\n  \"timedOut\": true,\n  \"totalSends\": 1,\n  \"trackingSince\": \"2024-01-15T09:30:00Z\",\n  \"truncatedSends\": 1,\n  \"untrackedSends\": 1\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "90e54b16-bdf3-4928-8e2d-7f1958166d29",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "7ef7c3ee-8595-4375-9824-e347a5835f87",
       "name": "List transactional emails - default",
       "request": {
@@ -15126,6 +15796,50 @@
         }
       },
       "postServeActions": []
+    },
+    {
+      "id": "6a0964ca-c7ab-4357-96f7-93c9a7d2c15a",
+      "name": "List recipients for a transactional email conditional block branch - default",
+      "request": {
+        "urlPathTemplate": "/transactional/{idOrSlug}/conditional-blocks/{blockId}/subscribers",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "blockId": {
+            "equalTo": "blockId"
+          },
+          "idOrSlug": {
+            "equalTo": "idOrSlug"
+          }
+        },
+        "queryParameters": {
+          "branch": {
+            "equalTo": "if"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"blockId\": \"blockId\",\n  \"branch\": \"branch\",\n  \"branchLabel\": \"branchLabel\",\n  \"items\": [\n    {\n      \"key\": \"value\"\n    }\n  ],\n  \"pagination\": {\n    \"limit\": 20,\n    \"page\": 1,\n    \"total\": 100,\n    \"totalPages\": 5\n  },\n  \"sourceId\": \"sourceId\",\n  \"sourceType\": \"sourceType\",\n  \"success\": true,\n  \"timedOut\": true,\n  \"total\": 1\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "6a0964ca-c7ab-4357-96f7-93c9a7d2c15a",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
     },
     {
       "id": "ab1663ad-3fbd-4726-90a5-18fcd501f36b",
@@ -17158,6 +17872,6 @@
     }
   ],
   "meta": {
-    "total": 498
+    "total": 516
   }
 }
