@@ -313,37 +313,42 @@ var (
 	sequenceCreateRequestFieldEnrollmentFieldPath   = big.NewInt(1 << 7)
 	sequenceCreateRequestFieldEnrollmentMode        = big.NewInt(1 << 8)
 	sequenceCreateRequestFieldEventName             = big.NewInt(1 << 9)
-	sequenceCreateRequestFieldFrequencyCapEnabled   = big.NewInt(1 << 10)
-	sequenceCreateRequestFieldFromEmail             = big.NewInt(1 << 11)
-	sequenceCreateRequestFieldFromName              = big.NewInt(1 << 12)
-	sequenceCreateRequestFieldGoal                  = big.NewInt(1 << 13)
-	sequenceCreateRequestFieldInactiveDays          = big.NewInt(1 << 14)
-	sequenceCreateRequestFieldInactivityBaseline    = big.NewInt(1 << 15)
-	sequenceCreateRequestFieldIntegrationEventKey   = big.NewInt(1 << 16)
-	sequenceCreateRequestFieldIntegrationSlug       = big.NewInt(1 << 17)
-	sequenceCreateRequestFieldKeyDates              = big.NewInt(1 << 18)
-	sequenceCreateRequestFieldLabels                = big.NewInt(1 << 19)
-	sequenceCreateRequestFieldListID                = big.NewInt(1 << 20)
-	sequenceCreateRequestFieldListIDs               = big.NewInt(1 << 21)
-	sequenceCreateRequestFieldListScope             = big.NewInt(1 << 22)
-	sequenceCreateRequestFieldMinCount              = big.NewInt(1 << 23)
-	sequenceCreateRequestFieldName                  = big.NewInt(1 << 24)
-	sequenceCreateRequestFieldPropertyFilters       = big.NewInt(1 << 25)
-	sequenceCreateRequestFieldReplyProfileID        = big.NewInt(1 << 26)
-	sequenceCreateRequestFieldReplyTo               = big.NewInt(1 << 27)
-	sequenceCreateRequestFieldReplyToName           = big.NewInt(1 << 28)
-	sequenceCreateRequestFieldSegmentID             = big.NewInt(1 << 29)
-	sequenceCreateRequestFieldSenderProfileID       = big.NewInt(1 << 30)
-	sequenceCreateRequestFieldSendingWindow         = big.NewInt(1 << 31)
-	sequenceCreateRequestFieldSendToNotSubscribed   = big.NewInt(1 << 32)
-	sequenceCreateRequestFieldSteps                 = big.NewInt(1 << 33)
-	sequenceCreateRequestFieldStopCondition         = big.NewInt(1 << 34)
-	sequenceCreateRequestFieldStopOnSegmentExit     = big.NewInt(1 << 35)
-	sequenceCreateRequestFieldTagName               = big.NewInt(1 << 36)
-	sequenceCreateRequestFieldTagNames              = big.NewInt(1 << 37)
-	sequenceCreateRequestFieldTimeWindowDays        = big.NewInt(1 << 38)
-	sequenceCreateRequestFieldTrigger               = big.NewInt(1 << 39)
-	sequenceCreateRequestFieldUserCancellable       = big.NewInt(1 << 40)
+	sequenceCreateRequestFieldFieldFromValue        = big.NewInt(1 << 10)
+	sequenceCreateRequestFieldFieldName             = big.NewInt(1 << 11)
+	sequenceCreateRequestFieldFieldOperator         = big.NewInt(1 << 12)
+	sequenceCreateRequestFieldFieldValue            = big.NewInt(1 << 13)
+	sequenceCreateRequestFieldFieldValues           = big.NewInt(1 << 14)
+	sequenceCreateRequestFieldFrequencyCapEnabled   = big.NewInt(1 << 15)
+	sequenceCreateRequestFieldFromEmail             = big.NewInt(1 << 16)
+	sequenceCreateRequestFieldFromName              = big.NewInt(1 << 17)
+	sequenceCreateRequestFieldGoal                  = big.NewInt(1 << 18)
+	sequenceCreateRequestFieldInactiveDays          = big.NewInt(1 << 19)
+	sequenceCreateRequestFieldInactivityBaseline    = big.NewInt(1 << 20)
+	sequenceCreateRequestFieldIntegrationEventKey   = big.NewInt(1 << 21)
+	sequenceCreateRequestFieldIntegrationSlug       = big.NewInt(1 << 22)
+	sequenceCreateRequestFieldKeyDates              = big.NewInt(1 << 23)
+	sequenceCreateRequestFieldLabels                = big.NewInt(1 << 24)
+	sequenceCreateRequestFieldListID                = big.NewInt(1 << 25)
+	sequenceCreateRequestFieldListIDs               = big.NewInt(1 << 26)
+	sequenceCreateRequestFieldListScope             = big.NewInt(1 << 27)
+	sequenceCreateRequestFieldMinCount              = big.NewInt(1 << 28)
+	sequenceCreateRequestFieldName                  = big.NewInt(1 << 29)
+	sequenceCreateRequestFieldPropertyFilters       = big.NewInt(1 << 30)
+	sequenceCreateRequestFieldReplyProfileID        = big.NewInt(1 << 31)
+	sequenceCreateRequestFieldReplyTo               = big.NewInt(1 << 32)
+	sequenceCreateRequestFieldReplyToName           = big.NewInt(1 << 33)
+	sequenceCreateRequestFieldSegmentID             = big.NewInt(1 << 34)
+	sequenceCreateRequestFieldSenderProfileID       = big.NewInt(1 << 35)
+	sequenceCreateRequestFieldSendingWindow         = big.NewInt(1 << 36)
+	sequenceCreateRequestFieldSendToNotSubscribed   = big.NewInt(1 << 37)
+	sequenceCreateRequestFieldSteps                 = big.NewInt(1 << 38)
+	sequenceCreateRequestFieldStopCondition         = big.NewInt(1 << 39)
+	sequenceCreateRequestFieldStopOnSegmentExit     = big.NewInt(1 << 40)
+	sequenceCreateRequestFieldTagName               = big.NewInt(1 << 41)
+	sequenceCreateRequestFieldTagNames              = big.NewInt(1 << 42)
+	sequenceCreateRequestFieldTimeWindowDays        = big.NewInt(1 << 43)
+	sequenceCreateRequestFieldTrigger               = big.NewInt(1 << 44)
+	sequenceCreateRequestFieldUserCancellable       = big.NewInt(1 << 45)
 )
 
 type SequenceCreateRequest struct {
@@ -366,6 +371,16 @@ type SequenceCreateRequest struct {
 	EnrollmentMode      *SequenceEnrollmentMode `json:"enrollmentMode,omitempty" url:"-"`
 	// Event name for event_received, inbound_webhook, inactivity, and frequency triggers.
 	EventName *string `json:"eventName,omitempty" url:"-"`
+	// Optional previous value required before a field_changed trigger fires.
+	FieldFromValue *string `json:"fieldFromValue,omitempty" url:"-"`
+	// Contact custom attribute name for field_changed triggers. Supports attribute names with spaces and nested dot paths.
+	FieldName *string `json:"fieldName,omitempty" url:"-"`
+	// Matching operator for field_changed triggers. Defaults to any_change.
+	FieldOperator *SequenceCreateRequestFieldOperator `json:"fieldOperator,omitempty" url:"-"`
+	// Target value for scalar field_changed operators (equals, not_equals, contains, not_contains, greater_than, less_than).
+	FieldValue *string `json:"fieldValue,omitempty" url:"-"`
+	// Target values for field_changed triggers with fieldOperator one_of. Changing to any of these values enrolls the contact.
+	FieldValues []string `json:"fieldValues,omitempty" url:"-"`
 	// Whether the sequence respects the company frequency cap (`/frequency-cap`). When true, an email step is skipped for a contact who already received the cap's number of campaign or marketing sequence emails in its window, and the contact continues to the next step. Transactional steps are never skipped and transactional emails never count. Has no effect until a cap is set.
 	FrequencyCapEnabled *bool `json:"frequencyCapEnabled,omitempty" url:"-"`
 	// From address for every email in this sequence. Its domain must be configured and verified.
@@ -505,6 +520,41 @@ func (s *SequenceCreateRequest) SetEnrollmentMode(enrollmentMode *SequenceEnroll
 func (s *SequenceCreateRequest) SetEventName(eventName *string) {
 	s.EventName = eventName
 	s.require(sequenceCreateRequestFieldEventName)
+}
+
+// SetFieldFromValue sets the FieldFromValue field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceCreateRequest) SetFieldFromValue(fieldFromValue *string) {
+	s.FieldFromValue = fieldFromValue
+	s.require(sequenceCreateRequestFieldFieldFromValue)
+}
+
+// SetFieldName sets the FieldName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceCreateRequest) SetFieldName(fieldName *string) {
+	s.FieldName = fieldName
+	s.require(sequenceCreateRequestFieldFieldName)
+}
+
+// SetFieldOperator sets the FieldOperator field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceCreateRequest) SetFieldOperator(fieldOperator *SequenceCreateRequestFieldOperator) {
+	s.FieldOperator = fieldOperator
+	s.require(sequenceCreateRequestFieldFieldOperator)
+}
+
+// SetFieldValue sets the FieldValue field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceCreateRequest) SetFieldValue(fieldValue *string) {
+	s.FieldValue = fieldValue
+	s.require(sequenceCreateRequestFieldFieldValue)
+}
+
+// SetFieldValues sets the FieldValues field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceCreateRequest) SetFieldValues(fieldValues []string) {
+	s.FieldValues = fieldValues
+	s.require(sequenceCreateRequestFieldFieldValues)
 }
 
 // SetFrequencyCapEnabled sets the FrequencyCapEnabled field and marks it as non-optional;
@@ -6630,26 +6680,32 @@ func (s SequenceAudienceType) Ptr() *SequenceAudienceType {
 }
 
 var (
-	sequenceBranchConditionInputFieldActivityScope = big.NewInt(1 << 0)
-	sequenceBranchConditionInputFieldConditionType = big.NewInt(1 << 1)
-	sequenceBranchConditionInputFieldEventName     = big.NewInt(1 << 2)
-	sequenceBranchConditionInputFieldFieldName     = big.NewInt(1 << 3)
-	sequenceBranchConditionInputFieldFieldValue    = big.NewInt(1 << 4)
-	sequenceBranchConditionInputFieldID            = big.NewInt(1 << 5)
-	sequenceBranchConditionInputFieldLabel         = big.NewInt(1 << 6)
-	sequenceBranchConditionInputFieldLinkURL       = big.NewInt(1 << 7)
-	sequenceBranchConditionInputFieldListID        = big.NewInt(1 << 8)
-	sequenceBranchConditionInputFieldSegmentID     = big.NewInt(1 << 9)
-	sequenceBranchConditionInputFieldSegmentName   = big.NewInt(1 << 10)
-	sequenceBranchConditionInputFieldSteps         = big.NewInt(1 << 11)
-	sequenceBranchConditionInputFieldTagID         = big.NewInt(1 << 12)
-	sequenceBranchConditionInputFieldTagName       = big.NewInt(1 << 13)
-	sequenceBranchConditionInputFieldTargetNodeID  = big.NewInt(1 << 14)
+	sequenceBranchConditionInputFieldActivityScope  = big.NewInt(1 << 0)
+	sequenceBranchConditionInputFieldAutomationID   = big.NewInt(1 << 1)
+	sequenceBranchConditionInputFieldAutomationName = big.NewInt(1 << 2)
+	sequenceBranchConditionInputFieldConditionType  = big.NewInt(1 << 3)
+	sequenceBranchConditionInputFieldEventName      = big.NewInt(1 << 4)
+	sequenceBranchConditionInputFieldFieldName      = big.NewInt(1 << 5)
+	sequenceBranchConditionInputFieldFieldValue     = big.NewInt(1 << 6)
+	sequenceBranchConditionInputFieldID             = big.NewInt(1 << 7)
+	sequenceBranchConditionInputFieldLabel          = big.NewInt(1 << 8)
+	sequenceBranchConditionInputFieldLinkURL        = big.NewInt(1 << 9)
+	sequenceBranchConditionInputFieldListID         = big.NewInt(1 << 10)
+	sequenceBranchConditionInputFieldSegmentID      = big.NewInt(1 << 11)
+	sequenceBranchConditionInputFieldSegmentName    = big.NewInt(1 << 12)
+	sequenceBranchConditionInputFieldSteps          = big.NewInt(1 << 13)
+	sequenceBranchConditionInputFieldTagID          = big.NewInt(1 << 14)
+	sequenceBranchConditionInputFieldTagName        = big.NewInt(1 << 15)
+	sequenceBranchConditionInputFieldTargetNodeID   = big.NewInt(1 << 16)
 )
 
 type SequenceBranchConditionInput struct {
 	// Scope for event_received and link_clicked conditions.
 	ActivityScope *SequenceBranchConditionInputActivityScope `json:"activityScope,omitempty" url:"activityScope,omitempty"`
+	// Target sequence ID (must be another sequence in the same company) for in_sequence, not_in_sequence, completed_sequence, and not_completed_sequence conditions.
+	AutomationID *string `json:"automationId,omitempty" url:"automationId,omitempty"`
+	// Optional display name for sequence-membership conditions.
+	AutomationName *string `json:"automationName,omitempty" url:"automationName,omitempty"`
 	// Condition for this path. Required on a condition split; must be omitted when the branch sets splitMode to random, where paths are chosen by percentage.
 	ConditionType *SequenceBranchConditionInputConditionType `json:"conditionType,omitempty" url:"conditionType,omitempty"`
 	// Event name for event_received conditions.
@@ -6690,6 +6746,20 @@ func (s *SequenceBranchConditionInput) GetActivityScope() *SequenceBranchConditi
 		return nil
 	}
 	return s.ActivityScope
+}
+
+func (s *SequenceBranchConditionInput) GetAutomationID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.AutomationID
+}
+
+func (s *SequenceBranchConditionInput) GetAutomationName() *string {
+	if s == nil {
+		return nil
+	}
+	return s.AutomationName
 }
 
 func (s *SequenceBranchConditionInput) GetConditionType() *SequenceBranchConditionInputConditionType {
@@ -6809,6 +6879,20 @@ func (s *SequenceBranchConditionInput) require(field *big.Int) {
 func (s *SequenceBranchConditionInput) SetActivityScope(activityScope *SequenceBranchConditionInputActivityScope) {
 	s.ActivityScope = activityScope
 	s.require(sequenceBranchConditionInputFieldActivityScope)
+}
+
+// SetAutomationID sets the AutomationID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceBranchConditionInput) SetAutomationID(automationID *string) {
+	s.AutomationID = automationID
+	s.require(sequenceBranchConditionInputFieldAutomationID)
+}
+
+// SetAutomationName sets the AutomationName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceBranchConditionInput) SetAutomationName(automationName *string) {
+	s.AutomationName = automationName
+	s.require(sequenceBranchConditionInputFieldAutomationName)
 }
 
 // SetConditionType sets the ConditionType field and marks it as non-optional;
@@ -6981,19 +7065,23 @@ func (s SequenceBranchConditionInputActivityScope) Ptr() *SequenceBranchConditio
 type SequenceBranchConditionInputConditionType string
 
 const (
-	SequenceBranchConditionInputConditionTypeHasTag           SequenceBranchConditionInputConditionType = "has_tag"
-	SequenceBranchConditionInputConditionTypeDoesNotHaveTag   SequenceBranchConditionInputConditionType = "does_not_have_tag"
-	SequenceBranchConditionInputConditionTypeInList           SequenceBranchConditionInputConditionType = "in_list"
-	SequenceBranchConditionInputConditionTypeInSegment        SequenceBranchConditionInputConditionType = "in_segment"
-	SequenceBranchConditionInputConditionTypeEventReceived    SequenceBranchConditionInputConditionType = "event_received"
-	SequenceBranchConditionInputConditionTypeLinkClicked      SequenceBranchConditionInputConditionType = "link_clicked"
-	SequenceBranchConditionInputConditionTypeFieldEquals      SequenceBranchConditionInputConditionType = "field_equals"
-	SequenceBranchConditionInputConditionTypeFieldContains    SequenceBranchConditionInputConditionType = "field_contains"
-	SequenceBranchConditionInputConditionTypeFieldGreaterThan SequenceBranchConditionInputConditionType = "field_greater_than"
-	SequenceBranchConditionInputConditionTypeFieldLessThan    SequenceBranchConditionInputConditionType = "field_less_than"
-	SequenceBranchConditionInputConditionTypeHasPhone         SequenceBranchConditionInputConditionType = "has_phone"
-	SequenceBranchConditionInputConditionTypeSmsSubscribed    SequenceBranchConditionInputConditionType = "sms_subscribed"
-	SequenceBranchConditionInputConditionTypeHasPushDevice    SequenceBranchConditionInputConditionType = "has_push_device"
+	SequenceBranchConditionInputConditionTypeHasTag               SequenceBranchConditionInputConditionType = "has_tag"
+	SequenceBranchConditionInputConditionTypeDoesNotHaveTag       SequenceBranchConditionInputConditionType = "does_not_have_tag"
+	SequenceBranchConditionInputConditionTypeInList               SequenceBranchConditionInputConditionType = "in_list"
+	SequenceBranchConditionInputConditionTypeInSegment            SequenceBranchConditionInputConditionType = "in_segment"
+	SequenceBranchConditionInputConditionTypeInSequence           SequenceBranchConditionInputConditionType = "in_sequence"
+	SequenceBranchConditionInputConditionTypeNotInSequence        SequenceBranchConditionInputConditionType = "not_in_sequence"
+	SequenceBranchConditionInputConditionTypeCompletedSequence    SequenceBranchConditionInputConditionType = "completed_sequence"
+	SequenceBranchConditionInputConditionTypeNotCompletedSequence SequenceBranchConditionInputConditionType = "not_completed_sequence"
+	SequenceBranchConditionInputConditionTypeEventReceived        SequenceBranchConditionInputConditionType = "event_received"
+	SequenceBranchConditionInputConditionTypeLinkClicked          SequenceBranchConditionInputConditionType = "link_clicked"
+	SequenceBranchConditionInputConditionTypeFieldEquals          SequenceBranchConditionInputConditionType = "field_equals"
+	SequenceBranchConditionInputConditionTypeFieldContains        SequenceBranchConditionInputConditionType = "field_contains"
+	SequenceBranchConditionInputConditionTypeFieldGreaterThan     SequenceBranchConditionInputConditionType = "field_greater_than"
+	SequenceBranchConditionInputConditionTypeFieldLessThan        SequenceBranchConditionInputConditionType = "field_less_than"
+	SequenceBranchConditionInputConditionTypeHasPhone             SequenceBranchConditionInputConditionType = "has_phone"
+	SequenceBranchConditionInputConditionTypeSmsSubscribed        SequenceBranchConditionInputConditionType = "sms_subscribed"
+	SequenceBranchConditionInputConditionTypeHasPushDevice        SequenceBranchConditionInputConditionType = "has_push_device"
 )
 
 func NewSequenceBranchConditionInputConditionTypeFromString(s string) (SequenceBranchConditionInputConditionType, error) {
@@ -7006,6 +7094,14 @@ func NewSequenceBranchConditionInputConditionTypeFromString(s string) (SequenceB
 		return SequenceBranchConditionInputConditionTypeInList, nil
 	case "in_segment":
 		return SequenceBranchConditionInputConditionTypeInSegment, nil
+	case "in_sequence":
+		return SequenceBranchConditionInputConditionTypeInSequence, nil
+	case "not_in_sequence":
+		return SequenceBranchConditionInputConditionTypeNotInSequence, nil
+	case "completed_sequence":
+		return SequenceBranchConditionInputConditionTypeCompletedSequence, nil
+	case "not_completed_sequence":
+		return SequenceBranchConditionInputConditionTypeNotCompletedSequence, nil
 	case "event_received":
 		return SequenceBranchConditionInputConditionTypeEventReceived, nil
 	case "link_clicked":
@@ -7345,7 +7441,7 @@ type SequenceBranchPathStepInput struct {
 	Text *string `json:"text,omitempty" url:"text,omitempty"`
 	// Push steps only. Notification title; merge tags work.
 	Title *string `json:"title,omitempty" url:"title,omitempty"`
-	// Step type. Omit for email steps, use sms for a native SMS step, push for a push notification step, or use delay for a standalone wait.
+	// Step type. Omit for email steps, use sms for a native SMS step, push for a push notification step, delay for a standalone wait, or wait_until to hold contacts until they match conditions.
 	Type *SequenceBranchPathStepInputType `json:"type,omitempty" url:"type,omitempty"`
 	// Push steps only. Link opened on tap - an https URL or an app deep link.
 	URL              *string                        `json:"url,omitempty" url:"url,omitempty"`
@@ -7888,6 +7984,7 @@ const (
 	SequenceBranchPathStepInputNodeTypeActionRemoveFromList   SequenceBranchPathStepInputNodeType = "action_remove_from_list"
 	SequenceBranchPathStepInputNodeTypeActionUpdateAttributes SequenceBranchPathStepInputNodeType = "action_update_attributes"
 	SequenceBranchPathStepInputNodeTypeLogicWaitForEvent      SequenceBranchPathStepInputNodeType = "logic_wait_for_event"
+	SequenceBranchPathStepInputNodeTypeLogicWaitUntil         SequenceBranchPathStepInputNodeType = "logic_wait_until"
 	SequenceBranchPathStepInputNodeTypeLogicCondition         SequenceBranchPathStepInputNodeType = "logic_condition"
 	SequenceBranchPathStepInputNodeTypeActionWebhook          SequenceBranchPathStepInputNodeType = "action_webhook"
 	SequenceBranchPathStepInputNodeTypeActionAi               SequenceBranchPathStepInputNodeType = "action_ai"
@@ -7917,6 +8014,8 @@ func NewSequenceBranchPathStepInputNodeTypeFromString(s string) (SequenceBranchP
 		return SequenceBranchPathStepInputNodeTypeActionUpdateAttributes, nil
 	case "logic_wait_for_event":
 		return SequenceBranchPathStepInputNodeTypeLogicWaitForEvent, nil
+	case "logic_wait_until":
+		return SequenceBranchPathStepInputNodeTypeLogicWaitUntil, nil
 	case "logic_condition":
 		return SequenceBranchPathStepInputNodeTypeLogicCondition, nil
 	case "action_webhook":
@@ -7957,7 +8056,7 @@ func (s SequenceBranchPathStepInputPlatformsItem) Ptr() *SequenceBranchPathStepI
 	return &s
 }
 
-// Step type. Omit for email steps, use sms for a native SMS step, push for a push notification step, or use delay for a standalone wait.
+// Step type. Omit for email steps, use sms for a native SMS step, push for a push notification step, delay for a standalone wait, or wait_until to hold contacts until they match conditions.
 type SequenceBranchPathStepInputType string
 
 const (
@@ -7969,6 +8068,7 @@ const (
 	SequenceBranchPathStepInputTypeDiscount         SequenceBranchPathStepInputType = "discount"
 	SequenceBranchPathStepInputTypeUpdateSubscriber SequenceBranchPathStepInputType = "update_subscriber"
 	SequenceBranchPathStepInputTypeCondition        SequenceBranchPathStepInputType = "condition"
+	SequenceBranchPathStepInputTypeWaitUntil        SequenceBranchPathStepInputType = "wait_until"
 	SequenceBranchPathStepInputTypeWebhook          SequenceBranchPathStepInputType = "webhook"
 	SequenceBranchPathStepInputTypeAi               SequenceBranchPathStepInputType = "ai"
 )
@@ -7991,6 +8091,8 @@ func NewSequenceBranchPathStepInputTypeFromString(s string) (SequenceBranchPathS
 		return SequenceBranchPathStepInputTypeUpdateSubscriber, nil
 	case "condition":
 		return SequenceBranchPathStepInputTypeCondition, nil
+	case "wait_until":
+		return SequenceBranchPathStepInputTypeWaitUntil, nil
 	case "webhook":
 		return SequenceBranchPathStepInputTypeWebhook, nil
 	case "ai":
@@ -9291,7 +9393,7 @@ var (
 )
 
 type SequenceDefinitionConnection struct {
-	// Branch lane, for example {"branchId":"else"} on a logic_branch step.
+	// Branch lane, for example {"branchId":"else"} on a logic_branch step, or {"branchId":"matched"} and {"branchId":"timed_out"} on a logic_wait_until step whose timeout continues.
 	Condition map[string]any `json:"condition,omitempty" url:"condition,omitempty"`
 	// Step key.
 	From string `json:"from" url:"from"`
@@ -17095,6 +17197,7 @@ const (
 	SequenceEnrollmentGetResponseEnrollmentEnteredViaKindList       SequenceEnrollmentGetResponseEnrollmentEnteredViaKind = "list"
 	SequenceEnrollmentGetResponseEnrollmentEnteredViaKindTag        SequenceEnrollmentGetResponseEnrollmentEnteredViaKind = "tag"
 	SequenceEnrollmentGetResponseEnrollmentEnteredViaKindSegment    SequenceEnrollmentGetResponseEnrollmentEnteredViaKind = "segment"
+	SequenceEnrollmentGetResponseEnrollmentEnteredViaKindField      SequenceEnrollmentGetResponseEnrollmentEnteredViaKind = "field"
 	SequenceEnrollmentGetResponseEnrollmentEnteredViaKindEvent      SequenceEnrollmentGetResponseEnrollmentEnteredViaKind = "event"
 	SequenceEnrollmentGetResponseEnrollmentEnteredViaKindInactivity SequenceEnrollmentGetResponseEnrollmentEnteredViaKind = "inactivity"
 	SequenceEnrollmentGetResponseEnrollmentEnteredViaKindFrequency  SequenceEnrollmentGetResponseEnrollmentEnteredViaKind = "frequency"
@@ -17111,6 +17214,8 @@ func NewSequenceEnrollmentGetResponseEnrollmentEnteredViaKindFromString(s string
 		return SequenceEnrollmentGetResponseEnrollmentEnteredViaKindTag, nil
 	case "segment":
 		return SequenceEnrollmentGetResponseEnrollmentEnteredViaKindSegment, nil
+	case "field":
+		return SequenceEnrollmentGetResponseEnrollmentEnteredViaKindField, nil
 	case "event":
 		return SequenceEnrollmentGetResponseEnrollmentEnteredViaKindEvent, nil
 	case "inactivity":
@@ -18287,6 +18392,7 @@ const (
 	SequenceEnrollmentListResponseEnrollmentsItemEnteredViaKindList       SequenceEnrollmentListResponseEnrollmentsItemEnteredViaKind = "list"
 	SequenceEnrollmentListResponseEnrollmentsItemEnteredViaKindTag        SequenceEnrollmentListResponseEnrollmentsItemEnteredViaKind = "tag"
 	SequenceEnrollmentListResponseEnrollmentsItemEnteredViaKindSegment    SequenceEnrollmentListResponseEnrollmentsItemEnteredViaKind = "segment"
+	SequenceEnrollmentListResponseEnrollmentsItemEnteredViaKindField      SequenceEnrollmentListResponseEnrollmentsItemEnteredViaKind = "field"
 	SequenceEnrollmentListResponseEnrollmentsItemEnteredViaKindEvent      SequenceEnrollmentListResponseEnrollmentsItemEnteredViaKind = "event"
 	SequenceEnrollmentListResponseEnrollmentsItemEnteredViaKindInactivity SequenceEnrollmentListResponseEnrollmentsItemEnteredViaKind = "inactivity"
 	SequenceEnrollmentListResponseEnrollmentsItemEnteredViaKindFrequency  SequenceEnrollmentListResponseEnrollmentsItemEnteredViaKind = "frequency"
@@ -18303,6 +18409,8 @@ func NewSequenceEnrollmentListResponseEnrollmentsItemEnteredViaKindFromString(s 
 		return SequenceEnrollmentListResponseEnrollmentsItemEnteredViaKindTag, nil
 	case "segment":
 		return SequenceEnrollmentListResponseEnrollmentsItemEnteredViaKindSegment, nil
+	case "field":
+		return SequenceEnrollmentListResponseEnrollmentsItemEnteredViaKindField, nil
 	case "event":
 		return SequenceEnrollmentListResponseEnrollmentsItemEnteredViaKindEvent, nil
 	case "inactivity":
@@ -24535,7 +24643,7 @@ func (s SequenceNodeUpdateInputChangesEmailPreset) Ptr() *SequenceNodeUpdateInpu
 	return &s
 }
 
-// Config for advanced nodeType steps. Required fields depend on nodeType: action_add_tag and action_remove_tag need tagId or tagName; action_add_to_list and action_remove_from_list need listId; action_update_attributes uses the Update Subscriber fields and may reference the trigger event payload; logic_wait_for_event needs eventName plus optional timeoutDays and timeoutAction; logic_condition needs conditionType plus that condition's resource field; action_webhook needs an HTTPS url plus optional method, headers, body, resultKey, and onError; action_ai needs prompt, resultKey, and outputFields plus optional includeTags, includeEventProperties, includeRecentEvents, recentEventLimit, includeAttributes, and onError; logic_delay uses delayDays, delayHours, and delayMinutes. Fields that do not apply to the node type are dropped.
+// Config for advanced nodeType steps. Required fields depend on nodeType: action_add_tag and action_remove_tag need tagId or tagName; action_add_to_list and action_remove_from_list need listId; action_update_attributes uses the Update Subscriber fields and may reference the trigger event payload; logic_wait_for_event needs eventName plus optional timeoutDays and timeoutAction; logic_wait_until needs conditions plus optional conditionLogic, timeout and timeoutAction; a logic_wait_until whose timeout continues gets a matched path and a "Timed out" path (edge branchId matched and timed_out) that both lead to the next step; logic_condition needs conditionType plus that condition's resource field; action_webhook needs an HTTPS url plus optional method, headers, body, resultKey, and onError; action_ai needs prompt, resultKey, and outputFields plus optional includeTags, includeEventProperties, includeRecentEvents, recentEventLimit, includeAttributes, and onError; logic_delay uses delayDays, delayHours, and delayMinutes. Fields that do not apply to the node type are dropped.
 var (
 	sequencePathStepConfigFieldCustomAttributeUpdates = big.NewInt(1 << 0)
 	sequencePathStepConfigFieldFirstName              = big.NewInt(1 << 1)
@@ -24543,35 +24651,40 @@ var (
 	sequencePathStepConfigFieldLastName               = big.NewInt(1 << 3)
 	sequencePathStepConfigFieldStatus                 = big.NewInt(1 << 4)
 	sequencePathStepConfigFieldActivityScope          = big.NewInt(1 << 5)
-	sequencePathStepConfigFieldBody                   = big.NewInt(1 << 6)
-	sequencePathStepConfigFieldConditionType          = big.NewInt(1 << 7)
-	sequencePathStepConfigFieldDelayDays              = big.NewInt(1 << 8)
-	sequencePathStepConfigFieldDelayHours             = big.NewInt(1 << 9)
-	sequencePathStepConfigFieldDelayMinutes           = big.NewInt(1 << 10)
-	sequencePathStepConfigFieldEventName              = big.NewInt(1 << 11)
-	sequencePathStepConfigFieldFieldName              = big.NewInt(1 << 12)
-	sequencePathStepConfigFieldFieldValue             = big.NewInt(1 << 13)
-	sequencePathStepConfigFieldHeaders                = big.NewInt(1 << 14)
-	sequencePathStepConfigFieldIncludeAttributes      = big.NewInt(1 << 15)
-	sequencePathStepConfigFieldIncludeEventProperties = big.NewInt(1 << 16)
-	sequencePathStepConfigFieldIncludeRecentEvents    = big.NewInt(1 << 17)
-	sequencePathStepConfigFieldIncludeTags            = big.NewInt(1 << 18)
-	sequencePathStepConfigFieldLinkURL                = big.NewInt(1 << 19)
-	sequencePathStepConfigFieldListID                 = big.NewInt(1 << 20)
-	sequencePathStepConfigFieldListName               = big.NewInt(1 << 21)
-	sequencePathStepConfigFieldMethod                 = big.NewInt(1 << 22)
-	sequencePathStepConfigFieldOnError                = big.NewInt(1 << 23)
-	sequencePathStepConfigFieldOutputFields           = big.NewInt(1 << 24)
-	sequencePathStepConfigFieldPrompt                 = big.NewInt(1 << 25)
-	sequencePathStepConfigFieldRecentEventLimit       = big.NewInt(1 << 26)
-	sequencePathStepConfigFieldResultKey              = big.NewInt(1 << 27)
-	sequencePathStepConfigFieldSegmentID              = big.NewInt(1 << 28)
-	sequencePathStepConfigFieldSegmentName            = big.NewInt(1 << 29)
-	sequencePathStepConfigFieldTagID                  = big.NewInt(1 << 30)
-	sequencePathStepConfigFieldTagName                = big.NewInt(1 << 31)
-	sequencePathStepConfigFieldTimeoutAction          = big.NewInt(1 << 32)
-	sequencePathStepConfigFieldTimeoutDays            = big.NewInt(1 << 33)
-	sequencePathStepConfigFieldURL                    = big.NewInt(1 << 34)
+	sequencePathStepConfigFieldAutomationID           = big.NewInt(1 << 6)
+	sequencePathStepConfigFieldAutomationName         = big.NewInt(1 << 7)
+	sequencePathStepConfigFieldBody                   = big.NewInt(1 << 8)
+	sequencePathStepConfigFieldConditionLogic         = big.NewInt(1 << 9)
+	sequencePathStepConfigFieldConditions             = big.NewInt(1 << 10)
+	sequencePathStepConfigFieldConditionType          = big.NewInt(1 << 11)
+	sequencePathStepConfigFieldDelayDays              = big.NewInt(1 << 12)
+	sequencePathStepConfigFieldDelayHours             = big.NewInt(1 << 13)
+	sequencePathStepConfigFieldDelayMinutes           = big.NewInt(1 << 14)
+	sequencePathStepConfigFieldEventName              = big.NewInt(1 << 15)
+	sequencePathStepConfigFieldFieldName              = big.NewInt(1 << 16)
+	sequencePathStepConfigFieldFieldValue             = big.NewInt(1 << 17)
+	sequencePathStepConfigFieldHeaders                = big.NewInt(1 << 18)
+	sequencePathStepConfigFieldIncludeAttributes      = big.NewInt(1 << 19)
+	sequencePathStepConfigFieldIncludeEventProperties = big.NewInt(1 << 20)
+	sequencePathStepConfigFieldIncludeRecentEvents    = big.NewInt(1 << 21)
+	sequencePathStepConfigFieldIncludeTags            = big.NewInt(1 << 22)
+	sequencePathStepConfigFieldLinkURL                = big.NewInt(1 << 23)
+	sequencePathStepConfigFieldListID                 = big.NewInt(1 << 24)
+	sequencePathStepConfigFieldListName               = big.NewInt(1 << 25)
+	sequencePathStepConfigFieldMethod                 = big.NewInt(1 << 26)
+	sequencePathStepConfigFieldOnError                = big.NewInt(1 << 27)
+	sequencePathStepConfigFieldOutputFields           = big.NewInt(1 << 28)
+	sequencePathStepConfigFieldPrompt                 = big.NewInt(1 << 29)
+	sequencePathStepConfigFieldRecentEventLimit       = big.NewInt(1 << 30)
+	sequencePathStepConfigFieldResultKey              = big.NewInt(1 << 31)
+	sequencePathStepConfigFieldSegmentID              = big.NewInt(1 << 32)
+	sequencePathStepConfigFieldSegmentName            = big.NewInt(1 << 33)
+	sequencePathStepConfigFieldTagID                  = big.NewInt(1 << 34)
+	sequencePathStepConfigFieldTagName                = big.NewInt(1 << 35)
+	sequencePathStepConfigFieldTimeout                = big.NewInt(1 << 36)
+	sequencePathStepConfigFieldTimeoutAction          = big.NewInt(1 << 37)
+	sequencePathStepConfigFieldTimeoutDays            = big.NewInt(1 << 38)
+	sequencePathStepConfigFieldURL                    = big.NewInt(1 << 39)
 )
 
 type SequencePathStepConfig struct {
@@ -24582,9 +24695,17 @@ type SequencePathStepConfig struct {
 	Status                 *SubscriberUpdateConfigStatus                       `json:"status,omitempty" url:"status,omitempty"`
 	// logic_condition. Scope for event_received and link_clicked checks.
 	ActivityScope *SequencePathStepConfigActivityScope `json:"activityScope,omitempty" url:"activityScope,omitempty"`
+	// logic_condition. Target sequence ID (another sequence in the same company) for in_sequence, not_in_sequence, completed_sequence, and not_completed_sequence.
+	AutomationID *string `json:"automationId,omitempty" url:"automationId,omitempty"`
+	// Optional cached target sequence display name.
+	AutomationName *string `json:"automationName,omitempty" url:"automationName,omitempty"`
 	// action_webhook. Optional JSON body template for POST/PUT/PATCH requests. Must be valid JSON as written, with merge tags inside quoted string values; a tag in a bare value position is rejected. Tags are resolved at execution time. When omitted, a default payload with the subscriber and sequence context is sent.
 	Body *string `json:"body,omitempty" url:"body,omitempty"`
-	// logic_condition. Condition evaluated before continuing. has_phone, sms_subscribed and has_push_device need no resource fields. has_push_device passes when the contact has an active push device on a platform the workspace has push credentials for (APNs, FCM or web push).
+	// logic_wait_until. Continue when all rules match, or when any one does. Defaults to all.
+	ConditionLogic *SequencePathStepConfigConditionLogic `json:"conditionLogic,omitempty" url:"conditionLogic,omitempty"`
+	// logic_wait_until. Rules the contact must match before continuing, each with the same fields as a logic_condition step (conditionType plus tagId or tagName, listId, segmentId, eventName, linkUrl, activityScope, fieldName and fieldValue as that type needs). A contact that already matches continues at once. Others are re-checked when their tags, lists, attributes or events change, and at least once an hour. Lists and segments must exist in this company; listName and segmentName are filled in for you.
+	Conditions []*SequencePathStepConfigConditionsItem `json:"conditions,omitempty" url:"conditions,omitempty"`
+	// logic_condition. Condition evaluated before continuing. in_sequence, not_in_sequence, completed_sequence and not_completed_sequence require automationId pointing to another sequence in the same company. has_phone, sms_subscribed and has_push_device need no resource fields. has_push_device passes when the contact has an active push device on a platform the workspace has push credentials for (APNs, FCM or web push).
 	ConditionType *SequencePathStepConfigConditionType `json:"conditionType,omitempty" url:"conditionType,omitempty"`
 	// logic_delay. Whole days to wait.
 	DelayDays *float64 `json:"delayDays,omitempty" url:"delayDays,omitempty"`
@@ -24634,7 +24755,9 @@ type SequencePathStepConfig struct {
 	TagID *string `json:"tagId,omitempty" url:"tagId,omitempty"`
 	// action_add_tag / action_remove_tag / has_tag / does_not_have_tag. Tag name; use instead of tagId when you only know the name.
 	TagName *string `json:"tagName,omitempty" url:"tagName,omitempty"`
-	// logic_wait_for_event. Continue to the next node or exit the sequence on timeout. Defaults to continue.
+	// logic_wait_until. Longest wait. Omit or send null to wait until the contact matches.
+	Timeout *SequencePathStepConfigTimeout `json:"timeout,omitempty" url:"timeout,omitempty"`
+	// logic_wait_for_event and logic_wait_until. Continue to the next node (the "Timed out" path for logic_wait_until) or exit the sequence on timeout. Defaults to continue.
 	TimeoutAction *SequencePathStepConfigTimeoutAction `json:"timeoutAction,omitempty" url:"timeoutAction,omitempty"`
 	// logic_wait_for_event. Maximum wait in whole days from 1 to 365. Defaults to 7.
 	TimeoutDays *float64 `json:"timeoutDays,omitempty" url:"timeoutDays,omitempty"`
@@ -24691,11 +24814,39 @@ func (s *SequencePathStepConfig) GetActivityScope() *SequencePathStepConfigActiv
 	return s.ActivityScope
 }
 
+func (s *SequencePathStepConfig) GetAutomationID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.AutomationID
+}
+
+func (s *SequencePathStepConfig) GetAutomationName() *string {
+	if s == nil {
+		return nil
+	}
+	return s.AutomationName
+}
+
 func (s *SequencePathStepConfig) GetBody() *string {
 	if s == nil {
 		return nil
 	}
 	return s.Body
+}
+
+func (s *SequencePathStepConfig) GetConditionLogic() *SequencePathStepConfigConditionLogic {
+	if s == nil {
+		return nil
+	}
+	return s.ConditionLogic
+}
+
+func (s *SequencePathStepConfig) GetConditions() []*SequencePathStepConfigConditionsItem {
+	if s == nil {
+		return nil
+	}
+	return s.Conditions
 }
 
 func (s *SequencePathStepConfig) GetConditionType() *SequencePathStepConfigConditionType {
@@ -24873,6 +25024,13 @@ func (s *SequencePathStepConfig) GetTagName() *string {
 	return s.TagName
 }
 
+func (s *SequencePathStepConfig) GetTimeout() *SequencePathStepConfigTimeout {
+	if s == nil {
+		return nil
+	}
+	return s.Timeout
+}
+
 func (s *SequencePathStepConfig) GetTimeoutAction() *SequencePathStepConfigTimeoutAction {
 	if s == nil {
 		return nil
@@ -24950,11 +25108,39 @@ func (s *SequencePathStepConfig) SetActivityScope(activityScope *SequencePathSte
 	s.require(sequencePathStepConfigFieldActivityScope)
 }
 
+// SetAutomationID sets the AutomationID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequencePathStepConfig) SetAutomationID(automationID *string) {
+	s.AutomationID = automationID
+	s.require(sequencePathStepConfigFieldAutomationID)
+}
+
+// SetAutomationName sets the AutomationName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequencePathStepConfig) SetAutomationName(automationName *string) {
+	s.AutomationName = automationName
+	s.require(sequencePathStepConfigFieldAutomationName)
+}
+
 // SetBody sets the Body field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *SequencePathStepConfig) SetBody(body *string) {
 	s.Body = body
 	s.require(sequencePathStepConfigFieldBody)
+}
+
+// SetConditionLogic sets the ConditionLogic field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequencePathStepConfig) SetConditionLogic(conditionLogic *SequencePathStepConfigConditionLogic) {
+	s.ConditionLogic = conditionLogic
+	s.require(sequencePathStepConfigFieldConditionLogic)
+}
+
+// SetConditions sets the Conditions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequencePathStepConfig) SetConditions(conditions []*SequencePathStepConfigConditionsItem) {
+	s.Conditions = conditions
+	s.require(sequencePathStepConfigFieldConditions)
 }
 
 // SetConditionType sets the ConditionType field and marks it as non-optional;
@@ -25132,6 +25318,13 @@ func (s *SequencePathStepConfig) SetTagName(tagName *string) {
 	s.require(sequencePathStepConfigFieldTagName)
 }
 
+// SetTimeout sets the Timeout field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequencePathStepConfig) SetTimeout(timeout *SequencePathStepConfigTimeout) {
+	s.Timeout = timeout
+	s.require(sequencePathStepConfigFieldTimeout)
+}
+
 // SetTimeoutAction sets the TimeoutAction field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *SequencePathStepConfig) SetTimeoutAction(timeoutAction *SequencePathStepConfigTimeoutAction) {
@@ -25225,23 +25418,50 @@ func (s SequencePathStepConfigActivityScope) Ptr() *SequencePathStepConfigActivi
 	return &s
 }
 
-// logic_condition. Condition evaluated before continuing. has_phone, sms_subscribed and has_push_device need no resource fields. has_push_device passes when the contact has an active push device on a platform the workspace has push credentials for (APNs, FCM or web push).
+// logic_wait_until. Continue when all rules match, or when any one does. Defaults to all.
+type SequencePathStepConfigConditionLogic string
+
+const (
+	SequencePathStepConfigConditionLogicAll SequencePathStepConfigConditionLogic = "all"
+	SequencePathStepConfigConditionLogicAny SequencePathStepConfigConditionLogic = "any"
+)
+
+func NewSequencePathStepConfigConditionLogicFromString(s string) (SequencePathStepConfigConditionLogic, error) {
+	switch s {
+	case "all":
+		return SequencePathStepConfigConditionLogicAll, nil
+	case "any":
+		return SequencePathStepConfigConditionLogicAny, nil
+	}
+	var t SequencePathStepConfigConditionLogic
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SequencePathStepConfigConditionLogic) Ptr() *SequencePathStepConfigConditionLogic {
+	return &s
+}
+
+// logic_condition. Condition evaluated before continuing. in_sequence, not_in_sequence, completed_sequence and not_completed_sequence require automationId pointing to another sequence in the same company. has_phone, sms_subscribed and has_push_device need no resource fields. has_push_device passes when the contact has an active push device on a platform the workspace has push credentials for (APNs, FCM or web push).
 type SequencePathStepConfigConditionType string
 
 const (
-	SequencePathStepConfigConditionTypeHasTag           SequencePathStepConfigConditionType = "has_tag"
-	SequencePathStepConfigConditionTypeDoesNotHaveTag   SequencePathStepConfigConditionType = "does_not_have_tag"
-	SequencePathStepConfigConditionTypeInList           SequencePathStepConfigConditionType = "in_list"
-	SequencePathStepConfigConditionTypeInSegment        SequencePathStepConfigConditionType = "in_segment"
-	SequencePathStepConfigConditionTypeEventReceived    SequencePathStepConfigConditionType = "event_received"
-	SequencePathStepConfigConditionTypeLinkClicked      SequencePathStepConfigConditionType = "link_clicked"
-	SequencePathStepConfigConditionTypeFieldEquals      SequencePathStepConfigConditionType = "field_equals"
-	SequencePathStepConfigConditionTypeFieldContains    SequencePathStepConfigConditionType = "field_contains"
-	SequencePathStepConfigConditionTypeFieldGreaterThan SequencePathStepConfigConditionType = "field_greater_than"
-	SequencePathStepConfigConditionTypeFieldLessThan    SequencePathStepConfigConditionType = "field_less_than"
-	SequencePathStepConfigConditionTypeHasPhone         SequencePathStepConfigConditionType = "has_phone"
-	SequencePathStepConfigConditionTypeSmsSubscribed    SequencePathStepConfigConditionType = "sms_subscribed"
-	SequencePathStepConfigConditionTypeHasPushDevice    SequencePathStepConfigConditionType = "has_push_device"
+	SequencePathStepConfigConditionTypeHasTag               SequencePathStepConfigConditionType = "has_tag"
+	SequencePathStepConfigConditionTypeDoesNotHaveTag       SequencePathStepConfigConditionType = "does_not_have_tag"
+	SequencePathStepConfigConditionTypeInList               SequencePathStepConfigConditionType = "in_list"
+	SequencePathStepConfigConditionTypeInSegment            SequencePathStepConfigConditionType = "in_segment"
+	SequencePathStepConfigConditionTypeInSequence           SequencePathStepConfigConditionType = "in_sequence"
+	SequencePathStepConfigConditionTypeNotInSequence        SequencePathStepConfigConditionType = "not_in_sequence"
+	SequencePathStepConfigConditionTypeCompletedSequence    SequencePathStepConfigConditionType = "completed_sequence"
+	SequencePathStepConfigConditionTypeNotCompletedSequence SequencePathStepConfigConditionType = "not_completed_sequence"
+	SequencePathStepConfigConditionTypeEventReceived        SequencePathStepConfigConditionType = "event_received"
+	SequencePathStepConfigConditionTypeLinkClicked          SequencePathStepConfigConditionType = "link_clicked"
+	SequencePathStepConfigConditionTypeFieldEquals          SequencePathStepConfigConditionType = "field_equals"
+	SequencePathStepConfigConditionTypeFieldContains        SequencePathStepConfigConditionType = "field_contains"
+	SequencePathStepConfigConditionTypeFieldGreaterThan     SequencePathStepConfigConditionType = "field_greater_than"
+	SequencePathStepConfigConditionTypeFieldLessThan        SequencePathStepConfigConditionType = "field_less_than"
+	SequencePathStepConfigConditionTypeHasPhone             SequencePathStepConfigConditionType = "has_phone"
+	SequencePathStepConfigConditionTypeSmsSubscribed        SequencePathStepConfigConditionType = "sms_subscribed"
+	SequencePathStepConfigConditionTypeHasPushDevice        SequencePathStepConfigConditionType = "has_push_device"
 )
 
 func NewSequencePathStepConfigConditionTypeFromString(s string) (SequencePathStepConfigConditionType, error) {
@@ -25254,6 +25474,14 @@ func NewSequencePathStepConfigConditionTypeFromString(s string) (SequencePathSte
 		return SequencePathStepConfigConditionTypeInList, nil
 	case "in_segment":
 		return SequencePathStepConfigConditionTypeInSegment, nil
+	case "in_sequence":
+		return SequencePathStepConfigConditionTypeInSequence, nil
+	case "not_in_sequence":
+		return SequencePathStepConfigConditionTypeNotInSequence, nil
+	case "completed_sequence":
+		return SequencePathStepConfigConditionTypeCompletedSequence, nil
+	case "not_completed_sequence":
+		return SequencePathStepConfigConditionTypeNotCompletedSequence, nil
 	case "event_received":
 		return SequencePathStepConfigConditionTypeEventReceived, nil
 	case "link_clicked":
@@ -25279,6 +25507,96 @@ func NewSequencePathStepConfigConditionTypeFromString(s string) (SequencePathSte
 
 func (s SequencePathStepConfigConditionType) Ptr() *SequencePathStepConfigConditionType {
 	return &s
+}
+
+var (
+	sequencePathStepConfigConditionsItemFieldConditionType = big.NewInt(1 << 0)
+)
+
+type SequencePathStepConfigConditionsItem struct {
+	// Same values as conditionType.
+	ConditionType string `json:"conditionType" url:"conditionType"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	ExtraProperties map[string]interface{} `json:"-" url:"-"`
+
+	rawJSON json.RawMessage
+}
+
+func (s *SequencePathStepConfigConditionsItem) GetConditionType() string {
+	if s == nil {
+		return ""
+	}
+	return s.ConditionType
+}
+
+func (s *SequencePathStepConfigConditionsItem) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.ExtraProperties
+}
+
+func (s *SequencePathStepConfigConditionsItem) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetConditionType sets the ConditionType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequencePathStepConfigConditionsItem) SetConditionType(conditionType string) {
+	s.ConditionType = conditionType
+	s.require(sequencePathStepConfigConditionsItemFieldConditionType)
+}
+
+func (s *SequencePathStepConfigConditionsItem) UnmarshalJSON(data []byte) error {
+	type embed SequencePathStepConfigConditionsItem
+	var unmarshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*s = SequencePathStepConfigConditionsItem(unmarshaler.embed)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.ExtraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequencePathStepConfigConditionsItem) MarshalJSON() ([]byte, error) {
+	type embed SequencePathStepConfigConditionsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return internal.MarshalJSONWithExtraProperties(explicitMarshaler, s.ExtraProperties)
+}
+
+func (s *SequencePathStepConfigConditionsItem) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
 }
 
 // action_webhook. HTTP method. Defaults to POST.
@@ -25475,7 +25793,109 @@ func (s *SequencePathStepConfigOutputFieldsItem) String() string {
 	return fmt.Sprintf("%#v", s)
 }
 
-// logic_wait_for_event. Continue to the next node or exit the sequence on timeout. Defaults to continue.
+// logic_wait_until. Longest wait. Omit or send null to wait until the contact matches.
+var (
+	sequencePathStepConfigTimeoutFieldUnit  = big.NewInt(1 << 0)
+	sequencePathStepConfigTimeoutFieldValue = big.NewInt(1 << 1)
+)
+
+type SequencePathStepConfigTimeout struct {
+	Unit SequencePathStepConfigTimeoutUnit `json:"unit" url:"unit"`
+	// Whole number. The total can be at most 2 years.
+	Value int `json:"value" url:"value"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SequencePathStepConfigTimeout) GetUnit() SequencePathStepConfigTimeoutUnit {
+	if s == nil {
+		return ""
+	}
+	return s.Unit
+}
+
+func (s *SequencePathStepConfigTimeout) GetValue() int {
+	if s == nil {
+		return 0
+	}
+	return s.Value
+}
+
+func (s *SequencePathStepConfigTimeout) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SequencePathStepConfigTimeout) require(field *big.Int) {
+	if s.explicitFields == nil {
+		s.explicitFields = big.NewInt(0)
+	}
+	s.explicitFields.Or(s.explicitFields, field)
+}
+
+// SetUnit sets the Unit field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequencePathStepConfigTimeout) SetUnit(unit SequencePathStepConfigTimeoutUnit) {
+	s.Unit = unit
+	s.require(sequencePathStepConfigTimeoutFieldUnit)
+}
+
+// SetValue sets the Value field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequencePathStepConfigTimeout) SetValue(value int) {
+	s.Value = value
+	s.require(sequencePathStepConfigTimeoutFieldValue)
+}
+
+func (s *SequencePathStepConfigTimeout) UnmarshalJSON(data []byte) error {
+	type unmarshaler SequencePathStepConfigTimeout
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SequencePathStepConfigTimeout(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SequencePathStepConfigTimeout) MarshalJSON() ([]byte, error) {
+	type embed SequencePathStepConfigTimeout
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SequencePathStepConfigTimeout) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+// logic_wait_for_event and logic_wait_until. Continue to the next node (the "Timed out" path for logic_wait_until) or exit the sequence on timeout. Defaults to continue.
 type SequencePathStepConfigTimeoutAction string
 
 const (
@@ -25495,6 +25915,34 @@ func NewSequencePathStepConfigTimeoutActionFromString(s string) (SequencePathSte
 }
 
 func (s SequencePathStepConfigTimeoutAction) Ptr() *SequencePathStepConfigTimeoutAction {
+	return &s
+}
+
+type SequencePathStepConfigTimeoutUnit string
+
+const (
+	SequencePathStepConfigTimeoutUnitMinutes SequencePathStepConfigTimeoutUnit = "minutes"
+	SequencePathStepConfigTimeoutUnitHours   SequencePathStepConfigTimeoutUnit = "hours"
+	SequencePathStepConfigTimeoutUnitDays    SequencePathStepConfigTimeoutUnit = "days"
+	SequencePathStepConfigTimeoutUnitWeeks   SequencePathStepConfigTimeoutUnit = "weeks"
+)
+
+func NewSequencePathStepConfigTimeoutUnitFromString(s string) (SequencePathStepConfigTimeoutUnit, error) {
+	switch s {
+	case "minutes":
+		return SequencePathStepConfigTimeoutUnitMinutes, nil
+	case "hours":
+		return SequencePathStepConfigTimeoutUnitHours, nil
+	case "days":
+		return SequencePathStepConfigTimeoutUnitDays, nil
+	case "weeks":
+		return SequencePathStepConfigTimeoutUnitWeeks, nil
+	}
+	var t SequencePathStepConfigTimeoutUnit
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SequencePathStepConfigTimeoutUnit) Ptr() *SequencePathStepConfigTimeoutUnit {
 	return &s
 }
 
@@ -31686,7 +32134,7 @@ func (s *SequenceTriggerPropertyFilterValueThreeItem) Accept(visitor SequenceTri
 	return fmt.Errorf("type %T does not include a non-empty union type", s)
 }
 
-// How contacts enter the sequence. `segment_exited` enrolls active contacts who stop matching the segment; unsubscribing or bouncing does not count as leaving. `manual` never enrolls anyone automatically; use it with key dates for one-time countdown campaigns and enroll the audience with the enroll-audience endpoint.
+// How contacts enter the sequence. `segment_exited` enrolls active contacts who stop matching the segment; unsubscribing or bouncing does not count as leaving. `field_changed` enrolls contacts whenever a custom attribute changes from its previous value. `manual` never enrolls anyone automatically; use it with key dates for one-time countdown campaigns and enroll the audience with the enroll-audience endpoint.
 type SequenceTriggerType string
 
 const (
@@ -31694,6 +32142,7 @@ const (
 	SequenceTriggerTypeTagAdded       SequenceTriggerType = "tag_added"
 	SequenceTriggerTypeSegmentEntered SequenceTriggerType = "segment_entered"
 	SequenceTriggerTypeSegmentExited  SequenceTriggerType = "segment_exited"
+	SequenceTriggerTypeFieldChanged   SequenceTriggerType = "field_changed"
 	SequenceTriggerTypeEventReceived  SequenceTriggerType = "event_received"
 	SequenceTriggerTypeInboundWebhook SequenceTriggerType = "inbound_webhook"
 	SequenceTriggerTypeInactivity     SequenceTriggerType = "inactivity"
@@ -31711,6 +32160,8 @@ func NewSequenceTriggerTypeFromString(s string) (SequenceTriggerType, error) {
 		return SequenceTriggerTypeSegmentEntered, nil
 	case "segment_exited":
 		return SequenceTriggerTypeSegmentExited, nil
+	case "field_changed":
+		return SequenceTriggerTypeFieldChanged, nil
 	case "event_received":
 		return SequenceTriggerTypeEventReceived, nil
 	case "inbound_webhook":
@@ -42000,6 +42451,47 @@ func (s SequenceCreateRequestEmailStyle) Ptr() *SequenceCreateRequestEmailStyle 
 	return &s
 }
 
+// Matching operator for field_changed triggers. Defaults to any_change.
+type SequenceCreateRequestFieldOperator string
+
+const (
+	SequenceCreateRequestFieldOperatorAnyChange   SequenceCreateRequestFieldOperator = "any_change"
+	SequenceCreateRequestFieldOperatorEquals      SequenceCreateRequestFieldOperator = "equals"
+	SequenceCreateRequestFieldOperatorNotEquals   SequenceCreateRequestFieldOperator = "not_equals"
+	SequenceCreateRequestFieldOperatorOneOf       SequenceCreateRequestFieldOperator = "one_of"
+	SequenceCreateRequestFieldOperatorContains    SequenceCreateRequestFieldOperator = "contains"
+	SequenceCreateRequestFieldOperatorNotContains SequenceCreateRequestFieldOperator = "not_contains"
+	SequenceCreateRequestFieldOperatorGreaterThan SequenceCreateRequestFieldOperator = "greater_than"
+	SequenceCreateRequestFieldOperatorLessThan    SequenceCreateRequestFieldOperator = "less_than"
+)
+
+func NewSequenceCreateRequestFieldOperatorFromString(s string) (SequenceCreateRequestFieldOperator, error) {
+	switch s {
+	case "any_change":
+		return SequenceCreateRequestFieldOperatorAnyChange, nil
+	case "equals":
+		return SequenceCreateRequestFieldOperatorEquals, nil
+	case "not_equals":
+		return SequenceCreateRequestFieldOperatorNotEquals, nil
+	case "one_of":
+		return SequenceCreateRequestFieldOperatorOneOf, nil
+	case "contains":
+		return SequenceCreateRequestFieldOperatorContains, nil
+	case "not_contains":
+		return SequenceCreateRequestFieldOperatorNotContains, nil
+	case "greater_than":
+		return SequenceCreateRequestFieldOperatorGreaterThan, nil
+	case "less_than":
+		return SequenceCreateRequestFieldOperatorLessThan, nil
+	}
+	var t SequenceCreateRequestFieldOperator
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SequenceCreateRequestFieldOperator) Ptr() *SequenceCreateRequestFieldOperator {
+	return &s
+}
+
 // For inactivity triggers, controls when to start counting for subscribers who have never performed the event. Defaults to sequence_created_at.
 type SequenceCreateRequestInactivityBaseline string
 
@@ -42072,6 +42564,47 @@ func NewSequenceEnrollmentMoveRequestSortFromString(s string) (SequenceEnrollmen
 }
 
 func (s SequenceEnrollmentMoveRequestSort) Ptr() *SequenceEnrollmentMoveRequestSort {
+	return &s
+}
+
+// Matching operator for a replacement field_changed trigger. Defaults to any_change.
+type SequenceUpdateRequestFieldOperator string
+
+const (
+	SequenceUpdateRequestFieldOperatorAnyChange   SequenceUpdateRequestFieldOperator = "any_change"
+	SequenceUpdateRequestFieldOperatorEquals      SequenceUpdateRequestFieldOperator = "equals"
+	SequenceUpdateRequestFieldOperatorNotEquals   SequenceUpdateRequestFieldOperator = "not_equals"
+	SequenceUpdateRequestFieldOperatorOneOf       SequenceUpdateRequestFieldOperator = "one_of"
+	SequenceUpdateRequestFieldOperatorContains    SequenceUpdateRequestFieldOperator = "contains"
+	SequenceUpdateRequestFieldOperatorNotContains SequenceUpdateRequestFieldOperator = "not_contains"
+	SequenceUpdateRequestFieldOperatorGreaterThan SequenceUpdateRequestFieldOperator = "greater_than"
+	SequenceUpdateRequestFieldOperatorLessThan    SequenceUpdateRequestFieldOperator = "less_than"
+)
+
+func NewSequenceUpdateRequestFieldOperatorFromString(s string) (SequenceUpdateRequestFieldOperator, error) {
+	switch s {
+	case "any_change":
+		return SequenceUpdateRequestFieldOperatorAnyChange, nil
+	case "equals":
+		return SequenceUpdateRequestFieldOperatorEquals, nil
+	case "not_equals":
+		return SequenceUpdateRequestFieldOperatorNotEquals, nil
+	case "one_of":
+		return SequenceUpdateRequestFieldOperatorOneOf, nil
+	case "contains":
+		return SequenceUpdateRequestFieldOperatorContains, nil
+	case "not_contains":
+		return SequenceUpdateRequestFieldOperatorNotContains, nil
+	case "greater_than":
+		return SequenceUpdateRequestFieldOperatorGreaterThan, nil
+	case "less_than":
+		return SequenceUpdateRequestFieldOperatorLessThan, nil
+	}
+	var t SequenceUpdateRequestFieldOperator
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SequenceUpdateRequestFieldOperator) Ptr() *SequenceUpdateRequestFieldOperator {
 	return &s
 }
 
@@ -43690,41 +44223,46 @@ var (
 	sequenceUpdateRequestFieldEnrollmentMode          = big.NewInt(1 << 11)
 	sequenceUpdateRequestFieldEnrollmentPaused        = big.NewInt(1 << 12)
 	sequenceUpdateRequestFieldEventName               = big.NewInt(1 << 13)
-	sequenceUpdateRequestFieldFrequencyCapEnabled     = big.NewInt(1 << 14)
-	sequenceUpdateRequestFieldFromEmail               = big.NewInt(1 << 15)
-	sequenceUpdateRequestFieldFromName                = big.NewInt(1 << 16)
-	sequenceUpdateRequestFieldGraphEdit               = big.NewInt(1 << 17)
-	sequenceUpdateRequestFieldInactiveDays            = big.NewInt(1 << 18)
-	sequenceUpdateRequestFieldInactivityBaseline      = big.NewInt(1 << 19)
-	sequenceUpdateRequestFieldInsertSteps             = big.NewInt(1 << 20)
-	sequenceUpdateRequestFieldIntegrationEventKey     = big.NewInt(1 << 21)
-	sequenceUpdateRequestFieldIntegrationSlug         = big.NewInt(1 << 22)
-	sequenceUpdateRequestFieldKeyDates                = big.NewInt(1 << 23)
-	sequenceUpdateRequestFieldLabels                  = big.NewInt(1 << 24)
-	sequenceUpdateRequestFieldListID                  = big.NewInt(1 << 25)
-	sequenceUpdateRequestFieldListIDs                 = big.NewInt(1 << 26)
-	sequenceUpdateRequestFieldListScope               = big.NewInt(1 << 27)
-	sequenceUpdateRequestFieldMinCount                = big.NewInt(1 << 28)
-	sequenceUpdateRequestFieldName                    = big.NewInt(1 << 29)
-	sequenceUpdateRequestFieldNodeUpdates             = big.NewInt(1 << 30)
-	sequenceUpdateRequestFieldPropertyFilters         = big.NewInt(1 << 31)
-	sequenceUpdateRequestFieldReplyProfileID          = big.NewInt(1 << 32)
-	sequenceUpdateRequestFieldReplyTo                 = big.NewInt(1 << 33)
-	sequenceUpdateRequestFieldReplyToName             = big.NewInt(1 << 34)
-	sequenceUpdateRequestFieldSegmentID               = big.NewInt(1 << 35)
-	sequenceUpdateRequestFieldSenderProfileID         = big.NewInt(1 << 36)
-	sequenceUpdateRequestFieldSendingWindow           = big.NewInt(1 << 37)
-	sequenceUpdateRequestFieldSendToNotSubscribed     = big.NewInt(1 << 38)
-	sequenceUpdateRequestFieldSmsSteps                = big.NewInt(1 << 39)
-	sequenceUpdateRequestFieldSteps                   = big.NewInt(1 << 40)
-	sequenceUpdateRequestFieldStopCondition           = big.NewInt(1 << 41)
-	sequenceUpdateRequestFieldStopOnSegmentExit       = big.NewInt(1 << 42)
-	sequenceUpdateRequestFieldSubscriberUpdateSteps   = big.NewInt(1 << 43)
-	sequenceUpdateRequestFieldTagName                 = big.NewInt(1 << 44)
-	sequenceUpdateRequestFieldTagNames                = big.NewInt(1 << 45)
-	sequenceUpdateRequestFieldTimeWindowDays          = big.NewInt(1 << 46)
-	sequenceUpdateRequestFieldTrigger                 = big.NewInt(1 << 47)
-	sequenceUpdateRequestFieldUserCancellable         = big.NewInt(1 << 48)
+	sequenceUpdateRequestFieldFieldFromValue          = big.NewInt(1 << 14)
+	sequenceUpdateRequestFieldFieldName               = big.NewInt(1 << 15)
+	sequenceUpdateRequestFieldFieldOperator           = big.NewInt(1 << 16)
+	sequenceUpdateRequestFieldFieldValue              = big.NewInt(1 << 17)
+	sequenceUpdateRequestFieldFieldValues             = big.NewInt(1 << 18)
+	sequenceUpdateRequestFieldFrequencyCapEnabled     = big.NewInt(1 << 19)
+	sequenceUpdateRequestFieldFromEmail               = big.NewInt(1 << 20)
+	sequenceUpdateRequestFieldFromName                = big.NewInt(1 << 21)
+	sequenceUpdateRequestFieldGraphEdit               = big.NewInt(1 << 22)
+	sequenceUpdateRequestFieldInactiveDays            = big.NewInt(1 << 23)
+	sequenceUpdateRequestFieldInactivityBaseline      = big.NewInt(1 << 24)
+	sequenceUpdateRequestFieldInsertSteps             = big.NewInt(1 << 25)
+	sequenceUpdateRequestFieldIntegrationEventKey     = big.NewInt(1 << 26)
+	sequenceUpdateRequestFieldIntegrationSlug         = big.NewInt(1 << 27)
+	sequenceUpdateRequestFieldKeyDates                = big.NewInt(1 << 28)
+	sequenceUpdateRequestFieldLabels                  = big.NewInt(1 << 29)
+	sequenceUpdateRequestFieldListID                  = big.NewInt(1 << 30)
+	sequenceUpdateRequestFieldListIDs                 = big.NewInt(1 << 31)
+	sequenceUpdateRequestFieldListScope               = big.NewInt(1 << 32)
+	sequenceUpdateRequestFieldMinCount                = big.NewInt(1 << 33)
+	sequenceUpdateRequestFieldName                    = big.NewInt(1 << 34)
+	sequenceUpdateRequestFieldNodeUpdates             = big.NewInt(1 << 35)
+	sequenceUpdateRequestFieldPropertyFilters         = big.NewInt(1 << 36)
+	sequenceUpdateRequestFieldReplyProfileID          = big.NewInt(1 << 37)
+	sequenceUpdateRequestFieldReplyTo                 = big.NewInt(1 << 38)
+	sequenceUpdateRequestFieldReplyToName             = big.NewInt(1 << 39)
+	sequenceUpdateRequestFieldSegmentID               = big.NewInt(1 << 40)
+	sequenceUpdateRequestFieldSenderProfileID         = big.NewInt(1 << 41)
+	sequenceUpdateRequestFieldSendingWindow           = big.NewInt(1 << 42)
+	sequenceUpdateRequestFieldSendToNotSubscribed     = big.NewInt(1 << 43)
+	sequenceUpdateRequestFieldSmsSteps                = big.NewInt(1 << 44)
+	sequenceUpdateRequestFieldSteps                   = big.NewInt(1 << 45)
+	sequenceUpdateRequestFieldStopCondition           = big.NewInt(1 << 46)
+	sequenceUpdateRequestFieldStopOnSegmentExit       = big.NewInt(1 << 47)
+	sequenceUpdateRequestFieldSubscriberUpdateSteps   = big.NewInt(1 << 48)
+	sequenceUpdateRequestFieldTagName                 = big.NewInt(1 << 49)
+	sequenceUpdateRequestFieldTagNames                = big.NewInt(1 << 50)
+	sequenceUpdateRequestFieldTimeWindowDays          = big.NewInt(1 << 51)
+	sequenceUpdateRequestFieldTrigger                 = big.NewInt(1 << 52)
+	sequenceUpdateRequestFieldUserCancellable         = big.NewInt(1 << 53)
 )
 
 type SequenceUpdateRequest struct {
@@ -43754,6 +44292,16 @@ type SequenceUpdateRequest struct {
 	EnrollmentPaused *bool `json:"enrollmentPaused,omitempty" url:"-"`
 	// Event name for event_received, inbound_webhook, inactivity, or frequency triggers.
 	EventName *string `json:"eventName,omitempty" url:"-"`
+	// Optional prior value required before a replacement field_changed trigger fires.
+	FieldFromValue *string `json:"fieldFromValue,omitempty" url:"-"`
+	// Contact custom attribute name for a replacement field_changed trigger.
+	FieldName *string `json:"fieldName,omitempty" url:"-"`
+	// Matching operator for a replacement field_changed trigger. Defaults to any_change.
+	FieldOperator *SequenceUpdateRequestFieldOperator `json:"fieldOperator,omitempty" url:"-"`
+	// Target value for scalar field_changed operators on a trigger replacement.
+	FieldValue *string `json:"fieldValue,omitempty" url:"-"`
+	// Target values for a replacement field_changed trigger with fieldOperator one_of.
+	FieldValues []string `json:"fieldValues,omitempty" url:"-"`
 	// Whether the sequence respects the company frequency cap (`/frequency-cap`). When true, an email step is skipped for a contact already at the cap, and the contact continues to the next step. Transactional steps are never skipped. Omit to leave it unchanged.
 	FrequencyCapEnabled *bool `json:"frequencyCapEnabled,omitempty" url:"-"`
 	// From address for every email in this sequence. Its domain must be configured and verified.
@@ -43923,6 +44471,41 @@ func (s *SequenceUpdateRequest) SetEnrollmentPaused(enrollmentPaused *bool) {
 func (s *SequenceUpdateRequest) SetEventName(eventName *string) {
 	s.EventName = eventName
 	s.require(sequenceUpdateRequestFieldEventName)
+}
+
+// SetFieldFromValue sets the FieldFromValue field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceUpdateRequest) SetFieldFromValue(fieldFromValue *string) {
+	s.FieldFromValue = fieldFromValue
+	s.require(sequenceUpdateRequestFieldFieldFromValue)
+}
+
+// SetFieldName sets the FieldName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceUpdateRequest) SetFieldName(fieldName *string) {
+	s.FieldName = fieldName
+	s.require(sequenceUpdateRequestFieldFieldName)
+}
+
+// SetFieldOperator sets the FieldOperator field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceUpdateRequest) SetFieldOperator(fieldOperator *SequenceUpdateRequestFieldOperator) {
+	s.FieldOperator = fieldOperator
+	s.require(sequenceUpdateRequestFieldFieldOperator)
+}
+
+// SetFieldValue sets the FieldValue field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceUpdateRequest) SetFieldValue(fieldValue *string) {
+	s.FieldValue = fieldValue
+	s.require(sequenceUpdateRequestFieldFieldValue)
+}
+
+// SetFieldValues sets the FieldValues field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SequenceUpdateRequest) SetFieldValues(fieldValues []string) {
+	s.FieldValues = fieldValues
+	s.require(sequenceUpdateRequestFieldFieldValues)
 }
 
 // SetFrequencyCapEnabled sets the FrequencyCapEnabled field and marks it as non-optional;

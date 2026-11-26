@@ -745,6 +745,46 @@ func TestSettersSequenceCreateRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetFieldFromValue", func(t *testing.T) {
+		obj := &SequenceCreateRequest{}
+		var fernTestValueFieldFromValue *string
+		obj.SetFieldFromValue(fernTestValueFieldFromValue)
+		assert.Equal(t, fernTestValueFieldFromValue, obj.FieldFromValue)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetFieldName", func(t *testing.T) {
+		obj := &SequenceCreateRequest{}
+		var fernTestValueFieldName *string
+		obj.SetFieldName(fernTestValueFieldName)
+		assert.Equal(t, fernTestValueFieldName, obj.FieldName)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetFieldOperator", func(t *testing.T) {
+		obj := &SequenceCreateRequest{}
+		var fernTestValueFieldOperator *SequenceCreateRequestFieldOperator
+		obj.SetFieldOperator(fernTestValueFieldOperator)
+		assert.Equal(t, fernTestValueFieldOperator, obj.FieldOperator)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetFieldValue", func(t *testing.T) {
+		obj := &SequenceCreateRequest{}
+		var fernTestValueFieldValue *string
+		obj.SetFieldValue(fernTestValueFieldValue)
+		assert.Equal(t, fernTestValueFieldValue, obj.FieldValue)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetFieldValues", func(t *testing.T) {
+		obj := &SequenceCreateRequest{}
+		var fernTestValueFieldValues []string
+		obj.SetFieldValues(fernTestValueFieldValues)
+		assert.Equal(t, fernTestValueFieldValues, obj.FieldValues)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetFrequencyCapEnabled", func(t *testing.T) {
 		obj := &SequenceCreateRequest{}
 		var fernTestValueFrequencyCapEnabled *bool
@@ -1283,6 +1323,161 @@ func TestSettersMarkExplicitSequenceCreateRequest(t *testing.T) {
 
 		// Act
 		obj.SetEventName(fernTestValueEventName)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetFieldFromValue_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceCreateRequest{}
+		var fernTestValueFieldFromValue *string
+
+		// Act
+		obj.SetFieldFromValue(fernTestValueFieldFromValue)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetFieldName_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceCreateRequest{}
+		var fernTestValueFieldName *string
+
+		// Act
+		obj.SetFieldName(fernTestValueFieldName)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetFieldOperator_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceCreateRequest{}
+		var fernTestValueFieldOperator *SequenceCreateRequestFieldOperator
+
+		// Act
+		obj.SetFieldOperator(fernTestValueFieldOperator)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetFieldValue_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceCreateRequest{}
+		var fernTestValueFieldValue *string
+
+		// Act
+		obj.SetFieldValue(fernTestValueFieldValue)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetFieldValues_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceCreateRequest{}
+		var fernTestValueFieldValues []string
+
+		// Act
+		obj.SetFieldValues(fernTestValueFieldValues)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -17755,6 +17950,22 @@ func TestSettersSequenceBranchConditionInput(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetAutomationID", func(t *testing.T) {
+		obj := &SequenceBranchConditionInput{}
+		var fernTestValueAutomationID *string
+		obj.SetAutomationID(fernTestValueAutomationID)
+		assert.Equal(t, fernTestValueAutomationID, obj.AutomationID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetAutomationName", func(t *testing.T) {
+		obj := &SequenceBranchConditionInput{}
+		var fernTestValueAutomationName *string
+		obj.SetAutomationName(fernTestValueAutomationName)
+		assert.Equal(t, fernTestValueAutomationName, obj.AutomationName)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetConditionType", func(t *testing.T) {
 		obj := &SequenceBranchConditionInput{}
 		var fernTestValueConditionType *SequenceBranchConditionInputConditionType
@@ -17901,6 +18112,72 @@ func TestGettersSequenceBranchConditionInput(t *testing.T) {
 			}
 		}()
 		_ = obj.GetActivityScope() // Should return zero value
+	})
+
+	t.Run("GetAutomationID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceBranchConditionInput{}
+		var expected *string
+		obj.AutomationID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAutomationID(), "getter should return the property value")
+	})
+
+	t.Run("GetAutomationID_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceBranchConditionInput{}
+		obj.AutomationID = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetAutomationID(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetAutomationID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequenceBranchConditionInput
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAutomationID() // Should return zero value
+	})
+
+	t.Run("GetAutomationName", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceBranchConditionInput{}
+		var expected *string
+		obj.AutomationName = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAutomationName(), "getter should return the property value")
+	})
+
+	t.Run("GetAutomationName_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceBranchConditionInput{}
+		obj.AutomationName = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetAutomationName(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetAutomationName_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequenceBranchConditionInput
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAutomationName() // Should return zero value
 	})
 
 	t.Run("GetConditionType", func(t *testing.T) {
@@ -18376,6 +18653,68 @@ func TestSettersMarkExplicitSequenceBranchConditionInput(t *testing.T) {
 
 		// Act
 		obj.SetActivityScope(fernTestValueActivityScope)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetAutomationID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceBranchConditionInput{}
+		var fernTestValueAutomationID *string
+
+		// Act
+		obj.SetAutomationID(fernTestValueAutomationID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetAutomationName_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceBranchConditionInput{}
+		var fernTestValueAutomationName *string
+
+		// Act
+		obj.SetAutomationName(fernTestValueAutomationName)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -66918,11 +67257,43 @@ func TestSettersSequencePathStepConfig(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetAutomationID", func(t *testing.T) {
+		obj := &SequencePathStepConfig{}
+		var fernTestValueAutomationID *string
+		obj.SetAutomationID(fernTestValueAutomationID)
+		assert.Equal(t, fernTestValueAutomationID, obj.AutomationID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetAutomationName", func(t *testing.T) {
+		obj := &SequencePathStepConfig{}
+		var fernTestValueAutomationName *string
+		obj.SetAutomationName(fernTestValueAutomationName)
+		assert.Equal(t, fernTestValueAutomationName, obj.AutomationName)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetBody", func(t *testing.T) {
 		obj := &SequencePathStepConfig{}
 		var fernTestValueBody *string
 		obj.SetBody(fernTestValueBody)
 		assert.Equal(t, fernTestValueBody, obj.Body)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetConditionLogic", func(t *testing.T) {
+		obj := &SequencePathStepConfig{}
+		var fernTestValueConditionLogic *SequencePathStepConfigConditionLogic
+		obj.SetConditionLogic(fernTestValueConditionLogic)
+		assert.Equal(t, fernTestValueConditionLogic, obj.ConditionLogic)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetConditions", func(t *testing.T) {
+		obj := &SequencePathStepConfig{}
+		var fernTestValueConditions []*SequencePathStepConfigConditionsItem
+		obj.SetConditions(fernTestValueConditions)
+		assert.Equal(t, fernTestValueConditions, obj.Conditions)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -67123,6 +67494,14 @@ func TestSettersSequencePathStepConfig(t *testing.T) {
 		var fernTestValueTagName *string
 		obj.SetTagName(fernTestValueTagName)
 		assert.Equal(t, fernTestValueTagName, obj.TagName)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetTimeout", func(t *testing.T) {
+		obj := &SequencePathStepConfig{}
+		var fernTestValueTimeout *SequencePathStepConfigTimeout
+		obj.SetTimeout(fernTestValueTimeout)
+		assert.Equal(t, fernTestValueTimeout, obj.Timeout)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -67351,6 +67730,72 @@ func TestGettersSequencePathStepConfig(t *testing.T) {
 		_ = obj.GetActivityScope() // Should return zero value
 	})
 
+	t.Run("GetAutomationID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequencePathStepConfig{}
+		var expected *string
+		obj.AutomationID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAutomationID(), "getter should return the property value")
+	})
+
+	t.Run("GetAutomationID_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequencePathStepConfig{}
+		obj.AutomationID = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetAutomationID(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetAutomationID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequencePathStepConfig
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAutomationID() // Should return zero value
+	})
+
+	t.Run("GetAutomationName", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequencePathStepConfig{}
+		var expected *string
+		obj.AutomationName = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAutomationName(), "getter should return the property value")
+	})
+
+	t.Run("GetAutomationName_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequencePathStepConfig{}
+		obj.AutomationName = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetAutomationName(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetAutomationName_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequencePathStepConfig
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAutomationName() // Should return zero value
+	})
+
 	t.Run("GetBody", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -67382,6 +67827,72 @@ func TestGettersSequencePathStepConfig(t *testing.T) {
 			}
 		}()
 		_ = obj.GetBody() // Should return zero value
+	})
+
+	t.Run("GetConditionLogic", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequencePathStepConfig{}
+		var expected *SequencePathStepConfigConditionLogic
+		obj.ConditionLogic = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetConditionLogic(), "getter should return the property value")
+	})
+
+	t.Run("GetConditionLogic_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequencePathStepConfig{}
+		obj.ConditionLogic = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetConditionLogic(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetConditionLogic_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequencePathStepConfig
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetConditionLogic() // Should return zero value
+	})
+
+	t.Run("GetConditions", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequencePathStepConfig{}
+		var expected []*SequencePathStepConfigConditionsItem
+		obj.Conditions = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetConditions(), "getter should return the property value")
+	})
+
+	t.Run("GetConditions_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequencePathStepConfig{}
+		obj.Conditions = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetConditions(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetConditions_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequencePathStepConfig
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetConditions() // Should return zero value
 	})
 
 	t.Run("GetConditionType", func(t *testing.T) {
@@ -68209,6 +68720,39 @@ func TestGettersSequencePathStepConfig(t *testing.T) {
 		_ = obj.GetTagName() // Should return zero value
 	})
 
+	t.Run("GetTimeout", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequencePathStepConfig{}
+		var expected *SequencePathStepConfigTimeout
+		obj.Timeout = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetTimeout(), "getter should return the property value")
+	})
+
+	t.Run("GetTimeout_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequencePathStepConfig{}
+		obj.Timeout = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetTimeout(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetTimeout_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequencePathStepConfig
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetTimeout() // Should return zero value
+	})
+
 	t.Run("GetTimeoutAction", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -68497,6 +69041,68 @@ func TestSettersMarkExplicitSequencePathStepConfig(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetAutomationID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequencePathStepConfig{}
+		var fernTestValueAutomationID *string
+
+		// Act
+		obj.SetAutomationID(fernTestValueAutomationID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetAutomationName_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequencePathStepConfig{}
+		var fernTestValueAutomationName *string
+
+		// Act
+		obj.SetAutomationName(fernTestValueAutomationName)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetBody_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -68505,6 +69111,68 @@ func TestSettersMarkExplicitSequencePathStepConfig(t *testing.T) {
 
 		// Act
 		obj.SetBody(fernTestValueBody)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetConditionLogic_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequencePathStepConfig{}
+		var fernTestValueConditionLogic *SequencePathStepConfigConditionLogic
+
+		// Act
+		obj.SetConditionLogic(fernTestValueConditionLogic)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetConditions_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequencePathStepConfig{}
+		var fernTestValueConditions []*SequencePathStepConfigConditionsItem
+
+		// Act
+		obj.SetConditions(fernTestValueConditions)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -69303,6 +69971,37 @@ func TestSettersMarkExplicitSequencePathStepConfig(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetTimeout_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequencePathStepConfig{}
+		var fernTestValueTimeout *SequencePathStepConfigTimeout
+
+		// Act
+		obj.SetTimeout(fernTestValueTimeout)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetTimeoutAction_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -69373,6 +70072,77 @@ func TestSettersMarkExplicitSequencePathStepConfig(t *testing.T) {
 
 		// Act
 		obj.SetURL(fernTestValueURL)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersSequencePathStepConfigConditionsItem(t *testing.T) {
+	t.Run("SetConditionType", func(t *testing.T) {
+		obj := &SequencePathStepConfigConditionsItem{}
+		var fernTestValueConditionType string
+		obj.SetConditionType(fernTestValueConditionType)
+		assert.Equal(t, fernTestValueConditionType, obj.ConditionType)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersSequencePathStepConfigConditionsItem(t *testing.T) {
+	t.Run("GetConditionType", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequencePathStepConfigConditionsItem{}
+		var expected string
+		obj.ConditionType = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetConditionType(), "getter should return the property value")
+	})
+
+	t.Run("GetConditionType_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequencePathStepConfigConditionsItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetConditionType() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitSequencePathStepConfigConditionsItem(t *testing.T) {
+	t.Run("SetConditionType_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequencePathStepConfigConditionsItem{}
+		var fernTestValueConditionType string
+
+		// Act
+		obj.SetConditionType(fernTestValueConditionType)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -69660,6 +70430,139 @@ func TestSettersMarkExplicitSequencePathStepConfigOutputFieldsItem(t *testing.T)
 
 		// Act
 		obj.SetMaxLength(fernTestValueMaxLength)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersSequencePathStepConfigTimeout(t *testing.T) {
+	t.Run("SetUnit", func(t *testing.T) {
+		obj := &SequencePathStepConfigTimeout{}
+		var fernTestValueUnit SequencePathStepConfigTimeoutUnit
+		obj.SetUnit(fernTestValueUnit)
+		assert.Equal(t, fernTestValueUnit, obj.Unit)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetValue", func(t *testing.T) {
+		obj := &SequencePathStepConfigTimeout{}
+		var fernTestValueValue int
+		obj.SetValue(fernTestValueValue)
+		assert.Equal(t, fernTestValueValue, obj.Value)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersSequencePathStepConfigTimeout(t *testing.T) {
+	t.Run("GetUnit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequencePathStepConfigTimeout{}
+		var expected SequencePathStepConfigTimeoutUnit
+		obj.Unit = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetUnit(), "getter should return the property value")
+	})
+
+	t.Run("GetUnit_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequencePathStepConfigTimeout
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetUnit() // Should return zero value
+	})
+
+	t.Run("GetValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequencePathStepConfigTimeout{}
+		var expected int
+		obj.Value = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetValue(), "getter should return the property value")
+	})
+
+	t.Run("GetValue_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequencePathStepConfigTimeout
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetValue() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitSequencePathStepConfigTimeout(t *testing.T) {
+	t.Run("SetUnit_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequencePathStepConfigTimeout{}
+		var fernTestValueUnit SequencePathStepConfigTimeoutUnit
+
+		// Act
+		obj.SetUnit(fernTestValueUnit)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetValue_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequencePathStepConfigTimeout{}
+		var fernTestValueValue int
+
+		// Act
+		obj.SetValue(fernTestValueValue)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -110733,6 +111636,46 @@ func TestSettersSequenceUpdateRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetFieldFromValue", func(t *testing.T) {
+		obj := &SequenceUpdateRequest{}
+		var fernTestValueFieldFromValue *string
+		obj.SetFieldFromValue(fernTestValueFieldFromValue)
+		assert.Equal(t, fernTestValueFieldFromValue, obj.FieldFromValue)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetFieldName", func(t *testing.T) {
+		obj := &SequenceUpdateRequest{}
+		var fernTestValueFieldName *string
+		obj.SetFieldName(fernTestValueFieldName)
+		assert.Equal(t, fernTestValueFieldName, obj.FieldName)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetFieldOperator", func(t *testing.T) {
+		obj := &SequenceUpdateRequest{}
+		var fernTestValueFieldOperator *SequenceUpdateRequestFieldOperator
+		obj.SetFieldOperator(fernTestValueFieldOperator)
+		assert.Equal(t, fernTestValueFieldOperator, obj.FieldOperator)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetFieldValue", func(t *testing.T) {
+		obj := &SequenceUpdateRequest{}
+		var fernTestValueFieldValue *string
+		obj.SetFieldValue(fernTestValueFieldValue)
+		assert.Equal(t, fernTestValueFieldValue, obj.FieldValue)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetFieldValues", func(t *testing.T) {
+		obj := &SequenceUpdateRequest{}
+		var fernTestValueFieldValues []string
+		obj.SetFieldValues(fernTestValueFieldValues)
+		assert.Equal(t, fernTestValueFieldValues, obj.FieldValues)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetFrequencyCapEnabled", func(t *testing.T) {
 		obj := &SequenceUpdateRequest{}
 		var fernTestValueFrequencyCapEnabled *bool
@@ -111427,6 +112370,161 @@ func TestSettersMarkExplicitSequenceUpdateRequest(t *testing.T) {
 
 		// Act
 		obj.SetEventName(fernTestValueEventName)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetFieldFromValue_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceUpdateRequest{}
+		var fernTestValueFieldFromValue *string
+
+		// Act
+		obj.SetFieldFromValue(fernTestValueFieldFromValue)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetFieldName_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceUpdateRequest{}
+		var fernTestValueFieldName *string
+
+		// Act
+		obj.SetFieldName(fernTestValueFieldName)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetFieldOperator_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceUpdateRequest{}
+		var fernTestValueFieldOperator *SequenceUpdateRequestFieldOperator
+
+		// Act
+		obj.SetFieldOperator(fernTestValueFieldOperator)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetFieldValue_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceUpdateRequest{}
+		var fernTestValueFieldValue *string
+
+		// Act
+		obj.SetFieldValue(fernTestValueFieldValue)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetFieldValues_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequenceUpdateRequest{}
+		var fernTestValueFieldValues []string
+
+		// Act
+		obj.SetFieldValues(fernTestValueFieldValues)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -117409,6 +118507,39 @@ func TestJSONMarshalingSequencePathStepConfig(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingSequencePathStepConfigConditionsItem(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequencePathStepConfigConditionsItem{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled SequencePathStepConfigConditionsItem
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj SequencePathStepConfigConditionsItem
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj SequencePathStepConfigConditionsItem
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingSequencePathStepConfigOutputFieldsItem(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -117437,6 +118568,39 @@ func TestJSONMarshalingSequencePathStepConfigOutputFieldsItem(t *testing.T) {
 	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
 		t.Parallel()
 		var obj SequencePathStepConfigOutputFieldsItem
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestJSONMarshalingSequencePathStepConfigTimeout(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SequencePathStepConfigTimeout{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled SequencePathStepConfigTimeout
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj SequencePathStepConfigTimeout
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj SequencePathStepConfigTimeout
 		err := json.Unmarshal([]byte(`{}`), &obj)
 		assert.NoError(t, err, "unmarshaling empty object should succeed")
 	})
@@ -121019,6 +122183,22 @@ func TestStringSequencePathStepConfig(t *testing.T) {
 	})
 }
 
+func TestStringSequencePathStepConfigConditionsItem(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &SequencePathStepConfigConditionsItem{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequencePathStepConfigConditionsItem
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
 func TestStringSequencePathStepConfigOutputFieldsItem(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
@@ -121030,6 +122210,22 @@ func TestStringSequencePathStepConfigOutputFieldsItem(t *testing.T) {
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *SequencePathStepConfigOutputFieldsItem
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringSequencePathStepConfigTimeout(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &SequencePathStepConfigTimeout{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequencePathStepConfigTimeout
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -123035,6 +124231,34 @@ func TestEnumSequenceBranchConditionInputConditionType(t *testing.T) {
 		assert.Equal(t, SequenceBranchConditionInputConditionType("in_segment"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_in_sequence", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSequenceBranchConditionInputConditionTypeFromString("in_sequence")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SequenceBranchConditionInputConditionType("in_sequence"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_not_in_sequence", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSequenceBranchConditionInputConditionTypeFromString("not_in_sequence")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SequenceBranchConditionInputConditionType("not_in_sequence"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_completed_sequence", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSequenceBranchConditionInputConditionTypeFromString("completed_sequence")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SequenceBranchConditionInputConditionType("completed_sequence"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_not_completed_sequence", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSequenceBranchConditionInputConditionTypeFromString("not_completed_sequence")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SequenceBranchConditionInputConditionType("not_completed_sequence"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_event_received", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewSequenceBranchConditionInputConditionTypeFromString("event_received")
@@ -123248,6 +124472,13 @@ func TestEnumSequenceBranchPathStepInputNodeType(t *testing.T) {
 		assert.Equal(t, SequenceBranchPathStepInputNodeType("logic_wait_for_event"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_logic_wait_until", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSequenceBranchPathStepInputNodeTypeFromString("logic_wait_until")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SequenceBranchPathStepInputNodeType("logic_wait_until"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_logic_condition", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewSequenceBranchPathStepInputNodeTypeFromString("logic_condition")
@@ -123376,6 +124607,13 @@ func TestEnumSequenceBranchPathStepInputType(t *testing.T) {
 		assert.Equal(t, SequenceBranchPathStepInputType("condition"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_wait_until", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSequenceBranchPathStepInputTypeFromString("wait_until")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SequenceBranchPathStepInputType("wait_until"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_webhook", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewSequenceBranchPathStepInputTypeFromString("webhook")
@@ -123426,6 +124664,77 @@ func TestEnumSequenceCreateRequestEmailStyle(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewSequenceCreateRequestEmailStyleFromString("visual")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumSequenceCreateRequestFieldOperator(t *testing.T) {
+	t.Run("NewFromString_any_change", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSequenceCreateRequestFieldOperatorFromString("any_change")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SequenceCreateRequestFieldOperator("any_change"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_equals", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSequenceCreateRequestFieldOperatorFromString("equals")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SequenceCreateRequestFieldOperator("equals"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_not_equals", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSequenceCreateRequestFieldOperatorFromString("not_equals")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SequenceCreateRequestFieldOperator("not_equals"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_one_of", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSequenceCreateRequestFieldOperatorFromString("one_of")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SequenceCreateRequestFieldOperator("one_of"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_contains", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSequenceCreateRequestFieldOperatorFromString("contains")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SequenceCreateRequestFieldOperator("contains"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_not_contains", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSequenceCreateRequestFieldOperatorFromString("not_contains")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SequenceCreateRequestFieldOperator("not_contains"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_greater_than", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSequenceCreateRequestFieldOperatorFromString("greater_than")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SequenceCreateRequestFieldOperator("greater_than"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_less_than", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSequenceCreateRequestFieldOperatorFromString("less_than")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SequenceCreateRequestFieldOperator("less_than"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewSequenceCreateRequestFieldOperatorFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewSequenceCreateRequestFieldOperatorFromString("any_change")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -124429,6 +125738,13 @@ func TestEnumSequenceEnrollmentGetResponseEnrollmentEnteredViaKind(t *testing.T)
 		assert.Equal(t, SequenceEnrollmentGetResponseEnrollmentEnteredViaKind("segment"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_field", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSequenceEnrollmentGetResponseEnrollmentEnteredViaKindFromString("field")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SequenceEnrollmentGetResponseEnrollmentEnteredViaKind("field"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_event", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewSequenceEnrollmentGetResponseEnrollmentEnteredViaKindFromString("event")
@@ -124605,6 +125921,13 @@ func TestEnumSequenceEnrollmentListResponseEnrollmentsItemEnteredViaKind(t *test
 		val, err := NewSequenceEnrollmentListResponseEnrollmentsItemEnteredViaKindFromString("segment")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, SequenceEnrollmentListResponseEnrollmentsItemEnteredViaKind("segment"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_field", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSequenceEnrollmentListResponseEnrollmentsItemEnteredViaKindFromString("field")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SequenceEnrollmentListResponseEnrollmentsItemEnteredViaKind("field"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_event", func(t *testing.T) {
@@ -125245,6 +126568,35 @@ func TestEnumSequencePathStepConfigActivityScope(t *testing.T) {
 	})
 }
 
+func TestEnumSequencePathStepConfigConditionLogic(t *testing.T) {
+	t.Run("NewFromString_all", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSequencePathStepConfigConditionLogicFromString("all")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SequencePathStepConfigConditionLogic("all"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_any", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSequencePathStepConfigConditionLogicFromString("any")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SequencePathStepConfigConditionLogic("any"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewSequencePathStepConfigConditionLogicFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewSequencePathStepConfigConditionLogicFromString("all")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumSequencePathStepConfigConditionType(t *testing.T) {
 	t.Run("NewFromString_has_tag", func(t *testing.T) {
 		t.Parallel()
@@ -125272,6 +126624,34 @@ func TestEnumSequencePathStepConfigConditionType(t *testing.T) {
 		val, err := NewSequencePathStepConfigConditionTypeFromString("in_segment")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, SequencePathStepConfigConditionType("in_segment"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_in_sequence", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSequencePathStepConfigConditionTypeFromString("in_sequence")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SequencePathStepConfigConditionType("in_sequence"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_not_in_sequence", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSequencePathStepConfigConditionTypeFromString("not_in_sequence")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SequencePathStepConfigConditionType("not_in_sequence"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_completed_sequence", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSequencePathStepConfigConditionTypeFromString("completed_sequence")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SequencePathStepConfigConditionType("completed_sequence"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_not_completed_sequence", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSequencePathStepConfigConditionTypeFromString("not_completed_sequence")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SequencePathStepConfigConditionType("not_completed_sequence"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_event_received", func(t *testing.T) {
@@ -125459,6 +126839,49 @@ func TestEnumSequencePathStepConfigTimeoutAction(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewSequencePathStepConfigTimeoutActionFromString("continue")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumSequencePathStepConfigTimeoutUnit(t *testing.T) {
+	t.Run("NewFromString_minutes", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSequencePathStepConfigTimeoutUnitFromString("minutes")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SequencePathStepConfigTimeoutUnit("minutes"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_hours", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSequencePathStepConfigTimeoutUnitFromString("hours")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SequencePathStepConfigTimeoutUnit("hours"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_days", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSequencePathStepConfigTimeoutUnitFromString("days")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SequencePathStepConfigTimeoutUnit("days"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_weeks", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSequencePathStepConfigTimeoutUnitFromString("weeks")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SequencePathStepConfigTimeoutUnit("weeks"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewSequencePathStepConfigTimeoutUnitFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewSequencePathStepConfigTimeoutUnitFromString("minutes")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -126671,6 +128094,13 @@ func TestEnumSequenceTriggerType(t *testing.T) {
 		assert.Equal(t, SequenceTriggerType("segment_exited"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_field_changed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSequenceTriggerTypeFromString("field_changed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SequenceTriggerType("field_changed"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_event_received", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewSequenceTriggerTypeFromString("event_received")
@@ -126713,6 +128143,77 @@ func TestEnumSequenceTriggerType(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewSequenceTriggerTypeFromString("contact_added")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumSequenceUpdateRequestFieldOperator(t *testing.T) {
+	t.Run("NewFromString_any_change", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSequenceUpdateRequestFieldOperatorFromString("any_change")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SequenceUpdateRequestFieldOperator("any_change"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_equals", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSequenceUpdateRequestFieldOperatorFromString("equals")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SequenceUpdateRequestFieldOperator("equals"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_not_equals", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSequenceUpdateRequestFieldOperatorFromString("not_equals")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SequenceUpdateRequestFieldOperator("not_equals"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_one_of", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSequenceUpdateRequestFieldOperatorFromString("one_of")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SequenceUpdateRequestFieldOperator("one_of"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_contains", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSequenceUpdateRequestFieldOperatorFromString("contains")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SequenceUpdateRequestFieldOperator("contains"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_not_contains", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSequenceUpdateRequestFieldOperatorFromString("not_contains")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SequenceUpdateRequestFieldOperator("not_contains"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_greater_than", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSequenceUpdateRequestFieldOperatorFromString("greater_than")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SequenceUpdateRequestFieldOperator("greater_than"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_less_than", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSequenceUpdateRequestFieldOperatorFromString("less_than")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SequenceUpdateRequestFieldOperator("less_than"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewSequenceUpdateRequestFieldOperatorFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewSequenceUpdateRequestFieldOperatorFromString("any_change")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -130676,6 +132177,29 @@ func TestExtraPropertiesSequencePathStepConfig(t *testing.T) {
 	})
 }
 
+func TestExtraPropertiesSequencePathStepConfigConditionsItem(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &SequencePathStepConfigConditionsItem{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequencePathStepConfigConditionsItem
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
 func TestExtraPropertiesSequencePathStepConfigOutputFieldsItem(t *testing.T) {
 	t.Run("GetExtraProperties", func(t *testing.T) {
 		t.Parallel()
@@ -130694,6 +132218,29 @@ func TestExtraPropertiesSequencePathStepConfigOutputFieldsItem(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *SequencePathStepConfigOutputFieldsItem
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesSequencePathStepConfigTimeout(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &SequencePathStepConfigTimeout{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SequencePathStepConfigTimeout
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})
