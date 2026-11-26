@@ -4,6 +4,7 @@ package tags
 
 import (
 	context "context"
+	os "os"
 
 	core "github.com/sequenzy/sequenzy-go/core"
 	internal "github.com/sequenzy/sequenzy-go/internal"
@@ -20,6 +21,9 @@ type Client struct {
 }
 
 func NewClient(options *core.RequestOptions) *Client {
+	if options.APIKey == "" {
+		options.APIKey = os.Getenv("SEQUENZY_API_KEY")
+	}
 	return &Client{
 		WithRawResponse: NewRawClient(options),
 		options:         options,

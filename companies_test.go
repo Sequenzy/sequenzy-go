@@ -6275,6 +6275,14 @@ func TestSettersMarkExplicitListCompaniesResponse(t *testing.T) {
 }
 
 func TestSettersUpdateCompaniesRequestEmailTheme(t *testing.T) {
+	t.Run("SetBackgroundImage", func(t *testing.T) {
+		obj := &UpdateCompaniesRequestEmailTheme{}
+		var fernTestValueBackgroundImage *UpdateCompaniesRequestEmailThemeBackgroundImage
+		obj.SetBackgroundImage(fernTestValueBackgroundImage)
+		assert.Equal(t, fernTestValueBackgroundImage, obj.BackgroundImage)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetButtonStyle", func(t *testing.T) {
 		obj := &UpdateCompaniesRequestEmailTheme{}
 		var fernTestValueButtonStyle *UpdateCompaniesRequestEmailThemeButtonStyle
@@ -6350,6 +6358,39 @@ func TestSettersUpdateCompaniesRequestEmailTheme(t *testing.T) {
 }
 
 func TestGettersUpdateCompaniesRequestEmailTheme(t *testing.T) {
+	t.Run("GetBackgroundImage", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateCompaniesRequestEmailTheme{}
+		var expected *UpdateCompaniesRequestEmailThemeBackgroundImage
+		obj.BackgroundImage = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetBackgroundImage(), "getter should return the property value")
+	})
+
+	t.Run("GetBackgroundImage_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateCompaniesRequestEmailTheme{}
+		obj.BackgroundImage = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetBackgroundImage(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetBackgroundImage_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateCompaniesRequestEmailTheme
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetBackgroundImage() // Should return zero value
+	})
+
 	t.Run("GetButtonStyle", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -6650,6 +6691,37 @@ func TestGettersUpdateCompaniesRequestEmailTheme(t *testing.T) {
 }
 
 func TestSettersMarkExplicitUpdateCompaniesRequestEmailTheme(t *testing.T) {
+	t.Run("SetBackgroundImage_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateCompaniesRequestEmailTheme{}
+		var fernTestValueBackgroundImage *UpdateCompaniesRequestEmailThemeBackgroundImage
+
+		// Act
+		obj.SetBackgroundImage(fernTestValueBackgroundImage)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetButtonStyle_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -6906,6 +6978,303 @@ func TestSettersMarkExplicitUpdateCompaniesRequestEmailTheme(t *testing.T) {
 
 		// Act
 		obj.SetTypography(fernTestValueTypography)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersUpdateCompaniesRequestEmailThemeBackgroundImage(t *testing.T) {
+	t.Run("SetFit", func(t *testing.T) {
+		obj := &UpdateCompaniesRequestEmailThemeBackgroundImage{}
+		var fernTestValueFit *UpdateCompaniesRequestEmailThemeBackgroundImageFit
+		obj.SetFit(fernTestValueFit)
+		assert.Equal(t, fernTestValueFit, obj.Fit)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetShade", func(t *testing.T) {
+		obj := &UpdateCompaniesRequestEmailThemeBackgroundImage{}
+		var fernTestValueShade *float64
+		obj.SetShade(fernTestValueShade)
+		assert.Equal(t, fernTestValueShade, obj.Shade)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetSrc", func(t *testing.T) {
+		obj := &UpdateCompaniesRequestEmailThemeBackgroundImage{}
+		var fernTestValueSrc *string
+		obj.SetSrc(fernTestValueSrc)
+		assert.Equal(t, fernTestValueSrc, obj.Src)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetTarget", func(t *testing.T) {
+		obj := &UpdateCompaniesRequestEmailThemeBackgroundImage{}
+		var fernTestValueTarget *UpdateCompaniesRequestEmailThemeBackgroundImageTarget
+		obj.SetTarget(fernTestValueTarget)
+		assert.Equal(t, fernTestValueTarget, obj.Target)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersUpdateCompaniesRequestEmailThemeBackgroundImage(t *testing.T) {
+	t.Run("GetFit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateCompaniesRequestEmailThemeBackgroundImage{}
+		var expected *UpdateCompaniesRequestEmailThemeBackgroundImageFit
+		obj.Fit = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetFit(), "getter should return the property value")
+	})
+
+	t.Run("GetFit_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateCompaniesRequestEmailThemeBackgroundImage{}
+		obj.Fit = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetFit(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetFit_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateCompaniesRequestEmailThemeBackgroundImage
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetFit() // Should return zero value
+	})
+
+	t.Run("GetShade", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateCompaniesRequestEmailThemeBackgroundImage{}
+		var expected *float64
+		obj.Shade = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetShade(), "getter should return the property value")
+	})
+
+	t.Run("GetShade_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateCompaniesRequestEmailThemeBackgroundImage{}
+		obj.Shade = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetShade(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetShade_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateCompaniesRequestEmailThemeBackgroundImage
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetShade() // Should return zero value
+	})
+
+	t.Run("GetSrc", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateCompaniesRequestEmailThemeBackgroundImage{}
+		var expected *string
+		obj.Src = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSrc(), "getter should return the property value")
+	})
+
+	t.Run("GetSrc_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateCompaniesRequestEmailThemeBackgroundImage{}
+		obj.Src = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSrc(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSrc_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateCompaniesRequestEmailThemeBackgroundImage
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSrc() // Should return zero value
+	})
+
+	t.Run("GetTarget", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateCompaniesRequestEmailThemeBackgroundImage{}
+		var expected *UpdateCompaniesRequestEmailThemeBackgroundImageTarget
+		obj.Target = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetTarget(), "getter should return the property value")
+	})
+
+	t.Run("GetTarget_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateCompaniesRequestEmailThemeBackgroundImage{}
+		obj.Target = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetTarget(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetTarget_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateCompaniesRequestEmailThemeBackgroundImage
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetTarget() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitUpdateCompaniesRequestEmailThemeBackgroundImage(t *testing.T) {
+	t.Run("SetFit_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateCompaniesRequestEmailThemeBackgroundImage{}
+		var fernTestValueFit *UpdateCompaniesRequestEmailThemeBackgroundImageFit
+
+		// Act
+		obj.SetFit(fernTestValueFit)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetShade_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateCompaniesRequestEmailThemeBackgroundImage{}
+		var fernTestValueShade *float64
+
+		// Act
+		obj.SetShade(fernTestValueShade)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSrc_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateCompaniesRequestEmailThemeBackgroundImage{}
+		var fernTestValueSrc *string
+
+		// Act
+		obj.SetSrc(fernTestValueSrc)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetTarget_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateCompaniesRequestEmailThemeBackgroundImage{}
+		var fernTestValueTarget *UpdateCompaniesRequestEmailThemeBackgroundImageTarget
+
+		// Act
+		obj.SetTarget(fernTestValueTarget)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -12782,6 +13151,39 @@ func TestJSONMarshalingUpdateCompaniesRequestEmailTheme(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingUpdateCompaniesRequestEmailThemeBackgroundImage(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateCompaniesRequestEmailThemeBackgroundImage{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled UpdateCompaniesRequestEmailThemeBackgroundImage
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj UpdateCompaniesRequestEmailThemeBackgroundImage
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj UpdateCompaniesRequestEmailThemeBackgroundImage
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingUpdateCompaniesRequestEmailThemeColors(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -13141,6 +13543,22 @@ func TestStringUpdateCompaniesRequestEmailTheme(t *testing.T) {
 	})
 }
 
+func TestStringUpdateCompaniesRequestEmailThemeBackgroundImage(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &UpdateCompaniesRequestEmailThemeBackgroundImage{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateCompaniesRequestEmailThemeBackgroundImage
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
 func TestStringUpdateCompaniesRequestEmailThemeColors(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
@@ -13338,6 +13756,13 @@ func TestEnumCompanyEmailBrandingReason(t *testing.T) {
 		val, err := NewCompanyEmailBrandingReasonFromString("email_partner")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, CompanyEmailBrandingReason("email_partner"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_credit_grant", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCompanyEmailBrandingReasonFromString("credit_grant")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CompanyEmailBrandingReason("credit_grant"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_inactive_subscription", func(t *testing.T) {
@@ -14114,6 +14539,71 @@ func TestEnumUpdateCompaniesRequestEmailStylePreference(t *testing.T) {
 	})
 }
 
+func TestEnumUpdateCompaniesRequestEmailThemeBackgroundImageFit(t *testing.T) {
+	t.Run("NewFromString_cover", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateCompaniesRequestEmailThemeBackgroundImageFitFromString("cover")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateCompaniesRequestEmailThemeBackgroundImageFit("cover"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_tile", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateCompaniesRequestEmailThemeBackgroundImageFitFromString("tile")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateCompaniesRequestEmailThemeBackgroundImageFit("tile"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewUpdateCompaniesRequestEmailThemeBackgroundImageFitFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewUpdateCompaniesRequestEmailThemeBackgroundImageFitFromString("cover")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumUpdateCompaniesRequestEmailThemeBackgroundImageTarget(t *testing.T) {
+	t.Run("NewFromString_both", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateCompaniesRequestEmailThemeBackgroundImageTargetFromString("both")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateCompaniesRequestEmailThemeBackgroundImageTarget("both"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_content", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateCompaniesRequestEmailThemeBackgroundImageTargetFromString("content")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateCompaniesRequestEmailThemeBackgroundImageTarget("content"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_canvas", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateCompaniesRequestEmailThemeBackgroundImageTargetFromString("canvas")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateCompaniesRequestEmailThemeBackgroundImageTarget("canvas"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewUpdateCompaniesRequestEmailThemeBackgroundImageTargetFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewUpdateCompaniesRequestEmailThemeBackgroundImageTargetFromString("both")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumUpdateCompaniesRequestEmailThemeButtonStyle(t *testing.T) {
 	t.Run("NewFromString_solid", func(t *testing.T) {
 		t.Parallel()
@@ -14724,6 +15214,29 @@ func TestExtraPropertiesUpdateCompaniesRequestEmailTheme(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *UpdateCompaniesRequestEmailTheme
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesUpdateCompaniesRequestEmailThemeBackgroundImage(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &UpdateCompaniesRequestEmailThemeBackgroundImage{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateCompaniesRequestEmailThemeBackgroundImage
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})

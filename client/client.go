@@ -4,6 +4,7 @@ package client
 
 import (
 	context "context"
+	os "os"
 
 	sequenzygo "github.com/sequenzy/sequenzy-go"
 	abtests "github.com/sequenzy/sequenzy-go/abtests"
@@ -129,6 +130,9 @@ type Client struct {
 
 func NewClient(opts ...option.RequestOption) *Client {
 	options := core.NewRequestOptions(opts...)
+	if options.APIKey == "" {
+		options.APIKey = os.Getenv("SEQUENZY_API_KEY")
+	}
 	return &Client{
 		AbTests:                 abtests.NewClient(options),
 		Account:                 account.NewClient(options),

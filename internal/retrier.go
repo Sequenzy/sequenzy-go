@@ -5,6 +5,7 @@ import (
 	"math/big"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -135,7 +136,7 @@ func (r *Retrier) run(
 		return nil, err
 	}
 
-	if r.shouldRetry(response) {
+	if r.shouldRetry(request, response) {
 		defer func() { _ = response.Body.Close() }()
 
 		delay, err := r.retryDelay(response, retryAttempt)
@@ -163,9 +164,28 @@ func (r *Retrier) run(
 	return response, nil
 }
 
-// shouldRetry returns true if the request should be retried based on the given
-// response status code.
-func (r *Retrier) shouldRetry(response *http.Response) bool {
+func isIdempotentMethod(method string) bool {
+	switch strings.ToUpper(method) {
+	case http.MethodGet, http.MethodHead, http.MethodOptions, http.MethodPut, http.MethodDelete:
+		return true
+	default:
+		return false
+	}
+}
+
+func hasIdempotencyKey(request *http.Request) bool {
+	if request == nil {
+		return false
+	}
+	return strings.TrimSpace(request.Header.Get("Idempotency-Key")) != ""
+}
+
+// shouldRetry returns true if the request should be retried based on the request
+// method, Idempotency-Key header, and response status code.
+func (r *Retrier) shouldRetry(request *http.Request, response *http.Response) bool {
+	if request != nil && !isIdempotentMethod(request.Method) && !hasIdempotencyKey(request) {
+		return response.StatusCode == http.StatusTooManyRequests
+	}
 	return response.StatusCode == http.StatusTooManyRequests ||
 		response.StatusCode == http.StatusRequestTimeout ||
 		response.StatusCode >= http.StatusInternalServerError

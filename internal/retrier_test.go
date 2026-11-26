@@ -279,6 +279,7 @@ func TestRetryWithRequestBody(t *testing.T) {
 		&CallParams{
 			URL:                server.URL,
 			Method:             http.MethodPost,
+			Headers:            http.Header{"Idempotency-Key": []string{"test-retry-body"}},
 			Request:            &InternalTestRequest{Id: "test-id"},
 			Response:           &response,
 			MaxAttempts:        2,
@@ -293,6 +294,59 @@ func TestRetryWithRequestBody(t *testing.T) {
 	// Both requests should have the same non-empty body
 	assert.Equal(t, expectedBody, requestBodies[0], "First request body should match expected")
 	assert.Equal(t, expectedBody, requestBodies[1], "Second request body should match expected (retry should re-send body)")
+}
+
+func TestPostWithoutIdempotencyKeyRetryPolicy(t *testing.T) {
+	t.Run("does not retry 503 or 408 without Idempotency-Key", func(t *testing.T) {
+		for _, status := range []int{http.StatusServiceUnavailable, http.StatusRequestTimeout} {
+			var requestCount int
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				requestCount++
+				w.WriteHeader(status)
+			}))
+			defer server.Close()
+
+			caller := NewCaller(&CallerParams{Client: server.Client()})
+			_, err := caller.Call(context.Background(), &CallParams{
+				URL:                server.URL,
+				Method:             http.MethodPost,
+				Request:            &InternalTestRequest{Id: "no-key"},
+				MaxAttempts:        2,
+				ResponseIsOptional: true,
+			})
+			require.IsType(t, &core.APIError{}, err)
+			assert.Equal(t, status, err.(*core.APIError).StatusCode)
+			assert.Equal(t, 1, requestCount)
+		}
+	})
+
+	t.Run("retries 429 without Idempotency-Key", func(t *testing.T) {
+		var requestCount int
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			requestCount++
+			if requestCount == 1 {
+				w.WriteHeader(http.StatusTooManyRequests)
+				return
+			}
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte(`{"id":"ok"}`))
+		}))
+		defer server.Close()
+
+		caller := NewCaller(&CallerParams{Client: server.Client()})
+		var response *InternalTestResponse
+		_, err := caller.Call(context.Background(), &CallParams{
+			URL:                server.URL,
+			Method:             http.MethodPost,
+			Request:            &InternalTestRequest{Id: "rate-limited"},
+			Response:           &response,
+			MaxAttempts:        2,
+			ResponseIsOptional: true,
+		})
+		require.NoError(t, err)
+		assert.Equal(t, 2, requestCount)
+		assert.Equal(t, &InternalTestResponse{Id: "ok"}, response)
+	})
 }
 
 func TestRetryDelayTiming(t *testing.T) {

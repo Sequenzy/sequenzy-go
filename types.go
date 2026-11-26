@@ -6840,13 +6840,13 @@ func (g *GetMcpDiscoveryResponse) String() string {
 type GetMcpDiscoveryResponseDescription string
 
 const (
-	GetMcpDiscoveryResponseDescriptionEmailMarketingForSaaSAndEcommerce GetMcpDiscoveryResponseDescription = "Email marketing for SaaS and ecommerce"
+	GetMcpDiscoveryResponseDescriptionAiNativeEmailMarketingToolForSaaS GetMcpDiscoveryResponseDescription = "AI-native email marketing tool for SaaS"
 )
 
 func NewGetMcpDiscoveryResponseDescriptionFromString(s string) (GetMcpDiscoveryResponseDescription, error) {
 	switch s {
-	case "Email marketing for SaaS and ecommerce":
-		return GetMcpDiscoveryResponseDescriptionEmailMarketingForSaaSAndEcommerce, nil
+	case "AI-native email marketing tool for SaaS":
+		return GetMcpDiscoveryResponseDescriptionAiNativeEmailMarketingToolForSaaS, nil
 	}
 	var t GetMcpDiscoveryResponseDescription
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

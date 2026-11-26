@@ -29799,11 +29799,11 @@ func TestEnumFilterLeafOperator(t *testing.T) {
 }
 
 func TestEnumGetMcpDiscoveryResponseDescription(t *testing.T) {
-	t.Run("NewFromString_Email_marketing_for_SaaS_and_ecommerce", func(t *testing.T) {
+	t.Run("NewFromString_AI_native_email_marketing_tool_for_SaaS", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewGetMcpDiscoveryResponseDescriptionFromString("Email marketing for SaaS and ecommerce")
+		val, err := NewGetMcpDiscoveryResponseDescriptionFromString("AI-native email marketing tool for SaaS")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, GetMcpDiscoveryResponseDescription("Email marketing for SaaS and ecommerce"), val, "enum value should match expected wire value")
+		assert.Equal(t, GetMcpDiscoveryResponseDescription("AI-native email marketing tool for SaaS"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
@@ -29812,7 +29812,7 @@ func TestEnumGetMcpDiscoveryResponseDescription(t *testing.T) {
 	})
 
 	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewGetMcpDiscoveryResponseDescriptionFromString("Email marketing for SaaS and ecommerce")
+		val, err := NewGetMcpDiscoveryResponseDescriptionFromString("AI-native email marketing tool for SaaS")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)

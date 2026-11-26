@@ -111,6 +111,11 @@ response, err := client.AbTests.AddVariant(
 )
 ```
 
+When credentials are not explicitly provided, the client reads them from the
+following environment variables:
+
+- `SEQUENZY_API_KEY`
+
 ## Advanced
 
 ### Response Headers

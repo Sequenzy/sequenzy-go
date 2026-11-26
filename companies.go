@@ -1284,6 +1284,7 @@ const (
 	CompanyEmailBrandingReasonFreePlan             CompanyEmailBrandingReason = "free_plan"
 	CompanyEmailBrandingReasonPaidPlan             CompanyEmailBrandingReason = "paid_plan"
 	CompanyEmailBrandingReasonEmailPartner         CompanyEmailBrandingReason = "email_partner"
+	CompanyEmailBrandingReasonCreditGrant          CompanyEmailBrandingReason = "credit_grant"
 	CompanyEmailBrandingReasonInactiveSubscription CompanyEmailBrandingReason = "inactive_subscription"
 	CompanyEmailBrandingReasonCompanyNotFound      CompanyEmailBrandingReason = "company_not_found"
 )
@@ -1296,6 +1297,8 @@ func NewCompanyEmailBrandingReasonFromString(s string) (CompanyEmailBrandingReas
 		return CompanyEmailBrandingReasonPaidPlan, nil
 	case "email_partner":
 		return CompanyEmailBrandingReasonEmailPartner, nil
+	case "credit_grant":
+		return CompanyEmailBrandingReasonCreditGrant, nil
 	case "inactive_subscription":
 		return CompanyEmailBrandingReasonInactiveSubscription, nil
 	case "company_not_found":
@@ -2559,18 +2562,21 @@ func (u UpdateCompaniesRequestEmailStylePreference) Ptr() *UpdateCompaniesReques
 
 // Default email theme. Partial update - omitted fields keep their current value (or the preset default) and numeric values are clamped to supported ranges. Pass null to reset to the platform default theme.
 var (
-	updateCompaniesRequestEmailThemeFieldButtonStyle          = big.NewInt(1 << 0)
-	updateCompaniesRequestEmailThemeFieldChromePack           = big.NewInt(1 << 1)
-	updateCompaniesRequestEmailThemeFieldColors               = big.NewInt(1 << 2)
-	updateCompaniesRequestEmailThemeFieldHeadingFontFromBrand = big.NewInt(1 << 3)
-	updateCompaniesRequestEmailThemeFieldLayout               = big.NewInt(1 << 4)
-	updateCompaniesRequestEmailThemeFieldPresetID             = big.NewInt(1 << 5)
-	updateCompaniesRequestEmailThemeFieldRadiiFromBrand       = big.NewInt(1 << 6)
-	updateCompaniesRequestEmailThemeFieldSignature            = big.NewInt(1 << 7)
-	updateCompaniesRequestEmailThemeFieldTypography           = big.NewInt(1 << 8)
+	updateCompaniesRequestEmailThemeFieldBackgroundImage      = big.NewInt(1 << 0)
+	updateCompaniesRequestEmailThemeFieldButtonStyle          = big.NewInt(1 << 1)
+	updateCompaniesRequestEmailThemeFieldChromePack           = big.NewInt(1 << 2)
+	updateCompaniesRequestEmailThemeFieldColors               = big.NewInt(1 << 3)
+	updateCompaniesRequestEmailThemeFieldHeadingFontFromBrand = big.NewInt(1 << 4)
+	updateCompaniesRequestEmailThemeFieldLayout               = big.NewInt(1 << 5)
+	updateCompaniesRequestEmailThemeFieldPresetID             = big.NewInt(1 << 6)
+	updateCompaniesRequestEmailThemeFieldRadiiFromBrand       = big.NewInt(1 << 7)
+	updateCompaniesRequestEmailThemeFieldSignature            = big.NewInt(1 << 8)
+	updateCompaniesRequestEmailThemeFieldTypography           = big.NewInt(1 << 9)
 )
 
 type UpdateCompaniesRequestEmailTheme struct {
+	// Optional email-level background image painted over the solid fallback color (classic Windows Outlook falls back to the solid color). Pass null to remove it.
+	BackgroundImage *UpdateCompaniesRequestEmailThemeBackgroundImage `json:"backgroundImage,omitempty" url:"backgroundImage,omitempty"`
 	// How primary buttons are filled. "outline" renders them as a transparent box with a brand-color border; "solid" (default) is the classic filled button.
 	ButtonStyle *UpdateCompaniesRequestEmailThemeButtonStyle `json:"buttonStyle,omitempty" url:"buttonStyle,omitempty"`
 	// Brand-derived. Send back the value a theme read returned so a copied theme renders the same; null removes it.
@@ -2594,6 +2600,13 @@ type UpdateCompaniesRequestEmailTheme struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (u *UpdateCompaniesRequestEmailTheme) GetBackgroundImage() *UpdateCompaniesRequestEmailThemeBackgroundImage {
+	if u == nil {
+		return nil
+	}
+	return u.BackgroundImage
 }
 
 func (u *UpdateCompaniesRequestEmailTheme) GetButtonStyle() *UpdateCompaniesRequestEmailThemeButtonStyle {
@@ -2671,6 +2684,13 @@ func (u *UpdateCompaniesRequestEmailTheme) require(field *big.Int) {
 		u.explicitFields = big.NewInt(0)
 	}
 	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetBackgroundImage sets the BackgroundImage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateCompaniesRequestEmailTheme) SetBackgroundImage(backgroundImage *UpdateCompaniesRequestEmailThemeBackgroundImage) {
+	u.BackgroundImage = backgroundImage
+	u.require(updateCompaniesRequestEmailThemeFieldBackgroundImage)
 }
 
 // SetButtonStyle sets the ButtonStyle field and marks it as non-optional;
@@ -2776,6 +2796,192 @@ func (u *UpdateCompaniesRequestEmailTheme) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", u)
+}
+
+// Optional email-level background image painted over the solid fallback color (classic Windows Outlook falls back to the solid color). Pass null to remove it.
+var (
+	updateCompaniesRequestEmailThemeBackgroundImageFieldFit    = big.NewInt(1 << 0)
+	updateCompaniesRequestEmailThemeBackgroundImageFieldShade  = big.NewInt(1 << 1)
+	updateCompaniesRequestEmailThemeBackgroundImageFieldSrc    = big.NewInt(1 << 2)
+	updateCompaniesRequestEmailThemeBackgroundImageFieldTarget = big.NewInt(1 << 3)
+)
+
+type UpdateCompaniesRequestEmailThemeBackgroundImage struct {
+	// "cover" (default) scales to fill; "tile" repeats at natural size for textures.
+	Fit *UpdateCompaniesRequestEmailThemeBackgroundImageFit `json:"fit,omitempty" url:"fit,omitempty"`
+	// 0-100 tint of the fallback background color over the image for contrast (default 0).
+	Shade *float64 `json:"shade,omitempty" url:"shade,omitempty"`
+	// Full http:// or https:// image URL without spaces, quotes, or merge tags.
+	Src *string `json:"src,omitempty" url:"src,omitempty"`
+	// "both" (default) paints the outer canvas and content seamlessly; "content" paints the content card only; "canvas" paints the outer page behind a solid content card.
+	Target *UpdateCompaniesRequestEmailThemeBackgroundImageTarget `json:"target,omitempty" url:"target,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateCompaniesRequestEmailThemeBackgroundImage) GetFit() *UpdateCompaniesRequestEmailThemeBackgroundImageFit {
+	if u == nil {
+		return nil
+	}
+	return u.Fit
+}
+
+func (u *UpdateCompaniesRequestEmailThemeBackgroundImage) GetShade() *float64 {
+	if u == nil {
+		return nil
+	}
+	return u.Shade
+}
+
+func (u *UpdateCompaniesRequestEmailThemeBackgroundImage) GetSrc() *string {
+	if u == nil {
+		return nil
+	}
+	return u.Src
+}
+
+func (u *UpdateCompaniesRequestEmailThemeBackgroundImage) GetTarget() *UpdateCompaniesRequestEmailThemeBackgroundImageTarget {
+	if u == nil {
+		return nil
+	}
+	return u.Target
+}
+
+func (u *UpdateCompaniesRequestEmailThemeBackgroundImage) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateCompaniesRequestEmailThemeBackgroundImage) require(field *big.Int) {
+	if u.explicitFields == nil {
+		u.explicitFields = big.NewInt(0)
+	}
+	u.explicitFields.Or(u.explicitFields, field)
+}
+
+// SetFit sets the Fit field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateCompaniesRequestEmailThemeBackgroundImage) SetFit(fit *UpdateCompaniesRequestEmailThemeBackgroundImageFit) {
+	u.Fit = fit
+	u.require(updateCompaniesRequestEmailThemeBackgroundImageFieldFit)
+}
+
+// SetShade sets the Shade field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateCompaniesRequestEmailThemeBackgroundImage) SetShade(shade *float64) {
+	u.Shade = shade
+	u.require(updateCompaniesRequestEmailThemeBackgroundImageFieldShade)
+}
+
+// SetSrc sets the Src field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateCompaniesRequestEmailThemeBackgroundImage) SetSrc(src *string) {
+	u.Src = src
+	u.require(updateCompaniesRequestEmailThemeBackgroundImageFieldSrc)
+}
+
+// SetTarget sets the Target field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateCompaniesRequestEmailThemeBackgroundImage) SetTarget(target *UpdateCompaniesRequestEmailThemeBackgroundImageTarget) {
+	u.Target = target
+	u.require(updateCompaniesRequestEmailThemeBackgroundImageFieldTarget)
+}
+
+func (u *UpdateCompaniesRequestEmailThemeBackgroundImage) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateCompaniesRequestEmailThemeBackgroundImage
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateCompaniesRequestEmailThemeBackgroundImage(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateCompaniesRequestEmailThemeBackgroundImage) MarshalJSON() ([]byte, error) {
+	type embed UpdateCompaniesRequestEmailThemeBackgroundImage
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateCompaniesRequestEmailThemeBackgroundImage) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+// "cover" (default) scales to fill; "tile" repeats at natural size for textures.
+type UpdateCompaniesRequestEmailThemeBackgroundImageFit string
+
+const (
+	UpdateCompaniesRequestEmailThemeBackgroundImageFitCover UpdateCompaniesRequestEmailThemeBackgroundImageFit = "cover"
+	UpdateCompaniesRequestEmailThemeBackgroundImageFitTile  UpdateCompaniesRequestEmailThemeBackgroundImageFit = "tile"
+)
+
+func NewUpdateCompaniesRequestEmailThemeBackgroundImageFitFromString(s string) (UpdateCompaniesRequestEmailThemeBackgroundImageFit, error) {
+	switch s {
+	case "cover":
+		return UpdateCompaniesRequestEmailThemeBackgroundImageFitCover, nil
+	case "tile":
+		return UpdateCompaniesRequestEmailThemeBackgroundImageFitTile, nil
+	}
+	var t UpdateCompaniesRequestEmailThemeBackgroundImageFit
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateCompaniesRequestEmailThemeBackgroundImageFit) Ptr() *UpdateCompaniesRequestEmailThemeBackgroundImageFit {
+	return &u
+}
+
+// "both" (default) paints the outer canvas and content seamlessly; "content" paints the content card only; "canvas" paints the outer page behind a solid content card.
+type UpdateCompaniesRequestEmailThemeBackgroundImageTarget string
+
+const (
+	UpdateCompaniesRequestEmailThemeBackgroundImageTargetBoth    UpdateCompaniesRequestEmailThemeBackgroundImageTarget = "both"
+	UpdateCompaniesRequestEmailThemeBackgroundImageTargetContent UpdateCompaniesRequestEmailThemeBackgroundImageTarget = "content"
+	UpdateCompaniesRequestEmailThemeBackgroundImageTargetCanvas  UpdateCompaniesRequestEmailThemeBackgroundImageTarget = "canvas"
+)
+
+func NewUpdateCompaniesRequestEmailThemeBackgroundImageTargetFromString(s string) (UpdateCompaniesRequestEmailThemeBackgroundImageTarget, error) {
+	switch s {
+	case "both":
+		return UpdateCompaniesRequestEmailThemeBackgroundImageTargetBoth, nil
+	case "content":
+		return UpdateCompaniesRequestEmailThemeBackgroundImageTargetContent, nil
+	case "canvas":
+		return UpdateCompaniesRequestEmailThemeBackgroundImageTargetCanvas, nil
+	}
+	var t UpdateCompaniesRequestEmailThemeBackgroundImageTarget
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateCompaniesRequestEmailThemeBackgroundImageTarget) Ptr() *UpdateCompaniesRequestEmailThemeBackgroundImageTarget {
+	return &u
 }
 
 // How primary buttons are filled. "outline" renders them as a transparent box with a brand-color border; "solid" (default) is the classic filled button.

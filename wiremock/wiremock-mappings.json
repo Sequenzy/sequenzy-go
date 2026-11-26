@@ -9,7 +9,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"description\": \"Email marketing for SaaS and ecommerce\",\n  \"documentation\": \"https://docs.sequenzy.com/concepts/mcp\",\n  \"name\": \"Sequenzy\",\n  \"repository\": \"https://github.com/Sequenzy/mcp\",\n  \"transport\": \"streamable-http\",\n  \"url\": \"https://api.sequenzy.com/v1/mcp\"\n}",
+        "body": "{\n  \"description\": \"AI-native email marketing tool for SaaS\",\n  \"documentation\": \"https://docs.sequenzy.com/concepts/mcp\",\n  \"name\": \"Sequenzy\",\n  \"repository\": \"https://github.com/Sequenzy/mcp\",\n  \"transport\": \"streamable-http\",\n  \"url\": \"https://api.sequenzy.com/v1/mcp\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
