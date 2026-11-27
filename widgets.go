@@ -22,9 +22,10 @@ var (
 	createSavedFormRequestFieldResubscribeBehavior = big.NewInt(1 << 8)
 	createSavedFormRequestFieldShowFirstName       = big.NewInt(1 << 9)
 	createSavedFormRequestFieldShowLastName        = big.NewInt(1 << 10)
-	createSavedFormRequestFieldSuccessMessage      = big.NewInt(1 << 11)
-	createSavedFormRequestFieldTagIDs              = big.NewInt(1 << 12)
-	createSavedFormRequestFieldTheme               = big.NewInt(1 << 13)
+	createSavedFormRequestFieldSubmitTokenMode     = big.NewInt(1 << 11)
+	createSavedFormRequestFieldSuccessMessage      = big.NewInt(1 << 12)
+	createSavedFormRequestFieldTagIDs              = big.NewInt(1 << 13)
+	createSavedFormRequestFieldTheme               = big.NewInt(1 << 14)
 )
 
 type CreateSavedFormRequest struct {
@@ -41,8 +42,10 @@ type CreateSavedFormRequest struct {
 	ResubscribeBehavior *CreateSavedFormRequestResubscribeBehavior `json:"resubscribeBehavior,omitempty" url:"-"`
 	ShowFirstName       *bool                                      `json:"showFirstName,omitempty" url:"-"`
 	ShowLastName        *bool                                      `json:"showLastName,omitempty" url:"-"`
-	SuccessMessage      *string                                    `json:"successMessage,omitempty" url:"-"`
-	TagIDs              []string                                   `json:"tagIds,omitempty" url:"-"`
+	// Which signups this form accepts. `inherit` (the default) follows your workspace. `strict` only accepts signups sent by the hosted JavaScript embed: signups from the plain HTML or fetch snippets, direct posts and mobile app signups get the normal success response but add no contact and send no email, and with `botProtection` on, signups that fail the bot check are dropped the same way instead of confirming by email. `enforce` makes signups without the embed token confirm by email first. A form setting can only tighten your workspace mode.
+	SubmitTokenMode *CreateSavedFormRequestSubmitTokenMode `json:"submitTokenMode,omitempty" url:"-"`
+	SuccessMessage  *string                                `json:"successMessage,omitempty" url:"-"`
+	TagIDs          []string                               `json:"tagIds,omitempty" url:"-"`
 	// Optional visual theme overrides (accentColor, backgroundColor, textColor, mutedTextColor, cardColor, borderColor as "#rrggbb", borderRadius 0-32, headingFontFamily, bodyFontFamily, density).
 	Theme map[string]any `json:"theme,omitempty" url:"-"`
 
@@ -134,6 +137,13 @@ func (c *CreateSavedFormRequest) SetShowLastName(showLastName *bool) {
 	c.require(createSavedFormRequestFieldShowLastName)
 }
 
+// SetSubmitTokenMode sets the SubmitTokenMode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateSavedFormRequest) SetSubmitTokenMode(submitTokenMode *CreateSavedFormRequestSubmitTokenMode) {
+	c.SubmitTokenMode = submitTokenMode
+	c.require(createSavedFormRequestFieldSubmitTokenMode)
+}
+
 // SetSuccessMessage sets the SuccessMessage field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreateSavedFormRequest) SetSuccessMessage(successMessage *string) {
@@ -193,13 +203,14 @@ var (
 	createSavedPopupRequestFieldReward              = big.NewInt(1 << 13)
 	createSavedPopupRequestFieldSchedule            = big.NewInt(1 << 14)
 	createSavedPopupRequestFieldStatus              = big.NewInt(1 << 15)
-	createSavedPopupRequestFieldSuccessMessage      = big.NewInt(1 << 16)
-	createSavedPopupRequestFieldTagIDs              = big.NewInt(1 << 17)
-	createSavedPopupRequestFieldTargeting           = big.NewInt(1 << 18)
-	createSavedPopupRequestFieldTemplate            = big.NewInt(1 << 19)
-	createSavedPopupRequestFieldTheme               = big.NewInt(1 << 20)
-	createSavedPopupRequestFieldTrigger             = big.NewInt(1 << 21)
-	createSavedPopupRequestFieldVisual              = big.NewInt(1 << 22)
+	createSavedPopupRequestFieldSubmitTokenMode     = big.NewInt(1 << 16)
+	createSavedPopupRequestFieldSuccessMessage      = big.NewInt(1 << 17)
+	createSavedPopupRequestFieldTagIDs              = big.NewInt(1 << 18)
+	createSavedPopupRequestFieldTargeting           = big.NewInt(1 << 19)
+	createSavedPopupRequestFieldTemplate            = big.NewInt(1 << 20)
+	createSavedPopupRequestFieldTheme               = big.NewInt(1 << 21)
+	createSavedPopupRequestFieldTrigger             = big.NewInt(1 << 22)
+	createSavedPopupRequestFieldVisual              = big.NewInt(1 << 23)
 )
 
 type CreateSavedPopupRequest struct {
@@ -223,9 +234,11 @@ type CreateSavedPopupRequest struct {
 	Reward              *SavedPopupReward                           `json:"reward,omitempty" url:"-"`
 	Schedule            *SavedPopupSchedule                         `json:"schedule,omitempty" url:"-"`
 	Status              *CreateSavedPopupRequestStatus              `json:"status,omitempty" url:"-"`
-	SuccessMessage      *string                                     `json:"successMessage,omitempty" url:"-"`
-	TagIDs              []string                                    `json:"tagIds,omitempty" url:"-"`
-	Targeting           *SavedPopupTargeting                        `json:"targeting,omitempty" url:"-"`
+	// Which signups this popup accepts. `inherit` (the default) follows your workspace. `strict` only accepts signups sent by the hosted popup script: direct posts get the normal success response but add no contact and send no email, and with `botProtection` on, signups that fail the bot check are dropped the same way instead of confirming by email. `enforce` makes signups without the popup token confirm by email first. A popup setting can only tighten your workspace mode.
+	SubmitTokenMode *CreateSavedPopupRequestSubmitTokenMode `json:"submitTokenMode,omitempty" url:"-"`
+	SuccessMessage  *string                                 `json:"successMessage,omitempty" url:"-"`
+	TagIDs          []string                                `json:"tagIds,omitempty" url:"-"`
+	Targeting       *SavedPopupTargeting                    `json:"targeting,omitempty" url:"-"`
 	// Starting design for the popup's blocks and theme.
 	Template *CreateSavedPopupRequestTemplate `json:"template,omitempty" url:"-"`
 	// Optional visual theme overrides (accentColor, backgroundColor, textColor, mutedTextColor, cardColor, borderColor as "#rrggbb", borderRadius 0-32, headingFontFamily, bodyFontFamily, density).
@@ -354,6 +367,13 @@ func (c *CreateSavedPopupRequest) SetSchedule(schedule *SavedPopupSchedule) {
 func (c *CreateSavedPopupRequest) SetStatus(status *CreateSavedPopupRequestStatus) {
 	c.Status = status
 	c.require(createSavedPopupRequestFieldStatus)
+}
+
+// SetSubmitTokenMode sets the SubmitTokenMode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateSavedPopupRequest) SetSubmitTokenMode(submitTokenMode *CreateSavedPopupRequestSubmitTokenMode) {
+	c.SubmitTokenMode = submitTokenMode
+	c.require(createSavedPopupRequestFieldSubmitTokenMode)
 }
 
 // SetSuccessMessage sets the SuccessMessage field and marks it as non-optional;
@@ -4702,7 +4722,8 @@ var (
 	formCaptureSettingsFieldListMode            = big.NewInt(1 << 4)
 	formCaptureSettingsFieldRedirectURL         = big.NewInt(1 << 5)
 	formCaptureSettingsFieldResubscribeBehavior = big.NewInt(1 << 6)
-	formCaptureSettingsFieldTagIDs              = big.NewInt(1 << 7)
+	formCaptureSettingsFieldSubmitTokenMode     = big.NewInt(1 << 7)
+	formCaptureSettingsFieldTagIDs              = big.NewInt(1 << 8)
 )
 
 type FormCaptureSettings struct {
@@ -4715,7 +4736,9 @@ type FormCaptureSettings struct {
 	RedirectURL       string                               `json:"redirectUrl" url:"redirectUrl"`
 	// What happens when a contact who unsubscribed from all email submits the form or popup again. `reactivate` resubscribes them and restores the target lists. `double_opt_in` sends the workspace confirmation email first. Workspace double opt-in always requires confirmation.
 	ResubscribeBehavior FormCaptureSettingsResubscribeBehavior `json:"resubscribeBehavior" url:"resubscribeBehavior"`
-	TagIDs              []string                               `json:"tagIds" url:"tagIds"`
+	// Signed submit-token mode. `inherit` follows the workspace. `strict` ignores signups that were not sent by the hosted script embed or popup script; they get the normal success response but add no contact and send no email. `enforce` makes them confirm by email first.
+	SubmitTokenMode *FormCaptureSettingsSubmitTokenMode `json:"submitTokenMode,omitempty" url:"submitTokenMode,omitempty"`
+	TagIDs          []string                            `json:"tagIds" url:"tagIds"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -4771,6 +4794,13 @@ func (f *FormCaptureSettings) GetResubscribeBehavior() FormCaptureSettingsResubs
 		return ""
 	}
 	return f.ResubscribeBehavior
+}
+
+func (f *FormCaptureSettings) GetSubmitTokenMode() *FormCaptureSettingsSubmitTokenMode {
+	if f == nil {
+		return nil
+	}
+	return f.SubmitTokenMode
 }
 
 func (f *FormCaptureSettings) GetTagIDs() []string {
@@ -4841,6 +4871,13 @@ func (f *FormCaptureSettings) SetRedirectURL(redirectURL string) {
 func (f *FormCaptureSettings) SetResubscribeBehavior(resubscribeBehavior FormCaptureSettingsResubscribeBehavior) {
 	f.ResubscribeBehavior = resubscribeBehavior
 	f.require(formCaptureSettingsFieldResubscribeBehavior)
+}
+
+// SetSubmitTokenMode sets the SubmitTokenMode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *FormCaptureSettings) SetSubmitTokenMode(submitTokenMode *FormCaptureSettingsSubmitTokenMode) {
+	f.SubmitTokenMode = submitTokenMode
+	f.require(formCaptureSettingsFieldSubmitTokenMode)
 }
 
 // SetTagIDs sets the TagIDs field and marks it as non-optional;
@@ -4984,6 +5021,32 @@ func NewFormCaptureSettingsResubscribeBehaviorFromString(s string) (FormCaptureS
 }
 
 func (f FormCaptureSettingsResubscribeBehavior) Ptr() *FormCaptureSettingsResubscribeBehavior {
+	return &f
+}
+
+// Signed submit-token mode. `inherit` follows the workspace. `strict` ignores signups that were not sent by the hosted script embed or popup script; they get the normal success response but add no contact and send no email. `enforce` makes them confirm by email first.
+type FormCaptureSettingsSubmitTokenMode string
+
+const (
+	FormCaptureSettingsSubmitTokenModeInherit FormCaptureSettingsSubmitTokenMode = "inherit"
+	FormCaptureSettingsSubmitTokenModeEnforce FormCaptureSettingsSubmitTokenMode = "enforce"
+	FormCaptureSettingsSubmitTokenModeStrict  FormCaptureSettingsSubmitTokenMode = "strict"
+)
+
+func NewFormCaptureSettingsSubmitTokenModeFromString(s string) (FormCaptureSettingsSubmitTokenMode, error) {
+	switch s {
+	case "inherit":
+		return FormCaptureSettingsSubmitTokenModeInherit, nil
+	case "enforce":
+		return FormCaptureSettingsSubmitTokenModeEnforce, nil
+	case "strict":
+		return FormCaptureSettingsSubmitTokenModeStrict, nil
+	}
+	var t FormCaptureSettingsSubmitTokenMode
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (f FormCaptureSettingsSubmitTokenMode) Ptr() *FormCaptureSettingsSubmitTokenMode {
 	return &f
 }
 
@@ -6139,13 +6202,14 @@ var (
 	savedFormSettingsFieldResubscribeBehavior  = big.NewInt(1 << 28)
 	savedFormSettingsFieldShowFirstName        = big.NewInt(1 << 29)
 	savedFormSettingsFieldShowLastName         = big.NewInt(1 << 30)
-	savedFormSettingsFieldSuccessFontColor     = big.NewInt(1 << 31)
-	savedFormSettingsFieldSuccessFontSize      = big.NewInt(1 << 32)
-	savedFormSettingsFieldSuccessMessage       = big.NewInt(1 << 33)
-	savedFormSettingsFieldTagIDs               = big.NewInt(1 << 34)
-	savedFormSettingsFieldTemplateID           = big.NewInt(1 << 35)
-	savedFormSettingsFieldThemeMode            = big.NewInt(1 << 36)
-	savedFormSettingsFieldVisualPlacement      = big.NewInt(1 << 37)
+	savedFormSettingsFieldSubmitTokenMode      = big.NewInt(1 << 31)
+	savedFormSettingsFieldSuccessFontColor     = big.NewInt(1 << 32)
+	savedFormSettingsFieldSuccessFontSize      = big.NewInt(1 << 33)
+	savedFormSettingsFieldSuccessMessage       = big.NewInt(1 << 34)
+	savedFormSettingsFieldTagIDs               = big.NewInt(1 << 35)
+	savedFormSettingsFieldTemplateID           = big.NewInt(1 << 36)
+	savedFormSettingsFieldThemeMode            = big.NewInt(1 << 37)
+	savedFormSettingsFieldVisualPlacement      = big.NewInt(1 << 38)
 )
 
 type SavedFormSettings struct {
@@ -6182,13 +6246,15 @@ type SavedFormSettings struct {
 	ResubscribeBehavior SavedFormSettingsResubscribeBehavior `json:"resubscribeBehavior" url:"resubscribeBehavior"`
 	ShowFirstName       bool                                 `json:"showFirstName" url:"showFirstName"`
 	ShowLastName        bool                                 `json:"showLastName" url:"showLastName"`
-	SuccessFontColor    *string                              `json:"successFontColor,omitempty" url:"successFontColor,omitempty"`
-	SuccessFontSize     string                               `json:"successFontSize" url:"successFontSize"`
-	SuccessMessage      string                               `json:"successMessage" url:"successMessage"`
-	TagIDs              []string                             `json:"tagIds" url:"tagIds"`
-	TemplateID          SavedFormSettingsTemplateID          `json:"templateId" url:"templateId"`
-	ThemeMode           SavedFormSettingsThemeMode           `json:"themeMode" url:"themeMode"`
-	VisualPlacement     SavedFormSettingsVisualPlacement     `json:"visualPlacement" url:"visualPlacement"`
+	// Signed submit-token mode. `inherit` follows the workspace. `strict` ignores signups that were not sent by the hosted script embed or popup script; they get the normal success response but add no contact and send no email. `enforce` makes them confirm by email first.
+	SubmitTokenMode  *SavedFormSettingsSubmitTokenMode `json:"submitTokenMode,omitempty" url:"submitTokenMode,omitempty"`
+	SuccessFontColor *string                           `json:"successFontColor,omitempty" url:"successFontColor,omitempty"`
+	SuccessFontSize  string                            `json:"successFontSize" url:"successFontSize"`
+	SuccessMessage   string                            `json:"successMessage" url:"successMessage"`
+	TagIDs           []string                          `json:"tagIds" url:"tagIds"`
+	TemplateID       SavedFormSettingsTemplateID       `json:"templateId" url:"templateId"`
+	ThemeMode        SavedFormSettingsThemeMode        `json:"themeMode" url:"themeMode"`
+	VisualPlacement  SavedFormSettingsVisualPlacement  `json:"visualPlacement" url:"visualPlacement"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -6412,6 +6478,13 @@ func (s *SavedFormSettings) GetShowLastName() bool {
 		return false
 	}
 	return s.ShowLastName
+}
+
+func (s *SavedFormSettings) GetSubmitTokenMode() *SavedFormSettingsSubmitTokenMode {
+	if s == nil {
+		return nil
+	}
+	return s.SubmitTokenMode
 }
 
 func (s *SavedFormSettings) GetSuccessFontColor() *string {
@@ -6692,6 +6765,13 @@ func (s *SavedFormSettings) SetShowFirstName(showFirstName bool) {
 func (s *SavedFormSettings) SetShowLastName(showLastName bool) {
 	s.ShowLastName = showLastName
 	s.require(savedFormSettingsFieldShowLastName)
+}
+
+// SetSubmitTokenMode sets the SubmitTokenMode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SavedFormSettings) SetSubmitTokenMode(submitTokenMode *SavedFormSettingsSubmitTokenMode) {
+	s.SubmitTokenMode = submitTokenMode
+	s.require(savedFormSettingsFieldSubmitTokenMode)
 }
 
 // SetSuccessFontColor sets the SuccessFontColor field and marks it as non-optional;
@@ -7047,6 +7127,32 @@ func NewSavedFormSettingsResubscribeBehaviorFromString(s string) (SavedFormSetti
 }
 
 func (s SavedFormSettingsResubscribeBehavior) Ptr() *SavedFormSettingsResubscribeBehavior {
+	return &s
+}
+
+// Signed submit-token mode. `inherit` follows the workspace. `strict` ignores signups that were not sent by the hosted script embed or popup script; they get the normal success response but add no contact and send no email. `enforce` makes them confirm by email first.
+type SavedFormSettingsSubmitTokenMode string
+
+const (
+	SavedFormSettingsSubmitTokenModeInherit SavedFormSettingsSubmitTokenMode = "inherit"
+	SavedFormSettingsSubmitTokenModeEnforce SavedFormSettingsSubmitTokenMode = "enforce"
+	SavedFormSettingsSubmitTokenModeStrict  SavedFormSettingsSubmitTokenMode = "strict"
+)
+
+func NewSavedFormSettingsSubmitTokenModeFromString(s string) (SavedFormSettingsSubmitTokenMode, error) {
+	switch s {
+	case "inherit":
+		return SavedFormSettingsSubmitTokenModeInherit, nil
+	case "enforce":
+		return SavedFormSettingsSubmitTokenModeEnforce, nil
+	case "strict":
+		return SavedFormSettingsSubmitTokenModeStrict, nil
+	}
+	var t SavedFormSettingsSubmitTokenMode
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SavedFormSettingsSubmitTokenMode) Ptr() *SavedFormSettingsSubmitTokenMode {
 	return &s
 }
 
@@ -9140,6 +9246,32 @@ func (c CreateSavedFormRequestResubscribeBehavior) Ptr() *CreateSavedFormRequest
 	return &c
 }
 
+// Which signups this form accepts. `inherit` (the default) follows your workspace. `strict` only accepts signups sent by the hosted JavaScript embed: signups from the plain HTML or fetch snippets, direct posts and mobile app signups get the normal success response but add no contact and send no email, and with `botProtection` on, signups that fail the bot check are dropped the same way instead of confirming by email. `enforce` makes signups without the embed token confirm by email first. A form setting can only tighten your workspace mode.
+type CreateSavedFormRequestSubmitTokenMode string
+
+const (
+	CreateSavedFormRequestSubmitTokenModeInherit CreateSavedFormRequestSubmitTokenMode = "inherit"
+	CreateSavedFormRequestSubmitTokenModeEnforce CreateSavedFormRequestSubmitTokenMode = "enforce"
+	CreateSavedFormRequestSubmitTokenModeStrict  CreateSavedFormRequestSubmitTokenMode = "strict"
+)
+
+func NewCreateSavedFormRequestSubmitTokenModeFromString(s string) (CreateSavedFormRequestSubmitTokenMode, error) {
+	switch s {
+	case "inherit":
+		return CreateSavedFormRequestSubmitTokenModeInherit, nil
+	case "enforce":
+		return CreateSavedFormRequestSubmitTokenModeEnforce, nil
+	case "strict":
+		return CreateSavedFormRequestSubmitTokenModeStrict, nil
+	}
+	var t CreateSavedFormRequestSubmitTokenMode
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateSavedFormRequestSubmitTokenMode) Ptr() *CreateSavedFormRequestSubmitTokenMode {
+	return &c
+}
+
 var (
 	createSavedFormResponseFieldEmbed   = big.NewInt(1 << 0)
 	createSavedFormResponseFieldForm    = big.NewInt(1 << 1)
@@ -9382,6 +9514,32 @@ func NewCreateSavedPopupRequestStatusFromString(s string) (CreateSavedPopupReque
 }
 
 func (c CreateSavedPopupRequestStatus) Ptr() *CreateSavedPopupRequestStatus {
+	return &c
+}
+
+// Which signups this popup accepts. `inherit` (the default) follows your workspace. `strict` only accepts signups sent by the hosted popup script: direct posts get the normal success response but add no contact and send no email, and with `botProtection` on, signups that fail the bot check are dropped the same way instead of confirming by email. `enforce` makes signups without the popup token confirm by email first. A popup setting can only tighten your workspace mode.
+type CreateSavedPopupRequestSubmitTokenMode string
+
+const (
+	CreateSavedPopupRequestSubmitTokenModeInherit CreateSavedPopupRequestSubmitTokenMode = "inherit"
+	CreateSavedPopupRequestSubmitTokenModeEnforce CreateSavedPopupRequestSubmitTokenMode = "enforce"
+	CreateSavedPopupRequestSubmitTokenModeStrict  CreateSavedPopupRequestSubmitTokenMode = "strict"
+)
+
+func NewCreateSavedPopupRequestSubmitTokenModeFromString(s string) (CreateSavedPopupRequestSubmitTokenMode, error) {
+	switch s {
+	case "inherit":
+		return CreateSavedPopupRequestSubmitTokenModeInherit, nil
+	case "enforce":
+		return CreateSavedPopupRequestSubmitTokenModeEnforce, nil
+	case "strict":
+		return CreateSavedPopupRequestSubmitTokenModeStrict, nil
+	}
+	var t CreateSavedPopupRequestSubmitTokenMode
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateSavedPopupRequestSubmitTokenMode) Ptr() *CreateSavedPopupRequestSubmitTokenMode {
 	return &c
 }
 
@@ -12810,6 +12968,32 @@ func (u UpdateSavedFormRequestResubscribeBehavior) Ptr() *UpdateSavedFormRequest
 	return &u
 }
 
+// Which signups this form accepts. `inherit` (the default) follows your workspace. `strict` only accepts signups sent by the hosted JavaScript embed: signups from the plain HTML or fetch snippets, direct posts and mobile app signups get the normal success response but add no contact and send no email, and with `botProtection` on, signups that fail the bot check are dropped the same way instead of confirming by email. `enforce` makes signups without the embed token confirm by email first. A form setting can only tighten your workspace mode. Omit to keep the current setting.
+type UpdateSavedFormRequestSubmitTokenMode string
+
+const (
+	UpdateSavedFormRequestSubmitTokenModeInherit UpdateSavedFormRequestSubmitTokenMode = "inherit"
+	UpdateSavedFormRequestSubmitTokenModeEnforce UpdateSavedFormRequestSubmitTokenMode = "enforce"
+	UpdateSavedFormRequestSubmitTokenModeStrict  UpdateSavedFormRequestSubmitTokenMode = "strict"
+)
+
+func NewUpdateSavedFormRequestSubmitTokenModeFromString(s string) (UpdateSavedFormRequestSubmitTokenMode, error) {
+	switch s {
+	case "inherit":
+		return UpdateSavedFormRequestSubmitTokenModeInherit, nil
+	case "enforce":
+		return UpdateSavedFormRequestSubmitTokenModeEnforce, nil
+	case "strict":
+		return UpdateSavedFormRequestSubmitTokenModeStrict, nil
+	}
+	var t UpdateSavedFormRequestSubmitTokenMode
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateSavedFormRequestSubmitTokenMode) Ptr() *UpdateSavedFormRequestSubmitTokenMode {
+	return &u
+}
+
 var (
 	updateSavedFormResponseFieldEmbed   = big.NewInt(1 << 0)
 	updateSavedFormResponseFieldForm    = big.NewInt(1 << 1)
@@ -13072,6 +13256,32 @@ func (u UpdateSavedPopupRequestStatus) Ptr() *UpdateSavedPopupRequestStatus {
 	return &u
 }
 
+// Which signups this popup accepts. `inherit` (the default) follows your workspace. `strict` only accepts signups sent by the hosted popup script: direct posts get the normal success response but add no contact and send no email, and with `botProtection` on, signups that fail the bot check are dropped the same way instead of confirming by email. `enforce` makes signups without the popup token confirm by email first. A popup setting can only tighten your workspace mode. Omit to keep the current setting.
+type UpdateSavedPopupRequestSubmitTokenMode string
+
+const (
+	UpdateSavedPopupRequestSubmitTokenModeInherit UpdateSavedPopupRequestSubmitTokenMode = "inherit"
+	UpdateSavedPopupRequestSubmitTokenModeEnforce UpdateSavedPopupRequestSubmitTokenMode = "enforce"
+	UpdateSavedPopupRequestSubmitTokenModeStrict  UpdateSavedPopupRequestSubmitTokenMode = "strict"
+)
+
+func NewUpdateSavedPopupRequestSubmitTokenModeFromString(s string) (UpdateSavedPopupRequestSubmitTokenMode, error) {
+	switch s {
+	case "inherit":
+		return UpdateSavedPopupRequestSubmitTokenModeInherit, nil
+	case "enforce":
+		return UpdateSavedPopupRequestSubmitTokenModeEnforce, nil
+	case "strict":
+		return UpdateSavedPopupRequestSubmitTokenModeStrict, nil
+	}
+	var t UpdateSavedPopupRequestSubmitTokenMode
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateSavedPopupRequestSubmitTokenMode) Ptr() *UpdateSavedPopupRequestSubmitTokenMode {
+	return &u
+}
+
 var (
 	updateSavedPopupResponseFieldEmbed   = big.NewInt(1 << 0)
 	updateSavedPopupResponseFieldMessage = big.NewInt(1 << 1)
@@ -13216,9 +13426,10 @@ var (
 	updateSavedFormRequestFieldName                = big.NewInt(1 << 8)
 	updateSavedFormRequestFieldRedirectURL         = big.NewInt(1 << 9)
 	updateSavedFormRequestFieldResubscribeBehavior = big.NewInt(1 << 10)
-	updateSavedFormRequestFieldSuccessMessage      = big.NewInt(1 << 11)
-	updateSavedFormRequestFieldTagIDs              = big.NewInt(1 << 12)
-	updateSavedFormRequestFieldTheme               = big.NewInt(1 << 13)
+	updateSavedFormRequestFieldSubmitTokenMode     = big.NewInt(1 << 11)
+	updateSavedFormRequestFieldSuccessMessage      = big.NewInt(1 << 12)
+	updateSavedFormRequestFieldTagIDs              = big.NewInt(1 << 13)
+	updateSavedFormRequestFieldTheme               = big.NewInt(1 << 14)
 )
 
 type UpdateSavedFormRequest struct {
@@ -13238,7 +13449,9 @@ type UpdateSavedFormRequest struct {
 	RedirectURL *string `json:"redirectUrl,omitempty" url:"-"`
 	// What happens when a contact who unsubscribed from all email submits this form again. `reactivate` resubscribes them and restores the form's lists. `double_opt_in` sends the workspace confirmation email first and resubscribes them when they confirm. Turning it on requires a double opt-in confirmation email and a sender profile, otherwise the request returns 400; if either is removed later, returning unsubscribed contacts stay unsubscribed. Workspace double opt-in always requires confirmation. `duplicateStrategy` never changes subscription status.
 	ResubscribeBehavior *UpdateSavedFormRequestResubscribeBehavior `json:"resubscribeBehavior,omitempty" url:"-"`
-	SuccessMessage      *string                                    `json:"successMessage,omitempty" url:"-"`
+	// Which signups this form accepts. `inherit` (the default) follows your workspace. `strict` only accepts signups sent by the hosted JavaScript embed: signups from the plain HTML or fetch snippets, direct posts and mobile app signups get the normal success response but add no contact and send no email, and with `botProtection` on, signups that fail the bot check are dropped the same way instead of confirming by email. `enforce` makes signups without the embed token confirm by email first. A form setting can only tighten your workspace mode. Omit to keep the current setting.
+	SubmitTokenMode *UpdateSavedFormRequestSubmitTokenMode `json:"submitTokenMode,omitempty" url:"-"`
+	SuccessMessage  *string                                `json:"successMessage,omitempty" url:"-"`
 	// Replacement tag IDs. An empty array clears tags.
 	TagIDs []string `json:"tagIds,omitempty" url:"-"`
 	// Visual theme overrides merged into the current theme (accentColor, backgroundColor, textColor, mutedTextColor, cardColor, borderColor as "#rrggbb", borderRadius 0-32, headingFontFamily, bodyFontFamily, density).
@@ -13332,6 +13545,13 @@ func (u *UpdateSavedFormRequest) SetResubscribeBehavior(resubscribeBehavior *Upd
 	u.require(updateSavedFormRequestFieldResubscribeBehavior)
 }
 
+// SetSubmitTokenMode sets the SubmitTokenMode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateSavedFormRequest) SetSubmitTokenMode(submitTokenMode *UpdateSavedFormRequestSubmitTokenMode) {
+	u.SubmitTokenMode = submitTokenMode
+	u.require(updateSavedFormRequestFieldSubmitTokenMode)
+}
+
 // SetSuccessMessage sets the SuccessMessage field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateSavedFormRequest) SetSuccessMessage(successMessage *string) {
@@ -13392,12 +13612,13 @@ var (
 	updateSavedPopupRequestFieldReward              = big.NewInt(1 << 14)
 	updateSavedPopupRequestFieldSchedule            = big.NewInt(1 << 15)
 	updateSavedPopupRequestFieldStatus              = big.NewInt(1 << 16)
-	updateSavedPopupRequestFieldSuccessMessage      = big.NewInt(1 << 17)
-	updateSavedPopupRequestFieldTagIDs              = big.NewInt(1 << 18)
-	updateSavedPopupRequestFieldTargeting           = big.NewInt(1 << 19)
-	updateSavedPopupRequestFieldTheme               = big.NewInt(1 << 20)
-	updateSavedPopupRequestFieldTrigger             = big.NewInt(1 << 21)
-	updateSavedPopupRequestFieldVisual              = big.NewInt(1 << 22)
+	updateSavedPopupRequestFieldSubmitTokenMode     = big.NewInt(1 << 17)
+	updateSavedPopupRequestFieldSuccessMessage      = big.NewInt(1 << 18)
+	updateSavedPopupRequestFieldTagIDs              = big.NewInt(1 << 19)
+	updateSavedPopupRequestFieldTargeting           = big.NewInt(1 << 20)
+	updateSavedPopupRequestFieldTheme               = big.NewInt(1 << 21)
+	updateSavedPopupRequestFieldTrigger             = big.NewInt(1 << 22)
+	updateSavedPopupRequestFieldVisual              = big.NewInt(1 << 23)
 )
 
 type UpdateSavedPopupRequest struct {
@@ -13425,7 +13646,9 @@ type UpdateSavedPopupRequest struct {
 	Reward              *SavedPopupReward                           `json:"reward,omitempty" url:"-"`
 	Schedule            *SavedPopupSchedule                         `json:"schedule,omitempty" url:"-"`
 	Status              *UpdateSavedPopupRequestStatus              `json:"status,omitempty" url:"-"`
-	SuccessMessage      *string                                     `json:"successMessage,omitempty" url:"-"`
+	// Which signups this popup accepts. `inherit` (the default) follows your workspace. `strict` only accepts signups sent by the hosted popup script: direct posts get the normal success response but add no contact and send no email, and with `botProtection` on, signups that fail the bot check are dropped the same way instead of confirming by email. `enforce` makes signups without the popup token confirm by email first. A popup setting can only tighten your workspace mode. Omit to keep the current setting.
+	SubmitTokenMode *UpdateSavedPopupRequestSubmitTokenMode `json:"submitTokenMode,omitempty" url:"-"`
+	SuccessMessage  *string                                 `json:"successMessage,omitempty" url:"-"`
 	// Replacement tag IDs. Pass an empty array to clear tags.
 	TagIDs    []string             `json:"tagIds,omitempty" url:"-"`
 	Targeting *SavedPopupTargeting `json:"targeting,omitempty" url:"-"`
@@ -13562,6 +13785,13 @@ func (u *UpdateSavedPopupRequest) SetSchedule(schedule *SavedPopupSchedule) {
 func (u *UpdateSavedPopupRequest) SetStatus(status *UpdateSavedPopupRequestStatus) {
 	u.Status = status
 	u.require(updateSavedPopupRequestFieldStatus)
+}
+
+// SetSubmitTokenMode sets the SubmitTokenMode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateSavedPopupRequest) SetSubmitTokenMode(submitTokenMode *UpdateSavedPopupRequestSubmitTokenMode) {
+	u.SubmitTokenMode = submitTokenMode
+	u.require(updateSavedPopupRequestFieldSubmitTokenMode)
 }
 
 // SetSuccessMessage sets the SuccessMessage field and marks it as non-optional;

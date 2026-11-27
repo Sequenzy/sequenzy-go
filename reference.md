@@ -40362,6 +40362,14 @@ client.Widgets.CreateSavedForm(
 <dl>
 <dd>
 
+**submitTokenMode:** `*sequenzygo.CreateSavedFormRequestSubmitTokenMode` — Which signups this form accepts. `inherit` (the default) follows your workspace. `strict` only accepts signups sent by the hosted JavaScript embed: signups from the plain HTML or fetch snippets, direct posts and mobile app signups get the normal success response but add no contact and send no email, and with `botProtection` on, signups that fail the bot check are dropped the same way instead of confirming by email. `enforce` makes signups without the embed token confirm by email first. A form setting can only tighten your workspace mode.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **successMessage:** `*string` 
     
 </dd>
@@ -40561,6 +40569,14 @@ client.Widgets.CreateSavedPopup(
 <dd>
 
 **status:** `*sequenzygo.CreateSavedPopupRequestStatus` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**submitTokenMode:** `*sequenzygo.CreateSavedPopupRequestSubmitTokenMode` — Which signups this popup accepts. `inherit` (the default) follows your workspace. `strict` only accepts signups sent by the hosted popup script: direct posts get the normal success response but add no contact and send no email, and with `botProtection` on, signups that fail the bot check are dropped the same way instead of confirming by email. `enforce` makes signups without the popup token confirm by email first. A popup setting can only tighten your workspace mode.
     
 </dd>
 </dl>
@@ -42129,6 +42145,14 @@ client.Widgets.UpdateSavedForm(
 <dl>
 <dd>
 
+**submitTokenMode:** `*sequenzygo.UpdateSavedFormRequestSubmitTokenMode` — Which signups this form accepts. `inherit` (the default) follows your workspace. `strict` only accepts signups sent by the hosted JavaScript embed: signups from the plain HTML or fetch snippets, direct posts and mobile app signups get the normal success response but add no contact and send no email, and with `botProtection` on, signups that fail the bot check are dropped the same way instead of confirming by email. `enforce` makes signups without the embed token confirm by email first. A form setting can only tighten your workspace mode. Omit to keep the current setting.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **successMessage:** `*string` 
     
 </dd>
@@ -42336,6 +42360,14 @@ client.Widgets.UpdateSavedPopup(
 <dd>
 
 **status:** `*sequenzygo.UpdateSavedPopupRequestStatus` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**submitTokenMode:** `*sequenzygo.UpdateSavedPopupRequestSubmitTokenMode` — Which signups this popup accepts. `inherit` (the default) follows your workspace. `strict` only accepts signups sent by the hosted popup script: direct posts get the normal success response but add no contact and send no email, and with `botProtection` on, signups that fail the bot check are dropped the same way instead of confirming by email. `enforce` makes signups without the popup token confirm by email first. A popup setting can only tighten your workspace mode. Omit to keep the current setting.
     
 </dd>
 </dl>

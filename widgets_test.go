@@ -99,6 +99,14 @@ func TestSettersCreateSavedFormRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetSubmitTokenMode", func(t *testing.T) {
+		obj := &CreateSavedFormRequest{}
+		var fernTestValueSubmitTokenMode *CreateSavedFormRequestSubmitTokenMode
+		obj.SetSubmitTokenMode(fernTestValueSubmitTokenMode)
+		assert.Equal(t, fernTestValueSubmitTokenMode, obj.SubmitTokenMode)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetSuccessMessage", func(t *testing.T) {
 		obj := &CreateSavedFormRequest{}
 		var fernTestValueSuccessMessage *string
@@ -467,6 +475,37 @@ func TestSettersMarkExplicitCreateSavedFormRequest(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetSubmitTokenMode_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateSavedFormRequest{}
+		var fernTestValueSubmitTokenMode *CreateSavedFormRequestSubmitTokenMode
+
+		// Act
+		obj.SetSubmitTokenMode(fernTestValueSubmitTokenMode)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetSuccessMessage_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -688,6 +727,14 @@ func TestSettersCreateSavedPopupRequest(t *testing.T) {
 		var fernTestValueStatus *CreateSavedPopupRequestStatus
 		obj.SetStatus(fernTestValueStatus)
 		assert.Equal(t, fernTestValueStatus, obj.Status)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetSubmitTokenMode", func(t *testing.T) {
+		obj := &CreateSavedPopupRequest{}
+		var fernTestValueSubmitTokenMode *CreateSavedPopupRequestSubmitTokenMode
+		obj.SetSubmitTokenMode(fernTestValueSubmitTokenMode)
+		assert.Equal(t, fernTestValueSubmitTokenMode, obj.SubmitTokenMode)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -1223,6 +1270,37 @@ func TestSettersMarkExplicitCreateSavedPopupRequest(t *testing.T) {
 
 		// Act
 		obj.SetStatus(fernTestValueStatus)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSubmitTokenMode_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateSavedPopupRequest{}
+		var fernTestValueSubmitTokenMode *CreateSavedPopupRequestSubmitTokenMode
+
+		// Act
+		obj.SetSubmitTokenMode(fernTestValueSubmitTokenMode)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -10432,6 +10510,14 @@ func TestSettersFormCaptureSettings(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetSubmitTokenMode", func(t *testing.T) {
+		obj := &FormCaptureSettings{}
+		var fernTestValueSubmitTokenMode *FormCaptureSettingsSubmitTokenMode
+		obj.SetSubmitTokenMode(fernTestValueSubmitTokenMode)
+		assert.Equal(t, fernTestValueSubmitTokenMode, obj.SubmitTokenMode)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetTagIDs", func(t *testing.T) {
 		obj := &FormCaptureSettings{}
 		var fernTestValueTagIDs []string
@@ -10612,6 +10698,39 @@ func TestGettersFormCaptureSettings(t *testing.T) {
 			}
 		}()
 		_ = obj.GetResubscribeBehavior() // Should return zero value
+	})
+
+	t.Run("GetSubmitTokenMode", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FormCaptureSettings{}
+		var expected *FormCaptureSettingsSubmitTokenMode
+		obj.SubmitTokenMode = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSubmitTokenMode(), "getter should return the property value")
+	})
+
+	t.Run("GetSubmitTokenMode_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FormCaptureSettings{}
+		obj.SubmitTokenMode = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSubmitTokenMode(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSubmitTokenMode_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *FormCaptureSettings
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSubmitTokenMode() // Should return zero value
 	})
 
 	t.Run("GetTagIDs", func(t *testing.T) {
@@ -10844,6 +10963,37 @@ func TestSettersMarkExplicitFormCaptureSettings(t *testing.T) {
 
 		// Act
 		obj.SetResubscribeBehavior(fernTestValueResubscribeBehavior)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSubmitTokenMode_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &FormCaptureSettings{}
+		var fernTestValueSubmitTokenMode *FormCaptureSettingsSubmitTokenMode
+
+		// Act
+		obj.SetSubmitTokenMode(fernTestValueSubmitTokenMode)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -13771,6 +13921,14 @@ func TestSettersSavedFormSettings(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetSubmitTokenMode", func(t *testing.T) {
+		obj := &SavedFormSettings{}
+		var fernTestValueSubmitTokenMode *SavedFormSettingsSubmitTokenMode
+		obj.SetSubmitTokenMode(fernTestValueSubmitTokenMode)
+		assert.Equal(t, fernTestValueSubmitTokenMode, obj.SubmitTokenMode)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetSuccessFontColor", func(t *testing.T) {
 		obj := &SavedFormSettings{}
 		var fernTestValueSuccessFontColor *string
@@ -14641,6 +14799,39 @@ func TestGettersSavedFormSettings(t *testing.T) {
 			}
 		}()
 		_ = obj.GetShowLastName() // Should return zero value
+	})
+
+	t.Run("GetSubmitTokenMode", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SavedFormSettings{}
+		var expected *SavedFormSettingsSubmitTokenMode
+		obj.SubmitTokenMode = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSubmitTokenMode(), "getter should return the property value")
+	})
+
+	t.Run("GetSubmitTokenMode_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SavedFormSettings{}
+		obj.SubmitTokenMode = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSubmitTokenMode(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSubmitTokenMode_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SavedFormSettings
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSubmitTokenMode() // Should return zero value
 	})
 
 	t.Run("GetSuccessFontColor", func(t *testing.T) {
@@ -15765,6 +15956,37 @@ func TestSettersMarkExplicitSavedFormSettings(t *testing.T) {
 
 		// Act
 		obj.SetShowLastName(fernTestValueShowLastName)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSubmitTokenMode_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SavedFormSettings{}
+		var fernTestValueSubmitTokenMode *SavedFormSettingsSubmitTokenMode
+
+		// Act
+		obj.SetSubmitTokenMode(fernTestValueSubmitTokenMode)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -28229,6 +28451,14 @@ func TestSettersUpdateSavedFormRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetSubmitTokenMode", func(t *testing.T) {
+		obj := &UpdateSavedFormRequest{}
+		var fernTestValueSubmitTokenMode *UpdateSavedFormRequestSubmitTokenMode
+		obj.SetSubmitTokenMode(fernTestValueSubmitTokenMode)
+		assert.Equal(t, fernTestValueSubmitTokenMode, obj.SubmitTokenMode)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetSuccessMessage", func(t *testing.T) {
 		obj := &UpdateSavedFormRequest{}
 		var fernTestValueSuccessMessage *string
@@ -28597,6 +28827,37 @@ func TestSettersMarkExplicitUpdateSavedFormRequest(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetSubmitTokenMode_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateSavedFormRequest{}
+		var fernTestValueSubmitTokenMode *UpdateSavedFormRequestSubmitTokenMode
+
+		// Act
+		obj.SetSubmitTokenMode(fernTestValueSubmitTokenMode)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetSuccessMessage_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -28826,6 +29087,14 @@ func TestSettersUpdateSavedPopupRequest(t *testing.T) {
 		var fernTestValueStatus *UpdateSavedPopupRequestStatus
 		obj.SetStatus(fernTestValueStatus)
 		assert.Equal(t, fernTestValueStatus, obj.Status)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetSubmitTokenMode", func(t *testing.T) {
+		obj := &UpdateSavedPopupRequest{}
+		var fernTestValueSubmitTokenMode *UpdateSavedPopupRequestSubmitTokenMode
+		obj.SetSubmitTokenMode(fernTestValueSubmitTokenMode)
+		assert.Equal(t, fernTestValueSubmitTokenMode, obj.SubmitTokenMode)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -29384,6 +29653,37 @@ func TestSettersMarkExplicitUpdateSavedPopupRequest(t *testing.T) {
 
 		// Act
 		obj.SetStatus(fernTestValueStatus)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSubmitTokenMode_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateSavedPopupRequest{}
+		var fernTestValueSubmitTokenMode *UpdateSavedPopupRequestSubmitTokenMode
+
+		// Act
+		obj.SetSubmitTokenMode(fernTestValueSubmitTokenMode)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -32917,6 +33217,42 @@ func TestEnumCreateSavedFormRequestResubscribeBehavior(t *testing.T) {
 	})
 }
 
+func TestEnumCreateSavedFormRequestSubmitTokenMode(t *testing.T) {
+	t.Run("NewFromString_inherit", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateSavedFormRequestSubmitTokenModeFromString("inherit")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateSavedFormRequestSubmitTokenMode("inherit"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_enforce", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateSavedFormRequestSubmitTokenModeFromString("enforce")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateSavedFormRequestSubmitTokenMode("enforce"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_strict", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateSavedFormRequestSubmitTokenModeFromString("strict")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateSavedFormRequestSubmitTokenMode("strict"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewCreateSavedFormRequestSubmitTokenModeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewCreateSavedFormRequestSubmitTokenModeFromString("inherit")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumCreateSavedPopupRequestDuplicateStrategy(t *testing.T) {
 	t.Run("NewFromString_skip", func(t *testing.T) {
 		t.Parallel()
@@ -33097,6 +33433,42 @@ func TestEnumCreateSavedPopupRequestStatus(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewCreateSavedPopupRequestStatusFromString("draft")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumCreateSavedPopupRequestSubmitTokenMode(t *testing.T) {
+	t.Run("NewFromString_inherit", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateSavedPopupRequestSubmitTokenModeFromString("inherit")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateSavedPopupRequestSubmitTokenMode("inherit"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_enforce", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateSavedPopupRequestSubmitTokenModeFromString("enforce")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateSavedPopupRequestSubmitTokenMode("enforce"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_strict", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateSavedPopupRequestSubmitTokenModeFromString("strict")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateSavedPopupRequestSubmitTokenMode("strict"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewCreateSavedPopupRequestSubmitTokenModeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewCreateSavedPopupRequestSubmitTokenModeFromString("inherit")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -33497,6 +33869,42 @@ func TestEnumFormCaptureSettingsResubscribeBehavior(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewFormCaptureSettingsResubscribeBehaviorFromString("reactivate")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumFormCaptureSettingsSubmitTokenMode(t *testing.T) {
+	t.Run("NewFromString_inherit", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFormCaptureSettingsSubmitTokenModeFromString("inherit")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FormCaptureSettingsSubmitTokenMode("inherit"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_enforce", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFormCaptureSettingsSubmitTokenModeFromString("enforce")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FormCaptureSettingsSubmitTokenMode("enforce"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_strict", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFormCaptureSettingsSubmitTokenModeFromString("strict")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FormCaptureSettingsSubmitTokenMode("strict"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewFormCaptureSettingsSubmitTokenModeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewFormCaptureSettingsSubmitTokenModeFromString("inherit")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -34149,6 +34557,42 @@ func TestEnumSavedFormSettingsResubscribeBehavior(t *testing.T) {
 	})
 }
 
+func TestEnumSavedFormSettingsSubmitTokenMode(t *testing.T) {
+	t.Run("NewFromString_inherit", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSavedFormSettingsSubmitTokenModeFromString("inherit")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SavedFormSettingsSubmitTokenMode("inherit"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_enforce", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSavedFormSettingsSubmitTokenModeFromString("enforce")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SavedFormSettingsSubmitTokenMode("enforce"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_strict", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSavedFormSettingsSubmitTokenModeFromString("strict")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SavedFormSettingsSubmitTokenMode("strict"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewSavedFormSettingsSubmitTokenModeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewSavedFormSettingsSubmitTokenModeFromString("inherit")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumSavedFormSettingsTemplateID(t *testing.T) {
 	t.Run("NewFromString_minimal", func(t *testing.T) {
 		t.Parallel()
@@ -34773,6 +35217,42 @@ func TestEnumUpdateSavedFormRequestResubscribeBehavior(t *testing.T) {
 	})
 }
 
+func TestEnumUpdateSavedFormRequestSubmitTokenMode(t *testing.T) {
+	t.Run("NewFromString_inherit", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateSavedFormRequestSubmitTokenModeFromString("inherit")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateSavedFormRequestSubmitTokenMode("inherit"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_enforce", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateSavedFormRequestSubmitTokenModeFromString("enforce")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateSavedFormRequestSubmitTokenMode("enforce"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_strict", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateSavedFormRequestSubmitTokenModeFromString("strict")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateSavedFormRequestSubmitTokenMode("strict"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewUpdateSavedFormRequestSubmitTokenModeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewUpdateSavedFormRequestSubmitTokenModeFromString("inherit")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumUpdateSavedPopupRequestDuplicateStrategy(t *testing.T) {
 	t.Run("NewFromString_skip", func(t *testing.T) {
 		t.Parallel()
@@ -34953,6 +35433,42 @@ func TestEnumUpdateSavedPopupRequestStatus(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewUpdateSavedPopupRequestStatusFromString("draft")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumUpdateSavedPopupRequestSubmitTokenMode(t *testing.T) {
+	t.Run("NewFromString_inherit", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateSavedPopupRequestSubmitTokenModeFromString("inherit")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateSavedPopupRequestSubmitTokenMode("inherit"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_enforce", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateSavedPopupRequestSubmitTokenModeFromString("enforce")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateSavedPopupRequestSubmitTokenMode("enforce"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_strict", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateSavedPopupRequestSubmitTokenModeFromString("strict")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateSavedPopupRequestSubmitTokenMode("strict"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewUpdateSavedPopupRequestSubmitTokenModeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewUpdateSavedPopupRequestSubmitTokenModeFromString("inherit")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
