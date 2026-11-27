@@ -2638,7 +2638,7 @@ var (
 )
 
 type GetInboxAddressResponseInbox struct {
-	// The address to share. Your branded address once it is active, otherwise the default address.
+	// The address to share. Your branded address once it is active, otherwise inbox@ your oldest verified receiving domain (inbox+{companyId}@ it for a domain moved from an older reply setup), otherwise the default address.
 	Address string `json:"address" url:"address"`
 	// Every address that currently delivers to this inbox, starting with `address`.
 	Addresses []string `json:"addresses" url:"addresses"`
@@ -2647,7 +2647,7 @@ type GetInboxAddressResponseInbox struct {
 	CustomAddress        *InboxCustomAddress `json:"customAddress,omitempty" url:"customAddress,omitempty"`
 	// inbox+{companyId}@inbound.sequenzy.com. Always works.
 	DefaultAddress string `json:"defaultAddress" url:"defaultAddress"`
-	// Whether the company receives email. When false, replies and inbox address email are not stored.
+	// Whether reply tracking is on, so new emails get a tracking Reply-To address. Mail sent to the inbox addresses is stored either way.
 	Enabled bool `json:"enabled" url:"enabled"`
 	// Days received email and attachments are kept.
 	RetentionDays int `json:"retentionDays" url:"retentionDays"`
@@ -3989,7 +3989,7 @@ var (
 )
 
 type UpdateInboxAddressRequest struct {
-	// One of your receiving domains, by name, such as `acme.com`. For compatibility, the name of a sending domain whose earlier reply setup moved to a receiving domain is also accepted and uses that receiving domain. A verified sending domain with no earlier setup gets its inbound host (usually `inbound.{root}`) added as the workspace's one receiving domain, or fails with 409 `limit_reached` when the workspace already has a different one. Null to clear.
+	// One of your receiving domains, by name, such as `acme.com`. For compatibility, the name of a sending domain whose earlier reply setup moved to a receiving domain is also accepted and uses that receiving domain. A verified sending domain with no earlier setup gets its inbound host (usually `inbound.{root}`) added as a receiving domain, or fails with 409 `limit_reached` when the workspace already has 5 receiving domains. Null to clear.
 	Domain *string `json:"domain,omitempty" url:"-"`
 	// Name before the @, such as `support`. Letters, numbers, dots, dashes and underscores, starting and ending with a letter or number. Stored in lowercase. Null to clear.
 	LocalPart *string `json:"localPart,omitempty" url:"-"`

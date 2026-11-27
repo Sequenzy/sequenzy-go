@@ -528,7 +528,7 @@ type SendTransactionalRequest struct {
 	To *SendTransactionalRequestTo `json:"to" url:"-"`
 	// Direct content only. Names the email type so its sends are counted under one code-managed transactional email, created on first use. Up to 255 ASCII letters, digits, spaces and `. _ - : /`, including at least one letter or digit; it is normalized like a slug. Cannot be combined with `slug`/`templateId`.
 	TrackAs *string `json:"trackAs,omitempty" url:"-"`
-	// Per-send tracking opt-outs. Omitted fields follow the company Transactional API open/click defaults. Set false to disable tracking for this send. Neither true nor omission can enable tracking disabled by account-wide or Transactional API settings.
+	// Per-send tracking opt-outs. Omitted fields follow the company Transactional API open, click, and reply tracking defaults. Set false to disable tracking for this send. Neither true nor omission can enable tracking disabled by account-wide or Transactional API settings.
 	TrackingSettings *SendTransactionalRequestTrackingSettings `json:"trackingSettings,omitempty" url:"-"`
 	// Variables for template replacement (works with both modes). Values can be scalars, nested objects, or arrays used by repeat blocks. For a single recipient, stored subscriber first and last names fill missing name variables; explicit request variables take precedence. Raw HTML templates can use simple subscriber/custom-attribute conditionals such as `{{#if subscriber.plan}}...{{else}}...{{/if}}` and `{{#unless subscriber.plan}}...{{/unless}}`. Variables are always HTML-escaped; a template can prefix a tag with `html.` (`{{html.prerenderedHtml}}`) to insert a trusted HTML value unescaped. Injected HTML is sanitized (scripts, event handlers, and dangerous URLs are stripped), only applies in HTML text position, and must not contain end-user input. Likely variable issues are returned as non-blocking diagnostics when possible; missing required variables without defaults render as empty strings and do not block sending.
 	Variables map[string]any `json:"variables,omitempty" url:"-"`
@@ -4211,10 +4211,11 @@ func (s *SendTransactionalRequestTo) Accept(visitor SendTransactionalRequestToVi
 	return fmt.Errorf("type %T does not include a non-empty union type", s)
 }
 
-// Per-send tracking opt-outs. Omitted fields follow the company Transactional API open/click defaults. Set false to disable tracking for this send. Neither true nor omission can enable tracking disabled by account-wide or Transactional API settings.
+// Per-send tracking opt-outs. Omitted fields follow the company Transactional API open, click, and reply tracking defaults. Set false to disable tracking for this send. Neither true nor omission can enable tracking disabled by account-wide or Transactional API settings.
 var (
 	sendTransactionalRequestTrackingSettingsFieldClickTracking = big.NewInt(1 << 0)
 	sendTransactionalRequestTrackingSettingsFieldOpenTracking  = big.NewInt(1 << 1)
+	sendTransactionalRequestTrackingSettingsFieldReplyTracking = big.NewInt(1 << 2)
 )
 
 type SendTransactionalRequestTrackingSettings struct {
@@ -4222,6 +4223,8 @@ type SendTransactionalRequestTrackingSettings struct {
 	ClickTracking *bool `json:"clickTracking,omitempty" url:"clickTracking,omitempty"`
 	// Set `false` to skip the open-tracking pixel for this send only.
 	OpenTracking *bool `json:"openTracking,omitempty" url:"openTracking,omitempty"`
+	// Set `false` to skip Reply-To rewriting for this send only, so replies go directly to the original Reply-To address instead of Sequenzy Inbox.
+	ReplyTracking *bool `json:"replyTracking,omitempty" url:"replyTracking,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -4242,6 +4245,13 @@ func (s *SendTransactionalRequestTrackingSettings) GetOpenTracking() *bool {
 		return nil
 	}
 	return s.OpenTracking
+}
+
+func (s *SendTransactionalRequestTrackingSettings) GetReplyTracking() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.ReplyTracking
 }
 
 func (s *SendTransactionalRequestTrackingSettings) GetExtraProperties() map[string]interface{} {
@@ -4270,6 +4280,13 @@ func (s *SendTransactionalRequestTrackingSettings) SetClickTracking(clickTrackin
 func (s *SendTransactionalRequestTrackingSettings) SetOpenTracking(openTracking *bool) {
 	s.OpenTracking = openTracking
 	s.require(sendTransactionalRequestTrackingSettingsFieldOpenTracking)
+}
+
+// SetReplyTracking sets the ReplyTracking field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendTransactionalRequestTrackingSettings) SetReplyTracking(replyTracking *bool) {
+	s.ReplyTracking = replyTracking
+	s.require(sendTransactionalRequestTrackingSettingsFieldReplyTracking)
 }
 
 func (s *SendTransactionalRequestTrackingSettings) UnmarshalJSON(data []byte) error {

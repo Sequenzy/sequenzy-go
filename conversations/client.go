@@ -154,7 +154,7 @@ func (c *Client) Get(
 	return response.Body, nil
 }
 
-// Returns the address anyone can email to reach this company's inbox, the same inbox+ address on each verified receiving domain, whether receiving is on, whether attachments are stored, and how long received email is kept. Every other address on a receiving domain reaches the inbox too.
+// Returns the address anyone can email to reach this company's inbox, the same inbox+ address on each verified receiving domain, whether reply tracking is on, whether attachments are stored, and how long received email is kept. Every other address on a receiving domain reaches the inbox too.
 //
 // Example:
 //

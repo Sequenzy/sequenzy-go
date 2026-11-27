@@ -9233,6 +9233,13 @@ func TestEnumWebsiteReadinessReason(t *testing.T) {
 		assert.Equal(t, WebsiteReadinessReason("sending_unavailable"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_custom_sending_domain_required", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewWebsiteReadinessReasonFromString("custom_sending_domain_required")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, WebsiteReadinessReason("custom_sending_domain_required"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewWebsiteReadinessReasonFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)

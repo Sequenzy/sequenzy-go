@@ -454,19 +454,29 @@ func (t TrackingDomainStatus) Ptr() *TrackingDomainStatus {
 }
 
 var (
-	getTrackingDomainResponseFieldSuccess        = big.NewInt(1 << 0)
-	getTrackingDomainResponseFieldTrackingDomain = big.NewInt(1 << 1)
+	getTrackingDomainResponseFieldRequireCustomTracking = big.NewInt(1 << 0)
+	getTrackingDomainResponseFieldSuccess               = big.NewInt(1 << 1)
+	getTrackingDomainResponseFieldTrackingDomain        = big.NewInt(1 << 2)
 )
 
 type GetTrackingDomainResponse struct {
-	Success        *bool           `json:"success,omitempty" url:"success,omitempty"`
-	TrackingDomain *TrackingDomain `json:"trackingDomain,omitempty" url:"trackingDomain,omitempty"`
+	// True when this workspace's sending policy requires a verified custom tracking domain and disallows fallback to shared tracking domains.
+	RequireCustomTracking *bool           `json:"requireCustomTracking,omitempty" url:"requireCustomTracking,omitempty"`
+	Success               *bool           `json:"success,omitempty" url:"success,omitempty"`
+	TrackingDomain        *TrackingDomain `json:"trackingDomain,omitempty" url:"trackingDomain,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (g *GetTrackingDomainResponse) GetRequireCustomTracking() *bool {
+	if g == nil {
+		return nil
+	}
+	return g.RequireCustomTracking
 }
 
 func (g *GetTrackingDomainResponse) GetSuccess() *bool {
@@ -495,6 +505,13 @@ func (g *GetTrackingDomainResponse) require(field *big.Int) {
 		g.explicitFields = big.NewInt(0)
 	}
 	g.explicitFields.Or(g.explicitFields, field)
+}
+
+// SetRequireCustomTracking sets the RequireCustomTracking field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GetTrackingDomainResponse) SetRequireCustomTracking(requireCustomTracking *bool) {
+	g.RequireCustomTracking = requireCustomTracking
+	g.require(getTrackingDomainResponseFieldRequireCustomTracking)
 }
 
 // SetSuccess sets the Success field and marks it as non-optional;

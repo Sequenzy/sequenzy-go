@@ -245,7 +245,7 @@ type Website struct {
 	Dkim map[string]any `json:"dkim,omitempty" url:"dkim,omitempty"`
 	// The DNS records and their per-record verification status. Publish the DKIM record, DMARC when present, and the bounce records described by bounceRecords (returnPathCnameRecord when bounceRecords.style is cname, otherwise spfRecord and mxRecord; never both at the same name). Receiving mail is set up separately with receiving domains (/receiving-domains); the inbound* fields some older domains still return are deprecated. GET returns stored results; POST verify performs a fresh check.
 	DNSRecords *WebsiteDNSRecords `json:"dnsRecords,omitempty" url:"dnsRecords,omitempty"`
-	// Upgrade of this domain to the current per-domain CNAME record set, without removing the domain. available: a verified domain on the previous record set, including an older SES-only domain that has a working DMARC record; start it with POST /websites/{domain}/dns-upgrade. in_progress: publish records next to your current records, which keep working until the switch; about an hour after every required record is visible on public DNS, the domain switches by itself. completed: shown for 30 days after the switch; delete oldRecords after deleteOldRecordsAfter. unavailable: everything else (already on the current records, not verified, verification paused, an older SES-only domain without a working DMARC record, a domain on Amazon's three-CNAME DKIM records or in the middle of an earlier records migration, a Sequenzy-managed domain, or a domain the upgrade has not been offered to yet).
+	// Upgrade of this domain to the current per-domain CNAME record set, without removing the domain. available: a verified domain on the previous record set, including an older SES-only domain that has a working DMARC record; start it with POST /websites/{domain}/dns-upgrade. in_progress: publish records next to your current records, which keep working until the switch; about an hour after every required record is visible on public DNS, the domain switches by itself. completed: shown for 30 days after the switch; delete oldRecords after deleteOldRecordsAfter. unavailable: everything else (already on the current records, not verified, verification paused, an older SES-only domain without a working DMARC record, a domain in the middle of an earlier records migration, a Sequenzy-managed domain, or a domain the upgrade has not been offered to yet).
 	DNSUpgrade *WebsiteDNSUpgrade `json:"dnsUpgrade,omitempty" url:"dnsUpgrade,omitempty"`
 	// Whether the customer DNS records are verified.
 	DNSVerified    *bool      `json:"dnsVerified,omitempty" url:"dnsVerified,omitempty"`
@@ -263,7 +263,7 @@ type Website struct {
 	ReadyToSend *bool `json:"readyToSend,omitempty" url:"readyToSend,omitempty"`
 	// Normalized SPF status, expected record, and diagnostics.
 	Spf map[string]any `json:"spf,omitempty" url:"spf,omitempty"`
-	// Stored DNS verification status. This does not imply that a sending transport is ready.
+	// Stored DNS verification status. A new domain starts as pending and is checked automatically; not_started appears only on domains added before that. This does not imply that a sending transport is ready.
 	Status *WebsiteStatus `json:"status,omitempty" url:"status,omitempty"`
 	// Link tracking for this domain. Every sending domain uses the company tracking domain, which never gates verification or sending; until it verifies, links use the shared Sequenzy tracking domain. Manage it with the Tracking Domain endpoints.
 	Tracking *WebsiteTracking `json:"tracking,omitempty" url:"tracking,omitempty"`
@@ -1773,7 +1773,7 @@ func (w WebsiteDNSRecordsTrackingStatus) Ptr() *WebsiteDNSRecordsTrackingStatus 
 	return &w
 }
 
-// Upgrade of this domain to the current per-domain CNAME record set, without removing the domain. available: a verified domain on the previous record set, including an older SES-only domain that has a working DMARC record; start it with POST /websites/{domain}/dns-upgrade. in_progress: publish records next to your current records, which keep working until the switch; about an hour after every required record is visible on public DNS, the domain switches by itself. completed: shown for 30 days after the switch; delete oldRecords after deleteOldRecordsAfter. unavailable: everything else (already on the current records, not verified, verification paused, an older SES-only domain without a working DMARC record, a domain on Amazon's three-CNAME DKIM records or in the middle of an earlier records migration, a Sequenzy-managed domain, or a domain the upgrade has not been offered to yet).
+// Upgrade of this domain to the current per-domain CNAME record set, without removing the domain. available: a verified domain on the previous record set, including an older SES-only domain that has a working DMARC record; start it with POST /websites/{domain}/dns-upgrade. in_progress: publish records next to your current records, which keep working until the switch; about an hour after every required record is visible on public DNS, the domain switches by itself. completed: shown for 30 days after the switch; delete oldRecords after deleteOldRecordsAfter. unavailable: everything else (already on the current records, not verified, verification paused, an older SES-only domain without a working DMARC record, a domain in the middle of an earlier records migration, a Sequenzy-managed domain, or a domain the upgrade has not been offered to yet).
 var (
 	websiteDNSUpgradeFieldCompletedAt           = big.NewInt(1 << 0)
 	websiteDNSUpgradeFieldDeleteOldRecordsAfter = big.NewInt(1 << 1)
@@ -1790,11 +1790,11 @@ type WebsiteDNSUpgrade struct {
 	CompletedAt *time.Time `json:"completedAt,omitempty" url:"completedAt,omitempty"`
 	// The old records can be deleted from this time, 8 days after the switch; deleting them is optional. Set when completed.
 	DeleteOldRecordsAfter *time.Time `json:"deleteOldRecordsAfter,omitempty" url:"deleteOldRecordsAfter,omitempty"`
-	// Records the domain no longer uses (the DKIM TXT at sequenzy._domainkey and the previous return path records). Set when completed. Keep them until deleteOldRecordsAfter so receivers can still check signatures and return bounces for email sent before the switch. removed turns true once a record is gone from public DNS (checked on each verification).
+	// Records the domain no longer uses (the DKIM TXT at sequenzy._domainkey or the three legacy Easy DKIM CNAMEs, plus the previous return path records). Set when completed. Keep them until deleteOldRecordsAfter so receivers can still check signatures and return bounces for email sent before the switch. removed turns true once a record is gone from public DNS (checked on each verification).
 	OldRecords []*WebsiteDNSUpgradeOldRecordsItem `json:"oldRecords,omitempty" url:"oldRecords,omitempty"`
 	// The CNAMEs to add next to your current records. Set while in_progress, otherwise null. Only entries with required true hold back the switch; publish all of them.
 	Records []*WebsiteDNSUpgradeRecordsItem `json:"records,omitempty" url:"records,omitempty"`
-	// Your current records that the upgrade replaces, which you can optionally remove about a week after the switch (the DKIM TXT at sequenzy._domainkey and the current return path records). Set while available or in_progress, otherwise null. Keep them until then.
+	// Your current records that the upgrade replaces, which you can optionally remove about a week after the switch (the DKIM TXT at sequenzy._domainkey or the three legacy Easy DKIM CNAMEs, plus the current return path records). Set while available or in_progress, otherwise null. Keep them until then.
 	ReplacedRecords []*WebsiteDNSUpgradeReplacedRecordsItem `json:"replacedRecords,omitempty" url:"replacedRecords,omitempty"`
 	// When the upgrade started. Set while in_progress.
 	StartedAt *time.Time              `json:"startedAt,omitempty" url:"startedAt,omitempty"`
@@ -2861,12 +2861,13 @@ func (w *WebsiteReadiness) String() string {
 type WebsiteReadinessReason string
 
 const (
-	WebsiteReadinessReasonDNSNotStarted      WebsiteReadinessReason = "dns_not_started"
-	WebsiteReadinessReasonDNSPending         WebsiteReadinessReason = "dns_pending"
-	WebsiteReadinessReasonDNSFailed          WebsiteReadinessReason = "dns_failed"
-	WebsiteReadinessReasonActivationPending  WebsiteReadinessReason = "activation_pending"
-	WebsiteReadinessReasonActivationFailed   WebsiteReadinessReason = "activation_failed"
-	WebsiteReadinessReasonSendingUnavailable WebsiteReadinessReason = "sending_unavailable"
+	WebsiteReadinessReasonDNSNotStarted               WebsiteReadinessReason = "dns_not_started"
+	WebsiteReadinessReasonDNSPending                  WebsiteReadinessReason = "dns_pending"
+	WebsiteReadinessReasonDNSFailed                   WebsiteReadinessReason = "dns_failed"
+	WebsiteReadinessReasonActivationPending           WebsiteReadinessReason = "activation_pending"
+	WebsiteReadinessReasonActivationFailed            WebsiteReadinessReason = "activation_failed"
+	WebsiteReadinessReasonSendingUnavailable          WebsiteReadinessReason = "sending_unavailable"
+	WebsiteReadinessReasonCustomSendingDomainRequired WebsiteReadinessReason = "custom_sending_domain_required"
 )
 
 func NewWebsiteReadinessReasonFromString(s string) (WebsiteReadinessReason, error) {
@@ -2883,6 +2884,8 @@ func NewWebsiteReadinessReasonFromString(s string) (WebsiteReadinessReason, erro
 		return WebsiteReadinessReasonActivationFailed, nil
 	case "sending_unavailable":
 		return WebsiteReadinessReasonSendingUnavailable, nil
+	case "custom_sending_domain_required":
+		return WebsiteReadinessReasonCustomSendingDomainRequired, nil
 	}
 	var t WebsiteReadinessReason
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -2923,7 +2926,7 @@ func (w WebsiteReadinessStatus) Ptr() *WebsiteReadinessStatus {
 	return &w
 }
 
-// Stored DNS verification status. This does not imply that a sending transport is ready.
+// Stored DNS verification status. A new domain starts as pending and is checked automatically; not_started appears only on domains added before that. This does not imply that a sending transport is ready.
 type WebsiteStatus string
 
 const (
@@ -2979,7 +2982,7 @@ type WebsiteTracking struct {
 	Ready *bool `json:"ready,omitempty" url:"ready,omitempty"`
 	// Always false; tracking never gates sending. Kept for compatibility.
 	Required *bool `json:"required,omitempty" url:"required,omitempty"`
-	// Verification status of hostname, including HTTPS. not_started until you confirm DNS setup with Verify Sending Domain or check it with Verify Tracking Domain.
+	// Verification status of hostname, including HTTPS. not_started until the first record of a sending domain is found, its DNS setup is confirmed with Verify Sending Domain, or you check it with Verify Tracking Domain.
 	Status *WebsiteTrackingStatus `json:"status,omitempty" url:"status,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -3302,7 +3305,7 @@ func (w WebsiteTrackingPolicy) Ptr() *WebsiteTrackingPolicy {
 	return &w
 }
 
-// Verification status of hostname, including HTTPS. not_started until you confirm DNS setup with Verify Sending Domain or check it with Verify Tracking Domain.
+// Verification status of hostname, including HTTPS. not_started until the first record of a sending domain is found, its DNS setup is confirmed with Verify Sending Domain, or you check it with Verify Tracking Domain.
 type WebsiteTrackingStatus string
 
 const (

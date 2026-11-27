@@ -10348,6 +10348,14 @@ func TestSettersSendTransactionalRequestTrackingSettings(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetReplyTracking", func(t *testing.T) {
+		obj := &SendTransactionalRequestTrackingSettings{}
+		var fernTestValueReplyTracking *bool
+		obj.SetReplyTracking(fernTestValueReplyTracking)
+		assert.Equal(t, fernTestValueReplyTracking, obj.ReplyTracking)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 }
 
 func TestGettersSendTransactionalRequestTrackingSettings(t *testing.T) {
@@ -10417,6 +10425,39 @@ func TestGettersSendTransactionalRequestTrackingSettings(t *testing.T) {
 		_ = obj.GetOpenTracking() // Should return zero value
 	})
 
+	t.Run("GetReplyTracking", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SendTransactionalRequestTrackingSettings{}
+		var expected *bool
+		obj.ReplyTracking = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetReplyTracking(), "getter should return the property value")
+	})
+
+	t.Run("GetReplyTracking_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SendTransactionalRequestTrackingSettings{}
+		obj.ReplyTracking = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetReplyTracking(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetReplyTracking_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SendTransactionalRequestTrackingSettings
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetReplyTracking() // Should return zero value
+	})
+
 }
 
 func TestSettersMarkExplicitSendTransactionalRequestTrackingSettings(t *testing.T) {
@@ -10459,6 +10500,37 @@ func TestSettersMarkExplicitSendTransactionalRequestTrackingSettings(t *testing.
 
 		// Act
 		obj.SetOpenTracking(fernTestValueOpenTracking)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetReplyTracking_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SendTransactionalRequestTrackingSettings{}
+		var fernTestValueReplyTracking *bool
+
+		// Act
+		obj.SetReplyTracking(fernTestValueReplyTracking)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)

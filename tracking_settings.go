@@ -397,9 +397,10 @@ func (t *TrackingSettingsConsent) String() string {
 }
 
 var (
-	trackingSettingsReplyTrackingFieldForwardReplies         = big.NewInt(1 << 0)
-	trackingSettingsReplyTrackingFieldInboundEmailEnabled    = big.NewInt(1 << 1)
-	trackingSettingsReplyTrackingFieldInboundReplyDomainMode = big.NewInt(1 << 2)
+	trackingSettingsReplyTrackingFieldForwardReplies                    = big.NewInt(1 << 0)
+	trackingSettingsReplyTrackingFieldInboundEmailEnabled               = big.NewInt(1 << 1)
+	trackingSettingsReplyTrackingFieldInboundReplyDomainMode            = big.NewInt(1 << 2)
+	trackingSettingsReplyTrackingFieldTransactionalReplyTrackingEnabled = big.NewInt(1 << 3)
 )
 
 type TrackingSettingsReplyTracking struct {
@@ -407,6 +408,8 @@ type TrackingSettingsReplyTracking struct {
 	InboundEmailEnabled *bool `json:"inboundEmailEnabled,omitempty" url:"inboundEmailEnabled,omitempty"`
 	// Where reply addresses in your emails point. custom uses your verified receiving domain for emails from every sending domain, and inbound.sequenzy.com until one is verified; sequenzy always uses inbound.sequenzy.com. Adding your first receiving domain sets it to custom.
 	InboundReplyDomainMode *TrackingSettingsReplyTrackingInboundReplyDomainMode `json:"inboundReplyDomainMode,omitempty" url:"inboundReplyDomainMode,omitempty"`
+	// Reply tracking default for sends through the Send Email API. Account-wide reply tracking must also be enabled; per-send trackingSettings can only opt out.
+	TransactionalReplyTrackingEnabled *bool `json:"transactionalReplyTrackingEnabled,omitempty" url:"transactionalReplyTrackingEnabled,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -434,6 +437,13 @@ func (t *TrackingSettingsReplyTracking) GetInboundReplyDomainMode() *TrackingSet
 		return nil
 	}
 	return t.InboundReplyDomainMode
+}
+
+func (t *TrackingSettingsReplyTracking) GetTransactionalReplyTrackingEnabled() *bool {
+	if t == nil {
+		return nil
+	}
+	return t.TransactionalReplyTrackingEnabled
 }
 
 func (t *TrackingSettingsReplyTracking) GetExtraProperties() map[string]interface{} {
@@ -469,6 +479,13 @@ func (t *TrackingSettingsReplyTracking) SetInboundEmailEnabled(inboundEmailEnabl
 func (t *TrackingSettingsReplyTracking) SetInboundReplyDomainMode(inboundReplyDomainMode *TrackingSettingsReplyTrackingInboundReplyDomainMode) {
 	t.InboundReplyDomainMode = inboundReplyDomainMode
 	t.require(trackingSettingsReplyTrackingFieldInboundReplyDomainMode)
+}
+
+// SetTransactionalReplyTrackingEnabled sets the TransactionalReplyTrackingEnabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TrackingSettingsReplyTracking) SetTransactionalReplyTrackingEnabled(transactionalReplyTrackingEnabled *bool) {
+	t.TransactionalReplyTrackingEnabled = transactionalReplyTrackingEnabled
+	t.require(trackingSettingsReplyTrackingFieldTransactionalReplyTrackingEnabled)
 }
 
 func (t *TrackingSettingsReplyTracking) UnmarshalJSON(data []byte) error {
@@ -1257,7 +1274,8 @@ var (
 	updateTrackingSettingsRequestFieldStrictBotFilteringEnabled         = big.NewInt(1 << 8)
 	updateTrackingSettingsRequestFieldTransactionalClickTrackingEnabled = big.NewInt(1 << 9)
 	updateTrackingSettingsRequestFieldTransactionalOpenTrackingEnabled  = big.NewInt(1 << 10)
-	updateTrackingSettingsRequestFieldUnsubscribeTrackingEnabled        = big.NewInt(1 << 11)
+	updateTrackingSettingsRequestFieldTransactionalReplyTrackingEnabled = big.NewInt(1 << 11)
+	updateTrackingSettingsRequestFieldUnsubscribeTrackingEnabled        = big.NewInt(1 << 12)
 )
 
 type UpdateTrackingSettingsRequest struct {
@@ -1283,6 +1301,8 @@ type UpdateTrackingSettingsRequest struct {
 	TransactionalClickTrackingEnabled *bool `json:"transactionalClickTrackingEnabled,omitempty" url:"-"`
 	// Open tracking default for sends through the Send Email API. Account-wide open tracking must also be enabled; per-send trackingSettings can only opt out.
 	TransactionalOpenTrackingEnabled *bool `json:"transactionalOpenTrackingEnabled,omitempty" url:"-"`
+	// Reply tracking default for sends through the Send Email API. Account-wide reply tracking must also be enabled; per-send trackingSettings can only opt out.
+	TransactionalReplyTrackingEnabled *bool `json:"transactionalReplyTrackingEnabled,omitempty" url:"-"`
 	// Whether unsubscribe links that point to other services are routed through your tracking domain. Sequenzy's own unsubscribe and preference links, including the one-click unsubscribe header, always use your tracking domain (or the shared one). Actual unsubscribes and their email attribution are recorded either way.
 	UnsubscribeTrackingEnabled *bool `json:"unsubscribeTrackingEnabled,omitempty" url:"-"`
 
@@ -1372,6 +1392,13 @@ func (u *UpdateTrackingSettingsRequest) SetTransactionalClickTrackingEnabled(tra
 func (u *UpdateTrackingSettingsRequest) SetTransactionalOpenTrackingEnabled(transactionalOpenTrackingEnabled *bool) {
 	u.TransactionalOpenTrackingEnabled = transactionalOpenTrackingEnabled
 	u.require(updateTrackingSettingsRequestFieldTransactionalOpenTrackingEnabled)
+}
+
+// SetTransactionalReplyTrackingEnabled sets the TransactionalReplyTrackingEnabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateTrackingSettingsRequest) SetTransactionalReplyTrackingEnabled(transactionalReplyTrackingEnabled *bool) {
+	u.TransactionalReplyTrackingEnabled = transactionalReplyTrackingEnabled
+	u.require(updateTrackingSettingsRequestFieldTransactionalReplyTrackingEnabled)
 }
 
 // SetUnsubscribeTrackingEnabled sets the UnsubscribeTrackingEnabled field and marks it as non-optional;

@@ -134,56 +134,57 @@ func (g *GetCompaniesRequest) SetCompanyID(companyID string) {
 }
 
 var (
-	companyFieldAddress                  = big.NewInt(1 << 0)
-	companyFieldBrandColors              = big.NewInt(1 << 1)
-	companyFieldCompanyContext           = big.NewInt(1 << 2)
-	companyFieldCreatedAt                = big.NewInt(1 << 3)
-	companyFieldDarkModeLogoStatus       = big.NewInt(1 << 4)
-	companyFieldDarkModeLogoURL          = big.NewInt(1 << 5)
-	companyFieldDefaultFromEmail         = big.NewInt(1 << 6)
-	companyFieldDefaultFromName          = big.NewInt(1 << 7)
-	companyFieldDefaultReplyProfileID    = big.NewInt(1 << 8)
-	companyFieldDefaultReplyToEmail      = big.NewInt(1 << 9)
-	companyFieldDefaultReplyToName       = big.NewInt(1 << 10)
-	companyFieldDefaultSenderProfileID   = big.NewInt(1 << 11)
-	companyFieldDefaultSubscriberListIDs = big.NewInt(1 << 12)
-	companyFieldDescription              = big.NewInt(1 << 13)
-	companyFieldEmailBranding            = big.NewInt(1 << 14)
-	companyFieldEmailDesignPrompt        = big.NewInt(1 << 15)
-	companyFieldEmailDirection           = big.NewInt(1 << 16)
-	companyFieldEmailLengthPreference    = big.NewInt(1 << 17)
-	companyFieldEmailLocalizationConfig  = big.NewInt(1 << 18)
-	companyFieldEmailPreset              = big.NewInt(1 << 19)
-	companyFieldEmailStylePreference     = big.NewInt(1 << 20)
-	companyFieldEmailTheme               = big.NewInt(1 << 21)
-	companyFieldFontFamily               = big.NewInt(1 << 22)
-	companyFieldFooterMode               = big.NewInt(1 << 23)
-	companyFieldFooterStyle              = big.NewInt(1 << 24)
-	companyFieldFooterTheme              = big.NewInt(1 << 25)
-	companyFieldForwardReplies           = big.NewInt(1 << 26)
-	companyFieldFounderName              = big.NewInt(1 << 27)
-	companyFieldFounderPhotoURL          = big.NewInt(1 << 28)
-	companyFieldID                       = big.NewInt(1 << 29)
-	companyFieldLanguage                 = big.NewInt(1 << 30)
-	companyFieldLogoURL                  = big.NewInt(1 << 31)
-	companyFieldName                     = big.NewInt(1 << 32)
-	companyFieldPreviewURL               = big.NewInt(1 << 33)
-	companyFieldPricing                  = big.NewInt(1 << 34)
-	companyFieldPrimaryColor             = big.NewInt(1 << 35)
-	companyFieldPrivacyPolicyURL         = big.NewInt(1 << 36)
-	companyFieldReplyRetentionDays       = big.NewInt(1 << 37)
-	companyFieldReplyTrackingDomainMode  = big.NewInt(1 << 38)
-	companyFieldReplyTrackingEnabled     = big.NewInt(1 << 39)
-	companyFieldSocialLinks              = big.NewInt(1 << 40)
-	companyFieldStatus                   = big.NewInt(1 << 41)
-	companyFieldTermsURL                 = big.NewInt(1 << 42)
-	companyFieldTestimonials             = big.NewInt(1 << 43)
-	companyFieldToneVoice                = big.NewInt(1 << 44)
-	companyFieldURL                      = big.NewInt(1 << 45)
-	companyFieldValueProps               = big.NewInt(1 << 46)
-	companyFieldWebsiteType              = big.NewInt(1 << 47)
-	companyFieldWebsiteTypeSource        = big.NewInt(1 << 48)
-	companyFieldWebsiteURL               = big.NewInt(1 << 49)
+	companyFieldAddress                           = big.NewInt(1 << 0)
+	companyFieldBrandColors                       = big.NewInt(1 << 1)
+	companyFieldCompanyContext                    = big.NewInt(1 << 2)
+	companyFieldCreatedAt                         = big.NewInt(1 << 3)
+	companyFieldDarkModeLogoStatus                = big.NewInt(1 << 4)
+	companyFieldDarkModeLogoURL                   = big.NewInt(1 << 5)
+	companyFieldDefaultFromEmail                  = big.NewInt(1 << 6)
+	companyFieldDefaultFromName                   = big.NewInt(1 << 7)
+	companyFieldDefaultReplyProfileID             = big.NewInt(1 << 8)
+	companyFieldDefaultReplyToEmail               = big.NewInt(1 << 9)
+	companyFieldDefaultReplyToName                = big.NewInt(1 << 10)
+	companyFieldDefaultSenderProfileID            = big.NewInt(1 << 11)
+	companyFieldDefaultSubscriberListIDs          = big.NewInt(1 << 12)
+	companyFieldDescription                       = big.NewInt(1 << 13)
+	companyFieldEmailBranding                     = big.NewInt(1 << 14)
+	companyFieldEmailDesignPrompt                 = big.NewInt(1 << 15)
+	companyFieldEmailDirection                    = big.NewInt(1 << 16)
+	companyFieldEmailLengthPreference             = big.NewInt(1 << 17)
+	companyFieldEmailLocalizationConfig           = big.NewInt(1 << 18)
+	companyFieldEmailPreset                       = big.NewInt(1 << 19)
+	companyFieldEmailStylePreference              = big.NewInt(1 << 20)
+	companyFieldEmailTheme                        = big.NewInt(1 << 21)
+	companyFieldFontFamily                        = big.NewInt(1 << 22)
+	companyFieldFooterMode                        = big.NewInt(1 << 23)
+	companyFieldFooterStyle                       = big.NewInt(1 << 24)
+	companyFieldFooterTheme                       = big.NewInt(1 << 25)
+	companyFieldForwardReplies                    = big.NewInt(1 << 26)
+	companyFieldFounderName                       = big.NewInt(1 << 27)
+	companyFieldFounderPhotoURL                   = big.NewInt(1 << 28)
+	companyFieldID                                = big.NewInt(1 << 29)
+	companyFieldLanguage                          = big.NewInt(1 << 30)
+	companyFieldLogoURL                           = big.NewInt(1 << 31)
+	companyFieldName                              = big.NewInt(1 << 32)
+	companyFieldPreviewURL                        = big.NewInt(1 << 33)
+	companyFieldPricing                           = big.NewInt(1 << 34)
+	companyFieldPrimaryColor                      = big.NewInt(1 << 35)
+	companyFieldPrivacyPolicyURL                  = big.NewInt(1 << 36)
+	companyFieldReplyRetentionDays                = big.NewInt(1 << 37)
+	companyFieldReplyTrackingDomainMode           = big.NewInt(1 << 38)
+	companyFieldReplyTrackingEnabled              = big.NewInt(1 << 39)
+	companyFieldSocialLinks                       = big.NewInt(1 << 40)
+	companyFieldStatus                            = big.NewInt(1 << 41)
+	companyFieldTermsURL                          = big.NewInt(1 << 42)
+	companyFieldTestimonials                      = big.NewInt(1 << 43)
+	companyFieldToneVoice                         = big.NewInt(1 << 44)
+	companyFieldTransactionalReplyTrackingEnabled = big.NewInt(1 << 45)
+	companyFieldURL                               = big.NewInt(1 << 46)
+	companyFieldValueProps                        = big.NewInt(1 << 47)
+	companyFieldWebsiteType                       = big.NewInt(1 << 48)
+	companyFieldWebsiteTypeSource                 = big.NewInt(1 << 49)
+	companyFieldWebsiteURL                        = big.NewInt(1 << 50)
 )
 
 type Company struct {
@@ -242,7 +243,7 @@ type Company struct {
 	ReplyRetentionDays *int `json:"replyRetentionDays,omitempty" url:"replyRetentionDays,omitempty"`
 	// Where reply addresses in your emails point. custom uses your verified receiving domain for emails from every sending domain, and inbound.sequenzy.com until one is verified; sequenzy always uses inbound.sequenzy.com. Adding your first receiving domain sets it to custom.
 	ReplyTrackingDomainMode *CompanyReplyTrackingDomainMode `json:"replyTrackingDomainMode,omitempty" url:"replyTrackingDomainMode,omitempty"`
-	// Whether inbound reply capture is enabled for this company.
+	// Whether new emails get a tracking Reply-To address so replies are matched to the email they answer. Mail sent to your inbox addresses is stored either way.
 	ReplyTrackingEnabled *bool `json:"replyTrackingEnabled,omitempty" url:"replyTrackingEnabled,omitempty"`
 	// Profile URL per platform. Bare hosts (`x.com/acme`) and mistyped web schemes (`ttps://`, `https:/`) are saved as `https://` URLs. Branded footers show an icon for `x` (or `twitter`), `threads`, `bluesky`, `linkedin`, `instagram`, `facebook`, `youtube`, `tiktok`, `pinterest`, `discord`, `reddit`, and the mobile app store listings `appstore` and `googleplay`. Other keys are stored but get no icon.
 	SocialLinks  map[string]*string `json:"socialLinks,omitempty" url:"socialLinks,omitempty"`
@@ -250,6 +251,8 @@ type Company struct {
 	TermsURL     *string            `json:"termsUrl,omitempty" url:"termsUrl,omitempty"`
 	Testimonials []map[string]any   `json:"testimonials,omitempty" url:"testimonials,omitempty"`
 	ToneVoice    *string            `json:"toneVoice,omitempty" url:"toneVoice,omitempty"`
+	// Reply tracking default for sends through the Send Email API. Account-wide reply tracking must also be enabled; per-send trackingSettings can only opt out.
+	TransactionalReplyTrackingEnabled *bool `json:"transactionalReplyTrackingEnabled,omitempty" url:"transactionalReplyTrackingEnabled,omitempty"`
 	// Dashboard edit URL for this campaign.
 	URL        *string          `json:"url,omitempty" url:"url,omitempty"`
 	ValueProps []map[string]any `json:"valueProps,omitempty" url:"valueProps,omitempty"`
@@ -579,6 +582,13 @@ func (c *Company) GetToneVoice() *string {
 		return nil
 	}
 	return c.ToneVoice
+}
+
+func (c *Company) GetTransactionalReplyTrackingEnabled() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.TransactionalReplyTrackingEnabled
 }
 
 func (c *Company) GetURL() *string {
@@ -943,6 +953,13 @@ func (c *Company) SetTestimonials(testimonials []map[string]any) {
 func (c *Company) SetToneVoice(toneVoice *string) {
 	c.ToneVoice = toneVoice
 	c.require(companyFieldToneVoice)
+}
+
+// SetTransactionalReplyTrackingEnabled sets the TransactionalReplyTrackingEnabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *Company) SetTransactionalReplyTrackingEnabled(transactionalReplyTrackingEnabled *bool) {
+	c.TransactionalReplyTrackingEnabled = transactionalReplyTrackingEnabled
+	c.require(companyFieldTransactionalReplyTrackingEnabled)
 }
 
 // SetURL sets the URL field and marks it as non-optional;
@@ -4638,48 +4655,49 @@ func (u *UploadFounderPhotoCompaniesResponse) String() string {
 }
 
 var (
-	updateCompaniesRequestFieldCompanyID                = big.NewInt(1 << 0)
-	updateCompaniesRequestFieldAddress                  = big.NewInt(1 << 1)
-	updateCompaniesRequestFieldBrandColors              = big.NewInt(1 << 2)
-	updateCompaniesRequestFieldCompanyContext           = big.NewInt(1 << 3)
-	updateCompaniesRequestFieldDarkModeLogoURL          = big.NewInt(1 << 4)
-	updateCompaniesRequestFieldDefaultSubscriberListIDs = big.NewInt(1 << 5)
-	updateCompaniesRequestFieldDescription              = big.NewInt(1 << 6)
-	updateCompaniesRequestFieldEmailDesignPrompt        = big.NewInt(1 << 7)
-	updateCompaniesRequestFieldEmailDirection           = big.NewInt(1 << 8)
-	updateCompaniesRequestFieldEmailLengthPreference    = big.NewInt(1 << 9)
-	updateCompaniesRequestFieldEmailPreset              = big.NewInt(1 << 10)
-	updateCompaniesRequestFieldEmailStylePreference     = big.NewInt(1 << 11)
-	updateCompaniesRequestFieldEmailTheme               = big.NewInt(1 << 12)
-	updateCompaniesRequestFieldFontFamily               = big.NewInt(1 << 13)
-	updateCompaniesRequestFieldFooterMode               = big.NewInt(1 << 14)
-	updateCompaniesRequestFieldFooterStyle              = big.NewInt(1 << 15)
-	updateCompaniesRequestFieldFooterTheme              = big.NewInt(1 << 16)
-	updateCompaniesRequestFieldForwardReplies           = big.NewInt(1 << 17)
-	updateCompaniesRequestFieldFounderName              = big.NewInt(1 << 18)
-	updateCompaniesRequestFieldFounderPhotoURL          = big.NewInt(1 << 19)
-	updateCompaniesRequestFieldFromEmail                = big.NewInt(1 << 20)
-	updateCompaniesRequestFieldFromName                 = big.NewInt(1 << 21)
-	updateCompaniesRequestFieldLanguage                 = big.NewInt(1 << 22)
-	updateCompaniesRequestFieldLogoURL                  = big.NewInt(1 << 23)
-	updateCompaniesRequestFieldName                     = big.NewInt(1 << 24)
-	updateCompaniesRequestFieldPreviousCompanyName      = big.NewInt(1 << 25)
-	updateCompaniesRequestFieldPricing                  = big.NewInt(1 << 26)
-	updateCompaniesRequestFieldPrimaryColor             = big.NewInt(1 << 27)
-	updateCompaniesRequestFieldPrivacyPolicyURL         = big.NewInt(1 << 28)
-	updateCompaniesRequestFieldRenameMatchingFooters    = big.NewInt(1 << 29)
-	updateCompaniesRequestFieldReplyProfileID           = big.NewInt(1 << 30)
-	updateCompaniesRequestFieldReplyTo                  = big.NewInt(1 << 31)
-	updateCompaniesRequestFieldReplyToName              = big.NewInt(1 << 32)
-	updateCompaniesRequestFieldReplyTrackingDomainMode  = big.NewInt(1 << 33)
-	updateCompaniesRequestFieldReplyTrackingEnabled     = big.NewInt(1 << 34)
-	updateCompaniesRequestFieldSenderProfileID          = big.NewInt(1 << 35)
-	updateCompaniesRequestFieldSocialLinks              = big.NewInt(1 << 36)
-	updateCompaniesRequestFieldTermsURL                 = big.NewInt(1 << 37)
-	updateCompaniesRequestFieldTestimonials             = big.NewInt(1 << 38)
-	updateCompaniesRequestFieldToneVoice                = big.NewInt(1 << 39)
-	updateCompaniesRequestFieldValueProps               = big.NewInt(1 << 40)
-	updateCompaniesRequestFieldWebsiteType              = big.NewInt(1 << 41)
+	updateCompaniesRequestFieldCompanyID                         = big.NewInt(1 << 0)
+	updateCompaniesRequestFieldAddress                           = big.NewInt(1 << 1)
+	updateCompaniesRequestFieldBrandColors                       = big.NewInt(1 << 2)
+	updateCompaniesRequestFieldCompanyContext                    = big.NewInt(1 << 3)
+	updateCompaniesRequestFieldDarkModeLogoURL                   = big.NewInt(1 << 4)
+	updateCompaniesRequestFieldDefaultSubscriberListIDs          = big.NewInt(1 << 5)
+	updateCompaniesRequestFieldDescription                       = big.NewInt(1 << 6)
+	updateCompaniesRequestFieldEmailDesignPrompt                 = big.NewInt(1 << 7)
+	updateCompaniesRequestFieldEmailDirection                    = big.NewInt(1 << 8)
+	updateCompaniesRequestFieldEmailLengthPreference             = big.NewInt(1 << 9)
+	updateCompaniesRequestFieldEmailPreset                       = big.NewInt(1 << 10)
+	updateCompaniesRequestFieldEmailStylePreference              = big.NewInt(1 << 11)
+	updateCompaniesRequestFieldEmailTheme                        = big.NewInt(1 << 12)
+	updateCompaniesRequestFieldFontFamily                        = big.NewInt(1 << 13)
+	updateCompaniesRequestFieldFooterMode                        = big.NewInt(1 << 14)
+	updateCompaniesRequestFieldFooterStyle                       = big.NewInt(1 << 15)
+	updateCompaniesRequestFieldFooterTheme                       = big.NewInt(1 << 16)
+	updateCompaniesRequestFieldForwardReplies                    = big.NewInt(1 << 17)
+	updateCompaniesRequestFieldFounderName                       = big.NewInt(1 << 18)
+	updateCompaniesRequestFieldFounderPhotoURL                   = big.NewInt(1 << 19)
+	updateCompaniesRequestFieldFromEmail                         = big.NewInt(1 << 20)
+	updateCompaniesRequestFieldFromName                          = big.NewInt(1 << 21)
+	updateCompaniesRequestFieldLanguage                          = big.NewInt(1 << 22)
+	updateCompaniesRequestFieldLogoURL                           = big.NewInt(1 << 23)
+	updateCompaniesRequestFieldName                              = big.NewInt(1 << 24)
+	updateCompaniesRequestFieldPreviousCompanyName               = big.NewInt(1 << 25)
+	updateCompaniesRequestFieldPricing                           = big.NewInt(1 << 26)
+	updateCompaniesRequestFieldPrimaryColor                      = big.NewInt(1 << 27)
+	updateCompaniesRequestFieldPrivacyPolicyURL                  = big.NewInt(1 << 28)
+	updateCompaniesRequestFieldRenameMatchingFooters             = big.NewInt(1 << 29)
+	updateCompaniesRequestFieldReplyProfileID                    = big.NewInt(1 << 30)
+	updateCompaniesRequestFieldReplyTo                           = big.NewInt(1 << 31)
+	updateCompaniesRequestFieldReplyToName                       = big.NewInt(1 << 32)
+	updateCompaniesRequestFieldReplyTrackingDomainMode           = big.NewInt(1 << 33)
+	updateCompaniesRequestFieldReplyTrackingEnabled              = big.NewInt(1 << 34)
+	updateCompaniesRequestFieldSenderProfileID                   = big.NewInt(1 << 35)
+	updateCompaniesRequestFieldSocialLinks                       = big.NewInt(1 << 36)
+	updateCompaniesRequestFieldTermsURL                          = big.NewInt(1 << 37)
+	updateCompaniesRequestFieldTestimonials                      = big.NewInt(1 << 38)
+	updateCompaniesRequestFieldToneVoice                         = big.NewInt(1 << 39)
+	updateCompaniesRequestFieldTransactionalReplyTrackingEnabled = big.NewInt(1 << 40)
+	updateCompaniesRequestFieldValueProps                        = big.NewInt(1 << 41)
+	updateCompaniesRequestFieldWebsiteType                       = big.NewInt(1 << 42)
 )
 
 type UpdateCompaniesRequest struct {
@@ -4739,7 +4757,7 @@ type UpdateCompaniesRequest struct {
 	ReplyToName *string `json:"replyToName,omitempty" url:"-"`
 	// custom points reply addresses at your verified receiving domain for emails from every sending domain, falling back to inbound.sequenzy.com until one is verified; sequenzy always uses inbound.sequenzy.com.
 	ReplyTrackingDomainMode *UpdateCompaniesRequestReplyTrackingDomainMode `json:"replyTrackingDomainMode,omitempty" url:"-"`
-	// Enable or disable inbound reply capture (Inbox). Turning it on needs a verified receiving domain unless the workspace has received conversations before; otherwise the request fails with 409 receiving_domain_required. The first verification of a receiving domain you added turns it on automatically.
+	// Turn reply tracking on or off. When on, new emails get a tracking Reply-To address; without a verified receiving domain it is on inbound.sequenzy.com. Turning it off does not stop mail to your inbox addresses or replies to emails already sent. The first verification of a receiving domain you added also turns it on automatically.
 	ReplyTrackingEnabled *bool `json:"replyTrackingEnabled,omitempty" url:"-"`
 	// Existing sender profile to make the account-wide default, and the profile fromName renames. List IDs with GET /v1/sender-profiles. Mutually exclusive with fromEmail.
 	SenderProfileID *string            `json:"senderProfileId,omitempty" url:"-"`
@@ -4747,7 +4765,9 @@ type UpdateCompaniesRequest struct {
 	TermsURL        *string            `json:"termsUrl,omitempty" url:"-"`
 	Testimonials    []map[string]any   `json:"testimonials,omitempty" url:"-"`
 	ToneVoice       *string            `json:"toneVoice,omitempty" url:"-"`
-	ValueProps      []map[string]any   `json:"valueProps,omitempty" url:"-"`
+	// Reply tracking default for sends through the Send Email API. Account-wide reply tracking must also be enabled; per-send trackingSettings can only opt out.
+	TransactionalReplyTrackingEnabled *bool            `json:"transactionalReplyTrackingEnabled,omitempty" url:"-"`
+	ValueProps                        []map[string]any `json:"valueProps,omitempty" url:"-"`
 	// Company category, recorded as your choice: website detection never overwrites it. `null` clears it so detection may classify the company again. Other values return 400.
 	WebsiteType *UpdateCompaniesRequestWebsiteType `json:"websiteType,omitempty" url:"-"`
 
@@ -5040,6 +5060,13 @@ func (u *UpdateCompaniesRequest) SetTestimonials(testimonials []map[string]any) 
 func (u *UpdateCompaniesRequest) SetToneVoice(toneVoice *string) {
 	u.ToneVoice = toneVoice
 	u.require(updateCompaniesRequestFieldToneVoice)
+}
+
+// SetTransactionalReplyTrackingEnabled sets the TransactionalReplyTrackingEnabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateCompaniesRequest) SetTransactionalReplyTrackingEnabled(transactionalReplyTrackingEnabled *bool) {
+	u.TransactionalReplyTrackingEnabled = transactionalReplyTrackingEnabled
+	u.require(updateCompaniesRequestFieldTransactionalReplyTrackingEnabled)
 }
 
 // SetValueProps sets the ValueProps field and marks it as non-optional;
